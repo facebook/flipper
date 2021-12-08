@@ -11,9 +11,6 @@
 /* eslint-disable node/no-sync */
 
 import path from 'path';
-import fs from 'fs';
-
-import config from '../fb-stubs/config';
 import {getRenderHostInstance} from '../RenderHost';
 
 /**
@@ -32,16 +29,4 @@ export function getStaticPath(
   return asarUnpacked
     ? absolutePath.replace('app.asar', 'app.asar.unpacked')
     : absolutePath;
-}
-
-/**
- * @deprecated
- */
-export function getChangelogPath() {
-  const changelogPath = getStaticPath(config.isFBBuild ? 'facebook' : '.');
-  if (fs.existsSync(changelogPath)) {
-    return changelogPath;
-  } else {
-    throw new Error('Changelog path path does not exist: ' + changelogPath);
-  }
 }

@@ -17,14 +17,7 @@ import {
   BugOutlined,
   HistoryOutlined,
 } from '@ant-design/icons';
-import {
-  Dialog,
-  Layout,
-  NUX,
-  theme,
-  Tracked,
-  TrackingScope,
-} from 'flipper-plugin';
+import {Layout, NUX, theme, Tracked, TrackingScope} from 'flipper-plugin';
 
 const {Text, Title} = Typography;
 
@@ -33,8 +26,8 @@ import config from '../fb-stubs/config';
 import isProduction from '../utils/isProduction';
 import {getAppVersion} from '../utils/info';
 import {getFlipperLib} from 'flipper-plugin';
-import ChangelogSheet from '../chrome/ChangelogSheet';
 import {ReleaseChannel} from 'flipper-common';
+import {showChangelog} from '../chrome/ChangelogSheet';
 
 const RowContainer = styled(FlexRow)({
   alignItems: 'flex-start',
@@ -192,11 +185,9 @@ function WelcomeScreenContent() {
                 size="small"
                 icon={<HistoryOutlined />}
                 title="Changelog"
-                onClick={() =>
-                  Dialog.showModal((onHide) => (
-                    <ChangelogSheet onHide={onHide} />
-                  ))
-                }
+                onClick={() => {
+                  showChangelog(false);
+                }}
               />
             </NUX>
           </Tooltip>

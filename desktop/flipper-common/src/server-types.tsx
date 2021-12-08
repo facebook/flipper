@@ -133,6 +133,7 @@ export type IOSDeviceParams = {
 
 export type FlipperServerCommands = {
   'get-config': () => Promise<FlipperServerConfig>;
+  'get-changelog': () => Promise<string>;
   'device-start-logging': (serial: string) => Promise<void>;
   'device-stop-logging': (serial: string) => Promise<void>;
   'device-supports-screenshot': (serial: string) => Promise<boolean>;

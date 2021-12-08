@@ -30,7 +30,16 @@ export function getStaticPath(
     : absolutePath;
 }
 
-export function getChangelogPath() {
+export async function getChangelog() {
+  return (
+    await fs.promises.readFile(
+      path.join(getChangelogPath(), 'CHANGELOG.md'),
+      'utf8',
+    )
+  ).trim();
+}
+
+function getChangelogPath() {
   const changelogPath = getStaticPath(isFBBuild ? 'facebook' : '.');
   if (fs.existsSync(changelogPath)) {
     return changelogPath;

@@ -29,7 +29,7 @@ import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
 import {Notification} from './notification/Notification';
-import ChangelogSheet, {hasNewChangesToShow} from '../chrome/ChangelogSheet';
+import {showChangelog} from '../chrome/ChangelogSheet';
 import PlatformSelectWizard, {
   hasPlatformWizardBeenDone,
 } from '../chrome/PlatformSelectWizard';
@@ -98,9 +98,6 @@ export function SandyApp() {
     })`;
 
     registerStartupTime(logger);
-    if (hasNewChangesToShow(window.localStorage)) {
-      Dialog.showModal((onHide) => <ChangelogSheet onHide={onHide} recent />);
-    }
 
     if (hasPlatformWizardBeenDone(window.localStorage)) {
       Dialog.showModal((onHide) => (
@@ -112,6 +109,8 @@ export function SandyApp() {
         />
       ));
     }
+
+    showChangelog(true);
 
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line

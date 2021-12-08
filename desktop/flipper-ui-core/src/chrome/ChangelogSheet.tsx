@@ -8,28 +8,16 @@
  */
 
 import {Markdown} from '../ui';
-import {readFileSync} from 'fs';
 import React, {Component} from 'react';
-import path from 'path';
 import {reportUsage} from 'flipper-common';
-import {getChangelogPath} from '../utils/pathUtils';
 import {Modal} from 'antd';
-import {theme} from 'flipper-plugin';
+import {Dialog, theme} from 'flipper-plugin';
+import {getRenderHostInstance} from '../RenderHost';
 
 const changelogKey = 'FlipperChangelogStatus';
 
 type ChangelogStatus = {
   lastHeader: string;
-};
-
-let getChangelogFromDisk = (): string => {
-  const changelogFromDisk: string = readFileSync(
-    path.join(getChangelogPath(), 'CHANGELOG.md'),
-    'utf8',
-  ).trim();
-
-  getChangelogFromDisk = () => changelogFromDisk;
-  return changelogFromDisk;
 };
 
 const changelogSectionStyle = {
@@ -45,9 +33,10 @@ const changelogSectionStyle = {
 type Props = {
   onHide: () => void;
   recent?: boolean;
+  changelog: string;
 };
 
-export default class ChangelogSheet extends Component<Props, {}> {
+class ChangelogSheet extends Component<Props, {}> {
   componentDidMount() {
     if (!this.props.recent) {
       // opened through the menu
@@ -57,7 +46,9 @@ export default class ChangelogSheet extends Component<Props, {}> {
 
   componentWillUnmount(): void {
     if (this.props.recent) {
-      markChangelogRead(window.localStorage, getChangelogFromDisk());
+      if (this.props.changelog) {
+        markChangelogRead(window.localStorage, this.props.changelog);
+      }
     }
     if (!this.props.recent) {
       reportUsage('changelog:closed');
@@ -65,7 +56,7 @@ export default class ChangelogSheet extends Component<Props, {}> {
   }
 
   render() {
-    return (
+    return this.props.changelog ? (
       <Modal
         visible
         title="Changelog"
@@ -74,13 +65,13 @@ export default class ChangelogSheet extends Component<Props, {}> {
         <Markdown
           source={
             this.props.recent
-              ? getRecentChangelog(window.localStorage, getChangelogFromDisk())
-              : getChangelogFromDisk()
+              ? getRecentChangelog(window.localStorage, this.props.changelog)
+              : this.props.changelog
           }
           style={changelogSectionStyle}
         />
       </Modal>
-    );
+    ) : null;
   }
 }
 
@@ -100,7 +91,7 @@ function getFirstHeader(changelog: string): string {
 
 export function hasNewChangesToShow(
   localStorage: Storage | undefined,
-  changelog: string = getChangelogFromDisk(),
+  changelog: string,
 ): boolean {
   if (!localStorage) {
     return false;
@@ -150,4 +141,26 @@ export /*for test*/ function markChangelogRead(
     lastHeader: firstHeader,
   };
   localStorage.setItem(changelogKey, JSON.stringify(status));
+}
+
+export function showChangelog(onlyIfNewChanges: boolean) {
+  getRenderHostInstance()
+    .flipperServer.exec('get-changelog')
+    .then((changelog) => {
+      const show =
+        !onlyIfNewChanges ||
+        hasNewChangesToShow(window.localStorage, changelog);
+      if (show) {
+        Dialog.showModal((onHide) => (
+          <ChangelogSheet
+            onHide={onHide}
+            recent={onlyIfNewChanges}
+            changelog={changelog}
+          />
+        ));
+      }
+    })
+    .catch((e) => {
+      console.error('Failed to load changelog', e);
+    });
 }

@@ -37,6 +37,7 @@ import {KeytarManager} from './utils/keytar';
 import {PluginManager} from './plugins/PluginManager';
 import {runHealthcheck, getHealthChecks} from './utils/runHealthchecks';
 import {openFile} from './utils/openFile';
+import {getChangelog} from './utils/pathUtils';
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
@@ -195,6 +196,7 @@ export class FlipperServerImpl implements FlipperServer {
 
   private commandHandler: FlipperServerCommands = {
     'get-config': async () => this.config,
+    'get-changelog': getChangelog,
     'device-start-logging': async (serial: string) =>
       this.getDevice(serial).startLogging(),
     'device-stop-logging': async (serial: string) =>
