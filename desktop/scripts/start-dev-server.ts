@@ -244,6 +244,8 @@ async function startMetroServer(app: Express, server: http.Server) {
   const watchFolders = (await getAppWatchFolders()).concat(
     await getPluginSourceFolders(),
   );
+  console.log('Source dirs\n\t' + watchFolders.join('\n\t'));
+
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
     projectRoot: rootDir,
@@ -339,7 +341,15 @@ async function startWatchChanges(io: socketIo.Server) {
     const watchman = new Watchman(path.resolve(__dirname, '..'));
     await watchman.initialize();
     await Promise.all(
-      ['app', 'pkg', 'doctor', 'plugin-lib', 'flipper-plugin'].map((dir) =>
+      [
+        'app',
+        'pkg',
+        'doctor',
+        'plugin-lib',
+        'flipper-plugin',
+        'flipper-common',
+        'flipper-ui-core',
+      ].map((dir) =>
         watchman.startWatchFiles(
           dir,
           () => {
