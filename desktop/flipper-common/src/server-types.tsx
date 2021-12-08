@@ -7,7 +7,15 @@
  * @format
  */
 
-import {DeviceSpec, DeviceType, OS as PluginOS} from './PluginDetails';
+import {
+  BundledPluginDetails,
+  DeviceSpec,
+  DeviceType,
+  DownloadablePluginDetails,
+  InstalledPluginDetails,
+  OS as PluginOS,
+  UpdatablePluginDetails,
+} from './PluginDetails';
 import {LauncherSettings, ProcessConfig, Settings} from './settings';
 
 // In the future, this file would deserve it's own package, as it doesn't really relate to plugins.
@@ -152,6 +160,20 @@ export type FlipperServerCommands = {
   'keychain-write': (service: string, token: string) => Promise<void>;
   'keychain-read': (service: string) => Promise<string>;
   'keychain-unset': (service: string) => Promise<void>;
+  'plugins-load-dynamic-plugins': () => Promise<InstalledPluginDetails[]>;
+  'plugins-get-bundled-plugins': () => Promise<BundledPluginDetails[]>;
+  'plugins-get-installed-plugins': () => Promise<InstalledPluginDetails[]>;
+  'plugins-get-updatable-plugins': (
+    query: string | undefined,
+  ) => Promise<UpdatablePluginDetails[]>;
+  'plugin-start-download': (
+    plugin: DownloadablePluginDetails,
+  ) => Promise<InstalledPluginDetails>;
+  'plugins-install-from-npm': (name: string) => Promise<InstalledPluginDetails>;
+  'plugins-install-from-file': (
+    path: string,
+  ) => Promise<InstalledPluginDetails>;
+  'plugins-remove-plugins': (names: string[]) => Promise<void>;
 };
 
 export type ENVIRONMENT_VARIABLES =

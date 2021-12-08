@@ -16,7 +16,7 @@ import {EOL} from 'os';
 import pmap from 'p-map';
 import {rootDir} from './paths';
 import yargs from 'yargs';
-import {isPluginJson} from 'flipper-plugin-lib';
+import {isPluginJson} from 'flipper-common';
 
 const argv = yargs
   .usage('yarn tsc-plugins [args]')

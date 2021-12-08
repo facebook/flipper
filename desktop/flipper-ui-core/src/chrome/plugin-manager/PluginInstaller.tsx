@@ -14,23 +14,18 @@ import {
   reportPlatformFailures,
   reportUsage,
   InstalledPluginDetails,
+  UpdateResult,
+  UpdatablePluginDetails,
 } from 'flipper-common';
 import reloadFlipper from '../../utils/reloadFlipper';
 import {registerInstalledPlugins} from '../../reducers/plugins';
-import {
-  UpdateResult,
-  getInstalledPlugins,
-  getUpdatablePlugins,
-  removePlugin,
-  UpdatablePluginDetails,
-} from 'flipper-plugin-lib';
-import {installPluginFromNpm} from 'flipper-plugin-lib';
 import {State as AppState} from '../../reducers';
 import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';
 import PluginPackageInstaller from './PluginPackageInstaller';
 import {Toolbar} from 'flipper-plugin';
 import {Alert, Button, Input, Tooltip, Typography} from 'antd';
+import {getRenderHostInstance} from '../../RenderHost';
 
 const {Text, Link} = Typography;
 
@@ -327,8 +322,33 @@ export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
   }),
   (dispatch: Dispatch<Action<any>>) => ({
     refreshInstalledPlugins: async () => {
-      const plugins = await getInstalledPlugins();
+      const plugins = await await getRenderHostInstance().flipperServer!.exec(
+        'plugins-get-installed-plugins',
+      );
       dispatch(registerInstalledPlugins(plugins));
     },
   }),
 )(PluginInstaller);
+
+async function installPluginFromNpm(
+  name: string,
+): Promise<InstalledPluginDetails> {
+  return await getRenderHostInstance().flipperServer!.exec(
+    'plugins-install-from-npm',
+    name,
+  );
+}
+
+async function removePlugin(name: string) {
+  return await getRenderHostInstance().flipperServer!.exec(
+    'plugins-remove-plugins',
+    [name],
+  );
+}
+
+async function getUpdatablePlugins(query: string | undefined) {
+  return await getRenderHostInstance().flipperServer!.exec(
+    'plugins-get-updatable-plugins',
+    query,
+  );
+}

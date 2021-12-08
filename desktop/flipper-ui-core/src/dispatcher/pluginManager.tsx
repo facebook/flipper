@@ -17,11 +17,6 @@ import {
   SwitchPluginActionPayload,
   PluginCommand,
 } from '../reducers/pluginManager';
-import {
-  getInstalledPlugins,
-  cleanupOldInstalledPluginVersions,
-  removePlugins,
-} from 'flipper-plugin-lib';
 import {sideEffect} from '../utils/sideEffect';
 import {requirePlugin} from './plugins';
 import {showErrorNotification} from '../utils/notifications';
@@ -49,13 +44,18 @@ import {
   defaultEnabledBackgroundPlugins,
 } from '../utils/pluginUtils';
 import {getPluginKey} from '../utils/pluginKey';
-
-const maxInstalledPluginVersionsToKeep = 2;
+import {getRenderHostInstance} from '../RenderHost';
 
 async function refreshInstalledPlugins(store: Store) {
-  await removePlugins(store.getState().plugins.uninstalledPluginNames.values());
-  await cleanupOldInstalledPluginVersions(maxInstalledPluginVersionsToKeep);
-  const plugins = await getInstalledPlugins();
+  const flipperServer = getRenderHostInstance().flipperServer;
+  if (!flipperServer) {
+    throw new Error('Flipper Server not ready');
+  }
+  await flipperServer.exec(
+    'plugins-remove-plugins',
+    Array.from(store.getState().plugins.uninstalledPluginNames.values()),
+  );
+  const plugins = await flipperServer.exec('plugins-get-installed-plugins');
   return store.dispatch(registerInstalledPlugins(plugins));
 }
 

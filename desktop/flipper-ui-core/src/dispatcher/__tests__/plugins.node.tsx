@@ -8,7 +8,6 @@
  */
 
 jest.mock('../../../../app/src/defaultPlugins');
-jest.mock('../../utils/loadDynamicPlugins');
 import dispatcher, {
   getDynamicPlugins,
   checkDisabled,
@@ -23,11 +22,9 @@ import {getLogger} from 'flipper-common';
 import configureStore from 'redux-mock-store';
 import TestPlugin from './TestPlugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
-import {mocked} from 'ts-jest/utils';
-import loadDynamicPlugins from '../../utils/loadDynamicPlugins';
 import {getRenderHostInstance} from '../../RenderHost';
 
-const loadDynamicPluginsMock = mocked(loadDynamicPlugins);
+let loadDynamicPluginsMock: jest.Mock;
 
 const mockStore = configureStore<State, {}>([])(
   createRootReducer()(undefined, {type: 'INIT'}),
@@ -56,11 +53,9 @@ const sampleBundledPluginDetails: BundledPluginDetails = {
 };
 
 beforeEach(() => {
+  loadDynamicPluginsMock = getRenderHostInstance().flipperServer.exec =
+    jest.fn();
   loadDynamicPluginsMock.mockResolvedValue([]);
-});
-
-afterEach(() => {
-  loadDynamicPluginsMock.mockClear();
 });
 
 test('dispatcher dispatches REGISTER_PLUGINS', async () => {
@@ -70,7 +65,6 @@ test('dispatcher dispatches REGISTER_PLUGINS', async () => {
 });
 
 test('getDynamicPlugins returns empty array on errors', async () => {
-  const loadDynamicPluginsMock = mocked(loadDynamicPlugins);
   loadDynamicPluginsMock.mockRejectedValue(new Error('ooops'));
   const res = await getDynamicPlugins();
   expect(res).toEqual([]);

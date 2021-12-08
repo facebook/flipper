@@ -15,7 +15,7 @@ import globImport from 'glob';
 import pfilter from 'p-filter';
 import pmap from 'p-map';
 import {execSync} from 'child_process';
-import {isPluginJson} from 'flipper-plugin-lib';
+import {isPluginJson} from 'flipper-common';
 const glob = promisify(globImport);
 
 export interface Package {

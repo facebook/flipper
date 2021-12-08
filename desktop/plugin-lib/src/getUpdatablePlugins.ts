@@ -7,28 +7,20 @@
  * @format
  */
 
-import {InstalledPluginDetails} from 'flipper-common';
+import {
+  UpdatablePluginDetails,
+  UpdateResult,
+  getPluginDetails,
+} from 'flipper-common';
 import {getInstalledPlugins} from './pluginInstaller';
 import semver from 'semver';
 import {getNpmHostedPlugins, NpmPackageDescriptor} from './getNpmHostedPlugins';
 import NpmApi from 'npm-api';
-import {getInstalledPluginDetails, getPluginDetails} from './getPluginDetails';
+import {getInstalledPluginDetails} from './getPluginDetails';
 import {getPluginVersionInstallationDir} from './pluginPaths';
 import pmap from 'p-map';
 import {notNull} from './typeUtils';
 const npmApi = new NpmApi();
-
-export type UpdateResult =
-  | {kind: 'not-installed'; version: string}
-  | {kind: 'up-to-date'}
-  | {kind: 'error'; error: Error}
-  | {kind: 'update-available'; version: string};
-
-export type UpdatablePlugin = {
-  updateStatus: UpdateResult;
-};
-
-export type UpdatablePluginDetails = InstalledPluginDetails & UpdatablePlugin;
 
 export async function getUpdatablePlugins(
   query?: string,

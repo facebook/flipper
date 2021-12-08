@@ -34,6 +34,7 @@ import {setFlipperServerConfig} from './FlipperServerConfig';
 import {saveSettings} from './utils/settings';
 import {saveLauncherSettings} from './utils/launcherSettings';
 import {KeytarManager} from './utils/keytar';
+import {PluginManager} from './plugins/PluginManager';
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
@@ -53,6 +54,7 @@ export class FlipperServerImpl implements FlipperServer {
   android: AndroidDeviceManager;
   ios: IOSDeviceManager;
   keytarManager: KeytarManager;
+  pluginManager: PluginManager;
 
   constructor(
     public config: FlipperServerConfig,
@@ -64,6 +66,9 @@ export class FlipperServerImpl implements FlipperServer {
     this.android = new AndroidDeviceManager(this);
     this.ios = new IOSDeviceManager(this);
     this.keytarManager = new KeytarManager(keytarModule);
+    // TODO: given flipper-dump, it might make more sense to have the plugin command
+    // handled by moved to flipper-server & app, but let's keep things simple for now
+    this.pluginManager = new PluginManager();
 
     server.addListener('error', (err) => {
       this.emit('server-error', err);
@@ -122,6 +127,7 @@ export class FlipperServerImpl implements FlipperServer {
 
     try {
       await this.server.init();
+      await this.pluginManager.start();
       await this.startDeviceListeners();
       this.setServerState('started');
     } catch (e) {
@@ -247,6 +253,21 @@ export class FlipperServerImpl implements FlipperServer {
     'keychain-write': (service, password) =>
       this.keytarManager.writeKeychain(service, password),
     'keychain-unset': (service) => this.keytarManager.unsetKeychain(service),
+    'plugins-load-dynamic-plugins': () =>
+      this.pluginManager.loadDynamicPlugins(),
+    'plugins-get-bundled-plugins': () => this.pluginManager.getBundledPlugins(),
+    'plugins-get-installed-plugins': () =>
+      this.pluginManager.getInstalledPlugins(),
+    'plugins-remove-plugins': (plugins) =>
+      this.pluginManager.removePlugins(plugins),
+    'plugin-start-download': (details) =>
+      this.pluginManager.downloadPlugin(details),
+    'plugins-get-updatable-plugins': (query) =>
+      this.pluginManager.getUpdatablePlugins(query),
+    'plugins-install-from-file': (path) =>
+      this.pluginManager.installPluginFromFile(path),
+    'plugins-install-from-npm': (name) =>
+      this.pluginManager.installPluginFromNpm(name),
   };
 
   registerDevice(device: ServerDevice) {

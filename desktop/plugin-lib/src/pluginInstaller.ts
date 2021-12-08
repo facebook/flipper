@@ -109,7 +109,7 @@ export async function installPluginFromNpm(name: string) {
       tmpDir,
       getPluginDirNameFromPackageName(name),
     );
-    await installPluginFromTempDir(pluginTempDir);
+    return await installPluginFromTempDir(pluginTempDir);
   } finally {
     await fs.remove(tmpDir);
   }
@@ -137,9 +137,7 @@ export async function removePlugin(name: string): Promise<void> {
   await fs.remove(getPluginInstallationDir(name));
 }
 
-export async function removePlugins(
-  names: IterableIterator<string>,
-): Promise<void> {
+export async function removePlugins(names: Array<string>): Promise<void> {
   await pmap(names, (name) => removePlugin(name));
 }
 

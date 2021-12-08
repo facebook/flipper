@@ -8,10 +8,8 @@
  */
 
 import {DownloadablePluginDetails} from 'flipper-common';
-import {getPluginVersionInstallationDir} from 'flipper-plugin-lib';
 import {Actions} from '.';
 import produce from 'immer';
-import {Canceler} from 'axios';
 
 export enum PluginDownloadStatus {
   QUEUED = 'Queued',
@@ -24,7 +22,7 @@ export type DownloadablePluginState = {
   startedByUser: boolean;
 } & (
   | {status: PluginDownloadStatus.QUEUED}
-  | {status: PluginDownloadStatus.STARTED; cancel: Canceler}
+  | {status: PluginDownloadStatus.STARTED}
 );
 
 // We use plugin installation path as key as it is unique for each plugin version.
@@ -42,7 +40,6 @@ export type PluginDownloadStarted = {
   type: 'PLUGIN_DOWNLOAD_STARTED';
   payload: {
     plugin: DownloadablePluginDetails;
-    cancel: Canceler;
   };
 };
 
@@ -67,10 +64,7 @@ export default function reducer(
   switch (action.type) {
     case 'PLUGIN_DOWNLOAD_START': {
       const {plugin, startedByUser} = action.payload;
-      const installationDir = getPluginVersionInstallationDir(
-        plugin.name,
-        plugin.version,
-      );
+      const installationDir = getDownloadKey(plugin.name, plugin.version);
       const downloadState = state[installationDir];
       if (downloadState) {
         // If download is already in progress - re-use the existing state.
@@ -90,11 +84,8 @@ export default function reducer(
       });
     }
     case 'PLUGIN_DOWNLOAD_STARTED': {
-      const {plugin, cancel} = action.payload;
-      const installationDir = getPluginVersionInstallationDir(
-        plugin.name,
-        plugin.version,
-      );
+      const {plugin} = action.payload;
+      const installationDir = getDownloadKey(plugin.name, plugin.version);
       const downloadState = state[installationDir];
       if (downloadState?.status !== PluginDownloadStatus.QUEUED) {
         console.warn(
@@ -107,16 +98,12 @@ export default function reducer(
           status: PluginDownloadStatus.STARTED,
           plugin,
           startedByUser: downloadState.startedByUser,
-          cancel,
         };
       });
     }
     case 'PLUGIN_DOWNLOAD_FINISHED': {
       const {plugin} = action.payload;
-      const installationDir = getPluginVersionInstallationDir(
-        plugin.name,
-        plugin.version,
-      );
+      const installationDir = getDownloadKey(plugin.name, plugin.version);
       return produce(state, (draft) => {
         delete draft[installationDir];
       });
@@ -136,9 +123,12 @@ export const startPluginDownload = (payload: {
 
 export const pluginDownloadStarted = (payload: {
   plugin: DownloadablePluginDetails;
-  cancel: Canceler;
 }): Action => ({type: 'PLUGIN_DOWNLOAD_STARTED', payload});
 
 export const pluginDownloadFinished = (payload: {
   plugin: DownloadablePluginDetails;
 }): Action => ({type: 'PLUGIN_DOWNLOAD_FINISHED', payload});
+
+function getDownloadKey(name: string, version: string) {
+  return name.replace('/', '__') + '@' + version;
+}

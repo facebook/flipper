@@ -12,18 +12,14 @@
 
 import path from 'path';
 import fs from 'fs';
+import {getFlipperServerConfig} from '../FlipperServerConfig';
+import {isFBBuild} from '../fb-stubs/constants';
 
-import config from '../fb-stubs/config';
-import {getRenderHostInstance} from '../RenderHost';
-
-/**
- * @deprecated
- */
 export function getStaticPath(
   relativePath: string = '.',
   {asarUnpacked}: {asarUnpacked: boolean} = {asarUnpacked: false},
 ) {
-  const staticDir = getRenderHostInstance().serverConfig.paths.staticPath;
+  const staticDir = getFlipperServerConfig().paths.staticPath;
   const absolutePath = path.resolve(staticDir, relativePath);
   // Unfortunately, path.resolve, fs.pathExists, fs.read etc do not automatically work with asarUnpacked files.
   // All these functions still look for files in "app.asar" even if they are unpacked.
@@ -34,11 +30,8 @@ export function getStaticPath(
     : absolutePath;
 }
 
-/**
- * @deprecated
- */
 export function getChangelogPath() {
-  const changelogPath = getStaticPath(config.isFBBuild ? 'facebook' : '.');
+  const changelogPath = getStaticPath(isFBBuild ? 'facebook' : '.');
   if (fs.existsSync(changelogPath)) {
     return changelogPath;
   } else {

@@ -8,7 +8,7 @@
  */
 
 import type {Store} from '../reducers/index';
-import type {Logger} from 'flipper-common';
+import type {InstalledPluginDetails, Logger} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -25,8 +25,6 @@ import {
   pluginsInitialized,
 } from '../reducers/plugins';
 import {FlipperBasePlugin} from '../plugin';
-import fs from 'fs-extra';
-import path from 'path';
 import {notNull} from '../utils/typeUtils';
 import {
   ActivatablePluginDetails,
@@ -36,7 +34,6 @@ import {
 import {tryCatchReportPluginFailures, reportUsage} from 'flipper-common';
 import * as FlipperPluginSDK from 'flipper-plugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
-import loadDynamicPlugins from '../utils/loadDynamicPlugins';
 import * as Immer from 'immer';
 import * as antd from 'antd';
 import * as emotion_styled from '@emotion/styled';
@@ -47,7 +44,6 @@ import * as crc32 from 'crc32';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import isPluginCompatible from '../utils/isPluginCompatible';
 import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
-import {getStaticPath} from '../utils/pathUtils';
 import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
 import {getRenderHostInstance} from '../RenderHost';
 let defaultPluginsIndex: any = null;
@@ -152,25 +148,23 @@ async function getBundledPlugins(): Promise<Array<BundledPluginDetails>> {
   if (process.env.NODE_ENV === 'test') {
     return [];
   }
-  // defaultPlugins that are included in the Flipper distributive.
-  // List of default bundled plugins is written at build time to defaultPlugins/bundled.json.
-  const pluginPath = getStaticPath(
-    path.join('defaultPlugins', 'bundled.json'),
-    {asarUnpacked: true},
-  );
-  let bundledPlugins: Array<BundledPluginDetails> = [];
   try {
-    bundledPlugins = await fs.readJson(pluginPath);
+    // defaultPlugins that are included in the Flipper distributive.
+    // List of default bundled plugins is written at build time to defaultPlugins/bundled.json.
+    return await getRenderHostInstance().flipperServer!.exec(
+      'plugins-get-bundled-plugins',
+    );
   } catch (e) {
     console.error('Failed to load list of bundled plugins', e);
+    return [];
   }
-
-  return bundledPlugins;
 }
 
-export async function getDynamicPlugins() {
+export async function getDynamicPlugins(): Promise<InstalledPluginDetails[]> {
   try {
-    return await loadDynamicPlugins();
+    return await getRenderHostInstance().flipperServer!.exec(
+      'plugins-load-dynamic-plugins',
+    );
   } catch (e) {
     console.error('Failed to load dynamic plugins', e);
     return [];

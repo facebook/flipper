@@ -7,19 +7,22 @@
  * @format
  */
 
-jest.mock('flipper-plugin-lib');
-
 import {default as PluginInstaller} from '../PluginInstaller';
 import React from 'react';
 import {render, waitFor} from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
-import type {PluginDetails} from 'flipper-common';
-import {getUpdatablePlugins, UpdatablePluginDetails} from 'flipper-plugin-lib';
+import type {PluginDetails, UpdatablePluginDetails} from 'flipper-common';
 import {Store} from '../../../reducers';
-import {mocked} from 'ts-jest/utils';
+import {getRenderHostInstance} from '../../../RenderHost';
 
-const getUpdatablePluginsMock = mocked(getUpdatablePlugins);
+let getUpdatablePluginsMock: jest.Mock<any, any>;
+
+beforeEach(() => {
+  // flipperServer get resets before each test, no need to do so explicitly
+  getUpdatablePluginsMock = getRenderHostInstance().flipperServer!.exec =
+    jest.fn();
+});
 
 function getStore(installedPlugins: PluginDetails[] = []): Store {
   return configureStore([])({
@@ -69,10 +72,6 @@ const samplePluginDetails2: UpdatablePluginDetails = {
 };
 
 const SEARCH_RESULTS = [samplePluginDetails1, samplePluginDetails2];
-
-afterEach(() => {
-  getUpdatablePluginsMock.mockClear();
-});
 
 test('load PluginInstaller list', async () => {
   getUpdatablePluginsMock.mockReturnValue(Promise.resolve(SEARCH_RESULTS));

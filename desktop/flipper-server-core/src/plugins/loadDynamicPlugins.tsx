@@ -20,9 +20,7 @@ import {getStaticPath} from '../utils/pathUtils';
 
 // Load "dynamic" plugins, e.g. those which are either pre-installed (default), installed or loaded from sources (for development).
 // This opposed to "bundled" plugins which are included into Flipper bundle.
-export default async function loadDynamicPlugins(): Promise<
-  InstalledPluginDetails[]
-> {
+export async function loadDynamicPlugins(): Promise<InstalledPluginDetails[]> {
   if (process.env.NODE_ENV === 'test') {
     return [];
   }
