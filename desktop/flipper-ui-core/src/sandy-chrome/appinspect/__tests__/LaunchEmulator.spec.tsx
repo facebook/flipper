@@ -14,18 +14,19 @@ import {createStore} from 'redux';
 import {LaunchEmulatorDialog} from '../LaunchEmulator';
 
 import {createRootReducer} from '../../../reducers';
-import {sleep, TestUtils} from 'flipper-plugin';
+import {sleep} from 'flipper-plugin';
+import {getRenderHostInstance} from '../../../RenderHost';
 
 test('Can render and launch android apps - empty', async () => {
   const store = createStore(createRootReducer());
-  const mockServer = TestUtils.createFlipperServerMock({
-    'ios-get-simulators': () => Promise.resolve([]),
-    'android-get-emulators': () => Promise.resolve([]),
-  });
-  store.dispatch({
-    type: 'SET_FLIPPER_SERVER',
-    payload: mockServer,
-  });
+
+  const responses: any = {
+    'ios-get-simulators': [],
+    'android-get-emulators': [],
+  };
+  getRenderHostInstance().flipperServer.exec = async function (cmd: any) {
+    return responses[cmd];
+  } as any;
   const onClose = jest.fn();
 
   const renderer = render(
@@ -44,20 +45,15 @@ test('Can render and launch android apps - empty', async () => {
 });
 
 test('Can render and launch android apps', async () => {
-  let p: Promise<any> | undefined = undefined;
-
   const store = createStore(createRootReducer());
-  const launch = jest.fn().mockImplementation(() => Promise.resolve());
-  const mockServer = TestUtils.createFlipperServerMock({
-    'ios-get-simulators': () => Promise.resolve([]),
-    'android-get-emulators': () =>
-      (p = Promise.resolve(['emulator1', 'emulator2'])),
-    'android-launch-emulator': launch,
+
+  const exec = jest.fn().mockImplementation(async (cmd) => {
+    if (cmd === 'android-get-emulators') {
+      return ['emulator1', 'emulator2'];
+    }
   });
-  store.dispatch({
-    type: 'SET_FLIPPER_SERVER',
-    payload: mockServer,
-  });
+
+  getRenderHostInstance().flipperServer.exec = exec;
 
   store.dispatch({
     type: 'UPDATE_SETTINGS',
@@ -74,7 +70,7 @@ test('Can render and launch android apps', async () => {
     </Provider>,
   );
 
-  await p!;
+  await sleep(1); // give exec time to resolve
 
   expect(await renderer.findAllByText(/emulator/)).toMatchInlineSnapshot(`
     Array [
@@ -91,5 +87,16 @@ test('Can render and launch android apps', async () => {
   fireEvent.click(renderer.getByText('emulator2'));
   await sleep(1000);
   expect(onClose).toBeCalled();
-  expect(launch).toBeCalledWith('emulator2', false);
+  expect(exec.mock.calls).toMatchInlineSnapshot(`
+    Array [
+      Array [
+        "android-get-emulators",
+      ],
+      Array [
+        "android-launch-emulator",
+        "emulator2",
+        false,
+      ],
+    ]
+  `);
 });

@@ -596,13 +596,14 @@ export function createFlipperServerMock(
     exec: jest
       .fn()
       .mockImplementation(
-        (cmd: keyof FlipperServerCommands, ...args: any[]) => {
+        async (cmd: keyof FlipperServerCommands, ...args: any[]) => {
           if (overrides?.[cmd]) {
             return (overrides[cmd] as any)(...args);
           }
-          return Promise.reject(
-            new Error(`FlipperServerMock exec not implemented: ${cmd}}`),
+          console.warn(
+            `Empty server response stubbed for command '${cmd}', set 'getRenderHostInstance().flipperServer.exec' in your test to override the behavior.`,
           );
+          return undefined;
         },
       ),
     close: jest.fn(),

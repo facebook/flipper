@@ -22,18 +22,10 @@ import {
   clipboard,
   shell,
 } from 'electron';
-import type {RenderHost} from 'flipper-ui-core';
 import fs from 'fs';
 import {setupMenuBar} from './setupMenuBar';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
-
-declare global {
-  interface Window {
-    // We store this as a global, to make sure the renderHost is available
-    // before flipper-ui-core is loaded and needs those during module initialisation
-    FlipperRenderHostInstance: RenderHost;
-  }
-}
+import type {RenderHost} from 'flipper-ui-core';
 
 export function initializeElectron(
   flipperServer: FlipperServer,
@@ -185,7 +177,7 @@ export function initializeElectron(
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },
     flipperServer,
-  };
+  } as RenderHost;
 
   setupMenuBar();
 }

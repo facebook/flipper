@@ -10,6 +10,7 @@
 import {DeviceOS, DeviceType} from 'flipper-plugin';
 import {DeviceSpec} from 'flipper-common';
 import BaseDevice from '../devices/BaseDevice';
+import {getRenderHostInstance} from '../RenderHost';
 
 export class TestDevice extends BaseDevice {
   constructor(
@@ -19,21 +20,12 @@ export class TestDevice extends BaseDevice {
     os: DeviceOS,
     specs?: DeviceSpec[],
   ) {
-    super(
-      {
-        async connect() {},
-        on: jest.fn(),
-        off: jest.fn(),
-        exec: jest.fn(),
-        close: jest.fn(),
-      },
-      {
-        serial,
-        deviceType,
-        title,
-        os,
-        specs,
-      },
-    );
+    super(getRenderHostInstance().flipperServer, {
+      serial,
+      deviceType,
+      title,
+      os,
+      specs,
+    });
   }
 }

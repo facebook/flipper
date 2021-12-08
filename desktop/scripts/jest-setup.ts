@@ -23,12 +23,11 @@ if (process.env.TZ !== timezone) {
 // Make sure we have identical formatting of Dates everywhere
 const toLocaleString = Date.prototype.toLocaleString;
 // eslint-disable-next-line no-extend-native
-Date.prototype.toLocaleString = function (_locale, ...args) {
+(Date as any).prototype.toLocaleString = function (
+  _locale: any,
+  ...args: any[]
+) {
   return toLocaleString.call(this, 'en-US', ...args);
 };
 
 require('immer').enableMapSet();
-
-require('../flipper-ui-core/src/fb-stubs/Logger').init(undefined, {
-  isTest: true,
-});

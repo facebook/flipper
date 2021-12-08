@@ -28,7 +28,6 @@ import ArchivedDevice from '../devices/ArchivedDevice';
 import {ClientQuery, DeviceOS} from 'flipper-common';
 import {TestDevice} from './TestDevice';
 import {getRenderHostInstance} from '../RenderHost';
-import {TestUtils} from 'flipper-plugin';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];
@@ -58,7 +57,7 @@ export default class MockFlipper {
   private _clients: Client[] = [];
   private _deviceCounter: number = 0;
   private _clientCounter: number = 0;
-  flipperServer: FlipperServer = TestUtils.createFlipperServerMock();
+  flipperServer: FlipperServer = getRenderHostInstance().flipperServer;
 
   public get store(): Store {
     return this._store;
@@ -96,10 +95,6 @@ export default class MockFlipper {
       this._logger,
     );
     this._store.dispatch(registerPlugins(plugins ?? []));
-    this._store.dispatch({
-      type: 'SET_FLIPPER_SERVER',
-      payload: this.flipperServer,
-    });
   }
 
   public async initWithDeviceAndClient(

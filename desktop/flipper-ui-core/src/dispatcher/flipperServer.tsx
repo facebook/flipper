@@ -27,11 +27,6 @@ export function connectFlipperServerToStore(
   store: Store,
   logger: Logger,
 ) {
-  store.dispatch({
-    type: 'SET_FLIPPER_SERVER',
-    payload: server,
-  });
-
   server.on('notification', ({type, title, description}) => {
     const text = `[$type] ${title}: ${description}`;
     console.warn(text);

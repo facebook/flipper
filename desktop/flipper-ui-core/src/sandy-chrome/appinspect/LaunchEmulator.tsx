@@ -20,6 +20,7 @@ import {useStore} from '../../utils/useStore';
 import {Layout, renderReactRoot, withTrackingScope} from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {IOSDeviceParams} from 'flipper-common';
+import {getRenderHostInstance} from '../../RenderHost';
 
 const COLD_BOOT = 'cold-boot';
 
@@ -37,7 +38,6 @@ function LaunchEmulatorContainer({onClose}: {onClose: () => void}) {
 
 export const LaunchEmulatorDialog = withTrackingScope(
   function LaunchEmulatorDialog({onClose}: {onClose: () => void}) {
-    const flipperServer = useStore((state) => state.connections.flipperServer);
     const iosEnabled = useStore((state) => state.settingsState.enableIOS);
     const androidEnabled = useStore(
       (state) => state.settingsState.enableAndroid,
@@ -49,8 +49,8 @@ export const LaunchEmulatorDialog = withTrackingScope(
       if (!iosEnabled) {
         return;
       }
-      flipperServer!
-        .exec('ios-get-simulators', false)
+      getRenderHostInstance()
+        .flipperServer.exec('ios-get-simulators', false)
         .then((emulators) => {
           setIosEmulators(
             emulators.filter(
@@ -63,21 +63,21 @@ export const LaunchEmulatorDialog = withTrackingScope(
         .catch((e) => {
           console.warn('Failed to find simulators', e);
         });
-    }, [iosEnabled, flipperServer]);
+    }, [iosEnabled]);
 
     useEffect(() => {
       if (!androidEnabled) {
         return;
       }
-      flipperServer!
-        .exec('android-get-emulators')
+      getRenderHostInstance()
+        .flipperServer.exec('android-get-emulators')
         .then((emulators) => {
           setAndroidEmulators(emulators);
         })
         .catch((e) => {
           console.warn('Failed to find emulators', e);
         });
-    }, [androidEnabled, flipperServer]);
+    }, [androidEnabled]);
 
     const items = [
       ...(androidEmulators.length > 0
@@ -85,8 +85,8 @@ export const LaunchEmulatorDialog = withTrackingScope(
         : []),
       ...androidEmulators.map((name) => {
         const launch = (coldBoot: boolean) => {
-          flipperServer!
-            .exec('android-launch-emulator', name, coldBoot)
+          getRenderHostInstance()
+            .flipperServer.exec('android-launch-emulator', name, coldBoot)
             .then(onClose)
             .catch((e) => {
               console.error('Failed to start emulator: ', e);
@@ -123,8 +123,8 @@ export const LaunchEmulatorDialog = withTrackingScope(
         <Button
           key={device.udid}
           onClick={() =>
-            flipperServer!
-              .exec('ios-launch-simulator', device.udid)
+            getRenderHostInstance()
+              .flipperServer.exec('ios-launch-simulator', device.udid)
               .catch((e) => {
                 console.error('Failed to start simulator: ', e);
                 message.error('Failed to start simulator: ' + e);

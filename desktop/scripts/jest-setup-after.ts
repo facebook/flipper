@@ -1,0 +1,172 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+// jest-setup-after will run after Jest has been initialized, so that it can be adapted.
+
+import {cleanup} from '@testing-library/react';
+import {resolve} from 'path';
+import {tmpdir} from 'os';
+
+window.FlipperRenderHostInstance = createStubRenderHost();
+
+require('../flipper-ui-core/src/fb-stubs/Logger').init(undefined, {
+  isTest: true,
+});
+
+import {TestUtils} from 'flipper-plugin';
+import {FlipperServerConfig, ReleaseChannel, Tristate} from 'flipper-common';
+import type {RenderHost} from 'flipper-ui-core';
+
+const test = global.test;
+if (!test) {
+  throw new Error('Failed jest test object');
+}
+/**
+ * This test will not be executed on Github / SandCastle,
+ * since, for example, it relies on precise timer reliability
+ */
+(test as any).local = function local() {
+  const fn = process.env.SANDCASTLE || process.env.CI ? test.skip : test;
+  // eslint-disable-next-line
+  return fn.apply(null, arguments as any);
+};
+
+/**
+ * This test will only run on non-windows machines
+ */
+(test as any).unix = function local() {
+  const fn = process.platform === 'win32' ? test.skip : test;
+  // eslint-disable-next-line
+  return fn.apply(null, arguments as any);
+};
+
+beforeEach(() => {
+  // Fresh mock flipperServer for every test
+  window.FlipperRenderHostInstance = createStubRenderHost();
+});
+
+afterEach(cleanup);
+
+console.debug = function () {
+  // Intentional noop, we don't want debug statements in Jest runs
+};
+
+// make perf tools available in Node (it is available in Browser / Electron just fine)
+const {PerformanceObserver, performance} = require('perf_hooks');
+Object.freeze(performance);
+Object.freeze(Object.getPrototypeOf(performance));
+// Something in our unit tests is messing with the performance global
+// This fixes that.....
+Object.defineProperty(global, 'performance', {
+  get() {
+    return performance;
+  },
+  set() {
+    throw new Error('Attempt to overwrite global.performance');
+  },
+});
+
+global.PerformanceObserver = PerformanceObserver;
+
+// https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
+function createStubRenderHost(): RenderHost {
+  const rootPath = resolve(__dirname, '..');
+  const stubConfig: FlipperServerConfig = {
+    env: {...process.env},
+    gatekeepers: {
+      TEST_PASSING_GK: true,
+      TEST_FAILING_GK: false,
+    },
+    isProduction: false,
+    launcherSettings: {
+      ignoreLocalPin: false,
+      releaseChannel: ReleaseChannel.DEFAULT,
+    },
+    paths: {
+      appPath: rootPath,
+      desktopPath: `/dev/null`,
+      execPath: process.execPath,
+      homePath: `/dev/null`,
+      staticPath: resolve(rootPath, 'static'),
+      tempPath: tmpdir(),
+    },
+    processConfig: {
+      disabledPlugins: new Set(),
+      lastWindowPosition: null,
+      launcherEnabled: false,
+      launcherMsg: null,
+      screenCapturePath: `/dev/null`,
+    },
+    settings: {
+      androidHome: `/dev/null`,
+      darkMode: 'light',
+      enableAndroid: false,
+      enableIOS: false,
+      enablePhysicalIOS: false,
+      enablePrefetching: Tristate.False,
+      idbPath: `/dev/null`,
+      reactNative: {
+        shortcuts: {enabled: false, openDevMenu: '', reload: ''},
+      },
+      showWelcomeAtStartup: false,
+      suppressPluginErrors: false,
+    },
+    validWebSocketOrigins: [],
+  };
+
+  return {
+    processId: -1,
+    isProduction: false,
+    readTextFromClipboard() {
+      return '';
+    },
+    writeTextToClipboard() {},
+    async importFile() {
+      return undefined;
+    },
+    async exportFile() {
+      return undefined;
+    },
+    registerShortcut() {
+      return () => undefined;
+    },
+    hasFocus() {
+      return true;
+    },
+    onIpcEvent() {},
+    sendIpcEvent() {},
+    shouldUseDarkColors() {
+      return false;
+    },
+    restartFlipper() {},
+    openLink() {},
+    serverConfig: stubConfig,
+    loadDefaultPlugins() {
+      return {};
+    },
+    GK(gk: string) {
+      return stubConfig.gatekeepers[gk] ?? false;
+    },
+    flipperServer: TestUtils.createFlipperServerMock(),
+  };
+}

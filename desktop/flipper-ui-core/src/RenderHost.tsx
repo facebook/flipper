@@ -11,12 +11,7 @@ import type {NotificationEvents} from './dispatcher/notifications';
 import type {PluginNotification} from './reducers/notifications';
 import type {NotificationConstructorOptions} from 'electron';
 import {FlipperLib} from 'flipper-plugin';
-import {
-  FlipperServer,
-  FlipperServerConfig,
-  ReleaseChannel,
-  Tristate,
-} from 'flipper-common';
+import {FlipperServer, FlipperServerConfig} from 'flipper-common';
 
 // Events that are emitted from the main.ts ovr the IPC process bridge in Electron
 type MainProcessEvents = {
@@ -101,7 +96,7 @@ export interface RenderHost {
   openLink(url: string): void;
   loadDefaultPlugins(): Record<string, any>;
   GK(gatekeeper: string): boolean;
-  flipperServer?: FlipperServer;
+  flipperServer: FlipperServer;
   serverConfig: FlipperServerConfig;
 }
 
@@ -110,88 +105,4 @@ export function getRenderHostInstance(): RenderHost {
     throw new Error('global FlipperRenderHostInstance was never set');
   }
   return window.FlipperRenderHostInstance;
-}
-
-if (process.env.NODE_ENV === 'test') {
-  const {tmpdir} = require('os');
-  const {resolve} = require('path');
-
-  const rootPath = resolve(__dirname, '..', '..');
-  const stubConfig: FlipperServerConfig = {
-    env: {...process.env},
-    gatekeepers: {
-      TEST_PASSING_GK: true,
-      TEST_FAILING_GK: false,
-    },
-    isProduction: false,
-    launcherSettings: {
-      ignoreLocalPin: false,
-      releaseChannel: ReleaseChannel.DEFAULT,
-    },
-    paths: {
-      appPath: rootPath,
-      desktopPath: `/dev/null`,
-      execPath: process.execPath,
-      homePath: `/dev/null`,
-      staticPath: resolve(rootPath, 'static'),
-      tempPath: tmpdir(),
-    },
-    processConfig: {
-      disabledPlugins: new Set(),
-      lastWindowPosition: null,
-      launcherEnabled: false,
-      launcherMsg: null,
-      screenCapturePath: `/dev/null`,
-    },
-    settings: {
-      androidHome: `/dev/null`,
-      darkMode: 'light',
-      enableAndroid: false,
-      enableIOS: false,
-      enablePhysicalIOS: false,
-      enablePrefetching: Tristate.False,
-      idbPath: `/dev/null`,
-      reactNative: {
-        shortcuts: {enabled: false, openDevMenu: '', reload: ''},
-      },
-      showWelcomeAtStartup: false,
-      suppressPluginErrors: false,
-    },
-    validWebSocketOrigins: [],
-  };
-
-  window.FlipperRenderHostInstance = {
-    processId: -1,
-    isProduction: false,
-    readTextFromClipboard() {
-      return '';
-    },
-    writeTextToClipboard() {},
-    async importFile() {
-      return undefined;
-    },
-    async exportFile() {
-      return undefined;
-    },
-    registerShortcut() {
-      return () => undefined;
-    },
-    hasFocus() {
-      return true;
-    },
-    onIpcEvent() {},
-    sendIpcEvent() {},
-    shouldUseDarkColors() {
-      return false;
-    },
-    restartFlipper() {},
-    openLink() {},
-    serverConfig: stubConfig,
-    loadDefaultPlugins() {
-      return {};
-    },
-    GK(gk) {
-      return stubConfig.gatekeepers[gk] ?? false;
-    },
-  };
 }

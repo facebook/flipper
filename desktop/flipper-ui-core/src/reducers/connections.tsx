@@ -12,12 +12,7 @@ import {produce} from 'immer';
 
 import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
-import type {
-  UninitializedClient,
-  DeviceOS,
-  Logger,
-  FlipperServer,
-} from 'flipper-common';
+import type {UninitializedClient, DeviceOS, Logger} from 'flipper-common';
 import type {Actions} from '.';
 import {WelcomeScreenStaticView} from '../sandy-chrome/WelcomeScreen';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
@@ -79,7 +74,6 @@ type StateV2 = {
   deepLinkPayload: unknown;
   staticView: StaticView;
   selectedAppPluginListRevision: number;
-  flipperServer: FlipperServer | undefined;
 };
 
 type StateV1 = Omit<StateV2, 'enabledPlugins' | 'enabledDevicePlugins'> & {
@@ -165,10 +159,6 @@ export type Action =
   | {
       type: 'APP_PLUGIN_LIST_CHANGED';
     }
-  | {
-      type: 'SET_FLIPPER_SERVER';
-      payload: FlipperServer;
-    }
   | RegisterPluginAction;
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -195,18 +185,10 @@ const INITAL_STATE: State = {
   deepLinkPayload: null,
   staticView: WelcomeScreenStaticView,
   selectedAppPluginListRevision: 0,
-  flipperServer: undefined,
 };
 
 export default (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
-    case 'SET_FLIPPER_SERVER': {
-      return {
-        ...state,
-        flipperServer: action.payload,
-      };
-    }
-
     case 'SET_STATIC_VIEW': {
       const {payload, deepLinkPayload} = action;
       return {
