@@ -70,6 +70,10 @@ export function initializeRenderHost(
       // eslint-disable-next-line no-eval
       return eval(source);
     },
+    getStaticResourceUrl(path): string {
+      // the 'static' folder is mounted as static middleware in Express at the root
+      return '/' + path;
+    },
   } as RenderHost;
 }
 

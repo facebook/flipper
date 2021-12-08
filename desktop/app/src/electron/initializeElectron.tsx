@@ -180,6 +180,12 @@ export function initializeElectron(
     async requirePlugin(path) {
       return (window as any).electronRequire(path);
     },
+    getStaticResourceUrl(relativePath): string {
+      return (
+        'file://' +
+        path.resolve(flipperServerConfig.paths.staticPath, relativePath)
+      );
+    },
   } as RenderHost;
 
   setupMenuBar();

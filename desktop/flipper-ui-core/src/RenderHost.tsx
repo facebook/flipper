@@ -97,6 +97,7 @@ export interface RenderHost {
   flipperServer: FlipperServer;
   serverConfig: FlipperServerConfig;
   requirePlugin(path: string): Promise<any>;
+  getStaticResourceUrl(relativePath: string): string;
 }
 
 export function getRenderHostInstance(): RenderHost {

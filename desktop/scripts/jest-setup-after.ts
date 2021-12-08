@@ -187,5 +187,8 @@ function createStubRenderHost(): RenderHost {
     async requirePlugin(path: string) {
       return require(path);
     },
+    getStaticResourceUrl(relativePath): string {
+      return 'file://' + resolve(rootPath, 'static', relativePath);
+    },
   };
 }
