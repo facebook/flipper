@@ -12,6 +12,8 @@ import type {PluginNotification} from './reducers/notifications';
 import type {NotificationConstructorOptions} from 'electron';
 import {FlipperLib} from 'flipper-plugin';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
+import {IconSize} from './ui/components/Glyph';
+import {Icon} from './utils/icons';
 
 // Events that are emitted from the main.ts ovr the IPC process bridge in Electron
 type MainProcessEvents = {
@@ -98,6 +100,8 @@ export interface RenderHost {
   serverConfig: FlipperServerConfig;
   requirePlugin(path: string): Promise<any>;
   getStaticResourceUrl(relativePath: string): string;
+  // given the requested icon and proposed public url of the icon, rewrite it to a local icon if needed
+  getLocalIconUrl?(icon: Icon, publicUrl: string): string;
 }
 
 export function getRenderHostInstance(): RenderHost {

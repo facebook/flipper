@@ -29,17 +29,13 @@ import {
   moveSourceMaps,
 } from './build-utils';
 import fetch from '@adobe/node-fetch-retry';
-import {
-  getIconsSync,
-  buildLocalIconPath,
-  getIconURLSync,
-  Icons,
-} from '../flipper-ui-core/src/utils/icons';
+import {buildLocalIconPath, Icons} from '../app/src/utils/icons';
 import isFB from './isFB';
 import copyPackageWithDependencies from './copy-package-with-dependencies';
 import {staticDir, distDir} from './paths';
 import yargs from 'yargs';
 import {WinPackager} from 'app-builder-lib/out/winPackager';
+import {Icon, getPublicIconUrl} from 'flipper-ui-core/src/utils/icons';
 
 // Used in some places to avoid release-to-release changes. Needs
 // to be this high for some MacOS-specific things that I can't
@@ -309,30 +305,40 @@ async function copyStaticFolder(buildFolder: string) {
   console.log('✅  Copied static package with dependencies.');
 }
 
-function downloadIcons(buildFolder: string) {
+// Takes a string like 'star', or 'star-outline', and converts it to
+// {trimmedName: 'star', variant: 'filled'} or {trimmedName: 'star', variant: 'outline'}
+function getIconPartsFromName(icon: string): {
+  trimmedName: string;
+  variant: 'outline' | 'filled';
+} {
+  const isOutlineVersion = icon.endsWith('-outline');
+  const trimmedName = isOutlineVersion ? icon.replace('-outline', '') : icon;
+  const variant = isOutlineVersion ? 'outline' : 'filled';
+  return {trimmedName: trimmedName, variant: variant};
+}
+
+async function downloadIcons(buildFolder: string) {
   const icons: Icons = JSON.parse(
-    fs.readFileSync(path.join(buildFolder, 'icons.json'), {
+    await fs.promises.readFile(path.join(buildFolder, 'icons.json'), {
       encoding: 'utf8',
     }),
   );
-  const iconURLs = Object.entries(icons).reduce<
-    {
-      name: string;
-      size: number;
-      density: number;
-    }[]
-  >((acc, [name, sizes]) => {
-    acc.push(
-      // get icons in @1x and @2x
-      ...sizes.map((size) => ({name, size, density: 1})),
-      ...sizes.map((size) => ({name, size, density: 2})),
-    );
-    return acc;
-  }, []);
+  const iconURLs = Object.entries(icons).reduce<Icon[]>(
+    (acc, [entryName, sizes]) => {
+      const {trimmedName: name, variant} = getIconPartsFromName(entryName);
+      acc.push(
+        // get icons in @1x and @2x
+        ...sizes.map((size) => ({name, variant, size, density: 1})),
+        ...sizes.map((size) => ({name, variant, size, density: 2})),
+      );
+      return acc;
+    },
+    [],
+  );
 
   return Promise.all(
-    iconURLs.map(({name, size, density}) => {
-      const url = getIconURLSync(name, size, density, buildFolder);
+    iconURLs.map((icon) => {
+      const url = getPublicIconUrl(icon);
       return fetch(url, {
         retryOptions: {
           // Be default, only 5xx are retried but we're getting the odd 404
@@ -344,9 +350,7 @@ function downloadIcons(buildFolder: string) {
           if (res.status !== 200) {
             throw new Error(
               // eslint-disable-next-line prettier/prettier
-              `Could not download the icon ${name} from ${url}: got status ${
-                res.status
-              }`,
+              `Could not download the icon ${name} from ${url}: got status ${res.status}`,
             );
           }
           return res;
@@ -355,7 +359,7 @@ function downloadIcons(buildFolder: string) {
           (res) =>
             new Promise((resolve, reject) => {
               const fileStream = fs.createWriteStream(
-                path.join(buildFolder, buildLocalIconPath(name, size, density)),
+                path.join(buildFolder, buildLocalIconPath(icon)),
               );
               res.body.pipe(fileStream);
               res.body.on('error', reject);

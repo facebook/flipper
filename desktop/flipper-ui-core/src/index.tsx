@@ -13,3 +13,5 @@ export * from './deprecated-exports';
 export {RenderHost, getRenderHostInstance} from './RenderHost';
 
 export {startFlipperDesktop} from './startFlipperDesktop';
+
+export {Icon} from './utils/icons';

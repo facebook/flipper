@@ -25,7 +25,8 @@ import {
 import fs from 'fs';
 import {setupMenuBar} from './setupMenuBar';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
-import type {RenderHost} from 'flipper-ui-core';
+import type {Icon, RenderHost} from 'flipper-ui-core';
+import {getLocalIconUrl} from '../utils/icons';
 
 export function initializeElectron(
   flipperServer: FlipperServer,
@@ -184,6 +185,14 @@ export function initializeElectron(
       return (
         'file://' +
         path.resolve(flipperServerConfig.paths.staticPath, relativePath)
+      );
+    },
+    getLocalIconUrl(icon: Icon, url: string): string {
+      return getLocalIconUrl(
+        icon,
+        url,
+        flipperServerConfig.paths.appPath,
+        !flipperServerConfig.environmentInfo.isProduction,
       );
     },
   } as RenderHost;
