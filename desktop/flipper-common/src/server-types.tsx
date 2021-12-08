@@ -7,11 +7,7 @@
  * @format
  */
 
-import {
-  DeviceSpec,
-  DeviceType as PluginDeviceType,
-  OS as PluginOS,
-} from 'flipper-plugin-lib';
+import {DeviceSpec, DeviceType, OS as PluginOS} from './PluginDetails';
 import {LauncherSettings, ProcessConfig, Settings} from './settings';
 
 // In the future, this file would deserve it's own package, as it doesn't really relate to plugins.
@@ -24,9 +20,7 @@ export type FlipperServerState =
   | 'error'
   | 'closed';
 
-export type DeviceType = PluginDeviceType;
-
-export type DeviceOS = PluginOS | 'Windows' | 'MacOS' | 'Browser' | 'Linux';
+export type DeviceOS = PluginOS;
 
 export type DeviceDescription = {
   readonly os: DeviceOS;

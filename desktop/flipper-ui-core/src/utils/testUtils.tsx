@@ -10,7 +10,7 @@
 import {
   ActivatablePluginDetails,
   DownloadablePluginDetails,
-} from 'flipper-plugin-lib';
+} from 'flipper-common';
 
 export function createMockDownloadablePluginDetails(
   params: {

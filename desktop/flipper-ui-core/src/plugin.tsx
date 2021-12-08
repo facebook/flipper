@@ -7,14 +7,13 @@
  * @format
  */
 
-import {Logger, Settings} from 'flipper-common';
+import {Logger, Settings, ActivatablePluginDetails} from 'flipper-common';
 import Client from './Client';
 import {Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
-import {ActivatablePluginDetails} from 'flipper-plugin-lib';
 import {
   Notification,
   Idler,

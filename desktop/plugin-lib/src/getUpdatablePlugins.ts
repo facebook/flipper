@@ -7,7 +7,7 @@
  * @format
  */
 
-import {InstalledPluginDetails} from './PluginDetails';
+import {InstalledPluginDetails} from 'flipper-common';
 import {getInstalledPlugins} from './pluginInstaller';
 import semver from 'semver';
 import {getNpmHostedPlugins, NpmPackageDescriptor} from './getNpmHostedPlugins';

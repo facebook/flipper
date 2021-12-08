@@ -13,7 +13,7 @@ import {
   DownloadablePluginDetails,
   InstalledPluginDetails,
   PluginDetails,
-} from './PluginDetails';
+} from 'flipper-common';
 import {pluginCacheDir} from './pluginPaths';
 
 export async function readPluginPackageJson(dir: string): Promise<any> {

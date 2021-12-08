@@ -14,6 +14,7 @@
     "decompress-targz": "^4.1.1",
     "decompress-unzip": "^4.0.1",
     "expand-tilde": "^2.0.2",
+    "flipper-common": "^0.0.0",
     "fs-extra": "^10.0.0",
     "live-plugin-manager": "^0.17.0",
     "npm-api": "^1.0.1",

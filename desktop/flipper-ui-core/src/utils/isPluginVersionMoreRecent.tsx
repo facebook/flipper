@@ -7,7 +7,7 @@
  * @format
  */
 
-import {ConcretePluginDetails} from 'flipper-plugin-lib';
+import {ConcretePluginDetails} from 'flipper-common';
 import semver from 'semver';
 import isPluginCompatible from './isPluginCompatible';
 

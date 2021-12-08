@@ -18,7 +18,7 @@ import decompress from 'decompress';
 import decompressTargz from 'decompress-targz';
 import decompressUnzip from 'decompress-unzip';
 import tmp from 'tmp';
-import {InstalledPluginDetails} from './PluginDetails';
+import {InstalledPluginDetails} from 'flipper-common';
 import {getInstalledPluginDetails, isPluginDir} from './getPluginDetails';
 import {
   getPluginVersionInstallationDir,

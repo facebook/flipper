@@ -14,7 +14,7 @@ import {
   registerInstalledPlugins,
 } from '../plugins';
 import {FlipperPlugin, FlipperDevicePlugin, BaseAction} from '../../plugin';
-import {InstalledPluginDetails} from 'flipper-plugin-lib';
+import {InstalledPluginDetails} from 'flipper-common';
 import {wrapSandy} from '../../test-utils/createMockFlipperWithPlugin';
 
 const testPluginOrig = class extends FlipperPlugin<any, BaseAction, any> {

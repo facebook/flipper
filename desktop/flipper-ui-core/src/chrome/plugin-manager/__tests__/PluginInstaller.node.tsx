@@ -14,7 +14,7 @@ import React from 'react';
 import {render, waitFor} from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
-import type {PluginDetails} from 'flipper-plugin-lib';
+import type {PluginDetails} from 'flipper-common';
 import {getUpdatablePlugins, UpdatablePluginDetails} from 'flipper-plugin-lib';
 import {Store} from '../../../reducers';
 import {mocked} from 'ts-jest/utils';

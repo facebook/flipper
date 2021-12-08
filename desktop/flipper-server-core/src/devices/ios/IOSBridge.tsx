@@ -9,7 +9,7 @@
 
 import fs from 'fs-extra';
 import child_process from 'child_process';
-import {DeviceType} from 'flipper-plugin-lib';
+import {DeviceType} from 'flipper-common';
 import {v1 as uuid} from 'uuid';
 import path from 'path';
 import {exec} from 'promisify-child-process';

@@ -17,7 +17,7 @@ import type {
   BundledPluginDetails,
   DownloadablePluginDetails,
   PluginDetails,
-} from 'flipper-plugin-lib';
+} from 'flipper-common';
 import {getLatestCompatibleVersionOfEachPlugin} from '../dispatcher/plugins';
 import {getPluginKey} from './pluginKey';
 

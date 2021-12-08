@@ -7,7 +7,7 @@
  * @format
  */
 
-import {PluginDetails} from 'flipper-plugin-lib';
+import {PluginDetails} from 'flipper-common';
 import {Layout} from 'flipper-plugin';
 import Client from '../../Client';
 import {TableBodyRow} from '../../ui/components/table/types';

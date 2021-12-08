@@ -32,7 +32,7 @@ import {
   ActivatablePluginDetails,
   BundledPluginDetails,
   ConcretePluginDetails,
-} from 'flipper-plugin-lib';
+} from 'flipper-common';
 import {tryCatchReportPluginFailures, reportUsage} from 'flipper-common';
 import * as FlipperPluginSDK from 'flipper-plugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';

@@ -16,7 +16,7 @@ import dispatcher, {
   createRequirePluginFunction,
   getLatestCompatibleVersionOfEachPlugin,
 } from '../plugins';
-import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-plugin-lib';
+import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-common';
 import path from 'path';
 import {createRootReducer, State} from '../../reducers/index';
 import {getLogger} from 'flipper-common';

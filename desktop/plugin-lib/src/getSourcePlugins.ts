@@ -15,7 +15,7 @@ import pmap from 'p-map';
 import pfilter from 'p-filter';
 import {satisfies} from 'semver';
 import {getInstalledPluginDetails, isPluginDir} from './getPluginDetails';
-import {InstalledPluginDetails} from './PluginDetails';
+import {InstalledPluginDetails} from 'flipper-common';
 
 const flipperVersion = require('../package.json').version;
 

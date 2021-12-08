@@ -17,7 +17,7 @@ import type {
   ActivatablePluginDetails,
   BundledPluginDetails,
   InstalledPluginDetails,
-} from 'flipper-plugin-lib';
+} from 'flipper-common';
 import type {Actions} from '.';
 import produce from 'immer';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';

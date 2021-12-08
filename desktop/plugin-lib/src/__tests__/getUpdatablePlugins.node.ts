@@ -18,7 +18,7 @@ import {
 import {getInstalledPlugins} from '../pluginInstaller';
 import {mocked} from 'ts-jest/utils';
 import type {Package} from 'npm-api';
-import {InstalledPluginDetails} from '../PluginDetails';
+import {InstalledPluginDetails} from 'flipper-common';
 
 jest.mock('npm-api', () => {
   return jest.fn().mockImplementation(() => {

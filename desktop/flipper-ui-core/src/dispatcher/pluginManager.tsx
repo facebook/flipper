@@ -8,7 +8,7 @@
  */
 
 import type {Store} from '../reducers/index';
-import type {Logger} from 'flipper-common';
+import type {Logger, ActivatablePluginDetails} from 'flipper-common';
 import {
   LoadPluginActionPayload,
   UninstallPluginActionPayload,
@@ -21,7 +21,6 @@ import {
   getInstalledPlugins,
   cleanupOldInstalledPluginVersions,
   removePlugins,
-  ActivatablePluginDetails,
 } from 'flipper-plugin-lib';
 import {sideEffect} from '../utils/sideEffect';
 import {requirePlugin} from './plugins';

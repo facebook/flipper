@@ -16,7 +16,9 @@ import recursiveReaddirImport from 'recursive-readdir';
 import {promisify} from 'util';
 import inquirer from 'inquirer';
 import {homedir} from 'os';
-import {PluginType} from 'flipper-plugin-lib';
+// only type imported
+// eslint-disable-next-line
+import type {PluginType} from 'flipper-common';
 
 const recursiveReaddir = promisify<string, string[]>(recursiveReaddirImport);
 

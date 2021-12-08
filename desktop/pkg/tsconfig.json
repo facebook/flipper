@@ -13,6 +13,9 @@
       "path": "../plugin-lib"
     },
     {
+      "path": "../flipper-common"
+    },
+    {
       "path": "../test-utils"
     }
   ]

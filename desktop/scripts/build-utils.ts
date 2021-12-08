@@ -18,12 +18,11 @@ import {
   stripSourceMapComment,
 } from 'flipper-pkg-lib';
 import getAppWatchFolders from './get-app-watch-folders';
-import {
-  getSourcePlugins,
-  getPluginSourceFolders,
+import {getSourcePlugins, getPluginSourceFolders} from 'flipper-plugin-lib';
+import type {
   BundledPluginDetails,
   InstalledPluginDetails,
-} from 'flipper-plugin-lib';
+} from 'flipper-common';
 import {
   appDir,
   staticDir,

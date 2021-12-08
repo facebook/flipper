@@ -3,5 +3,10 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src"
-  }
+  },
+  "references": [
+    {
+      "path": "../flipper-common"
+    }
+  ]
 }

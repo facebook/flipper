@@ -7,7 +7,7 @@
  * @format
  */
 
-import {PluginDetails} from 'flipper-plugin-lib';
+import {PluginDetails} from 'flipper-common';
 import semver from 'semver';
 import {getRenderHostInstance} from '../RenderHost';
 import {getAppVersion} from './info';

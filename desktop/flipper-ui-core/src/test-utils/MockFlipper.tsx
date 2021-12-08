@@ -23,7 +23,7 @@ import {registerPlugins} from '../reducers/plugins';
 import {getLogger} from 'flipper-common';
 import {initializeFlipperLibImplementation} from '../utils/flipperLibImplementation';
 import pluginManager from '../dispatcher/pluginManager';
-import {PluginDetails} from 'flipper-plugin-lib';
+import {PluginDetails} from 'flipper-common';
 import ArchivedDevice from '../devices/ArchivedDevice';
 import {ClientQuery, DeviceOS} from 'flipper-common';
 import {TestDevice} from './TestDevice';

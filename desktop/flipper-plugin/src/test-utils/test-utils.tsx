@@ -14,7 +14,7 @@ import {
   act as testingLibAct,
 } from '@testing-library/react';
 import {queries} from '@testing-library/dom';
-import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-plugin-lib';
+import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-common';
 
 import {
   RealFlipperClient,

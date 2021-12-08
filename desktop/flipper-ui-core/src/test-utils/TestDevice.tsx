@@ -8,7 +8,7 @@
  */
 
 import {DeviceOS, DeviceType} from 'flipper-plugin';
-import {DeviceSpec} from 'flipper-plugin-lib';
+import {DeviceSpec} from 'flipper-common';
 import BaseDevice from '../devices/BaseDevice';
 
 export class TestDevice extends BaseDevice {

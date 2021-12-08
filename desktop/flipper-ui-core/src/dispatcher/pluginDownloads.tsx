@@ -8,12 +8,14 @@
  */
 
 import {
-  DownloadablePluginDetails,
   getInstalledPluginDetails,
   getPluginVersionInstallationDir,
-  InstalledPluginDetails,
   installPluginFromFile,
 } from 'flipper-plugin-lib';
+import {
+  InstalledPluginDetails,
+  DownloadablePluginDetails,
+} from 'flipper-common';
 import {State, Store} from '../reducers/index';
 import {
   PluginDownloadStatus,

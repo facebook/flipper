@@ -24,7 +24,7 @@ import {getPluginTitle, getPluginTooltip} from '../../utils/pluginUtils';
 import {selectPlugin} from '../../reducers/connections';
 import Client from '../../Client';
 import BaseDevice from '../../devices/BaseDevice';
-import {DownloadablePluginDetails} from 'flipper-plugin-lib';
+import {DownloadablePluginDetails} from 'flipper-common';
 import {
   DownloadablePluginState,
   PluginDownloadStatus,
@@ -35,7 +35,7 @@ import {
   switchPlugin,
   uninstallPlugin,
 } from '../../reducers/pluginManager';
-import {BundledPluginDetails} from 'flipper-plugin-lib';
+import {BundledPluginDetails} from 'flipper-common';
 import {reportUsage} from 'flipper-common';
 import ConnectivityStatus from './fb-stubs/ConnectivityStatus';
 import {useSelector} from 'react-redux';

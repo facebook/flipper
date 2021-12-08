@@ -7,7 +7,7 @@
  * @format
  */
 
-import {ActivatablePluginDetails} from 'flipper-plugin-lib';
+import {ActivatablePluginDetails} from 'flipper-common';
 import {PluginFactory, FlipperPluginComponent} from './Plugin';
 import {DevicePluginPredicate, DevicePluginFactory} from './DevicePlugin';
 

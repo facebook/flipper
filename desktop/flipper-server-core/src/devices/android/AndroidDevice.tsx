@@ -14,7 +14,7 @@ import type {DeviceLogLevel, DeviceType} from 'flipper-common';
 import which from 'which';
 import {spawn} from 'child_process';
 import {dirname, join} from 'path';
-import {DeviceSpec} from 'flipper-plugin-lib';
+import {DeviceSpec} from 'flipper-common';
 import {ServerDevice} from '../ServerDevice';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 

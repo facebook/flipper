@@ -7,7 +7,6 @@
  * @format
  */
 
-export * from './PluginDetails';
 export * from './getPluginDetails';
 export * from './pluginInstaller';
 export * from './getUpdatablePlugins';

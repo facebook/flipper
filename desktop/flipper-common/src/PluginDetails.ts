@@ -49,7 +49,14 @@ export interface SupportedApp {
   readonly type?: DeviceType;
 }
 
-export type OS = 'iOS' | 'Android' | 'Metro';
+export type OS =
+  | 'iOS'
+  | 'Android'
+  | 'Metro'
+  | 'Windows'
+  | 'MacOS'
+  | 'Browser'
+  | 'Linux';
 
 export type DeviceType = 'emulator' | 'physical' | 'dummy';
 

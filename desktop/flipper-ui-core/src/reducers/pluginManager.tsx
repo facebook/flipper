@@ -8,7 +8,7 @@
  */
 
 import type {Actions} from './';
-import type {ActivatablePluginDetails} from 'flipper-plugin-lib';
+import type {ActivatablePluginDetails} from 'flipper-common';
 import type {PluginDefinition} from '../plugin';
 import {produce} from 'immer';
 

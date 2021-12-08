@@ -7,7 +7,7 @@
  * @format
  */
 
-import {DeviceType} from 'flipper-plugin-lib';
+import {DeviceType} from 'flipper-common';
 import AndroidDevice from './AndroidDevice';
 import {Client as ADBClient} from 'adbkit';
 import {FlipperServerImpl} from '../../FlipperServerImpl';

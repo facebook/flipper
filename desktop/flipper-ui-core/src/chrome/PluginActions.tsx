@@ -13,10 +13,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import {Alert, Button} from 'antd';
-import {
-  BundledPluginDetails,
-  DownloadablePluginDetails,
-} from 'flipper-plugin-lib';
+import {BundledPluginDetails, DownloadablePluginDetails} from 'flipper-common';
 import React, {useMemo} from 'react';
 import {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';

@@ -7,10 +7,8 @@
  * @format
  */
 
-import {
-  DownloadablePluginDetails,
-  getPluginVersionInstallationDir,
-} from 'flipper-plugin-lib';
+import {DownloadablePluginDetails} from 'flipper-common';
+import {getPluginVersionInstallationDir} from 'flipper-plugin-lib';
 import {Actions} from '.';
 import produce from 'immer';
 import {Canceler} from 'axios';

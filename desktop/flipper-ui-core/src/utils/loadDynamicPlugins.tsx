@@ -12,10 +12,10 @@ import fs from 'fs-extra';
 import {
   getSourcePlugins,
   moveInstalledPluginsFromLegacyDir,
-  InstalledPluginDetails,
   getAllInstalledPluginVersions,
   getAllInstalledPluginsInDir,
 } from 'flipper-plugin-lib';
+import {InstalledPluginDetails} from 'flipper-common';
 import {getStaticPath} from '../utils/pathUtils';
 
 // Load "dynamic" plugins, e.g. those which are either pre-installed (default), installed or loaded from sources (for development).

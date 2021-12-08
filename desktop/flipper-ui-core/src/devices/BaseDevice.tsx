@@ -24,7 +24,7 @@ import {
   DeviceDescription,
   FlipperServer,
 } from 'flipper-common';
-import {DeviceSpec, PluginDetails} from 'flipper-plugin-lib';
+import {DeviceSpec, PluginDetails} from 'flipper-common';
 import {getPluginKey} from '../utils/pluginKey';
 import {Base64} from 'js-base64';
 
