@@ -7,6 +7,7 @@
  * @format
  */
 
+import {FlipperDoctor} from './doctor';
 import {
   BundledPluginDetails,
   DeviceSpec,
@@ -180,6 +181,14 @@ export type FlipperServerCommands = {
     path: string,
   ) => Promise<InstalledPluginDetails>;
   'plugins-remove-plugins': (names: string[]) => Promise<void>;
+  'doctor-get-healthchecks': (
+    settings: FlipperDoctor.HealthcheckSettings,
+  ) => Promise<FlipperDoctor.Healthchecks>;
+  'doctor-run-healthcheck': (
+    settings: FlipperDoctor.HealthcheckSettings,
+    category: keyof FlipperDoctor.Healthchecks,
+    name: string,
+  ) => Promise<FlipperDoctor.HealthcheckResult>;
 };
 
 /**

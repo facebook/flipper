@@ -25,7 +25,7 @@ import {getEnvInfo} from './environmentInfo';
               category.healthchecks.map(async ({key, label, run}) => ({
                 key,
                 label,
-                result: await run(environmentInfo),
+                result: await run!(environmentInfo),
               })),
             ),
           },

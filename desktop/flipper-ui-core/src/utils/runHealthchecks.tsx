@@ -7,9 +7,12 @@
  * @format
  */
 
-import {HealthcheckResult} from '../reducers/healthchecks';
-import {getHealthchecks, getEnvInfo, Healthchecks} from 'flipper-doctor';
-import {logPlatformSuccessRate, reportPlatformFailures} from 'flipper-common';
+import {
+  logPlatformSuccessRate,
+  reportPlatformFailures,
+  FlipperDoctor,
+} from 'flipper-common';
+import {getRenderHostInstance} from '../RenderHost';
 
 let healthcheckIsRunning: boolean;
 let runningHealthcheck: Promise<void>;
@@ -18,9 +21,9 @@ export type HealthcheckEventsHandler = {
   updateHealthcheckResult: (
     categoryKey: string,
     itemKey: string,
-    result: HealthcheckResult,
+    result: FlipperDoctor.HealthcheckResult,
   ) => void;
-  startHealthchecks: (healthchecks: Healthchecks) => void;
+  startHealthchecks: (healthchecks: FlipperDoctor.Healthchecks) => void;
   finishHealthchecks: () => void;
 };
 
@@ -36,34 +39,25 @@ export type HealthcheckSettings = {
 export type HealthcheckOptions = HealthcheckEventsHandler & HealthcheckSettings;
 
 async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
-  const healthchecks = getHealthchecks();
-  if (!options.settings.enableAndroid) {
-    healthchecks.android = {
-      label: healthchecks.android.label,
-      isSkipped: true,
-      skipReason:
-        'Healthcheck is skipped, because "Android Development" option is disabled in the Flipper settings',
-    };
-  }
-  if (!options.settings.enableIOS) {
-    healthchecks.ios = {
-      label: healthchecks.ios.label,
-      isSkipped: true,
-      skipReason:
-        'Healthcheck is skipped, because "iOS Development" option is disabled in the Flipper settings',
-    };
-  }
+  const {flipperServer} = getRenderHostInstance();
+  const healthchecks = await flipperServer.exec('doctor-get-healthchecks', {
+    settings: options.settings,
+  });
   options.startHealthchecks(healthchecks);
-  const environmentInfo = await getEnvInfo();
   let hasProblems = false;
   for (const [categoryKey, category] of Object.entries(healthchecks)) {
     if (category.isSkipped) {
       continue;
     }
     for (const h of category.healthchecks) {
-      const checkResult = await h.run(environmentInfo, options.settings);
+      const checkResult = await flipperServer.exec(
+        'doctor-run-healthcheck',
+        {settings: options.settings},
+        categoryKey as keyof FlipperDoctor.Healthchecks,
+        h.key,
+      );
       const metricName = `doctor:${h.key.replace('.', ':')}.healthcheck`; // e.g. "doctor:ios:xcode-select.healthcheck"
-      if (checkResult.hasProblem) {
+      if (checkResult.status !== 'SUCCESS') {
         hasProblems = true;
         logPlatformSuccessRate(metricName, {
           kind: 'failure',
@@ -75,19 +69,7 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
           kind: 'success',
         });
       }
-      const result: HealthcheckResult =
-        checkResult.hasProblem && h.isRequired
-          ? {
-              status: 'FAILED',
-              message: checkResult.message,
-            }
-          : checkResult.hasProblem && !h.isRequired
-          ? {
-              status: 'WARNING',
-              message: checkResult.message,
-            }
-          : {status: 'SUCCESS', message: checkResult.message};
-      options.updateHealthcheckResult(categoryKey, h.key, result);
+      options.updateHealthcheckResult(categoryKey, h.key, checkResult);
     }
   }
   options.finishHealthchecks();

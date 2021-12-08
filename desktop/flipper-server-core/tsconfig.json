@@ -6,6 +6,9 @@
   },
   "references": [
     {
+      "path": "../doctor"
+    },
+    {
       "path": "../flipper-common"
     },
     {

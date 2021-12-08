@@ -9,65 +9,15 @@
 
 import {exec} from 'child_process';
 import {promisify} from 'util';
-import {EnvironmentInfo, getEnvInfo} from './environmentInfo';
-export {EnvironmentInfo, getEnvInfo} from './environmentInfo';
+import {getEnvInfo} from './environmentInfo';
+export {getEnvInfo} from './environmentInfo';
+
 import * as watchman from 'fb-watchman';
 import * as fs from 'fs';
 import * as path from 'path';
+import {FlipperDoctor} from 'flipper-common';
 
-export type HealthcheckCategory = {
-  label: string;
-  isSkipped: false;
-  isRequired: boolean;
-  healthchecks: Healthcheck[];
-};
-
-export type SkippedHealthcheckCategory = {
-  label: string;
-  isSkipped: true;
-  skipReason: string;
-};
-
-export type Healthchecks = {
-  common: HealthcheckCategory | SkippedHealthcheckCategory;
-  android: HealthcheckCategory | SkippedHealthcheckCategory;
-  ios: HealthcheckCategory | SkippedHealthcheckCategory;
-};
-
-export type Settings = {
-  idbPath: string;
-  enablePhysicalIOS: boolean;
-};
-
-export type Healthcheck = {
-  key: string;
-  label: string;
-  isRequired?: boolean;
-  run: (
-    env: EnvironmentInfo,
-    settings?: Settings,
-  ) => Promise<HealthcheckRunResult>;
-};
-
-export type HealthcheckRunResult = {
-  hasProblem: boolean;
-  message: string;
-};
-
-export type CategoryResult = [
-  string,
-  {
-    label: string;
-    results: Array<{
-      key: string;
-      label: string;
-      isRequired: boolean;
-      result: {hasProblem: boolean};
-    }>;
-  },
-];
-
-export function getHealthchecks(): Healthchecks {
+export function getHealthchecks(): FlipperDoctor.Healthchecks {
   return {
     common: {
       label: 'Common',
@@ -77,7 +27,7 @@ export function getHealthchecks(): Healthchecks {
         {
           key: 'common.openssl',
           label: 'OpenSSL Installed',
-          run: async (_: EnvironmentInfo) => {
+          run: async (_: FlipperDoctor.EnvironmentInfo) => {
             const result = await tryExecuteCommand('openssl version');
             const hasProblem = result.hasProblem;
             const message = hasProblem
@@ -92,7 +42,7 @@ export function getHealthchecks(): Healthchecks {
         {
           key: 'common.watchman',
           label: 'Watchman Installed',
-          run: async (_: EnvironmentInfo) => {
+          run: async (_: FlipperDoctor.EnvironmentInfo) => {
             const isAvailable = await isWatchmanAvailable();
             return {
               hasProblem: !isAvailable,
@@ -113,11 +63,11 @@ export function getHealthchecks(): Healthchecks {
           key: 'android.sdk',
           label: 'SDK Installed',
           isRequired: true,
-          run: async (_: EnvironmentInfo) => {
+          run: async (_: FlipperDoctor.EnvironmentInfo) => {
             const androidHome = process.env.ANDROID_HOME;
             const androidSdkRoot = process.env.ANDROID_SDK_ROOT;
 
-            let androidHomeResult: HealthcheckRunResult;
+            let androidHomeResult: FlipperDoctor.HealthcheckRunResult;
             if (!androidHome) {
               androidHomeResult = {
                 hasProblem: true,
@@ -145,7 +95,7 @@ export function getHealthchecks(): Healthchecks {
               return androidHomeResult;
             }
 
-            let androidSdkRootResult: HealthcheckRunResult;
+            let androidSdkRootResult: FlipperDoctor.HealthcheckRunResult;
             if (!androidSdkRoot) {
               androidSdkRootResult = {
                 hasProblem: true,
@@ -188,7 +138,7 @@ export function getHealthchecks(): Healthchecks {
                 key: 'ios.sdk',
                 label: 'SDK Installed',
                 isRequired: true,
-                run: async (e: EnvironmentInfo) => {
+                run: async (e: FlipperDoctor.EnvironmentInfo) => {
                   const hasProblem =
                     !e.SDKs['iOS SDK'] ||
                     !e.SDKs['iOS SDK'].Platforms ||
@@ -208,7 +158,7 @@ export function getHealthchecks(): Healthchecks {
                 key: 'ios.xcode',
                 label: 'XCode Installed',
                 isRequired: true,
-                run: async (e: EnvironmentInfo) => {
+                run: async (e: FlipperDoctor.EnvironmentInfo) => {
                   const hasProblem = e.IDEs == null || e.IDEs.Xcode == null;
                   const message = hasProblem
                     ? 'Xcode (https://developer.apple.com/xcode/) is not installed.'
@@ -223,7 +173,7 @@ export function getHealthchecks(): Healthchecks {
                 key: 'ios.xcode-select',
                 label: 'xcode-select set',
                 isRequired: true,
-                run: async (_: EnvironmentInfo) => {
+                run: async (_: FlipperDoctor.EnvironmentInfo) => {
                   const result = await tryExecuteCommand('xcode-select -p');
                   const hasProblem = result.hasProblem;
                   const message = hasProblem
@@ -239,7 +189,7 @@ export function getHealthchecks(): Healthchecks {
                 key: 'ios.xctrace',
                 label: 'xctrace exists',
                 isRequired: true,
-                run: async (_: EnvironmentInfo) => {
+                run: async (_: FlipperDoctor.EnvironmentInfo) => {
                   const result = await tryExecuteCommand(
                     'xcrun xctrace version',
                   );
@@ -258,7 +208,7 @@ export function getHealthchecks(): Healthchecks {
                 label: 'IDB installed',
                 isRequired: false,
                 run: async (
-                  _: EnvironmentInfo,
+                  _: FlipperDoctor.EnvironmentInfo,
                   settings?: {enablePhysicalIOS: boolean; idbPath: string},
                 ) => {
                   if (!settings) {
@@ -299,50 +249,48 @@ export function getHealthchecks(): Healthchecks {
 }
 
 export async function runHealthchecks(): Promise<
-  Array<CategoryResult | SkippedHealthcheckCategory>
+  Array<FlipperDoctor.CategoryResult | FlipperDoctor.SkippedHealthcheckCategory>
 > {
   const environmentInfo = await getEnvInfo();
-  const healthchecks: Healthchecks = getHealthchecks();
-  const results: Array<CategoryResult | SkippedHealthcheckCategory> =
-    await Promise.all(
-      Object.entries(healthchecks).map(async ([key, category]) => {
-        if (category.isSkipped) {
-          return category;
-        }
-        const categoryResult: CategoryResult = [
-          key,
-          {
-            label: category.label,
-            results: await Promise.all(
-              category.healthchecks.map(
-                async ({key, label, run, isRequired}) => ({
-                  key,
-                  label,
-                  isRequired: isRequired ?? true,
-                  result: await run(environmentInfo).catch((e) => {
-                    console.warn(
-                      `Health check ${key}/${label} failed with:`,
-                      e,
-                    );
-                    // TODO Improve result type to be: OK | Problem(message, fix...)
-                    return {
-                      hasProblem: true,
-                    };
-                  }),
+  const healthchecks: FlipperDoctor.Healthchecks = getHealthchecks();
+  const results: Array<
+    FlipperDoctor.CategoryResult | FlipperDoctor.SkippedHealthcheckCategory
+  > = await Promise.all(
+    Object.entries(healthchecks).map(async ([key, category]) => {
+      if (category.isSkipped) {
+        return category;
+      }
+      const categoryResult: FlipperDoctor.CategoryResult = [
+        key,
+        {
+          label: category.label,
+          results: await Promise.all(
+            category.healthchecks.map(
+              async ({key, label, run, isRequired}) => ({
+                key,
+                label,
+                isRequired: isRequired ?? true,
+                result: await run!(environmentInfo).catch((e) => {
+                  console.warn(`Health check ${key}/${label} failed with:`, e);
+                  // TODO Improve result type to be: OK | Problem(message, fix...)
+                  return {
+                    hasProblem: true,
+                  };
                 }),
-              ),
+              }),
             ),
-          },
-        ];
-        return categoryResult;
-      }),
-    );
+          ),
+        },
+      ];
+      return categoryResult;
+    }),
+  );
   return results;
 }
 
 async function tryExecuteCommand(
   command: string,
-): Promise<HealthcheckRunResult> {
+): Promise<FlipperDoctor.HealthcheckRunResult> {
   try {
     const output = await promisify(exec)(command);
     return {

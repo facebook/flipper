@@ -24,9 +24,6 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
 import {
-  HealthcheckResult,
-  HealthcheckReportCategory,
-  HealthcheckReport,
   startHealthchecks,
   finishHealthchecks,
   updateHealthcheckResult,
@@ -38,10 +35,10 @@ import runHealthchecks, {
   HealthcheckEventsHandler,
 } from '../utils/runHealthchecks';
 import {getFlipperLib} from 'flipper-plugin';
-import {reportUsage} from 'flipper-common';
+import {reportUsage, FlipperDoctor} from 'flipper-common';
 
 type StateFromProps = {
-  healthcheckReport: HealthcheckReport;
+  healthcheckReport: FlipperDoctor.HealthcheckReport;
 } & HealthcheckSettings;
 
 type DispatchFromProps = {
@@ -123,7 +120,9 @@ function CenteredCheckbox(props: {
   );
 }
 
-function HealthcheckIcon(props: {checkResult: HealthcheckResult}) {
+function HealthcheckIcon(props: {
+  checkResult: FlipperDoctor.HealthcheckResult;
+}) {
   const {checkResult: check} = props;
   switch (props.checkResult.status) {
     case 'IN_PROGRESS':
@@ -170,7 +169,7 @@ function HealthcheckIcon(props: {checkResult: HealthcheckResult}) {
 
 function HealthcheckDisplay(props: {
   label: string;
-  result: HealthcheckResult;
+  result: FlipperDoctor.HealthcheckResult;
   selected?: boolean;
   onClick?: () => void;
 }) {
@@ -194,7 +193,7 @@ function SideMessageDisplay(props: {children: React.ReactNode}) {
   return <SideContainerText selectable>{props.children}</SideContainerText>;
 }
 
-function ResultMessage(props: {result: HealthcheckResult}) {
+function ResultMessage(props: {result: FlipperDoctor.HealthcheckResult}) {
   if (status === 'IN_PROGRESS') {
     return <p>Doctor is running healthchecks...</p>;
   } else if (hasProblems(props.result)) {
@@ -213,12 +212,12 @@ function ResultMessage(props: {result: HealthcheckResult}) {
   }
 }
 
-function hasProblems(result: HealthcheckResult) {
+function hasProblems(result: FlipperDoctor.HealthcheckResult) {
   const {status} = result;
   return status === 'FAILED' || status === 'WARNING';
 }
 
-function hasNewProblems(result: HealthcheckResult) {
+function hasNewProblems(result: FlipperDoctor.HealthcheckResult) {
   return hasProblems(result) && !result.isAcknowledged;
 }
 
@@ -321,7 +320,7 @@ class DoctorSheet extends Component<Props, State> {
         <FlexRow>
           <HealthcheckListContainer>
             {Object.values(this.props.healthcheckReport.categories).map(
-              (category: HealthcheckReportCategory) => {
+              (category: FlipperDoctor.HealthcheckReportCategory) => {
                 return (
                   <CategoryContainer key={category.key}>
                     <HealthcheckDisplay

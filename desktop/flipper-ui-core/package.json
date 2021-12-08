@@ -31,7 +31,6 @@
     "expand-tilde": "^2.0.2",
     "flipper-client-sdk": "^0.0.3",
     "flipper-common": "0.0.0",
-    "flipper-doctor": "0.0.0",
     "flipper-plugin": "0.0.0",
     "flipper-ui-core": "0.0.0",
     "fs-extra": "^10.0.0",

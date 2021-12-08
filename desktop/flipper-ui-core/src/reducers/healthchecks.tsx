@@ -9,17 +9,17 @@
 
 import {Actions} from './';
 import {produce} from 'immer';
-import {Healthchecks} from 'flipper-doctor';
+import type {FlipperDoctor} from 'flipper-common';
 
 export type State = {
-  healthcheckReport: HealthcheckReport;
+  healthcheckReport: FlipperDoctor.HealthcheckReport;
   acknowledgedProblems: string[];
 };
 
 export type Action =
   | {
       type: 'START_HEALTHCHECKS';
-      payload: Healthchecks;
+      payload: FlipperDoctor.Healthchecks;
     }
   | {
       type: 'FINISH_HEALTHCHECKS';
@@ -29,7 +29,7 @@ export type Action =
       payload: {
         categoryKey: string;
         itemKey: string;
-        result: HealthcheckResult;
+        result: FlipperDoctor.HealthcheckResult;
       };
     }
   | {
@@ -47,39 +47,6 @@ const INITIAL_STATE: State = {
   acknowledgedProblems: [],
 };
 
-type Dictionary<T> = {[key: string]: T};
-
-export type HealthcheckStatus =
-  | 'IN_PROGRESS'
-  | 'SUCCESS'
-  | 'FAILED'
-  | 'SKIPPED'
-  | 'WARNING';
-
-export type HealthcheckResult = {
-  status: HealthcheckStatus;
-  isAcknowledged?: boolean;
-  message?: string;
-};
-
-export type HealthcheckReportItem = {
-  key: string;
-  label: string;
-  result: HealthcheckResult;
-};
-
-export type HealthcheckReportCategory = {
-  key: string;
-  label: string;
-  result: HealthcheckResult;
-  checks: Dictionary<HealthcheckReportItem>;
-};
-
-export type HealthcheckReport = {
-  result: HealthcheckResult;
-  categories: Dictionary<HealthcheckReportCategory>;
-};
-
 function recomputeHealthcheckStatus(draft: State): void {
   draft.healthcheckReport.result = computeAggregatedResult(
     Object.values(draft.healthcheckReport.categories).map((c) => c.result),
@@ -87,8 +54,8 @@ function recomputeHealthcheckStatus(draft: State): void {
 }
 
 function computeAggregatedResult(
-  results: HealthcheckResult[],
-): HealthcheckResult {
+  results: FlipperDoctor.HealthcheckResult[],
+): FlipperDoctor.HealthcheckResult {
   return results.some((r) => r.status === 'IN_PROGRESS')
     ? {status: 'IN_PROGRESS'}
     : results.every((r) => r.status === 'SUCCESS')
@@ -114,7 +81,7 @@ const updateCheckResult = produce(
     }: {
       categoryKey: string;
       itemKey: string;
-      result: HealthcheckResult;
+      result: FlipperDoctor.HealthcheckResult;
     },
   ) => {
     const category = draft.healthcheckReport.categories[categoryKey];
@@ -124,55 +91,57 @@ const updateCheckResult = produce(
   },
 );
 
-function createDict<T>(pairs: [string, T][]): Dictionary<T> {
-  const obj: Dictionary<T> = {};
+function createDict<T>(pairs: [string, T][]): FlipperDoctor.Dictionary<T> {
+  const obj: FlipperDoctor.Dictionary<T> = {};
   for (const pair of pairs) {
     obj[pair[0]] = pair[1];
   }
   return obj;
 }
 
-const start = produce((draft: State, healthchecks: Healthchecks) => {
-  draft.healthcheckReport = {
-    result: {status: 'IN_PROGRESS'},
-    categories: createDict<HealthcheckReportCategory>(
-      Object.entries(healthchecks).map(([categoryKey, category]) => {
-        if (category.isSkipped) {
+const start = produce(
+  (draft: State, healthchecks: FlipperDoctor.Healthchecks) => {
+    draft.healthcheckReport = {
+      result: {status: 'IN_PROGRESS'},
+      categories: createDict<FlipperDoctor.HealthcheckReportCategory>(
+        Object.entries(healthchecks).map(([categoryKey, category]) => {
+          if (category.isSkipped) {
+            return [
+              categoryKey,
+              {
+                key: categoryKey,
+                result: {
+                  status: 'SKIPPED',
+                  message: category.skipReason,
+                },
+                label: category.label,
+                checks: createDict<FlipperDoctor.HealthcheckReportItem>([]),
+              },
+            ];
+          }
           return [
             categoryKey,
             {
               key: categoryKey,
-              result: {
-                status: 'SKIPPED',
-                message: category.skipReason,
-              },
+              result: {status: 'IN_PROGRESS'},
               label: category.label,
-              checks: createDict<HealthcheckReportItem>([]),
+              checks: createDict<FlipperDoctor.HealthcheckReportItem>(
+                category.healthchecks.map((check) => [
+                  check.key,
+                  {
+                    key: check.key,
+                    result: {status: 'IN_PROGRESS'},
+                    label: check.label,
+                  },
+                ]),
+              ),
             },
           ];
-        }
-        return [
-          categoryKey,
-          {
-            key: categoryKey,
-            result: {status: 'IN_PROGRESS'},
-            label: category.label,
-            checks: createDict<HealthcheckReportItem>(
-              category.healthchecks.map((check) => [
-                check.key,
-                {
-                  key: check.key,
-                  result: {status: 'IN_PROGRESS'},
-                  label: check.label,
-                },
-              ]),
-            ),
-          },
-        ];
-      }),
-    ),
-  };
-});
+        }),
+      ),
+    };
+  },
+);
 
 const finish = produce((draft: State) => {
   Object.values(draft.healthcheckReport.categories)
@@ -244,7 +213,7 @@ export default function reducer(
 export const updateHealthcheckResult = (
   categoryKey: string,
   itemKey: string,
-  result: HealthcheckResult,
+  result: FlipperDoctor.HealthcheckResult,
 ): Action => ({
   type: 'UPDATE_HEALTHCHECK_RESULT',
   payload: {
@@ -254,7 +223,9 @@ export const updateHealthcheckResult = (
   },
 });
 
-export const startHealthchecks = (healthchecks: Healthchecks): Action => ({
+export const startHealthchecks = (
+  healthchecks: FlipperDoctor.Healthchecks,
+): Action => ({
   type: 'START_HEALTHCHECKS',
   payload: healthchecks,
 });
