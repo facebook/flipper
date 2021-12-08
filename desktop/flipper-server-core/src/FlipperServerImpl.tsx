@@ -33,7 +33,7 @@ import {launchEmulator} from './devices/android/AndroidDevice';
 import {setFlipperServerConfig} from './FlipperServerConfig';
 import {saveSettings} from './utils/settings';
 import {saveLauncherSettings} from './utils/launcherSettings';
-import {KeytarManager} from './utils/keytar';
+import {KeytarManager, KeytarModule} from './utils/keytar';
 import {PluginManager} from './plugins/PluginManager';
 import {runHealthcheck, getHealthChecks} from './utils/runHealthchecks';
 import {openFile} from './utils/openFile';
@@ -69,15 +69,16 @@ export class FlipperServerImpl implements FlipperServer {
   constructor(
     public config: FlipperServerConfig,
     public logger: Logger,
-    keytarModule?: any,
+    keytarModule?: KeytarModule,
   ) {
     setFlipperServerConfig(config);
     const server = (this.server = new ServerController(this));
     this.android = new AndroidDeviceManager(this);
     this.ios = new IOSDeviceManager(this);
     this.keytarManager = new KeytarManager(keytarModule);
-    // TODO: given flipper-dump, it might make more sense to have the plugin command
-    // handled by moved to flipper-server & app, but let's keep things simple for now
+    // given flipper-dump, it might make more sense to have the plugin command
+    // handling (like download, install, etc) moved to flipper-server & app,
+    // but let's keep things simple for now
     this.pluginManager = new PluginManager();
 
     server.addListener('error', (err) => {

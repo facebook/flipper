@@ -46,5 +46,11 @@ export function startSocketServer(
       connected = false;
       flipperServer.offAny(onServerEvent);
     });
+
+    client.on('error', (e) => {
+      console.error(chalk.red(`Socket error ${client.id}`), e);
+      connected = false;
+      flipperServer.offAny(onServerEvent);
+    });
   });
 }

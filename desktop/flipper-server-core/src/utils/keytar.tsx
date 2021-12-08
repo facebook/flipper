@@ -10,12 +10,14 @@
 import os from 'os';
 import {UserNotSignedInError} from 'flipper-common';
 
-export class KeytarManager {
-  keytar: any;
+export type KeytarModule = {
+  getPassword(service: string, username: string): string;
+  deletePassword(service: string, username: string): void;
+  setPassword(service: string, username: string, password: string): void;
+};
 
-  constructor(keytarModule: any) {
-    this.keytar = keytarModule;
-  }
+export class KeytarManager {
+  constructor(private keytar: KeytarModule | undefined) {}
 
   public async writeKeychain(service: string, password: string): Promise<void> {
     if (this.keytar == null) {
@@ -27,7 +29,7 @@ export class KeytarManager {
   }
 
   public async unsetKeychain(service: string): Promise<void> {
-    await this.keytar.deletePassword(service, os.userInfo().username);
+    await this.keytar?.deletePassword(service, os.userInfo().username);
   }
 
   public async retrieveToken(service: string): Promise<string> {

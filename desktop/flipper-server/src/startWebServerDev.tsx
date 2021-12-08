@@ -119,7 +119,7 @@ async function startMetroServer(
       )
     ).flat(),
   );
-  // console.log('Source dirs\n\t' + watchFolders.join('\n\t'));
+
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
     projectRoot: rootDir,

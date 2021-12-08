@@ -14,6 +14,9 @@ import fs from 'fs-extra';
 import TOML, {JsonMap} from '@iarna/toml';
 import {LauncherSettings, ReleaseChannel} from 'flipper-common';
 
+// There is some disagreement among the XDG Base Directory implementations
+// whether to use ~/Library/Preferences or ~/.config on MacOS. The Launcher
+// expects the former, whereas `xdg-basedir` implements the latter.
 export function xdgConfigDir() {
   return os.platform() === 'darwin'
     ? path.join(os.homedir(), 'Library', 'Preferences')
@@ -28,9 +31,6 @@ export function launcherConfigDir() {
 }
 
 function getLauncherSettingsFile(): string {
-  // There is some disagreement among the XDG Base Directory implementations
-  // whether to use ~/Library/Preferences or ~/.config on MacOS. The Launcher
-  // expects the former, whereas `xdg-basedir` implements the latter.
   return path.resolve(launcherConfigDir(), 'flipper-launcher.toml');
 }
 
