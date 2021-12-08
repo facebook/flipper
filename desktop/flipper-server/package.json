@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "@types/node": "^15.12.5",
     "metro": "^0.66.2",
     "nodemon": "^2.0.15",
     "ts-node": "^9.1.1",
@@ -32,7 +33,7 @@
     "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
     "prepack": "yarn reset && yarn build",
-    "start": "cross-env NODE_ENV=development nodemon --watch './src/**/*.tsx' --watch '../flipper-server-core/src/**/*.tsx' --exec 'yarn build && ../ts-node src/index.tsx'"
+    "start": "cross-env NODE_ENV=development nodemon --ext 'tsx' --watch './src/' --watch '../flipper-server-core/src/' --exec 'yarn build && ../ts-node src/index.tsx'"
   },
   "files": [
     "lib/**/*"

@@ -179,7 +179,7 @@ export function initializeElectron(
     },
     flipperServer,
     async requirePlugin(path) {
-      return (window as any).electronRequire(path);
+      return global.electronRequire(path);
     },
     getStaticResourceUrl(relativePath): string {
       return (

@@ -14,6 +14,13 @@ import {createFlipperServer} from './flipperServerConnection';
 document.getElementById('root')!.innerText = 'flipper-ui-browser started';
 
 async function start() {
+  (global as any).electronRequire = function (path: string) {
+    console.error(
+      `[decapitate] Tried to electronRequire ${path}, this module is not available in the browser and will be stubbed`,
+    );
+    return {};
+  };
+
   const logger = createDelegatedLogger();
   setLoggerInstance(logger);
 
@@ -28,10 +35,11 @@ async function start() {
   // before starting the rest of the Flipper process.
   // This prevent issues where the render host is referred at module initialisation level,
   // but not set yet, which might happen when using normal imports.
-  // eslint-disable-next-line import/no-commonjs
-  // TODO: replace
+  // TODO: remove
   window.flipperShowError?.('Connected to Flipper Server successfully');
-  // TODO:  require('flipper-ui-core').startFlipperDesktop(flipperServer);
+  // eslint-disable-next-line import/no-commonjs
+  require('flipper-ui-core').startFlipperDesktop(flipperServer);
+  window.flipperHideError?.();
 }
 
 start().catch((e) => {

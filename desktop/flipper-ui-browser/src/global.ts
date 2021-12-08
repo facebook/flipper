@@ -7,7 +7,7 @@
  * @format
  */
 
-import {RenderHost} from 'flipper-ui-core';
+import type {RenderHost} from 'flipper-ui-core';
 
 declare global {
   interface Window {

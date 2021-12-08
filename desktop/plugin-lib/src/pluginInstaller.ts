@@ -32,8 +32,6 @@ import pmap from 'p-map';
 import semver from 'semver';
 import {notNull} from './typeUtils';
 
-const getTmpDir = promisify(tmp.dir) as () => Promise<string>;
-
 function providePluginManagerNoDependencies(): PM {
   return new PM({ignoredDependencies: [/.*/]});
 }
@@ -43,7 +41,7 @@ async function installPluginFromTempDir(
 ): Promise<InstalledPluginDetails> {
   const pluginDetails = await getInstalledPluginDetails(sourceDir);
   const {name, version} = pluginDetails;
-  const backupDir = path.join(await getTmpDir(), `${name}-${version}`);
+  const backupDir = path.join(await promisify(tmp.dir)(), `${name}-${version}`);
   const destinationDir = getPluginVersionInstallationDir(name, version);
 
   if (pluginDetails.specVersion == 1) {
@@ -99,7 +97,7 @@ export async function getInstalledPlugin(
 }
 
 export async function installPluginFromNpm(name: string) {
-  const tmpDir = await getTmpDir();
+  const tmpDir = await promisify(tmp.dir)();
   try {
     await fs.ensureDir(tmpDir);
     const plugManNoDep = providePluginManagerNoDependencies();
@@ -118,7 +116,7 @@ export async function installPluginFromNpm(name: string) {
 export async function installPluginFromFile(
   packagePath: string,
 ): Promise<InstalledPluginDetails> {
-  const tmpDir = await getTmpDir();
+  const tmpDir = await promisify(tmp.dir)();
   try {
     const files = await decompress(packagePath, tmpDir, {
       plugins: [decompressTargz(), decompressUnzip()],

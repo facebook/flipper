@@ -39,7 +39,8 @@ async function start() {
 start()
   .then(() => {
     console.log(
-      `Flipper DEV server started at http://localhost:${PORT}/index.web.dev.html`,
+      'Flipper DEV server started at ' +
+        chalk.green(chalk.bold(`http://localhost:${PORT}/index.web.dev.html`)),
     );
   })
   .catch((e) => {

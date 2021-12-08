@@ -92,7 +92,9 @@ export function devicePlugin(client: DevicePluginClient) {
   let metroReloadAttempts = 0;
 
   function getGlobalDevToolsModule(): ReactDevToolsStandaloneType {
-    const required = global.electronRequire(globalDevToolsPath.get()!).default;
+    const required = (global as any).electronRequire(
+      globalDevToolsPath.get()!,
+    ).default;
     return required.default ?? required;
   }
 

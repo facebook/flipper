@@ -45,7 +45,9 @@ const getTempDirName = promisify(tmp.dir) as (
 export class PluginManager {
   async start() {
     // This needn't happen immediately and is (light) I/O work.
-    (window.requestIdleCallback || setImmediate)(() => {
+    (typeof window !== 'undefined'
+      ? window?.requestIdleCallback
+      : setImmediate)(() => {
       cleanupOldInstalledPluginVersions(maxInstalledPluginVersionsToKeep).catch(
         (err) =>
           console.error('Failed to clean up old installed plugins:', err),

@@ -20,10 +20,6 @@ declare global {
       | undefined
       | (StoreEnhancerStoreCreator & StoreEnhancerStateSanitizer);
 
-    Flipper: {
-      init: () => void;
-    };
-
     FlipperRenderHostInstance: RenderHost;
   }
 }

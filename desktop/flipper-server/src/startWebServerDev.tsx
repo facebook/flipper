@@ -16,6 +16,9 @@ import socketio from 'socket.io';
 import {getWatchFolders} from 'flipper-pkg-lib';
 import Metro from 'metro';
 import pFilter from 'p-filter';
+// provided by Metro
+// eslint-disable-next-line
+import MetroResolver from 'metro-resolver';
 
 const uiSourceDirs = [
   'flipper-ui-browser',
@@ -23,6 +26,53 @@ const uiSourceDirs = [
   'flipper-plugin',
   'flipper-common',
 ];
+
+const stubModules = new Set([
+  'fs',
+  'path',
+  'crypto',
+  'process',
+  'os',
+  'util',
+  'child_process',
+  'assert',
+  'adbkit', // TODO: factor out!
+  'zlib',
+  'events',
+  'fs-extra',
+  'archiver',
+  'graceful-fs',
+  'stream',
+  'url',
+  'node-fetch',
+  'net',
+  'vm',
+  'debug',
+  'lockfile',
+  'constants',
+  'https',
+  'plugin-lib', // TODO: we only want the types?
+  'flipper-plugin-lib',
+  'tar',
+  'minipass',
+  'live-plugin-manager',
+  'decompress-tar',
+  'readable-stream',
+  'archiver-utils',
+  'metro',
+  'decompress',
+  'temp',
+  'tmp',
+  'promisify-child-process',
+  'jsdom',
+  'extract-zip',
+  'yauzl',
+  'fd-slicer',
+  'envinfo',
+  'bser',
+  'fb-watchman',
+  // TODO fix me
+]);
 
 // This file is heavily inspired by scripts/start-dev-server.ts!
 export async function startWebServerDev(
@@ -84,8 +134,27 @@ async function startMetroServer(
     resolver: {
       ...baseConfig.resolver,
       resolverMainFields: ['flipperBundlerEntry', 'browser', 'module', 'main'],
-      blacklistRE: /\.native\.js$/,
+      blacklistRE: [/\.native\.js$/],
       sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
+      resolveRequest(context: any, moduleName: string, ...rest: any[]) {
+        if (stubModules.has(moduleName)) {
+          // console.warn("Found reference to ", moduleName)
+          return {
+            type: 'empty',
+          };
+        }
+        // if (moduleName.includes('pluginPaths')) {
+        //   console.error('got ' + moduleName, rest);
+        // }
+        return MetroResolver.resolve(
+          {
+            ...context,
+            resolveRequest: null,
+          },
+          moduleName,
+          ...rest,
+        );
+      },
     },
     watch: true,
     // only needed when medling with babel transforms

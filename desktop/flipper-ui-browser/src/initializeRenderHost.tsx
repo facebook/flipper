@@ -8,7 +8,7 @@
  */
 
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
-import {getRenderHostInstance, RenderHost} from 'flipper-ui-core';
+import {RenderHost} from 'flipper-ui-core';
 
 export function initializeRenderHost(
   flipperServer: FlipperServer,
@@ -63,10 +63,7 @@ export function initializeRenderHost(
     flipperServer,
     async requirePlugin(path) {
       // TODO: use `await import(path)`?
-      const source = await getRenderHostInstance().flipperServer.exec(
-        'plugin-source',
-        path,
-      );
+      const source = await flipperServer.exec('plugin-source', path);
       // eslint-disable-next-line no-eval
       return eval(source);
     },

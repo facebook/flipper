@@ -9,20 +9,21 @@
 
 import util from 'util';
 import {exec as execImport} from 'child_process';
-const exec = util.promisify(execImport);
 
 const cmd = 'klist --json';
 const endWith = '@THEFACEBOOK.COM';
 
 export async function isFBEmployee(): Promise<boolean> {
-  return exec(cmd).then(
-    (stdobj: {stderr: string; stdout: string}) => {
-      const principal = String(JSON.parse(stdobj.stdout).principal);
+  return util
+    .promisify(execImport)(cmd)
+    .then(
+      (stdobj: {stderr: string; stdout: string}) => {
+        const principal = String(JSON.parse(stdobj.stdout).principal);
 
-      return principal.endsWith(endWith);
-    },
-    (_err: Error) => {
-      return false;
-    },
-  );
+        return principal.endsWith(endWith);
+      },
+      (_err: Error) => {
+        return false;
+      },
+    );
 }
