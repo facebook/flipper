@@ -14,7 +14,7 @@ import {
   _setGlobalInteractionReporter,
   _LoggerContext,
 } from 'flipper-plugin';
-// eslint-disable-next-line flipper/no-electron-remote-imports
+// eslint-disable-next-line no-restricted-imports,flipper/no-electron-remote-imports
 import {
   ipcRenderer,
   remote,
@@ -26,7 +26,7 @@ import type {RenderHost} from 'flipper-ui-core';
 import fs from 'fs';
 import {setupMenuBar} from './setupMenuBar';
 import os from 'os';
-import {FlipperServerImpl} from 'flipper-server-core';
+import {FlipperServerConfig} from 'flipper-common';
 
 declare global {
   interface Window {
@@ -45,12 +45,9 @@ if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   global.electronRequire('mac-ca');
 }
 
-export function initializeElectron() {
-  const app = remote.app;
+export function initializeElectron(flipperServerConfig: FlipperServerConfig) {
   const execPath = process.execPath || remote.process.execPath;
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
-  const staticPath = getStaticDir();
-  const tempPath = app.getPath('temp');
 
   function restart(update: boolean = false) {
     if (isProduction) {
@@ -68,12 +65,9 @@ export function initializeElectron() {
     } else {
       // Relaunching the process with the standard way doesn't work in dev mode.
       // So instead we're sending a signal to dev server to kill the current instance of electron and launch new.
-      fetch(
-        `${window.FlipperRenderHostInstance.env.DEV_SERVER_URL}/_restartElectron`,
-        {
-          method: 'POST',
-        },
-      );
+      fetch(`${flipperServerConfig.env.DEV_SERVER_URL}/_restartElectron`, {
+        method: 'POST',
+      });
     }
   }
 
@@ -192,25 +186,10 @@ export function initializeElectron() {
     restartFlipper() {
       restart();
     },
-    env: process.env,
-    paths: {
-      appPath: app.getAppPath(),
-      homePath: app.getPath('home'),
-      execPath,
-      staticPath,
-      tempPath,
-      desktopPath: app.getPath('desktop'),
-    },
     loadDefaultPlugins: getDefaultPluginsIndex,
-    startFlipperServer({logger, ...config}) {
-      return new FlipperServerImpl(
-        {
-          ...config,
-          staticPath,
-          tempPath,
-        },
-        logger,
-      );
+    serverConfig: flipperServerConfig,
+    GK(gatekeeper) {
+      return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },
   };
 
@@ -221,18 +200,4 @@ function getDefaultPluginsIndex() {
   // eslint-disable-next-line import/no-unresolved
   const index = require('../defaultPlugins');
   return index.default || index;
-}
-
-function getStaticDir() {
-  let _staticPath = path.resolve(__dirname, '..', '..', '..', 'static');
-  if (fs.existsSync(_staticPath)) {
-    return _staticPath;
-  }
-  if (remote && fs.existsSync(remote.app.getAppPath())) {
-    _staticPath = path.join(remote.app.getAppPath());
-  }
-  if (!fs.existsSync(_staticPath)) {
-    throw new Error('Static path does not exist: ' + _staticPath);
-  }
-  return _staticPath;
 }

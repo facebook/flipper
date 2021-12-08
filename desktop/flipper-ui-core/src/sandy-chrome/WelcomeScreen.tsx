@@ -32,9 +32,9 @@ import constants from '../fb-stubs/constants';
 import config from '../fb-stubs/config';
 import isProduction from '../utils/isProduction';
 import {getAppVersion} from '../utils/info';
-import ReleaseChannel from '../ReleaseChannel';
 import {getFlipperLib} from 'flipper-plugin';
 import ChangelogSheet from '../chrome/ChangelogSheet';
+import {ReleaseChannel} from 'flipper-common';
 
 const RowContainer = styled(FlexRow)({
   alignItems: 'flex-start',

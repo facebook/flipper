@@ -37,10 +37,10 @@ Object {
   },
   "flipperServer": Object {
     "close": [MockFunction],
+    "connect": [Function],
     "exec": [MockFunction],
     "off": [MockFunction],
     "on": [MockFunction],
-    "start": [Function],
   },
   "pluginMenuEntries": Array [],
   "selectedAppId": "TestApp#Android#MockAndroidDevice#serial",

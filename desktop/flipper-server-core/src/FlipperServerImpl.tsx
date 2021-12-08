@@ -24,15 +24,15 @@ import {
   FlipperServerCommands,
   FlipperServer,
   UninitializedClient,
+  FlipperServerConfig,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
 import MetroDevice from './devices/metro/MetroDevice';
 import {launchEmulator} from './devices/android/AndroidDevice';
-import {
-  FlipperServerConfig,
-  setFlipperServerConfig,
-} from './FlipperServerConfig';
+import {setFlipperServerConfig} from './FlipperServerConfig';
+import {saveSettings} from './utils/settings';
+import {saveLauncherSettings} from './utils/launcherSettings';
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
@@ -52,7 +52,7 @@ export class FlipperServerImpl implements FlipperServer {
   android: AndroidDeviceManager;
   ios: IOSDeviceManager;
 
-  constructor(config: FlipperServerConfig, public logger: Logger) {
+  constructor(public config: FlipperServerConfig, public logger: Logger) {
     setFlipperServerConfig(config);
     const server = (this.server = new ServerController(this));
     this.android = new AndroidDeviceManager(this);
@@ -107,7 +107,7 @@ export class FlipperServerImpl implements FlipperServer {
   /**
    * Starts listening to parts and watching for devices
    */
-  async start() {
+  async connect() {
     if (this.state !== 'pending') {
       throw new Error('Server already started');
     }
@@ -170,6 +170,7 @@ export class FlipperServerImpl implements FlipperServer {
   }
 
   private commandHandler: FlipperServerCommands = {
+    'get-config': async () => this.config,
     'device-start-logging': async (serial: string) =>
       this.getDevice(serial).startLogging(),
     'device-stop-logging': async (serial: string) =>
@@ -223,6 +224,9 @@ export class FlipperServerImpl implements FlipperServer {
     'ios-get-simulators': async (bootedOnly) =>
       this.ios.getSimulators(bootedOnly),
     'ios-launch-simulator': async (udid) => launchSimulator(udid),
+    'persist-settings': async (settings) => saveSettings(settings),
+    'persist-launcher-settings': async (settings) =>
+      saveLauncherSettings(settings),
   };
 
   registerDevice(device: ServerDevice) {

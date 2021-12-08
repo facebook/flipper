@@ -23,6 +23,9 @@ import {getStaticPath} from '../utils/pathUtils';
 export default async function loadDynamicPlugins(): Promise<
   InstalledPluginDetails[]
 > {
+  if (process.env.NODE_ENV === 'test') {
+    return [];
+  }
   if (process.env.FLIPPER_FAST_REFRESH) {
     console.log(
       '❌  Skipping loading of dynamic plugins because Fast Refresh is enabled. Fast Refresh only works with bundled plugins.',

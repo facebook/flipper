@@ -7,26 +7,18 @@
  * @format
  */
 
+import {LauncherSettings} from 'flipper-common';
+import {getRenderHostInstance} from '../RenderHost';
 import {Actions} from './index';
-import ReleaseChannel from '../ReleaseChannel';
-
-export type LauncherSettings = {
-  releaseChannel: ReleaseChannel;
-  ignoreLocalPin: boolean;
-};
 
 export type Action = {
   type: 'UPDATE_LAUNCHER_SETTINGS';
   payload: LauncherSettings;
 };
 
-export const defaultLauncherSettings: LauncherSettings = {
-  releaseChannel: ReleaseChannel.DEFAULT,
-  ignoreLocalPin: false,
-};
-
 export default function reducer(
-  state: LauncherSettings = defaultLauncherSettings,
+  state: LauncherSettings = getRenderHostInstance().serverConfig
+    .launcherSettings,
   action: Actions,
 ): LauncherSettings {
   if (action.type === 'UPDATE_LAUNCHER_SETTINGS') {

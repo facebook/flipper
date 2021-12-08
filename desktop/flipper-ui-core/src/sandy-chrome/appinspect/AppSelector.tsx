@@ -30,8 +30,8 @@ import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {TroubleshootingGuide} from './fb-stubs/TroubleshootingGuide';
-import GK from '../../fb-stubs/GK';
 import {getSelectableDevices} from '../../selectors/connections';
+import {getRenderHostInstance} from '../../RenderHost';
 
 const {Text} = Typography;
 
@@ -127,7 +127,7 @@ export function AppSelector() {
         </Layout.Horizontal>
       )}
       <TroubleshootingGuide
-        showGuide={GK.get('flipper_self_sufficiency')}
+        showGuide={getRenderHostInstance().GK('flipper_self_sufficiency')}
         devicesDetected={entries.length}
       />
     </>

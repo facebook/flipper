@@ -73,18 +73,14 @@ export function buildLocalIconURL(name: string, size: number, density: number) {
 export function buildIconURLSync(name: string, size: number, density: number) {
   const icon = getIconPartsFromName(name);
   // eslint-disable-next-line prettier/prettier
-  const url = `https://facebook.com/assets/?name=${
-    icon.trimmedName
-    }&variant=${
-    icon.variant
-    }&size=${size}&set=facebook_icons&density=${density}x`;
+  const url = `https://facebook.com/assets/?name=${icon.trimmedName}&variant=${icon.variant}&size=${size}&set=facebook_icons&density=${density}x`;
   if (
     typeof window !== 'undefined' &&
     (!getIconsSync()[name] || !getIconsSync()[name].includes(size))
   ) {
     // From utils/isProduction
     const isProduction = !/node_modules[\\/]electron[\\/]/.test(
-      getRenderHostInstance().paths.execPath,
+      getRenderHostInstance().serverConfig.paths.execPath,
     );
 
     if (!isProduction) {
@@ -108,9 +104,7 @@ export function buildIconURLSync(name: string, size: number, density: number) {
             } else {
               throw new Error(
                 // eslint-disable-next-line prettier/prettier
-                `Trying to use icon '${name}' with size ${size} and density ${density}, however the icon doesn't seem to exists at ${url}: ${
-                res.status
-                }`,
+                `Trying to use icon '${name}' with size ${size} and density ${density}, however the icon doesn't seem to exists at ${url}: ${res.status}`,
               );
             }
           })
@@ -129,7 +123,7 @@ export function getIconURLSync(
   name: string,
   size: number,
   density: number,
-  basePath: string = getRenderHostInstance().paths.appPath,
+  basePath: string = getRenderHostInstance().serverConfig.paths.appPath,
 ) {
   if (name.indexOf('/') > -1) {
     return name;

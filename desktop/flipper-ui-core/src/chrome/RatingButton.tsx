@@ -24,7 +24,6 @@ import {
   Link,
 } from '../ui';
 import {LeftRailButton} from '../sandy-chrome/LeftRail';
-import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
 import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 import {StarOutlined} from '@ant-design/icons';
@@ -33,6 +32,7 @@ import {useStore} from '../utils/useStore';
 import {isLoggedIn} from '../fb-stubs/user';
 import {useValue} from 'flipper-plugin';
 import {reportPlatformFailures} from 'flipper-common';
+import {getRenderHostInstance} from '../RenderHost';
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';
 
@@ -281,7 +281,11 @@ export function SandyRatingButton() {
   }, [hasTriggered]);
 
   useEffect(() => {
-    if (GK.get('flipper_enable_star_ratiings') && !hasTriggered && loggedIn) {
+    if (
+      getRenderHostInstance().GK('flipper_enable_star_ratiings') &&
+      !hasTriggered &&
+      loggedIn
+    ) {
       reportPlatformFailures(
         UserFeedback.getPrompt().then((prompt) => {
           setPromptData(prompt);

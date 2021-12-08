@@ -21,12 +21,11 @@ import path from 'path';
 import {createRootReducer, State} from '../../reducers/index';
 import {getLogger} from 'flipper-common';
 import configureStore from 'redux-mock-store';
-import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
 import TestPlugin from './TestPlugin';
-import {resetConfigForTesting} from '../../utils/processConfig';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {mocked} from 'ts-jest/utils';
 import loadDynamicPlugins from '../../utils/loadDynamicPlugins';
+import {getRenderHostInstance} from '../../RenderHost';
 
 const loadDynamicPluginsMock = mocked(loadDynamicPlugins);
 
@@ -57,7 +56,6 @@ const sampleBundledPluginDetails: BundledPluginDetails = {
 };
 
 beforeEach(() => {
-  resetConfigForTesting();
   loadDynamicPluginsMock.mockResolvedValue([]);
 });
 
@@ -80,10 +78,13 @@ test('getDynamicPlugins returns empty array on errors', async () => {
 
 test('checkDisabled', () => {
   const disabledPlugin = 'pluginName';
-  const config = {disabledPlugins: [disabledPlugin]};
-  const orig = process.env.CONFIG;
+  const hostConfig = getRenderHostInstance().serverConfig;
+  const orig = hostConfig.processConfig;
   try {
-    process.env.CONFIG = JSON.stringify(config);
+    hostConfig.processConfig = {
+      ...orig,
+      disabledPlugins: new Set([disabledPlugin]),
+    };
     const disabled = checkDisabled([]);
 
     expect(
@@ -93,7 +94,6 @@ test('checkDisabled', () => {
         version: '1.0.0',
       }),
     ).toBeTruthy();
-
     expect(
       disabled({
         ...sampleBundledPluginDetails,
@@ -102,7 +102,7 @@ test('checkDisabled', () => {
       }),
     ).toBeFalsy();
   } finally {
-    process.env.CONFIG = orig;
+    hostConfig.processConfig = orig;
   }
 });
 
@@ -121,7 +121,7 @@ test('checkGK for passing plugin', () => {
     checkGK([])({
       ...sampleBundledPluginDetails,
       name: 'pluginID',
-      gatekeeper: TEST_PASSING_GK,
+      gatekeeper: 'TEST_PASSING_GK',
       version: '1.0.0',
     }),
   ).toBeTruthy();
@@ -133,7 +133,7 @@ test('checkGK for failing plugin', () => {
   const plugins = checkGK(gatekeepedPlugins)({
     ...sampleBundledPluginDetails,
     name,
-    gatekeeper: TEST_FAILING_GK,
+    gatekeeper: 'TEST_FAILING_GK',
     version: '1.0.0',
   });
 

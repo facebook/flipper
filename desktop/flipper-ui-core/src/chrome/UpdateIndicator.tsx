@@ -9,13 +9,12 @@
 
 import {notification, Typography} from 'antd';
 import isProduction from '../utils/isProduction';
-import {reportPlatformFailures} from 'flipper-common';
+import {reportPlatformFailures, ReleaseChannel} from 'flipper-common';
 import React, {useEffect, useState} from 'react';
 import fbConfig from '../fb-stubs/config';
 import {useStore} from '../utils/useStore';
 import {getAppVersion} from '../utils/info';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
-import ReleaseChannel from '../ReleaseChannel';
 
 export type VersionCheckResult =
   | {

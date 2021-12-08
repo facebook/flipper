@@ -11,7 +11,6 @@ import {_setFlipperLibImplementation} from 'flipper-plugin';
 import type {Logger} from 'flipper-common';
 import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
-import GK from '../fb-stubs/GK';
 import type BaseDevice from '../devices/BaseDevice';
 import constants from '../fb-stubs/constants';
 import {addNotification} from '../reducers/notifications';
@@ -32,9 +31,7 @@ export function initializeFlipperLibImplementation(
       store.dispatch(setMenuEntries(entries));
     },
     createPaste,
-    GK(gatekeeper: string) {
-      return GK.get(gatekeeper);
-    },
+    GK: renderHost.GK,
     selectPlugin(device, client, pluginId, deeplink) {
       store.dispatch({
         type: 'SELECT_PLUGIN',
@@ -63,8 +60,8 @@ export function initializeFlipperLibImplementation(
     importFile: renderHost.importFile,
     exportFile: renderHost.exportFile,
     paths: {
-      appPath: renderHost.paths.appPath,
-      homePath: renderHost.paths.homePath,
+      appPath: renderHost.serverConfig.paths.appPath,
+      homePath: renderHost.serverConfig.paths.homePath,
     },
   });
 }

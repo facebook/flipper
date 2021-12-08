@@ -7,22 +7,20 @@
  * @format
  */
 
-import {default as config, resetConfigForTesting} from '../processConfig';
-
-afterEach(() => {
-  resetConfigForTesting();
-});
+import {loadProcessConfig} from '../processConfig';
 
 test('config is decoded from env', () => {
-  process.env.CONFIG = JSON.stringify({
-    disabledPlugins: ['pluginA', 'pluginB', 'pluginC'],
-    lastWindowPosition: {x: 4, y: 8, width: 15, height: 16},
-    launcherMsg: 'wubba lubba dub dub',
-    screenCapturePath: '/my/screenshot/path',
-    launcherEnabled: false,
+  const config = loadProcessConfig({
+    CONFIG: JSON.stringify({
+      disabledPlugins: ['pluginA', 'pluginB', 'pluginC'],
+      lastWindowPosition: {x: 4, y: 8, width: 15, height: 16},
+      launcherMsg: 'wubba lubba dub dub',
+      screenCapturePath: '/my/screenshot/path',
+      launcherEnabled: false,
+    }),
   });
 
-  expect(config()).toEqual({
+  expect(config).toEqual({
     disabledPlugins: new Set(['pluginA', 'pluginB', 'pluginC']),
     lastWindowPosition: {x: 4, y: 8, width: 15, height: 16},
     launcherMsg: 'wubba lubba dub dub',
@@ -32,9 +30,7 @@ test('config is decoded from env', () => {
 });
 
 test('config is decoded from env with defaults', () => {
-  process.env.CONFIG = '{}';
-
-  expect(config()).toEqual({
+  expect(loadProcessConfig({CONFIG: '{}'})).toEqual({
     disabledPlugins: new Set([]),
     lastWindowPosition: undefined,
     launcherMsg: undefined,

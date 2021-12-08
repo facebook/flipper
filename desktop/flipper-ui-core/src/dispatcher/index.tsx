@@ -8,7 +8,6 @@
  */
 
 // Used responsibly.
-import flipperServer from './flipperServer';
 import application from './application';
 import tracking from './tracking';
 import notifications from './notifications';
@@ -32,7 +31,6 @@ export default function (store: Store, logger: Logger): () => Promise<void> {
   const dispatchers: Array<Dispatcher> = [
     application,
     tracking,
-    flipperServer,
     notifications,
     plugins,
     user,

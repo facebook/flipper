@@ -8,3 +8,20 @@
  */
 
 export {FlipperServerImpl} from './FlipperServerImpl';
+export {loadSettings} from './utils/settings';
+export {loadLauncherSettings} from './utils/launcherSettings';
+export {loadProcessConfig} from './utils/processConfig';
+
+import GKImplementation from './fb-stubs/GK';
+export {setupPrefetcher} from './fb-stubs/Prefetcher';
+
+let loaded = false;
+
+export function getGatekeepers(): Record<string, boolean> {
+  if (!loaded) {
+    // this starts fetching gatekeepers, note that they will only be available on next restart!
+    GKImplementation.init();
+    loaded = true;
+  }
+  return GKImplementation.allGKs();
+}

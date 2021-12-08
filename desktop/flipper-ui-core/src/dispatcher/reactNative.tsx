@@ -21,7 +21,7 @@ export default (store: Store) => {
   const settings = store.getState().settingsState.reactNative;
   const renderHost = getRenderHostInstance();
 
-  if (!settings.shortcuts.enabled) {
+  if (!settings?.shortcuts.enabled) {
     return;
   }
 

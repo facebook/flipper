@@ -2,6 +2,8 @@
 
 Stand alone Flipper command, that uses flipper-server-core to connect to apps and dump all incoming messages.
 
+To get started, run `yarn install` in the `desktop/` folder once.
+
 This package is currently a proof of concept and can be used like:
 
 `yarn start --device='iPhone 12' --client='Instagram' --plugin='AnalyticsLogging'`

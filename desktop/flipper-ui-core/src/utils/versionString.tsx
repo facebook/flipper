@@ -10,7 +10,7 @@
 import isProduction from '../utils/isProduction';
 import {getAppVersion} from './info';
 import config from '../fb-stubs/config';
-import ReleaseChannel from '../ReleaseChannel';
+import {ReleaseChannel} from 'flipper-common';
 
 export function getVersionString() {
   return (

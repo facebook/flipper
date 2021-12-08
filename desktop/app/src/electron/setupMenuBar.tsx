@@ -8,12 +8,10 @@
  */
 
 // Deliberate use of remote in this context.
-/* eslint-disable no-restricted-properties */
-
-import electron, {MenuItemConstructorOptions} from 'electron';
+/* eslint-disable no-restricted-properties, no-restricted-imports */
+import electron, {MenuItemConstructorOptions, webFrame} from 'electron';
 import {getLogger} from 'flipper-common';
 import {_buildInMenuEntries, _wrapInteractionHandler} from 'flipper-plugin';
-import {webFrame} from 'electron';
 
 export function setupMenuBar() {
   const template = getTemplate(electron.remote.app);

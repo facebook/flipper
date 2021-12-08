@@ -14,7 +14,7 @@ import {promisify} from 'util';
 import {getRenderHostInstance} from '../RenderHost';
 
 const getPackageJSON = async () => {
-  const base = getRenderHostInstance().paths.appPath;
+  const base = getRenderHostInstance().serverConfig.paths.appPath;
   const content = await promisify(fs.readFile)(
     path.join(base, 'package.json'),
     'utf-8',

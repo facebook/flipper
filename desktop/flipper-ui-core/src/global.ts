@@ -8,7 +8,6 @@
  */
 
 import {StoreEnhancerStoreCreator} from 'redux';
-import {Store} from './reducers';
 import {RenderHost} from './RenderHost';
 
 declare global {
@@ -17,8 +16,6 @@ declare global {
   }
 
   interface Window {
-    flipperGlobalStoreDispatch: Store['dispatch'];
-
     __REDUX_DEVTOOLS_EXTENSION__:
       | undefined
       | (StoreEnhancerStoreCreator & StoreEnhancerStateSanitizer);

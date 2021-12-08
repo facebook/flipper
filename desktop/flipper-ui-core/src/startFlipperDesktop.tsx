@@ -10,16 +10,11 @@
 import {Provider} from 'react-redux';
 import ReactDOM from 'react-dom';
 
-import GK from './fb-stubs/GK';
 import {init as initLogger} from './fb-stubs/Logger';
 import {SandyApp} from './sandy-chrome/SandyApp';
-import setupPrefetcher from './fb-stubs/Prefetcher';
 import {Persistor, persistStore} from 'redux-persist';
-import {Store} from './reducers/index';
 import dispatcher from './dispatcher/index';
 import TooltipProvider from './ui/components/TooltipProvider';
-import config from './utils/processConfig';
-import {initLauncherHooks} from './utils/launcher';
 import {setPersistor} from './utils/persistor';
 import React from 'react';
 import path from 'path';
@@ -28,7 +23,6 @@ import {cache} from '@emotion/css';
 import {CacheProvider} from '@emotion/react';
 import {initializeFlipperLibImplementation} from './utils/flipperLibImplementation';
 import {enableConsoleHook} from './chrome/ConsoleLogs';
-import {sideEffect} from './utils/sideEffect';
 import {
   _NuxManagerContext,
   _createNuxManager,
@@ -49,11 +43,14 @@ import {PersistGate} from 'redux-persist/integration/react';
 import {
   setLoggerInstance,
   setUserSessionManagerInstance,
-  GK as flipperCommonGK,
+  Settings,
+  FlipperServer,
 } from 'flipper-common';
 import {internGraphPOSTAPIRequest} from './fb-stubs/user';
 import {getRenderHostInstance} from './RenderHost';
 import {startGlobalErrorHandling} from './utils/globalErrorHandling';
+import {loadTheme} from './utils/loadTheme';
+import {connectFlipperServerToStore} from './dispatcher/flipperServer';
 
 class AppFrame extends React.Component<
   {logger: Logger; persistor: Persistor},
@@ -145,8 +142,7 @@ class AppFrame extends React.Component<
   }
 }
 
-function setProcessState(store: Store) {
-  const settings = store.getState().settingsState;
+function setProcessState(settings: Settings) {
   const androidHome = settings.androidHome;
   const idbPath = settings.idbPath;
 
@@ -162,27 +158,22 @@ function setProcessState(store: Store) {
       .join(':') +
     `:${idbPath}` +
     `:${process.env.PATH}`;
-
-  window.requestIdleCallback(() => {
-    setupPrefetcher(settings);
-  });
 }
 
-function init() {
-  GK.init();
-
-  // TODO: centralise all those initialisations in a single configuration call
-  flipperCommonGK.get = (name) => GK.get(name);
+function init(flipperServer: FlipperServer) {
+  const settings = getRenderHostInstance().serverConfig.settings;
   const store = getStore();
   const logger = initLogger(store);
-  setLoggerInstance(logger);
 
+  setLoggerInstance(logger);
   startGlobalErrorHandling();
+  loadTheme(settings.darkMode);
+  connectFlipperServerToStore(flipperServer, store, logger);
 
   // rehydrate app state before exposing init
   const persistor = persistStore(store, undefined, () => {
     // Make sure process state is set before dispatchers run
-    setProcessState(store);
+    setProcessState(settings);
     dispatcher(store, logger);
   });
 
@@ -205,39 +196,25 @@ function init() {
     <AppFrame logger={logger} persistor={persistor} />,
     document.getElementById('root'),
   );
-  initLauncherHooks(config(), store);
-  enableConsoleHook();
-  window.flipperGlobalStoreDispatch = store.dispatch;
 
-  // listen to settings and load the right theme
-  sideEffect(
-    store,
-    {name: 'loadTheme', fireImmediately: false, throttleMs: 500},
-    (state) => state.settingsState.darkMode,
-    (theme) => {
-      let shouldUseDarkMode = false;
-      if (theme === 'dark') {
-        shouldUseDarkMode = true;
-      } else if (theme === 'light') {
-        shouldUseDarkMode = false;
-      } else if (theme === 'system') {
-        shouldUseDarkMode = getRenderHostInstance().shouldUseDarkColors();
-      }
-      (
-        document.getElementById('flipper-theme-import') as HTMLLinkElement
-      ).href = `themes/${shouldUseDarkMode ? 'dark' : 'light'}.css`;
-      getRenderHostInstance().sendIpcEvent('setTheme', theme);
-    },
-  );
+  enableConsoleHook();
+
+  const launcherMessage =
+    getRenderHostInstance().serverConfig.processConfig.launcherMsg;
+  if (launcherMessage) {
+    store.dispatch({
+      type: 'LAUNCHER_MSG',
+      payload: {
+        severity: 'warning',
+        message: launcherMessage,
+      },
+    });
+  }
 }
 
-export function startFlipperDesktop() {
-  setImmediate(() => {
-    // make sure all modules are loaded
-    // @ts-ignore
-    window.flipperInit = init;
-    window.dispatchEvent(new Event('flipper-store-ready'));
-  });
+export async function startFlipperDesktop(flipperServer: FlipperServer) {
+  getRenderHostInstance(); // renderHost instance should be set at this point!
+  init(flipperServer);
 }
 
 const CodeBlock = styled(Input.TextArea)({

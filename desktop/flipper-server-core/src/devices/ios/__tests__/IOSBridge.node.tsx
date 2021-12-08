@@ -7,12 +7,22 @@
  * @format
  */
 
-import {makeIOSBridge} from '../IOSBridge';
 import childProcess from 'child_process';
-import * as promisifyChildProcess from 'promisify-child-process';
-
 jest.mock('child_process');
 jest.mock('promisify-child-process');
+
+import {makeIOSBridge} from '../IOSBridge';
+import * as promisifyChildProcess from 'promisify-child-process';
+import {setFlipperServerConfig} from '../../../FlipperServerConfig';
+import {getRenderHostInstance} from 'flipper-ui-core';
+
+beforeEach(() => {
+  setFlipperServerConfig(getRenderHostInstance().serverConfig);
+});
+
+afterEach(() => {
+  setFlipperServerConfig(undefined);
+});
 
 test('uses xcrun with no idb when xcode is detected', async () => {
   const ib = await makeIOSBridge('', true);
@@ -95,10 +105,10 @@ test.unix(
   async () => {
     const ib = await makeIOSBridge('', true);
 
-    ib.screenshot('deadbeef');
+    await expect(() => ib.screenshot('deadbeef')).rejects.toThrow();
 
-    expect(promisifyChildProcess.exec).toHaveBeenCalledWith(
-      'xcrun simctl io deadbeef screenshot /temp/00000000-0000-0000-0000-000000000000.png',
+    expect((promisifyChildProcess.exec as any).mock.calls[0][0]).toMatch(
+      'xcrun simctl io deadbeef screenshot',
     );
   },
 );
@@ -106,17 +116,17 @@ test.unix(
 test.unix('uses idb to take screenshots when available', async () => {
   const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
 
-  ib.screenshot('deadbeef');
+  await expect(() => ib.screenshot('deadbeef')).rejects.toThrow();
 
-  expect(promisifyChildProcess.exec).toHaveBeenCalledWith(
-    'idb screenshot --udid deadbeef /temp/00000000-0000-0000-0000-000000000000.png',
+  expect((promisifyChildProcess.exec as any).mock.calls[0][0]).toMatch(
+    'idb screenshot --udid deadbeef ',
   );
 });
 
 test('uses xcrun to navigate with no idb when xcode is detected', async () => {
   const ib = await makeIOSBridge('', true);
 
-  ib.navigate('deadbeef', 'fb://dummy');
+  await ib.navigate('deadbeef', 'fb://dummy');
 
   expect(promisifyChildProcess.exec).toHaveBeenCalledWith(
     'xcrun simctl io deadbeef launch url "fb://dummy"',
@@ -126,7 +136,7 @@ test('uses xcrun to navigate with no idb when xcode is detected', async () => {
 test('uses idb to navigate when available', async () => {
   const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
 
-  ib.navigate('deadbeef', 'fb://dummy');
+  await ib.navigate('deadbeef', 'fb://dummy');
 
   expect(promisifyChildProcess.exec).toHaveBeenCalledWith(
     'idb open --udid deadbeef "fb://dummy"',

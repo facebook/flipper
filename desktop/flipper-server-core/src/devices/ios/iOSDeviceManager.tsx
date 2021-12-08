@@ -46,7 +46,7 @@ export class IOSDeviceManager {
   private portForwarders: Array<ChildProcess> = [];
 
   private portforwardingClient = path.join(
-    getFlipperServerConfig().staticPath,
+    getFlipperServerConfig().paths.staticPath,
     'PortForwardingMacApp.app',
     'Contents',
     'MacOS',
@@ -111,7 +111,7 @@ export class IOSDeviceManager {
     isXcodeDetected: boolean,
     isIdbAvailable: boolean,
   ): Array<Promise<any>> {
-    const config = getFlipperServerConfig();
+    const config = getFlipperServerConfig().settings;
     return [
       isIdbAvailable
         ? getActiveDevices(config.idbPath, config.enablePhysicalIOS).then(
@@ -130,7 +130,7 @@ export class IOSDeviceManager {
   }
 
   private async queryDevices(): Promise<any> {
-    const config = getFlipperServerConfig();
+    const config = getFlipperServerConfig().settings;
     const isXcodeInstalled = await iosUtil.isXcodeDetected();
     const isIdbAvailable = await iosUtil.isAvailable(config.idbPath);
     console.debug(
@@ -182,21 +182,19 @@ export class IOSDeviceManager {
 
   public async watchIOSDevices() {
     // TODO: pull this condition up
-    if (!getFlipperServerConfig().enableIOS) {
+    const settings = getFlipperServerConfig().settings;
+    if (!settings.enableIOS) {
       return;
     }
     try {
       const isDetected = await iosUtil.isXcodeDetected();
       this.xcodeCommandLineToolsDetected = isDetected;
-      if (getFlipperServerConfig().enablePhysicalIOS) {
+      if (settings.enablePhysicalIOS) {
         this.startDevicePortForwarders();
       }
       try {
         // Awaiting the promise here to trigger immediate error handling.
-        this.iosBridge = await makeIOSBridge(
-          getFlipperServerConfig().idbPath,
-          isDetected,
-        );
+        this.iosBridge = await makeIOSBridge(settings.idbPath, isDetected);
         this.queryDevicesForever();
       } catch (err) {
         // This case is expected if both Xcode and idb are missing.

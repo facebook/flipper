@@ -7,43 +7,22 @@
  * @format
  */
 
-import {isTest} from 'flipper-common';
+import {FlipperServerConfig} from 'flipper-common';
 import {parseFlipperPorts} from './utils/environmentVariables';
-
-export interface FlipperServerConfig {
-  enableAndroid: boolean;
-  androidHome: string;
-  enableIOS: boolean;
-  idbPath: string;
-  enablePhysicalIOS: boolean;
-  validWebSocketOrigins: string[];
-  staticPath: string;
-  tempPath: string;
-}
-
-// defaultConfig should be used for testing only, and disables by default all features
-const testConfig: FlipperServerConfig = {
-  androidHome: '',
-  enableAndroid: false,
-  enableIOS: false,
-  enablePhysicalIOS: false,
-  idbPath: '',
-  validWebSocketOrigins: [],
-  staticPath: '/static/',
-  tempPath: '/temp/',
-};
 
 let currentConfig: FlipperServerConfig | undefined = undefined;
 
+// just an ugly utility to not need a reference to FlipperServerImpl itself everywhere
 export function getFlipperServerConfig(): FlipperServerConfig {
   if (!currentConfig) {
-    if (isTest()) return testConfig;
     throw new Error('FlipperServerConfig has not been set');
   }
   return currentConfig;
 }
 
-export function setFlipperServerConfig(config: FlipperServerConfig) {
+export function setFlipperServerConfig(
+  config: FlipperServerConfig | undefined,
+) {
   currentConfig = config;
 }
 

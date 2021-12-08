@@ -13,6 +13,7 @@ import {
   FlipperServer,
   Logger,
   NoLongerConnectedToClientError,
+  isTest,
 } from 'flipper-common';
 import Client from '../Client';
 import {notification} from 'antd';
@@ -20,23 +21,12 @@ import BaseDevice from '../devices/BaseDevice';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
-import constants from '../fb-stubs/constants';
-import {getRenderHostInstance} from '../RenderHost';
 
-export default async (store: Store, logger: Logger) => {
-  const {enableAndroid, androidHome, idbPath, enableIOS, enablePhysicalIOS} =
-    store.getState().settingsState;
-
-  const server = getRenderHostInstance().startFlipperServer({
-    logger,
-    enableAndroid,
-    androidHome,
-    idbPath,
-    enableIOS,
-    enablePhysicalIOS,
-    validWebSocketOrigins: constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
-  });
-
+export function connectFlipperServerToStore(
+  server: FlipperServer,
+  store: Store,
+  logger: Logger,
+) {
   store.dispatch({
     type: 'SET_FLIPPER_SERVER',
     payload: server,
@@ -147,25 +137,55 @@ export default async (store: Store, logger: Logger) => {
     });
   }
 
-  server
-    .start()
-    .then(() => {
-      console.log(
-        'Flipper server started and accepting device / client connections',
-      );
-    })
-    .catch((e) => {
-      console.error('Failed to start Flipper server', e);
-      notification.error({
-        message: 'Failed to start Flipper server',
-        description: 'error: ' + e,
-      });
-    });
+  let sideEffectDisposer: undefined | (() => void);
+
+  if (!isTest()) {
+    sideEffectDisposer = startSideEffects(store, server);
+  }
+  console.log(
+    'Flipper server started and accepting device / client connections',
+  );
 
   return () => {
+    sideEffectDisposer?.();
     server.close();
   };
-};
+}
+
+function startSideEffects(store: Store, server: FlipperServer) {
+  const dispose1 = sideEffect(
+    store,
+    {
+      name: 'settingsPersistor',
+      throttleMs: 100,
+    },
+    (state) => state.settingsState,
+    (settings) => {
+      server.exec('persist-settings', settings).catch((e) => {
+        console.error('Failed to persist Flipper settings', e);
+      });
+    },
+  );
+
+  const dispose2 = sideEffect(
+    store,
+    {
+      name: 'launcherSettingsPersistor',
+      throttleMs: 100,
+    },
+    (state) => state.launcherSettingsState,
+    (settings) => {
+      server.exec('persist-launcher-settings', settings).catch((e) => {
+        console.error('Failed to persist launcher settings', e);
+      });
+    },
+  );
+
+  return () => {
+    dispose1();
+    dispose2();
+  };
+}
 
 export async function handleClientConnected(
   server: Pick<FlipperServer, 'exec'>,

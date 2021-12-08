@@ -184,7 +184,7 @@ export class AndroidDeviceManager {
 
   async watchAndroidDevices() {
     try {
-      const client = await getAdbClient(getFlipperServerConfig());
+      const client = await getAdbClient(getFlipperServerConfig().settings);
       client
         .trackDevices()
         .then((tracker) => {

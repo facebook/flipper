@@ -7,7 +7,7 @@
  * @format
  */
 
-import ReleaseChannel from '../ReleaseChannel';
+import {ReleaseChannel} from 'flipper-common';
 
 export default {
   updateServer: 'https://www.facebook.com/fbflipper/public/latest.json',

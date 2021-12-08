@@ -12,12 +12,12 @@ import path from 'path';
 import BaseDevice from '../devices/BaseDevice';
 import {reportPlatformFailures} from 'flipper-common';
 import expandTilde from 'expand-tilde';
-import config from '../utils/processConfig';
 import {getRenderHostInstance} from '../RenderHost';
 
 export function getCaptureLocation() {
   return expandTilde(
-    config().screenCapturePath || getRenderHostInstance().paths.desktopPath,
+    getRenderHostInstance().serverConfig.processConfig.screenCapturePath ||
+      getRenderHostInstance().serverConfig.paths.desktopPath,
   );
 }
 

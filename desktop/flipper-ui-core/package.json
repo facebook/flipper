@@ -14,7 +14,6 @@
     "@emotion/css": "^11.5.0",
     "@emotion/react": "^11.6.0",
     "@emotion/styled": "^11.6.0",
-    "@iarna/toml": "^2.2.5",
     "@tanishiking/aho-corasick": "^0.0.1",
     "@types/archiver": "^5.1.1",
     "@types/uuid": "^8.3.1",
@@ -67,8 +66,7 @@
     "tmp": "^0.2.1",
     "uuid": "^8.3.2",
     "which": "^2.0.1",
-    "ws": "^8.2.3",
-    "xdg-basedir": "^4.0.0"
+    "ws": "^8.2.3"
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"

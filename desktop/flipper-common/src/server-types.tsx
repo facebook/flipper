@@ -12,6 +12,7 @@ import {
   DeviceType as PluginDeviceType,
   OS as PluginOS,
 } from 'flipper-plugin-lib';
+import {LauncherSettings, ProcessConfig, Settings} from './settings';
 
 // In the future, this file would deserve it's own package, as it doesn't really relate to plugins.
 // Since flipper-plugin however is currently shared among server, client and defines a lot of base types, leaving it here for now.
@@ -123,6 +124,7 @@ export type IOSDeviceParams = {
 };
 
 export type FlipperServerCommands = {
+  'get-config': () => Promise<FlipperServerConfig>;
   'device-start-logging': (serial: string) => Promise<void>;
   'device-stop-logging': (serial: string) => Promise<void>;
   'device-supports-screenshot': (serial: string) => Promise<boolean>;
@@ -151,10 +153,36 @@ export type FlipperServerCommands = {
   'android-launch-emulator': (name: string, coldboot: boolean) => Promise<void>;
   'ios-get-simulators': (bootedOnly: boolean) => Promise<IOSDeviceParams[]>;
   'ios-launch-simulator': (udid: string) => Promise<void>;
+  'persist-settings': (settings: Settings) => Promise<void>;
+  'persist-launcher-settings': (settings: LauncherSettings) => Promise<void>;
+};
+
+type ENVIRONMENT_VARIABLES =
+  | 'NODE_ENV'
+  | 'DEV_SERVER_URL'
+  | 'CONFIG'
+  | 'FLIPPER_ENABLED_PLUGINS';
+type ENVIRONMENT_PATHS =
+  | 'appPath'
+  | 'homePath'
+  | 'execPath'
+  | 'staticPath'
+  | 'tempPath'
+  | 'desktopPath';
+
+export type FlipperServerConfig = {
+  isProduction: boolean;
+  gatekeepers: Record<string, boolean>;
+  env: Partial<Record<ENVIRONMENT_VARIABLES, string>>;
+  paths: Record<ENVIRONMENT_PATHS, string>;
+  settings: Settings;
+  launcherSettings: LauncherSettings;
+  processConfig: ProcessConfig;
+  validWebSocketOrigins: string[];
 };
 
 export interface FlipperServer {
-  start(): Promise<void>;
+  connect(): Promise<void>;
   on<Event extends keyof FlipperServerEvents>(
     event: Event,
     callback: (payload: FlipperServerEvents[Event]) => void,

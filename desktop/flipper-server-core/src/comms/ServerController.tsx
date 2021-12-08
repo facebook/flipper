@@ -96,7 +96,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     this.certificateProvider = new CertificateProvider(
       this,
       this.logger,
-      getFlipperServerConfig(),
+      getFlipperServerConfig().settings,
     );
     this.connectionTracker = new ConnectionTracker(this.logger);
     this.secureServer = null;
@@ -244,13 +244,13 @@ class ServerController extends EventEmitter implements ServerEventsListener {
 
     const {os, app, device_id} = clientQuery;
     // without these checks, the user might see a connection timeout error instead, which would be much harder to track down
-    if (os === 'iOS' && !getFlipperServerConfig().enableIOS) {
+    if (os === 'iOS' && !getFlipperServerConfig().settings.enableIOS) {
       console.error(
         `Refusing connection from ${app} on ${device_id}, since iOS support is disabled in settings`,
       );
       return;
     }
-    if (os === 'Android' && !getFlipperServerConfig().enableAndroid) {
+    if (os === 'Android' && !getFlipperServerConfig().settings.enableAndroid) {
       console.error(
         `Refusing connection from ${app} on ${device_id}, since Android support is disabled in settings`,
       );

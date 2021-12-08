@@ -12,22 +12,21 @@ import {Radio} from 'antd';
 import {updateSettings, Action} from '../reducers/settings';
 import {
   Action as LauncherAction,
-  LauncherSettings,
   updateLauncherSettings,
 } from '../reducers/launcherSettings';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
-import {Settings, DEFAULT_ANDROID_SDK_PATH} from '../reducers/settings';
 import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
 import {FilePathConfigField, ConfigText} from './settings/configFields';
 import KeyboardShortcutInput from './settings/KeyboardShortcutInput';
 import {isEqual, isMatch, isEmpty} from 'lodash';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
-import {reportUsage} from 'flipper-common';
+import {LauncherSettings, reportUsage, Settings} from 'flipper-common';
 import {Modal, message, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
 import {getRenderHostInstance} from '../RenderHost';
+import {loadTheme} from '../utils/loadTheme';
 
 type OwnProps = {
   onHide: () => void;
@@ -142,7 +141,9 @@ class SettingsSheet extends Component<Props, State> {
           }}>
           <FilePathConfigField
             label="Android SDK location"
-            resetValue={DEFAULT_ANDROID_SDK_PATH}
+            resetValue={
+              getRenderHostInstance().serverConfig.settings.androidHome
+            }
             defaultValue={androidHome}
             onChange={(v) => {
               this.setState({
@@ -255,6 +256,7 @@ class SettingsSheet extends Component<Props, State> {
                   darkMode: event.target.value,
                 },
               }));
+              loadTheme(event.target.value);
             }}>
             <Radio.Button value="dark">Dark</Radio.Button>
             <Radio.Button value="light">Light</Radio.Button>

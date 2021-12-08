@@ -9,13 +9,13 @@
 
 import {PluginDetails} from 'flipper-plugin-lib';
 import semver from 'semver';
-import GK from '../fb-stubs/GK';
+import {getRenderHostInstance} from '../RenderHost';
 import {getAppVersion} from './info';
 
 export function isPluginCompatible(plugin: PluginDetails) {
   const flipperVersion = getAppVersion();
   return (
-    GK.get('flipper_disable_plugin_compatibility_checks') ||
+    getRenderHostInstance().GK('flipper_disable_plugin_compatibility_checks') ||
     flipperVersion === '0.0.0' ||
     !plugin.engines?.flipper ||
     semver.lte(plugin.engines?.flipper, flipperVersion)

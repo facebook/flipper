@@ -7,8 +7,7 @@
  * @format
  */
 
-import {Tristate} from '../reducers/settings';
-import ReleaseChannel from '../ReleaseChannel';
+import {Tristate, ReleaseChannel} from 'flipper-common';
 
 export default function (_props: {
   isPrefetchingEnabled: Tristate;

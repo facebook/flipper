@@ -98,8 +98,6 @@
             openError('Script failure. Check Chrome console for more info.');
           };
 
-          window.addEventListener('flipper-store-ready', () => global.flipperInit());
-
           document.body.appendChild(script);
         }
         init();

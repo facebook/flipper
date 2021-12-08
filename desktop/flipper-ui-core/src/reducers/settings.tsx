@@ -8,45 +8,8 @@
  */
 
 import {Actions} from './index';
-import os from 'os';
 import {getRenderHostInstance} from '../RenderHost';
-
-export enum Tristate {
-  True,
-  False,
-  Unset,
-}
-
-export type Settings = {
-  androidHome: string;
-  enableAndroid: boolean;
-  enableIOS: boolean;
-  enablePhysicalIOS: boolean;
-  /**
-   * If unset, this will assume the value of the GK setting.
-   * Note that this setting has no effect in the open source version
-   * of Flipper.
-   */
-  enablePrefetching: Tristate;
-  idbPath: string;
-  jsApps: {
-    webAppLauncher: {
-      url: string;
-      height: number;
-      width: number;
-    };
-  };
-  reactNative: {
-    shortcuts: {
-      enabled: boolean;
-      reload: string;
-      openDevMenu: string;
-    };
-  };
-  darkMode: 'dark' | 'light' | 'system';
-  showWelcomeAtStartup: boolean;
-  suppressPluginErrors: boolean;
-};
+import {Settings} from 'flipper-common';
 
 export type Action =
   | {type: 'INIT'}
@@ -55,36 +18,8 @@ export type Action =
       payload: Settings;
     };
 
-export const DEFAULT_ANDROID_SDK_PATH = getDefaultAndroidSdkPath();
-
-const initialState: Settings = {
-  androidHome: getDefaultAndroidSdkPath(),
-  enableAndroid: true,
-  enableIOS: os.platform() === 'darwin',
-  enablePhysicalIOS: os.platform() === 'darwin',
-  enablePrefetching: Tristate.Unset,
-  idbPath: '/usr/local/bin/idb',
-  jsApps: {
-    webAppLauncher: {
-      url: 'http://localhost:8888',
-      height: 600,
-      width: 800,
-    },
-  },
-  reactNative: {
-    shortcuts: {
-      enabled: false,
-      reload: 'Alt+Shift+R',
-      openDevMenu: 'Alt+Shift+D',
-    },
-  },
-  darkMode: 'light',
-  showWelcomeAtStartup: true,
-  suppressPluginErrors: false,
-};
-
 export default function reducer(
-  state: Settings = initialState,
+  state: Settings = getRenderHostInstance().serverConfig.settings,
   action: Actions,
 ): Settings {
   if (action.type === 'UPDATE_SETTINGS') {
@@ -98,14 +33,4 @@ export function updateSettings(settings: Settings): Action {
     type: 'UPDATE_SETTINGS',
     payload: settings,
   };
-}
-
-function getDefaultAndroidSdkPath() {
-  return os.platform() === 'win32' ? getWindowsSdkPath() : '/opt/android_sdk';
-}
-
-function getWindowsSdkPath() {
-  return `${
-    getRenderHostInstance().paths.homePath
-  }\\AppData\\Local\\android\\sdk`;
 }

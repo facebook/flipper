@@ -10,7 +10,12 @@
 import fs from 'fs';
 import os from 'os';
 import yargs from 'yargs';
-import {FlipperServerImpl} from 'flipper-server-core';
+import {
+  FlipperServerImpl,
+  loadLauncherSettings,
+  loadProcessConfig,
+  loadSettings,
+} from 'flipper-server-core';
 import {
   ClientDescription,
   Logger,
@@ -48,7 +53,7 @@ const argv = yargs
   .parse(process.argv.slice(1));
 
 async function start(deviceTitle: string, appName: string, pluginId: string) {
-  return new Promise((_resolve, reject) => {
+  return new Promise(async (_resolve, reject) => {
     let device: DeviceDescription | undefined;
     let deviceResolver: () => void;
     const devicePromise: Promise<void> = new Promise((resolve) => {
@@ -67,14 +72,20 @@ async function start(deviceTitle: string, appName: string, pluginId: string) {
 
     const server = new FlipperServerImpl(
       {
-        // TODO: make these better overridable
-        enableAndroid: true,
-        androidHome: process.env.ANDROID_HOME || '/opt/android_sdk',
-        idbPath: '/usr/local/bin/idb',
-        enableIOS: true,
-        enablePhysicalIOS: true,
-        staticPath: path.resolve(__dirname, '..', '..', 'static'),
-        tempPath: os.tmpdir(),
+        env: process.env,
+        gatekeepers: {},
+        isProduction: false,
+        paths: {
+          staticPath: path.resolve(__dirname, '..', '..', 'static'),
+          tempPath: os.tmpdir(),
+          appPath: `/dev/null`,
+          homePath: `/dev/null`,
+          execPath: process.execPath,
+          desktopPath: `/dev/null`,
+        },
+        launcherSettings: await loadLauncherSettings(),
+        processConfig: loadProcessConfig(process.env),
+        settings: await loadSettings(),
         validWebSocketOrigins: [],
       },
       logger,
@@ -196,7 +207,7 @@ async function start(deviceTitle: string, appName: string, pluginId: string) {
     });
 
     server
-      .start()
+      .connect()
       .then(() => {
         logger.info(
           'Flipper server started and accepting device / client connections',

@@ -17,6 +17,7 @@
     "flipper-common": "0.0.0",
     "flipper-server-core": "0.0.0",
     "flipper-ui-core": "0.0.0",
+    "fs-extra": "^10.0.0",
     "invariant": "^2.2.2",
     "metro-runtime": "^0.66.2",
     "pretty-format": "^27.3.1"

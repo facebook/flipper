@@ -7,7 +7,8 @@
  * @format
  */
 
-import {Settings} from '../reducers/settings';
+import {Tristate} from 'flipper-common';
 
-export default async function setupPrefetcher(_settings: Settings) {}
-export const shouldInstallPrefetcher = () => false;
+export async function setupPrefetcher(_settings: {
+  enablePrefetching: Tristate;
+}) {}

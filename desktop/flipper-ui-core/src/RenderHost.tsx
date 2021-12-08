@@ -10,18 +10,11 @@
 import type {NotificationEvents} from './dispatcher/notifications';
 import type {PluginNotification} from './reducers/notifications';
 import type {NotificationConstructorOptions} from 'electron';
-import {FlipperLib, TestUtils} from 'flipper-plugin';
-import path from 'path';
-import {FlipperServer, Logger} from 'flipper-common';
-
-type ENVIRONMENT_VARIABLES = 'NODE_ENV' | 'DEV_SERVER_URL' | 'CONFIG';
-type ENVIRONMENT_PATHS =
-  | 'appPath'
-  | 'homePath'
-  | 'execPath'
-  | 'staticPath'
-  | 'tempPath'
-  | 'desktopPath';
+import {FlipperLib} from 'flipper-plugin';
+import {FlipperServerConfig, ReleaseChannel, Tristate} from 'flipper-common';
+// TODO: those imports are only used for testing, require conditionally?
+import {tmpdir} from 'os';
+import {resolve} from 'path';
 
 // Events that are emitted from the main.ts ovr the IPC process bridge in Electron
 type MainProcessEvents = {
@@ -103,20 +96,10 @@ export interface RenderHost {
   ): void;
   shouldUseDarkColors(): boolean;
   restartFlipper(update?: boolean): void;
-  env: Partial<Record<ENVIRONMENT_VARIABLES, string>>;
-  paths: Record<ENVIRONMENT_PATHS, string>;
   openLink(url: string): void;
   loadDefaultPlugins(): Record<string, any>;
-  startFlipperServer(config: {
-    // TODO: this config is temporarily, settings should be loaded/stored by server, not client
-    logger: Logger;
-    enableAndroid: boolean;
-    androidHome: string;
-    enableIOS: boolean;
-    enablePhysicalIOS: boolean;
-    idbPath: string;
-    validWebSocketOrigins: string[];
-  }): FlipperServer;
+  GK(gatekeeper: string): boolean;
+  serverConfig: FlipperServerConfig;
 }
 
 export function getRenderHostInstance(): RenderHost {
@@ -127,6 +110,50 @@ export function getRenderHostInstance(): RenderHost {
 }
 
 if (process.env.NODE_ENV === 'test') {
+  const rootPath = resolve(__dirname, '..', '..');
+  const stubConfig: FlipperServerConfig = {
+    env: {...process.env},
+    gatekeepers: {
+      TEST_PASSING_GK: true,
+      TEST_FAILING_GK: false,
+    },
+    isProduction: false,
+    launcherSettings: {
+      ignoreLocalPin: false,
+      releaseChannel: ReleaseChannel.DEFAULT,
+    },
+    paths: {
+      appPath: rootPath,
+      desktopPath: `/dev/null`,
+      execPath: process.execPath,
+      homePath: `/dev/null`,
+      staticPath: resolve(rootPath, 'static'),
+      tempPath: tmpdir(),
+    },
+    processConfig: {
+      disabledPlugins: new Set(),
+      lastWindowPosition: null,
+      launcherEnabled: false,
+      launcherMsg: null,
+      screenCapturePath: `/dev/null`,
+    },
+    settings: {
+      androidHome: `/dev/null`,
+      darkMode: 'light',
+      enableAndroid: false,
+      enableIOS: false,
+      enablePhysicalIOS: false,
+      enablePrefetching: Tristate.False,
+      idbPath: `/dev/null`,
+      reactNative: {
+        shortcuts: {enabled: false, openDevMenu: '', reload: ''},
+      },
+      showWelcomeAtStartup: false,
+      suppressPluginErrors: false,
+    },
+    validWebSocketOrigins: [],
+  };
+
   window.FlipperRenderHostInstance = {
     processId: -1,
     isProduction: false,
@@ -153,18 +180,12 @@ if (process.env.NODE_ENV === 'test') {
     },
     restartFlipper() {},
     openLink() {},
-    env: process.env,
-    paths: {
-      appPath: process.cwd(),
-      homePath: `/dev/null`,
-      desktopPath: `/dev/null`,
-      execPath: process.cwd(),
-      staticPath: path.join(process.cwd(), 'static'),
-      tempPath: `/tmp/`,
-    },
+    serverConfig: stubConfig,
     loadDefaultPlugins() {
       return {};
     },
-    startFlipperServer: () => TestUtils.createFlipperServerMock(),
+    GK(gk) {
+      return stubConfig.gatekeepers[gk] ?? false;
+    },
   };
 }

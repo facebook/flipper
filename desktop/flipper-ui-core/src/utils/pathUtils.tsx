@@ -20,7 +20,7 @@ export function getStaticPath(
   relativePath: string = '.',
   {asarUnpacked}: {asarUnpacked: boolean} = {asarUnpacked: false},
 ) {
-  const staticDir = getRenderHostInstance().paths.staticPath;
+  const staticDir = getRenderHostInstance().serverConfig.paths.staticPath;
   const absolutePath = path.resolve(staticDir, relativePath);
   // Unfortunately, path.resolve, fs.pathExists, fs.read etc do not automatically work with asarUnpacked files.
   // All these functions still look for files in "app.asar" even if they are unpacked.

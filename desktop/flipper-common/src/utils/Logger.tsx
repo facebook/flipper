@@ -64,9 +64,6 @@ export function getLogger(): Logger {
 
 // only for testing
 export function setLoggerInstance(logger: Logger) {
-  if (!isTest() && instance) {
-    console.warn('Logger was already initialised');
-  }
   instance = logger;
 }
 

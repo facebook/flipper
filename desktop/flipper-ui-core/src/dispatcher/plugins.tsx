@@ -24,11 +24,9 @@ import {
   MarketplacePluginDetails,
   pluginsInitialized,
 } from '../reducers/plugins';
-import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
 import fs from 'fs-extra';
 import path from 'path';
-import {default as config} from '../utils/processConfig';
 import {notNull} from '../utils/typeUtils';
 import {
   ActivatablePluginDetails,
@@ -151,6 +149,9 @@ export function getLatestCompatibleVersionOfEachPlugin<
 }
 
 async function getBundledPlugins(): Promise<Array<BundledPluginDetails>> {
+  if (process.env.NODE_ENV === 'test') {
+    return [];
+  }
   // defaultPlugins that are included in the Flipper distributive.
   // List of default bundled plugins is written at build time to defaultPlugins/bundled.json.
   const pluginPath = getStaticPath(
@@ -183,7 +184,7 @@ export const checkGK =
       if (!plugin.gatekeeper) {
         return true;
       }
-      const result = GK.get(plugin.gatekeeper);
+      const result = getRenderHostInstance().GK(plugin.gatekeeper);
       if (!result) {
         gatekeepedPlugins.push(plugin);
       }
@@ -197,15 +198,16 @@ export const checkGK =
 export const checkDisabled = (
   disabledPlugins: Array<ActivatablePluginDetails>,
 ) => {
+  const config = getRenderHostInstance().serverConfig;
   let enabledList: Set<string> | null = null;
   let disabledList: Set<string> = new Set();
   try {
-    if (process.env.FLIPPER_ENABLED_PLUGINS) {
+    if (config.env.FLIPPER_ENABLED_PLUGINS) {
       enabledList = new Set<string>(
-        process.env.FLIPPER_ENABLED_PLUGINS.split(','),
+        config.env.FLIPPER_ENABLED_PLUGINS.split(','),
       );
     }
-    disabledList = config().disabledPlugins;
+    disabledList = config.processConfig.disabledPlugins;
   } catch (e) {
     console.error('Failed to compute enabled/disabled plugins', e);
   }

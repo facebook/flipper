@@ -42,10 +42,6 @@ export default class GK {
     return false;
   }
 
-  static serializeGKs() {
-    return '';
-  }
-
   static async withWhitelistedGK(
     id: GKID,
     callback: () => Promise<void> | void,
@@ -62,5 +58,9 @@ export default class GK {
         whitelistedGKs.splice(idx, 1);
       }
     }
+  }
+
+  static allGKs(): GKMap {
+    return {};
   }
 }

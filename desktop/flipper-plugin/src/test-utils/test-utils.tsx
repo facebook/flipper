@@ -590,7 +590,7 @@ export function createFlipperServerMock(
   overrides?: Partial<FlipperServerCommands>,
 ): FlipperServer {
   return {
-    async start() {},
+    async connect() {},
     on: jest.fn(),
     off: jest.fn(),
     exec: jest
