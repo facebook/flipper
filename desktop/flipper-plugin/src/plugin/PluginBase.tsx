@@ -8,7 +8,7 @@
  */
 
 import {message} from 'antd';
-import {EventEmitter} from 'events';
+import EventEmitter from 'eventemitter3';
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {MenuEntry, NormalizedMenuEntry, normalizeMenuEntry} from './MenuEntry';
 import {FlipperLib} from './FlipperLib';

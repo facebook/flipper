@@ -8,7 +8,7 @@
  */
 
 import {performance} from 'perf_hooks';
-import {EventEmitter} from 'events';
+import EventEmitter from 'eventemitter3';
 
 import {State, Store} from '../reducers/index';
 import {Logger} from 'flipper-common';

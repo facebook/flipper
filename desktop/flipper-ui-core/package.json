@@ -27,6 +27,7 @@
     "console-feed": "^3.2.2",
     "crc32": "^0.2.2",
     "deep-equal": "^2.0.5",
+    "eventemitter3": "^4.0.7",
     "expand-tilde": "^2.0.2",
     "flipper-client-sdk": "^0.0.3",
     "flipper-common": "0.0.0",

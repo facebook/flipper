@@ -20,7 +20,7 @@ import {
   NoLongerConnectedToClientError,
 } from 'flipper-common';
 import {default as isProduction} from './utils/isProduction';
-import {EventEmitter} from 'events';
+import EventEmitter from 'eventemitter3';
 import invariant from 'invariant';
 import {getPluginKey} from './utils/pluginKey';
 
