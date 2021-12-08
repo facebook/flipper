@@ -24,6 +24,7 @@
     "invariant": "^2.2.4",
     "js-base64": "^3.7.2",
     "lodash.memoize": "^4.1.2",
+    "open": "^8.3.0",
     "openssl-wrapper": "^0.3.4",
     "promisify-child-process": "^4.1.1",
     "rsocket-core": "^0.0.27",

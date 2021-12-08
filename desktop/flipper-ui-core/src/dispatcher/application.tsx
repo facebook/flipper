@@ -22,20 +22,20 @@ export default (store: Store, logger: Logger) => {
   const renderHost = getRenderHostInstance();
 
   const onFocus = () => {
-    setImmediate(() => {
+    setTimeout(() => {
       store.dispatch({
         type: 'windowIsFocused',
         payload: {isFocused: true, time: Date.now()},
       });
-    });
+    }, 1);
   };
   const onBlur = () => {
-    setImmediate(() => {
+    setTimeout(() => {
       store.dispatch({
         type: 'windowIsFocused',
         payload: {isFocused: false, time: Date.now()},
       });
-    });
+    }, 1);
   };
   window.addEventListener('focus', onFocus);
   window.addEventListener('blur', onBlur);

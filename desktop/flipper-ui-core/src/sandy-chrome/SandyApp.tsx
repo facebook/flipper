@@ -235,8 +235,7 @@ RootElement.displayName = 'SandyAppRootElement';
 
 function registerStartupTime(logger: Logger) {
   // track time since launch
-  const [s, ns] = process.hrtime();
-  const launchEndTime = s * 1e3 + ns / 1e6;
+  const launchEndTime = performance.now();
   const renderHost = getRenderHostInstance();
   renderHost.onIpcEvent('getLaunchTime', (launchStartTime: number) => {
     logger.track('performance', 'launchTime', launchEndTime - launchStartTime);

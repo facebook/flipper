@@ -39,7 +39,6 @@
     "js-base64": "^3.7.2",
     "lodash": "^4.17.21",
     "lodash.memoize": "^4.1.2",
-    "open": "^8.4.0",
     "openssl-wrapper": "^0.3.4",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",

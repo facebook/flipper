@@ -38,7 +38,7 @@
         font-family: monospace;
         font-size: 12px;
         z-index: 10;
-        top: 0;
+        bottom: 0;
         left: 0;
         position: absolute;
       }
@@ -63,12 +63,10 @@
       (function() {
         // FIXME: needed to make Metro work
         window.global = window;
-        // global.electronRequire = function(path) {
-        //   // debugger;
-        //   // throw(new Error("Tried to require: " + path));
-        //   console.error("Tried to require " + path);
-        //   return {};
-        // };
+        global.electronRequire = function(path) {
+          console.error("[decapitate] Tried to electronRequire: " + path);
+          return {};
+        };
 
         let suppressErrors = false;
 

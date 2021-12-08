@@ -36,6 +36,7 @@ import {saveLauncherSettings} from './utils/launcherSettings';
 import {KeytarManager} from './utils/keytar';
 import {PluginManager} from './plugins/PluginManager';
 import {runHealthcheck, getHealthChecks} from './utils/runHealthchecks';
+import {openFile} from './utils/openFile';
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
@@ -272,6 +273,7 @@ export class FlipperServerImpl implements FlipperServer {
     'plugin-source': (path) => this.pluginManager.loadSource(path),
     'doctor-get-healthchecks': getHealthChecks,
     'doctor-run-healthcheck': runHealthcheck,
+    'open-file': openFile,
   };
 
   registerDevice(device: ServerDevice) {

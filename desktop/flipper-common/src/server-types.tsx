@@ -189,6 +189,7 @@ export type FlipperServerCommands = {
     category: keyof FlipperDoctor.Healthchecks,
     name: string,
   ) => Promise<FlipperDoctor.HealthcheckResult>;
+  'open-file': (path: string) => Promise<void>;
 };
 
 /**

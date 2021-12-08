@@ -7,9 +7,10 @@
  * @format
  */
 
-const [s, ns] = process.hrtime();
-let launchStartTime: number | undefined = s * 1e3 + ns / 1e6;
+import {performance} from 'perf_hooks';
+let launchStartTime: number | undefined = performance.now();
 
+// eslint-disable-next-line no-restricted-imports
 import {
   app,
   BrowserWindow,
