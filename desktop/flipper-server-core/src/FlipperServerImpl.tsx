@@ -214,6 +214,9 @@ export class FlipperServerImpl implements FlipperServer {
   private commandHandler: FlipperServerCommands = {
     'get-config': async () => this.config,
     'get-changelog': getChangelog,
+    'device-list': async () => {
+      return Array.from(this.devices.values()).map((d) => d.info);
+    },
     'device-start-logging': async (serial: string) =>
       this.getDevice(serial).startLogging(),
     'device-stop-logging': async (serial: string) =>
@@ -241,6 +244,9 @@ export class FlipperServerImpl implements FlipperServer {
         throw new Error('Not a Metro device: ' + serial);
       }
       device.sendCommand(command);
+    },
+    'client-list': async () => {
+      return Array.from(this.server.connections.values()).map((c) => c.client);
     },
     'client-request': async (clientId, payload) => {
       this.server.connections.get(clientId)?.connection?.send(payload);

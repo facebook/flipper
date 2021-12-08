@@ -14,6 +14,7 @@ import {
   Logger,
   NoLongerConnectedToClientError,
   isTest,
+  DeviceDescription,
 } from 'flipper-common';
 import Client from '../Client';
 import {notification} from 'antd';
@@ -64,37 +65,7 @@ export function connectFlipperServerToStore(
   });
 
   server.on('device-connected', (deviceInfo) => {
-    logger.track('usage', 'register-device', {
-      os: deviceInfo.os,
-      name: deviceInfo.title,
-      serial: deviceInfo.serial,
-    });
-
-    const existing = store
-      .getState()
-      .connections.devices.find(
-        (device) => device.serial === deviceInfo.serial,
-      );
-    // handled outside reducer, as it might emit new redux actions...
-    if (existing) {
-      if (existing.connected.get()) {
-        console.warn(
-          `Tried to replace still connected device '${existing.serial}' with a new instance.`,
-        );
-      }
-      existing.destroy();
-    }
-
-    const device = new BaseDevice(server, deviceInfo);
-    device.loadDevicePlugins(
-      store.getState().plugins.devicePlugins,
-      store.getState().connections.enabledDevicePlugins,
-    );
-
-    store.dispatch({
-      type: 'REGISTER_DEVICE',
-      payload: device,
-    });
+    handleDeviceConnected(server, store, logger, deviceInfo);
   });
 
   server.on('device-disconnected', (device) => {
@@ -141,6 +112,26 @@ export function connectFlipperServerToStore(
     'Flipper server started and accepting device / client connections',
   );
 
+  server
+    .exec('device-list')
+    .then((devices) => {
+      // register all devices
+      devices.forEach((device) => {
+        handleDeviceConnected(server, store, logger, device);
+      });
+    })
+    .then(() => {
+      return server.exec('client-list');
+    })
+    .then((clients) => {
+      clients.forEach((client) => {
+        handleClientConnected(server, store, logger, client);
+      });
+    })
+    .catch((e) => {
+      console.error('Failed to get initial device/client list: ', e);
+    });
+
   return () => {
     sideEffectDisposer?.();
     server.close();
@@ -180,6 +171,43 @@ function startSideEffects(store: Store, server: FlipperServer) {
     dispose1();
     dispose2();
   };
+}
+
+function handleDeviceConnected(
+  server: FlipperServer,
+  store: Store,
+  logger: Logger,
+  deviceInfo: DeviceDescription,
+) {
+  logger.track('usage', 'register-device', {
+    os: deviceInfo.os,
+    name: deviceInfo.title,
+    serial: deviceInfo.serial,
+  });
+
+  const existing = store
+    .getState()
+    .connections.devices.find((device) => device.serial === deviceInfo.serial);
+  // handled outside reducer, as it might emit new redux actions...
+  if (existing) {
+    if (existing.connected.get()) {
+      console.warn(
+        `Tried to replace still connected device '${existing.serial}' with a new instance.`,
+      );
+    }
+    existing.destroy();
+  }
+
+  const device = new BaseDevice(server, deviceInfo);
+  device.loadDevicePlugins(
+    store.getState().plugins.devicePlugins,
+    store.getState().connections.enabledDevicePlugins,
+  );
+
+  store.dispatch({
+    type: 'REGISTER_DEVICE',
+    payload: device,
+  });
 }
 
 export async function handleClientConnected(

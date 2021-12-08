@@ -134,6 +134,7 @@ export type IOSDeviceParams = {
 export type FlipperServerCommands = {
   'get-config': () => Promise<FlipperServerConfig>;
   'get-changelog': () => Promise<string>;
+  'device-list': () => Promise<DeviceDescription[]>;
   'device-start-logging': (serial: string) => Promise<void>;
   'device-stop-logging': (serial: string) => Promise<void>;
   'device-supports-screenshot': (serial: string) => Promise<boolean>;
@@ -153,6 +154,7 @@ export type FlipperServerCommands = {
   'device-clear-logs': (serial: string) => Promise<void>;
   'device-navigate': (serial: string, location: string) => Promise<void>;
   'metro-command': (serial: string, command: string) => Promise<void>;
+  'client-list': () => Promise<ClientDescription[]>;
   'client-request': (clientId: string, payload: any) => Promise<void>;
   'client-request-response': (
     clientId: string,
