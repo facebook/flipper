@@ -40,7 +40,11 @@ import {stubLogger} from '../utils/Logger';
 import {Idler} from '../utils/Idler';
 import {createState} from '../state/atom';
 import baseMockConsole from 'jest-mock-console';
-import {DeviceLogEntry} from 'flipper-common';
+import {
+  DeviceLogEntry,
+  FlipperServer,
+  FlipperServerCommands,
+} from 'flipper-common';
 
 type Renderer = RenderResult<typeof queries>;
 
@@ -581,3 +585,26 @@ export function mockConsole() {
 }
 
 export type MockedConsole = ReturnType<typeof mockConsole>;
+
+export function createFlipperServerMock(
+  overrides?: Partial<FlipperServerCommands>,
+): FlipperServer {
+  return {
+    async start() {},
+    on: jest.fn(),
+    off: jest.fn(),
+    exec: jest
+      .fn()
+      .mockImplementation(
+        (cmd: keyof FlipperServerCommands, ...args: any[]) => {
+          if (overrides?.[cmd]) {
+            return (overrides[cmd] as any)(...args);
+          }
+          return Promise.reject(
+            new Error(`FlipperServerMock exec not implemented: ${cmd}}`),
+          );
+        },
+      ),
+    close: jest.fn(),
+  };
+}

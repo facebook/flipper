@@ -21,6 +21,7 @@ export class TestDevice extends BaseDevice {
   ) {
     super(
       {
+        async start() {},
         on: jest.fn(),
         off: jest.fn(),
         exec: jest.fn(),

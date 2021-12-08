@@ -14,12 +14,11 @@ import {createStore} from 'redux';
 import {LaunchEmulatorDialog} from '../LaunchEmulator';
 
 import {createRootReducer} from '../../../reducers';
-import {sleep} from 'flipper-plugin';
-import {createFlipperServerMock} from '../../../test-utils/createFlipperServerMock';
+import {sleep, TestUtils} from 'flipper-plugin';
 
 test('Can render and launch android apps - empty', async () => {
   const store = createStore(createRootReducer());
-  const mockServer = createFlipperServerMock({
+  const mockServer = TestUtils.createFlipperServerMock({
     'ios-get-simulators': () => Promise.resolve([]),
     'android-get-emulators': () => Promise.resolve([]),
   });
@@ -49,7 +48,7 @@ test('Can render and launch android apps', async () => {
 
   const store = createStore(createRootReducer());
   const launch = jest.fn().mockImplementation(() => Promise.resolve());
-  const mockServer = createFlipperServerMock({
+  const mockServer = TestUtils.createFlipperServerMock({
     'ios-get-simulators': () => Promise.resolve([]),
     'android-get-emulators': () =>
       (p = Promise.resolve(['emulator1', 'emulator2'])),

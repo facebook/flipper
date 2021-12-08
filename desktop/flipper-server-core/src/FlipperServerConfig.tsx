@@ -18,7 +18,7 @@ export interface FlipperServerConfig {
   enablePhysicalIOS: boolean;
   validWebSocketOrigins: string[];
   staticPath: string;
-  tmpPath: string;
+  tempPath: string;
 }
 
 // defaultConfig should be used for testing only, and disables by default all features
@@ -30,7 +30,7 @@ const testConfig: FlipperServerConfig = {
   idbPath: '',
   validWebSocketOrigins: [],
   staticPath: '/static/',
-  tmpPath: '/temp/',
+  tempPath: '/temp/',
 };
 
 let currentConfig: FlipperServerConfig | undefined = undefined;

@@ -10,8 +10,9 @@
 import type {NotificationEvents} from './dispatcher/notifications';
 import type {PluginNotification} from './reducers/notifications';
 import type {NotificationConstructorOptions} from 'electron';
-import type {FlipperLib} from 'flipper-plugin';
+import {FlipperLib, TestUtils} from 'flipper-plugin';
 import path from 'path';
+import {FlipperServer, Logger} from 'flipper-common';
 
 type ENVIRONMENT_VARIABLES = 'NODE_ENV' | 'DEV_SERVER_URL' | 'CONFIG';
 type ENVIRONMENT_PATHS =
@@ -106,6 +107,16 @@ export interface RenderHost {
   paths: Record<ENVIRONMENT_PATHS, string>;
   openLink(url: string): void;
   loadDefaultPlugins(): Record<string, any>;
+  startFlipperServer(config: {
+    // TODO: this config is temporarily, settings should be loaded/stored by server, not client
+    logger: Logger;
+    enableAndroid: boolean;
+    androidHome: string;
+    enableIOS: boolean;
+    enablePhysicalIOS: boolean;
+    idbPath: string;
+    validWebSocketOrigins: string[];
+  }): FlipperServer;
 }
 
 export function getRenderHostInstance(): RenderHost {
@@ -154,5 +165,6 @@ if (process.env.NODE_ENV === 'test') {
     loadDefaultPlugins() {
       return {};
     },
+    startFlipperServer: () => TestUtils.createFlipperServerMock(),
   };
 }

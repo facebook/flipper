@@ -14,15 +14,12 @@ import {
   Logger,
   NoLongerConnectedToClientError,
 } from 'flipper-common';
-import {FlipperServerImpl} from 'flipper-server-core';
-import {selectClient} from '../reducers/connections';
 import Client from '../Client';
 import {notification} from 'antd';
 import BaseDevice from '../devices/BaseDevice';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
-import {getStaticPath} from '../utils/pathUtils';
 import constants from '../fb-stubs/constants';
 import {getRenderHostInstance} from '../RenderHost';
 
@@ -30,19 +27,15 @@ export default async (store: Store, logger: Logger) => {
   const {enableAndroid, androidHome, idbPath, enableIOS, enablePhysicalIOS} =
     store.getState().settingsState;
 
-  const server = new FlipperServerImpl(
-    {
-      enableAndroid,
-      androidHome,
-      idbPath,
-      enableIOS,
-      enablePhysicalIOS,
-      staticPath: getStaticPath(),
-      tmpPath: getRenderHostInstance().paths.tempPath,
-      validWebSocketOrigins: constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
-    },
+  const server = getRenderHostInstance().startFlipperServer({
     logger,
-  );
+    enableAndroid,
+    androidHome,
+    idbPath,
+    enableIOS,
+    enablePhysicalIOS,
+    validWebSocketOrigins: constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
+  });
 
   store.dispatch({
     type: 'SET_FLIPPER_SERVER',

@@ -26,6 +26,7 @@ export default class ArchivedDevice extends BaseDevice {
   }) {
     super(
       {
+        async start() {},
         close() {},
         exec(command, ..._args: any[]) {
           throw new Error(

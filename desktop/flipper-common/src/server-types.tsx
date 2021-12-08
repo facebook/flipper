@@ -154,6 +154,7 @@ export type FlipperServerCommands = {
 };
 
 export interface FlipperServer {
+  start(): Promise<void>;
   on<Event extends keyof FlipperServerEvents>(
     event: Event,
     callback: (payload: FlipperServerEvents[Event]) => void,

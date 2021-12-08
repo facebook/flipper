@@ -26,9 +26,12 @@ import type {RenderHost} from 'flipper-ui-core';
 import fs from 'fs';
 import {setupMenuBar} from './setupMenuBar';
 import os from 'os';
+import {FlipperServerImpl} from 'flipper-server-core';
 
 declare global {
   interface Window {
+    // We store this as a global, to make sure the renderHost is available
+    // before flipper-ui-core is loaded and needs those during module initialisation
     FlipperRenderHostInstance: RenderHost;
   }
 }
@@ -46,6 +49,8 @@ export function initializeElectron() {
   const app = remote.app;
   const execPath = process.execPath || remote.process.execPath;
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
+  const staticPath = getStaticDir();
+  const tempPath = app.getPath('temp');
 
   function restart(update: boolean = false) {
     if (isProduction) {
@@ -192,11 +197,21 @@ export function initializeElectron() {
       appPath: app.getAppPath(),
       homePath: app.getPath('home'),
       execPath,
-      staticPath: getStaticDir(),
-      tempPath: app.getPath('temp'),
+      staticPath,
+      tempPath,
       desktopPath: app.getPath('desktop'),
     },
     loadDefaultPlugins: getDefaultPluginsIndex,
+    startFlipperServer({logger, ...config}) {
+      return new FlipperServerImpl(
+        {
+          ...config,
+          staticPath,
+          tempPath,
+        },
+        logger,
+      );
+    },
   };
 
   setupMenuBar();

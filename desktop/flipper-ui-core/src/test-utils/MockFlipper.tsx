@@ -27,8 +27,8 @@ import {PluginDetails} from 'flipper-plugin-lib';
 import ArchivedDevice from '../devices/ArchivedDevice';
 import {ClientQuery, DeviceOS} from 'flipper-common';
 import {TestDevice} from './TestDevice';
-import {createFlipperServerMock} from './createFlipperServerMock';
 import {getRenderHostInstance} from '../RenderHost';
+import {TestUtils} from 'flipper-plugin';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];
@@ -58,7 +58,7 @@ export default class MockFlipper {
   private _clients: Client[] = [];
   private _deviceCounter: number = 0;
   private _clientCounter: number = 0;
-  flipperServer: FlipperServer = createFlipperServerMock();
+  flipperServer: FlipperServer = TestUtils.createFlipperServerMock();
 
   public get store(): Store {
     return this._store;

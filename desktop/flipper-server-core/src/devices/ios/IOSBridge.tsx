@@ -98,7 +98,7 @@ export function xcrunStartLogListener(udid: string, deviceType: DeviceType) {
 
 function makeTempScreenshotFilePath() {
   const imageName = uuid() + '.png';
-  return path.join(getFlipperServerConfig().tmpPath, imageName);
+  return path.join(getFlipperServerConfig().tempPath, imageName);
 }
 
 async function runScreenshotCommand(

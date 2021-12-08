@@ -74,7 +74,7 @@ async function start(deviceTitle: string, appName: string, pluginId: string) {
         enableIOS: true,
         enablePhysicalIOS: true,
         staticPath: path.resolve(__dirname, '..', '..', 'static'),
-        tmpPath: os.tmpdir(),
+        tempPath: os.tmpdir(),
         validWebSocketOrigins: [],
       },
       logger,
