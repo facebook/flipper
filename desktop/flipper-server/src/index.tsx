@@ -7,14 +7,15 @@
  * @format
  */
 
+import chalk from 'chalk';
+import path from 'path';
 // TODO: currently flipper-server is only suitable for development,
 // needs to be come independently runnable, prebundled, distributed, etc!
 // in future require conditionally
 import {startWebServerDev} from './startWebServerDev';
 import {startFlipperServer} from './startFlipperServer';
 import {startBaseServer} from './startBaseServer';
-import chalk from 'chalk';
-import path from 'path';
+import {startSocketServer} from './startSocketServer';
 
 const PORT = 52342;
 const rootDir = path.resolve(__dirname, '..', '..');
@@ -27,10 +28,12 @@ async function start() {
     entry: 'index.web.dev.html',
   });
 
-  return Promise.all([
+  const [flipperServer] = await Promise.all([
     startFlipperServer(rootDir, staticDir),
     startWebServerDev(app, server, socket, rootDir),
   ]);
+
+  startSocketServer(flipperServer, socket);
 }
 
 start()

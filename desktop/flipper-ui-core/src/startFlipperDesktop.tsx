@@ -17,7 +17,6 @@ import dispatcher from './dispatcher/index';
 import TooltipProvider from './ui/components/TooltipProvider';
 import {setPersistor} from './utils/persistor';
 import React from 'react';
-import path from 'path';
 import {getStore} from './store';
 import {cache} from '@emotion/css';
 import {CacheProvider} from '@emotion/react';
@@ -142,24 +141,6 @@ class AppFrame extends React.Component<
   }
 }
 
-function setProcessState(settings: Settings) {
-  const androidHome = settings.androidHome;
-  const idbPath = settings.idbPath;
-
-  if (!process.env.ANDROID_HOME && !process.env.ANDROID_SDK_ROOT) {
-    process.env.ANDROID_HOME = androidHome;
-  }
-
-  // emulator/emulator is more reliable than tools/emulator, so prefer it if
-  // it exists
-  process.env.PATH =
-    ['emulator', 'tools', 'platform-tools']
-      .map((directory) => path.resolve(androidHome, directory))
-      .join(':') +
-    `:${idbPath}` +
-    `:${process.env.PATH}`;
-}
-
 function init(flipperServer: FlipperServer) {
   const settings = getRenderHostInstance().serverConfig.settings;
   const store = getStore();
@@ -173,7 +154,6 @@ function init(flipperServer: FlipperServer) {
   // rehydrate app state before exposing init
   const persistor = persistStore(store, undefined, () => {
     // Make sure process state is set before dispatchers run
-    setProcessState(settings);
     dispatcher(store, logger);
   });
 

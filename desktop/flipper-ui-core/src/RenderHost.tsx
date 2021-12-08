@@ -17,9 +17,6 @@ import {
   ReleaseChannel,
   Tristate,
 } from 'flipper-common';
-// TODO: those imports are only used for testing, require conditionally?
-import {tmpdir} from 'os';
-import {resolve} from 'path';
 
 // Events that are emitted from the main.ts ovr the IPC process bridge in Electron
 type MainProcessEvents = {
@@ -116,6 +113,9 @@ export function getRenderHostInstance(): RenderHost {
 }
 
 if (process.env.NODE_ENV === 'test') {
+  const {tmpdir} = require('os');
+  const {resolve} = require('path');
+
   const rootPath = resolve(__dirname, '..', '..');
   const stubConfig: FlipperServerConfig = {
     env: {...process.env},

@@ -6,6 +6,9 @@
   },
   "references": [
     {
+      "path": "../flipper-common"
+    },
+    {
       "path": "../flipper-ui-core"
     }
   ]

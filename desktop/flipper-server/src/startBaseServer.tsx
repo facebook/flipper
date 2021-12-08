@@ -64,12 +64,7 @@ function startAssetServer(
 }
 
 function addWebsocket(server: http.Server) {
-  const io = new socketio.Server(server); // 3.1.0 socket.io doesn't have type definitions
-
-  io.on('connection', (client) => {
-    console.log(chalk.green(`Client connected ${client.id}`));
-  });
-
+  const io = new socketio.Server(server);
   return io;
 }
 

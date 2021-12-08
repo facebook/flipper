@@ -7,4 +7,86 @@
  * @format
  */
 
+import {getLogger, Logger, setLoggerInstance} from 'flipper-common';
+import {initializeRenderHost} from './initializeRenderHost';
+import {createFlipperServer} from './flipperServerConnection';
+
 document.getElementById('root')!.innerText = 'flipper-ui-browser started';
+
+async function start() {
+  const logger = createDelegatedLogger();
+  setLoggerInstance(logger);
+
+  const flipperServer = await createFlipperServer();
+
+  await flipperServer.connect();
+  const flipperServerConfig = await flipperServer.exec('get-config');
+
+  initializeRenderHost(flipperServer, flipperServerConfig);
+
+  // By turning this in a require, we force the JS that the body of this module (init) has completed (initializeElectron),
+  // before starting the rest of the Flipper process.
+  // This prevent issues where the render host is referred at module initialisation level,
+  // but not set yet, which might happen when using normal imports.
+  // eslint-disable-next-line import/no-commonjs
+  // TODO: replace
+  window.flipperShowError?.('Connected to Flipper Server successfully');
+  // TODO:  require('flipper-ui-core').startFlipperDesktop(flipperServer);
+}
+
+start().catch((e) => {
+  console.error('Failed to start flipper-ui-browser', e);
+  window.flipperShowError?.('Failed to start flipper-ui-browser: ' + e);
+});
+
+// getLogger() is not  yet created when the electron app starts.
+// we can't create it here yet, as the real logger is wired up to
+// the redux store and the rest of the world. So we create a delegating logger
+// that uses a simple implementation until the real one comes available
+function createDelegatedLogger(): Logger {
+  const naiveLogger: Logger = {
+    track(...args: [any, any, any?, any?]) {
+      console.warn('(skipper track)', args);
+    },
+    trackTimeSince(...args: [any, any, any?]) {
+      console.warn('(skipped trackTimeSince)', args);
+    },
+    debug(...args: any[]) {
+      console.debug(...args);
+    },
+    error(...args: any[]) {
+      console.error(...args);
+      console.warn('(skipped error reporting)');
+    },
+    warn(...args: any[]) {
+      console.warn(...args);
+      console.warn('(skipped error reporting)');
+    },
+    info(...args: any[]) {
+      console.info(...args);
+    },
+  };
+  // will be overwrittingen later
+  setLoggerInstance(naiveLogger);
+
+  return {
+    track() {
+      // noop
+    },
+    trackTimeSince() {
+      // noop
+    },
+    debug(...args: any[]) {
+      getLogger().debug(...args);
+    },
+    error(...args: any[]) {
+      getLogger().error(...args);
+    },
+    warn(...args: any[]) {
+      getLogger().warn(...args);
+    },
+    info(...args: any[]) {
+      getLogger().info(...args);
+    },
+  };
+}

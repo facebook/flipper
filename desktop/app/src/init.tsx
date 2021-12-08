@@ -26,7 +26,13 @@ import {
   loadSettings,
   setupPrefetcher,
 } from 'flipper-server-core';
-import {getLogger, isTest, Logger, setLoggerInstance} from 'flipper-common';
+import {
+  getLogger,
+  isTest,
+  Logger,
+  setLoggerInstance,
+  Settings,
+} from 'flipper-common';
 import constants from './fb-stubs/constants';
 import {initializeElectron} from './electron/initializeElectron';
 import path from 'path';
@@ -98,6 +104,8 @@ async function start() {
   const flipperServerConfig = await flipperServer.exec('get-config');
 
   initializeElectron(flipperServer, flipperServerConfig);
+
+  setProcessState(flipperServerConfig.settings);
 
   // By turning this in a require, we force the JS that the body of this module (init) has completed (initializeElectron),
   // before starting the rest of the Flipper process.
@@ -184,4 +192,22 @@ function createDelegatedLogger(): Logger {
       getLogger().info(...args);
     },
   };
+}
+
+function setProcessState(settings: Settings) {
+  const androidHome = settings.androidHome;
+  const idbPath = settings.idbPath;
+
+  if (!process.env.ANDROID_HOME && !process.env.ANDROID_SDK_ROOT) {
+    process.env.ANDROID_HOME = androidHome;
+  }
+
+  // emulator/emulator is more reliable than tools/emulator, so prefer it if
+  // it exists
+  process.env.PATH =
+    ['emulator', 'tools', 'platform-tools']
+      .map((directory) => path.resolve(androidHome, directory))
+      .join(':') +
+    `:${idbPath}` +
+    `:${process.env.PATH}`;
 }

@@ -153,6 +153,14 @@ export class FlipperServerImpl implements FlipperServer {
     this.events.off(event, callback);
   }
 
+  onAny(callback: (event: keyof FlipperServerEvents, payload: any) => void) {
+    this.events.on('*', callback);
+  }
+
+  offAny(callback: (event: keyof FlipperServerEvents, payload: any) => void) {
+    this.events.off('*', callback);
+  }
+
   /**
    * @internal
    */
@@ -161,6 +169,7 @@ export class FlipperServerImpl implements FlipperServer {
     payload: FlipperServerEvents[Event],
   ): void {
     this.events.emit(event, payload);
+    this.events.emit('*', event, payload);
   }
 
   exec<Event extends keyof FlipperServerCommands>(

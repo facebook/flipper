@@ -76,15 +76,20 @@ async function startMetroServer(
     watchFolders,
     transformer: {
       ...baseConfig.transformer,
-      babelTransformerPath: path.join(babelTransformationsDir, 'transform-app'),
+      babelTransformerPath: path.join(
+        babelTransformationsDir,
+        'transform-browser',
+      ),
     },
     resolver: {
       ...baseConfig.resolver,
-      resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
+      resolverMainFields: ['flipperBundlerEntry', 'browser', 'module', 'main'],
       blacklistRE: /\.native\.js$/,
       sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
     },
     watch: true,
+    // only needed when medling with babel transforms
+    // cacheVersion: Math.random(), // only cache for current run
   });
   const connectMiddleware = await Metro.createConnectMiddleware(config);
   app.use(connectMiddleware.middleware);

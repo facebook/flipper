@@ -24,7 +24,10 @@ import {
 import path from 'path';
 import fs from 'fs';
 
-export async function startFlipperServer(rootDir: string, staticDir: string) {
+export async function startFlipperServer(
+  rootDir: string,
+  staticDir: string,
+): Promise<FlipperServerImpl> {
   if (os.platform() === 'darwin') {
     // By default Node.JS has its internal certificate storage and doesn't use
     // the system store. Because of this, it's impossible to access ondemand / devserver
@@ -90,6 +93,7 @@ export async function startFlipperServer(rootDir: string, staticDir: string) {
   );
 
   await flipperServer.connect();
+  return flipperServer;
 }
 
 function createLogger(): Logger {
@@ -103,7 +107,7 @@ function createLogger(): Logger {
       // console.warn('(skipped trackTimeSince)', args);
     },
     debug(..._args: any[]) {
-      // TODO: only if verbose console.debug(...args);
+      // TODO: only if double verbose console.debug(...args);
     },
     error(...args: any[]) {
       console.error(...args);
@@ -113,8 +117,9 @@ function createLogger(): Logger {
       console.warn(...args);
       console.warn('(skipped error reporting)');
     },
-    info(...args: any[]) {
-      console.info(...args);
+    info(..._args: any[]) {
+      // TODO: only if  verbose console.debug(...args);
+      // console.info(...args);
     },
   };
 }

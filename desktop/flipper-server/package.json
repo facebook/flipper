@@ -32,7 +32,7 @@
     "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
     "prepack": "yarn reset && yarn build",
-    "start": "cross-env NODE_ENV=development nodemon --watch './src/*.tsx' --exec '../ts-node' src/index.tsx"
+    "start": "cross-env NODE_ENV=development nodemon --watch './src/**/*.tsx' --watch '../flipper-server-core/src/**/*.tsx' --exec '../ts-node' src/index.tsx"
   },
   "files": [
     "lib/**/*"
