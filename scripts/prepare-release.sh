@@ -60,7 +60,7 @@ Summary:\nReleasing version $VERSION\n\n\
 Test Plan:\n\
 Please follow these steps to ship the new Flipper release:\n\n\
 1. Check Signal Hub for the ephemeral Flipper build. You will find instructions on how to run it in there: https://www.internalfb.com/intern/px/p/1Kcbk\n\
-2. Perform some brief exploratory tests. Start an emulator, click around in the layout. This should only take a few minutes.\n\
+2. Follow the [release smoke testing checklist](https://www.internalfb.com/intern/staticdocs/flipper/docs/fb/release-infra/#release-smoke-testing) to perform some brief exploratory tests.\n\
 3. If things are looking okay, accept both diffs and land them *together* as a stack.\n\
 4. Once landed, the Flipper bot will comment with \"#flipperrelease with bump\" on the diff. If this doesn't happen, please do this yourself. This will kick off the [\"flipper-release\"](https://fburl.com/sandcastle/uh698xj2) job, resulting in another diff which when landed pins the new release for our users.\n\
 See more details about the Flipper release process [here](https://fburl.com/flipperreleasebot).\n\n\
