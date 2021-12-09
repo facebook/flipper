@@ -89,16 +89,10 @@ class SecureServerWebSocket extends ServerWebSocket {
       if (!callbacks) {
         return;
       }
-
-      if (parsedMessage.success !== undefined) {
-        callbacks.resolve({
-          ...parsedMessage,
-          length: rawMessage.length,
-        });
-        return;
-      }
-
-      callbacks.reject(parsedMessage.error);
+      callbacks.resolve({
+        ...parsedMessage,
+        length: rawMessage.length,
+      });
       return;
     }
 
