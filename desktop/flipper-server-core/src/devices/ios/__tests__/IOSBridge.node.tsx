@@ -67,7 +67,11 @@ test('uses idb when present and xcode detected', async () => {
       '--debug',
       '--info',
     ],
-    {},
+    {
+      env: {
+        PYTHONUNBUFFERED: '1',
+      },
+    },
   );
 });
 
@@ -85,7 +89,11 @@ test('uses idb when present and xcode detected and physical device connected', a
       '--',
       // no further args; not supported by idb atm
     ],
-    {},
+    {
+      env: {
+        PYTHONUNBUFFERED: '1',
+      },
+    },
   );
 });
 

@@ -70,7 +70,11 @@ export function idbStartLogListener(
   return child_process.spawn(
     idbPath,
     ['log', '--udid', udid, '--', ...getLogExtraArgs(deviceType)],
-    {},
+    {
+      env: {
+        PYTHONUNBUFFERED: '1',
+      },
+    },
   );
 }
 
