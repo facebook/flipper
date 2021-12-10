@@ -1,3 +1,9 @@
+# 0.124.0 (8/12/2021)
+
+ * [D32797863](https://github.com/facebook/flipper/search?q=D32797863&type=Commits) -  Better handling of screenshot taking in navigation
+ * [D32830690](https://github.com/facebook/flipper/search?q=D32830690&type=Commits) -  Close input stream after use which was causing strict mode policy violation crashes and possibly leaking resources.
+
+
 # 0.119.0 (10/11/2021)
 
  * [D32279009](https://github.com/facebook/flipper/search?q=D32279009&type=Commits) -  Removed a lot of false positive error reports
