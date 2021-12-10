@@ -132,6 +132,13 @@ export type IOSDeviceParams = {
 };
 
 export type FlipperServerCommands = {
+  /**
+   * @throws ExecError
+   */
+  'node-api-exec': (
+    command: string,
+    options?: ExecOptions & {encoding?: BufferEncoding},
+  ) => Promise<ExecOut<string>>;
   'get-config': () => Promise<FlipperServerConfig>;
   'get-changelog': () => Promise<string>;
   'device-list': () => Promise<DeviceDescription[]>;
@@ -269,6 +276,38 @@ type ENVIRONMENT_PATHS =
   | 'staticPath'
   | 'tempPath'
   | 'desktopPath';
+
+export interface ExecOptions {
+  maxBuffer?: number;
+  timeout?: number;
+}
+
+export interface ExecError {
+  message: string;
+  stdout: string;
+  stderr: string;
+  stack?: string;
+  cmd?: string;
+  killed?: boolean;
+  code?: number;
+}
+
+export interface ExecOut<StdOutErrType> {
+  stdout: StdOutErrType;
+  stderr: StdOutErrType;
+}
+export type BufferEncoding =
+  | 'ascii'
+  | 'utf8'
+  | 'utf-8'
+  | 'utf16le'
+  | 'ucs2'
+  | 'ucs-2'
+  | 'base64'
+  | 'base64url'
+  | 'latin1'
+  | 'binary'
+  | 'hex';
 
 export type FlipperServerConfig = {
   gatekeepers: Record<string, boolean>;

@@ -69,6 +69,7 @@ export function createFlipperServer(): Promise<FlipperServer> {
     });
 
     socket.on('exec-response-error', (id: number, error: any) => {
+      // TODO: Deserialize error
       console.debug('exec <<< [SERVER ERROR]', id, error);
       const entry = pendingRequests.get(id);
       if (!entry) {

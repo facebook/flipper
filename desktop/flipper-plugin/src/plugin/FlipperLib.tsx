@@ -13,6 +13,7 @@ import {NormalizedMenuEntry} from './MenuEntry';
 import {RealFlipperClient} from './Plugin';
 import {Notification} from './Notification';
 import {DetailSidebarProps} from '../ui/DetailSidebar';
+import {ExecOptions, ExecOut, BufferEncoding} from 'flipper-common';
 
 export type FileEncoding = 'utf-8' | 'base64';
 
@@ -21,6 +22,18 @@ export interface FileDescriptor {
   name: string;
   path?: string;
 }
+
+export type RemoteNodeAPI = {
+  childProcess: {
+    exec(
+      command: string,
+      options?: {encoding?: BufferEncoding} & ExecOptions,
+    ): Promise<ExecOut<string>>;
+  };
+  fs: {
+    // TODO: Fill me
+  };
+};
 
 /**
  * This interface exposes all global methods for which an implementation will be provided by Flipper itself
@@ -105,6 +118,7 @@ export interface FlipperLib {
     homePath: string;
     appPath: string;
   };
+  removeNodeAPI: RemoteNodeAPI;
 }
 
 export let flipperLibInstance: FlipperLib | undefined;

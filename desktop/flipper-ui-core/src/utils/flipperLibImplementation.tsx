@@ -7,8 +7,8 @@
  * @format
  */
 
-import {_setFlipperLibImplementation} from 'flipper-plugin';
-import type {Logger} from 'flipper-common';
+import {_setFlipperLibImplementation, RemoteNodeAPI} from 'flipper-plugin';
+import type {BufferEncoding, ExecOptions, Logger} from 'flipper-common';
 import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
 import type BaseDevice from '../devices/BaseDevice';
@@ -62,6 +62,20 @@ export function initializeFlipperLibImplementation(
     paths: {
       appPath: renderHost.serverConfig.paths.appPath,
       homePath: renderHost.serverConfig.paths.homePath,
+    },
+    removeNodeAPI: {
+      childProcess: {
+        exec: (async (
+          command: string,
+          options?: ExecOptions & {encoding?: BufferEncoding},
+        ) =>
+          renderHost.flipperServer.exec(
+            'node-api-exec',
+            command,
+            options,
+          )) as RemoteNodeAPI['childProcess']['exec'],
+      },
+      fs: {},
     },
   });
 }

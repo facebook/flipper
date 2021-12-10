@@ -8,7 +8,6 @@
  */
 
 import EventEmitter from 'events';
-import {Logger} from 'flipper-common';
 import ServerController from './comms/ServerController';
 import {CertificateExchangeMedium} from './utils/CertificateProvider';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
@@ -25,6 +24,7 @@ import {
   FlipperServer,
   UninitializedClient,
   FlipperServerConfig,
+  Logger,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
@@ -43,6 +43,7 @@ import {
   internGraphGETAPIRequest,
   internGraphPOSTAPIRequest,
 } from './fb-stubs/internRequests';
+import {commandNodeApiExec} from './commands/NodeApiExec';
 
 export const SERVICE_FLIPPER = 'flipper.oAuthToken';
 
@@ -213,6 +214,7 @@ export class FlipperServerImpl implements FlipperServer {
   }
 
   private commandHandler: FlipperServerCommands = {
+    'node-api-exec': commandNodeApiExec,
     'get-config': async () => this.config,
     'get-changelog': getChangelog,
     'device-list': async () => {

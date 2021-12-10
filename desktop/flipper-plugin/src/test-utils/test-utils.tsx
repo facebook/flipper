@@ -389,6 +389,12 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
       appPath: process.cwd(),
       homePath: `/dev/null`,
     },
+    removeNodeAPI: {
+      childProcess: {
+        exec: jest.fn(),
+      },
+      fs: {},
+    },
   };
 }
 
