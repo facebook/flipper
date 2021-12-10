@@ -13,7 +13,12 @@ import {NormalizedMenuEntry} from './MenuEntry';
 import {RealFlipperClient} from './Plugin';
 import {Notification} from './Notification';
 import {DetailSidebarProps} from '../ui/DetailSidebar';
-import {ExecOptions, ExecOut, BufferEncoding} from 'flipper-common';
+import {
+  ExecOptions,
+  ExecOut,
+  BufferEncoding,
+  MkdirOptions,
+} from 'flipper-common';
 
 export type FileEncoding = 'utf-8' | 'base64';
 
@@ -31,7 +36,18 @@ export type RemoteNodeAPI = {
     ): Promise<ExecOut<string>>;
   };
   fs: {
-    // TODO: Fill me
+    access(path: string, mode?: number): Promise<void>;
+    pathExists(path: string, mode?: number): Promise<boolean>;
+    unlink(path: string): Promise<void>;
+    mkdir(
+      path: string,
+      options: {recursive: true} & MkdirOptions,
+    ): Promise<string | undefined>;
+    mkdir(
+      path: string,
+      options?: {recursive?: false} & MkdirOptions,
+    ): Promise<void>;
+    copyFile(src: string, dest: string, flags?: number): Promise<void>;
   };
 };
 

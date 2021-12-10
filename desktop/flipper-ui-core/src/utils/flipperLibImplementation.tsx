@@ -8,7 +8,12 @@
  */
 
 import {_setFlipperLibImplementation, RemoteNodeAPI} from 'flipper-plugin';
-import type {BufferEncoding, ExecOptions, Logger} from 'flipper-common';
+import type {
+  BufferEncoding,
+  ExecOptions,
+  Logger,
+  MkdirOptions,
+} from 'flipper-common';
 import type {Store} from '../reducers';
 import createPaste from '../fb-stubs/createPaste';
 import type BaseDevice from '../devices/BaseDevice';
@@ -75,7 +80,30 @@ export function initializeFlipperLibImplementation(
             options,
           )) as RemoteNodeAPI['childProcess']['exec'],
       },
-      fs: {},
+      fs: {
+        access: async (path: string, mode?: number) =>
+          renderHost.flipperServer.exec('node-api-fs-access', path, mode),
+        pathExists: async (path: string, mode?: number) =>
+          renderHost.flipperServer.exec('node-api-fs-pathExists', path, mode),
+        unlink: async (path: string) =>
+          renderHost.flipperServer.exec('node-api-fs-unlink', path),
+        mkdir: (async (
+          path: string,
+          options?: {recursive?: boolean} & MkdirOptions,
+        ) =>
+          renderHost.flipperServer.exec(
+            'node-api-fs-mkdir',
+            path,
+            options,
+          )) as RemoteNodeAPI['fs']['mkdir'],
+        copyFile: async (src: string, dest: string, flags?: number) =>
+          renderHost.flipperServer.exec(
+            'node-api-fs-copyFile',
+            src,
+            dest,
+            flags,
+          ),
+      },
     },
   });
 }

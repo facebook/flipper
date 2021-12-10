@@ -393,7 +393,13 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
       childProcess: {
         exec: jest.fn(),
       },
-      fs: {},
+      fs: {
+        access: jest.fn(),
+        pathExists: jest.fn(),
+        unlink: jest.fn(),
+        mkdir: jest.fn(),
+        copyFile: jest.fn(),
+      },
     },
   };
 }

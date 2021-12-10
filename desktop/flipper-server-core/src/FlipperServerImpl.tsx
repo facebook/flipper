@@ -44,6 +44,7 @@ import {
   internGraphPOSTAPIRequest,
 } from './fb-stubs/internRequests';
 import {commandNodeApiExec} from './commands/NodeApiExec';
+import {access, copyFile, mkdir, unlink} from 'fs/promises';
 
 export const SERVICE_FLIPPER = 'flipper.oAuthToken';
 
@@ -215,6 +216,18 @@ export class FlipperServerImpl implements FlipperServer {
 
   private commandHandler: FlipperServerCommands = {
     'node-api-exec': commandNodeApiExec,
+    'node-api-fs-access': access,
+    'node-api-fs-pathExists': async (path, mode) => {
+      try {
+        await access(path, mode);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    'node-api-fs-unlink': unlink,
+    'node-api-fs-mkdir': mkdir,
+    'node-api-fs-copyFile': copyFile,
     'get-config': async () => this.config,
     'get-changelog': getChangelog,
     'device-list': async () => {

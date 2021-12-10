@@ -132,6 +132,18 @@ export type IOSDeviceParams = {
 };
 
 export type FlipperServerCommands = {
+  'node-api-fs-access': (path: string, mode?: number) => Promise<void>;
+  'node-api-fs-pathExists': (path: string, mode?: number) => Promise<boolean>;
+  'node-api-fs-unlink': (path: string) => Promise<void>;
+  'node-api-fs-mkdir': (
+    path: string,
+    options?: {recursive?: boolean} & MkdirOptions,
+  ) => Promise<string | void>;
+  'node-api-fs-copyFile': (
+    src: string,
+    dest: string,
+    flags?: number,
+  ) => Promise<void>;
   /**
    * @throws ExecError
    */
@@ -309,6 +321,10 @@ export type BufferEncoding =
   | 'latin1'
   | 'binary'
   | 'hex';
+
+export interface MkdirOptions {
+  mode?: string | number;
+}
 
 export type FlipperServerConfig = {
   gatekeepers: Record<string, boolean>;
