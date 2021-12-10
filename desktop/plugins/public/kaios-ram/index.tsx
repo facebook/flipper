@@ -25,7 +25,7 @@ import {
 } from 'recharts';
 
 import adb from 'adbkit';
-import {exec} from 'promisify-child-process';
+import {getFlipperLib} from 'flipper-plugin';
 
 const PALETTE = [
   '#FFD700',
@@ -81,7 +81,7 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
 
   async init() {
     try {
-      await exec('adb root');
+      await getFlipperLib().removeNodeAPI.childProcess.exec('adb root');
     } catch (e) {
       console.error('Error obtaining root on the device', e);
     }

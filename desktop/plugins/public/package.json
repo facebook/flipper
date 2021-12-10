@@ -7,8 +7,7 @@
       "*"
     ],
     "nohoist": [
-      "flipper-plugin-kaios-big-allocations/firefox-client",
-      "flipper-plugin-kaios-big-allocations/patch-package"
+      "flipper-plugin-kaios-big-allocations/**"
     ]
   },
   "bugs": {

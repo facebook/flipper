@@ -280,6 +280,7 @@ type ENVIRONMENT_PATHS =
 export interface ExecOptions {
   maxBuffer?: number;
   timeout?: number;
+  cwd?: string;
 }
 
 export interface ExecError {
