@@ -14,7 +14,11 @@ import {
   act as testingLibAct,
 } from '@testing-library/react';
 import {queries} from '@testing-library/dom';
-import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-common';
+import {
+  BundledPluginDetails,
+  fsConstants,
+  InstalledPluginDetails,
+} from 'flipper-common';
 
 import {
   RealFlipperClient,
@@ -388,6 +392,14 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
     paths: {
       appPath: process.cwd(),
       homePath: `/dev/null`,
+      tempPath: `/dev/null`,
+    },
+    environmentInfo: {
+      os: {
+        arch: 'Test',
+        unixname: 'test',
+        platform: 'linux',
+      },
     },
     remoteServerContext: {
       childProcess: {
@@ -398,7 +410,9 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
         pathExists: jest.fn(),
         unlink: jest.fn(),
         mkdir: jest.fn(),
+        rm: jest.fn(),
         copyFile: jest.fn(),
+        constants: fsConstants,
       },
       downloadFile: jest.fn(),
     },

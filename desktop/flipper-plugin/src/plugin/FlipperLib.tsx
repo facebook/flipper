@@ -21,6 +21,9 @@ import {
   DownloadFileStartOptions,
   DownloadFileStartResponse,
   DownloadFileUpdate,
+  RmOptions,
+  fsConstants,
+  EnvironmentInfo,
 } from 'flipper-common';
 
 export type FileEncoding = 'utf-8' | 'base64';
@@ -57,7 +60,9 @@ export type RemoteServerContext = {
       path: string,
       options?: {recursive?: false} & MkdirOptions,
     ): Promise<void>;
+    rm(path: string, options?: RmOptions): Promise<void>;
     copyFile(src: string, dest: string, flags?: number): Promise<void>;
+    constants: typeof fsConstants;
   };
   downloadFile(
     url: string,
@@ -150,6 +155,10 @@ export interface FlipperLib {
   paths: {
     homePath: string;
     appPath: string;
+    tempPath: string;
+  };
+  environmentInfo: {
+    os: EnvironmentInfo['os'];
   };
   remoteServerContext: RemoteServerContext;
 }

@@ -69,6 +69,19 @@ export type ProcessConfig = {
   launcherEnabled: boolean;
 };
 
+export type Platform =
+  | 'aix'
+  | 'android'
+  | 'darwin'
+  | 'freebsd'
+  | 'haiku'
+  | 'linux'
+  | 'openbsd'
+  | 'sunos'
+  | 'win32'
+  | 'cygwin'
+  | 'netbsd';
+
 export type EnvironmentInfo = {
   processId: number;
   isProduction: boolean;
@@ -77,7 +90,7 @@ export type EnvironmentInfo = {
   appVersion: string;
   os: {
     arch: string;
-    platform: NodeJS.Platform;
+    platform: Platform;
     unixname: string;
   };
   versions: {

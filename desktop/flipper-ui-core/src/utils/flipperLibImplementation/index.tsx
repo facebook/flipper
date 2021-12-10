@@ -14,8 +14,10 @@ import {
 import {
   BufferEncoding,
   ExecOptions,
+  fsConstants,
   Logger,
   MkdirOptions,
+  RmOptions,
 } from 'flipper-common';
 import type {Store} from '../../reducers';
 import createPaste from '../../fb-stubs/createPaste';
@@ -71,6 +73,10 @@ export function initializeFlipperLibImplementation(
     paths: {
       appPath: renderHost.serverConfig.paths.appPath,
       homePath: renderHost.serverConfig.paths.homePath,
+      tempPath: renderHost.serverConfig.paths.tempPath,
+    },
+    environmentInfo: {
+      os: renderHost.serverConfig.environmentInfo.os,
     },
     remoteServerContext: {
       childProcess: {
@@ -95,6 +101,8 @@ export function initializeFlipperLibImplementation(
             path,
             options,
           )) as RemoteServerContext['fs']['mkdir'],
+        rm: async (path: string, options?: RmOptions) =>
+          renderHost.flipperServer.exec('node-api-fs-rm', path, options),
         copyFile: async (src: string, dest: string, flags?: number) =>
           renderHost.flipperServer.exec(
             'node-api-fs-copyFile',
@@ -102,6 +110,7 @@ export function initializeFlipperLibImplementation(
             dest,
             flags,
           ),
+        constants: fsConstants,
       },
       downloadFile: downloadFileFactory(renderHost),
     },

@@ -46,6 +46,8 @@ import {
 import {commandNodeApiExec} from './commands/NodeApiExec';
 import {commandDownloadFileStartFactory} from './commands/DownloadFile';
 import {promises} from 'fs';
+// Electron 11 runs on Node 12 which does not support fs.promises.rm
+import rm from 'rimraf';
 
 const {access, copyFile, mkdir, unlink} = promises;
 
@@ -230,6 +232,12 @@ export class FlipperServerImpl implements FlipperServer {
     },
     'node-api-fs-unlink': unlink,
     'node-api-fs-mkdir': mkdir,
+    'node-api-fs-rm': async (path, {maxRetries} = {}) =>
+      new Promise<void>((resolve, reject) =>
+        rm(path, {disableGlob: true, maxBusyTries: maxRetries}, (err) =>
+          err ? reject(err) : resolve(),
+        ),
+      ),
     'node-api-fs-copyFile': copyFile,
     // TODO: Do we need API to cancel an active download?
     'download-file-start': commandDownloadFileStartFactory(

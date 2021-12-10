@@ -70,6 +70,7 @@ test('Correct top level API exposed', () => {
       "usePlugin",
       "useTrackedCallback",
       "useValue",
+      "uuid",
       "withTrackingScope",
     ]
   `);

@@ -140,6 +140,7 @@ export type FlipperServerCommands = {
     path: string,
     options?: {recursive?: boolean} & MkdirOptions,
   ) => Promise<string | void>;
+  'node-api-fs-rm': (path: string, options?: RmOptions) => Promise<void>;
   'node-api-fs-copyFile': (
     src: string,
     dest: string,
@@ -330,6 +331,10 @@ export type BufferEncoding =
 
 export interface MkdirOptions {
   mode?: string | number;
+}
+
+export interface RmOptions {
+  maxRetries?: number;
 }
 
 export interface DownloadFileStartOptions {

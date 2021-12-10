@@ -133,6 +133,7 @@ export {createTablePlugin} from './utils/createTablePlugin';
 export {textContent} from './utils/textContent';
 import * as path from './utils/path';
 export {path};
+export * from './utils/uuid';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.
