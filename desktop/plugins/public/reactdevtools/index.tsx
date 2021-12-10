@@ -17,12 +17,12 @@ import {
   sleep,
   Toolbar,
   path,
+  getFlipperLib,
 } from 'flipper-plugin';
 import React from 'react';
 import getPort from 'get-port';
-import {Button, Select, message, Switch, Typography} from 'antd';
-import child_process from 'child_process';
-import fs from 'fs';
+import {Button, message, Switch, Typography, Select} from 'antd';
+import fs from 'fs/promises';
 import {DevToolsEmbedder} from './DevToolsEmbedder';
 import {getInternalDevToolsModule} from './fb-stubs/getInternalDevToolsModule';
 
@@ -30,27 +30,22 @@ const DEV_TOOLS_NODE_ID = 'reactdevtools-out-of-react-node';
 const CONNECTED = 'DevTools connected';
 const DEV_TOOLS_PORT = 8097; // hardcoded in RN
 
-function findGlobalDevTools(): Promise<string | undefined> {
-  return new Promise((resolve) => {
-    child_process.exec('npm root -g', (error, basePath) => {
-      if (error) {
-        console.warn(
-          'Failed to find globally installed React DevTools: ' + error,
-        );
-        resolve(undefined);
-      } else {
-        const devToolsPath = path.join(
-          basePath.trim(),
-          'react-devtools',
-          'node_modules',
-          'react-devtools-core',
-        );
-        fs.stat(devToolsPath, (err, stats) => {
-          resolve(!err && stats ? devToolsPath : undefined);
-        });
-      }
-    });
-  });
+async function findGlobalDevTools(): Promise<string | undefined> {
+  try {
+    const {stdout: basePath} =
+      await getFlipperLib().removeNodeAPI.childProcess.exec('npm root -g');
+    const devToolsPath = path.join(
+      basePath.trim(),
+      'react-devtools',
+      'node_modules',
+      'react-devtools-core',
+    );
+    await fs.stat(devToolsPath);
+    return devToolsPath;
+  } catch (error) {
+    console.warn('Failed to find globally installed React DevTools: ' + error);
+    return undefined;
+  }
 }
 
 enum ConnectionStatus {
