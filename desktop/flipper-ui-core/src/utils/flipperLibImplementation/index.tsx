@@ -11,21 +11,22 @@ import {
   _setFlipperLibImplementation,
   RemoteServerContext,
 } from 'flipper-plugin';
-import type {
+import {
   BufferEncoding,
   ExecOptions,
   Logger,
   MkdirOptions,
 } from 'flipper-common';
-import type {Store} from '../reducers';
-import createPaste from '../fb-stubs/createPaste';
-import type BaseDevice from '../devices/BaseDevice';
-import constants from '../fb-stubs/constants';
-import {addNotification} from '../reducers/notifications';
+import type {Store} from '../../reducers';
+import createPaste from '../../fb-stubs/createPaste';
+import type BaseDevice from '../../devices/BaseDevice';
+import constants from '../../fb-stubs/constants';
+import {addNotification} from '../../reducers/notifications';
 import {deconstructPluginKey} from 'flipper-common';
-import {DetailSidebarImpl} from '../sandy-chrome/DetailSidebarImpl';
-import {RenderHost} from '../RenderHost';
-import {setMenuEntries} from '../reducers/connections';
+import {DetailSidebarImpl} from '../../sandy-chrome/DetailSidebarImpl';
+import {RenderHost} from '../../RenderHost';
+import {setMenuEntries} from '../../reducers/connections';
+import {downloadFileFactory} from './downloadFile';
 
 export function initializeFlipperLibImplementation(
   renderHost: RenderHost,
@@ -102,6 +103,7 @@ export function initializeFlipperLibImplementation(
             flags,
           ),
       },
+      downloadFile: downloadFileFactory(renderHost),
     },
   });
 }

@@ -121,6 +121,7 @@ export type FlipperServerEvents = {
     id: string;
     message: string;
   };
+  'download-file-update': DownloadFileUpdate;
 };
 
 export type IOSDeviceParams = {
@@ -151,6 +152,11 @@ export type FlipperServerCommands = {
     command: string,
     options?: ExecOptions & {encoding?: BufferEncoding},
   ) => Promise<ExecOut<string>>;
+  'download-file-start': (
+    url: string,
+    dest: string,
+    options?: DownloadFileStartOptions,
+  ) => Promise<DownloadFileStartResponse>;
   'get-config': () => Promise<FlipperServerConfig>;
   'get-changelog': () => Promise<string>;
   'device-list': () => Promise<DeviceDescription[]>;
@@ -324,6 +330,54 @@ export type BufferEncoding =
 
 export interface MkdirOptions {
   mode?: string | number;
+}
+
+export interface DownloadFileStartOptions {
+  method?: 'GET' | 'POST';
+  timeout?: number;
+  maxRedirects?: number;
+  headers?: Record<string, string>;
+  overwrite?: boolean;
+}
+
+export type DownloadFileUpdate = {
+  id: string;
+  downloaded: number;
+  /**
+   * Set to 0 if unknown
+   */
+  totalSize: number;
+} & (
+  | {
+      status: 'downloading';
+    }
+  | {
+      status: 'success';
+    }
+  | {status: 'error'; message: string; stack?: string}
+);
+
+export interface DownloadFileStartResponse {
+  /**
+   * Download ID
+   */
+  id: string;
+  /**
+   * Response status
+   */
+  status: number;
+  /**
+   * Response status text
+   */
+  statusText: string;
+  /**
+   * Response headers
+   */
+  headers: Record<string, string>;
+  /**
+   * Size of the file, being downloaded, in bytes. Inferred from the "Content-Length" header. Set to 0 if unknown.
+   */
+  totalSize: number;
 }
 
 export type FlipperServerConfig = {

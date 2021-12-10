@@ -45,6 +45,7 @@ import {
 } from './fb-stubs/internRequests';
 import {commandNodeApiExec} from './commands/NodeApiExec';
 import {access, copyFile, mkdir, unlink} from 'fs/promises';
+import {commandDownloadFileStartFactory} from './commands/DownloadFile';
 
 export const SERVICE_FLIPPER = 'flipper.oAuthToken';
 
@@ -228,6 +229,11 @@ export class FlipperServerImpl implements FlipperServer {
     'node-api-fs-unlink': unlink,
     'node-api-fs-mkdir': mkdir,
     'node-api-fs-copyFile': copyFile,
+    // TODO: Unit tests
+    // TODO: Do we need API to cancel an active download?
+    'download-file-start': commandDownloadFileStartFactory(
+      this.emit.bind(this),
+    ),
     'get-config': async () => this.config,
     'get-changelog': getChangelog,
     'device-list': async () => {

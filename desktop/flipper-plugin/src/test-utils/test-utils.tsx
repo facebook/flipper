@@ -400,6 +400,7 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
         mkdir: jest.fn(),
         copyFile: jest.fn(),
       },
+      downloadFile: jest.fn(),
     },
   };
 }

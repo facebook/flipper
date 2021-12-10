@@ -91,6 +91,7 @@ test('Correct top level API exposed', () => {
       "DevicePluginClient",
       "DeviceType",
       "DialogResult",
+      "DownloadFileResponse",
       "Draft",
       "ElementAttribute",
       "ElementData",

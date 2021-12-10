@@ -26,7 +26,7 @@ import {
   getFlipperLib,
 } from '../plugin/FlipperLib';
 import {fromUint8Array} from 'js-base64';
-import {assertNever} from '../utils/assertNever';
+import {assertNever} from 'flipper-common';
 
 export type FileSelectorProps = {
   /**

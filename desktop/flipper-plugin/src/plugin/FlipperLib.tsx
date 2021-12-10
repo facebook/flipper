@@ -18,6 +18,9 @@ import {
   ExecOut,
   BufferEncoding,
   MkdirOptions,
+  DownloadFileStartOptions,
+  DownloadFileStartResponse,
+  DownloadFileUpdate,
 } from 'flipper-common';
 
 export type FileEncoding = 'utf-8' | 'base64';
@@ -26,6 +29,13 @@ export interface FileDescriptor {
   data: string;
   name: string;
   path?: string;
+}
+
+export interface DownloadFileResponse extends DownloadFileStartResponse {
+  /**
+   * Indicates whether a download is completed. Resolves with the number of downloaded bytes. Rejects if the download has errors.
+   */
+  completed: Promise<number>;
 }
 
 export type RemoteServerContext = {
@@ -49,6 +59,13 @@ export type RemoteServerContext = {
     ): Promise<void>;
     copyFile(src: string, dest: string, flags?: number): Promise<void>;
   };
+  downloadFile(
+    url: string,
+    dest: string,
+    options?: DownloadFileStartOptions & {
+      onProgressUpdate?: (progressUpdate: DownloadFileUpdate) => void;
+    },
+  ): Promise<DownloadFileResponse>;
 };
 
 /**

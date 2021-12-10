@@ -40,6 +40,7 @@ export {
   FileDescriptor,
   FileEncoding,
   RemoteServerContext,
+  DownloadFileResponse,
 } from './plugin/FlipperLib';
 export {
   MenuEntry,

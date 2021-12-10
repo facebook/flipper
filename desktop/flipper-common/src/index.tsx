@@ -20,6 +20,7 @@ export * from './server-types';
 export {sleep} from './utils/sleep';
 export {timeout} from './utils/timeout';
 export {isTest} from './utils/isTest';
+export {assertNever} from './utils/assertNever';
 export {
   logPlatformSuccessRate,
   reportPlatformFailures,
