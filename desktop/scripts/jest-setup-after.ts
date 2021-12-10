@@ -24,6 +24,7 @@ import {
 } from 'flipper-common';
 
 // Only import the type!
+// eslint-disable-next-line node/no-extraneous-import
 import type {RenderHost} from 'flipper-ui-core';
 
 const test = global.test;

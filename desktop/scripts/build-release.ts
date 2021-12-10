@@ -35,6 +35,7 @@ import copyPackageWithDependencies from './copy-package-with-dependencies';
 import {staticDir, distDir} from './paths';
 import yargs from 'yargs';
 import {WinPackager} from 'app-builder-lib/out/winPackager';
+// eslint-disable-next-line no-restricted-imports
 import {Icon, getPublicIconUrl} from 'flipper-ui-core/src/utils/icons';
 
 // Used in some places to avoid release-to-release changes. Needs

@@ -11,6 +11,7 @@ import {parseXcodeFromCoreSimPath} from '../iOSDeviceManager';
 import {getLogger} from 'flipper-common';
 import {IOSBridge} from '../IOSBridge';
 import {FlipperServerImpl} from '../../../FlipperServerImpl';
+// eslint-disable-next-line node/no-extraneous-import
 import {getRenderHostInstance} from 'flipper-ui-core';
 import {
   getFlipperServerConfig,

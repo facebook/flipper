@@ -9,6 +9,8 @@
 
 import type {NotificationEvents} from './dispatcher/notifications';
 import type {PluginNotification} from './reducers/notifications';
+// TODO: Fix me
+// eslint-disable-next-line no-restricted-imports
 import type {NotificationConstructorOptions} from 'electron';
 import {FlipperLib} from 'flipper-plugin';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';

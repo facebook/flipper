@@ -9,6 +9,9 @@
 
 const fbjs = require('eslint-config-fbjs');
 
+const rulesDirPlugin = require('eslint-plugin-rulesdir');
+rulesDirPlugin.RULES_DIR = 'eslint-rules';
+
 // enforces copy-right header and @format directive to be present in every file
 const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
 
@@ -30,6 +33,39 @@ const builtInModules = [
 
 const prettierConfig = require('./.prettierrc.json');
 
+// We should forbid using "flipper" import. However, we have hundreds of plugins using it.
+// So we forbid it everywhere but in "plugins" directory.
+// To do that we need to keep "error" level of linting for most imports, but downlevel warning for "flipper" import to "warn".
+// It is not possible OOTB by eslint.
+// Instead, we create a clone of the "no-restricted-imports" rule and use it to split out restricted imports in two groups: warn and error.
+// https://github.com/eslint/eslint/issues/14061#issuecomment-772490154
+const restrictedImportsUniversalErrorConfig = {
+  paths: [
+    {
+      name: 'electron',
+      message:
+        "Direct imports from 'electron' are deprecated. Most functions can be found in getFlipperLib() from flipper-plugin package instead.",
+    },
+  ],
+  patterns: [
+    {
+      group: ['flipper-plugin/*'],
+      message:
+        "Imports from nested flipper-plugin directories are not allowed. Import from 'flipper-plugin' module directly. If it is missing an export, add it there with corresponding documentation (https://fbflipper.com/docs/extending/flipper-plugin/).",
+    },
+    {
+      group: ['flipper-common/*'],
+      message:
+        "Imports from nested flipper-common directories are not allowed. Import from 'flipper-common' module directly. If it is missing an export, add it there.",
+    },
+    {
+      group: ['flipper-ui-core/*'],
+      message:
+        "Imports from nested flipper-ui-core directories are not allowed. Import from 'flipper-ui-core' module directly. If it is missing an export, add it there.",
+    },
+  ],
+};
+
 module.exports = {
   parser: 'babel-eslint',
   root: true,
@@ -45,6 +81,7 @@ module.exports = {
     'flipper',
     'promise',
     'communist-spelling',
+    'rulesdir',
   ],
   rules: {
     // disable rules from eslint-config-fbjs
@@ -81,16 +118,17 @@ module.exports = {
       },
     ],
     'no-restricted-imports': [
-      1,
+      'error',
       {
-        name: 'flipper',
-        message:
-          "Direct imports from 'flipper' are deprecated. Import from 'flipper-plugin' instead, which can be tested and distributed stand-alone. See https://fbflipper.com/docs/extending/sandy-migration for more details.",
-      },
-      {
-        name: 'electron',
-        message:
-          "Direct imports from 'electron' are deprecated. Most functions can be found in getFlipperLib() from flipper-plugin package instead.",
+        ...restrictedImportsUniversalErrorConfig,
+        paths: [
+          ...restrictedImportsUniversalErrorConfig.paths,
+          {
+            name: 'flipper',
+            message:
+              "Direct imports from 'flipper' are deprecated. Import from 'flipper-plugin' instead, which can be tested and distributed stand-alone. See https://fbflipper.com/docs/extending/sandy-migration for more details.",
+          },
+        ],
       },
     ],
 
@@ -146,6 +184,27 @@ module.exports = {
             varsIgnorePattern: '^_',
             argsIgnorePattern: '^_',
             caughtErrorsIgnorePattern: '^_',
+          },
+        ],
+      },
+    },
+    {
+      files: ['plugins/**/*.ts', 'plugins/**/*.tsx'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          restrictedImportsUniversalErrorConfig,
+        ],
+        'rulesdir/no-restricted-imports-clone': [
+          'warn',
+          {
+            paths: [
+              {
+                name: 'flipper',
+                message:
+                  "Direct imports from 'flipper' are deprecated. Import from 'flipper-plugin' instead, which can be tested and distributed stand-alone. See https://fbflipper.com/docs/extending/sandy-migration for more details.",
+              },
+            ],
           },
         ],
       },
