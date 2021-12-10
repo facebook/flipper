@@ -22,7 +22,7 @@ import {
 import React from 'react';
 import getPort from 'get-port';
 import {Button, message, Switch, Typography, Select} from 'antd';
-import fs from 'fs/promises';
+import fs from 'fs';
 import {DevToolsEmbedder} from './DevToolsEmbedder';
 import {getInternalDevToolsModule} from './fb-stubs/getInternalDevToolsModule';
 
@@ -42,7 +42,7 @@ async function findGlobalDevTools(): Promise<string | undefined> {
       'node_modules',
       'react-devtools-core',
     );
-    await fs.stat(devToolsPath);
+    await fs.promises.stat(devToolsPath);
     return devToolsPath;
   } catch (error) {
     console.warn('Failed to find globally installed React DevTools: ' + error);

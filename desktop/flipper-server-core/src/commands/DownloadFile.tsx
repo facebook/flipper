@@ -55,7 +55,10 @@ export const commandDownloadFileStartFactory =
       maxRedirects,
       headers,
     });
-    const totalSize = response.headers['content-length'] ?? 0;
+    let totalSize = parseInt(response.headers['content-length'], 10);
+    if (Number.isNaN(totalSize)) {
+      totalSize = 0;
+    }
 
     const writeStream = response.data.pipe(
       createWriteStream(dest, {autoClose: true}),

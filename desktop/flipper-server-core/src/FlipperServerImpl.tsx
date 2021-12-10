@@ -44,8 +44,10 @@ import {
   internGraphPOSTAPIRequest,
 } from './fb-stubs/internRequests';
 import {commandNodeApiExec} from './commands/NodeApiExec';
-import {access, copyFile, mkdir, unlink} from 'fs/promises';
 import {commandDownloadFileStartFactory} from './commands/DownloadFile';
+import {promises} from 'fs';
+
+const {access, copyFile, mkdir, unlink} = promises;
 
 export const SERVICE_FLIPPER = 'flipper.oAuthToken';
 
