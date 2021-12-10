@@ -262,7 +262,7 @@ export default class AllocationsPlugin extends FlipperDevicePlugin<
   }
 
   async init() {
-    await getFlipperLib().removeNodeAPI.childProcess.exec(
+    await getFlipperLib().remoteServerContext.childProcess.exec(
       'adb forward tcp:6000 localfilesystem:/data/local/debugger-socket',
     );
     await this.connectToDebugApi();

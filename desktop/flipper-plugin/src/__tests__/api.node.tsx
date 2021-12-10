@@ -112,7 +112,7 @@ test('Correct top level API exposed', () => {
       "NormalizedMenuEntry",
       "Notification",
       "PluginClient",
-      "RemoteNodeAPI",
+      "RemoteServerContext",
     ]
   `);
 });

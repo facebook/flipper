@@ -28,7 +28,7 @@ export interface FileDescriptor {
   path?: string;
 }
 
-export type RemoteNodeAPI = {
+export type RemoteServerContext = {
   childProcess: {
     exec(
       command: string,
@@ -134,7 +134,7 @@ export interface FlipperLib {
     homePath: string;
     appPath: string;
   };
-  removeNodeAPI: RemoteNodeAPI;
+  remoteServerContext: RemoteServerContext;
 }
 
 export let flipperLibInstance: FlipperLib | undefined;

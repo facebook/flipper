@@ -7,7 +7,10 @@
  * @format
  */
 
-import {_setFlipperLibImplementation, RemoteNodeAPI} from 'flipper-plugin';
+import {
+  _setFlipperLibImplementation,
+  RemoteServerContext,
+} from 'flipper-plugin';
 import type {
   BufferEncoding,
   ExecOptions,
@@ -68,17 +71,12 @@ export function initializeFlipperLibImplementation(
       appPath: renderHost.serverConfig.paths.appPath,
       homePath: renderHost.serverConfig.paths.homePath,
     },
-    removeNodeAPI: {
+    remoteServerContext: {
       childProcess: {
-        exec: (async (
+        exec: async (
           command: string,
           options?: ExecOptions & {encoding?: BufferEncoding},
-        ) =>
-          renderHost.flipperServer.exec(
-            'node-api-exec',
-            command,
-            options,
-          )) as RemoteNodeAPI['childProcess']['exec'],
+        ) => renderHost.flipperServer.exec('node-api-exec', command, options),
       },
       fs: {
         access: async (path: string, mode?: number) =>
@@ -95,7 +93,7 @@ export function initializeFlipperLibImplementation(
             'node-api-fs-mkdir',
             path,
             options,
-          )) as RemoteNodeAPI['fs']['mkdir'],
+          )) as RemoteServerContext['fs']['mkdir'],
         copyFile: async (src: string, dest: string, flags?: number) =>
           renderHost.flipperServer.exec(
             'node-api-fs-copyFile',

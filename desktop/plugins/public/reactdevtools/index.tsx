@@ -33,7 +33,9 @@ const DEV_TOOLS_PORT = 8097; // hardcoded in RN
 async function findGlobalDevTools(): Promise<string | undefined> {
   try {
     const {stdout: basePath} =
-      await getFlipperLib().removeNodeAPI.childProcess.exec('npm root -g');
+      await getFlipperLib().remoteServerContext.childProcess.exec(
+        'npm root -g',
+      );
     const devToolsPath = path.join(
       basePath.trim(),
       'react-devtools',

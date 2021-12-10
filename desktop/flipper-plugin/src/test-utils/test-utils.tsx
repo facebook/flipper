@@ -389,7 +389,7 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
       appPath: process.cwd(),
       homePath: `/dev/null`,
     },
-    removeNodeAPI: {
+    remoteServerContext: {
       childProcess: {
         exec: jest.fn(),
       },

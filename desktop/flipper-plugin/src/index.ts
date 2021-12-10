@@ -39,7 +39,7 @@ export {
   setFlipperLibImplementation as _setFlipperLibImplementation,
   FileDescriptor,
   FileEncoding,
-  RemoteNodeAPI,
+  RemoteServerContext,
 } from './plugin/FlipperLib';
 export {
   MenuEntry,
