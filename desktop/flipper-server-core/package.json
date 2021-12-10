@@ -41,7 +41,11 @@
     "xdg-basedir": "^4.0.0"
   },
   "devDependencies": {
-    "@types/node": "^15.12.5"
+    "@types/memorystream": "^0.3.0",
+    "@types/node": "^15.12.5",
+    "@types/tmp": "^0.2.2",
+    "memorystream": "^0.3.1",
+    "tmp": "^0.2.1"
   },
   "peerDependencies": {},
   "scripts": {

@@ -231,7 +231,6 @@ export class FlipperServerImpl implements FlipperServer {
     'node-api-fs-unlink': unlink,
     'node-api-fs-mkdir': mkdir,
     'node-api-fs-copyFile': copyFile,
-    // TODO: Unit tests
     // TODO: Do we need API to cancel an active download?
     'download-file-start': commandDownloadFileStartFactory(
       this.emit.bind(this),
