@@ -1,3 +1,11 @@
+# 0.125.0 (11/12/2021)
+
+ * [D32881744](https://github.com/facebook/flipper/search?q=D32881744&type=Commits) -  Remove child_process usage  from ReactDevTools plugin
+ * [D32881860](https://github.com/facebook/flipper/search?q=D32881860&type=Commits) -  Remove child_process usage  from kaios-allocation, kaios-ram plugins
+ * [D32988478](https://github.com/facebook/flipper/search?q=D32988478&type=Commits) -  Expose env info and FS rm command to flipper plugins.
+ * [D32987162](https://github.com/facebook/flipper/search?q=D32987162&type=Commits) -  Fixed issue where occasionally a plugin wouldn't open after starting Flipper
+
+
 # 0.124.0 (8/12/2021)
 
  * [D32797863](https://github.com/facebook/flipper/search?q=D32797863&type=Commits) -  Better handling of screenshot taking in navigation
