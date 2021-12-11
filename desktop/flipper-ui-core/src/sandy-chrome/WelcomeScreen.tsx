@@ -129,6 +129,7 @@ export function WelcomeScreenStaticView() {
       center
       style={{
         justifyContent: 'center',
+        overflow: 'hidden',
       }}
       pad
       grow>
