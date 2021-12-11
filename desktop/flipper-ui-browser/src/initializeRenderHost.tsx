@@ -52,8 +52,9 @@ export function initializeRenderHost(
       );
     },
     restartFlipper() {
-      // TODO: restart server as well
-      window.location.reload();
+      window.flipperShowError!(
+        'Flipper settings have changed, please restart flipper server for the changes to take effect',
+      );
     },
     loadDefaultPlugins: getDefaultPluginsIndex,
     serverConfig: flipperServerConfig,

@@ -20,6 +20,7 @@ import React, {useState} from 'react';
 import {promises as fs} from 'fs';
 import {theme} from 'flipper-plugin';
 import {getRenderHostInstance} from '../../RenderHost';
+import {useEffect} from 'react';
 
 export const ConfigFieldContainer = styled(FlexRow)({
   paddingLeft: 10,
@@ -70,14 +71,17 @@ export function FilePathConfigField(props: {
   const renderHost = getRenderHostInstance();
   const [value, setValue] = useState(props.defaultValue);
   const [isValid, setIsValid] = useState(true);
-  fs.stat(value)
-    .then((stat) => props.isRegularFile !== stat.isDirectory())
-    .then((valid) => {
-      if (valid !== isValid) {
-        setIsValid(valid);
+
+  useEffect(() => {
+    (async function () {
+      try {
+        const stat = await fs.stat(value);
+        setIsValid(props.isRegularFile !== stat.isDirectory());
+      } catch (_) {
+        setIsValid(false);
       }
-    })
-    .catch((_) => setIsValid(false));
+    })();
+  }, [props.isRegularFile, value]);
 
   return (
     <ConfigFieldContainer>

@@ -11,28 +11,37 @@ import os from 'os';
 import {resolve} from 'path';
 import xdg from 'xdg-basedir';
 import {Settings, Tristate} from 'flipper-common';
-import {readFile, writeFile, access} from 'fs-extra';
+import {readFile, writeFile, pathExists, mkdirp} from 'fs-extra';
 
 export async function loadSettings(): Promise<Settings> {
-  if (!access(getSettingsFile())) {
+  if (!pathExists(getSettingsFile())) {
     return getDefaultSettings();
   }
-  const json = await readFile(getSettingsFile(), {encoding: 'utf8'});
-  return JSON.parse(json);
+  try {
+    const json = await readFile(getSettingsFile(), {encoding: 'utf8'});
+    return JSON.parse(json);
+  } catch (e) {
+    console.warn('Failed to load settings file', e);
+    return getDefaultSettings();
+  }
 }
 
 export async function saveSettings(settings: Settings): Promise<void> {
+  await mkdirp(getSettingsDir());
   await writeFile(getSettingsFile(), JSON.stringify(settings, null, 2), {
     encoding: 'utf8',
   });
 }
 
-function getSettingsFile() {
+function getSettingsDir() {
   return resolve(
     ...(xdg.config ? [xdg.config] : [os.homedir(), '.config']),
     'flipper',
-    'settings.json',
   );
+}
+
+function getSettingsFile() {
+  return resolve(getSettingsDir(), 'settings.json');
 }
 
 export const DEFAULT_ANDROID_SDK_PATH = getDefaultAndroidSdkPath();
