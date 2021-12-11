@@ -143,7 +143,6 @@ function init(flipperServer: FlipperServer) {
   setLoggerInstance(logger);
   startGlobalErrorHandling();
   loadTheme(settings.darkMode);
-  connectFlipperServerToStore(flipperServer, store, logger);
 
   // rehydrate app state before exposing init
   const persistor = persistStore(store, undefined, () => {
@@ -162,6 +161,8 @@ function init(flipperServer: FlipperServer) {
       else console.warn(msg, r.error);
     }
   });
+
+  connectFlipperServerToStore(flipperServer, store, logger);
 
   ReactDOM.render(
     <AppFrame logger={logger} persistor={persistor} />,

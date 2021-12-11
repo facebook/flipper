@@ -46,6 +46,7 @@ import {
   isFlipperMessageDebuggingEnabled,
   registerFlipperDebugMessage,
 } from './chrome/FlipperMessages';
+import {waitFor} from './utils/waitFor';
 
 type Plugins = Set<string>;
 type PluginsArr = Array<string>;
@@ -173,6 +174,8 @@ export default class Client extends EventEmitter {
 
   async init() {
     await this.loadPlugins();
+    // if a client arrives before all plugins are loaded, we'll have to wait
+    await waitFor(this.store, (state) => state.plugins.initialized);
     // this starts all sandy enabled plugins
     this.plugins.forEach((pluginId) =>
       this.startPluginIfNeeded(this.getPlugin(pluginId)),

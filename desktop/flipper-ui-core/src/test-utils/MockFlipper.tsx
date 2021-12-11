@@ -19,7 +19,7 @@ import {
   ClientResponseType,
 } from 'flipper-common';
 import {PluginDefinition} from '../plugin';
-import {registerPlugins} from '../reducers/plugins';
+import {pluginsInitialized, registerPlugins} from '../reducers/plugins';
 import {getLogger} from 'flipper-common';
 import {initializeFlipperLibImplementation} from '../utils/flipperLibImplementation';
 import pluginManager from '../dispatcher/pluginManager';
@@ -28,6 +28,7 @@ import ArchivedDevice from '../devices/ArchivedDevice';
 import {ClientQuery, DeviceOS} from 'flipper-common';
 import {TestDevice} from './TestDevice';
 import {getRenderHostInstance} from '../RenderHost';
+import {waitFor} from '../utils/waitFor';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];
@@ -95,6 +96,7 @@ export default class MockFlipper {
       this._logger,
     );
     this._store.dispatch(registerPlugins(plugins ?? []));
+    this._store.dispatch(pluginsInitialized());
   }
 
   public async initWithDeviceAndClient(

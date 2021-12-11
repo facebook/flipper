@@ -11,7 +11,7 @@ import React from 'react';
 import {Dialog, getFlipperLib} from 'flipper-plugin';
 import {isTest} from 'flipper-common';
 import {getUser} from '../fb-stubs/user';
-import {State, Store} from '../reducers/index';
+import {Store} from '../reducers/index';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
 import {getAppVersion} from '../utils/info';
 import {UserNotSignedInError} from 'flipper-common';
@@ -39,6 +39,7 @@ import {
   OpenPluginParams,
 } from '../deeplinkTracking';
 import {getRenderHostInstance} from '../RenderHost';
+import {waitFor} from '../utils/waitFor';
 
 export function parseOpenPluginParams(query: string): OpenPluginParams {
   // 'flipper://open-plugin?plugin-id=graphql&client=facebook&devices=android,ios&chrome=1&payload='
@@ -270,21 +271,6 @@ async function showPleaseLoginDialog(
 
 async function waitForLogin(store: Store) {
   return waitFor(store, (state) => !!state.user?.id);
-}
-
-// make this more reusable?
-function waitFor(
-  store: Store,
-  predicate: (state: State) => boolean,
-): Promise<void> {
-  return new Promise<void>((resolve) => {
-    const unsub = store.subscribe(() => {
-      if (predicate(store.getState())) {
-        unsub();
-        resolve();
-      }
-    });
-  });
 }
 
 async function verifyFlipperIsUpToDate(title: string) {

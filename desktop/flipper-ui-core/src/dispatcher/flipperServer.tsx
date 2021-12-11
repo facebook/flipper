@@ -22,6 +22,7 @@ import BaseDevice from '../devices/BaseDevice';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
+import {waitFor} from '../utils/waitFor';
 
 export function connectFlipperServerToStore(
   server: FlipperServer,
@@ -112,17 +113,16 @@ export function connectFlipperServerToStore(
     'Flipper server started and accepting device / client connections',
   );
 
-  server
-    .exec('device-list')
+  // this flow is spawned delibarately from this main flow
+  waitFor(store, (state) => state.plugins.initialized)
+    .then(() => server.exec('device-list'))
     .then((devices) => {
       // register all devices
       devices.forEach((device) => {
         handleDeviceConnected(server, store, logger, device);
       });
     })
-    .then(() => {
-      return server.exec('client-list');
-    })
+    .then(() => server.exec('client-list'))
     .then((clients) => {
       clients.forEach((client) => {
         handleClientConnected(server, store, logger, client);
