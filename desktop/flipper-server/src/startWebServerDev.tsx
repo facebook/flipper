@@ -110,7 +110,7 @@ async function startMetroServer(
   const babelTransformationsDir = path.resolve(
     rootDir,
     'babel-transformer',
-    'src',
+    'lib', // Note: required pre-compiled!
   );
   const watchFolders = await dedupeFolders(
     (
@@ -143,9 +143,6 @@ async function startMetroServer(
             type: 'empty',
           };
         }
-        // if (moduleName.includes('pluginPaths')) {
-        //   console.error('got ' + moduleName, rest);
-        // }
         return MetroResolver.resolve(
           {
             ...context,

@@ -38,11 +38,11 @@ export function initializeRenderHost(
     hasFocus() {
       return document.hasFocus();
     },
-    onIpcEvent(event) {
-      console.warn('onIpcEvent not available', event);
+    onIpcEvent(_event) {
+      // no-op
     },
-    sendIpcEvent(event, ..._args: any[]) {
-      console.warn('sendIpcEvent not available', event);
+    sendIpcEvent(_event, ..._args: any[]) {
+      // no-op
     },
     shouldUseDarkColors() {
       return !!(

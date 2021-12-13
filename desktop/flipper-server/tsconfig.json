@@ -4,6 +4,7 @@
     "outDir": "lib",
     "rootDir": "src"
   },
+  "include": ["./src/*"],
   "references": [
     {
       "path": "../flipper-common"

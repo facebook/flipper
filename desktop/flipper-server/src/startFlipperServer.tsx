@@ -35,7 +35,7 @@ export async function startFlipperServer(
     // which are signed using some internal self-issued FB certificates. These certificates
     // are automatically installed to MacOS system store on FB machines, so here we're using
     // this "mac-ca" library to load them into Node.JS.
-    require('mac-ca');
+    electronRequire('mac-ca');
   }
 
   const execPath = process.execPath;
@@ -57,11 +57,13 @@ export async function startFlipperServer(
   let keytar: any = undefined;
   try {
     if (!isTest()) {
-      keytar = require(path.join(
-        staticPath,
-        'native-modules',
-        `keytar-${process.platform}.node`,
-      ));
+      keytar = electronRequire(
+        path.join(
+          staticPath,
+          'native-modules',
+          `keytar-${process.platform}.node`,
+        ),
+      );
     }
   } catch (e) {
     console.error('Failed to load keytar:', e);

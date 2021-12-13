@@ -28,6 +28,8 @@ import {
   staticDir,
   defaultPluginsDir,
   babelTransformationsDir,
+  serverDir,
+  rootDir,
 } from './paths';
 
 const {version} = require('../package.json');
@@ -342,4 +344,40 @@ export function genMercurialRevision(): Promise<string | null> {
         null,
     )
     .catch(() => null);
+}
+
+export async function compileServerMain() {
+  await fs.promises.mkdir(path.join(serverDir, 'dist'), {recursive: true});
+  const out = path.join(serverDir, 'dist', 'index.js');
+  console.log('⚙️  Compiling server bundle...');
+  const config = Object.assign({}, await Metro.loadConfig(), {
+    reporter: {update: () => {}},
+    projectRoot: rootDir,
+    transformer: {
+      babelTransformerPath: path.join(
+        babelTransformationsDir,
+        'transform-server',
+      ),
+      ...minifierConfig,
+    },
+    resolver: {
+      sourceExts: ['tsx', 'ts', 'js', 'json'],
+      resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
+    },
+  });
+  await Metro.runBuild(config, {
+    platform: 'node',
+    entry: path.join(serverDir, 'src', 'index.tsx'),
+    out,
+    dev,
+    minify: !dev,
+    sourceMap: true,
+    sourceMapUrl: dev ? 'index.map' : undefined,
+    inlineSourceMap: false,
+    resetCache: !dev,
+  });
+  console.log('✅  Compiled server bundle.');
+  if (!dev) {
+    stripSourceMapComment(out);
+  }
 }

@@ -7,13 +7,11 @@
  * @format
  */
 
-import chalk from 'chalk';
 import express, {Express} from 'express';
 import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import socketio from 'socket.io';
-import {hostname} from 'os';
 
 type Config = {
   port: number;
@@ -26,7 +24,6 @@ export async function startBaseServer(config: Config): Promise<{
   server: http.Server;
   socket: socketio.Server;
 }> {
-  checkDevServer();
   const {app, server} = await startAssetServer(config);
   const socket = addWebsocket(server);
   return {
@@ -66,25 +63,4 @@ function startAssetServer(
 function addWebsocket(server: http.Server) {
   const io = new socketio.Server(server);
   return io;
-}
-
-function looksLikeDevServer(): boolean {
-  const hn = hostname();
-  if (/^devvm.*\.facebook\.com$/.test(hn)) {
-    return true;
-  }
-  if (hn.endsWith('.od.fbinfra.net')) {
-    return true;
-  }
-  return false;
-}
-
-function checkDevServer() {
-  if (looksLikeDevServer()) {
-    console.log(
-      chalk.red(
-        `✖ It looks like you're trying to start Flipper on your OnDemand or DevServer, which is not supported. Please run this in a local checkout on your laptop or desktop instead.`,
-      ),
-    );
-  }
 }
