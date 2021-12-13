@@ -293,6 +293,11 @@ const requirePluginInternal = async (
   let plugin = pluginDetails.isBundled
     ? defaultPluginsIndex[pluginDetails.name]
     : await getRenderHostInstance().requirePlugin(pluginDetails.entry);
+  if (!plugin) {
+    throw new Error(
+      `Failed to obtain plugin source for: ${pluginDetails.name}`,
+    );
+  }
   if (isSandyPlugin(pluginDetails)) {
     // Sandy plugin
     return new _SandyPluginDefinition(pluginDetails, plugin);

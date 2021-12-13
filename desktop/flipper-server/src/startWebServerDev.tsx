@@ -19,6 +19,11 @@ import pFilter from 'p-filter';
 // provided by Metro
 // eslint-disable-next-line
 import MetroResolver from 'metro-resolver';
+import {homedir} from 'os';
+
+// This file is heavily inspired by scripts/start-dev-server.ts!
+// part of that is done by start-flipper-server (compiling "main"),
+// the other part ("renderer") here.
 
 const uiSourceDirs = [
   'flipper-ui-browser',
@@ -27,81 +32,28 @@ const uiSourceDirs = [
   'flipper-common',
 ];
 
-const stubModules = new Set<string>([
-  // 'fs',
-  // 'path',
-  // 'crypto',
-  // 'process',
-  // 'os',
-  // 'util',
-  // 'child_process',
-  // 'assert',
-  // 'adbkit', // TODO: factor out!
-  // 'zlib',
-  // 'events',
-  // 'fs-extra',
-  // 'archiver',
-  // 'graceful-fs',
-  // 'stream',
-  // 'url',
-  // 'node-fetch',
-  // 'net',
-  // 'vm',
-  // 'debug',
-  // 'lockfile',
-  // 'constants',
-  // 'https',
-  // 'plugin-lib', // TODO: we only want the types?
-  // 'flipper-plugin-lib',
-  // 'tar',
-  // 'minipass',
-  // 'live-plugin-manager',
-  // 'decompress-tar',
-  // 'readable-stream',
-  // 'archiver-utils',
-  // 'metro',
-  // 'decompress',
-  // 'temp',
-  // 'tmp',
-  // 'promisify-child-process',
-  // 'jsdom',
-  // 'extract-zip',
-  // 'yauzl',
-  // 'fd-slicer',
-  // 'envinfo',
-  // 'bser',
-  // 'fb-watchman',
-  // TODO fix me
-]);
-
-// This file is heavily inspired by scripts/start-dev-server.ts!
-export async function startWebServerDev(
-  app: Express,
-  server: http.Server,
-  socket: socketio.Server,
-  rootDir: string,
-) {
-  //   await prepareDefaultPlugins(
-  //     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
-  //   );
-  //   await ensurePluginFoldersWatchable();
-  await startMetroServer(app, server, socket, rootDir);
-  //   await compileMain();
-  //   if (dotenv && dotenv.parsed) {
-  //     console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
-  //   }
-  //   shutdownElectron = launchElectron(port);
-
-  // Refresh the app on changes.
-  // When Fast Refresh enabled, reloads are performed by HMRClient, so don't need to watch manually here.
-  //   if (!process.env.FLIPPER_FAST_REFRESH) {
-  //     await startWatchChanges(io);
-  //   }
-
-  console.log('DEV webserver started.');
+// copied from plugin-lib/src/pluginPaths
+export async function getPluginSourceFolders(): Promise<string[]> {
+  const pluginFolders: string[] = [];
+  if (process.env.FLIPPER_NO_DEFAULT_PLUGINS) {
+    console.log(
+      '🥫  Skipping default plugins because "--no-default-plugins" flag provided',
+    );
+    return pluginFolders;
+  }
+  const flipperConfigPath = path.join(homedir(), '.flipper', 'config.json');
+  if (await fs.pathExists(flipperConfigPath)) {
+    const config = await fs.readJson(flipperConfigPath);
+    if (config.pluginPaths) {
+      pluginFolders.push(...config.pluginPaths);
+    }
+  }
+  pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins', 'public'));
+  pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins', 'fb'));
+  return pFilter(pluginFolders, (p) => fs.pathExists(p));
 }
 
-async function startMetroServer(
+export async function startWebServerDev(
   app: Express,
   server: http.Server,
   socket: socketio.Server,
@@ -112,13 +64,26 @@ async function startMetroServer(
     'babel-transformer',
     'lib', // Note: required pre-compiled!
   );
-  const watchFolders = await dedupeFolders(
-    (
+
+  const electronRequires = path.join(
+    babelTransformationsDir,
+    'electron-requires.js',
+  );
+  const stubModules = new Set<string>(
+    global.electronRequire(electronRequires).BUILTINS,
+  );
+  if (!stubModules.size) {
+    throw new Error('Failed to load list of Node builtins');
+  }
+
+  const watchFolders = await dedupeFolders([
+    ...(
       await Promise.all(
         uiSourceDirs.map((dir) => getWatchFolders(path.resolve(rootDir, dir))),
       )
     ).flat(),
-  );
+    ...(await getPluginSourceFolders()),
+  ]);
 
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
@@ -137,8 +102,16 @@ async function startMetroServer(
       blacklistRE: [/\.native\.js$/],
       sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
       resolveRequest(context: any, moduleName: string, ...rest: any[]) {
+        // flipper is special cased, for plugins that we bundle,
+        // we want to resolve `impoSrt from 'flipper'` to 'flipper-ui-core', which
+        // defines all the deprecated exports
+        if (moduleName === 'flipper') {
+          return MetroResolver.resolve(context, 'flipper-ui-core', ...rest);
+        }
         if (stubModules.has(moduleName)) {
-          // console.warn("Found reference to ", moduleName)
+          console.warn(
+            `Found a reference to built-in module '${moduleName}', which will be stubbed out. Referer: ${context.originModulePath}`,
+          );
           return {
             type: 'empty',
           };
@@ -154,8 +127,6 @@ async function startMetroServer(
       },
     },
     watch: true,
-    // only needed when medling with babel transforms
-    // cacheVersion: Math.random(), // only cache for current run
   });
   const connectMiddleware = await Metro.createConnectMiddleware(config);
   app.use(connectMiddleware.middleware);
@@ -165,6 +136,8 @@ async function startMetroServer(
     socket.local.emit('hasErrors', err.toString());
     next();
   });
+
+  console.log('DEV webserver started.');
 }
 
 async function dedupeFolders(paths: string[]): Promise<string[]> {

@@ -7,15 +7,17 @@
  * @format
  */
 
+const dotenv = require('dotenv').config();
 import child from 'child_process';
 import chalk from 'chalk';
 import path from 'path';
-import {compileServerMain} from './build-utils';
+import {compileServerMain, prepareDefaultPlugins} from './build-utils';
 import Watchman from './watchman';
 import {serverDir} from './paths';
 import isFB from './isFB';
 import yargs from 'yargs';
 import open from 'open';
+import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
 
 const argv = yargs
   .usage('yarn start [args]')
@@ -191,10 +193,20 @@ async function startWatchChanges() {
 }
 
 (async () => {
+  if (dotenv && dotenv.parsed) {
+    console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
+  }
+  await prepareDefaultPlugins(
+    process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
+  );
+
+  // build?
   if (argv['build']) {
     await compileServerMain();
   } else {
+    // watch
     await startWatchChanges();
+    await ensurePluginFoldersWatchable();
     // builds and starts
     await restartServer();
 
