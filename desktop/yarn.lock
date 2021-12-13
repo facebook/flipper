@@ -2620,11 +2620,6 @@
   resolved "https://registry.yarnpkg.com/@types/electron-devtools-installer/-/electron-devtools-installer-2.2.0.tgz#32ee4ebbe99b3daf9847a6d2097dc00b5de94f10"
   integrity sha512-HJNxpaOXuykCK4rQ6FOMxAA0NLFYsf7FiPFGmab0iQmtVBHSAfxzy3MRFpLTTDDWbV0yD2YsHOQvdu8yCqtCfw==
 
-"@types/expand-tilde@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@types/expand-tilde/-/expand-tilde-2.0.0.tgz#c01a706675b9d60931bf6a7dc7dfa45d63540c97"
-  integrity sha512-17h/6MRHoetV2QVUVnUfrmaFCXNIFJ3uDJmXlklX2xDtlEb1W0OXLgP+qwND2Ibg/PtQfQi0vx19KGuPayjLiw==
-
 "@types/express-serve-static-core@*", "@types/express-serve-static-core@^4.17.18":
   version "4.17.19"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.19.tgz#00acfc1632e729acac4f1530e9e16f6dd1508a1d"

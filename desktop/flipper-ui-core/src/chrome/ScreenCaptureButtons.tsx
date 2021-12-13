@@ -9,11 +9,11 @@
 
 import {Button as AntButton, message} from 'antd';
 import React, {useState, useEffect, useCallback} from 'react';
-import path from 'path';
 import {capture, getCaptureLocation, getFileName} from '../utils/screenshot';
 import {CameraOutlined, VideoCameraOutlined} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
 import {getRenderHostInstance} from '../RenderHost';
+import {path} from 'flipper-plugin';
 
 async function openFile(path: string) {
   getRenderHostInstance().flipperServer.exec('open-file', path);

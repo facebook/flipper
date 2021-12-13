@@ -199,14 +199,12 @@ export default class BaseDevice implements Device {
     return this.flipperServer.exec('device-supports-screenshot', this.serial);
   }
 
-  async screenshot(): Promise<Buffer> {
+  async screenshot(): Promise<Uint8Array> {
     if (this.isArchived) {
-      return Buffer.from([]);
+      return new Uint8Array();
     }
-    return Buffer.from(
-      Base64.toUint8Array(
-        await this.flipperServer.exec('device-take-screenshot', this.serial),
-      ),
+    return Base64.toUint8Array(
+      await this.flipperServer.exec('device-take-screenshot', this.serial),
     );
   }
 

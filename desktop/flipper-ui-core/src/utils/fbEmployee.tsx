@@ -7,15 +7,14 @@
  * @format
  */
 
-import util from 'util';
-import {exec as execImport} from 'child_process';
+import {getFlipperLib} from 'flipper-plugin';
 
 const cmd = 'klist --json';
 const endWith = '@THEFACEBOOK.COM';
 
 export async function isFBEmployee(): Promise<boolean> {
-  return util
-    .promisify(execImport)(cmd)
+  return getFlipperLib()
+    .remoteServerContext.childProcess.exec(cmd)
     .then(
       (stdobj: {stderr: string; stdout: string}) => {
         const principal = String(JSON.parse(stdobj.stdout).principal);

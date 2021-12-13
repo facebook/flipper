@@ -9,7 +9,6 @@
 
 import path from 'path';
 import fs from 'fs-extra';
-import expandTilde from 'expand-tilde';
 import {getPluginSourceFolders} from './pluginPaths';
 import pmap from 'p-map';
 import pfilter from 'p-filter';
@@ -49,7 +48,6 @@ export async function getSourcePlugins(): Promise<InstalledPluginDetails[]> {
 async function entryPointForPluginFolder(
   pluginsDir: string,
 ): Promise<{[key: string]: InstalledPluginDetails}> {
-  pluginsDir = expandTilde(pluginsDir);
   if (!(await fs.pathExists(pluginsDir))) {
     return {};
   }

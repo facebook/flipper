@@ -30,7 +30,7 @@ export interface Device {
   clearLogs(): Promise<void>;
   sendMetroCommand(command: string): Promise<void>;
   navigateToLocation(location: string): Promise<void>;
-  screenshot(): Promise<Buffer>;
+  screenshot(): Promise<Uint8Array>;
 }
 
 export type DevicePluginPredicate = (device: Device) => boolean;

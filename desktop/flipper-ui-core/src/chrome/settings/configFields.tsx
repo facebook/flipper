@@ -16,11 +16,9 @@ import {
   colors,
   Glyph,
 } from '../../ui';
-import React, {useState} from 'react';
-import {promises as fs} from 'fs';
-import {theme} from 'flipper-plugin';
+import React, {useState, useEffect} from 'react';
+import {getFlipperLib, theme} from 'flipper-plugin';
 import {getRenderHostInstance} from '../../RenderHost';
-import {useEffect} from 'react';
 
 export const ConfigFieldContainer = styled(FlexRow)({
   paddingLeft: 10,
@@ -75,8 +73,8 @@ export function FilePathConfigField(props: {
   useEffect(() => {
     (async function () {
       try {
-        const stat = await fs.stat(value);
-        setIsValid(props.isRegularFile !== stat.isDirectory());
+        const stat = await getFlipperLib().remoteServerContext.fs.stat(value);
+        setIsValid(props.isRegularFile !== stat.isDirectory);
       } catch (_) {
         setIsValid(false);
       }
@@ -93,8 +91,9 @@ export function FilePathConfigField(props: {
         onChange={(e) => {
           setValue(e.target.value);
           props.onChange(e.target.value);
-          fs.stat(e.target.value)
-            .then((stat) => stat.isDirectory())
+          getFlipperLib()
+            .remoteServerContext.fs.stat(e.target.value)
+            .then((stat) => stat.isDirectory)
             .then((valid) => {
               if (valid !== isValid) {
                 setIsValid(valid);

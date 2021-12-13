@@ -7,17 +7,15 @@
  * @format
  */
 
-import fs from 'fs';
-import path from 'path';
 import BaseDevice from '../devices/BaseDevice';
 import {reportPlatformFailures} from 'flipper-common';
-import expandTilde from 'expand-tilde';
 import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperLib, path} from 'flipper-plugin';
 
 export function getCaptureLocation() {
-  return expandTilde(
+  return (
     getRenderHostInstance().serverConfig.processConfig.screenCapturePath ||
-      getRenderHostInstance().serverConfig.paths.desktopPath,
+    getRenderHostInstance().serverConfig.paths.desktopPath
   );
 }
 
@@ -34,33 +32,14 @@ export async function capture(device: BaseDevice): Promise<string> {
   }
   const pngPath = path.join(getCaptureLocation(), getFileName('png'));
   return reportPlatformFailures(
-    device.screenshot().then((buffer) => writeBufferToFile(pngPath, buffer)),
+    // TODO: there is no reason to read the screenshot first, grab it over the websocket, than send it back
+    // again to write in a file, probably easier to change screenshot api to `device.screenshot(): path`
+    device
+      .screenshot()
+      .then((buffer) =>
+        getFlipperLib().remoteServerContext.fs.writeFileBinary(pngPath, buffer),
+      )
+      .then(() => pngPath),
     'captureScreenshot',
   );
 }
-
-/**
- * Writes a buffer to a specified file path.
- * Returns a Promise which resolves to the file path.
- */
-export const writeBufferToFile = (
-  filePath: string,
-  buffer: Buffer,
-): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(filePath, buffer, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(filePath);
-      }
-    });
-  });
-};
-
-/**
- * Creates a Blob from a Buffer
- */
-export const bufferToBlob = (buffer: Buffer): Blob => {
-  return new Blob([buffer]);
-};

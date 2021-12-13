@@ -8,7 +8,6 @@
  */
 
 import * as React from 'react';
-import path from 'path';
 import {getLogger} from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
@@ -20,7 +19,6 @@ import {pluginKey} from '../utils/pluginKey';
 import {DevicePluginMap, ClientPluginMap} from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
-import fs from 'fs-extra';
 import {v4 as uuidv4} from 'uuid';
 import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {TestIdler} from './Idler';
@@ -33,7 +31,7 @@ import {deconstructClientId} from 'flipper-common';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
-import {Dialog, Idler} from 'flipper-plugin';
+import {Dialog, getFlipperLib, Idler, path} from 'flipper-plugin';
 import {ClientQuery} from 'flipper-common';
 import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
@@ -521,7 +519,10 @@ export const exportStoreToFile = (
 }> => {
   return exportStore(store, includeSupportDetails, idler, statusUpdate).then(
     async ({serializedString, fetchMetaDataErrors}) => {
-      await fs.writeFile(exportFilePath, serializedString);
+      await getFlipperLib().remoteServerContext.fs.writeFile(
+        exportFilePath,
+        serializedString,
+      );
       store.dispatch(resetSupportFormV2State());
       return {fetchMetaDataErrors};
     },
@@ -584,17 +585,17 @@ export function importDataToStore(source: string, data: string, store: Store) {
   }
 }
 
-export const importFileToStore = (file: string, store: Store) => {
-  fs.readFile(file, 'utf8', (err, data) => {
-    if (err) {
-      console.error(
-        `[exportData] importFileToStore for file ${file} failed:`,
-        err,
-      );
-      return;
-    }
+export const importFileToStore = async (file: string, store: Store) => {
+  try {
+    const data = await getFlipperLib().remoteServerContext.fs.readFile(file);
     importDataToStore(file, data, store);
-  });
+  } catch (err) {
+    console.error(
+      `[exportData] importFileToStore for file ${file} failed:`,
+      err,
+    );
+    return;
+  }
 };
 
 export function canOpenDialog() {

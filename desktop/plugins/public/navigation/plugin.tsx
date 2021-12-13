@@ -8,7 +8,6 @@
  * @flow strict-local
  */
 
-import {bufferToBlob} from 'flipper';
 import {RequiredParametersDialog} from './components';
 import {
   removeBookmarkFromDB,
@@ -73,14 +72,14 @@ export function plugin(client: PluginClient<Events, Methods>) {
       draft.unshift(navigationEvent);
     });
 
-    const screenshot: Buffer = await client.device.screenshot();
+    const screenshot = await client.device.screenshot();
     if (screenshot.byteLength === 0) {
       console.warn(
         '[navigation] Could not retrieve valid screenshot from the device.',
       );
       return;
     }
-    const blobURL = URL.createObjectURL(bufferToBlob(screenshot));
+    const blobURL = URL.createObjectURL(new Blob([screenshot.buffer]));
     // this process is async, make sure we update the correct one..
     const navigationEventIndex = navigationEvents
       .get()
