@@ -48,8 +48,10 @@ import {commandDownloadFileStartFactory} from './commands/DownloadFile';
 import {promises} from 'fs';
 // Electron 11 runs on Node 12 which does not support fs.promises.rm
 import rm from 'rimraf';
+import assert from 'assert';
 
-const {access, copyFile, mkdir, unlink, stat, readlink} = promises;
+const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
+  promises;
 
 export const SERVICE_FLIPPER = 'flipper.oAuthToken';
 
@@ -258,6 +260,22 @@ export class FlipperServerImpl implements FlipperServer {
       };
     },
     'node-api-fs-readlink': readlink,
+    'node-api-fs-readfile': async (path, options) => {
+      const contents = await readFile(path, options ?? 'utf8');
+      assert(
+        typeof contents === 'string',
+        `File ${path} was not read with a string encoding`,
+      );
+      return contents;
+    },
+    'node-api-fs-readfile-binary': async (path) => {
+      const contents = await readFile(path);
+      return Base64.fromUint8Array(contents);
+    },
+    'node-api-fs-writefile': (path, contents, options) =>
+      writeFile(path, contents, options ?? 'utf8'),
+    'node-api-fs-writefile-binary': (path, base64contents) =>
+      writeFile(path, Base64.toUint8Array(base64contents), 'binary'),
     // TODO: Do we need API to cancel an active download?
     'download-file-start': commandDownloadFileStartFactory(
       this.emit.bind(this),

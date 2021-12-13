@@ -66,6 +66,17 @@ export type RemoteServerContext = {
     copyFile(src: string, dest: string, flags?: number): Promise<void>;
     stat(path: string): Promise<FSStatsLike>;
     readlink(path: string): Promise<string>;
+    readFile(
+      path: string,
+      options?: {encoding?: BufferEncoding},
+    ): Promise<string>;
+    readFileBinary(path: string): Promise<Uint8Array>; // No Buffer, which is not a browser type
+    writeFile(
+      path: string,
+      contents: string,
+      options?: {encoding?: BufferEncoding},
+    ): Promise<void>;
+    writeFileBinary(path: string, contents: Uint8Array): Promise<void>;
   };
   downloadFile(
     url: string,

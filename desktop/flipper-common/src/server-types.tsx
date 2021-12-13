@@ -163,6 +163,22 @@ export type FlipperServerCommands = {
   ) => Promise<void>;
   'node-api-fs-stat': (path: string) => Promise<FSStatsLike>;
   'node-api-fs-readlink': (path: string) => Promise<string>;
+  'node-api-fs-readfile': (
+    path: string,
+    options?: {encoding?: BufferEncoding},
+  ) => Promise<string>;
+  'node-api-fs-readfile-binary': (
+    path: string,
+  ) => Promise<string /* base64 encoded */>;
+  'node-api-fs-writefile': (
+    path: string,
+    contents: string,
+    options?: {encoding?: BufferEncoding},
+  ) => Promise<void>;
+  'node-api-fs-writefile-binary': (
+    path: string,
+    base64contents: string,
+  ) => Promise<void>;
   /**
    * @throws ExecError
    */

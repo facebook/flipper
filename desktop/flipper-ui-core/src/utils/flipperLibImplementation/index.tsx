@@ -29,6 +29,7 @@ import {DetailSidebarImpl} from '../../sandy-chrome/DetailSidebarImpl';
 import {RenderHost} from '../../RenderHost';
 import {setMenuEntries} from '../../reducers/connections';
 import {downloadFileFactory} from './downloadFile';
+import {Base64} from 'js-base64';
 
 export function initializeFlipperLibImplementation(
   renderHost: RenderHost,
@@ -115,6 +116,30 @@ export function initializeFlipperLibImplementation(
           renderHost.flipperServer.exec('node-api-fs-stat', path),
         readlink: async (path: string) =>
           renderHost.flipperServer.exec('node-api-fs-readlink', path),
+        readFile: (path, options) =>
+          renderHost.flipperServer.exec('node-api-fs-readfile', path, options),
+        readFileBinary: async (path) =>
+          Base64.toUint8Array(
+            await renderHost.flipperServer.exec(
+              'node-api-fs-readfile-binary',
+              path,
+            ),
+          ),
+        writeFile: (path, contents, options) =>
+          renderHost.flipperServer.exec(
+            'node-api-fs-writefile',
+            path,
+            contents,
+            options,
+          ),
+        writeFileBinary: async (path, contents) => {
+          const base64contents = Base64.fromUint8Array(contents);
+          return await renderHost.flipperServer.exec(
+            'node-api-fs-writefile-binary',
+            path,
+            base64contents,
+          );
+        },
       },
       downloadFile: downloadFileFactory(renderHost),
     },
