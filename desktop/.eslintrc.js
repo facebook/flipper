@@ -17,14 +17,12 @@ const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
 
 // This list should match the replacements defined in `replace-flipper-requires.ts` and `dispatcher/plugins.tsx`
 const builtInModules = [
-  'fb-qpl-xplat',
   'flipper',
   'flipper-plugin',
   'flipper-plugin-lib',
   'react',
   'react-dom',
   'electron',
-  'adbkit',
   'antd',
   'immer',
   '@emotion/styled',

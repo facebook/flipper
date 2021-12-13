@@ -16,7 +16,6 @@ import {
 import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import adbkit from 'adbkit';
 import {
   registerPlugins,
   addGatekeepedPlugins,
@@ -42,8 +41,6 @@ import * as Immer from 'immer';
 import * as antd from 'antd';
 import * as emotion_styled from '@emotion/styled';
 import * as antdesign_icons from '@ant-design/icons';
-// @ts-ignore
-import * as crc32 from 'crc32';
 
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import isPluginCompatible from '../utils/isPluginCompatible';
@@ -62,13 +59,11 @@ export default async (store: Store, _logger: Logger) => {
   globalObject.React = React;
   globalObject.ReactDOM = ReactDOM;
   globalObject.Flipper = require('../deprecated-exports');
-  globalObject.adbkit = adbkit;
   globalObject.FlipperPlugin = FlipperPluginSDK;
   globalObject.Immer = Immer;
   globalObject.antd = antd;
   globalObject.emotion_styled = emotion_styled;
   globalObject.antdesign_icons = antdesign_icons;
-  globalObject.crc32_hack_fix_me = crc32;
 
   const gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
   const disabledPlugins: Array<ActivatablePluginDetails> = [];

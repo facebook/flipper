@@ -21,12 +21,10 @@ const requireReplacements: any = {
   'flipper-plugin': 'global.FlipperPlugin',
   react: 'global.React',
   'react-dom': 'global.ReactDOM',
-  adbkit: 'global.adbkit',
   antd: 'global.antd',
   immer: 'global.Immer',
   '@emotion/styled': 'global.emotion_styled',
   '@ant-design/icons': 'global.antdesign_icons',
-  crc32: 'global.crc32_hack_fix_me',
 };
 
 export function tryReplaceFlipperRequire(path: NodePath<CallExpression>) {
