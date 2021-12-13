@@ -138,7 +138,10 @@ function launchServer() {
 }
 
 async function restartServer() {
-  proc?.kill(9);
+  if (proc) {
+    proc.kill(9);
+    await sleep(1000);
+  }
   try {
     await compileServerMain();
     await launchServer();
@@ -196,10 +199,13 @@ async function startWatchChanges() {
     await restartServer();
 
     if (argv.open) {
-      setTimeout(() => {
-        // TODO: make port configurable together with flipper-server
-        open('http://localhost:52342/index.web.dev.html');
-      }, 2000);
+      await sleep(2000);
+      // TODO: make port configurable together with flipper-server
+      open('http://localhost:52342/index.web.dev.html');
     }
   }
 })();
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}

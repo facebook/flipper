@@ -12,6 +12,7 @@ import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import socketio from 'socket.io';
+import {WEBSOCKET_MAX_MESSAGE_SIZE} from 'flipper-server-core';
 
 type Config = {
   port: number;
@@ -61,6 +62,8 @@ function startAssetServer(
 }
 
 function addWebsocket(server: http.Server) {
-  const io = new socketio.Server(server);
+  const io = new socketio.Server(server, {
+    maxHttpBufferSize: WEBSOCKET_MAX_MESSAGE_SIZE,
+  });
   return io;
 }

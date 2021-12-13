@@ -26,3 +26,5 @@ export function getGatekeepers(username: string): Record<string, boolean> {
   }
   return GKImplementation.allGKs();
 }
+
+export {WEBSOCKET_MAX_MESSAGE_SIZE} from './comms/ServerWebSocket';

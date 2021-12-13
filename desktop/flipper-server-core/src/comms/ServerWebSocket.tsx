@@ -35,6 +35,10 @@ export interface ConnectionCtx {
   request: IncomingMessage;
 }
 
+// based on https://github.com/websockets/ws/blob/master/lib/websocket-server.js#L40,
+// exposed to share with socket.io defaults
+export const WEBSOCKET_MAX_MESSAGE_SIZE = 100 * 1024 * 1024;
+
 /**
  * It serves as a base class for WebSocket based servers. It delegates the 'connection'
  * event to subclasses as a customisation point.
@@ -52,6 +56,7 @@ class ServerWebSocket extends ServerAdapter {
       const wsServer = new WSServer({
         server,
         verifyClient: this.verifyClient(),
+        maxPayload: WEBSOCKET_MAX_MESSAGE_SIZE,
       });
 
       // We do not need to listen to http server's `error` because it is propagated to WS
