@@ -68,7 +68,10 @@ export class PluginManager {
   }
 
   async getBundledPlugins(): Promise<Array<BundledPluginDetails>> {
-    if (process.env.NODE_ENV === 'test') {
+    if (
+      process.env.NODE_ENV === 'test' ||
+      process.env.FLIPPER_NO_BUNDLED_PLUGINS === 'true'
+    ) {
       return [];
     }
     // defaultPlugins that are included in the Flipper distributive.

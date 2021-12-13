@@ -27,7 +27,7 @@ const argv = yargs
     },
     'bundled-plugins': {
       describe:
-        'Enables bundling of plugins into Flipper bundle. This is useful for debugging, because it makes Flipper dev mode loading faster and unblocks fast refresh. The flag is enabled by default. Env var FLIPPER_NO_BUNDLEDD_PLUGINS is equivalent to the command-line option "--no-bundled-plugins".',
+        'Enables bundling of plugins into Flipper bundle. This is useful for debugging, because it makes Flipper dev mode loading faster and unblocks fast refresh. The flag is enabled by default. Env var FLIPPER_NO_BUNDLED_PLUGINS is equivalent to the command-line option "--no-bundled-plugins".',
       type: 'boolean',
     },
     'rebuild-plugins': {
