@@ -26,7 +26,7 @@ export async function startBaseServer(config: Config): Promise<{
   socket: socketio.Server;
 }> {
   const {app, server} = await startAssetServer(config);
-  const socket = addWebsocket(server);
+  const socket = addWebsocket(server, config);
   return {
     app,
     server,
@@ -61,9 +61,21 @@ function startAssetServer(
   });
 }
 
-function addWebsocket(server: http.Server) {
+function addWebsocket(server: http.Server, config: Config) {
+  const validHost = `localhost:${config.port}`;
   const io = new socketio.Server(server, {
     maxHttpBufferSize: WEBSOCKET_MAX_MESSAGE_SIZE,
+    allowRequest(req, callback) {
+      const noOriginHeader = req.headers.origin === undefined;
+      if (noOriginHeader && req.headers.host === validHost) {
+        callback(null, true);
+      } else {
+        console.warn(
+          `Refused sockect connection from cross domain request, origin: ${req.headers.origin}, host: ${req.headers.host}. Expected: ${validHost}`,
+        );
+        callback(null, false);
+      }
+    },
   });
   return io;
 }
