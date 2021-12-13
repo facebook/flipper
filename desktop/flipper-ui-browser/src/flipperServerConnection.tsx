@@ -12,7 +12,7 @@ import {FlipperServer} from 'flipper-common';
 import {io, Socket} from 'socket.io-client';
 
 const CONNECTION_TIMEOUT = 30 * 1000;
-const EXEC_TIMOUT = 30 * 10 * 1000;
+const EXEC_TIMOUT = 30 * 1000;
 
 export function createFlipperServer(): Promise<FlipperServer> {
   // TODO: polish this all!
@@ -54,6 +54,10 @@ export function createFlipperServer(): Promise<FlipperServer> {
       window?.flipperShowError?.('WebSocket connection lost');
       console.warn('Socket to Flipper server disconnected');
       connected = false;
+      pendingRequests.forEach((r) =>
+        r.reject(new Error('FLIPPER_SERVER_SOCKET_CONNECT_LOST')),
+      );
+      pendingRequests.clear();
     });
 
     socket.on('exec-response', (id: number, data: any) => {

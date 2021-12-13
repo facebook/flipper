@@ -50,12 +50,21 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
       continue;
     }
     for (const h of category.healthchecks) {
-      const checkResult = await flipperServer.exec(
-        'doctor-run-healthcheck',
-        {settings: options.settings},
-        categoryKey as keyof FlipperDoctor.Healthchecks,
-        h.key,
-      );
+      const checkResult: FlipperDoctor.HealthcheckResult = await flipperServer
+        .exec(
+          'doctor-run-healthcheck',
+          {settings: options.settings},
+          categoryKey as keyof FlipperDoctor.Healthchecks,
+          h.key,
+        )
+        .catch((e) => {
+          console.error('Failed to run doctor check', e);
+          return {
+            status: 'FAILED',
+            isAcknowledged: false,
+            message: 'Failed to run doctor check: ' + e,
+          };
+        });
       const metricName = `doctor:${h.key.replace('.', ':')}.healthcheck`; // e.g. "doctor:ios:xcode-select.healthcheck"
       if (checkResult.status !== 'SUCCESS') {
         hasProblems = true;
