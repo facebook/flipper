@@ -18,7 +18,9 @@ async function start() {
     console.error(
       `[decapitate] Tried to electronRequire ${path}, this module is not available in the browser and will be stubbed`,
     );
-    return {};
+    return {
+      default: {},
+    };
   };
 
   const logger = createDelegatedLogger();

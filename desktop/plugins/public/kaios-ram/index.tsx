@@ -9,9 +9,15 @@
 
 import React from 'react';
 
-import {FlipperDevicePlugin, Device, sleep} from 'flipper';
-
-import {FlexColumn, Button, Toolbar, Panel} from 'flipper';
+import {
+  FlipperDevicePlugin,
+  Device,
+  sleep,
+  FlexColumn,
+  Button,
+  Toolbar,
+  Panel,
+} from 'flipper';
 
 import {
   Legend,
@@ -24,7 +30,6 @@ import {
   Tooltip,
 } from 'recharts';
 
-import adb from 'adbkit';
 import {getFlipperLib} from 'flipper-plugin';
 
 const PALETTE = [

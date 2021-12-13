@@ -27,6 +27,7 @@ import {setupMenuBar} from './setupMenuBar';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
 import type {Icon, RenderHost} from 'flipper-ui-core';
 import {getLocalIconUrl} from '../utils/icons';
+import {getCPUUsage} from 'process';
 
 export function initializeElectron(
   flipperServer: FlipperServer,
@@ -201,6 +202,9 @@ export function initializeElectron(
         return;
       }
       delete global.electronRequire.cache[resolvedPath];
+    },
+    getPercentCPUUsage() {
+      return getCPUUsage().percentCPUUsage;
     },
   } as RenderHost;
 

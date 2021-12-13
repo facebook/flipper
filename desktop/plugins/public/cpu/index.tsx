@@ -20,7 +20,6 @@ import {
   DataTableColumn,
   Toolbar,
 } from 'flipper-plugin';
-import adb from 'adbkit';
 import TemperatureTable from './TemperatureTable';
 import {Button, Typography, Switch} from 'antd';
 import {PlayCircleOutlined, PauseCircleOutlined} from '@ant-design/icons';

@@ -104,6 +104,7 @@ export interface RenderHost {
   // given the requested icon and proposed public url of the icon, rewrite it to a local icon if needed
   getLocalIconUrl?(icon: Icon, publicUrl: string): string;
   unloadModule?(path: string): void;
+  getPercentCPUUsage?(): number;
 }
 
 export function getRenderHostInstance(): RenderHost {
