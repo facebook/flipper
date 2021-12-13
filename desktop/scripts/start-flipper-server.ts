@@ -54,6 +54,11 @@ const argv = yargs
         '[FB-internal only] Will force using public sources only, to be able to iterate quickly on the public version. If sources are checked out from GitHub this is already the default. Setting env var "FLIPPER_FORCE_PUBLIC_BUILD" is equivalent.',
       type: 'boolean',
     },
+    build: {
+      describe:
+        'Build the server without watching for changing or starting the service',
+      type: 'boolean',
+    },
   })
   .version('DEV')
   .help()
@@ -113,13 +118,17 @@ let proc: child.ChildProcess | undefined;
 
 function launchServer() {
   console.log('⚙️  Launching flipper-server...');
-  proc = child.spawn('node', [`../flipper-server/server.js`], {
-    cwd: serverDir,
-    env: {
-      ...process.env,
+  proc = child.spawn(
+    'node',
+    ['--inspect=9229', `../flipper-server/server.js`],
+    {
+      cwd: serverDir,
+      env: {
+        ...process.env,
+      },
+      stdio: 'inherit',
     },
-    stdio: 'inherit',
-  });
+  );
 }
 
 async function restartServer() {
@@ -173,6 +182,10 @@ async function startWatchChanges() {
 }
 
 (async () => {
-  await startWatchChanges();
-  restartServer();
+  if (argv['build']) {
+    await compileServerMain();
+  } else {
+    await startWatchChanges();
+    restartServer(); // builds and starts
+  }
 })();

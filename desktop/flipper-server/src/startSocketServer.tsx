@@ -37,7 +37,12 @@ export function startSocketServer(
         .catch((error: any) => {
           if (connected) {
             // TODO: Serialize error
-            client.emit('exec-response-error', id, error.toString());
+            // TODO: log if verbose console.warn('Failed to handle response', error);
+            client.emit(
+              'exec-response-error',
+              id,
+              error.toString() + (error.stack ? `\n${error.stack}` : ''),
+            );
           }
         });
     });

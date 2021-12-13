@@ -12,7 +12,7 @@ import {FlipperServer} from 'flipper-common';
 import {io, Socket} from 'socket.io-client';
 
 const CONNECTION_TIMEOUT = 30 * 1000;
-const EXEC_TIMOUT = 10 * 1000;
+const EXEC_TIMOUT = 30 * 10 * 1000;
 
 export function createFlipperServer(): Promise<FlipperServer> {
   // TODO: polish this all!
@@ -90,8 +90,8 @@ export function createFlipperServer(): Promise<FlipperServer> {
       close() {},
       exec(command, ...args): any {
         if (connected) {
+          const id = ++requestId;
           return new Promise<any>((resolve, reject) => {
-            const id = ++requestId;
             console.debug('exec >>>', id, command, args);
 
             pendingRequests.set(id, {
