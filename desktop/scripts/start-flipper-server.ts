@@ -15,6 +15,7 @@ import Watchman from './watchman';
 import {serverDir} from './paths';
 import isFB from './isFB';
 import yargs from 'yargs';
+import open from 'open';
 
 const argv = yargs
   .usage('yarn start [args]')
@@ -58,6 +59,11 @@ const argv = yargs
       describe:
         'Build the server without watching for changing or starting the service',
       type: 'boolean',
+    },
+    open: {
+      describe: 'Open Flipper in the default browser after starting',
+      type: 'boolean',
+      default: true,
     },
   })
   .version('DEV')
@@ -186,6 +192,14 @@ async function startWatchChanges() {
     await compileServerMain();
   } else {
     await startWatchChanges();
-    restartServer(); // builds and starts
+    // builds and starts
+    await restartServer();
+
+    if (argv.open) {
+      setTimeout(() => {
+        // TODO: make port configurable together with flipper-server
+        open('http://localhost:52342/index.web.dev.html');
+      }, 2000);
+    }
   }
 })();
