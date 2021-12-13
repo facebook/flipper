@@ -413,6 +413,8 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
         rm: jest.fn(),
         copyFile: jest.fn(),
         constants: fsConstants,
+        stat: jest.fn(),
+        readlink: jest.fn(),
       },
       downloadFile: jest.fn(),
     },

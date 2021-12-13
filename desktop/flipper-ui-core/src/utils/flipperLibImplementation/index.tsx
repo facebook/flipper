@@ -111,6 +111,10 @@ export function initializeFlipperLibImplementation(
             flags,
           ),
         constants: fsConstants,
+        stat: async (path: string) =>
+          renderHost.flipperServer.exec('node-api-fs-stat', path),
+        readlink: async (path: string) =>
+          renderHost.flipperServer.exec('node-api-fs-readlink', path),
       },
       downloadFile: downloadFileFactory(renderHost),
     },
