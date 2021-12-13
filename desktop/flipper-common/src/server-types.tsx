@@ -244,7 +244,6 @@ export type FlipperServerCommands = {
 export type GraphResponse = {
   status: number;
   data: any;
-  headers: Record<string, any>;
 };
 
 export type GraphFileUpload = {
