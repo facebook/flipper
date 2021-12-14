@@ -67,6 +67,7 @@ import {
 import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
 import {getRenderHostInstance} from '../RenderHost';
+import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -240,6 +241,8 @@ function ExtrasMenu() {
   const {showWelcomeAtStartup} = settings;
   const [welcomeVisible, setWelcomeVisible] = useState(showWelcomeAtStartup);
 
+  const fullState = useStore((state) => state);
+
   return (
     <>
       <NUX
@@ -283,7 +286,13 @@ function ExtrasMenu() {
                       source: 'sidebar',
                       group: undefined,
                     });
-                    store.dispatch(setStaticView(SupportRequestFormV2));
+                    if (
+                      getRenderHostInstance().GK('flipper_support_entry_point')
+                    ) {
+                      openSupportRequestForm(fullState);
+                    } else {
+                      store.dispatch(setStaticView(SupportRequestFormV2));
+                    }
                   }}>
                   Feedback
                 </Menu.Item>
