@@ -32,6 +32,7 @@
     "flipper-plugin": "0.0.0",
     "flipper-ui-core": "0.0.0",
     "fs-extra": "^10.0.0",
+    "hotkeys-js": "^3.8.7",
     "immer": "^9.0.6",
     "invariant": "^2.2.2",
     "js-base64": "^3.7.2",

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlexColumn, styled, FlexRow, Text, Glyph, colors} from '../../ui';
+import {FlexColumn, styled, FlexRow, Text, Glyph} from '../../ui';
 import React, {useRef, useState, useEffect} from 'react';
 import {theme} from 'flipper-plugin';
 

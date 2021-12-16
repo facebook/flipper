@@ -78,11 +78,6 @@ export interface RenderHost {
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
   importFile: FlipperLib['importFile'];
   exportFile: FlipperLib['exportFile'];
-  /**
-   * @returns
-   * A callback to unregister the shortcut
-   */
-  registerShortcut(shortCut: string, callback: () => void): () => void;
   hasFocus(): boolean;
   onIpcEvent<Event extends keyof MainProcessEvents>(
     event: Event,

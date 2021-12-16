@@ -17,8 +17,8 @@ import {
   useTrackedCallback,
 } from 'flipper-plugin';
 import React, {useEffect} from 'react';
-import {getRenderHostInstance} from '../RenderHost';
 import {getActivePlugin} from '../selectors/connections';
+import {registerShortcut} from '../utils/registerShortcut';
 import {useStore} from '../utils/useStore';
 
 function MagicIcon() {
@@ -99,11 +99,7 @@ function PluginActionMenuItem({
 
   useEffect(() => {
     if (accelerator) {
-      const unregister = getRenderHostInstance().registerShortcut(
-        accelerator,
-        trackedHandler,
-      );
-      return unregister;
+      return registerShortcut(accelerator, trackedHandler);
     }
   }, [trackedHandler, accelerator]);
 

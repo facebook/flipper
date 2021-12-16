@@ -31,10 +31,6 @@ export function initializeRenderHost(
     openLink(url: string) {
       window.open(url, '_blank');
     },
-    registerShortcut(_shortcut, _callback) {
-      // TODO:
-      return () => {};
-    },
     hasFocus() {
       return document.hasFocus();
     },

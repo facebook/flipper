@@ -8,7 +8,7 @@
  */
 
 import {Store} from '../reducers';
-import {getRenderHostInstance} from '../RenderHost';
+import {registerShortcut} from '../utils/registerShortcut';
 
 type ShortcutEventCommand =
   | {
@@ -19,7 +19,6 @@ type ShortcutEventCommand =
 
 export default (store: Store) => {
   const settings = store.getState().settingsState.reactNative;
-  const renderHost = getRenderHostInstance();
 
   if (!settings?.shortcuts.enabled) {
     return;
@@ -40,7 +39,7 @@ export default (store: Store) => {
     (shortcut: ShortcutEventCommand) =>
       shortcut &&
       shortcut.shortcut &&
-      renderHost.registerShortcut(shortcut.shortcut, () => {
+      registerShortcut(shortcut.shortcut, () => {
         const devices = store
           .getState()
           .connections.devices.filter(

@@ -16,7 +16,6 @@ import {
   BrowserWindow,
   ipcMain,
   Notification,
-  globalShortcut,
   session,
   nativeTheme,
   shell,
@@ -260,10 +259,6 @@ function configureSession() {
     },
   );
 }
-
-app.on('will-quit', () => {
-  globalShortcut.unregisterAll();
-});
 
 ipcMain.on('componentDidMount', (_event) => {
   didMount = true;
