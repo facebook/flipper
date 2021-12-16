@@ -12,10 +12,11 @@
   "dependencies": {
     "flipper-common": "0.0.0",
     "flipper-server-core": "0.0.0",
-    "ts-node": "^10.2.1",
     "yargs": "^17.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^16.11.7"
+  },
   "peerDependencies": {},
   "scripts": {
     "start": "ts-node src/index.tsx",

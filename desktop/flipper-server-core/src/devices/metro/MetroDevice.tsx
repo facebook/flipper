@@ -11,6 +11,7 @@ import {DeviceLogLevel, MetroReportableEvent} from 'flipper-common';
 import util from 'util';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {ServerDevice} from '../ServerDevice';
+import WebSocket from 'ws';
 
 const metroLogLevelMapping: {[key: string]: DeviceLogLevel} = {
   trace: 'verbose',

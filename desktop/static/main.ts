@@ -31,6 +31,7 @@ import isFB from './fb-stubs/isFB';
 import delegateToLauncher from './launcher';
 import yargs from 'yargs';
 import {promisify} from 'util';
+import process from 'process';
 
 const VERSION: string = (global as any).__VERSION__;
 

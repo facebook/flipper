@@ -29,6 +29,12 @@ import type {Icon, RenderHost} from 'flipper-ui-core';
 import {getLocalIconUrl} from '../utils/icons';
 import {getCPUUsage} from 'process';
 
+declare const electronRequire: {
+  (name: string): any;
+  resolve: (module: string) => string;
+  cache: {[module: string]: any};
+};
+
 export function initializeElectron(
   flipperServer: FlipperServer,
   flipperServerConfig: FlipperServerConfig,
@@ -176,7 +182,7 @@ export function initializeElectron(
     },
     flipperServer,
     async requirePlugin(path) {
-      return global.electronRequire(path);
+      return electronRequire(path);
     },
     getStaticResourceUrl(relativePath): string {
       return (
@@ -193,11 +199,11 @@ export function initializeElectron(
       );
     },
     unloadModule(path: string) {
-      const resolvedPath = global.electronRequire.resolve(path);
-      if (!resolvedPath || !global.electronRequire.cache[resolvedPath]) {
+      const resolvedPath = electronRequire.resolve(path);
+      if (!resolvedPath || !electronRequire.cache[resolvedPath]) {
         return;
       }
-      delete global.electronRequire.cache[resolvedPath];
+      delete electronRequire.cache[resolvedPath];
     },
     getPercentCPUUsage() {
       return getCPUUsage().percentCPUUsage;

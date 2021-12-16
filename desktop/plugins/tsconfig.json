@@ -4,7 +4,8 @@
         "noEmit": true,
         "baseUrl": ".",
         "rootDir": ".",
-        "outDir": "lib"
+        "outDir": "lib",
+        "lib": ["DOM"]
     },
     "include": [
         "public/",

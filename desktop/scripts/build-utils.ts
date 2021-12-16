@@ -33,6 +33,7 @@ import {
   browserUiDir,
 } from './paths';
 
+// eslint-disable-next-line flipper/no-relative-imports-across-packages
 const {version} = require('../package.json');
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -344,6 +345,7 @@ export function buildFolder(): Promise<string> {
   });
 }
 export function getVersionNumber(buildNumber?: number) {
+  // eslint-disable-next-line flipper/no-relative-imports-across-packages
   let {version} = require('../package.json');
   if (buildNumber) {
     // Unique build number is passed as --version parameter from Sandcastle

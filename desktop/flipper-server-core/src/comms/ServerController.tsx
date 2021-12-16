@@ -231,7 +231,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     }
     id = buildClientId(clientQuery);
     this.timestamps.set(id, {
-      secureStart: performance.now(),
+      secureStart: Date.now(),
       ...tracker,
     });
 
@@ -282,7 +282,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     const strippedClientQuery = (({device_id, ...o}) => o)(clientQuery);
     const id = buildClientId({device_id: 'unknown', ...strippedClientQuery});
     this.timestamps.set(id, {
-      insecureStart: performance.now(),
+      insecureStart: Date.now(),
     });
     this.logger.track('usage', 'untrusted-request-handler-called', clientQuery);
     this.connectionTracker.logConnectionAttempt(clientQuery);
@@ -446,7 +446,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
 
     const tracker = this.timestamps.get(id);
     if (tracker) {
-      const end = performance.now();
+      const end = Date.now();
       const start = tracker.insecureStart
         ? tracker.insecureStart
         : tracker.secureStart;

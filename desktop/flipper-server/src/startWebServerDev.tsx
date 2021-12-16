@@ -70,7 +70,7 @@ export async function startWebServerDev(
     'electron-requires.js',
   );
   const stubModules = new Set<string>(
-    global.electronRequire(electronRequires).BUILTINS,
+    (global as any).electronRequire(electronRequires).BUILTINS,
   );
   if (!stubModules.size) {
     throw new Error('Failed to load list of Node builtins');

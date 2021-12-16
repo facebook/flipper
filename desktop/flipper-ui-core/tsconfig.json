@@ -4,7 +4,8 @@
     "outDir": "lib",
     "rootDir": "src",
     "esModuleInterop": true,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "lib": ["dom"]
   },
   "references": [
     {

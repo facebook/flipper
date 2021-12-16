@@ -13,5 +13,8 @@
     "ws": "^8.2.3",
     "xdg-basedir": "^4.0.0",
     "yargs": "^16.2.0"
+  },
+  "devDependencies": {
+    "@types/mkdirp": "^1.0.2"
   }
 }

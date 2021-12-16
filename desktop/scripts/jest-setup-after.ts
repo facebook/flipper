@@ -9,11 +9,12 @@
 
 // jest-setup-after will run after Jest has been initialized, so that it can be adapted.
 
+// eslint-disable-next-line node/no-extraneous-import
 import {cleanup} from '@testing-library/react';
 import {resolve} from 'path';
 import os from 'os';
 
-window.FlipperRenderHostInstance = createStubRenderHost();
+(window as any).FlipperRenderHostInstance = createStubRenderHost();
 
 import {TestUtils} from 'flipper-plugin';
 import {
@@ -52,7 +53,7 @@ if (!test) {
 
 beforeEach(() => {
   // Fresh mock flipperServer for every test
-  window.FlipperRenderHostInstance = createStubRenderHost();
+  (window as any).FlipperRenderHostInstance = createStubRenderHost();
 });
 
 afterEach(cleanup);

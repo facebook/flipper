@@ -31,7 +31,9 @@ function createDevToolsNode(
   wrapper.style.height = '100%';
   wrapper.style.width = '100%';
 
-  const iframe = document.createElement('webview');
+  const iframe = document.createElement(
+    'webview',
+  ) as unknown as HTMLIFrameElement;
   iframe.style.height = '100%';
   iframe.style.width = '100%';
 
