@@ -276,34 +276,32 @@ export default class AndroidDevice extends ServerDevice {
   }
 }
 
-export async function launchEmulator(name: string, coldBoot: boolean = false) {
-  // On Linux, you must run the emulator from the directory it's in because
-  // reasons ...
-  return which('emulator')
-    .catch(() =>
-      join(
-        process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || '',
-        'emulator',
-        'emulator',
-      ),
-    )
-    .then((emulatorPath) => {
-      if (emulatorPath) {
-        const child = spawn(
-          emulatorPath,
-          [`@${name}`, ...(coldBoot ? ['-no-snapshot-load'] : [])],
-          {
-            detached: true,
-            cwd: dirname(emulatorPath),
-          },
-        );
-        child.stderr.on('data', (data) => {
-          console.warn(`Android emulator stderr: ${data}`);
-        });
-        child.on('error', (e) => console.warn('Android emulator error:', e));
-      } else {
-        throw new Error('Could not get emulator path');
-      }
-    })
-    .catch((e) => console.error('Android emulator startup failed:', e));
+export async function launchEmulator(
+  androidHome: string,
+  name: string,
+  coldBoot: boolean = false,
+) {
+  try {
+    // On Linux, you must run the emulator from the directory it's in because
+    // reasons ...
+    const emulatorPath = join(androidHome, 'emulator', 'emulator');
+    const child = spawn(
+      emulatorPath,
+      [`@${name}`, ...(coldBoot ? ['-no-snapshot-load'] : [])],
+      {
+        detached: true,
+        cwd: dirname(emulatorPath),
+        env: {
+          ...process.env,
+          ANDROID_SDK_ROOT: androidHome,
+        },
+      },
+    );
+    child.stderr.on('data', (data) => {
+      console.warn(`Android emulator stderr: ${data}`);
+    });
+    child.on('error', (e) => console.warn('Android emulator error:', e));
+  } catch (e) {
+    console.warn('Android emulator startup failed:', e);
+  }
 }

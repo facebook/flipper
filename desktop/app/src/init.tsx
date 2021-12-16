@@ -204,6 +204,7 @@ function setProcessState(settings: Settings) {
 
   if (!process.env.ANDROID_HOME && !process.env.ANDROID_SDK_ROOT) {
     process.env.ANDROID_HOME = androidHome;
+    process.env.ANDROID_SDK_ROOT = androidHome;
   }
 
   // emulator/emulator is more reliable than tools/emulator, so prefer it if

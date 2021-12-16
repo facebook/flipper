@@ -337,7 +337,7 @@ export class FlipperServerImpl implements FlipperServer {
     },
     'android-get-emulators': async () => this.android.getAndroidEmulators(),
     'android-launch-emulator': async (name, coldBoot) =>
-      launchEmulator(name, coldBoot),
+      launchEmulator(this.config.settings.androidHome, name, coldBoot),
     'ios-get-simulators': async (bootedOnly) =>
       this.ios.getSimulators(bootedOnly),
     'ios-launch-simulator': async (udid) => launchSimulator(udid),
