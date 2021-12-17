@@ -9,5 +9,10 @@
     "lib": ["DOM", "ES2019"],
     "types": ["jest"]
   },
-  "exclude": ["**/node_modules/", "**/lib/", "**/dist/"]
+  "exclude": [
+    "**/node_modules/",
+    "**/lib/",
+    "**/dist/",
+    "flipper-server/static/**"
+  ]
 }
