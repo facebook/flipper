@@ -41,7 +41,7 @@ export function sideEffect<
   let scheduled = false;
   let lastRun = -1;
   let lastSelectedValue: V = selector(store.getState());
-  let timeout: NodeJS.Timeout;
+  let timeout: any;
 
   function run() {
     scheduled = false;

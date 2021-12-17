@@ -390,6 +390,8 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
     exportFile: jest.fn(),
     importFile: jest.fn(),
     paths: {
+      // @ts-ignore process not known outside unit tests / Node, but this function should not be used
+      // outside a node context, so that is ok
       appPath: process.cwd(),
       homePath: `/dev/null`,
       tempPath: `/dev/null`,
@@ -441,7 +443,7 @@ function createBasePluginResult(
       return new Promise((resolve) => {
         // this ensures the test won't continue until the setImmediate used by
         // the deeplink handling event is handled
-        setImmediate(resolve);
+        setTimeout(resolve, 0);
       });
     },
     destroy: () => pluginInstance.destroy(),

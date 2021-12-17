@@ -7,8 +7,10 @@
  * @format
  */
 
+import {isTest} from 'flipper-common';
+
 export function sha256(message: string): Promise<string> {
-  if (process.env.NODE_ENV === 'test') {
+  if (isTest()) {
     return Promise.resolve(message.substr(0, 100));
   }
   // From https://stackoverflow.com/a/48161723/1983583

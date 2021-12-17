@@ -5,7 +5,7 @@
     "rootDir": "src",
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
-    "lib": ["DOM"]
+    "lib": ["DOM", "ES2019"]
   },
   "references": [
     {

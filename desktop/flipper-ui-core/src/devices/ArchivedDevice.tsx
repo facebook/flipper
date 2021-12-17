@@ -9,7 +9,6 @@
 
 import BaseDevice from './BaseDevice';
 import type {DeviceOS, DeviceType} from 'flipper-plugin';
-import {DeviceShell} from './BaseDevice';
 import {SupportFormRequestDetailsState} from '../reducers/supportForm';
 
 export default class ArchivedDevice extends BaseDevice {
@@ -61,10 +60,6 @@ export default class ArchivedDevice extends BaseDevice {
   }
 
   supportRequestDetails?: SupportFormRequestDetailsState;
-
-  spawnShell(): DeviceShell | undefined | null {
-    return null;
-  }
 
   getArchivedScreenshotHandle(): string | null {
     return this.archivedScreenshotHandle;

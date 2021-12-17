@@ -7,10 +7,12 @@
  * @format
  */
 
+import {isTest} from 'flipper-common';
+
 /**
  * Check if we are currently running a unit test.
  * Use this hook to disable certain functionality that is probably not going to work as expected in the JSDom implementaiton
  */
 export function useInUnitTest(): boolean {
-  return process.env.NODE_ENV === 'test';
+  return isTest();
 }

@@ -3,7 +3,7 @@
 exports[`load PluginInstaller list 1`] = `
 <div>
   <div
-    class="css-1v0y38i-Container e1hsqii15"
+    class="css-1v0y38i-Container e1k65efv0"
     height="500"
   >
     <div
@@ -166,7 +166,7 @@ exports[`load PluginInstaller list 1`] = `
               width="0"
             >
               <div
-                class="css-s1wsbn-Container-Horizontal e1hsqii14"
+                class="css-s1wsbn-Container-Horizontal e1hsqii12"
               >
                 <span
                   class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -233,7 +233,7 @@ exports[`load PluginInstaller list 1`] = `
               width="0"
             >
               <div
-                class="css-s1wsbn-Container-Horizontal e1hsqii14"
+                class="css-s1wsbn-Container-Horizontal e1hsqii12"
               >
                 <span
                   class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -379,7 +379,7 @@ exports[`load PluginInstaller list 1`] = `
 exports[`load PluginInstaller list with one plugin installed 1`] = `
 <div>
   <div
-    class="css-1v0y38i-Container e1hsqii15"
+    class="css-1v0y38i-Container e1k65efv0"
     height="500"
   >
     <div
@@ -542,7 +542,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               width="0"
             >
               <div
-                class="css-s1wsbn-Container-Horizontal e1hsqii14"
+                class="css-s1wsbn-Container-Horizontal e1hsqii12"
               >
                 <span
                   class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -609,7 +609,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               width="0"
             >
               <div
-                class="css-s1wsbn-Container-Horizontal e1hsqii14"
+                class="css-s1wsbn-Container-Horizontal e1hsqii12"
               >
                 <span
                   class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"

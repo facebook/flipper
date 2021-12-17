@@ -9,13 +9,17 @@
 
 import {useRef} from 'react';
 
+// TODO: create isProduction utility!
+declare const process: any;
+
 /**
  * This hook will throw in development builds if the value passed in is unstable.
  * Use this if to make sure consumers aren't creating or changing certain props over time
  * (intentionally or accidentally)
  */
 export const useAssertStableRef =
-  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+  typeof process !== 'undefined' &&
+  (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test')
     ? function useAssertStableRef(value: any, prop: string) {
         const ref = useRef(value);
         if (ref.current !== value) {

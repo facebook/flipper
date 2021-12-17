@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": ".",
-    "lib": ["DOM", "ES2019"],
+    "lib": ["ES2019"],
     "noEmit": true,
     "esModuleInterop": true
   },

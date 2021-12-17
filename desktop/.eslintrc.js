@@ -27,6 +27,8 @@ const builtInModules = [
   'immer',
   '@emotion/styled',
   '@ant-design/icons',
+  'jest',
+  'ts-jest',
 ];
 
 const prettierConfig = require('./.prettierrc.json');

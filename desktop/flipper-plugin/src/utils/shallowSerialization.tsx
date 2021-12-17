@@ -66,14 +66,17 @@ export function deserializeShallowObject(obj: any): any {
   return obj;
 }
 
+// TODO: introduce a isProduction utility!
+declare const process: any;
+
 /**
  * Asserts a value is JSON serializable.
  * Will print a warning if a value is JSON serializable, but isn't a pure tree
  */
 export function assertSerializable(obj: any) {
   if (
-    process.env.NODE_ENV !== 'test' &&
-    process.env.NODE_ENV !== 'development'
+    typeof process === 'undefined' ||
+    (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'development')
   ) {
     return;
   }
