@@ -357,6 +357,21 @@ bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
     return true;
   }
 
+  auto last_known_medium = contextStore_->getLastKnownMedium();
+  if (!last_known_medium) {
+    return true;
+  }
+
+  // When we exchange certs over WWW, we use a fake generated serial number and
+  // a virtual device. If medium changes to FS_ACCESS at some point, we should
+  // restart the exchange process to get the device ID of the real device.
+  int medium = certProvider_ != nullptr
+      ? certProvider_->getCertificateExchangeMedium()
+      : FlipperCertificateExchangeMedium::FS_ACCESS;
+  if (last_known_medium != medium) {
+    return true;
+  }
+
   auto step = flipperState_->start("Check required certificates are present");
   bool hasRequiredFiles = contextStore_->hasRequiredFiles();
   if (hasRequiredFiles) {
@@ -380,10 +395,10 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
 
   certificateExchangeCompleted_ = false;
 
-  flipperEventBase_->add([this, message, gettingCert]() {
+  flipperEventBase_->add([this, message, gettingCert, medium]() {
     client_->sendExpectResponse(
         folly::toJson(message),
-        [this, message, gettingCert](
+        [this, message, gettingCert, medium](
             const std::string& response, bool isError) {
           /**
             Need to keep track of whether the response has been handled.
@@ -412,6 +427,7 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
           }
           if (!response.empty()) {
             folly::dynamic config = folly::parseJson(response);
+            config["medium"] = medium;
             contextStore_->storeConnectionConfig(config);
           }
           if (certProvider_) {

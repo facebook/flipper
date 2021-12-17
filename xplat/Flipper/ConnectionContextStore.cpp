@@ -6,6 +6,7 @@
  */
 
 #include "ConnectionContextStore.h"
+#include <folly/Optional.h>
 #include <folly/json.h>
 #include <folly/portability/SysStat.h>
 #include <openssl/err.h>
@@ -107,6 +108,21 @@ std::string ConnectionContextStore::getDeviceId() {
                                     : deviceData_.deviceId;
   } catch (std::exception&) {
     return deviceData_.deviceId;
+  }
+}
+
+folly::Optional<FlipperCertificateExchangeMedium>
+ConnectionContextStore::getLastKnownMedium() {
+  try {
+    std::string config =
+        loadStringFromFile(absoluteFilePath(CONNECTION_CONFIG_FILE));
+    auto maybeMedium = folly::parseJson(config)["medium"];
+    return maybeMedium.isInt()
+        ? folly::Optional<FlipperCertificateExchangeMedium>{static_cast<
+              FlipperCertificateExchangeMedium>(maybeMedium.getInt())}
+        : folly::none;
+  } catch (std::exception&) {
+    return folly::none;
   }
 }
 
