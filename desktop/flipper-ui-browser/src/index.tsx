@@ -15,7 +15,7 @@ document.getElementById('root')!.innerText = 'flipper-ui-browser started';
 
 async function start() {
   // @ts-ignore
-  (global as any).electronRequire = function (path: string) {
+  electronRequire = function (path: string) {
     console.error(
       `[decapitate] Tried to electronRequire ${path}, this module is not available in the browser and will be stubbed`,
     );

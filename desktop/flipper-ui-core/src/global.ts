@@ -19,7 +19,5 @@ declare global {
     __REDUX_DEVTOOLS_EXTENSION__:
       | undefined
       | (StoreEnhancerStoreCreator & StoreEnhancerStateSanitizer);
-
-    FlipperRenderHostInstance: RenderHost;
   }
 }

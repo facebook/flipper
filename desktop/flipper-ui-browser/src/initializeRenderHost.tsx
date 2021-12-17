@@ -14,7 +14,7 @@ export function initializeRenderHost(
   flipperServer: FlipperServer,
   flipperServerConfig: FlipperServerConfig,
 ) {
-  window.FlipperRenderHostInstance = {
+  FlipperRenderHostInstance = {
     readTextFromClipboard() {
       // TODO:
       return undefined;

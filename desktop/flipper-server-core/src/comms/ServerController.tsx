@@ -58,7 +58,7 @@ type ClientCsrQuery = {
   csr_path?: string | undefined;
 };
 
-declare interface ServerController {
+interface ServerController {
   on(event: 'error', callback: (err: Error) => void): this;
 }
 
