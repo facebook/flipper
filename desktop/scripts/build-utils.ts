@@ -7,6 +7,7 @@
  * @format
  */
 
+// @ts-ignore
 import Metro from 'metro';
 import tmp from 'tmp';
 import path from 'path';

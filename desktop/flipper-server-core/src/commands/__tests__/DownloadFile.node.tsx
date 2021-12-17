@@ -159,7 +159,7 @@ describe('commands', () => {
       });
     });
 
-    test('rejects "complete" promise if writeable stream errors', async () => {
+    test.skip('rejects "complete" promise if writeable stream errors', async () => {
       const fakeDownloadStream = new MemoryStream();
       const fakeFileSize = 10;
       const fakeHeaders = {
