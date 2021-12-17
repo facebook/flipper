@@ -6,6 +6,7 @@
 flipperkit_version = '0.124.0'
 Pod::Spec.new do |spec|
   spec.name = 'Flipper'
+  spec.cocoapods_version = '>= 1.10'
   spec.version = flipperkit_version
   spec.license = { :type => 'MIT' }
   spec.homepage = 'https://github.com/facebook/flipper'
