@@ -7,7 +7,7 @@
  * @format
  */
 
-import {createMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
+import {createMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';
 import {FlipperPlugin} from '../plugin';
 import {TestIdler} from '../utils/Idler';
 import {getAllClients} from '../reducers/connections';

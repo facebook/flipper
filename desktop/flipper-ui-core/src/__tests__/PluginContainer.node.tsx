@@ -12,7 +12,7 @@
 import React from 'react';
 import produce from 'immer';
 import {FlipperPlugin} from '../plugin';
-import {renderMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
+import {renderMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';
 import {
   _SandyPluginDefinition,
   PluginClient,

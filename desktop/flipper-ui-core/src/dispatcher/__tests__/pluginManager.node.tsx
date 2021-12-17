@@ -16,9 +16,9 @@ import {
 import {requirePlugin} from '../plugins';
 import {mocked} from 'ts-jest/utils';
 import {TestUtils} from 'flipper-plugin';
-import * as TestPlugin from '../../test-utils/TestPlugin';
+import * as TestPlugin from '../../__tests__/test-utils/TestPlugin';
 import {_SandyPluginDefinition as SandyPluginDefinition} from 'flipper-plugin';
-import MockFlipper from '../../test-utils/MockFlipper';
+import MockFlipper from '../../__tests__/test-utils/MockFlipper';
 import Client from '../../Client';
 import React from 'react';
 import BaseDevice from '../../devices/BaseDevice';

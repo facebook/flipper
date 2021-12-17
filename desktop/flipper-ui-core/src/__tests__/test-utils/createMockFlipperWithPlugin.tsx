@@ -20,24 +20,28 @@ import {
   selectPlugin,
   selectDevice,
   selectClient,
-} from '../reducers/connections';
-import BaseDevice from '../devices/BaseDevice';
+} from '../../reducers/connections';
+import BaseDevice from '../../devices/BaseDevice';
 
-import {Store} from '../reducers/index';
-import Client from '../Client';
+import {Store} from '../../reducers/index';
+import Client from '../../Client';
 
 import {ClientQuery, FlipperServer, Logger} from 'flipper-common';
-import {FlipperDevicePlugin, FlipperPlugin, PluginDefinition} from '../plugin';
-import PluginContainer from '../PluginContainer';
-import {isDevicePluginDefinition} from '../utils/pluginUtils';
-import {getPluginKey} from '../utils/pluginKey';
+import {
+  FlipperDevicePlugin,
+  FlipperPlugin,
+  PluginDefinition,
+} from '../../plugin';
+import PluginContainer from '../../PluginContainer';
+import {isDevicePluginDefinition} from '../../utils/pluginUtils';
+import {getPluginKey} from '../../utils/pluginKey';
 
 import MockFlipper from './MockFlipper';
-import {switchPlugin} from '../reducers/pluginManager';
-import {createSandyPluginFromClassicPlugin} from '../dispatcher/plugins';
-import {createMockActivatablePluginDetails} from '../utils/testUtils';
+import {switchPlugin} from '../../reducers/pluginManager';
+import {createSandyPluginFromClassicPlugin} from '../../dispatcher/plugins';
+import {createMockActivatablePluginDetails} from '../../utils/testUtils';
 import {_SandyPluginDefinition} from 'flipper-plugin';
-import {awaitPluginCommandQueueEmpty} from '../dispatcher/pluginManager';
+import {awaitPluginCommandQueueEmpty} from '../../dispatcher/pluginManager';
 
 export type MockFlipperResult = {
   client: Client;

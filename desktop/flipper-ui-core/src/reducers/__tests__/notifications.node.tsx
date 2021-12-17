@@ -7,7 +7,7 @@
  * @format
  */
 
-import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
+import {createMockFlipperWithPlugin} from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {
   _SandyPluginDefinition,
   TestUtils,

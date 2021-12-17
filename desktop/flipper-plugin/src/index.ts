@@ -13,7 +13,6 @@ export const styled = styledImport;
 
 import './plugin/PluginBase';
 import * as TestUtilites from './test-utils/test-utils';
-export {MockedConsole} from './test-utils/test-utils';
 
 export {
   SandyPluginInstance as _SandyPluginInstance,

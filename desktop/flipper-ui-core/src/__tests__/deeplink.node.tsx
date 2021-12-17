@@ -10,7 +10,7 @@
 jest.useFakeTimers();
 
 import React from 'react';
-import {renderMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
+import {renderMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';
 import {
   _SandyPluginDefinition,
   PluginClient,
