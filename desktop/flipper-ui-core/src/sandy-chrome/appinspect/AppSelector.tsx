@@ -213,7 +213,7 @@ function computeEntries(
         onClick={() => {
           onSelectApp(device, client);
         }}>
-        <Radio value={client.id}>
+        <Radio value={client.id} style={{marginLeft: theme.space.large}}>
           <ClientTitle client={client} />
         </Radio>
       </Menu.Item>
