@@ -349,5 +349,6 @@ export function useTableRedraw() {
 declare const process: any;
 
 function useInUnitTest(): boolean {
+  // N.B. Not reusing flipper-common here, since data-source is published as separate package
   return typeof process !== 'undefined' && process?.env?.NODE_ENV === 'test';
 }

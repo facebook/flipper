@@ -8,8 +8,7 @@
  */
 
 declare const process: any;
-const _isTest = typeof process !== 'undefined' && !!process.env.JEST_WORKER_ID;
 
 export function isTest(): boolean {
-  return _isTest;
+  return typeof process !== 'undefined' && !!process.env.JEST_WORKER_ID;
 }
