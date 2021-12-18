@@ -8,7 +8,7 @@
  */
 
 import {run} from 'envinfo';
-import {FlipperDoctor} from 'flipper-common';
+import type {FlipperDoctor} from 'flipper-common';
 
 async function retrieveAndParseEnvInfo(): Promise<any> {
   return JSON.parse(

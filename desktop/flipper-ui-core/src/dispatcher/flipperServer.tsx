@@ -59,7 +59,7 @@ export function connectFlipperServerToStore(
             {'' + err}
           </>
         ) : (
-          <>Failed to start Flipper server: ${err.message}</>
+          <>Failed to start Flipper server: {err.message ?? err}</>
         ),
       duration: null,
     });

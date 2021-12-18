@@ -4,17 +4,13 @@
   "version": "0.0.0",
   "description": "Standalone nodeJS based Flipper server",
   "repository": "facebook/flipper",
-  "main": "lib/index.js",
+  "main": "server.js",
   "flipperBundlerEntry": "src",
-  "types": "lib/index.d.ts",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "chalk": "^4.1.2",
     "express": "^4.15.2",
-    "flipper-common": "0.0.0",
-    "flipper-pkg-lib": "0.0.0",
-    "flipper-server-core": "0.0.0",
     "fs-extra": "^9.0.0",
     "mac-ca": "^1.0.6",
     "p-filter": "^2.1.0",
@@ -23,20 +19,19 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^15.12.5",
-    "metro": "^0.66.2",
-    "nodemon": "^2.0.15",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.4.4"
+    "flipper-common": "0.0.0",
+    "flipper-pkg-lib": "0.0.0",
+    "flipper-server-core": "0.0.0",
+    "metro": "^0.66.2"
   },
   "peerDependencies": {},
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
-    "prepack": "yarn reset && yarn build",
-    "start": "cross-env NODE_ENV=development nodemon --ext 'tsx' --watch './src/' --watch '../flipper-server-core/src/' --exec 'yarn build && ../ts-node src/index.tsx'"
+    "prepack": "yarn reset && yarn build"
   },
   "files": [
-    "lib/**/*"
+    "dist/**/*"
   ],
   "homepage": "https://github.com/facebook/flipper",
   "keywords": [

@@ -16,7 +16,6 @@ import {
 import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import adbkit from 'adbkit';
 import {
   registerPlugins,
   addGatekeepedPlugins,
@@ -42,8 +41,6 @@ import * as Immer from 'immer';
 import * as antd from 'antd';
 import * as emotion_styled from '@emotion/styled';
 import * as antdesign_icons from '@ant-design/icons';
-// @ts-ignore
-import * as crc32 from 'crc32';
 
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import isPluginCompatible from '../utils/isPluginCompatible';
@@ -51,24 +48,25 @@ import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
 import {getRenderHostInstance} from '../RenderHost';
 import pMap from 'p-map';
+import * as deprecatedExports from '../deprecated-exports';
 
 let defaultPluginsIndex: any = null;
 
 export default async (store: Store, _logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
-  const globalObject: any = typeof window === 'undefined' ? global : window;
+  const globalObject = (function (this: any) {
+    return this;
+  })();
 
   // this list should match `replace-flipper-requires.tsx` and the `builtInModules` in `desktop/.eslintrc`
   globalObject.React = React;
   globalObject.ReactDOM = ReactDOM;
-  globalObject.Flipper = require('../deprecated-exports');
-  globalObject.adbkit = adbkit;
+  globalObject.Flipper = deprecatedExports;
   globalObject.FlipperPlugin = FlipperPluginSDK;
   globalObject.Immer = Immer;
   globalObject.antd = antd;
   globalObject.emotion_styled = emotion_styled;
   globalObject.antdesign_icons = antdesign_icons;
-  globalObject.crc32_hack_fix_me = crc32;
 
   const gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
   const disabledPlugins: Array<ActivatablePluginDetails> = [];
@@ -298,6 +296,11 @@ const requirePluginInternal = async (
   let plugin = pluginDetails.isBundled
     ? defaultPluginsIndex[pluginDetails.name]
     : await getRenderHostInstance().requirePlugin(pluginDetails.entry);
+  if (!plugin) {
+    throw new Error(
+      `Failed to obtain plugin source for: ${pluginDetails.name}`,
+    );
+  }
   if (isSandyPlugin(pluginDetails)) {
     // Sandy plugin
     return new _SandyPluginDefinition(pluginDetails, plugin);

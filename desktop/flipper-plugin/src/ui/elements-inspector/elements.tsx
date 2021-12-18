@@ -14,7 +14,10 @@ import styled from '@emotion/styled';
 import React, {MouseEvent, KeyboardEvent} from 'react';
 import {theme} from '../theme';
 import {Layout} from '../Layout';
-import {getFlipperLib} from 'flipper-plugin';
+import {
+  getFlipperLib,
+  tryGetFlipperLibImplementation,
+} from '../../plugin/FlipperLib';
 import {DownOutlined, RightOutlined} from '@ant-design/icons';
 
 const {Text} = Typography;
@@ -529,6 +532,9 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     this.props.onElementSelected(key);
   };
 
+  isDarwin =
+    tryGetFlipperLibImplementation()?.environmentInfo.os.platform === 'darwin';
+
   onKeyDown = (e: KeyboardEvent<any>) => {
     const {selected} = this.props;
     if (selected == null) {
@@ -550,8 +556,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
     if (
       e.key === 'c' &&
-      ((e.metaKey && process.platform === 'darwin') ||
-        (e.ctrlKey && process.platform !== 'darwin'))
+      ((e.metaKey && this.isDarwin) || (e.ctrlKey && this.isDarwin))
     ) {
       e.stopPropagation();
       e.preventDefault();

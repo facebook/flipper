@@ -4,11 +4,15 @@
     "noEmit": true,
     "incremental": false,
     "composite": false,
-    "allowJs": false
+    "allowJs": false,
+    // for unit tests:
+    "lib": ["DOM", "ES2019"],
+    "types": ["jest"]
   },
   "exclude": [
     "**/node_modules/",
     "**/lib/",
-    "**/dist/"
+    "**/dist/",
+    "flipper-server/static/**"
   ]
 }

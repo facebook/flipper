@@ -11,6 +11,9 @@
 // eslint-disable-next-line
 global.fetch = require('jest-fetch-mock');
 
+// @ts-ignore
+global.electronRequire = require;
+
 // make sure test run everywhere in the same timezone!
 // +11, somewhere in the middle of nowhere, so this deviates for everyone and will fail early :)
 const timezone = 'Pacific/Pohnpei';

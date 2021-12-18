@@ -56,26 +56,22 @@ export class IOSDeviceManager {
   private xcodeVersionMismatchFound = false;
   public xcodeCommandLineToolsDetected = false;
 
-  constructor(private flipperServer: FlipperServerImpl) {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('beforeunload', () => {
-        this.portForwarders.forEach((process) => process.kill());
-      });
-    }
-  }
+  constructor(private flipperServer: FlipperServerImpl) {}
 
   private forwardPort(port: number, multiplexChannelPort: number) {
     const child = childProcess.execFile(
       this.portforwardingClient,
       [`-portForward=${port}`, `-multiplexChannelPort=${multiplexChannelPort}`],
       (err, stdout, stderr) => {
-        // This happens on app reloads and doesn't need to be treated as an error.
-        console.warn(
-          '[conn] Port forwarding app failed to start',
-          err,
-          stdout,
-          stderr,
-        );
+        if (err) {
+          // This happens on app reloads and doesn't need to be treated as an error.
+          console.warn(
+            '[conn] Port forwarding app failed to start',
+            err,
+            stdout,
+            stderr,
+          );
+        }
       },
     );
     console.info(

@@ -42,6 +42,8 @@ export async function getHealthChecks(
   });
 }
 
+let envInfoPromise: Promise<FlipperDoctor.EnvironmentInfo> | undefined;
+
 export async function runHealthcheck(
   options: FlipperDoctor.HealthcheckSettings,
   categoryName: keyof FlipperDoctor.Healthchecks,
@@ -60,7 +62,10 @@ export async function runHealthcheck(
     throw new Error('Unknown healthcheck: ' + ruleName);
   }
 
-  const environmentInfo = await getEnvInfo();
+  if (!envInfoPromise) {
+    envInfoPromise = getEnvInfo();
+  }
+  const environmentInfo = await envInfoPromise;
   const checkResult = await check.run!(environmentInfo, options.settings);
   return checkResult.hasProblem && check.isRequired
     ? {

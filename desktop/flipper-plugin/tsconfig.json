@@ -2,7 +2,9 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src"
+    "rootDir": "src",
+    "lib": ["dom", "ES2019"],
+    "types": ["jest", "../types/jest-extensions"]
   },
   "references": [
     {

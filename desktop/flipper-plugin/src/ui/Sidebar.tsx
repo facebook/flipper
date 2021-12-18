@@ -7,14 +7,15 @@
  * @format
  */
 
-import {Layout} from './Layout';
 import {Component, ReactNode} from 'react';
 import styled from '@emotion/styled';
 import {Property} from 'csstype';
+import {Container} from './Container';
 import React from 'react';
 import {MoreOutlined} from '@ant-design/icons';
 import {Interactive, InteractiveProps} from './Interactive';
 import {theme} from './theme';
+import {Layout} from './Layout';
 
 const SidebarInteractiveContainer = styled(Interactive)<InteractiveProps>({
   display: 'flex',
@@ -26,7 +27,7 @@ type SidebarPosition = 'left' | 'top' | 'right' | 'bottom';
 
 const borderStyle = `1px solid ${theme.dividerColor}`;
 
-const SidebarContainer = styled(Layout.Container)<{
+const SidebarContainer = styled(Container)<{
   position: 'right' | 'top' | 'left' | 'bottom';
   overflow?: boolean;
   unstyled?: boolean;

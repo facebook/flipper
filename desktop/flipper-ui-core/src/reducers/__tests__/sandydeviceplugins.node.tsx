@@ -7,7 +7,7 @@
  * @format
  */
 
-import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
+import {createMockFlipperWithPlugin} from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {Store} from '../../reducers/';
 import {selectPlugin} from '../../reducers/connections';
 import {

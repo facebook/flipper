@@ -24,7 +24,6 @@ import {
 import produce from 'immer';
 import BaseDevice from '../devices/BaseDevice';
 import {deconstructClientId} from 'flipper-common';
-import {getCPUUsage} from 'process';
 import {sideEffect} from '../utils/sideEffect';
 import {getSelectionInfo} from '../utils/info';
 import type {SelectionInfo} from '../utils/info';
@@ -239,7 +238,7 @@ export default (store: Store, logger: Logger) => {
       sdkVersion,
       isForeground: state.application.windowIsFocused,
       usedJSHeapSize: (window.performance as any).memory.usedJSHeapSize,
-      cpuLoad: getCPUUsage().percentCPUUsage,
+      cpuLoad: renderHost.getPercentCPUUsage?.() ?? 0,
     };
 
     // reset dropped frames counter

@@ -132,6 +132,21 @@ export type IOSDeviceParams = {
   state?: string;
 };
 
+// Serializable subset of StatsBase from fs.d.ts
+export interface FSStatsLike {
+  isFile: boolean;
+  isDirectory: boolean;
+  isSymbolicLink: boolean;
+  mode: number;
+  uid: number;
+  gid: number;
+  size: number;
+  atimeMs: number;
+  mtimeMs: number;
+  ctimeMs: number;
+  birthtimeMs: number;
+}
+
 export type FlipperServerCommands = {
   'node-api-fs-access': (path: string, mode?: number) => Promise<void>;
   'node-api-fs-pathExists': (path: string, mode?: number) => Promise<boolean>;
@@ -145,6 +160,24 @@ export type FlipperServerCommands = {
     src: string,
     dest: string,
     flags?: number,
+  ) => Promise<void>;
+  'node-api-fs-stat': (path: string) => Promise<FSStatsLike>;
+  'node-api-fs-readlink': (path: string) => Promise<string>;
+  'node-api-fs-readfile': (
+    path: string,
+    options?: {encoding?: BufferEncoding},
+  ) => Promise<string>;
+  'node-api-fs-readfile-binary': (
+    path: string,
+  ) => Promise<string /* base64 encoded */>;
+  'node-api-fs-writefile': (
+    path: string,
+    contents: string,
+    options?: {encoding?: BufferEncoding},
+  ) => Promise<void>;
+  'node-api-fs-writefile-binary': (
+    path: string,
+    base64contents: string,
   ) => Promise<void>;
   /**
    * @throws ExecError
@@ -244,7 +277,6 @@ export type FlipperServerCommands = {
 export type GraphResponse = {
   status: number;
   data: any;
-  headers: Record<string, any>;
 };
 
 export type GraphFileUpload = {

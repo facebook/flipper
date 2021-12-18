@@ -3,7 +3,13 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": [
+      "../types/JSONStream",
+      "../types/adbkit",
+      "../types/openssl-wrapper",
+      "../types/adbkit-logcat"
+    ]
   },
   "references": [
     {

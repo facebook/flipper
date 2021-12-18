@@ -27,7 +27,7 @@ index 28a12c7..13f7382 100644
  
    devWarning(!(typeof icon === 'string' && icon.length > 2), 'Button', "`icon` is using ReactNode instead of string naming in v4. Please check `".concat(icon, "` at https://ant.design/components/icon"));
 diff --git a/node_modules/antd/es/typography/Link.js b/node_modules/antd/es/typography/Link.js
-index 2847840..294ec8d 100644
+index 2847840..c58480a 100644
 --- a/node_modules/antd/es/typography/Link.js
 +++ b/node_modules/antd/es/typography/Link.js
 @@ -36,12 +36,23 @@ var Link = function Link(_a, ref) {

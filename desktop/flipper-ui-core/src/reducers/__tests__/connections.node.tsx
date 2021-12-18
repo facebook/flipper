@@ -13,21 +13,24 @@ import {
   _SandyPluginDefinition,
   _setFlipperLibImplementation,
   TestUtils,
-  MockedConsole,
 } from 'flipper-plugin';
-import {TestDevice} from '../../test-utils/TestDevice';
+import {TestDevice} from '../../devices/TestDevice';
 import {
   createMockFlipperWithPlugin,
   MockFlipperResult,
-} from '../../test-utils/createMockFlipperWithPlugin';
+} from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {Store} from '..';
 import {getActiveClient, getActiveDevice} from '../../selectors/connections';
 import BaseDevice from '../../devices/BaseDevice';
 import Client from '../../Client';
+import {
+  mockConsole,
+  MockedConsole,
+} from '../../__tests__/test-utils/mockConsole';
 
 let mockedConsole: MockedConsole;
 beforeEach(() => {
-  mockedConsole = TestUtils.mockConsole();
+  mockedConsole = mockConsole();
   _setFlipperLibImplementation(TestUtils.createMockFlipperLib());
 });
 

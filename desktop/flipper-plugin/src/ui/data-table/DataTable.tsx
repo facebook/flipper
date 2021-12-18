@@ -144,7 +144,7 @@ export function DataTable<T extends object>(
   const isUnitTest = useInUnitTest();
 
   // eslint-disable-next-line
-  const scope = isUnitTest ? "" : usePluginInstanceMaybe()?.pluginKey ?? "";
+  const scope = isUnitTest ? '' : usePluginInstanceMaybe()?.pluginKey ?? '';
   const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
   const [tableState, dispatch] = useReducer(
     dataTableManagerReducer as DataTableReducer<T>,
@@ -344,7 +344,12 @@ export function DataTable<T extends object>(
     // Important dep optimization: we don't want to recalc filters if just the width or visibility changes!
     // We pass entire state.columns to computeDataTableFilter, but only changes in the filter are a valid cause to compute a new filter function
     // eslint-disable-next-line
-    [tableState.searchValue, tableState.useRegex, ...tableState.columns.map((c) => c.filters), ...tableState.columns.map((c => c.inversed))],
+    [
+      tableState.searchValue,
+      tableState.useRegex,
+      ...tableState.columns.map((c) => c.filters),
+      ...tableState.columns.map((c) => c.inversed),
+    ],
   );
 
   useEffect(
@@ -398,7 +403,7 @@ export function DataTable<T extends object>(
 
   /** Range finder */
   const [range, setRange] = useState('');
-  const hideRange = useRef<NodeJS.Timeout>();
+  const hideRange = useRef<any>();
 
   const onRangeChange = useCallback(
     (start: number, end: number, total: number, offset) => {
@@ -425,7 +430,7 @@ export function DataTable<T extends object>(
   const contexMenu = isUnitTest
     ? undefined
     : // eslint-disable-next-line
-    useCallback(
+      useCallback(
         () =>
           tableContextMenuFactory(
             dataSource,

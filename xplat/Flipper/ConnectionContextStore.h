@@ -7,9 +7,11 @@
 
 #pragma once
 
+#include <folly/Optional.h>
 #include <folly/dynamic.h>
 #include <folly/io/async/SSLContext.h>
 #include <string>
+#include "FlipperCertificateExchangeMedium.h"
 #include "FlipperInitConfig.h"
 
 namespace facebook {
@@ -24,6 +26,10 @@ class ConnectionContextStore {
   std::string getCertificateDirectoryPath();
   std::string getCACertificatePath();
   std::string getDeviceId();
+  /**
+   * Get medium over which the certificate was received.
+   */
+  folly::Optional<FlipperCertificateExchangeMedium> getLastKnownMedium();
   void storeConnectionConfig(folly::dynamic& config);
   bool resetState();
 

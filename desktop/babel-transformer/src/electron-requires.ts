@@ -84,3 +84,6 @@ module.exports = () => ({
     },
   },
 });
+
+// used by startWebServerDev to know which modules to stub
+module.exports.BUILTINS = BUILTINS;

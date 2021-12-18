@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": ["es7", "dom", "es2019"],
+    "lib": ["ES2019"],
     "esModuleInterop": true,
     "target": "ES2019",
     "removeComments": true,
@@ -27,7 +27,10 @@
       "flipper-server-ui": ["./flipper-server-ui/src"],
       "flipper-common": ["./flipper-common/src"],
       "flipper-*": ["./*/src"]
-    }
+    },
+    // by default we don't include any @types, as to white list them specifically per project.
+    // this avoids hoised @types packages being shared by all projects implicitly
+    "types": []
   },
   "exclude": ["**/lib/", "**/dist/", "**/node_modules/", "**/__tests__/"]
 }

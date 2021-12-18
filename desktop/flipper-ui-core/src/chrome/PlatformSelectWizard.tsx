@@ -14,7 +14,7 @@ import {State as Store} from '../reducers';
 import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
 import {isEqual} from 'lodash';
-import {reportUsage, Settings} from 'flipper-common';
+import {Platform, reportUsage, Settings} from 'flipper-common';
 import {Modal, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
 import {getRenderHostInstance} from '../RenderHost';
@@ -23,7 +23,7 @@ const WIZARD_FINISHED_LOCAL_STORAGE_KEY = 'platformSelectWizardFinished';
 
 type OwnProps = {
   onHide: () => void;
-  platform: NodeJS.Platform;
+  platform: Platform;
 };
 
 type StateFromProps = {

@@ -7,7 +7,6 @@
  * @format
  */
 
-import stream from 'stream';
 import {
   Device,
   _SandyDevicePluginInstance,
@@ -27,12 +26,6 @@ import {
 import {DeviceSpec, PluginDetails} from 'flipper-common';
 import {getPluginKey} from '../utils/pluginKey';
 import {Base64} from 'js-base64';
-
-export type DeviceShell = {
-  stdout: stream.Readable;
-  stderr: stream.Readable;
-  stdin: stream.Writable;
-};
 
 type PluginDefinition = _SandyPluginDefinition;
 type PluginMap = Map<string, PluginDefinition>;
@@ -199,14 +192,12 @@ export default class BaseDevice implements Device {
     return this.flipperServer.exec('device-supports-screenshot', this.serial);
   }
 
-  async screenshot(): Promise<Buffer> {
+  async screenshot(): Promise<Uint8Array> {
     if (this.isArchived) {
-      return Buffer.from([]);
+      return new Uint8Array();
     }
-    return Buffer.from(
-      Base64.toUint8Array(
-        await this.flipperServer.exec('device-take-screenshot', this.serial),
-      ),
+    return Base64.toUint8Array(
+      await this.flipperServer.exec('device-take-screenshot', this.serial),
     );
   }
 

@@ -9,12 +9,50 @@
 
 import type {NotificationEvents} from './dispatcher/notifications';
 import type {PluginNotification} from './reducers/notifications';
-// TODO: Fix me
-// eslint-disable-next-line no-restricted-imports
-import type {NotificationConstructorOptions} from 'electron';
 import {FlipperLib} from 'flipper-plugin';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
 import {Icon} from './utils/icons';
+
+interface NotificationAction {
+  // Docs: https://electronjs.org/docs/api/structures/notification-action
+
+  /**
+   * The label for the given action.
+   */
+  text?: string;
+  /**
+   * The type of action, can be `button`.
+   */
+  type: 'button';
+}
+
+// Subset of electron.d.ts
+interface NotificationConstructorOptions {
+  /**
+   * A title for the notification, which will be shown at the top of the notification
+   * window when it is shown.
+   */
+  title: string;
+  /**
+   * The body text of the notification, which will be displayed below the title or
+   * subtitle.
+   */
+  body: string;
+  /**
+   * Actions to add to the notification. Please read the available actions and
+   * limitations in the `NotificationAction` documentation.
+   *
+   * @platform darwin
+   */
+  actions?: NotificationAction[];
+  /**
+   * A custom title for the close button of an alert. An empty string will cause the
+   * default localized text to be used.
+   *
+   * @platform darwin
+   */
+  closeButtonText?: string;
+}
 
 // Events that are emitted from the main.ts ovr the IPC process bridge in Electron
 type MainProcessEvents = {
@@ -78,11 +116,6 @@ export interface RenderHost {
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
   importFile: FlipperLib['importFile'];
   exportFile: FlipperLib['exportFile'];
-  /**
-   * @returns
-   * A callback to unregister the shortcut
-   */
-  registerShortcut(shortCut: string, callback: () => void): () => void;
   hasFocus(): boolean;
   onIpcEvent<Event extends keyof MainProcessEvents>(
     event: Event,
@@ -104,11 +137,12 @@ export interface RenderHost {
   // given the requested icon and proposed public url of the icon, rewrite it to a local icon if needed
   getLocalIconUrl?(icon: Icon, publicUrl: string): string;
   unloadModule?(path: string): void;
+  getPercentCPUUsage?(): number;
 }
 
 export function getRenderHostInstance(): RenderHost {
-  if (!window.FlipperRenderHostInstance) {
+  if (!FlipperRenderHostInstance) {
     throw new Error('global FlipperRenderHostInstance was never set');
   }
-  return window.FlipperRenderHostInstance;
+  return FlipperRenderHostInstance;
 }

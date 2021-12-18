@@ -11,7 +11,7 @@ import {FlipperPlugin} from '../../plugin';
 import {
   createMockFlipperWithPlugin,
   wrapSandy,
-} from '../../test-utils/createMockFlipperWithPlugin';
+} from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {sleep} from 'flipper-common';
 import {Store} from '../../reducers';
 import Client from '../../Client';

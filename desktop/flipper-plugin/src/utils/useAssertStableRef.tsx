@@ -7,6 +7,7 @@
  * @format
  */
 
+import {isProduction} from 'flipper-common';
 import {useRef} from 'react';
 
 /**
@@ -14,16 +15,15 @@ import {useRef} from 'react';
  * Use this if to make sure consumers aren't creating or changing certain props over time
  * (intentionally or accidentally)
  */
-export const useAssertStableRef =
-  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
-    ? function useAssertStableRef(value: any, prop: string) {
-        const ref = useRef(value);
-        if (ref.current !== value) {
-          throw new Error(
-            `[useAssertStableRef] An unstable reference was passed to this component as property '${prop}'. For optimization purposes we expect that this prop doesn't change over time. You might want to create the value passed to this prop outside the render closure, store it in useCallback / useMemo / useState, or set a key on the parent component`,
-          );
-        }
+export const useAssertStableRef = !isProduction()
+  ? function useAssertStableRef(value: any, prop: string) {
+      const ref = useRef(value);
+      if (ref.current !== value) {
+        throw new Error(
+          `[useAssertStableRef] An unstable reference was passed to this component as property '${prop}'. For optimization purposes we expect that this prop doesn't change over time. You might want to create the value passed to this prop outside the render closure, store it in useCallback / useMemo / useState, or set a key on the parent component`,
+        );
       }
-    : function (_value: any, _prop: string) {
-        // no-op
-      };
+    }
+  : function (_value: any, _prop: string) {
+      // no-op
+    };

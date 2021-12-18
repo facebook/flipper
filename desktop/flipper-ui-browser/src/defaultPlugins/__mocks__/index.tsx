@@ -7,11 +7,4 @@
  * @format
  */
 
-declare module NodeJS {
-  interface Global {
-    window: Window | undefined;
-    WebSocket: any;
-    fetch: any;
-    originalConsole: Console | undefined;
-  }
-}
+export default {} as any;

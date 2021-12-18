@@ -14,7 +14,7 @@ export function initializeRenderHost(
   flipperServer: FlipperServer,
   flipperServerConfig: FlipperServerConfig,
 ) {
-  window.FlipperRenderHostInstance = {
+  FlipperRenderHostInstance = {
     readTextFromClipboard() {
       // TODO:
       return undefined;
@@ -31,18 +31,14 @@ export function initializeRenderHost(
     openLink(url: string) {
       window.open(url, '_blank');
     },
-    registerShortcut(_shortcut, _callback) {
-      // TODO:
-      return () => {};
-    },
     hasFocus() {
       return document.hasFocus();
     },
-    onIpcEvent(event) {
-      console.warn('onIpcEvent not available', event);
+    onIpcEvent(_event) {
+      // no-op
     },
-    sendIpcEvent(event, ..._args: any[]) {
-      console.warn('sendIpcEvent not available', event);
+    sendIpcEvent(_event, ..._args: any[]) {
+      // no-op
     },
     shouldUseDarkColors() {
       return !!(
@@ -76,9 +72,8 @@ export function initializeRenderHost(
 }
 
 function getDefaultPluginsIndex() {
-  // TODO:
-  return {};
+  // @ts-ignore
   // eslint-disable-next-line import/no-unresolved
-  // const index = require('../defaultPlugins');
-  // return index.default || index;
+  const index = require('./defaultPlugins');
+  return index.default || index;
 }

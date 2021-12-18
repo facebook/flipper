@@ -29,14 +29,13 @@ import {
   moveSourceMaps,
 } from './build-utils';
 import fetch from '@adobe/node-fetch-retry';
-import {buildLocalIconPath, Icons} from '../app/src/utils/icons';
 import isFB from './isFB';
 import copyPackageWithDependencies from './copy-package-with-dependencies';
 import {staticDir, distDir} from './paths';
 import yargs from 'yargs';
 import {WinPackager} from 'app-builder-lib/out/winPackager';
-// eslint-disable-next-line no-restricted-imports
-import {Icon, getPublicIconUrl} from 'flipper-ui-core/src/utils/icons';
+// eslint-disable-next-line node/no-extraneous-import
+import type {Icon} from 'flipper-ui-core';
 
 // Used in some places to avoid release-to-release changes. Needs
 // to be this high for some MacOS-specific things that I can't
@@ -159,7 +158,9 @@ async function modifyPackageManifest(
 ) {
   // eslint-disable-next-line no-console
   console.log('Creating package.json manifest');
+  // eslint-disable-next-line flipper/no-relative-imports-across-packages
   const manifest = require('../package.json');
+  // eslint-disable-next-line flipper/no-relative-imports-across-packages
   const manifestStatic = require('../static/package.json');
 
   // The manifest's dependencies are bundled with the final app by
@@ -392,3 +393,20 @@ async function downloadIcons(buildFolder: string) {
   console.log('✨  Done');
   process.exit();
 })();
+
+export type Icons = {
+  [key: string]: Icon['size'][];
+};
+
+// should match flipper-ui-core/src/utils/icons.tsx
+export function getPublicIconUrl({name, variant, size, density}: Icon) {
+  return `https://facebook.com/assets/?name=${name}&variant=${variant}&size=${size}&set=facebook_icons&density=${density}x`;
+}
+
+// should match app/src/utils/icons.tsx
+function buildLocalIconPath(icon: Icon) {
+  return path.join(
+    'icons',
+    `${icon.name}-${icon.variant}-${icon.size}@${icon.density}x.png`,
+  );
+}

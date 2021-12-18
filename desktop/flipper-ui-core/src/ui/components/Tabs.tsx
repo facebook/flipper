@@ -178,7 +178,8 @@ export default function Tabs(props: {
   classic?: boolean;
 }) {
   let tabsContainer = useContext(TabsContext);
-  const scope = useContext((global as any).FlipperTrackingScopeContext);
+  // @ts-ignore
+  const scope = useContext(global.FlipperTrackingScopeContext);
   if (props.classic === true) {
     tabsContainer = false;
   }

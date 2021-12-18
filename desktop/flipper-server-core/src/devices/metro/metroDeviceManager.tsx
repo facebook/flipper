@@ -11,6 +11,7 @@ import MetroDevice from './MetroDevice';
 import http from 'http';
 import {parseEnvironmentVariableAsNumber} from '../../utils/environmentVariables';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
+import WebSocket from 'ws';
 
 const METRO_HOST = 'localhost';
 const METRO_PORT = parseEnvironmentVariableAsNumber('METRO_SERVER_PORT', 8081);

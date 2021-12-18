@@ -24,7 +24,7 @@ import {selectedPlugins, State as PluginsState} from '../../reducers/plugins';
 import {
   createMockFlipperWithPlugin,
   wrapSandy,
-} from '../../test-utils/createMockFlipperWithPlugin';
+} from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {
   Notification,
   TestUtils,
@@ -37,7 +37,7 @@ import {
 } from 'flipper-plugin';
 import {selectPlugin, getAllClients} from '../../reducers/connections';
 import {TestIdler} from '../Idler';
-import {TestDevice} from '../../test-utils/TestDevice';
+import {TestDevice} from '../../devices/TestDevice';
 
 const testIdler = new TestIdler();
 

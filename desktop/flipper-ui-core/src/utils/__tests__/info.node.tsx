@@ -15,7 +15,7 @@ import {registerLoadedPlugins} from '../../reducers/plugins';
 import {TestUtils} from 'flipper-plugin';
 import {getLogger} from 'flipper-common';
 import {selectPlugin} from '../../reducers/connections';
-import {renderMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
+import {renderMockFlipperWithPlugin} from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 
 const networkPluginDetails = TestUtils.createMockPluginDetails({
   id: 'Network',

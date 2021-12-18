@@ -9,7 +9,7 @@
 
 import {getPluginKey} from '../pluginKey';
 import {FlipperPlugin, FlipperDevicePlugin} from '../../plugin';
-import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
+import {createMockFlipperWithPlugin} from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {getExportablePlugins} from '../../selectors/connections';
 
 function createMockFlipperPluginWithDefaultPersistedState(id: string) {

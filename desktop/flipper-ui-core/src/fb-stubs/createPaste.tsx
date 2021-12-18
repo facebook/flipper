@@ -12,3 +12,15 @@ export default function createPaste(
 ): Promise<string | undefined> {
   return Promise.reject(new Error('Not implemented!'));
 }
+
+export type CreatePasteResult = {
+  number: number;
+  url: string;
+};
+
+export async function createPasteWithDetails(_details: {
+  title?: string;
+  content: string;
+}): Promise<CreatePasteResult | undefined> {
+  return Promise.reject(new Error('Not implemented!'));
+}

@@ -15,3 +15,4 @@ static/index.js
 static/defaultPlugins/*
 app/src/defaultPlugins/index.tsx
 generated
+flipper-server/static

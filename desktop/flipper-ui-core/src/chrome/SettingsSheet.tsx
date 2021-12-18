@@ -22,7 +22,12 @@ import {FilePathConfigField, ConfigText} from './settings/configFields';
 import KeyboardShortcutInput from './settings/KeyboardShortcutInput';
 import {isEqual, isMatch, isEmpty} from 'lodash';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
-import {LauncherSettings, reportUsage, Settings} from 'flipper-common';
+import {
+  LauncherSettings,
+  Platform,
+  reportUsage,
+  Settings,
+} from 'flipper-common';
 import {Modal, message, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
 import {getRenderHostInstance} from '../RenderHost';
@@ -30,7 +35,7 @@ import {loadTheme} from '../utils/loadTheme';
 
 type OwnProps = {
   onHide: () => void;
-  platform: NodeJS.Platform;
+  platform: Platform;
   noModal?: boolean; // used for testing
 };
 

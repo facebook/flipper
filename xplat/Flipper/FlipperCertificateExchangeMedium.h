@@ -5,4 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 enum FlipperCertificateExchangeMedium { FS_ACCESS = 1, WWW = 2 };

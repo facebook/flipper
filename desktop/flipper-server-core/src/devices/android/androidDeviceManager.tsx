@@ -23,9 +23,6 @@ import {
 } from '../../FlipperServerConfig';
 
 export class AndroidDeviceManager {
-  // cache emulator path
-  private emulatorPath: string | undefined;
-
   constructor(public flipperServer: FlipperServerImpl) {}
 
   private createDevice(
@@ -119,25 +116,16 @@ export class AndroidDeviceManager {
     });
   }
 
-  async getEmulatorPath(): Promise<string> {
-    if (this.emulatorPath) {
-      return this.emulatorPath;
-    }
-    // TODO: this doesn't respect the currently configured android_home in settings!
-    try {
-      this.emulatorPath = (await promisify(which)('emulator')) as string;
-    } catch (_e) {
-      this.emulatorPath = join(
-        process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || '',
-        'emulator',
-        'emulator',
-      );
-    }
-    return this.emulatorPath;
+  getEmulatorPath(): string {
+    return join(
+      this.flipperServer.config.settings.androidHome,
+      'emulator',
+      'emulator',
+    );
   }
 
   async getAndroidEmulators(): Promise<string[]> {
-    const emulatorPath = await this.getEmulatorPath();
+    const emulatorPath = this.getEmulatorPath();
     return new Promise<string[]>((resolve) => {
       child_process.execFile(
         emulatorPath as string,

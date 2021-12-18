@@ -22,7 +22,6 @@ import {theme, _Interactive, _InteractiveProps} from 'flipper-plugin';
 import styled from '@emotion/styled';
 import {colors} from '../colors';
 import FlexRow from '../FlexRow';
-import invariant from 'invariant';
 import React from 'react';
 
 const TableHeaderArrow = styled.span({
@@ -143,7 +142,9 @@ class TableHeadColumn extends PureComponent<{
     // normalise number to a percentage if we were originally passed a percentage
     if (isPercentage(width) && this.ref) {
       const {parentElement} = this.ref;
-      invariant(parentElement, 'expected there to be parentElement');
+      if (!parentElement) {
+        throw new Error('expected there to be parentElement');
+      }
 
       const parentWidth = parentElement.clientWidth;
       const {childNodes} = parentElement;

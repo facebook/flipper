@@ -1,3 +1,9 @@
+# 0.126.0 (17/12/2021)
+
+ * [D33158280](https://github.com/facebook/flipper/search?q=D33158280&type=Commits) -  Fixed issue where a missing ANDROID_SDK_ROOT env var made it impossible to launch emulators
+ * [D33158445](https://github.com/facebook/flipper/search?q=D33158445&type=Commits) -  Register shortcuts only for Flipper application instead of globally. Fixes https://github.com/facebook/flipper/issues/3090
+
+
 # 0.125.0 (11/12/2021)
 
  * [D32881744](https://github.com/facebook/flipper/search?q=D32881744&type=Commits) -  Remove child_process usage  from ReactDevTools plugin

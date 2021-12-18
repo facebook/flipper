@@ -16,13 +16,13 @@ import dispatcher, {
   getLatestCompatibleVersionOfEachPlugin,
 } from '../plugins';
 import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-common';
-import path from 'path';
 import {createRootReducer, State} from '../../reducers/index';
 import {getLogger} from 'flipper-common';
 import configureStore from 'redux-mock-store';
 import TestPlugin from './TestPlugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {getRenderHostInstance} from '../../RenderHost';
+import path from 'path';
 
 let loadDynamicPluginsMock: jest.Mock;
 

@@ -14,7 +14,7 @@ if (isFB && process.env.FLIPPER_FB === undefined) {
 }
 process.env.FLIPPER_TEST_RUNNER = 'true';
 
-// eslint-disable-next-line import/no-unresolved
+// eslint-disable-next-line import/no-unresolved,flipper/no-relative-imports-across-packages
 const {transform} = require('../babel-transformer/lib/transform-jest');
 
 module.exports = {

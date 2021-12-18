@@ -62,9 +62,6 @@ export {Component, PureComponent} from 'react';
 // context menus and dropdowns
 export {default as ContextMenu} from './components/ContextMenu';
 
-// file
-export {FileListFile, FileListFiles} from './components/FileList';
-export {default as FileList} from './components/FileList';
 // utility elements
 export {default as View} from './components/View';
 export {default as Sidebar} from './components/Sidebar';

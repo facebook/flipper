@@ -20,7 +20,6 @@ import {
 } from 'flipper-common';
 import {default as isProduction} from './utils/isProduction';
 import EventEmitter from 'eventemitter3';
-import invariant from 'invariant';
 import {getPluginKey} from './utils/pluginKey';
 
 import {defaultEnabledBackgroundPlugins} from './utils/pluginUtils';
@@ -378,7 +377,9 @@ export default class Client extends EventEmitter {
         } else if (method === 'refreshPlugins') {
           this.refreshPlugins();
         } else if (method === 'execute') {
-          invariant(data.params, 'expected params');
+          if (!data.params) {
+            throw new Error('expected params');
+          }
           const params: Params = data.params;
           const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
           emitBytesReceived(params.api, bytes);

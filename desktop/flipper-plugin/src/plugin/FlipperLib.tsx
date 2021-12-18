@@ -24,6 +24,7 @@ import {
   RmOptions,
   fsConstants,
   EnvironmentInfo,
+  FSStatsLike,
 } from 'flipper-common';
 
 export type FileEncoding = 'utf-8' | 'base64';
@@ -49,6 +50,7 @@ export type RemoteServerContext = {
     ): Promise<ExecOut<string>>;
   };
   fs: {
+    constants: typeof fsConstants;
     access(path: string, mode?: number): Promise<void>;
     pathExists(path: string, mode?: number): Promise<boolean>;
     unlink(path: string): Promise<void>;
@@ -62,7 +64,19 @@ export type RemoteServerContext = {
     ): Promise<void>;
     rm(path: string, options?: RmOptions): Promise<void>;
     copyFile(src: string, dest: string, flags?: number): Promise<void>;
-    constants: typeof fsConstants;
+    stat(path: string): Promise<FSStatsLike>;
+    readlink(path: string): Promise<string>;
+    readFile(
+      path: string,
+      options?: {encoding?: BufferEncoding},
+    ): Promise<string>;
+    readFileBinary(path: string): Promise<Uint8Array>; // No Buffer, which is not a browser type
+    writeFile(
+      path: string,
+      contents: string,
+      options?: {encoding?: BufferEncoding},
+    ): Promise<void>;
+    writeFileBinary(path: string, contents: Uint8Array): Promise<void>;
   };
   downloadFile(
     url: string,

@@ -42,21 +42,13 @@ import fs from 'fs';
 
 enableMapSet();
 
-declare global {
-  interface Window {
-    // We store this as a global, to make sure the renderHost is available
-    // before flipper-ui-core is loaded and needs those during module initialisation
-    FlipperRenderHostInstance: RenderHost;
-  }
-}
-
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
   // the system store. Because of this, it's impossible to access ondemand / devserver
   // which are signed using some internal self-issued FB certificates. These certificates
   // are automatically installed to MacOS system store on FB machines, so here we're using
   // this "mac-ca" library to load them into Node.JS.
-  global.electronRequire('mac-ca');
+  electronRequire('mac-ca');
 }
 
 async function start() {
@@ -73,7 +65,7 @@ async function start() {
   let keytar: any = undefined;
   try {
     if (!isTest()) {
-      keytar = (global.electronRequire || require)(
+      keytar = electronRequire(
         path.join(appPath, 'native-modules', `keytar-${process.platform}.node`),
       );
     }
@@ -204,6 +196,7 @@ function setProcessState(settings: Settings) {
 
   if (!process.env.ANDROID_HOME && !process.env.ANDROID_SDK_ROOT) {
     process.env.ANDROID_HOME = androidHome;
+    process.env.ANDROID_SDK_ROOT = androidHome;
   }
 
   // emulator/emulator is more reliable than tools/emulator, so prefer it if

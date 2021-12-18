@@ -15,7 +15,7 @@ export {getEnvInfo} from './environmentInfo';
 import * as watchman from 'fb-watchman';
 import * as fs from 'fs';
 import * as path from 'path';
-import {FlipperDoctor} from 'flipper-common';
+import type {FlipperDoctor} from 'flipper-common';
 
 export function getHealthchecks(): FlipperDoctor.Healthchecks {
   return {

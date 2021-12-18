@@ -7,7 +7,7 @@
  * @format
  */
 
-import {createMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
+import {createMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';
 import {
   TestUtils,
   _SandyPluginDefinition,
@@ -16,7 +16,7 @@ import {
   PluginClient,
 } from 'flipper-plugin';
 import {handleClientConnected} from '../dispatcher/flipperServer';
-import {TestDevice} from '../test-utils/TestDevice';
+import {TestDevice} from '../devices/TestDevice';
 
 test('Devices can disconnect', async () => {
   const deviceplugin = new _SandyPluginDefinition(

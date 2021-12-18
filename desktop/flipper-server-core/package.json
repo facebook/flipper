@@ -38,14 +38,21 @@
     "tmp": "^0.2.1",
     "uuid": "^8.3.2",
     "which": "^2.0.2",
-    "ws": "^8.2.3",
+    "ws": "^7.5.6",
     "xdg-basedir": "^4.0.0"
   },
   "devDependencies": {
+    "@types/archiver": "^5.1.1",
+    "@types/invariant": "^2.2.35",
     "@types/memorystream": "^0.3.0",
     "@types/node": "^15.12.5",
     "@types/rimraf": "^3.0.2",
+    "@types/rsocket-core": "^0.0.7",
+    "@types/rsocket-tcp-server": "^0.0.2",
+    "@types/split2": "^3.2.1",
     "@types/tmp": "^0.2.2",
+    "@types/ws": "^7.4.7",
+    "@types/which": "^2.0.1",
     "memorystream": "^0.3.1",
     "tmp": "^0.2.1"
   },

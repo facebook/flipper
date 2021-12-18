@@ -1,9 +1,11 @@
 lib/
+dist/
 node_modules/
 *.tsbuildinfo
 /static/themes/
 /static/defaultPlugins/
 /app/src/defaultPlugins/index.tsx
+/flipper-ui-browser/src/defaultPlugins/index.tsx
 /coverage
 .env
 tsc-error.log

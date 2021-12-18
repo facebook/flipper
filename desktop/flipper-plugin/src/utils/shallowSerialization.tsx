@@ -7,6 +7,8 @@
  * @format
  */
 
+import {isProduction} from 'flipper-common';
+
 /**
  * makeShallowSerializable will prepare common data structures, like Map and Set, for JSON serialization.
  * However, this will happen only for the root object and not recursively to keep things efficiently.
@@ -71,10 +73,7 @@ export function deserializeShallowObject(obj: any): any {
  * Will print a warning if a value is JSON serializable, but isn't a pure tree
  */
 export function assertSerializable(obj: any) {
-  if (
-    process.env.NODE_ENV !== 'test' &&
-    process.env.NODE_ENV !== 'development'
-  ) {
+  if (isProduction()) {
     return;
   }
   // path to current object

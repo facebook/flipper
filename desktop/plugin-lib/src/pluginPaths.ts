@@ -11,7 +11,6 @@ import path from 'path';
 import {homedir} from 'os';
 import fs from 'fs-extra';
 import pFilter from 'p-filter';
-import expandTilde from 'expand-tilde';
 
 const flipperDataDir = path.join(homedir(), '.flipper');
 
@@ -44,7 +43,7 @@ export async function getPluginSourceFolders(): Promise<string[]> {
   }
   pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins', 'public'));
   pluginFolders.push(path.resolve(__dirname, '..', '..', 'plugins', 'fb'));
-  return pFilter(pluginFolders.map(expandTilde), (p) => fs.pathExists(p));
+  return pFilter(pluginFolders, (p) => fs.pathExists(p));
 }
 
 export function getPluginInstallationDir(name: string) {

@@ -2,7 +2,7 @@
 
 exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 <div
-  className="css-gzchr8-Container e1hsqii15"
+  className="css-gzchr8-Container e1k65efv0"
   style={
     Object {
       "textAlign": "center",
@@ -51,7 +51,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
     </strong>
   </span>
   <div
-    className="css-1knrt0j-SandySplitContainer e1hsqii10"
+    className="css-1knrt0j-SandySplitContainer e148ues30"
   >
     <div />
     <button
@@ -69,7 +69,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 
 exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
 <div
-  className="css-gzchr8-Container e1hsqii15"
+  className="css-gzchr8-Container e1k65efv0"
   style={
     Object {
       "textAlign": "center",
@@ -118,7 +118,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
     </strong>
   </span>
   <div
-    className="css-1knrt0j-SandySplitContainer e1hsqii10"
+    className="css-1knrt0j-SandySplitContainer e148ues30"
   >
     <div />
     <button

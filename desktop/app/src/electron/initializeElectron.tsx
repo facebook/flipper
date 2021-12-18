@@ -27,6 +27,7 @@ import {setupMenuBar} from './setupMenuBar';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
 import type {Icon, RenderHost} from 'flipper-ui-core';
 import {getLocalIconUrl} from '../utils/icons';
+import {getCPUUsage} from 'process';
 
 export function initializeElectron(
   flipperServer: FlipperServer,
@@ -57,7 +58,7 @@ export function initializeElectron(
     }
   }
 
-  window.FlipperRenderHostInstance = {
+  FlipperRenderHostInstance = {
     processId: remote.process.pid,
     isProduction,
     readTextFromClipboard() {
@@ -151,10 +152,6 @@ export function initializeElectron(
     openLink(url: string) {
       shell.openExternal(url);
     },
-    registerShortcut(shortcut, callback) {
-      remote.globalShortcut.register(shortcut, callback);
-      return () => remote.globalShortcut.unregister(shortcut);
-    },
     hasFocus() {
       return remote.getCurrentWindow().isFocused();
     },
@@ -179,7 +176,7 @@ export function initializeElectron(
     },
     flipperServer,
     async requirePlugin(path) {
-      return global.electronRequire(path);
+      return electronRequire(path);
     },
     getStaticResourceUrl(relativePath): string {
       return (
@@ -196,11 +193,14 @@ export function initializeElectron(
       );
     },
     unloadModule(path: string) {
-      const resolvedPath = global.electronRequire.resolve(path);
-      if (!resolvedPath || !global.electronRequire.cache[resolvedPath]) {
+      const resolvedPath = electronRequire.resolve(path);
+      if (!resolvedPath || !electronRequire.cache[resolvedPath]) {
         return;
       }
-      delete global.electronRequire.cache[resolvedPath];
+      delete electronRequire.cache[resolvedPath];
+    },
+    getPercentCPUUsage() {
+      return getCPUUsage().percentCPUUsage;
     },
   } as RenderHost;
 
