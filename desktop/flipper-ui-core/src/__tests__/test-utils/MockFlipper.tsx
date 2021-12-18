@@ -8,27 +8,26 @@
  */
 
 import {createStore} from 'redux';
-import BaseDevice from '../devices/BaseDevice';
-import {createRootReducer} from '../reducers';
-import {Store} from '../reducers/index';
-import Client, {ClientConnection} from '../Client';
+import BaseDevice from '../../devices/BaseDevice';
+import {createRootReducer} from '../../reducers';
+import {Store} from '../../reducers/index';
+import Client, {ClientConnection} from '../../Client';
 import {
   Logger,
   buildClientId,
   FlipperServer,
   ClientResponseType,
 } from 'flipper-common';
-import {PluginDefinition} from '../plugin';
-import {pluginsInitialized, registerPlugins} from '../reducers/plugins';
+import {PluginDefinition} from '../../plugin';
+import {pluginsInitialized, registerPlugins} from '../../reducers/plugins';
 import {getLogger} from 'flipper-common';
-import {initializeFlipperLibImplementation} from '../utils/flipperLibImplementation';
-import pluginManager from '../dispatcher/pluginManager';
+import {initializeFlipperLibImplementation} from '../../utils/flipperLibImplementation';
+import pluginManager from '../../dispatcher/pluginManager';
 import {PluginDetails} from 'flipper-common';
-import ArchivedDevice from '../devices/ArchivedDevice';
+import ArchivedDevice from '../../devices/ArchivedDevice';
 import {ClientQuery, DeviceOS} from 'flipper-common';
-import {TestDevice} from './TestDevice';
-import {getRenderHostInstance} from '../RenderHost';
-import {waitFor} from '../utils/waitFor';
+import {TestDevice} from '../../devices/TestDevice';
+import {getRenderHostInstance} from '../../RenderHost';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];

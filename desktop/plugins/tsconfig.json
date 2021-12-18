@@ -1,21 +1,25 @@
 {
-    "extends": "../tsconfig.base.json",
-    "compilerOptions": {
-        "noEmit": true,
-        "baseUrl": ".",
-        "rootDir": ".",
-        "outDir": "lib",
-        "lib": ["DOM"]
-    },
-    "include": [
-        "public/",
-        "fb/"
-    ],
-    "exclude": [
-        "**/lib/",
-        "**/dist/",
-        "**/node_modules/",
-        "**/__tests__/",
-        "**/__test__/"
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "baseUrl": ".",
+    "rootDir": ".",
+    "outDir": "lib",
+    "lib": ["DOM", "ES2019"],
+    // TODO: ideally we'd move those into specific packages
+    "types": [
+      "../types/ReactDebounceRender",
+      "../types/json-format-highlight",
+      "../types/memoize-weak",
+      "../types/XmlBeautifier"
     ]
+  },
+  "include": ["public/", "fb/"],
+  "exclude": [
+    "**/lib/",
+    "**/dist/",
+    "**/node_modules/",
+    "**/__tests__/",
+    "**/__test__/"
+  ]
 }

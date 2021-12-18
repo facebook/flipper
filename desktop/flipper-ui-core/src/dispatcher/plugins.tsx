@@ -48,17 +48,20 @@ import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
 import {getRenderHostInstance} from '../RenderHost';
 import pMap from 'p-map';
+import * as deprecatedExports from '../deprecated-exports';
 
 let defaultPluginsIndex: any = null;
 
 export default async (store: Store, _logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
-  const globalObject: any = typeof window === 'undefined' ? global : window;
+  const globalObject = (function (this: any) {
+    return this;
+  })();
 
   // this list should match `replace-flipper-requires.tsx` and the `builtInModules` in `desktop/.eslintrc`
   globalObject.React = React;
   globalObject.ReactDOM = ReactDOM;
-  globalObject.Flipper = require('../deprecated-exports');
+  globalObject.Flipper = deprecatedExports;
   globalObject.FlipperPlugin = FlipperPluginSDK;
   globalObject.Immer = Immer;
   globalObject.antd = antd;

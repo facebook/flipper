@@ -141,7 +141,7 @@ const KeyboardShortcutInput = (props: {
   }, [isShortcutValid, pressedKeys, props]);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  let typingTimeout: NodeJS.Timeout;
+  let typingTimeout: any;
 
   const handleFocusInput = () => {
     if (inputRef.current !== null) {

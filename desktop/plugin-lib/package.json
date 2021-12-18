@@ -25,12 +25,10 @@
   "devDependencies": {
     "@types/decompress": "4.2.4",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^26.0.24",
     "@types/mock-fs": "^4.13.1",
     "@types/node": "^15.12.5",
     "flipper-test-utils": "0.0.0",
-    "mock-fs": "^5.1.2",
-    "ts-jest": "^26.5.6"
+    "mock-fs": "^5.1.2"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",

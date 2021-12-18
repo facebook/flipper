@@ -141,8 +141,8 @@ export interface RenderHost {
 }
 
 export function getRenderHostInstance(): RenderHost {
-  if (!window.FlipperRenderHostInstance) {
+  if (!FlipperRenderHostInstance) {
     throw new Error('global FlipperRenderHostInstance was never set');
   }
-  return window.FlipperRenderHostInstance;
+  return FlipperRenderHostInstance;
 }

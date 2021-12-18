@@ -2,7 +2,8 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": ["../types/flipperGlobals", "../types/metro-resolver", "../types/metro"]
   },
   "include": ["./src/*"],
   "references": [

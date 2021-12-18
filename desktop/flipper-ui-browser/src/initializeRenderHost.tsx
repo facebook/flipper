@@ -14,7 +14,7 @@ export function initializeRenderHost(
   flipperServer: FlipperServer,
   flipperServerConfig: FlipperServerConfig,
 ) {
-  window.FlipperRenderHostInstance = {
+  FlipperRenderHostInstance = {
     readTextFromClipboard() {
       // TODO:
       return undefined;
@@ -72,6 +72,7 @@ export function initializeRenderHost(
 }
 
 function getDefaultPluginsIndex() {
+  // @ts-ignore
   // eslint-disable-next-line import/no-unresolved
   const index = require('./defaultPlugins');
   return index.default || index;

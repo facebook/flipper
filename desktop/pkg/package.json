@@ -31,7 +31,6 @@
     "@oclif/dev-cli": "^1",
     "@types/fs-extra": "^9.0.13",
     "@types/inquirer": "^7.3.3",
-    "@types/jest": "^26.0.24",
     "@types/node": "^15.12.5",
     "@types/recursive-readdir": "^2.2.0",
     "flipper-test-utils": "0.0.0"

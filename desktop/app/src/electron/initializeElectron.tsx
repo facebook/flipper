@@ -29,12 +29,6 @@ import type {Icon, RenderHost} from 'flipper-ui-core';
 import {getLocalIconUrl} from '../utils/icons';
 import {getCPUUsage} from 'process';
 
-declare const electronRequire: {
-  (name: string): any;
-  resolve: (module: string) => string;
-  cache: {[module: string]: any};
-};
-
 export function initializeElectron(
   flipperServer: FlipperServer,
   flipperServerConfig: FlipperServerConfig,
@@ -64,7 +58,7 @@ export function initializeElectron(
     }
   }
 
-  window.FlipperRenderHostInstance = {
+  FlipperRenderHostInstance = {
     processId: remote.process.pid,
     isProduction,
     readTextFromClipboard() {

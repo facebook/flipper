@@ -8,11 +8,7 @@
  */
 
 import * as React from 'react';
-import {
-  render,
-  RenderResult,
-  act as testingLibAct,
-} from '@testing-library/react';
+import type {RenderResult} from '@testing-library/react';
 import {queries} from '@testing-library/dom';
 import {
   BundledPluginDetails,
@@ -32,7 +28,6 @@ import {
   FlipperDevicePluginModule,
 } from '../plugin/SandyPluginDefinition';
 import {SandyPluginRenderer} from '../plugin/PluginRenderer';
-import {act} from '@testing-library/react';
 import {
   SandyDevicePluginInstance,
   Device,
@@ -43,12 +38,14 @@ import {FlipperLib} from '../plugin/FlipperLib';
 import {stubLogger} from '../utils/Logger';
 import {Idler} from '../utils/Idler';
 import {createState} from '../state/atom';
-import baseMockConsole from 'jest-mock-console';
 import {
   DeviceLogEntry,
   FlipperServer,
   FlipperServerCommands,
 } from 'flipper-common';
+
+declare const process: any;
+declare const electronRequire: any;
 
 type Renderer = RenderResult<typeof queries>;
 
@@ -184,10 +181,22 @@ interface StartDevicePluginResult<Module extends FlipperDevicePluginModule>
   sendLogEntry(logEntry: DeviceLogEntry): void;
 }
 
+export function createStubFunction(): jest.Mock<any, any> {
+  // we shouldn't be usign jest.fn() outside a unit test, as it would not resolve / cause jest to be bundled up!
+  if (typeof jest !== 'undefined') {
+    return jest.fn();
+  }
+  return (() => {
+    console.warn('Using a stub function outside a test environment!');
+  }) as any;
+}
+
 export function startPlugin<Module extends FlipperPluginModule<any>>(
   module: Module,
   options?: StartPluginOptions,
 ): StartPluginResult<Module> {
+  const {act} = electronRequire('@testing-library/react');
+
   const definition = new SandyPluginDefinition(
     createMockPluginDetails(),
     module,
@@ -198,7 +207,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     );
   }
 
-  const sendStub = jest.fn();
+  const sendStub = createStubFunction();
   const flipperUtils = createMockFlipperLib(options);
   const testDevice = createMockDevice(options);
   const appName = 'TestApplication';
@@ -291,6 +300,8 @@ export function renderPlugin<Module extends FlipperPluginModule<any>>(
   renderer: Renderer;
   act: (cb: () => void) => void;
 } {
+  // prevent bundling in UI bundle
+  const {render, act} = electronRequire('@testing-library/react');
   const res = startPlugin(module, options);
   const pluginInstance: SandyPluginInstance = (res as any)._backingInstance;
 
@@ -299,7 +310,7 @@ export function renderPlugin<Module extends FlipperPluginModule<any>>(
   return {
     ...res,
     renderer,
-    act: testingLibAct,
+    act,
     destroy: () => {
       renderer.unmount();
       pluginInstance.destroy();
@@ -311,6 +322,8 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
   module: Module,
   options?: StartPluginOptions,
 ): StartDevicePluginResult<Module> {
+  const {act} = electronRequire('@testing-library/react');
+
   const definition = new SandyPluginDefinition(
     createMockPluginDetails({pluginType: 'device'}),
     module,
@@ -356,6 +369,8 @@ export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
   renderer: Renderer;
   act: (cb: () => void) => void;
 } {
+  const {render, act} = electronRequire('@testing-library/react');
+
   const res = startDevicePlugin(module, options);
   // @ts-ignore hidden api
   const pluginInstance: SandyDevicePluginInstance = (res as any)
@@ -366,7 +381,7 @@ export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
   return {
     ...res,
     renderer,
-    act: testingLibAct,
+    act,
     destroy: () => {
       renderer.unmount();
       pluginInstance.destroy();
@@ -378,17 +393,17 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
   return {
     isFB: false,
     logger: stubLogger,
-    enableMenuEntries: jest.fn(),
-    createPaste: jest.fn(),
+    enableMenuEntries: createStubFunction(),
+    createPaste: createStubFunction(),
     GK(gk: string) {
       return options?.GKs?.includes(gk) || false;
     },
-    selectPlugin: jest.fn(),
-    writeTextToClipboard: jest.fn(),
-    openLink: jest.fn(),
-    showNotification: jest.fn(),
-    exportFile: jest.fn(),
-    importFile: jest.fn(),
+    selectPlugin: createStubFunction(),
+    writeTextToClipboard: createStubFunction(),
+    openLink: createStubFunction(),
+    showNotification: createStubFunction(),
+    exportFile: createStubFunction(),
+    importFile: createStubFunction(),
     paths: {
       appPath: process.cwd(),
       homePath: `/dev/null`,
@@ -403,24 +418,24 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
     },
     remoteServerContext: {
       childProcess: {
-        exec: jest.fn(),
+        exec: createStubFunction(),
       },
       fs: {
-        access: jest.fn(),
-        pathExists: jest.fn(),
-        unlink: jest.fn(),
-        mkdir: jest.fn(),
-        rm: jest.fn(),
-        copyFile: jest.fn(),
+        access: createStubFunction(),
+        pathExists: createStubFunction(),
+        unlink: createStubFunction(),
+        mkdir: createStubFunction(),
+        rm: createStubFunction(),
+        copyFile: createStubFunction(),
         constants: fsConstants,
-        stat: jest.fn(),
-        readlink: jest.fn(),
-        readFile: jest.fn(),
-        readFileBinary: jest.fn(),
-        writeFile: jest.fn(),
-        writeFileBinary: jest.fn(),
+        stat: createStubFunction(),
+        readlink: createStubFunction(),
+        readFile: createStubFunction(),
+        readFileBinary: createStubFunction(),
+        writeFile: createStubFunction(),
+        writeFileBinary: createStubFunction(),
       },
-      downloadFile: jest.fn(),
+      downloadFile: createStubFunction(),
     },
   };
 }
@@ -441,7 +456,7 @@ function createBasePluginResult(
       return new Promise((resolve) => {
         // this ensures the test won't continue until the setImmediate used by
         // the deeplink handling event is handled
-        setImmediate(resolve);
+        setTimeout(resolve, 0);
       });
     },
     destroy: () => pluginInstance.destroy(),
@@ -553,15 +568,15 @@ function createMockDevice(options?: StartPluginOptions): Device & {
     addLogEntry(entry: DeviceLogEntry) {
       logListeners.forEach((f) => f?.(entry));
     },
-    executeShell: jest.fn(),
-    clearLogs: jest.fn(),
-    forwardPort: jest.fn(),
+    executeShell: createStubFunction(),
+    clearLogs: createStubFunction(),
+    forwardPort: createStubFunction(),
     get isConnected() {
       return this.connected.get();
     },
-    navigateToLocation: jest.fn(),
-    screenshot: jest.fn(),
-    sendMetroCommand: jest.fn(),
+    navigateToLocation: createStubFunction(),
+    screenshot: createStubFunction(),
+    sendMetroCommand: createStubFunction(),
   };
 }
 
@@ -580,52 +595,13 @@ function createStubIdler(): Idler {
   };
 }
 
-/**
- * Mockes the current console. Inspect results through e.g.
- * console.errorCalls etc.
- *
- * Or, alternatively, expect(mockedConsole.error).toBeCalledWith...
- *
- * Don't forgot to call .unmock when done!
- */
-export function mockConsole() {
-  const restoreConsole = baseMockConsole();
-  // The mocked console methods, make sure they remain available after unmocking
-  const {log, error, warn} = console as any;
-  return {
-    get logCalls(): any[][] {
-      return log.mock.calls;
-    },
-    get errorCalls(): any[][] {
-      return error.mock.calls;
-    },
-    get warnCalls(): any[][] {
-      return warn.mock.calls;
-    },
-    get log(): jest.Mock<any, any> {
-      return log as any;
-    },
-    get warn(): jest.Mock<any, any> {
-      return warn as any;
-    },
-    get error(): jest.Mock<any, any> {
-      return error as any;
-    },
-    unmock() {
-      restoreConsole();
-    },
-  };
-}
-
-export type MockedConsole = ReturnType<typeof mockConsole>;
-
 export function createFlipperServerMock(
   overrides?: Partial<FlipperServerCommands>,
 ): FlipperServer {
   return {
     async connect() {},
-    on: jest.fn(),
-    off: jest.fn(),
+    on: createStubFunction(),
+    off: createStubFunction(),
     exec: jest
       .fn()
       .mockImplementation(
@@ -639,6 +615,6 @@ export function createFlipperServerMock(
           return undefined;
         },
       ),
-    close: jest.fn(),
+    close: createStubFunction(),
   };
 }

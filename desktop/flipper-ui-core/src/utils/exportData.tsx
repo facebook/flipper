@@ -38,6 +38,7 @@ import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
 import {getRenderHostInstance} from '../RenderHost';
 import {uploadFlipperMedia} from '../fb-stubs/user';
+import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -580,7 +581,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
   if (supportRequestDetails) {
     store.dispatch(
       // Late require to avoid circular dependency issue
-      setStaticView(require('../fb-stubs/SupportRequestDetails').default),
+      setStaticView(SupportRequestDetails),
     );
   }
 }

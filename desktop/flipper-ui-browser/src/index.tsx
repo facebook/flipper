@@ -14,7 +14,8 @@ import {createFlipperServer} from './flipperServerConnection';
 document.getElementById('root')!.innerText = 'flipper-ui-browser started';
 
 async function start() {
-  (global as any).electronRequire = function (path: string) {
+  // @ts-ignore
+  electronRequire = function (path: string) {
     console.error(
       `[decapitate] Tried to electronRequire ${path}, this module is not available in the browser and will be stubbed`,
     );
@@ -39,6 +40,7 @@ async function start() {
   // but not set yet, which might happen when using normal imports.
   // TODO: remove
   window.flipperShowError?.('Connected to Flipper Server successfully');
+  // @ts-ignore
   // eslint-disable-next-line import/no-commonjs
   require('flipper-ui-core').startFlipperDesktop(flipperServer);
   window.flipperHideError?.();

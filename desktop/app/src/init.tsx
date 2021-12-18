@@ -42,20 +42,6 @@ import fs from 'fs';
 
 enableMapSet();
 
-declare global {
-  interface Window {
-    // We store this as a global, to make sure the renderHost is available
-    // before flipper-ui-core is loaded and needs those during module initialisation
-    FlipperRenderHostInstance: RenderHost;
-  }
-}
-
-declare const electronRequire: {
-  (name: string): any;
-  resolve: (module: string) => string;
-  cache: {[module: string]: any};
-};
-
 if (process.env.NODE_ENV === 'development' && os.platform() === 'darwin') {
   // By default Node.JS has its internal certificate storage and doesn't use
   // the system store. Because of this, it's impossible to access ondemand / devserver

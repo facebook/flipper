@@ -5,7 +5,8 @@
     "rootDir": "src",
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
-    "lib": ["dom"]
+    "lib": ["dom", "es2019"],
+    "types": ["../types/ReactDebounceRender", "../types/flipperGlobals"]
   },
   "references": [
     {

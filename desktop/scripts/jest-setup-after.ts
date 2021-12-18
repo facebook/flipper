@@ -165,9 +165,6 @@ function createStubRenderHost(): RenderHost {
     async exportFile() {
       return undefined;
     },
-    registerShortcut() {
-      return () => undefined;
-    },
     hasFocus() {
       return true;
     },

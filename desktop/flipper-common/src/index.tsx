@@ -20,6 +20,7 @@ export * from './server-types';
 export {sleep} from './utils/sleep';
 export {timeout} from './utils/timeout';
 export {isTest} from './utils/isTest';
+export {isProduction} from './utils/isProduction';
 export {assertNever} from './utils/assertNever';
 export {fsConstants} from './utils/fsConstants';
 export {

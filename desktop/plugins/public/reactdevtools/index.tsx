@@ -100,16 +100,26 @@ export function devicePlugin(client: DevicePluginClient) {
     return required.default ?? required;
   }
 
-  function getInitialDevToolsInstance(): DevToolsInstance {
-    // Load right library
-    if (useGlobalDevTools.get()) {
-      return {
-        type: 'global',
-        module: getGlobalDevToolsModule(),
-      };
+  async function maybeGetInitialGlobalDevTools(): Promise<DevToolsInstance> {
+    const path = await findGlobalDevTools();
+    let instance = devToolsInstance;
+    if (path) {
+      globalDevToolsPath.set(path + '/standalone');
+      console.log('Found global React DevTools: ', path);
+      // load global devtools instance if the flag is set and
+      // we're running a non-FB version of Flipper
+      if (useGlobalDevTools.get() && !client.isFB) {
+        selectedDevToolsInstanceType.set('global');
+
+        instance = {
+          type: 'global',
+          module: getGlobalDevToolsModule(),
+        };
+      }
     } else {
-      return getDefaultDevToolsInstance();
+      useGlobalDevTools.set(false); // disable in case it was enabled
     }
+    return instance;
   }
 
   function getDefaultDevToolsInstance(): DevToolsInstance {
@@ -341,16 +351,7 @@ export function devicePlugin(client: DevicePluginClient) {
   }
 
   client.onReady(async () => {
-    const path = await findGlobalDevTools();
-    if (path) {
-      globalDevToolsPath.set(path + '/standalone');
-      selectedDevToolsInstanceType.set('global');
-      console.log('Found global React DevTools: ', path);
-      // load it, if the flag is set
-      devToolsInstance = getInitialDevToolsInstance();
-    } else {
-      useGlobalDevTools.set(false); // disable in case it was enabled
-    }
+    devToolsInstance = await maybeGetInitialGlobalDevTools();
   });
 
   client.onDestroy(() => {

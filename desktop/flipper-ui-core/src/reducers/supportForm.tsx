@@ -20,6 +20,7 @@ import {logPlatformSuccessRate} from 'flipper-common';
 export const SUPPORT_FORM_PREFIX = 'support-form-v2';
 import {getExportablePlugins} from '../selectors/connections';
 import {DeviceOS} from 'flipper-plugin';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 
 const {DEFAULT_SUPPORT_GROUP} = constants;
 
@@ -113,9 +114,7 @@ export class Group {
       source: 'deeplink',
       group: this.name,
     });
-    store.dispatch(
-      setStaticView(require('../fb-stubs/SupportRequestFormV2').default),
-    );
+    store.dispatch(setStaticView(SupportRequestFormV2));
     const selectedAppId = store.getState().connections.selectedAppId;
     const selectedClient = store
       .getState()

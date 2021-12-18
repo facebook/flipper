@@ -17,8 +17,6 @@ declare global {
       debug: boolean;
     };
 
-    FlipperRenderHostInstance: RenderHost;
-
     flipperShowError?(error: string): void;
     flipperHideError?(): void;
   }

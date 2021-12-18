@@ -106,7 +106,10 @@ export const DataSourceRendererVirtual: <T extends object, C>(
     parentRef,
     useObserver: isUnitTest ? () => ({height: 500, width: 1000}) : undefined,
     // eslint-disable-next-line
-      estimateSize: useCallback(() => defaultRowHeight, [forceHeightRecalculation.current, defaultRowHeight]),
+    estimateSize: useCallback(
+      () => defaultRowHeight,
+      [forceHeightRecalculation.current, defaultRowHeight],
+    ),
     // TODO: optimise by using setting a keyExtractor if DataSource is keyed
     overscan: 0,
   });
@@ -130,7 +133,7 @@ export const DataSourceRendererVirtual: <T extends object, C>(
       };
 
       let unmounted = false;
-      let timeoutHandle: NodeJS.Timeout | undefined = undefined;
+      let timeoutHandle: any = undefined;
 
       function rerender(prio: 1 | 2, invalidateHeights = false) {
         if (invalidateHeights && !useFixedRowHeight) {
@@ -343,6 +346,9 @@ export function useTableRedraw() {
   return useContext(RedrawContext);
 }
 
+declare const process: any;
+
 function useInUnitTest(): boolean {
-  return process.env.NODE_ENV === 'test';
+  // N.B. Not reusing flipper-common here, since data-source is published as separate package
+  return typeof process !== 'undefined' && process?.env?.NODE_ENV === 'test';
 }

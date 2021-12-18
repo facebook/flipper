@@ -1,15 +1,18 @@
 {
-    "extends": "./tsconfig.base.json",
-    "compilerOptions": {
-      "noEmit": true,
-      "incremental": false,
-      "composite": false,
-      "allowJs": false,
-      "lib": ["DOM"] // for unit tests
-    },
-    "exclude": [
-      "**/node_modules/",
-      "**/lib/",
-      "**/dist/"
-    ]
-  }
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "incremental": false,
+    "composite": false,
+    "allowJs": false,
+    // for unit tests:
+    "lib": ["DOM", "ES2019"],
+    "types": ["jest"]
+  },
+  "exclude": [
+    "**/node_modules/",
+    "**/lib/",
+    "**/dist/",
+    "flipper-server/static/**"
+  ]
+}

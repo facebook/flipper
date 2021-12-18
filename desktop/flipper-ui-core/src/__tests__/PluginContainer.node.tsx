@@ -12,7 +12,7 @@
 import React from 'react';
 import produce from 'immer';
 import {FlipperPlugin} from '../plugin';
-import {renderMockFlipperWithPlugin} from '../test-utils/createMockFlipperWithPlugin';
+import {renderMockFlipperWithPlugin} from './test-utils/createMockFlipperWithPlugin';
 import {
   _SandyPluginDefinition,
   PluginClient,
@@ -74,11 +74,11 @@ test('Plugin container can render plugin and receive updates', async () => {
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -176,11 +176,11 @@ test('PluginContainer can render Sandy plugins', async () => {
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -216,11 +216,11 @@ test('PluginContainer can render Sandy plugins', async () => {
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -296,11 +296,11 @@ test('PluginContainer can render Sandy plugins', async () => {
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -561,11 +561,11 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -605,11 +605,11 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -748,11 +748,11 @@ test('PluginContainer can render Sandy device plugins', async () => {
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -793,11 +793,11 @@ test('PluginContainer can render Sandy device plugins', async () => {
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -909,11 +909,11 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -955,11 +955,11 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -1247,11 +1247,11 @@ test('PluginContainer can render Sandy plugins for archived devices', async () =
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
@@ -1325,11 +1325,11 @@ test('PluginContainer can render Sandy plugins for archived devices', async () =
     <body>
       <div>
         <div
-          class="css-1x2cmzz-SandySplitContainer e1hsqii10"
+          class="css-1x2cmzz-SandySplitContainer e148ues30"
         >
           <div />
           <div
-            class="css-1knrt0j-SandySplitContainer e1hsqii10"
+            class="css-1knrt0j-SandySplitContainer e148ues30"
           >
             <div
               class="css-1woty6b-Container"
