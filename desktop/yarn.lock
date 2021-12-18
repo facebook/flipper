@@ -10407,10 +10407,10 @@ react-test-renderer@^17.0.1:
     react-shallow-renderer "^16.13.1"
     scheduler "^0.20.2"
 
-react-virtual@^2.8.2:
-  version "2.8.2"
-  resolved "https://registry.yarnpkg.com/react-virtual/-/react-virtual-2.8.2.tgz#e204b30c57c426bd260ed1ac49f8b1099e92b7cb"
-  integrity sha512-CwnvF/3Jev4M14S9S7fgzGc0UFQ/bG/VXbrUCq+AB0zH8WGnVDTG0lQT7O3jPY76YLPzTHBu+AMl64Stp8+exg==
+react-virtual@^2.10.0:
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/react-virtual/-/react-virtual-2.10.0.tgz#110cc0f48bb6edffd253f532123a074e6bbec4cb"
+  integrity sha512-Mgy//1Ty0YMcELTooFq5mMrEb4dLRzS9PbPrgDbpdgGRgG9RuQrXBxgPCm1vNBonoiNZjbsGSEPLuJ7MuHLvLg==
   dependencies:
     "@reach/observe-rect" "^1.1.0"
 
