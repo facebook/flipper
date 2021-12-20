@@ -407,6 +407,7 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
     paths: {
       appPath: process.cwd(),
       homePath: `/dev/null`,
+      staticPath: process.cwd(),
       tempPath: `/dev/null`,
     },
     environmentInfo: {

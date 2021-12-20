@@ -74,6 +74,7 @@ export function initializeFlipperLibImplementation(
     paths: {
       appPath: renderHost.serverConfig.paths.appPath,
       homePath: renderHost.serverConfig.paths.homePath,
+      staticPath: renderHost.serverConfig.paths.staticPath,
       tempPath: renderHost.serverConfig.paths.tempPath,
     },
     environmentInfo: {

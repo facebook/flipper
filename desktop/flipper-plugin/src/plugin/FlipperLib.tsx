@@ -167,8 +167,9 @@ export interface FlipperLib {
     },
   ): Promise<string | undefined>;
   paths: {
-    homePath: string;
     appPath: string;
+    homePath: string;
+    staticPath: string;
     tempPath: string;
   };
   environmentInfo: {

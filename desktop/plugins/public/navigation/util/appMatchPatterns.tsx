@@ -7,17 +7,9 @@
  * @format
  */
 
-import fs from 'fs';
 import {path} from 'flipper-plugin';
 import {AppMatchPattern} from '../types';
 import {Device, getFlipperLib} from 'flipper-plugin';
-
-let patternsPath: string | undefined;
-
-function getPatternsBasePath() {
-  return (patternsPath =
-    patternsPath ?? path.join(getFlipperLib().paths.appPath, 'facebook'));
-}
 
 const extractAppNameFromSelectedApp = (selectedApp: string | null) => {
   if (selectedApp == null) {
@@ -31,7 +23,7 @@ export const getAppMatchPatterns = (
   selectedApp: string | null,
   device: Device,
 ) => {
-  return new Promise<Array<AppMatchPattern>>((resolve, reject) => {
+  return new Promise<Array<AppMatchPattern>>(async (resolve, reject) => {
     const appName = extractAppNameFromSelectedApp(selectedApp);
     if (appName === 'Facebook') {
       let filename: string;
@@ -42,14 +34,14 @@ export const getAppMatchPatterns = (
       } else {
         return;
       }
-      const patternsFilePath = path.join(getPatternsBasePath(), filename);
-      fs.readFile(patternsFilePath, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(JSON.parse(data.toString()));
-        }
-      });
+      const patternsFilePath = path.join(
+        getFlipperLib().paths.staticPath,
+        'facebook',
+        filename,
+      );
+      const patternsFileContentString =
+        await getFlipperLib().remoteServerContext.fs.readFile(patternsFilePath);
+      return JSON.parse(patternsFileContentString);
     } else if (appName != null) {
       console.log('No rule for app ' + appName);
       resolve([]);
