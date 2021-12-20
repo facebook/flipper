@@ -193,6 +193,78 @@ module.exports = {
       rules: {
         'no-restricted-imports': [
           'error',
+          {
+            ...restrictedImportsUniversalErrorConfig,
+            paths: [
+              ...restrictedImportsUniversalErrorConfig.paths,
+              // Ban Node.js API
+              'async_hooks',
+              {
+                name: 'child_process',
+                message:
+                  "Node APIs are not allowed. Use 'getFlipperLib().remoteServerContext.child_process' from 'flipper-plugin' instead. See https://fbflipper.com/docs/extending/flipper-plugin/.",
+              },
+              'cluster',
+              'crypto',
+              'dgram',
+              'dns',
+              {
+                name: 'fs',
+                message:
+                  "Node APIs are not allowed. Use 'getFlipperLib().remoteServerContext.fs' from 'flipper-plugin' instead. See https://fbflipper.com/docs/extending/flipper-plugin/.",
+              },
+              {
+                name: 'fs-extra',
+                message:
+                  "Node APIs are not allowed. Use 'getFlipperLib().remoteServerContext.fs' from 'flipper-plugin' instead. See https://fbflipper.com/docs/extending/flipper-plugin/.",
+              },
+              'http',
+              'https',
+              'net',
+              {
+                name: 'os',
+                message:
+                  "Node APIs are not allowed. Use 'getFlipperLib().paths' and 'getFlipperLib().environmentInfo' from 'flipper-plugin' instead. See https://fbflipper.com/docs/extending/flipper-plugin/.",
+              },
+              {
+                name: 'path',
+                message:
+                  "Node APIs are not allowed. Use 'path' from 'flipper-plugin' instead. See https://fbflipper.com/docs/extending/flipper-plugin/.",
+              },
+              'stream',
+            ],
+          },
+        ],
+        'rulesdir/no-restricted-imports-clone': [
+          'warn',
+          {
+            paths: [
+              {
+                name: 'flipper',
+                message:
+                  "Direct imports from 'flipper' are deprecated. Import from 'flipper-plugin' instead, which can be tested and distributed stand-alone. See https://fbflipper.com/docs/extending/sandy-migration for more details.",
+              },
+            ],
+          },
+        ],
+      },
+    },
+    // Overide rules for tests and service scripts (postinstall). Allow Node APIs usage there.
+    {
+      files: [
+        'plugins/**/__tests__/*.tsx',
+        'plugins/**/__tests__/*.ts',
+        'plugins/postinstall.ts',
+        // TODO: Remove specific plugin overrides down below
+        'plugins/fb/graphql/data/getQueryFromQueryId.tsx',
+        'plugins/fb/kaios-portal/kaios-debugger-client/client.tsx',
+        'plugins/public/crash_reporter/index.tsx',
+        'plugins/public/crash_reporter/ios-crash-utils.tsx',
+        'plugins/public/reactdevtools/index.tsx',
+      ],
+      rules: {
+        'no-restricted-imports': [
+          'error',
           restrictedImportsUniversalErrorConfig,
         ],
         'rulesdir/no-restricted-imports-clone': [
