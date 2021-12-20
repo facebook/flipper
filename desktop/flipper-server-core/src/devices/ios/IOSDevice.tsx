@@ -20,6 +20,7 @@ import {ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB, IOSBridge} from './IOSBridge';
 import split2 from 'split2';
 import {ServerDevice} from '../ServerDevice';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
+import {addFileWatcherForiOSCrashLogs} from './iOSCrashUtils';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
 
@@ -151,6 +152,10 @@ export default class IOSDevice extends ServerDevice {
         this.startLogListener(iOSBridge, retries - 1);
       }
     }
+  }
+
+  protected startCrashWatcherImpl(): () => void {
+    return addFileWatcherForiOSCrashLogs(this);
   }
 
   static getLogLevel(level: string): DeviceLogLevel {

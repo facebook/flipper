@@ -7,11 +7,11 @@
  * @format
  */
 
-import type {CrashLog} from './index';
+import type {CrashLog} from 'flipper-common';
 import fs from 'fs-extra';
 import os from 'os';
-import {path} from 'flipper-plugin';
-import {UNKNOWN_CRASH_REASON} from './crash-utils';
+import path from 'path';
+import {ServerDevice} from '../ServerDevice';
 
 export function parseIosCrash(content: string) {
   const regex = /Exception Type: *\w*/;
@@ -19,7 +19,7 @@ export function parseIosCrash(content: string) {
   const exceptionString = arr ? arr[0] : '';
   const exceptionRegex = /\w*$/;
   const tmp = exceptionRegex.exec(exceptionString);
-  const exception = tmp && tmp[0].length ? tmp[0] : UNKNOWN_CRASH_REASON;
+  const exception = tmp && tmp[0].length ? tmp[0] : 'Unknown';
 
   const dateRegex = /Date\/Time: *[\w\s\.:-]*/;
   const dateArr = dateRegex.exec(content);
@@ -63,16 +63,14 @@ export function parsePath(content: string): string | null {
   return path.trim();
 }
 
-export async function addFileWatcherForiOSCrashLogs(
-  serial: string,
-  reportCrash: (payload: CrashLog) => void,
-) {
+export function addFileWatcherForiOSCrashLogs(device: ServerDevice) {
   const dir = path.join(os.homedir(), 'Library', 'Logs', 'DiagnosticReports');
-  if (!(await fs.pathExists(dir))) {
-    // Directory doesn't exist
-    return;
+  // eslint-disable-next-line node/no-sync
+  if (!fs.pathExistsSync(dir)) {
+    console.warn('Failed to start iOS crash watcher');
+    return () => {};
   }
-  return fs.watch(dir, async (_eventType, filename) => {
+  const watcher = fs.watch(dir, async (_eventType, filename) => {
     // We just parse the crash logs with extension `.crash`
     const checkFileExtension = /.crash$/.exec(filename);
     if (!filename || !checkFileExtension) {
@@ -88,9 +86,14 @@ export async function addFileWatcherForiOSCrashLogs(
         console.warn('Failed to read crash file', err);
         return;
       }
-      if (shouldShowiOSCrashNotification(serial, data)) {
-        reportCrash(parseIosCrash(data));
+      if (shouldShowiOSCrashNotification(device.info.serial, data)) {
+        device.flipperServer.emit('device-crash', {
+          crash: parseIosCrash(data),
+          serial: device.info.serial,
+        });
       }
     });
   });
+
+  return () => watcher.close();
 }

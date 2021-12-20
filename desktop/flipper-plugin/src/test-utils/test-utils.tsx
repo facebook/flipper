@@ -32,6 +32,7 @@ import {
   SandyDevicePluginInstance,
   Device,
   DeviceLogListener,
+  CrashLogListener,
 } from '../plugin/DevicePlugin';
 import {BasePluginInstance} from '../plugin/PluginBase';
 import {FlipperLib} from '../plugin/FlipperLib';
@@ -553,6 +554,7 @@ function createMockDevice(options?: StartPluginOptions): Device & {
   addLogEntry(entry: DeviceLogEntry): void;
 } {
   const logListeners: (undefined | DeviceLogListener)[] = [];
+  const crashListeners: (undefined | CrashLogListener)[] = [];
   return {
     os: 'Android',
     deviceType: 'emulator',
@@ -565,6 +567,13 @@ function createMockDevice(options?: StartPluginOptions): Device & {
     },
     removeLogListener(idx) {
       logListeners[idx as any] = undefined;
+    },
+    addCrashListener(cb) {
+      crashListeners.push(cb);
+      return (crashListeners.length - 1) as any;
+    },
+    removeCrashListener(idx) {
+      crashListeners[idx as any] = undefined;
     },
     addLogEntry(entry: DeviceLogEntry) {
       logListeners.forEach((f) => f?.(entry));

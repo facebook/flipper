@@ -7,11 +7,8 @@
  * @format
  */
 
-import type {FSWatcher} from 'fs';
-import {createState, DevicePluginClient} from 'flipper-plugin';
+import {createState, DevicePluginClient, CrashLog} from 'flipper-plugin';
 import {showCrashNotification} from './crash-utils';
-import {addFileWatcherForiOSCrashLogs} from './ios-crash-utils';
-import {startAndroidCrashWatcher} from './android-crash-utils';
 
 export type Crash = {
   notificationID: string;
@@ -21,16 +18,8 @@ export type Crash = {
   date: number;
 };
 
-export type CrashLog = {
-  callstack: string;
-  reason: string;
-  name: string;
-  date?: number;
-};
-
 export function devicePlugin(client: DevicePluginClient) {
   let notificationID = -1;
-  let watcher: Promise<FSWatcher | undefined> | undefined = undefined;
 
   const crashes = createState<Crash[]>([], {persist: 'crashes'});
   const selectedCrash = createState<string | undefined>();
@@ -59,31 +48,13 @@ export function devicePlugin(client: DevicePluginClient) {
 
   // Startup logic to establish log monitoring
   if (client.device.isConnected) {
-    if (client.device.os.includes('iOS')) {
-      watcher = addFileWatcherForiOSCrashLogs(
-        client.device.serial,
-        reportCrash,
-      );
-    } else {
-      startAndroidCrashWatcher(client, reportCrash);
-    }
+    client.onDeviceCrash(reportCrash);
   }
 
-  client.onDestroy(() => {
-    watcher
-      ?.then((watcher) => watcher?.close())
-      .catch((e) =>
-        console.error(
-          '[crash_reporter] FSWatcher failed resoving on destroy:',
-          e,
-        ),
-      );
-  });
-
   return {
-    reportCrash,
     crashes,
     selectedCrash,
+    reportCrash,
     openInLogs(callstack: string) {
       client.selectPlugin('DeviceLogs', callstack);
     },

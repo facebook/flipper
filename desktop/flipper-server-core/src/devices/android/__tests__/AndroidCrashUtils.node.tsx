@@ -7,23 +7,23 @@
  * @format
  */
 
-import {DeviceLogEntry, DeviceLogLevel} from 'flipper-plugin';
-import {shouldParseAndroidLog} from '../android-crash-utils';
+import {Entry, Priority} from 'adbkit-logcat';
+import {parseAndroidCrash, shouldParseAndroidLog} from '../AndroidCrashUtils';
 
 function getAndroidLog(
   date: Date,
-  type: DeviceLogLevel,
+  priority: number,
   tag: string,
   message: string,
-): DeviceLogEntry {
-  return {date, type, tag, message, app: 'testapp', pid: 0, tid: 0};
+) {
+  return {date, priority, tag, message, pid: 0, tid: 0} as Entry;
 }
 
 test('test shouldParseAndroidLog function for type error and tag is AndroidRuntime', () => {
   const referenceDate = new Date();
-  const log: DeviceLogEntry = getAndroidLog(
+  const log = getAndroidLog(
     new Date(referenceDate.getTime() + 10000), //This log arrives 10 secs after the refernce time
-    'error',
+    Priority.ERROR,
     'AndroidRuntime',
     'Possible runtime crash',
   );
@@ -32,9 +32,9 @@ test('test shouldParseAndroidLog function for type error and tag is AndroidRunti
 });
 test('test shouldParseAndroidLog function for type non-error', () => {
   const referenceDate = new Date();
-  const log: DeviceLogEntry = getAndroidLog(
+  const log = getAndroidLog(
     new Date(referenceDate.getTime() + 10000), //This log arrives 10 secs after the refernce time
-    'debug',
+    Priority.DEBUG,
     'fb4a.activitymanager',
     'Possible debug info in activitymanager',
   );
@@ -43,9 +43,9 @@ test('test shouldParseAndroidLog function for type non-error', () => {
 });
 test('test shouldParseAndroidLog function for the older android log', () => {
   const referenceDate = new Date();
-  const log: DeviceLogEntry = getAndroidLog(
+  const log = getAndroidLog(
     new Date(referenceDate.getTime() - 10000), //This log arrives 10 secs before the refernce time
-    'error',
+    Priority.ERROR,
     'fb4a.activitymanager',
     'Possible error info in activitymanager',
   );
@@ -54,9 +54,9 @@ test('test shouldParseAndroidLog function for the older android log', () => {
 });
 test('test shouldParseAndroidLog function for the fatal log', () => {
   const referenceDate = new Date();
-  const log: DeviceLogEntry = getAndroidLog(
+  const log = getAndroidLog(
     new Date(referenceDate.getTime() + 10000), //This log arrives 10 secs after the refernce time
-    'fatal',
+    Priority.FATAL,
     'arbitrary tag',
     'Possible error info in activitymanager',
   );
@@ -65,12 +65,39 @@ test('test shouldParseAndroidLog function for the fatal log', () => {
 });
 test('test shouldParseAndroidLog function for the error log which does not staisfy our tags check', () => {
   const referenceDate = new Date();
-  const log: DeviceLogEntry = getAndroidLog(
+  const log = getAndroidLog(
     new Date(referenceDate.getTime() + 10000), //This log arrives 10 secs after the refernce time
-    'error',
+    Priority.ERROR,
     'arbitrary tag',
     'Possible error info in fb4a',
   );
   const shouldParseTheLog = shouldParseAndroidLog(log, referenceDate);
   expect(shouldParseTheLog).toEqual(false);
+});
+test('test the parsing of the Android crash log for the proper android crash format', () => {
+  const log =
+    'FATAL EXCEPTION: main\nProcess: com.facebook.flipper.sample, PID: 27026\njava.lang.IndexOutOfBoundsException: Index: 190, Size: 0\n\tat java.util.ArrayList.get(ArrayList.java:437)\n\tat com.facebook.flipper.sample.RootComponentSpec.hitGetRequest(RootComponentSpec.java:72)\n\tat com.facebook.flipper.sample.RootComponent.hitGetRequest(RootComponent.java:46)\n';
+  const date = new Date();
+  const crash = parseAndroidCrash(log, date);
+  expect(crash.callstack).toEqual(log);
+  expect(crash.reason).toEqual(
+    'java.lang.IndexOutOfBoundsException: Index: 190, Size: 0',
+  );
+  expect(crash.name).toEqual('FATAL EXCEPTION: main');
+  expect(crash.date).toEqual(date.getTime());
+});
+test('test the parsing of the Android crash log for the unknown crash format and no date', () => {
+  const log = 'Blaa Blaa Blaa';
+  const crash = parseAndroidCrash(log, undefined);
+  expect(crash.callstack).toEqual(log);
+  expect(crash.reason).toEqual('Unknown');
+  expect(crash.name).toEqual('Unknown');
+  expect(crash.date).toBeUndefined();
+});
+test('test the parsing of the Android crash log for the partial format matching the crash format', () => {
+  const log = 'First Line Break \n Blaa Blaa \n Blaa Blaa ';
+  const crash = parseAndroidCrash(log, undefined);
+  expect(crash.callstack).toEqual(log);
+  expect(crash.reason).toEqual('Unknown');
+  expect(crash.name).toEqual('First Line Break ');
 });

@@ -17,6 +17,7 @@ import {dirname, join} from 'path';
 import {DeviceSpec} from 'flipper-common';
 import {ServerDevice} from '../ServerDevice';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
+import {startAndroidCrashWatcher} from './AndroidCrashUtils';
 
 const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 
@@ -49,6 +50,7 @@ export default class AndroidDevice extends ServerDevice {
     this.adb = adb;
   }
 
+  // TODO: Prevent starting logging multiple times
   startLogging() {
     this.adb
       .openLogcat(this.serial, {clear: true})
@@ -110,6 +112,10 @@ export default class AndroidDevice extends ServerDevice {
   stopLogging() {
     this.reader?.end();
     this.reader = undefined;
+  }
+
+  protected startCrashWatcherImpl(): () => void {
+    return startAndroidCrashWatcher(this);
   }
 
   reverse(ports: number[]): Promise<void> {

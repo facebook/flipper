@@ -11,7 +11,7 @@ import unicodeSubstring from 'unicode-substring';
 import type {Crash} from './index';
 import {DevicePluginClient} from 'flipper-plugin';
 
-export const UNKNOWN_CRASH_REASON = 'Cannot figure out the cause';
+export const UNKNOWN_CRASH_REASON = 'Unknown';
 
 function truncate(baseString: string, numOfChars: number): string {
   if (baseString.length <= numOfChars) {

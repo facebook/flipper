@@ -114,6 +114,10 @@ export type FlipperServerEvents = {
     serial: string;
     entry: DeviceLogEntry;
   };
+  'device-crash': {
+    serial: string;
+    crash: CrashLog;
+  };
   'client-setup': UninitializedClient;
   'client-connected': ClientDescription;
   'client-disconnected': {id: string};
@@ -196,6 +200,8 @@ export type FlipperServerCommands = {
   'device-list': () => Promise<DeviceDescription[]>;
   'device-start-logging': (serial: string) => Promise<void>;
   'device-stop-logging': (serial: string) => Promise<void>;
+  'device-start-crash-watcher': (serial: string) => Promise<void>;
+  'device-stop-crash-watcher': (serial: string) => Promise<void>;
   'device-supports-screenshot': (serial: string) => Promise<boolean>;
   'device-supports-screencapture': (serial: string) => Promise<boolean>;
   'device-take-screenshot': (serial: string) => Promise<string>; // base64 encoded buffer
@@ -571,3 +577,10 @@ export type ResponseMessage =
       success?: never;
       error: ClientErrorType;
     };
+
+export type CrashLog = {
+  callstack?: string;
+  reason: string;
+  name: string;
+  date?: number;
+};

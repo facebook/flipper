@@ -258,8 +258,6 @@ module.exports = {
         // TODO: Remove specific plugin overrides down below
         'plugins/fb/graphql/data/getQueryFromQueryId.tsx',
         'plugins/fb/kaios-portal/kaios-debugger-client/client.tsx',
-        'plugins/public/crash_reporter/index.tsx',
-        'plugins/public/crash_reporter/ios-crash-utils.tsx',
         'plugins/public/reactdevtools/index.tsx',
       ],
       rules: {

@@ -22,6 +22,7 @@ export {
   Device,
   DeviceLogListener,
   DevicePluginClient,
+  CrashLogListener,
   SandyDevicePluginInstance as _SandyDevicePluginInstance,
 } from './plugin/DevicePlugin';
 export {SandyPluginDefinition as _SandyPluginDefinition} from './plugin/SandyPluginDefinition';
@@ -148,4 +149,5 @@ export {
   DeviceLogEntry,
   DeviceLogLevel,
   Logger,
+  CrashLog,
 } from 'flipper-common';

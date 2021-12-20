@@ -15,6 +15,8 @@ export abstract class ServerDevice {
   readonly flipperServer: FlipperServerImpl;
   connected = true;
 
+  protected stopCrashWatcherCb?: () => void;
+
   constructor(flipperServer: FlipperServerImpl, info: DeviceDescription) {
     this.flipperServer = flipperServer;
     this.info = info;
@@ -44,6 +46,20 @@ export abstract class ServerDevice {
 
   stopLogging() {
     // to be subclassed
+  }
+
+  startCrashWatcher() {
+    this.stopCrashWatcherCb = this.startCrashWatcherImpl?.();
+  }
+
+  protected startCrashWatcherImpl(): () => void {
+    // to be subclassed
+    return () => {};
+  }
+
+  stopCrashWatcher() {
+    this.stopCrashWatcherCb?.();
+    this.stopCrashWatcherCb = undefined;
   }
 
   async screenshotAvailable(): Promise<boolean> {

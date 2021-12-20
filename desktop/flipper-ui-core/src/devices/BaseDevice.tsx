@@ -15,6 +15,7 @@ import {
   Idler,
   createState,
   getFlipperLib,
+  CrashLogListener,
 } from 'flipper-plugin';
 import {
   DeviceLogEntry,
@@ -22,6 +23,7 @@ import {
   DeviceType,
   DeviceDescription,
   FlipperServer,
+  CrashLog,
 } from 'flipper-common';
 import {DeviceSpec, PluginDetails} from 'flipper-common';
 import {getPluginKey} from '../utils/pluginKey';
@@ -84,6 +86,8 @@ export default class BaseDevice implements Device {
   }
 
   logListeners: Map<Symbol, DeviceLogListener> = new Map();
+
+  crashListeners: Map<Symbol, CrashLogListener> = new Map();
 
   readonly connected = createState(true);
 
@@ -178,6 +182,52 @@ export default class BaseDevice implements Device {
     this.logListeners.delete(id);
     if (this.logListeners.size === 0) {
       this.stopLogging();
+    }
+  }
+
+  private crashLogEventHandler = (payload: {
+    serial: string;
+    crash: CrashLog;
+  }) => {
+    if (payload.serial === this.serial && this.crashListeners.size > 0) {
+      this.addCrashEntry(payload.crash);
+    }
+  };
+
+  addCrashEntry(entry: CrashLog) {
+    this.crashListeners.forEach((listener) => {
+      // prevent breaking other listeners, if one listener doesn't work.
+      try {
+        listener(entry);
+      } catch (e) {
+        console.error(`Crash listener exception:`, e);
+      }
+    });
+  }
+
+  async startCrashWatcher() {
+    await this.flipperServer.exec('device-start-crash-watcher', this.serial);
+    this.flipperServer.on('device-crash', this.crashLogEventHandler);
+  }
+
+  stopCrashWatcher() {
+    this.flipperServer.off('device-crash', this.crashLogEventHandler);
+    return this.flipperServer.exec('device-stop-crash-watcher', this.serial);
+  }
+
+  addCrashListener(callback: CrashLogListener): Symbol {
+    if (this.crashListeners.size === 0) {
+      this.startCrashWatcher();
+    }
+    const id = Symbol();
+    this.crashListeners.set(id, callback);
+    return id;
+  }
+
+  removeCrashListener(id: Symbol) {
+    this.crashListeners.delete(id);
+    if (this.crashListeners.size === 0) {
+      this.stopCrashWatcher();
     }
   }
 
@@ -328,6 +378,8 @@ export default class BaseDevice implements Device {
   disconnect() {
     this.logListeners.clear();
     this.stopLogging();
+    this.crashListeners.clear();
+    this.stopCrashWatcher();
     this.connected.set(false);
   }
 

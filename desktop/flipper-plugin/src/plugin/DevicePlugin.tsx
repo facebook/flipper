@@ -11,9 +11,10 @@ import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
 import {Atom, ReadOnlyAtom} from '../state/atom';
-import {DeviceOS, DeviceType, DeviceLogEntry} from 'flipper-common';
+import {DeviceOS, DeviceType, DeviceLogEntry, CrashLog} from 'flipper-common';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
+export type CrashLogListener = (crash: CrashLog) => void;
 
 export interface Device {
   readonly isArchived: boolean;
@@ -24,7 +25,9 @@ export interface Device {
   readonly connected: Atom<boolean>;
   executeShell(command: string): Promise<string>;
   addLogListener(callback: DeviceLogListener): Symbol;
+  addCrashListener(callback: CrashLogListener): Symbol;
   removeLogListener(id: Symbol): void;
+  removeCrashListener(id: Symbol): void;
   executeShell(command: string): Promise<string>;
   forwardPort(local: string, remote: string): Promise<boolean>;
   clearLogs(): Promise<void>;

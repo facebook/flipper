@@ -289,6 +289,10 @@ export class FlipperServerImpl implements FlipperServer {
       this.getDevice(serial).startLogging(),
     'device-stop-logging': async (serial: string) =>
       this.getDevice(serial).stopLogging(),
+    'device-start-crash-watcher': async (serial: string) =>
+      this.getDevice(serial).startCrashWatcher(),
+    'device-stop-crash-watcher': async (serial: string) =>
+      this.getDevice(serial).stopCrashWatcher(),
     'device-supports-screenshot': async (serial: string) =>
       this.getDevice(serial).screenshotAvailable(),
     'device-supports-screencapture': async (serial: string) =>

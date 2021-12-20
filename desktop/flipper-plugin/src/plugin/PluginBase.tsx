@@ -12,7 +12,7 @@ import EventEmitter from 'eventemitter3';
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {MenuEntry, NormalizedMenuEntry, normalizeMenuEntry} from './MenuEntry';
 import {FlipperLib} from './FlipperLib';
-import {Device, DeviceLogListener} from './DevicePlugin';
+import {CrashLogListener, Device, DeviceLogListener} from './DevicePlugin';
 import {batched} from '../state/batch';
 import {Idler} from '../utils/Idler';
 import {Notification} from './Notification';
@@ -83,6 +83,12 @@ export interface BasePluginClient {
    * Listeners established with this mechanism will automatically be cleaned up during destroy
    */
   onDeviceLogEntry(cb: DeviceLogListener): () => void;
+
+  /**
+   * Listener that is triggered if the underlying device crashes.
+   * Listeners established with this mechanism will automatically be cleaned up during destroy
+   */
+  onDeviceCrash(cb: CrashLogListener): () => void;
 
   /**
    * Creates a Paste (similar to a Github Gist).
@@ -186,6 +192,7 @@ export abstract class BasePluginInstance {
 
   menuEntries: NormalizedMenuEntry[] = [];
   logListeners: Symbol[] = [];
+  crashListeners: Symbol[] = [];
 
   readonly instanceId = ++staticInstanceId;
 
@@ -316,6 +323,13 @@ export abstract class BasePluginInstance {
           this.device.removeLogListener(handle);
         };
       },
+      onDeviceCrash: (cb: CrashLogListener): (() => void) => {
+        const handle = this.device.addCrashListener(cb);
+        this.crashListeners.push(handle);
+        return () => {
+          this.device.removeCrashListener(handle);
+        };
+      },
       writeTextToClipboard: this.flipperLib.writeTextToClipboard,
       createPaste: this.flipperLib.createPaste,
       isFB: this.flipperLib.isFB,
@@ -364,6 +378,9 @@ export abstract class BasePluginInstance {
     this.deactivate();
     this.logListeners.splice(0).forEach((handle) => {
       this.device.removeLogListener(handle);
+    });
+    this.crashListeners.splice(0).forEach((handle) => {
+      this.device.removeCrashListener(handle);
     });
     this.events.emit('destroy');
     this.destroyed = true;
