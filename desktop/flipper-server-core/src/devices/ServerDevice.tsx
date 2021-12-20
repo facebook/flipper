@@ -8,6 +8,7 @@
  */
 
 import {DeviceDescription, DeviceLogEntry} from 'flipper-common';
+import {DeviceListener, NoopListener} from '../utils/DeviceListener';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 
 export abstract class ServerDevice {
@@ -16,6 +17,11 @@ export abstract class ServerDevice {
   connected = true;
 
   protected stopCrashWatcherCb?: () => void;
+
+  readonly logListener: DeviceListener = new NoopListener(() => this.connected);
+  readonly crashWatcher: DeviceListener = new NoopListener(
+    () => this.connected,
+  );
 
   constructor(flipperServer: FlipperServerImpl, info: DeviceDescription) {
     this.flipperServer = flipperServer;
@@ -38,28 +44,8 @@ export abstract class ServerDevice {
    */
   disconnect(): void {
     this.connected = false;
-  }
-
-  startLogging() {
-    // to be subclassed
-  }
-
-  stopLogging() {
-    // to be subclassed
-  }
-
-  startCrashWatcher() {
-    this.stopCrashWatcherCb = this.startCrashWatcherImpl?.();
-  }
-
-  protected startCrashWatcherImpl(): () => void {
-    // to be subclassed
-    return () => {};
-  }
-
-  stopCrashWatcher() {
-    this.stopCrashWatcherCb?.();
-    this.stopCrashWatcherCb = undefined;
+    this.logListener.stop();
+    this.crashWatcher.stop();
   }
 
   async screenshotAvailable(): Promise<boolean> {

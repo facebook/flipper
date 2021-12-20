@@ -8,16 +8,17 @@
  */
 
 import adb, {Client as ADBClient, PullTransfer} from 'adbkit';
-import {Priority, Reader} from 'adbkit-logcat';
+import {Reader} from 'adbkit-logcat';
 import {createWriteStream} from 'fs';
-import type {DeviceLogLevel, DeviceType} from 'flipper-common';
+import type {DeviceType} from 'flipper-common';
 import which from 'which';
 import {spawn} from 'child_process';
 import {dirname, join} from 'path';
 import {DeviceSpec} from 'flipper-common';
 import {ServerDevice} from '../ServerDevice';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
-import {startAndroidCrashWatcher} from './AndroidCrashUtils';
+import {AndroidCrashWatcher} from './AndroidCrashUtils';
+import {AndroidLogListener} from './AndroidLogListener';
 
 const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 
@@ -26,6 +27,8 @@ export default class AndroidDevice extends ServerDevice {
   pidAppMapping: {[key: number]: string} = {};
   private recordingProcess?: Promise<string>;
   reader?: Reader;
+  readonly logListener: AndroidLogListener;
+  readonly crashWatcher: AndroidCrashWatcher;
 
   constructor(
     flipperServer: FlipperServerImpl,
@@ -48,74 +51,30 @@ export default class AndroidDevice extends ServerDevice {
       sdkVersion,
     });
     this.adb = adb;
-  }
 
-  // TODO: Prevent starting logging multiple times
-  startLogging() {
-    this.adb
-      .openLogcat(this.serial, {clear: true})
-      .then((reader) => {
-        this.reader = reader;
-        reader
-          .on('entry', (entry) => {
-            let type: DeviceLogLevel = 'unknown';
-            if (entry.priority === Priority.VERBOSE) {
-              type = 'verbose';
-            }
-            if (entry.priority === Priority.DEBUG) {
-              type = 'debug';
-            }
-            if (entry.priority === Priority.INFO) {
-              type = 'info';
-            }
-            if (entry.priority === Priority.WARN) {
-              type = 'warn';
-            }
-            if (entry.priority === Priority.ERROR) {
-              type = 'error';
-            }
-            if (entry.priority === Priority.FATAL) {
-              type = 'fatal';
-            }
-
-            this.addLogEntry({
-              tag: entry.tag,
-              pid: entry.pid,
-              tid: entry.tid,
-              message: entry.message,
-              date: entry.date,
-              type,
-            });
-          })
-          .on('end', () => {
-            if (this.reader) {
-              // logs didn't stop gracefully
-              setTimeout(() => {
-                if (this.connected) {
-                  console.warn(
-                    `Log stream broken: ${this.serial} - restarting`,
-                  );
-                  this.startLogging();
-                }
-              }, 100);
-            }
-          })
-          .on('error', (e) => {
-            console.warn('Failed to read from adb logcat: ', e);
-          });
-      })
-      .catch((e) => {
-        console.warn('Failed to open log stream: ', e);
-      });
-  }
-
-  stopLogging() {
-    this.reader?.end();
-    this.reader = undefined;
-  }
-
-  protected startCrashWatcherImpl(): () => void {
-    return startAndroidCrashWatcher(this);
+    this.logListener = new AndroidLogListener(
+      () => this.connected,
+      (logEntry) => this.addLogEntry(logEntry),
+      this.adb,
+      this.serial,
+    );
+    // It is OK not to await the start of the log listener. We just spawn it and handle errors internally.
+    this.logListener
+      .start()
+      .catch((e) =>
+        console.error('AndroidDevice.logListener.start -> unexpected error', e),
+      );
+    this.crashWatcher = new AndroidCrashWatcher(this);
+    // It is OK not to await the start of the crash watcher. We just spawn it and handle errors internally.
+    // Crash watcher depends on functioning log listener. It waits for its start internally.
+    this.crashWatcher
+      .start()
+      .catch((e) =>
+        console.error(
+          'AndroidDevice.crashWatcher.start -> unexpected error',
+          e,
+        ),
+      );
   }
 
   reverse(ports: number[]): Promise<void> {

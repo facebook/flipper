@@ -58,7 +58,7 @@ const IGNORED_MODULES = [
 ];
 
 module.exports = () => ({
-  name: 'infinity-import-react',
+  name: 'change-require-to-electronRequire-in-electron-app',
   visitor: {
     CallExpression(path: NodePath<CallExpression>) {
       const node = path.node;

@@ -7,9 +7,9 @@
  * @format
  */
 
-import {Entry, Priority} from 'adbkit-logcat';
-import type {CrashLog} from 'flipper-common';
-import AndroidDevice from './AndroidDevice';
+import type {CrashLog, DeviceLogEntry} from 'flipper-common';
+import {DeviceListener} from '../../utils/DeviceListener';
+import {ServerDevice} from '../ServerDevice';
 
 export function parseAndroidCrash(content: string, logDate?: Date) {
   const regForName = /.*\n/;
@@ -38,82 +38,87 @@ export function parseAndroidCrash(content: string, logDate?: Date) {
   return crash;
 }
 
-export function shouldParseAndroidLog(entry: Entry, date: Date): boolean {
+export function shouldParseAndroidLog(
+  entry: DeviceLogEntry,
+  date: Date,
+): boolean {
   return (
     entry.date.getTime() - date.getTime() > 0 && // The log should have arrived after the device has been registered
-    ((entry.priority === Priority.ERROR && entry.tag === 'AndroidRuntime') ||
-      entry.priority === Priority.FATAL)
+    ((entry.type === 'error' && entry.tag === 'AndroidRuntime') ||
+      entry.type === 'fatal')
   );
 }
 
-/**
- * Starts listening ADB logs. Emits 'device-crash' on "error" and "fatal" entries.
- * Listens to the logs in a separate stream.
- * We can't leverage teh existing log listener mechanism (see `startLogging`)
- * it is started externally (by the client). Refactoring how we start log listeners is a bit too much.
- * It is easier to start its own stream for crash watcher and manage it independently.
- */
-export function startAndroidCrashWatcher(device: AndroidDevice) {
-  const referenceDate = new Date();
-  let androidLog: string = '';
-  let androidLogUnderProcess = false;
-  let timer: null | NodeJS.Timeout = null;
-  let gracefulShutdown = false;
-  const readerPromise = device.adb
-    .openLogcat(device.serial, {clear: true})
-    .then((reader) =>
-      reader
-        .on('entry', (entry) => {
-          if (shouldParseAndroidLog(entry, referenceDate)) {
-            if (androidLogUnderProcess) {
-              androidLog += '\n' + entry.message;
-              androidLog = androidLog.trim();
-              if (timer) {
-                clearTimeout(timer);
-              }
-            } else {
-              androidLog = entry.message;
-              androidLogUnderProcess = true;
-            }
-            timer = setTimeout(() => {
-              if (androidLog.length > 0) {
-                device.flipperServer.emit('device-crash', {
-                  crash: parseAndroidCrash(androidLog, entry.date),
-                  serial: device.info.serial,
-                });
-              }
-              androidLogUnderProcess = false;
-              androidLog = '';
-            }, 50);
-          }
-        })
-        .on('end', () => {
-          if (!gracefulShutdown) {
-            // logs didn't stop gracefully
-            setTimeout(() => {
-              if (device.connected) {
-                console.warn(
-                  `Log stream broken: ${device.serial} - restarting`,
-                );
-                device.startCrashWatcher();
-              }
-            }, 100);
-          }
-        })
-        .on('error', (e) => {
-          console.warn('Failed to read from adb logcat: ', e);
-        }),
-    )
-    .catch((e) => {
-      console.warn('Failed to open log stream: ', e);
+export class AndroidCrashWatcher extends DeviceListener {
+  constructor(private readonly device: ServerDevice) {
+    super(() => device.connected);
+  }
+  protected async startListener() {
+    const referenceDate = new Date();
+    let androidLog: string = '';
+    let androidLogUnderProcess = false;
+    let timer: null | NodeJS.Timeout = null;
+
+    // Wait for the start of the log listener
+    await new Promise<void>((resolve, reject) => {
+      const unsubscribeFatal = this.device.logListener.once('fatal', () => {
+        reject(
+          this.device.logListener.error ??
+            new Error('Unknown log listener error'),
+        );
+      });
+      this.device.logListener.once('active', () => {
+        unsubscribeFatal();
+        resolve();
+      });
     });
 
-  return () => {
-    gracefulShutdown = true;
-    readerPromise
-      .then((reader) => reader?.end())
-      .catch((e) => {
-        console.error('Failed to close adb logcat stream: ', e);
-      });
-  };
+    const onDeviceLog = ({
+      entry,
+      serial,
+    }: {
+      entry: DeviceLogEntry;
+      serial: string;
+    }) => {
+      if (
+        serial === this.device.serial &&
+        shouldParseAndroidLog(entry, referenceDate)
+      ) {
+        if (androidLogUnderProcess) {
+          androidLog += '\n' + entry.message;
+          androidLog = androidLog.trim();
+          if (timer) {
+            clearTimeout(timer);
+          }
+        } else {
+          androidLog = entry.message;
+          androidLogUnderProcess = true;
+        }
+        timer = setTimeout(() => {
+          if (androidLog.length > 0) {
+            this.device.flipperServer.emit('device-crash', {
+              crash: parseAndroidCrash(androidLog, entry.date),
+              serial: this.device.serial,
+            });
+          }
+          androidLogUnderProcess = false;
+          androidLog = '';
+        }, 50);
+      }
+    };
+
+    this.device.flipperServer.on('device-log', onDeviceLog);
+    this.device.logListener.on('fatal', () =>
+      console.warn(
+        'AndroidCrashWatcher -> log listener failed. Crash listener is not functional until log listener restarts.',
+      ),
+    );
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      this.device.flipperServer.off('device-log', onDeviceLog);
+    };
+  }
 }

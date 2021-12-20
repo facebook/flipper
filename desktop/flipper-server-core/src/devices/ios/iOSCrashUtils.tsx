@@ -8,6 +8,7 @@
  */
 
 import type {CrashLog} from 'flipper-common';
+import {DeviceListener} from '../../utils/DeviceListener';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -63,37 +64,48 @@ export function parsePath(content: string): string | null {
   return path.trim();
 }
 
-export function addFileWatcherForiOSCrashLogs(device: ServerDevice) {
-  const dir = path.join(os.homedir(), 'Library', 'Logs', 'DiagnosticReports');
-  // eslint-disable-next-line node/no-sync
-  if (!fs.pathExistsSync(dir)) {
-    console.warn('Failed to start iOS crash watcher');
-    return () => {};
+export class iOSCrashWatcher extends DeviceListener {
+  constructor(private readonly device: ServerDevice) {
+    super(() => device.connected);
   }
-  const watcher = fs.watch(dir, async (_eventType, filename) => {
-    // We just parse the crash logs with extension `.crash`
-    const checkFileExtension = /.crash$/.exec(filename);
-    if (!filename || !checkFileExtension) {
-      return;
+  protected async startListener() {
+    const dir = path.join(os.homedir(), 'Library', 'Logs', 'DiagnosticReports');
+
+    if (!(await fs.pathExists(dir))) {
+      throw new Error('Failed to start iOS crash watcher: path does not exist');
     }
-    const filepath = path.join(dir, filename);
-    const exists = await fs.pathExists(filepath);
-    if (!exists) {
-      return;
-    }
-    fs.readFile(filepath, 'utf8', function (err, data) {
-      if (err) {
-        console.warn('Failed to read crash file', err);
+
+    const watcher = fs.watch(dir, async (_eventType, filename) => {
+      // We just parse the crash logs with extension `.crash`
+      // TODO: Make it work on MacOS 12. ASAP!
+      // MacOS 12 does not create .crash reports, but uses new .ips files instead with different format.
+      const checkFileExtension = /.crash$/.exec(filename);
+      if (!filename || !checkFileExtension) {
         return;
       }
-      if (shouldShowiOSCrashNotification(device.info.serial, data)) {
-        device.flipperServer.emit('device-crash', {
-          crash: parseIosCrash(data),
-          serial: device.info.serial,
-        });
+      const filepath = path.join(dir, filename);
+      const exists = await fs.pathExists(filepath);
+      if (!exists) {
+        return;
       }
+      fs.readFile(filepath, 'utf8', (err, data) => {
+        if (err) {
+          console.warn('Failed to read crash file', err);
+          return;
+        }
+        if (shouldShowiOSCrashNotification(this.device.serial, data)) {
+          this.device.flipperServer.emit('device-crash', {
+            crash: parseIosCrash(data),
+            serial: this.device.serial,
+          });
+        }
+      });
     });
-  });
 
-  return () => watcher.close();
+    watcher.on('error', (e) => {
+      console.error('iOS crash watcher error', e);
+    });
+
+    return () => watcher.close();
+  }
 }

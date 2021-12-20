@@ -5,7 +5,10 @@
     "rootDir": "src",
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
-    "lib": ["DOM", "ES2019"]
+    "lib": ["DOM", "ES2019"],
+    "types": [
+      "../types/flipperGlobals"
+    ]
   },
   "references": [
     {

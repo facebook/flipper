@@ -113,6 +113,7 @@
   "privileged": true,
   "productName": "Flipper",
   "resolutions": {
+    "adbkit-logcat": "^2.0.1"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production ./ts-node scripts/build-release.ts $@",

@@ -7,23 +7,23 @@
  * @format
  */
 
-import {Entry, Priority} from 'adbkit-logcat';
+import {DeviceLogEntry} from 'flipper-plugin';
 import {parseAndroidCrash, shouldParseAndroidLog} from '../AndroidCrashUtils';
 
 function getAndroidLog(
   date: Date,
-  priority: number,
+  type: DeviceLogEntry['type'],
   tag: string,
   message: string,
-) {
-  return {date, priority, tag, message, pid: 0, tid: 0} as Entry;
+): DeviceLogEntry {
+  return {date, type, tag, message, pid: 0, tid: 0};
 }
 
 test('test shouldParseAndroidLog function for type error and tag is AndroidRuntime', () => {
   const referenceDate = new Date();
   const log = getAndroidLog(
     new Date(referenceDate.getTime() + 10000), //This log arrives 10 secs after the refernce time
-    Priority.ERROR,
+    'error',
     'AndroidRuntime',
     'Possible runtime crash',
   );
@@ -34,7 +34,7 @@ test('test shouldParseAndroidLog function for type non-error', () => {
   const referenceDate = new Date();
   const log = getAndroidLog(
     new Date(referenceDate.getTime() + 10000), //This log arrives 10 secs after the refernce time
-    Priority.DEBUG,
+    'debug',
     'fb4a.activitymanager',
     'Possible debug info in activitymanager',
   );
@@ -45,7 +45,7 @@ test('test shouldParseAndroidLog function for the older android log', () => {
   const referenceDate = new Date();
   const log = getAndroidLog(
     new Date(referenceDate.getTime() - 10000), //This log arrives 10 secs before the refernce time
-    Priority.ERROR,
+    'error',
     'fb4a.activitymanager',
     'Possible error info in activitymanager',
   );
@@ -56,7 +56,7 @@ test('test shouldParseAndroidLog function for the fatal log', () => {
   const referenceDate = new Date();
   const log = getAndroidLog(
     new Date(referenceDate.getTime() + 10000), //This log arrives 10 secs after the refernce time
-    Priority.FATAL,
+    'fatal',
     'arbitrary tag',
     'Possible error info in activitymanager',
   );
@@ -67,7 +67,7 @@ test('test shouldParseAndroidLog function for the error log which does not stais
   const referenceDate = new Date();
   const log = getAndroidLog(
     new Date(referenceDate.getTime() + 10000), //This log arrives 10 secs after the refernce time
-    Priority.ERROR,
+    'error',
     'arbitrary tag',
     'Possible error info in fb4a',
   );

@@ -11,7 +11,7 @@ import {CallExpression} from '@babel/types';
 import {NodePath} from '@babel/traverse';
 
 module.exports = () => ({
-  name: 'change-electron-to-electronRequire-in-main',
+  name: 'change-require-to-electronRequire-in-main',
   visitor: {
     CallExpression(path: NodePath<CallExpression>) {
       const node = path.node;

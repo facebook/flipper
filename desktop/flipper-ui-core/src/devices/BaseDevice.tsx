@@ -160,13 +160,11 @@ export default class BaseDevice implements Device {
   }
 
   async startLogging() {
-    await this.flipperServer.exec('device-start-logging', this.serial);
     this.flipperServer.on('device-log', this.deviceLogEventHandler);
   }
 
   stopLogging() {
     this.flipperServer.off('device-log', this.deviceLogEventHandler);
-    return this.flipperServer.exec('device-stop-logging', this.serial);
   }
 
   addLogListener(callback: DeviceLogListener): Symbol {
@@ -206,13 +204,11 @@ export default class BaseDevice implements Device {
   }
 
   async startCrashWatcher() {
-    await this.flipperServer.exec('device-start-crash-watcher', this.serial);
     this.flipperServer.on('device-crash', this.crashLogEventHandler);
   }
 
   stopCrashWatcher() {
     this.flipperServer.off('device-crash', this.crashLogEventHandler);
-    return this.flipperServer.exec('device-stop-crash-watcher', this.serial);
   }
 
   addCrashListener(callback: CrashLogListener): Symbol {
