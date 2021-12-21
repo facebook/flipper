@@ -19,10 +19,21 @@ describe('commands', () => {
       typeof commandDownloadFileStartFactory
     >;
     let emit: jest.Mock<any>;
+    let tmpDirName: string;
+    let rmTmpDir: () => void;
 
     beforeEach(() => {
       emit = jest.fn();
       commandDownloadFileStart = commandDownloadFileStartFactory(emit);
+      const tmp = dirSync({
+        unsafeCleanup: true,
+      });
+      tmpDirName = tmp.name;
+      rmTmpDir = tmp.removeCallback;
+    });
+
+    afterEach(() => {
+      rmTmpDir();
     });
 
     test('downloads file and reports the progress', async () => {
@@ -43,9 +54,6 @@ describe('commands', () => {
           data: fakeDownloadStream,
         }));
 
-      const {name: tmpDirName} = dirSync({
-        unsafeCleanup: true,
-      });
       const dest = `${tmpDirName}/flipperTest`;
 
       expect(requestSpy).toBeCalledTimes(0);
@@ -57,9 +65,6 @@ describe('commands', () => {
       const downloadFileDescriptor = await commandDownloadFileStart(
         fakeDownloadURL,
         dest,
-        {
-          overwrite: true,
-        },
       );
 
       expect(requestSpy).toBeCalledTimes(1);
@@ -126,18 +131,13 @@ describe('commands', () => {
         data: fakeDownloadStream,
       }));
 
-      const {name: tmpDirName} = dirSync({
-        unsafeCleanup: true,
-      });
       const dest = `${tmpDirName}/flipperTest`;
 
       const fakeDownloadURL = 'https://flipper.rocks';
       const fakeUuid = 'flipper42';
       jest.spyOn(uuid, 'v4').mockImplementation(() => fakeUuid);
 
-      await commandDownloadFileStart(fakeDownloadURL, dest, {
-        overwrite: true,
-      });
+      await commandDownloadFileStart(fakeDownloadURL, dest);
 
       const lastFileUpdateCalled = new Promise((resolve) =>
         emit.mockImplementationOnce(resolve),
@@ -159,7 +159,7 @@ describe('commands', () => {
       });
     });
 
-    test.skip('rejects "complete" promise if writeable stream errors', async () => {
+    test('rejects "complete" promise if writeable stream errors', async () => {
       const fakeDownloadStream = new MemoryStream();
       const fakeFileSize = 10;
       const fakeHeaders = {
@@ -175,18 +175,12 @@ describe('commands', () => {
         data: fakeDownloadStream,
       }));
 
-      const {name: tmpDirName, removeCallback: removeTmpDir} = dirSync({
-        unsafeCleanup: true,
-      });
-      const dest = `${tmpDirName}/flipperTest`;
-
       const fakeDownloadURL = 'https://flipper.rocks';
       const fakeUuid = 'flipper42';
       jest.spyOn(uuid, 'v4').mockImplementation(() => fakeUuid);
 
-      await commandDownloadFileStart(fakeDownloadURL, dest, {
-        overwrite: true,
-      });
+      // We provide an invalid path to force write stream to fail
+      await commandDownloadFileStart(fakeDownloadURL, '');
 
       const lastFileUpdateCalled = new Promise<void>((resolve) =>
         emit.mockImplementation(
@@ -194,10 +188,7 @@ describe('commands', () => {
         ),
       );
 
-      // We remove the end file to cause an error
-      removeTmpDir();
       fakeDownloadStream.write('Obi');
-
       await lastFileUpdateCalled;
 
       expect(emit).toBeCalledTimes(2);
@@ -212,7 +203,7 @@ describe('commands', () => {
         downloaded: 3,
         totalSize: fakeFileSize,
         status: 'error',
-        message: expect.stringContaining('ENOENT'),
+        message: expect.anything(),
         stack: expect.anything(),
       });
     });
