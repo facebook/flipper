@@ -49,6 +49,7 @@ export {
   DefaultKeyboardAction,
 } from './plugin/MenuEntry';
 export {Notification} from './plugin/Notification';
+export {CreatePasteArgs, CreatePasteResult} from './plugin/Paste';
 
 export {theme} from './ui/theme';
 export {Layout} from './ui/Layout';

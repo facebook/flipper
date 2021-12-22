@@ -17,6 +17,7 @@ import {batched} from '../state/batch';
 import {Idler} from '../utils/Idler';
 import {Notification} from './Notification';
 import {Logger} from '../utils/Logger';
+import {CreatePasteArgs, CreatePasteResult} from './Paste';
 
 type StateExportHandler<T = any> = (
   idler: Idler,
@@ -94,7 +95,9 @@ export interface BasePluginClient {
    * Creates a Paste (similar to a Github Gist).
    * Facebook only function. Resolves to undefined if creating a paste failed.
    */
-  createPaste(input: string): Promise<string | undefined>;
+  createPaste(
+    args: string | CreatePasteArgs,
+  ): Promise<CreatePasteResult | undefined>;
 
   /**
    * Returns true if this is an internal Facebook build.

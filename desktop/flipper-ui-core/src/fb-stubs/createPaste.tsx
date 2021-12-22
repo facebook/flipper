@@ -7,20 +7,10 @@
  * @format
  */
 
-export default function createPaste(
-  _input: string,
-): Promise<string | undefined> {
-  return Promise.reject(new Error('Not implemented!'));
-}
+import type {CreatePasteArgs, CreatePasteResult} from 'flipper-plugin';
 
-export type CreatePasteResult = {
-  number: number;
-  url: string;
-};
-
-export async function createPasteWithDetails(_details: {
-  title?: string;
-  content: string;
-}): Promise<CreatePasteResult | undefined> {
-  return Promise.reject(new Error('Not implemented!'));
+export default async function createPaste(
+  _args: string | CreatePasteArgs,
+): Promise<CreatePasteResult | undefined> {
+  throw new Error('Not implemented');
 }

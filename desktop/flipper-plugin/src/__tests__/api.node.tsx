@@ -81,6 +81,8 @@ test('Correct top level API exposed', () => {
       "Atom",
       "CrashLog",
       "CrashLogListener",
+      "CreatePasteArgs",
+      "CreatePasteResult",
       "DataDescriptionType",
       "DataInspectorExpanded",
       "DataTableColumn",
