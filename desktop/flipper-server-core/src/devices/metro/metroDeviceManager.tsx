@@ -65,7 +65,11 @@ export default (flipperServer: FlipperServerImpl) => {
 
     if (await isMetroRunning()) {
       try {
-        const _ws = new WebSocket(METRO_LOGS_ENDPOINT);
+        const _ws = new WebSocket(METRO_LOGS_ENDPOINT, {
+          // temporarily hardcoded URL, as without an origin header, metro will crash, see
+          // https://github.com/facebook/flipper/issues/3189
+          origin: 'http://localhost:3000/flipper',
+        });
 
         _ws.onopen = () => {
           clearTimeout(guard);
