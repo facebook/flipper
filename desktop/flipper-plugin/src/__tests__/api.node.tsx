@@ -59,6 +59,7 @@ test('Correct top level API exposed', () => {
       "path",
       "produce",
       "renderReactRoot",
+      "safeStringify",
       "sleep",
       "styled",
       "textContent",
