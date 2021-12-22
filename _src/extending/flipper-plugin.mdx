@@ -1166,6 +1166,12 @@ Usage: `uuid()`
 
 Returns UUID V4.
 
+### safeStringify
+
+Usage: `safeStringify(dataStructure)`
+
+Serialises the given data structure using `JSON.stringify`, but doesn't throw if the processes failed, but rather returns a `<unserializable ...>` string.
+
 ## TestUtils
 
 The object `TestUtils` as exposed from `flipper-plugin` exposes utilities to write unit tests for Sandy plugins.
