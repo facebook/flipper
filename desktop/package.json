@@ -134,7 +134,7 @@
     "lint:tsc": "tsc -p tsc-root/tsconfig.json --noemit",
     "list-plugins": "./ts-node scripts/list-plugins.ts",
     "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
-    "postinstall": "patch-package && yarn --cwd plugins install --mutex network:30331 && yarn build:tsc && ./ts-node scripts/generate-plugin-entry-points.ts && yarn build:themes",
+    "postinstall": "patch-package && yarn --cwd plugins install --mutex network:30331 && yarn tsc -b pkg-lib/tsconfig.json && ./ts-node scripts/generate-plugin-entry-points.ts && yarn build:tsc && yarn build:themes",
     "prebuild": "yarn build:tsc && yarn rm-dist && yarn build:themes",
     "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
     "prelint:eslint": "yarn build:eslint",
