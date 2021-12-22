@@ -68,9 +68,9 @@
   "description": "Mobile development tool",
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.3",
+    "@types/jest": "^26.0.24",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "@types/jest": "^26.0.24",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
     "electron": "11.2.3",
@@ -157,7 +157,7 @@
     "tsc-plugins": "./ts-node scripts/tsc-plugins.ts",
     "watch": "cross-env TZ=Pacific/Pohnpei node --expose-gc --stack-trace-limit=40 ./node_modules/.bin/jest --watch"
   },
-  "version": "0.126.0",
+  "version": "0.127.0",
   "workspaces": {
     "packages": [
       "scripts",

@@ -1,3 +1,10 @@
+# 0.127.0 (22/12/2021)
+
+ * [D33089810](https://github.com/facebook/flipper/search?q=D33089810&type=Commits) -  Move crash watcher to the server. Add 'device-crash' event. Add 'device-start-crash-watcher', 'device-stop-crash-watcher' commands. Add 'onDeviceCrash' method to Plugin Client.
+ * [D33132506](https://github.com/facebook/flipper/search?q=D33132506&type=Commits) -  Allow only a single crash watcher and a single log listener per device. Start log listener and crash watcher for every device upon connection. Remove commands to start/stop them externally.
+ * [D33276414](https://github.com/facebook/flipper/search?q=D33276414&type=Commits) -  Work-around for missing `origin` header problem https://github.com/facebook/flipper/issues/3189; causing Metro to crash when Flipper tries to connect
+
+
 # 0.126.0 (17/12/2021)
 
  * [D33158280](https://github.com/facebook/flipper/search?q=D33158280&type=Commits) -  Fixed issue where a missing ANDROID_SDK_ROOT env var made it impossible to launch emulators
