@@ -7,8 +7,8 @@
  * @format
  */
 
-import {FlipperServer, FlipperServerConfig} from 'flipper-common';
-import {RenderHost} from 'flipper-ui-core';
+import {FlipperServer, FlipperServerConfig, isProduction} from 'flipper-common';
+import type {RenderHost} from 'flipper-ui-core';
 
 export function initializeRenderHost(
   flipperServer: FlipperServer,
@@ -78,6 +78,12 @@ export function initializeRenderHost(
     getStaticResourceUrl(path): string {
       // the 'static' folder is mounted as static middleware in Express at the root
       return '/' + path;
+    },
+    getLocalIconUrl(icon, url) {
+      if (isProduction()) {
+        return `icons/${icon.name}-${icon.variant}-${icon.size}@${icon.density}x.png`;
+      }
+      return url;
     },
   } as RenderHost;
 }

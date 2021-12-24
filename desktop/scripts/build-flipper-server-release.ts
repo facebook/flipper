@@ -24,9 +24,7 @@ import {
 import isFB from './isFB';
 import yargs from 'yargs';
 import fs from 'fs-extra';
-import copyPackageWithDependencies, {
-  copyPackageWithDependenciesRecursive,
-} from './copy-package-with-dependencies';
+import {downloadIcons} from './build-icons';
 
 const argv = yargs
   .usage('yarn build-flipper-server [args]')
@@ -115,6 +113,7 @@ if (argv['enabled-plugins'] !== undefined) {
   await compileServerMain(false);
   await buildBrowserBundle(false);
   await copyStaticResources();
+  await downloadIcons(serverStaticDir);
 
   if (argv.open) {
     await launchServer(false, true);
