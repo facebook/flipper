@@ -7,10 +7,12 @@
  * @format
  */
 
+const path = require('path');
+
 const fbjs = require('eslint-config-fbjs');
 
 const rulesDirPlugin = require('eslint-plugin-rulesdir');
-rulesDirPlugin.RULES_DIR = 'eslint-rules';
+rulesDirPlugin.RULES_DIR = path.join(__dirname, 'eslint-rules');
 
 // enforces copy-right header and @format directive to be present in every file
 const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
