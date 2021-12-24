@@ -14,11 +14,11 @@ import path from 'path';
 import {EnvironmentInfo, ReleaseChannel} from 'flipper-common';
 
 export async function getEnvironmentInfo(
-  staticPath: string,
+  packageJsonDir: string,
   isProduction: boolean,
 ): Promise<EnvironmentInfo> {
   const packageJson = await fs.readJSON(
-    path.resolve(staticPath, 'package.json'),
+    path.resolve(packageJsonDir, 'package.json'),
   );
 
   const releaseChannel: ReleaseChannel =

@@ -11,23 +11,23 @@ const dotenv = require('dotenv').config();
 import path from 'path';
 import {
   buildBrowserBundle,
+  buildFolder,
   compileServerMain,
-  launchServer,
+  genMercurialRevision,
+  getVersionNumber,
   prepareDefaultPlugins,
 } from './build-utils';
-import {
-  defaultPluginsDir,
-  serverDefaultPluginsDir,
-  serverStaticDir,
-  staticDir,
-} from './paths';
+import {defaultPluginsDir, distDir, serverDir, staticDir} from './paths';
 import isFB from './isFB';
 import yargs from 'yargs';
 import fs from 'fs-extra';
 import {downloadIcons} from './build-icons';
+import {spawn} from 'promisify-child-process';
+import {homedir} from 'os';
 
 const argv = yargs
   .usage('yarn build-flipper-server [args]')
+  .version(false)
   .options({
     'default-plugins': {
       describe:
@@ -62,9 +62,19 @@ const argv = yargs
       choices: ['stable', 'insiders'],
       default: 'stable',
     },
+    'default-plugins-dir': {
+      describe:
+        'Directory with prepared list of default plugins which will be included into the Flipper distribution as "defaultPlugins" dir',
+      type: 'string',
+    },
+    version: {
+      description:
+        'Unique build identifier to be used as the version patch part for the build',
+      type: 'number',
+    },
   })
-  .version('DEV')
   .help()
+  .strict()
   .parse(process.argv.slice(1));
 
 if (isFB) {
@@ -97,35 +107,13 @@ if (argv['enabled-plugins'] !== undefined) {
   process.env.FLIPPER_ENABLED_PLUGINS = argv['enabled-plugins'].join(',');
 }
 
-(async () => {
-  console.log(`⚙️  Starting build-flipper-server-release`);
+if (argv['default-plugins-dir']) {
+  process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];
+}
 
-  if (dotenv && dotenv.parsed) {
-    console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
-  }
-
-  // clear and re-create static dir
-  await fs.remove(serverStaticDir);
-  await fs.mkdir(serverStaticDir);
-
-  await prepareDefaultPlugins(argv.channel === 'insiders');
-
-  await compileServerMain(false);
-  await buildBrowserBundle(false);
-  await copyStaticResources();
-  await downloadIcons(serverStaticDir);
-
-  if (argv.open) {
-    await launchServer(false, true);
-  }
-})().catch((e) => {
-  console.error('Failed to build flipper-server', e, e.stack);
-  process.exit(1);
-});
-
-async function copyStaticResources() {
+async function copyStaticResources(outDir: string) {
   console.log(`⚙️  Copying default plugins...`);
-  await fs.mkdirp(serverDefaultPluginsDir);
+
   const plugins = await fs.readdir(defaultPluginsDir);
   for (const plugin of plugins) {
     let source = path.join(defaultPluginsDir, plugin);
@@ -133,7 +121,7 @@ async function copyStaticResources() {
     while ((await fs.lstat(source)).isSymbolicLink()) {
       source = await fs.readlink(source);
     }
-    const target = path.join(serverDefaultPluginsDir, plugin);
+    const target = path.join(outDir, 'static', 'defaultPlugins', plugin);
     if ((await fs.stat(source)).isDirectory()) {
       // for plugins, only copy package.json & dist, to keep impact minimal
       await fs.copy(
@@ -146,10 +134,21 @@ async function copyStaticResources() {
     }
   }
 
+  console.log(`⚙️  Copying package resources...`);
+
+  // static folder, without the things that are only for Electron
+  const packageFilesToCopy = ['README.md', 'package.json', 'server.js', 'dist'];
+
+  await Promise.all(
+    packageFilesToCopy.map((e) =>
+      fs.copy(path.join(serverDir, e), path.join(outDir, e)),
+    ),
+  );
+
   console.log(`⚙️  Copying static resources...`);
 
   // static folder, without the things that are only for Electron
-  const thingsToCopy = [
+  const staticsToCopy = [
     'facebook',
     'icons',
     'native-modules',
@@ -162,14 +161,86 @@ async function copyStaticResources() {
     'icons.json',
     'index.web.dev.html',
     'index.web.html',
-    'package.json',
     'style.css',
   ];
 
   await Promise.all(
-    thingsToCopy.map((e) =>
-      fs.copy(path.join(staticDir, e), path.join(serverStaticDir, e)),
+    staticsToCopy.map((e) =>
+      fs.copy(path.join(staticDir, e), path.join(outDir, 'static', e)),
     ),
   );
   console.log('✅  Copied static resources.');
 }
+
+async function modifyPackageManifest(
+  buildFolder: string,
+  versionNumber: string,
+  hgRevision: string | null,
+  channel: string,
+) {
+  // eslint-disable-next-line no-console
+  console.log('Creating package.json manifest');
+  // eslint-disable-next-line flipper/no-relative-imports-across-packages
+  const manifest = require('../flipper-server/package.json');
+
+  manifest.version = versionNumber;
+  if (hgRevision != null) {
+    manifest.revision = hgRevision;
+  }
+  manifest.releaseChannel = channel;
+  await fs.writeFile(
+    path.join(buildFolder, 'package.json'),
+    JSON.stringify(manifest, null, '  '),
+  );
+}
+
+(async () => {
+  console.log(`⚙️  Starting build-flipper-server-release`);
+  console.dir(argv);
+  const dir = await buildFolder();
+  console.log('Created build directory', dir);
+
+  if (dotenv && dotenv.parsed) {
+    console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
+  }
+
+  const versionNumber = getVersionNumber(argv.version);
+  const hgRevision = await genMercurialRevision();
+  console.log(
+    `  Building version / revision ${versionNumber} ${hgRevision ?? ''}`,
+  );
+
+  // create static dir
+  await fs.mkdirp(path.join(dir, 'static', 'defaultPlugins'));
+
+  await prepareDefaultPlugins(argv.channel === 'insiders');
+  await compileServerMain(false);
+  await buildBrowserBundle(path.join(dir, 'static'), false);
+  await copyStaticResources(dir);
+  await downloadIcons(path.join(dir, 'static'));
+  await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
+
+  console.log(`⚙️  Packing flipper-server.tgz`);
+  const archive = path.resolve(distDir, 'flipper-server.tgz');
+  await spawn('yarn', ['pack', '--filename', archive], {
+    cwd: dir,
+    stdio: 'inherit',
+  });
+
+  console.log(
+    `✅  flipper-release-build completed, version ${versionNumber} in ${dir}`,
+  );
+
+  if (argv.open) {
+    // This is a hack, as npx cached very aggressively if package.version
+    // didn't change
+    console.log(`⚙️  Installing flipper-server.tgz using npx`);
+    await fs.remove(path.join(homedir(), '.npm', '_npx'));
+    await spawn('npx', [archive], {
+      stdio: 'inherit',
+    });
+  }
+})().catch((e) => {
+  console.error('Failed to build flipper-server', e, e.stack);
+  process.exit(1);
+});

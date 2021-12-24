@@ -69,7 +69,7 @@ export async function startFlipperServer(
     console.error('Failed to load keytar:', e);
   }
 
-  const environmentInfo = await getEnvironmentInfo(staticPath, isProduction);
+  const environmentInfo = await getEnvironmentInfo(appPath, isProduction);
 
   const flipperServer = new FlipperServerImpl(
     {

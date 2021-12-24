@@ -431,9 +431,9 @@ const uiSourceDirs = [
   'flipper-common',
 ];
 
-export async function buildBrowserBundle(dev: boolean) {
+export async function buildBrowserBundle(outDir: string, dev: boolean) {
   console.log('⚙️  Compiling browser bundle...');
-  const out = path.join(serverStaticDir, 'bundle.js');
+  const out = path.join(outDir, 'bundle.js');
 
   const electronRequires = path.join(
     babelTransformationsDir,

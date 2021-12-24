@@ -29,12 +29,3 @@ yarn build:flipper-server
 Pass the `--open` flag to open Flipper server after building
 
 Use `--no-rebuild-plugins` to speed up subsequent builds if default plugins have been build already
-
-### Test NPX build
-
-```
-cd <Flipper checkout>/desktop/
-yarn build:flipper-server
-cd flipper-server
-yarn test:npx
-```

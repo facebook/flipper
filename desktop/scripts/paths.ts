@@ -14,12 +14,7 @@ export const appDir = path.join(rootDir, 'app');
 export const browserUiDir = path.join(rootDir, 'flipper-ui-browser');
 export const staticDir = path.join(rootDir, 'static');
 export const serverDir = path.join(rootDir, 'flipper-server');
-export const serverStaticDir = path.join(serverDir, 'static'); // for pre-bundled server, static resources are copied here
 export const defaultPluginsDir = path.join(staticDir, 'defaultPlugins');
-export const serverDefaultPluginsDir = path.join(
-  serverStaticDir,
-  'defaultPlugins',
-);
 export const pluginsDir = path.join(rootDir, 'plugins');
 export const fbPluginsDir = path.join(pluginsDir, 'fb');
 export const publicPluginsDir = path.join(pluginsDir, 'public');

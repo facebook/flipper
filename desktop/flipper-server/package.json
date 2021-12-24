@@ -6,7 +6,6 @@
   "repository": "facebook/flipper",
   "main": "server.js",
   "bin": "server.js",
-  "flipperBundlerEntry": "src",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependenciesComment": "mac-ca is required dynamically for darwin, node-fetch is treated special in electron-requires, not sure why",
@@ -32,12 +31,13 @@
   "peerDependencies": {},
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
-    "build": "tsc -b",
-    "test:npx": "yarn pack && cd ~/Desktop && rm -rf ~/.npm/_npx/ && mv ~/fbsource/xplat/sonar/desktop/flipper-server/flipper-server-v0.0.0.tgz . && npx flipper-server-v0.0.0.tgz"
+    "build": "tsc -b"
   },
   "files": [
     "dist/**/*",
-    "static/**/*"
+    "static/**/*",
+    "README.md",
+    "server.js"
   ],
   "homepage": "https://github.com/facebook/flipper",
   "keywords": [
