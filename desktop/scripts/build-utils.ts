@@ -10,6 +10,7 @@
 // @ts-ignore
 import Metro from 'metro';
 // provided by Metro
+// @ts-ignore
 // eslint-disable-next-line
 import MetroResolver from 'metro-resolver';
 import tmp from 'tmp';
