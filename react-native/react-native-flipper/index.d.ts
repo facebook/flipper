@@ -41,13 +41,15 @@ declare namespace Flipper {
     runInBackground?(): boolean;
   }
 
+  type Serializable = undefined | Array<any> | object
+
   export interface FlipperResponder {
-    success(response?: any): void;
-    error(response: any): void;
+    success(response?: Serializable): void;
+    error(response: Serializable): void;
   }
 
   export interface FlipperConnection {
-    send(method: string, data: any): void;
+    send(method: string, data: Serializable): void;
     reportErrorWithMetadata(reason: string, stackTrace: string): void;
     reportError(error: Error): void;
     receive(
