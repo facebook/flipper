@@ -9,3 +9,4 @@ node_modules/
 /coverage
 .env
 tsc-error.log
+/flipper-server/static/

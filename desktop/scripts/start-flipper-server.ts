@@ -8,19 +8,22 @@
  */
 
 const dotenv = require('dotenv').config();
-import child from 'child_process';
 import chalk from 'chalk';
 import path from 'path';
-import {compileServerMain, prepareDefaultPlugins} from './build-utils';
+import {
+  compileServerMain,
+  launchServer,
+  prepareDefaultPlugins,
+} from './build-utils';
 import Watchman from './watchman';
-import {serverDir} from './paths';
+import {serverStaticDir} from './paths';
 import isFB from './isFB';
 import yargs from 'yargs';
-import open from 'open';
 import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
+import {remove} from 'fs-extra';
 
 const argv = yargs
-  .usage('yarn start [args]')
+  .usage('yarn flipper-server [args]')
   .options({
     'default-plugins': {
       describe:
@@ -55,11 +58,6 @@ const argv = yargs
     'public-build': {
       describe:
         '[FB-internal only] Will force using public sources only, to be able to iterate quickly on the public version. If sources are checked out from GitHub this is already the default. Setting env var "FLIPPER_FORCE_PUBLIC_BUILD" is equivalent.',
-      type: 'boolean',
-    },
-    build: {
-      describe:
-        'Build the server without watching for changing or starting the service',
       type: 'boolean',
     },
     open: {
@@ -122,31 +120,12 @@ if (argv['enabled-plugins'] !== undefined) {
   process.env.FLIPPER_ENABLED_PLUGINS = argv['enabled-plugins'].join(',');
 }
 
-let proc: child.ChildProcess | undefined;
-
-function launchServer() {
-  console.log('⚙️  Launching flipper-server...');
-  proc = child.spawn(
-    'node',
-    ['--inspect=9229', `../flipper-server/server.js`],
-    {
-      cwd: serverDir,
-      env: {
-        ...process.env,
-      },
-      stdio: 'inherit',
-    },
-  );
-}
+let startCount = 0;
 
 async function restartServer() {
-  if (proc) {
-    proc.kill(9);
-    await sleep(1000);
-  }
   try {
-    await compileServerMain();
-    await launchServer();
+    await compileServerMain(true);
+    await launchServer(true, ++startCount === 1); // only openon the first time
   } catch (e) {
     console.error(
       chalk.red(
@@ -193,6 +172,8 @@ async function startWatchChanges() {
 }
 
 (async () => {
+  await remove(serverStaticDir);
+
   if (dotenv && dotenv.parsed) {
     console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
   }
@@ -200,24 +181,9 @@ async function startWatchChanges() {
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
   );
 
-  // build?
-  if (argv['build']) {
-    await compileServerMain();
-  } else {
-    // watch
-    await startWatchChanges();
-    await ensurePluginFoldersWatchable();
-    // builds and starts
-    await restartServer();
-
-    if (argv.open) {
-      await sleep(2000);
-      // TODO: make port configurable together with flipper-server
-      open('http://localhost:52342/index.web.dev.html');
-    }
-  }
+  // watch
+  await startWatchChanges();
+  await ensurePluginFoldersWatchable();
+  // builds and starts
+  await restartServer();
 })();
-
-function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}

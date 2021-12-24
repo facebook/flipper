@@ -352,7 +352,7 @@ async function downloadIcons(buildFolder: string) {
           if (res.status !== 200) {
             throw new Error(
               // eslint-disable-next-line prettier/prettier
-              `Could not download the icon ${name} from ${url}: got status ${res.status}`,
+              `Could not download the icon ${icon} from ${url}: got status ${res.status}`,
             );
           }
           return res;

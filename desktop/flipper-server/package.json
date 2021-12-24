@@ -5,6 +5,7 @@
   "description": "Standalone nodeJS based Flipper server",
   "repository": "facebook/flipper",
   "main": "server.js",
+  "bin": "server.js",
   "flipperBundlerEntry": "src",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
@@ -22,7 +23,9 @@
     "flipper-common": "0.0.0",
     "flipper-pkg-lib": "0.0.0",
     "flipper-server-core": "0.0.0",
-    "metro": "^0.66.2"
+    "metro": "^0.66.2",
+    "open": "^8.3.0",
+    "yargs": "^17.0.1"
   },
   "peerDependencies": {},
   "scripts": {
@@ -31,7 +34,8 @@
     "prepack": "yarn reset && yarn build"
   },
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "static/**/*"
   ],
   "homepage": "https://github.com/facebook/flipper",
   "keywords": [

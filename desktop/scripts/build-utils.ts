@@ -9,6 +9,9 @@
 
 // @ts-ignore
 import Metro from 'metro';
+// provided by Metro
+// eslint-disable-next-line
+import MetroResolver from 'metro-resolver';
 import tmp from 'tmp';
 import path from 'path';
 import fs from 'fs-extra';
@@ -32,7 +35,11 @@ import {
   serverDir,
   rootDir,
   browserUiDir,
+  serverStaticDir,
 } from './paths';
+import pFilter from 'p-filter';
+import child from 'child_process';
+import pMap from 'p-map';
 
 // eslint-disable-next-line flipper/no-relative-imports-across-packages
 const {version} = require('../package.json');
@@ -170,23 +177,29 @@ async function buildDefaultPlugins(defaultPlugins: InstalledPluginDetails[]) {
         .join(', ')}`,
     );
   }
-  for (const plugin of defaultPlugins) {
-    try {
-      if (!process.env.FLIPPER_NO_REBUILD_PLUGINS) {
-        console.log(
-          `⚙️  Building plugin ${plugin.id} to include it into the default plugins list...`,
+  await pMap(
+    defaultPlugins,
+    async function (plugin) {
+      try {
+        if (!process.env.FLIPPER_NO_REBUILD_PLUGINS) {
+          console.log(
+            `⚙️  Building plugin ${plugin.id} to include it into the default plugins list...`,
+          );
+          await runBuild(plugin.dir, dev);
+        }
+        await fs.ensureSymlink(
+          plugin.dir,
+          path.join(defaultPluginsDir, plugin.name),
+          'junction',
         );
-        await runBuild(plugin.dir, dev);
+      } catch (err) {
+        console.error(`✖ Failed to build plugin ${plugin.id}`, err);
       }
-      await fs.ensureSymlink(
-        plugin.dir,
-        path.join(defaultPluginsDir, plugin.name),
-        'junction',
-      );
-    } catch (err) {
-      console.error(`✖ Failed to build plugin ${plugin.id}`, err);
-    }
-  }
+    },
+    {
+      concurrency: 16,
+    },
+  );
 }
 
 const minifierConfig = {
@@ -371,7 +384,7 @@ export function genMercurialRevision(): Promise<string | null> {
     .catch(() => null);
 }
 
-export async function compileServerMain() {
+export async function compileServerMain(dev: boolean) {
   await fs.promises.mkdir(path.join(serverDir, 'dist'), {recursive: true});
   const out = path.join(serverDir, 'dist', 'index.js');
   console.log('⚙️  Compiling server bundle...');
@@ -405,4 +418,131 @@ export async function compileServerMain() {
   if (!dev) {
     stripSourceMapComment(out);
   }
+}
+
+// TODO: needed?
+const uiSourceDirs = [
+  'flipper-ui-browser',
+  'flipper-ui-core',
+  'flipper-plugin',
+  'flipper-common',
+];
+
+export async function buildBrowserBundle(dev: boolean) {
+  console.log('⚙️  Compiling browser bundle...');
+  const out = path.join(serverStaticDir, 'bundle.js');
+
+  const electronRequires = path.join(
+    babelTransformationsDir,
+    'electron-requires',
+  );
+  const stubModules = new Set<string>(require(electronRequires).BUILTINS);
+  if (!stubModules.size) {
+    throw new Error('Failed to load list of Node builtins');
+  }
+
+  const watchFolders = await dedupeFolders([
+    ...(
+      await Promise.all(
+        uiSourceDirs.map((dir) => getWatchFolders(path.resolve(rootDir, dir))),
+      )
+    ).flat(),
+    ...(await getPluginSourceFolders()),
+  ]);
+
+  const baseConfig = await Metro.loadConfig();
+  const config = Object.assign({}, baseConfig, {
+    projectRoot: rootDir,
+    watchFolders,
+    transformer: {
+      ...baseConfig.transformer,
+      babelTransformerPath: path.join(
+        babelTransformationsDir,
+        'transform-browser',
+      ),
+      ...(!dev ? minifierConfig : undefined),
+    },
+    resolver: {
+      ...baseConfig.resolver,
+      resolverMainFields: ['flipperBundlerEntry', 'browser', 'module', 'main'],
+      blacklistRE: [/\.native\.js$/],
+      sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
+      resolveRequest(context: any, moduleName: string, ...rest: any[]) {
+        // flipper is special cased, for plugins that we bundle,
+        // we want to resolve `impoSrt from 'flipper'` to 'flipper-ui-core', which
+        // defines all the deprecated exports
+        if (moduleName === 'flipper') {
+          return MetroResolver.resolve(context, 'flipper-ui-core', ...rest);
+        }
+        if (stubModules.has(moduleName)) {
+          console.warn(
+            `Found a reference to built-in module '${moduleName}', which will be stubbed out. Referer: ${context.originModulePath}`,
+          );
+          return {
+            type: 'empty',
+          };
+        }
+        return MetroResolver.resolve(
+          {
+            ...context,
+            resolveRequest: null,
+          },
+          moduleName,
+          ...rest,
+        );
+      },
+    },
+  });
+  await Metro.runBuild(config, {
+    platform: 'web',
+    entry: path.join(browserUiDir, 'src', 'index.tsx'),
+    out,
+    dev,
+    minify: !dev,
+    sourceMap: true,
+    sourceMapUrl: dev ? 'index.map' : undefined,
+    inlineSourceMap: false,
+  });
+  console.log('✅  Compiled browser bundle.');
+  if (!dev) {
+    stripSourceMapComment(out);
+  }
+}
+
+async function dedupeFolders(paths: string[]): Promise<string[]> {
+  return pFilter(
+    paths.filter((value, index, self) => self.indexOf(value) === index),
+    (f) => fs.pathExists(f),
+  );
+}
+
+export function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+let proc: child.ChildProcess | undefined;
+
+export async function launchServer(startBundler: boolean, open: boolean) {
+  if (proc) {
+    console.log('⚙️  Killing old flipper-server...');
+    proc.kill(9);
+    await sleep(1000);
+  }
+  console.log('⚙️  Launching flipper-server...');
+  proc = child.spawn(
+    'node',
+    [
+      '--inspect=9229',
+      `../flipper-server/server.js`,
+      startBundler ? `--bundler` : `--no-bundler`,
+      open ? `--open` : `--no-open`,
+    ],
+    {
+      cwd: serverDir,
+      env: {
+        ...process.env,
+      },
+      stdio: 'inherit',
+    },
+  );
 }
