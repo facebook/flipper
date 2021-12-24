@@ -58,13 +58,13 @@ jobs:
       with:
         node-version: '14.x'
     - name: Install
-      uses: nick-invision/retry@v2.0.0
+      uses: nick-invision/retry@v2.6.0
       with:
         timeout_minutes: 10
         max_attempts: 3
         command: cd ${{env.desktop-directory}} && yarn
     - name: Build
-      uses: nick-invision/retry@v2.0.0
+      uses: nick-invision/retry@v2.6.0
       with:
         timeout_minutes: 30
         max_attempts: 3
@@ -90,13 +90,13 @@ jobs:
       with:
         node-version: '14.x'
     - name: Install
-      uses: nick-invision/retry@v2.0.0
+      uses: nick-invision/retry@v2.6.0
       with:
         timeout_minutes: 10
         max_attempts: 3
         command: cd ${{env.desktop-directory}} && yarn
     - name: Build
-      uses: nick-invision/retry@v2.0.0
+      uses: nick-invision/retry@v2.6.0
       with:
         timeout_minutes: 30
         max_attempts: 3
@@ -122,13 +122,13 @@ jobs:
       with:
         node-version: '14.x'
     - name: Install
-      uses: nick-invision/retry@v2.0.0
+      uses: nick-invision/retry@v2.6.0
       with:
         timeout_minutes: 10
         max_attempts: 3
         command: cd ${{env.desktop-directory}} && yarn
     - name: Build
-      uses: nick-invision/retry@v2.0.0
+      uses: nick-invision/retry@v2.6.0
       with:
         timeout_minutes: 30
         max_attempts: 3

@@ -23,7 +23,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FBDefines
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -36,7 +36,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/Core
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -49,7 +49,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/CppBridge
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -62,7 +62,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FBCxxFollyDynamicConvert
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -75,7 +75,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FKPortForwarding
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -88,7 +88,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitHighlightOverlay
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -101,7 +101,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitHighlightOverlay
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -114,7 +114,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutHelpers
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -127,7 +127,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutIOSDescriptors
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -140,7 +140,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutPlugin
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -153,7 +153,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutComponentKitSupport
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -166,7 +166,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitNetworkPlugin
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -179,7 +179,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/SKIOSNetworkPlugin
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -192,7 +192,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitUserDefaultsPlugin
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -205,7 +205,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitExamplePlugin
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -218,7 +218,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitReactPlugin
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -231,7 +231,7 @@ jobs:
       - name: Install Dependences
         run: pod repo update
       - name: Lint Flipper
-        uses: nick-invision/retry@v2.0.0
+        uses: nick-invision/retry@v2.6.0
         with:
           timeout_minutes: 60
           max_attempts: 3
