@@ -41,8 +41,21 @@ const argv = yargs
       type: 'boolean',
       default: false,
     },
+    start: {
+      describe:
+        'Start flipper-server from the build folder after compiling it.',
+      type: 'boolean',
+      default: false,
+    },
+    npx: {
+      describe:
+        'Install flipper-server to the local system using NPX and start it',
+      type: 'boolean',
+      default: false,
+    },
     open: {
-      describe: 'Open Flipper in the default browser after starting',
+      describe:
+        'Open Flipper in the default browser after starting. Should be combined with --start or --npx',
       type: 'boolean',
       default: false,
     },
@@ -188,6 +201,9 @@ async function modifyPackageManifest(
     manifest.revision = hgRevision;
   }
   manifest.releaseChannel = channel;
+  // not needed in public builds
+  delete manifest.scripts;
+  delete manifest.devDependencies;
   await fs.writeFile(
     path.join(buildFolder, 'package.json'),
     JSON.stringify(manifest, null, '  '),
@@ -231,12 +247,21 @@ async function modifyPackageManifest(
     `✅  flipper-release-build completed, version ${versionNumber} in ${dir}`,
   );
 
-  if (argv.open) {
+  if (argv.npx) {
     // This is a hack, as npx cached very aggressively if package.version
     // didn't change
     console.log(`⚙️  Installing flipper-server.tgz using npx`);
     await fs.remove(path.join(homedir(), '.npm', '_npx'));
-    await spawn('npx', [archive], {
+    await spawn('npx', [archive, argv.open ? '--open' : '--no-open'], {
+      stdio: 'inherit',
+    });
+  } else if (argv.start) {
+    console.log(`⚙️  Starting flipper-server from build dir`);
+    await spawn('yarn', ['install', '--production', '--no-lockfile'], {
+      cwd: dir,
+    });
+    await spawn('./server.js', [argv.open ? '--open' : '--no-open'], {
+      cwd: dir,
       stdio: 'inherit',
     });
   }
