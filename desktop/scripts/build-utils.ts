@@ -394,13 +394,18 @@ export async function compileServerMain(dev: boolean) {
     transformer: {
       babelTransformerPath: path.join(
         babelTransformationsDir,
-        'transform-server',
+        'transform-server-' + (dev ? 'dev' : 'prod'),
       ),
       ...minifierConfig,
     },
     resolver: {
-      sourceExts: ['tsx', 'ts', 'js', 'json'],
-      resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
+      // no 'mjs' / 'module'; it caused issues
+      sourceExts: ['tsx', 'ts', 'js', 'json', 'cjs'],
+      resolverMainFields: ['flipperBundlerEntry', 'main'],
+      resolveRequest(context: any, moduleName: string, ...rest: any[]) {
+        assertSaneImport(context, moduleName);
+        return defaultResolve(context, moduleName, ...rest);
+      },
     },
   });
   await Metro.runBuild(config, {
@@ -408,7 +413,7 @@ export async function compileServerMain(dev: boolean) {
     entry: path.join(serverDir, 'src', 'index.tsx'),
     out,
     dev,
-    minify: !dev,
+    minify: false, // !dev,
     sourceMap: true,
     sourceMapUrl: dev ? 'index.map' : undefined,
     inlineSourceMap: false,
@@ -468,8 +473,9 @@ export async function buildBrowserBundle(dev: boolean) {
       blacklistRE: [/\.native\.js$/],
       sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
       resolveRequest(context: any, moduleName: string, ...rest: any[]) {
+        assertSaneImport(context, moduleName);
         // flipper is special cased, for plugins that we bundle,
-        // we want to resolve `impoSrt from 'flipper'` to 'flipper-ui-core', which
+        // we want to resolve `import from 'flipper'` to 'flipper-ui-core', which
         // defines all the deprecated exports
         if (moduleName === 'flipper') {
           return MetroResolver.resolve(context, 'flipper-ui-core', ...rest);
@@ -482,14 +488,7 @@ export async function buildBrowserBundle(dev: boolean) {
             type: 'empty',
           };
         }
-        return MetroResolver.resolve(
-          {
-            ...context,
-            resolveRequest: null,
-          },
-          moduleName,
-          ...rest,
-        );
+        return defaultResolve(context, moduleName, ...rest);
       },
     },
   });
@@ -544,5 +543,38 @@ export async function launchServer(startBundler: boolean, open: boolean) {
       },
       stdio: 'inherit',
     },
+  );
+}
+
+function assertSaneImport(context: any, moduleName: string) {
+  // This function checks that we aren't accidentally bundling up something huge we don't want to
+  // bundle up
+  if (
+    moduleName.startsWith('jest') ||
+    (moduleName.startsWith('metro') &&
+      !moduleName.startsWith('metro-runtime')) ||
+    moduleName === 'Metro' ||
+    moduleName.startsWith('babel') ||
+    moduleName.startsWith('typescript') ||
+    moduleName.startsWith('electron') ||
+    moduleName.startsWith('@testing-library')
+  ) {
+    console.error(
+      `Found a reference to module '${moduleName}', which should not be imported / required. Referer: ${context.originModulePath}`,
+    );
+    // throwing errors doesn't really stop Metro :-/
+    process.exit(1);
+  }
+}
+
+function defaultResolve(...rest: any[]) {
+  const [context, moduleName] = rest;
+  return MetroResolver.resolve(
+    {
+      ...context,
+      resolveRequest: null,
+    },
+    moduleName,
+    ...rest,
   );
 }

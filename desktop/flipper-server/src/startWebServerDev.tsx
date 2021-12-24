@@ -13,12 +13,7 @@ import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import socketio from 'socket.io';
-import {getWatchFolders} from 'flipper-pkg-lib';
-import Metro from 'metro';
 import pFilter from 'p-filter';
-// provided by Metro
-// eslint-disable-next-line
-import MetroResolver from 'metro-resolver';
 import {homedir} from 'os';
 
 // This file is heavily inspired by scripts/start-dev-server.ts!
@@ -59,6 +54,11 @@ export async function startWebServerDev(
   socket: socketio.Server,
   rootDir: string,
 ) {
+  // prevent bundling!
+  const Metro = electronRequire('metro');
+  const MetroResolver = electronRequire('metro-resolver');
+  const {getWatchFolders} = electronRequire('flipper-pkg-lib');
+
   const babelTransformationsDir = path.resolve(
     rootDir,
     'babel-transformer',

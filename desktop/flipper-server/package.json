@@ -9,29 +9,31 @@
   "flipperBundlerEntry": "src",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
+  "dependenciesComment": "mac-ca is required dynamically for darwin, node-fetch is treated special in electron-requires, not sure why",
   "dependencies": {
-    "chalk": "^4.1.2",
-    "express": "^4.15.2",
-    "fs-extra": "^9.0.0",
     "mac-ca": "^1.0.6",
-    "p-filter": "^2.1.0",
-    "socket.io": "^4.3.1"
+    "node-fetch": "^2.6.6"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^15.12.5",
+    "chalk": "^4.1.2",
+    "express": "^4.15.2",
     "flipper-common": "0.0.0",
     "flipper-pkg-lib": "0.0.0",
     "flipper-server-core": "0.0.0",
+    "fs-extra": "^9.0.0",
     "metro": "^0.66.2",
     "open": "^8.3.0",
+    "p-filter": "^2.1.0",
+    "socket.io": "^4.3.1",
     "yargs": "^17.0.1"
   },
   "peerDependencies": {},
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
-    "prepack": "yarn reset && yarn build"
+    "test:npx": "yarn pack && cd ~/Desktop && rm -rf ~/.npm/_npx/ && mv ~/fbsource/xplat/sonar/desktop/flipper-server/flipper-server-v0.0.0.tgz . && npx flipper-server-v0.0.0.tgz"
   },
   "files": [
     "dist/**/*",
