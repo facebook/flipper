@@ -61,8 +61,11 @@ export function initializeRenderHost(
     async requirePlugin(path) {
       // TODO: use `await import(path)`?
       const source = await flipperServer.exec('plugin-source', path);
-      // eslint-disable-next-line no-eval
-      return eval(source);
+      // eslint-disable-next-line no-new-func
+      const cjsLoader = new Function('module', source);
+      const theModule = {exports: {}};
+      cjsLoader(theModule);
+      return theModule.exports;
     },
     getStaticResourceUrl(path): string {
       // the 'static' folder is mounted as static middleware in Express at the root

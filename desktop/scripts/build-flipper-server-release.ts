@@ -46,6 +46,11 @@ const argv = yargs
       type: 'boolean',
       default: true,
     },
+    'enabled-plugins': {
+      describe:
+        'Load only specified plugins and skip loading rest. This is useful when you are developing only one or few plugins. Plugins to load can be specified as a comma-separated list with either plugin id or name used as identifier, e.g. "--enabled-plugins network,inspector". The flag is not provided by default which means that all plugins loaded.',
+      type: 'array',
+    },
   })
   .version('DEV')
   .help()
@@ -74,6 +79,10 @@ if (argv['public-build'] === true) {
   process.env.FLIPPER_FORCE_PUBLIC_BUILD = 'true';
 } else if (argv['public-build'] === false) {
   delete process.env.FLIPPER_FORCE_PUBLIC_BUILD;
+}
+
+if (argv['enabled-plugins'] !== undefined) {
+  process.env.FLIPPER_ENABLED_PLUGINS = argv['enabled-plugins'].join(',');
 }
 
 (async () => {

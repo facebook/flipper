@@ -57,25 +57,11 @@
 
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-
     <script>
       (function() {
         // FIXME: needed to make Metro work
         window.global = window;
         let suppressErrors = false;
-
-        const socket = io(location.origin);
-
-        socket.on('refresh', () => {
-          location.reload();
-        });
-
-        socket.on('hasErrors', (html) => {
-          openError(html);
-          suppressErrors = true;
-        });
-
 
         function openError(text) {
           if (suppressErrors) {
