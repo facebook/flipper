@@ -81,6 +81,9 @@ export class FlipperServerImpl implements FlipperServer {
     keytarModule?: KeytarModule,
   ) {
     setFlipperServerConfig(config);
+    console.log(
+      'Loaded flipper config, paths: ' + JSON.stringify(config.paths, null, 2),
+    );
     const server = (this.server = new ServerController(this));
     this.android = new AndroidDeviceManager(this);
     this.ios = new IOSDeviceManager(this);

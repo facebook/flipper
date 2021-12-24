@@ -17,7 +17,7 @@ import pFilter from 'p-filter';
 import {homedir} from 'os';
 
 // This file is heavily inspired by scripts/start-dev-server.ts!
-// part of that is done by start-flipper-server (compiling "main"),
+// part of that is done by start-flipper-server-dev (compiling "main"),
 // the other part ("renderer") here.
 
 const uiSourceDirs = [

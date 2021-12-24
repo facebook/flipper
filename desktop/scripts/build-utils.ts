@@ -420,9 +420,6 @@ export async function compileServerMain(dev: boolean) {
     resetCache: !dev,
   });
   console.log('✅  Compiled server bundle.');
-  if (!dev) {
-    stripSourceMapComment(out);
-  }
 }
 
 // TODO: needed?
@@ -503,9 +500,6 @@ export async function buildBrowserBundle(dev: boolean) {
     inlineSourceMap: false,
   });
   console.log('✅  Compiled browser bundle.');
-  if (!dev) {
-    stripSourceMapComment(out);
-  }
 }
 
 async function dedupeFolders(paths: string[]): Promise<string[]> {

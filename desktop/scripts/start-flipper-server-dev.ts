@@ -65,6 +65,11 @@ const argv = yargs
       type: 'boolean',
       default: true,
     },
+    channel: {
+      description: 'Release channel for the build',
+      choices: ['stable', 'insiders'],
+      default: 'stable',
+    },
   })
   .version('DEV')
   .help()
@@ -73,6 +78,8 @@ const argv = yargs
 if (isFB) {
   process.env.FLIPPER_FB = 'true';
 }
+
+process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
 
 if (argv['default-plugins'] === true) {
   delete process.env.FLIPPER_NO_DEFAULT_PLUGINS;

@@ -59,10 +59,18 @@ export function initializeRenderHost(
     },
     flipperServer,
     async requirePlugin(path) {
-      // TODO: use `await import(path)`?
-      const source = await flipperServer.exec('plugin-source', path);
-      // eslint-disable-next-line no-new-func
-      const cjsLoader = new Function('module', source);
+      let source = await flipperServer.exec('plugin-source', path);
+      // append source url (to make sure a file entry shows up in the debugger)
+      source += `\n//# sourceURL=file://${path}`;
+      // and source map url (to get source code if available)
+      source += `\n//# sourceMappingURL=file://${path.replace(/.js$/, '.map')}`;
+
+      // Plugins are compiled as typical CJS modules, referring to the global
+      // 'module', which we'll make available by loading the source into a closure that captures 'module'.
+      // Note that we use 'eval', and not 'new Function', because the latter will cause the source maps
+      // to be off by two lines (as the function declaration uses two lines in the generated source)
+      // eslint-disable-next-line no-eval
+      const cjsLoader = eval('(module) => {' + source + '\n}');
       const theModule = {exports: {}};
       cjsLoader(theModule);
       return theModule.exports;

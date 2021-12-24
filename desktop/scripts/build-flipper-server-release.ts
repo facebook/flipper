@@ -15,10 +15,18 @@ import {
   launchServer,
   prepareDefaultPlugins,
 } from './build-utils';
-import {serverStaticDir, staticDir} from './paths';
+import {
+  defaultPluginsDir,
+  serverDefaultPluginsDir,
+  serverStaticDir,
+  staticDir,
+} from './paths';
 import isFB from './isFB';
 import yargs from 'yargs';
-import {copy, mkdir, remove} from 'fs-extra';
+import fs from 'fs-extra';
+import copyPackageWithDependencies, {
+  copyPackageWithDependenciesRecursive,
+} from './copy-package-with-dependencies';
 
 const argv = yargs
   .usage('yarn build-flipper-server [args]')
@@ -51,6 +59,11 @@ const argv = yargs
         'Load only specified plugins and skip loading rest. This is useful when you are developing only one or few plugins. Plugins to load can be specified as a comma-separated list with either plugin id or name used as identifier, e.g. "--enabled-plugins network,inspector". The flag is not provided by default which means that all plugins loaded.',
       type: 'array',
     },
+    channel: {
+      description: 'Release channel for the build',
+      choices: ['stable', 'insiders'],
+      default: 'stable',
+    },
   })
   .version('DEV')
   .help()
@@ -60,7 +73,8 @@ if (isFB) {
   process.env.FLIPPER_FB = 'true';
 }
 
-// Don't bundle any plugins into the UI
+process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
+
 process.env.FLIPPER_NO_BUNDLED_PLUGINS = 'true';
 
 // Don't rebuild default plugins, mostly to speed up testing
@@ -93,10 +107,10 @@ if (argv['enabled-plugins'] !== undefined) {
   }
 
   // clear and re-create static dir
-  await remove(serverStaticDir);
-  await mkdir(serverStaticDir);
+  await fs.remove(serverStaticDir);
+  await fs.mkdir(serverStaticDir);
 
-  await prepareDefaultPlugins(false);
+  await prepareDefaultPlugins(argv.channel === 'insiders');
 
   await compileServerMain(false);
   await buildBrowserBundle(false);
@@ -111,11 +125,32 @@ if (argv['enabled-plugins'] !== undefined) {
 });
 
 async function copyStaticResources() {
+  console.log(`⚙️  Copying default plugins...`);
+  await fs.mkdirp(serverDefaultPluginsDir);
+  const plugins = await fs.readdir(defaultPluginsDir);
+  for (const plugin of plugins) {
+    let source = path.join(defaultPluginsDir, plugin);
+    // static/defaultPlugins will symlink, resolve those first
+    while ((await fs.lstat(source)).isSymbolicLink()) {
+      source = await fs.readlink(source);
+    }
+    const target = path.join(serverDefaultPluginsDir, plugin);
+    if ((await fs.stat(source)).isDirectory()) {
+      // for plugins, only copy package.json & dist, to keep impact minimal
+      await fs.copy(
+        path.join(source, 'package.json'),
+        path.join(target, 'package.json'),
+      );
+      await fs.copy(path.join(source, 'dist'), path.join(target, 'dist'));
+    } else {
+      await fs.copy(source, target);
+    }
+  }
+
   console.log(`⚙️  Copying static resources...`);
 
   // static folder, without the things that are only for Electron
   const thingsToCopy = [
-    'defaultPlugins',
     'facebook',
     'icons',
     'native-modules',
@@ -134,7 +169,7 @@ async function copyStaticResources() {
 
   await Promise.all(
     thingsToCopy.map((e) =>
-      copy(path.join(staticDir, e), path.join(serverStaticDir, e)),
+      fs.copy(path.join(staticDir, e), path.join(serverStaticDir, e)),
     ),
   );
   console.log('✅  Copied static resources.');

@@ -31,7 +31,7 @@ import {
 import fetch from '@adobe/node-fetch-retry';
 import isFB from './isFB';
 import copyPackageWithDependencies from './copy-package-with-dependencies';
-import {staticDir, distDir} from './paths';
+import {staticDir, distDir, defaultPluginsDir} from './paths';
 import yargs from 'yargs';
 import {WinPackager} from 'app-builder-lib/out/winPackager';
 // eslint-disable-next-line node/no-extraneous-import

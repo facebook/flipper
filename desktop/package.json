@@ -128,7 +128,7 @@
     "predev-server": "yarn build:tsc",
     "dev-server": "cross-env NODE_ENV=development ./ts-node scripts/start-dev-server.ts",
     "preflipper-server": "yarn build:tsc",
-    "flipper-server": "cross-env NODE_ENV=development ./ts-node scripts/start-flipper-server.ts",
+    "flipper-server": "cross-env NODE_ENV=development ./ts-node scripts/start-flipper-server-dev.ts",
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn tsc-plugins",
     "lint:eslint": "eslint . --ext .js,.ts,.tsx",
