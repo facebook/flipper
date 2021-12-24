@@ -136,6 +136,18 @@ async function copyStaticResources(outDir: string) {
     }
     const target = path.join(outDir, 'static', 'defaultPlugins', plugin);
     if ((await fs.stat(source)).isDirectory()) {
+      // Verify it safe to strip the package down, does it have the
+      // typical flipper plugin structure?
+      const packageJson = JSON.parse(
+        await fs.readFile(path.join(source, 'package.json'), 'utf8'),
+      );
+      if (packageJson.main !== 'dist/bundle.js') {
+        console.error(
+          `Cannot bundle plugin '${source}', the main entry point is '${packageJson.main}', but expected 'dist/bundle.js'`,
+        );
+        continue;
+      }
+
       // for plugins, only copy package.json & dist, to keep impact minimal
       await fs.copy(
         path.join(source, 'package.json'),
