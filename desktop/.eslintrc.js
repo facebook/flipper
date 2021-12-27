@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,7 @@ const rulesDirPlugin = require('eslint-plugin-rulesdir');
 rulesDirPlugin.RULES_DIR = path.join(__dirname, 'eslint-rules');
 
 // enforces copy-right header and @format directive to be present in every file
-const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
+const pattern = /^\*\r?\n[\S\s]*Meta Platforms, Inc\.[\S\s]* \* @format\r?\n/;
 
 // This list should match the replacements defined in `replace-flipper-requires.ts` and `dispatcher/plugins.tsx`
 const builtInModules = [
