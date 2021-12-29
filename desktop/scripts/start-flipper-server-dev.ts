@@ -16,11 +16,9 @@ import {
   prepareDefaultPlugins,
 } from './build-utils';
 import Watchman from './watchman';
-import {serverStaticDir} from './paths';
 import isFB from './isFB';
 import yargs from 'yargs';
 import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
-import {remove} from 'fs-extra';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -179,8 +177,6 @@ async function startWatchChanges() {
 }
 
 (async () => {
-  await remove(serverStaticDir);
-
   if (dotenv && dotenv.parsed) {
     console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
   }

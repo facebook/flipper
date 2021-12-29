@@ -41,6 +41,9 @@
     },
     {
       "path": "../test-utils"
+    },
+    {
+      "path": "../scripts"
     }
   ]
 }

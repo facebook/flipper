@@ -22,6 +22,7 @@ import fs from 'fs-extra';
 import {hostname} from 'os';
 import {compileMain, prepareDefaultPlugins} from './build-utils';
 import Watchman from './watchman';
+// @ts-ignore no typings for metro
 import Metro from 'metro';
 import {staticDir, babelTransformationsDir, rootDir} from './paths';
 import isFB from './isFB';

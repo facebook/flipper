@@ -36,7 +36,6 @@ import {
   serverDir,
   rootDir,
   browserUiDir,
-  serverStaticDir,
 } from './paths';
 import pFilter from 'p-filter';
 import child from 'child_process';

@@ -14,7 +14,7 @@ import {cleanup} from '@testing-library/react';
 import {resolve} from 'path';
 import os from 'os';
 
-(window as any).FlipperRenderHostInstance = createStubRenderHost();
+(global as any).FlipperRenderHostInstance = createStubRenderHost();
 
 import {TestUtils} from 'flipper-plugin';
 import {
@@ -53,7 +53,7 @@ if (!test) {
 
 beforeEach(() => {
   // Fresh mock flipperServer for every test
-  (window as any).FlipperRenderHostInstance = createStubRenderHost();
+  (global as any).FlipperRenderHostInstance = createStubRenderHost();
 });
 
 afterEach(cleanup);
@@ -77,10 +77,10 @@ Object.defineProperty(global, 'performance', {
   },
 });
 
-global.PerformanceObserver = PerformanceObserver;
+(global as any).PerformanceObserver = PerformanceObserver;
 
 // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(global, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,
