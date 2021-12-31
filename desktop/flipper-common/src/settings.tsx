@@ -37,6 +37,8 @@ export type Settings = {
     };
   };
   darkMode: 'dark' | 'light' | 'system';
+  enabledLogsSyntaxHighlighting: boolean;
+  logsSyntaxHighlightingStyle: string;
   showWelcomeAtStartup: boolean;
   suppressPluginErrors: boolean;
 };

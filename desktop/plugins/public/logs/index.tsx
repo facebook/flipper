@@ -101,6 +101,7 @@ function createColumnConfig(
         DataFormatter.truncate(400),
         DataFormatter.prettyPrintJson,
         DataFormatter.linkify,
+        DataFormatter.highlightSyntax,
       ],
     },
   ];

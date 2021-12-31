@@ -140,6 +140,8 @@ function createStubRenderHost(): RenderHost {
     settings: {
       androidHome: `/dev/null`,
       darkMode: 'light',
+      enabledLogsSyntaxHighlighting: false,
+      logsSyntaxHighlightingStyle: 'atomOneLight',
       enableAndroid: false,
       enableIOS: false,
       enablePhysicalIOS: false,

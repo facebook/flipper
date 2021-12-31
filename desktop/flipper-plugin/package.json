@@ -28,6 +28,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/react-syntax-highlighter": "^13.5.2",
     "@types/string-natural-compare": "^3.0.2",
     "@types/uuid": "^8.3.3",
     "jest-mock-console": "^1.2.3"

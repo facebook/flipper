@@ -62,6 +62,8 @@ function getDefaultSettings(): Settings {
       },
     },
     darkMode: 'light',
+    enabledLogsSyntaxHighlighting: false,
+    logsSyntaxHighlightingStyle: 'atomOneLight',
     showWelcomeAtStartup: true,
     suppressPluginErrors: false,
   };

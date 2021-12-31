@@ -15,6 +15,8 @@ import {
 import {Button, Typography} from 'antd';
 import {isPlainObject, pad} from 'lodash';
 import React, {createElement, Fragment, isValidElement, useState} from 'react';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import * as hljsStyles from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import {tryGetFlipperLibImplementation} from '../plugin/FlipperLib';
 import {safeStringify} from '../utils/safeStringify';
 import {urlRegex} from '../utils/urlRegex';
@@ -131,6 +133,13 @@ export const DataFormatter = {
     return value;
   },
 
+  highlightSyntax(value: any) {
+    if (typeof value === 'string') {
+      return <SyntaxHighlight>{value}</SyntaxHighlight>;
+    }
+    return value;
+  },
+
   format(value: any, formatters?: Formatter[] | Formatter): any {
     let res = value;
     if (Array.isArray(formatters)) {
@@ -157,7 +166,9 @@ export function TruncateHelper({
 
   return (
     <>
-      {collapsed ? value.substr(0, maxLength) : value}
+      <SyntaxHighlight>
+        {collapsed ? value.substring(0, maxLength) : value}
+      </SyntaxHighlight>
       <Button
         onClick={() => {
           setCollapsed((c) => !c);
@@ -187,3 +198,31 @@ const truncateButtonStyle = {
   color: theme.primaryColor,
   marginLeft: 4,
 };
+
+type HljsStylesType = typeof hljsStyles;
+
+type SyntaxHighlightProps = {
+  children: React.ReactNode;
+};
+
+function SyntaxHighlight({children}: SyntaxHighlightProps) {
+  const {
+    enabledLogsSyntaxHighlighting,
+    logsSyntaxHighlightingStyle = 'atomOneLight',
+  } = window.FlipperRenderHostInstance.serverConfig.settings;
+
+  if (!enabledLogsSyntaxHighlighting) {
+    return <React.Fragment>{children}</React.Fragment>;
+  }
+
+  const highlightStyle = logsSyntaxHighlightingStyle as keyof HljsStylesType;
+
+  return (
+    <SyntaxHighlighter
+      wrapLongLines
+      language="javascript"
+      style={hljsStyles[highlightStyle]}>
+      {children}
+    </SyntaxHighlighter>
+  );
+}

@@ -8,7 +8,7 @@
  */
 
 import React, {Component, useContext} from 'react';
-import {Radio} from 'antd';
+import {Radio, Select, Modal, message, Button} from 'antd';
 import {updateSettings, Action} from '../reducers/settings';
 import {
   Action as LauncherAction,
@@ -29,10 +29,12 @@ import {
   Settings,
   sleep,
 } from 'flipper-common';
-import {Modal, message, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
+// @ts-ignore
+import * as hljsStyles from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import {getRenderHostInstance} from '../RenderHost';
 import {loadTheme} from '../utils/loadTheme';
+import {normalizeCamelCase} from '../utils/normalizeCamelCase';
 
 type OwnProps = {
   onHide: () => void;
@@ -117,6 +119,8 @@ class SettingsSheet extends Component<Props, State> {
       idbPath,
       reactNative,
       darkMode,
+      enabledLogsSyntaxHighlighting,
+      logsSyntaxHighlightingStyle = 'atomOneLight',
       suppressPluginErrors,
     } = this.state.updatedSettings;
 
@@ -270,6 +274,39 @@ class SettingsSheet extends Component<Props, State> {
             <Radio.Button value="system">Use System Setting</Radio.Button>
           </Radio.Group>
         </Layout.Container>
+        <ToggledSection
+          label="Syntax Highlighting for Logs (experimental)"
+          toggled={enabledLogsSyntaxHighlighting}
+          onChange={(enabled) => {
+            this.setState((prevState) => ({
+              updatedSettings: {
+                ...prevState.updatedSettings,
+                enabledLogsSyntaxHighlighting: enabled,
+              },
+            }));
+          }}>
+          <Layout.Container
+            style={{display: 'block', paddingLeft: 10, paddingTop: 10}}>
+            Highlighting style
+            <Select
+              defaultValue={logsSyntaxHighlightingStyle}
+              style={{width: 240, marginLeft: 10}}
+              onChange={(v) => {
+                this.setState((prevState) => ({
+                  updatedSettings: {
+                    ...prevState.updatedSettings,
+                    logsSyntaxHighlightingStyle: v,
+                  },
+                }));
+              }}>
+              {Object.keys(hljsStyles).map((style) => (
+                <Select.Option key={style} value={style}>
+                  {normalizeCamelCase(style)}
+                </Select.Option>
+              ))}
+            </Select>
+          </Layout.Container>
+        </ToggledSection>
         <ToggledSection
           label="React Native keyboard shortcuts"
           toggled={reactNative.shortcuts.enabled}
