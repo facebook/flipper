@@ -419,7 +419,7 @@ function DevToolsInstanceToolbar() {
         <Select
           options={devToolsInstanceOptions}
           value={selectedDevToolsInstanceType}
-          onSelect={instance.setDevToolsInstance}
+          onChange={instance.setDevToolsInstance}
           style={{width: 90}}
           size="small"
         />

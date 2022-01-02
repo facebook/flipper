@@ -291,7 +291,7 @@ exports[`load PluginInstaller list 1`] = `
         </div>
         <div
           class="ant-col"
-          style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto;"
+          style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto; min-width: 0;"
         >
           <button
             class="ant-btn ant-btn-icon-only"
@@ -322,7 +322,7 @@ exports[`load PluginInstaller list 1`] = `
         </div>
         <div
           class="ant-col"
-          style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto;"
+          style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto; min-width: 0;"
         >
           <button
             class="ant-btn ant-btn-icon-only"
@@ -667,7 +667,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
         </div>
         <div
           class="ant-col"
-          style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto;"
+          style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto; min-width: 0;"
         >
           <button
             class="ant-btn ant-btn-icon-only"
@@ -698,7 +698,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
         </div>
         <div
           class="ant-col"
-          style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto;"
+          style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto; min-width: 0;"
         >
           <button
             class="ant-btn ant-btn-icon-only"

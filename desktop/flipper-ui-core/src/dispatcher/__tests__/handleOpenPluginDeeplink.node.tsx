@@ -329,7 +329,6 @@ test('triggering a deeplink without applicable client can wait for a device', as
           </div>
         </div>
       </div>
-      <div />
     </body>
   `);
 });
