@@ -96,7 +96,7 @@
     "jest-fetch-mock": "^3.0.3",
     "less": "^4.1.2",
     "patch-package": "^6.4.7",
-    "prettier": "^2.4.1",
+    "prettier": "^2.5.1",
     "pretty-format": "^27.4.2",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.6",
