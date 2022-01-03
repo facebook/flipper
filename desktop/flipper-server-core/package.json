@@ -38,7 +38,7 @@
     "tmp": "^0.2.1",
     "uuid": "^8.3.2",
     "which": "^2.0.2",
-    "ws": "^7.5.6",
+    "ws": "^8.4.0",
     "xdg-basedir": "^4.0.0"
   },
   "devDependencies": {
@@ -51,7 +51,7 @@
     "@types/rsocket-tcp-server": "^0.0.2",
     "@types/split2": "^3.2.1",
     "@types/tmp": "^0.2.2",
-    "@types/ws": "^7.4.7",
+    "@types/ws": "^8.2.2",
     "@types/which": "^2.0.1",
     "memorystream": "^0.3.1",
     "tmp": "^0.2.1"

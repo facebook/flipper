@@ -163,11 +163,12 @@ class ServerWebSocket extends ServerAdapter {
     this.handleClientQuery(ctx);
     this.handleConnectionAttempt(ctx);
 
-    ws.on('message', async (message: unknown) => {
+    ws.on('message', async (message: WebSocket.RawData) => {
       try {
-        const parsedMessage = this.handleMessageDeserialization(message);
+        const messageString = message.toString();
+        const parsedMessage = this.handleMessageDeserialization(messageString);
         // Successful deserialization is a proof that the message is a string
-        this.handleMessage(ctx, parsedMessage, message as string);
+        this.handleMessage(ctx, parsedMessage, messageString);
       } catch (error) {
         // See the reasoning in the error handler for a `connection` event
         ws.emit('error', error);
