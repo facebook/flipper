@@ -204,6 +204,7 @@ export const DataList: (<T extends object>(
   enableArrow: true,
   enableContextMenu: false,
   enableMultiSelect: false,
+  enableHorizontalScroll: false,
   idAttribute: 'id',
   titleAttribute: 'title',
   descriptionAttribute: 'description',

@@ -227,6 +227,7 @@ export function Component() {
       columns={plugin.columns}
       enableAutoScroll
       onRowStyle={getRowStyle}
+      enableHorizontalScroll={false}
       extraActions={
         plugin.isConnected ? (
           <>

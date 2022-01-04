@@ -40,6 +40,7 @@ export function KeyValueTable({items}: {items: KeyValueItem[]}) {
       records={items}
       enableSearchbar={false}
       scrollable={false}
+      enableHorizontalScroll={false}
       onCopyRows={handleCopyRows}
     />
   );

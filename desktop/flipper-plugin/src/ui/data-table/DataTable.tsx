@@ -57,6 +57,7 @@ interface DataTableBaseProps<T = any> {
   columns: DataTableColumn<T>[];
   enableSearchbar?: boolean;
   enableAutoScroll?: boolean;
+  enableHorizontalScroll?: boolean;
   enableColumnHeaders?: boolean;
   enableMultiSelect?: boolean;
   enableContextMenu?: boolean;
@@ -483,6 +484,10 @@ export function DataTable<T extends object>(
           extraActions={props.extraActions}
         />
       )}
+    </Layout.Container>
+  );
+  const columnHeaders = (
+    <Layout.Container>
       {props.enableColumnHeaders && (
         <TableHead
           visibleColumns={visibleColumns}
@@ -502,9 +507,9 @@ export function DataTable<T extends object>(
     props.onRenderEmpty === undefined
       ? props.onRenderEmpty
       : props.onRenderEmpty;
-  const mainSection = props.scrollable ? (
-    <Layout.Top>
-      {header}
+  let mainSection: JSX.Element;
+  if (props.scrollable) {
+    const dataSourceRenderer = (
       <DataSourceRendererVirtual<T, TableRowRenderContext<T>>
         dataSource={dataSource}
         autoScroll={tableState.autoScroll && !dragging.current}
@@ -518,21 +523,44 @@ export function DataTable<T extends object>(
         onUpdateAutoScroll={onUpdateAutoScroll}
         emptyRenderer={emptyRenderer}
       />
-    </Layout.Top>
-  ) : (
-    <Layout.Container>
-      {header}
-      <DataSourceRendererStatic<T, TableRowRenderContext<T>>
-        dataSource={dataSource}
-        useFixedRowHeight={!tableState.usesWrapping}
-        defaultRowHeight={DEFAULT_ROW_HEIGHT}
-        context={renderingConfig}
-        itemRenderer={itemRenderer}
-        onKeyDown={onKeyDown}
-        emptyRenderer={emptyRenderer}
-      />
-    </Layout.Container>
-  );
+    );
+
+    mainSection = props.enableHorizontalScroll ? (
+      <Layout.Top>
+        {header}
+        <Layout.ScrollContainer horizontal vertical={false}>
+          <Layout.Top>
+            {columnHeaders}
+            {dataSourceRenderer}
+          </Layout.Top>
+        </Layout.ScrollContainer>
+      </Layout.Top>
+    ) : (
+      <Layout.Top>
+        <div>
+          {header}
+          {columnHeaders}
+        </div>
+        {dataSourceRenderer}
+      </Layout.Top>
+    );
+  } else {
+    mainSection = (
+      <Layout.Container>
+        {header}
+        {columnHeaders}
+        <DataSourceRendererStatic<T, TableRowRenderContext<T>>
+          dataSource={dataSource}
+          useFixedRowHeight={!tableState.usesWrapping}
+          defaultRowHeight={DEFAULT_ROW_HEIGHT}
+          context={renderingConfig}
+          itemRenderer={itemRenderer}
+          onKeyDown={onKeyDown}
+          emptyRenderer={emptyRenderer}
+        />
+      </Layout.Container>
+    );
+  }
 
   return (
     <Layout.Container grow={props.scrollable}>
@@ -558,6 +586,7 @@ DataTable.defaultProps = {
   scrollable: true,
   enableSearchbar: true,
   enableAutoScroll: false,
+  enableHorizontalScroll: true,
   enableColumnHeaders: true,
   enableMultiSelect: true,
   enableContextMenu: true,

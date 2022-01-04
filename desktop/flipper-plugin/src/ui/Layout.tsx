@@ -10,13 +10,7 @@
 import React, {CSSProperties, forwardRef} from 'react';
 import styled from '@emotion/styled';
 import {Container} from './Container';
-import {
-  normalizePadding,
-  normalizeSpace,
-  PaddingProps,
-  Spacing,
-  theme,
-} from './theme';
+import {PaddingProps, Spacing} from './theme';
 
 import {renderSplitLayout} from './renderSplitLayout';
 
