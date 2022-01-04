@@ -149,11 +149,40 @@ jobs:
       with:
         filename: .github/action-failure-template.md
 
+  build-flipper-server:
+    needs:
+      - release
+    runs-on: ubuntu-latest
+    env:
+      desktop-directory: ./desktop
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ needs.release.outputs.tag }}
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - name: Install
+      uses: nick-invision/retry@v2.0.0
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        command: cd ${{env.desktop-directory}} && yarn
+    - name: Build
+      run: cd ${{env.desktop-directory}} && yarn build:flipper-server
+    - name: Upload flipper-server
+      uses: actions/upload-artifact@v1
+      with:
+        name: 'flipper-server.tgz'
+        path: 'dist/flipper-server.zip'
+
   publish:
     needs:
       - build-win
       - build-linux
       - build-mac
+      - build-flipper-server
       - release
     runs-on: ubuntu-latest
 
@@ -176,6 +205,12 @@ jobs:
       with:
         name: 'Flipper-win.zip'
         path: 'Flipper-win.zip'
+    - name: Download Flipper Server
+      if: ${{ needs.release.outputs.tag != '' }}
+      uses: actions/download-artifact@v1
+      with:
+        name: 'flipper-server.tgz'
+        path: 'flipper-server.tgz'
     - name: GitHub Upload Release Artifacts
       if: ${{ needs.release.outputs.tag != '' }}
       uses: passy/github-upload-release-artifacts-action@v2.2.2
@@ -183,7 +218,14 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         created_tag: ${{ needs.release.outputs.tag }}
-        args: Flipper-mac.dmg/Flipper-mac.dmg Flipper-linux.zip/Flipper-linux.zip Flipper-win.zip/Flipper-win.zip
+        args: Flipper-mac.dmg/Flipper-mac.dmg Flipper-linux.zip/Flipper-linux.zip Flipper-win.zip/Flipper-win.zip flipper-server.tgz/flipper-server.tgz
+    - name: Set up npm token
+      run: echo "//registry.yarnpkg.com/:_authToken=${{ secrets.FLIPPER_NPM_TOKEN }}" >> ~/.npmrc
+    - name: Publish flipper-server on NPM
+      run: |
+        tar zxvf flipper-server.tgz
+        cd package
+        yarn publish
     - name: Open issue on failure
       if: failure()
       uses: JasonEtco/create-an-issue@v2.4.0
