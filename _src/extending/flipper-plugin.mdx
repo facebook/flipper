@@ -990,7 +990,9 @@ See `View > Flipper Style Guide` inside the Flipper application for more details
 A set of globally available utilities like opening links, interacting with the clipboard, etc.
 Example: `getFlipperLib().writeTextToClipboard("hello from Flipper");
 
-The full set of utilities can be found [here](https://github.com/facebook/flipper/blob/main/desktop/flipper-plugin/src/plugin/FlipperLib.tsx#L20)
+The full set of utilities can be found [here](https://github.com/facebook/flipper/blob/main/desktop/flipper-plugin/src/plugin/FlipperLib.tsx#L94).
+
+Since Node.js system API's cannot be used directly by Flipper plugins (when running in a browser), the utilties exposed on `getFlipperLib().remoteServerContext` should be used instead, as detailed in [Using Node.js APIs](./node-apis.mdx).
 
 ### createTablePlugin
 
