@@ -72,7 +72,6 @@ const TableBodyColumnContainer = styled.div<{
   multiline?: boolean;
   justifyContent: 'left' | 'right' | 'center';
 }>((props) => ({
-  display: 'block',
   flexShrink: props.width === undefined ? 1 : 0,
   flexGrow: props.width === undefined ? 1 : 0,
   overflow: 'hidden',
@@ -82,6 +81,7 @@ const TableBodyColumnContainer = styled.div<{
   whiteSpace: props.multiline ? 'pre-wrap' : 'nowrap',
   wordWrap: props.multiline ? 'break-word' : 'normal',
   width: props.width,
+  minWidth: 25,
   textAlign: props.justifyContent,
   justifyContent: props.justifyContent,
   '&::selection': {

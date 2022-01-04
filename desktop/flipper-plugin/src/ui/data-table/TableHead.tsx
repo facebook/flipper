@@ -91,11 +91,14 @@ TableHeaderColumnInteractive.displayName =
 const TableHeadColumnContainer = styled.div<{
   width: Width;
 }>((props) => ({
-  // height: DEFAULT_ROW_HEIGHT,
   flexShrink: props.width === undefined ? 1 : 0,
   flexGrow: props.width === undefined ? 1 : 0,
-  width: props.width === undefined ? '100%' : props.width,
-  paddingLeft: 8,
+  overflow: 'hidden',
+  paddingLeft: theme.space.small,
+  whiteSpace: 'nowrap',
+  wordWrap: 'normal',
+  width: props.width,
+  minWidth: 25,
   [`:hover ${SortIconsContainer}`]: {
     visibility: 'visible',
   },
@@ -110,14 +113,17 @@ const TableHeadContainer = styled.div<{scrollbarSize: number}>(
     position: 'relative',
     display: 'flex',
     flexDirection: 'row',
+    borderLeft: `4px solid ${theme.backgroundWash}`, // space for selection, see TableRow
     borderBottom: `1px solid ${theme.dividerColor}`,
     backgroundColor: theme.backgroundWash,
     userSelect: 'none',
     whiteSpace: 'nowrap',
-    borderLeft: `4px solid ${theme.backgroundWash}`, // space for selection, see TableRow
     // hardcoded value to correct for the scrollbar in the main container.
     // ideally we should measure this instead.
     paddingRight: scrollbarSize,
+    overflow: 'hidden',
+    width: '100%',
+    flexShrink: 0,
   }),
 );
 TableHeadContainer.displayName = 'TableHead:TableHeadContainer';
