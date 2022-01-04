@@ -27,6 +27,7 @@ import {
   Platform,
   reportUsage,
   Settings,
+  sleep,
 } from 'flipper-common';
 import {Modal, message, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
@@ -73,9 +74,9 @@ class SettingsSheet extends Component<Props, State> {
     this.props.updateSettings(this.state.updatedSettings);
     this.props.updateLauncherSettings(this.state.updatedLauncherSettings);
     this.props.onHide();
-    return flush().then(() => {
-      getRenderHostInstance().restartFlipper(true);
-    });
+    await flush();
+    await sleep(1000);
+    getRenderHostInstance().restartFlipper(true);
   };
 
   applyChangesWithoutRestart = async () => {
