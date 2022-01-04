@@ -144,7 +144,7 @@ export function DataTable<T extends object>(
   const isUnitTest = useInUnitTest();
 
   // eslint-disable-next-line
-  const scope = isUnitTest ? '' : usePluginInstanceMaybe()?.pluginKey ?? '';
+  const scope = isUnitTest ? '' : usePluginInstanceMaybe()?.definition.id ?? '';
   const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
   const [tableState, dispatch] = useReducer(
     dataTableManagerReducer as DataTableReducer<T>,
@@ -561,6 +561,7 @@ DataTable.defaultProps = {
   enableColumnHeaders: true,
   enableMultiSelect: true,
   enableContextMenu: true,
+  enablePersistSettings: true,
   onRenderEmpty: emptyRenderer,
 } as Partial<DataTableProps<any>>;
 

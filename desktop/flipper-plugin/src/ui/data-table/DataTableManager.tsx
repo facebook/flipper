@@ -330,6 +330,7 @@ export function createDataTableManager<T>(
 export function createInitialState<T>(
   config: DataManagerConfig<T>,
 ): DataManagerState<T> {
+  // by default a table is considered to be identical if plugins, and default column names are the same
   const storageKey = `${config.scope}:DataTable:${config.defaultColumns
     .map((c) => c.key)
     .join(',')}`;
