@@ -96,7 +96,11 @@ if (isFB) {
 
 process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
 
-process.env.FLIPPER_NO_BUNDLED_PLUGINS = 'true';
+if (argv['default-plugins'] === true) {
+  delete process.env.FLIPPER_NO_DEFAULT_PLUGINS;
+} else if (argv['default-plugins'] === false) {
+  process.env.FLIPPER_NO_DEFAULT_PLUGINS = 'true';
+}
 
 // Don't rebuild default plugins, mostly to speed up testing
 if (argv['rebuild-plugins'] === false) {
