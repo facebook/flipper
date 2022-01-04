@@ -92,10 +92,12 @@ describe('ServerWebSocket', () => {
     expect(mockSEListener.onError).toBeCalledTimes(0);
 
     const conflictingServer = new ServerWebSocket(mockSEListener);
-    await expect(conflictingServer.start(assignedPort)).rejects.toThrow();
+    await expect(conflictingServer.start(assignedPort)).rejects.toThrow(
+      /EADDRINUSE/,
+    );
 
     expect(mockSEListener.onListening).toBeCalledTimes(1);
-    expect(mockSEListener.onError).toBeCalledTimes(1);
+    expect(mockSEListener.onError).toBeCalledTimes(0); // no onError triggered, as start throws already
   });
 
   test('calls listener onError if a connection attempt fails', async () => {

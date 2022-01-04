@@ -16,7 +16,6 @@ import {
 } from 'flipper-plugin';
 // eslint-disable-next-line no-restricted-imports,flipper/no-electron-remote-imports
 import {remote} from 'electron';
-import type {RenderHost} from 'flipper-ui-core';
 import os from 'os';
 import {
   FlipperServerImpl,

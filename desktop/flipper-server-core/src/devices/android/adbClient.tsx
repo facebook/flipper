@@ -13,15 +13,18 @@ import adbConfig from './adbConfig';
 import adbkit, {Client} from 'adbkit';
 import path from 'path';
 
-let instance: Promise<Client>;
+let instance: Client;
 
 type Config = {
   androidHome: string;
 };
 
-export function getAdbClient(config: Config): Promise<Client> {
+export async function getAdbClient(config: Config): Promise<Client> {
   if (!instance) {
-    instance = reportPlatformFailures(createClient(config), 'createADBClient');
+    instance = await reportPlatformFailures(
+      createClient(config),
+      'createADBClient',
+    );
   }
   return instance;
 }

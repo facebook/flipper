@@ -106,6 +106,11 @@ async function start(deviceTitle: string, appName: string, pluginId: string) {
     });
 
     server.on('server-error', reject);
+    server.on('server-state', ({state, error}) => {
+      if (state === 'error') {
+        reject(error);
+      }
+    });
 
     server.on('device-connected', (deviceInfo) => {
       logger.info(

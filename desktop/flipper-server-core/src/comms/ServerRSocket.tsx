@@ -56,23 +56,17 @@ class ServerRSocket extends ServerAdapter {
               onConnect(socket);
             })
           : net.createServer(onConnect);
-        transportServer
-          .on('error', (err) => {
-            self.listener.onError(err);
-            console.error(`Error opening server on port ${port}`, 'server');
-            reject(err);
-          })
-          .on('listening', () => {
-            console.debug(
-              `${
-                sslConfig ? 'Secure' : 'Certificate'
-              } server started on port ${port}`,
-              'server',
-            );
-            self.listener.onListening(port);
-            self.rawServer_ = rawServer;
-            resolve((transportServer.address() as AddressInfo).port);
-          });
+        transportServer.on('error', reject).on('listening', () => {
+          console.debug(
+            `${
+              sslConfig ? 'Secure' : 'Certificate'
+            } server started on port ${port}`,
+            'server',
+          );
+          self.listener.onListening(port);
+          self.rawServer_ = rawServer;
+          resolve((transportServer.address() as AddressInfo).port);
+        });
         return transportServer;
       };
       rawServer = new RSocketServer({

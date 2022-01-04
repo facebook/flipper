@@ -7,6 +7,7 @@
  * @format
  */
 
+import process from 'process';
 import chalk from 'chalk';
 import path from 'path';
 import {startFlipperServer} from './startFlipperServer';
@@ -37,6 +38,12 @@ const argv = yargs
       type: 'boolean',
       default: true,
     },
+    failFast: {
+      describe:
+        'Exit the process immediately if the server cannot start, for example due to an incorrect configuration.',
+      type: 'boolean',
+      default: false,
+    },
   })
   .version('DEV')
   .help()
@@ -64,12 +71,19 @@ async function start() {
     staticDir,
     entry: 'index.web.dev.html',
   });
+  const flipperServer = await startFlipperServer(rootDir, staticDir);
+  if (argv.failFast) {
+    flipperServer.on('server-state', ({state}) => {
+      if (state === 'error') {
+        process.exit(1);
+      }
+    });
+  }
+  await flipperServer.connect();
 
-  const [flipperServer] = await Promise.all([
-    startFlipperServer(rootDir, staticDir),
-    argv.bundler ? startWebServerDev(app, server, socket, rootDir) : undefined,
-  ]);
-
+  if (argv.bundler) {
+    await startWebServerDev(app, server, socket, rootDir);
+  }
   startSocketServer(flipperServer, socket);
 }
 
@@ -85,6 +99,6 @@ start()
     }
   })
   .catch((e) => {
-    console.error(chalk.red('Server error: '), e);
+    console.error(chalk.red('Server startup error: '), e);
     process.exit(1);
   });

@@ -117,7 +117,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     if (isTest()) {
       throw new Error('Spawing new server is not supported in test');
     }
-    this.certificateProvider.init();
+    await this.certificateProvider.init();
     const {insecure, secure} = getServerPortsConfig().serverPorts;
 
     const options = await this.certificateProvider.loadSecureServerConfig();

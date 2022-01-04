@@ -62,8 +62,6 @@ class ServerWebSocket extends ServerAdapter {
       // We do not need to listen to http server's `error` because it is propagated to WS
       // https://github.com/websockets/ws/blob/a3a22e4ed39c1a3be8e727e9c630dd440edc61dd/lib/websocket-server.js#L109
       const onConnectionError = (error: Error) => {
-        console.error(`[conn] Unable to start server at port ${port}`, error);
-        this.listener.onError(error);
         reject(
           new Error(
             `Unable to start server at port ${port} due to ${JSON.stringify(

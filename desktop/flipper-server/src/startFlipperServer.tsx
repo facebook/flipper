@@ -71,7 +71,7 @@ export async function startFlipperServer(
 
   const environmentInfo = await getEnvironmentInfo(appPath, isProduction);
 
-  const flipperServer = new FlipperServerImpl(
+  return new FlipperServerImpl(
     {
       environmentInfo,
       env: parseEnvironmentVariables(process.env),
@@ -93,9 +93,6 @@ export async function startFlipperServer(
     logger,
     keytar,
   );
-
-  await flipperServer.connect();
-  return flipperServer;
 }
 
 function createLogger(): Logger {

@@ -70,6 +70,7 @@ export class FlipperServerImpl implements FlipperServer {
   readonly disposers: ((() => void) | void)[] = [];
   private readonly devices = new Map<string, ServerDevice>();
   state: FlipperServerState = 'pending';
+  stateError: string | undefined = undefined;
   android: AndroidDeviceManager;
   ios: IOSDeviceManager;
   keytarManager: KeytarManager;
@@ -136,11 +137,14 @@ export class FlipperServerImpl implements FlipperServer {
 
   setServerState(state: FlipperServerState, error?: Error) {
     this.state = state;
-    this.emit('server-state', {state, error});
+    this.stateError = '' + error;
+    this.emit('server-state', {state, error: this.stateError});
   }
 
   /**
-   * Starts listening to parts and watching for devices
+   * Starts listening to parts and watching for devices.
+   * Connect never throws directly, but communicates
+   * through server-state events
    */
   async connect() {
     if (this.state !== 'pending') {
@@ -225,6 +229,10 @@ export class FlipperServerImpl implements FlipperServer {
   }
 
   private commandHandler: FlipperServerCommands = {
+    'get-server-state': async () => ({
+      state: this.state,
+      error: this.stateError,
+    }),
     'node-api-exec': commandNodeApiExec,
     'node-api-fs-access': access,
     'node-api-fs-pathExists': async (path, mode) => {

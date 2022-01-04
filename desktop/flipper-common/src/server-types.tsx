@@ -101,7 +101,7 @@ export type ClientResponseType =
   | {success?: never; error: ClientErrorType; length: number};
 
 export type FlipperServerEvents = {
-  'server-state': {state: FlipperServerState; error?: Error};
+  'server-state': {state: FlipperServerState; error?: string};
   'server-error': any;
   notification: {
     type: 'error';
@@ -152,6 +152,10 @@ export interface FSStatsLike {
 }
 
 export type FlipperServerCommands = {
+  'get-server-state': () => Promise<{
+    state: FlipperServerState;
+    error?: string;
+  }>;
   'node-api-fs-access': (path: string, mode?: number) => Promise<void>;
   'node-api-fs-pathExists': (path: string, mode?: number) => Promise<boolean>;
   'node-api-fs-unlink': (path: string) => Promise<void>;

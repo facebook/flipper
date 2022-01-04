@@ -15,6 +15,7 @@ import {
   NoLongerConnectedToClientError,
   isTest,
   DeviceDescription,
+  FlipperServerState,
 } from 'flipper-common';
 import Client from '../Client';
 import {notification} from 'antd';
@@ -40,6 +41,8 @@ export function connectFlipperServerToStore(
       key: text,
     });
   });
+
+  server.on('server-state', handleServerStateChange);
 
   server.on('server-error', (err) => {
     notification.error({
@@ -113,6 +116,13 @@ export function connectFlipperServerToStore(
     'Flipper server started and accepting device / client connections',
   );
 
+  server
+    .exec('get-server-state')
+    .then(handleServerStateChange)
+    .catch((e) => {
+      console.error(`Failed to get initial server state`, e);
+    });
+
   // this flow is spawned delibarately from this main flow
   waitFor(store, (state) => state.plugins.initialized)
     .then(() => server.exec('device-list'))
@@ -171,6 +181,25 @@ function startSideEffects(store: Store, server: FlipperServer) {
     dispose1();
     dispose2();
   };
+}
+
+function handleServerStateChange({
+  state,
+  error,
+}: {
+  state: FlipperServerState;
+  error?: string;
+}) {
+  if (state === 'error') {
+    console.warn(`[conn] Flipper server state -> ${state}`, error);
+    notification.error({
+      message: 'Failed to start flipper-server',
+      description: '' + error,
+      duration: null,
+    });
+  } else {
+    console.info(`[conn] Flipper server state -> ${state}`);
+  }
 }
 
 function handleDeviceConnected(
