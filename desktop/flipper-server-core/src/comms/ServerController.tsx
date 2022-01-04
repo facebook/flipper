@@ -71,15 +71,14 @@ interface ServerController {
  * Additionally, it manages client connections.
  */
 class ServerController extends EventEmitter implements ServerEventsListener {
-  connections: Map<string, ClientInfo>;
-  timestamps: Map<string, ClientTimestampTracker>;
+  connections: Map<string, ClientInfo> = new Map();
+  timestamps: Map<string, ClientTimestampTracker> = new Map();
 
-  initialized: Promise<void> | null;
-  secureServer: Promise<ServerAdapter> | null;
-  insecureServer: Promise<ServerAdapter> | null;
-  altSecureServer: Promise<ServerAdapter> | null;
-  altInsecureServer: Promise<ServerAdapter> | null;
-  browserServer: Promise<ServerAdapter> | null;
+  secureServer: ServerAdapter | null = null;
+  insecureServer: ServerAdapter | null = null;
+  altSecureServer: ServerAdapter | null = null;
+  altInsecureServer: ServerAdapter | null = null;
+  browserServer: ServerAdapter | null = null;
 
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
@@ -91,19 +90,11 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   constructor(flipperServer: FlipperServerImpl) {
     super();
     this.flipperServer = flipperServer;
-    this.connections = new Map();
-    this.timestamps = new Map();
     this.certificateProvider = new CertificateProvider(
       this,
       getFlipperServerConfig().settings,
     );
     this.connectionTracker = new ConnectionTracker(this.logger);
-    this.secureServer = null;
-    this.insecureServer = null;
-    this.altSecureServer = null;
-    this.altInsecureServer = null;
-    this.browserServer = null;
-    this.initialized = null;
   }
 
   onClientMessage(clientId: string, payload: string): void {
@@ -122,69 +113,57 @@ class ServerController extends EventEmitter implements ServerEventsListener {
    * Initialisation is complete once the initialized promise is fullfilled at
    * which point Flipper is accepting connections.
    */
-  init() {
+  async init() {
     if (isTest()) {
       throw new Error('Spawing new server is not supported in test');
     }
+    this.certificateProvider.init();
     const {insecure, secure} = getServerPortsConfig().serverPorts;
 
-    this.initialized = this.certificateProvider
-      .loadSecureServerConfig()
-      .then((options) => {
-        console.info('[conn] secure server listening at port: ', secure);
-        this.secureServer = createServer(secure, this, options);
-        const {secure: altSecure} = getServerPortsConfig().altServerPorts;
-        console.info(
-          '[conn] secure server (ws) listening at port: ',
-          altSecure,
-        );
-        this.altSecureServer = createServer(
-          altSecure,
-          this,
-          options,
-          TransportType.WebSocket,
-        );
-      })
-      .then(() => {
-        console.info('[conn] insecure server listening at port: ', insecure);
-        this.insecureServer = createServer(insecure, this);
-        const {insecure: altInsecure} = getServerPortsConfig().altServerPorts;
-        console.info(
-          '[conn] insecure server (ws) listening at port: ',
-          altInsecure,
-        );
-        this.altInsecureServer = createServer(
-          altInsecure,
-          this,
-          undefined,
-          TransportType.WebSocket,
-        );
-        return;
-      });
+    const options = await this.certificateProvider.loadSecureServerConfig();
+
+    console.info('[conn] secure server listening at port: ', secure);
+    this.secureServer = await createServer(secure, this, options);
+    const {secure: altSecure} = getServerPortsConfig().altServerPorts;
+    console.info('[conn] secure server (ws) listening at port: ', altSecure);
+    this.altSecureServer = await createServer(
+      altSecure,
+      this,
+      options,
+      TransportType.WebSocket,
+    );
+
+    console.info('[conn] insecure server listening at port: ', insecure);
+    this.insecureServer = await createServer(insecure, this);
+    const {insecure: altInsecure} = getServerPortsConfig().altServerPorts;
+    console.info(
+      '[conn] insecure server (ws) listening at port: ',
+      altInsecure,
+    );
+    this.altInsecureServer = await createServer(
+      altInsecure,
+      this,
+      undefined,
+      TransportType.WebSocket,
+    );
 
     if (GK.get('comet_enable_flipper_connection')) {
       console.info('[conn] Browser server (ws) listening at port: ', 8333);
-      this.browserServer = createBrowserServer(8333, this);
+      this.browserServer = await createBrowserServer(8333, this);
     }
-
-    reportPlatformFailures(this.initialized, 'initializeServer');
-
-    return this.initialized;
   }
 
   /**
    * If initialized, it stops any started servers.
    */
   async close() {
-    if (this.initialized && (await this.initialized)) {
-      await Promise.all([
-        this.insecureServer && (await this.insecureServer).stop(),
-        this.secureServer && (await this.secureServer).stop(),
-        this.altInsecureServer && (await this.altInsecureServer).stop(),
-        this.altSecureServer && (await this.altSecureServer).stop(),
-        this.browserServer && (await this.browserServer).stop(),
-      ]);
-    }
+    await Promise.all([
+      this.insecureServer?.stop(),
+      this.secureServer?.stop(),
+      this.altInsecureServer?.stop(),
+      this.altSecureServer?.stop(),
+      this.browserServer?.stop(),
+    ]);
   }
 
   onConnectionCreated(

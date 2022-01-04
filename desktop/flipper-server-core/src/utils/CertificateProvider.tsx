@@ -89,12 +89,12 @@ type CertificateProviderConfig = {
  * Flipper CA.
  */
 export default class CertificateProvider {
-  private _adb: Promise<ADBClient> | undefined;
+  private _adb: ADBClient | undefined;
   private didCertificateSetup = false;
   private config: CertificateProviderConfig;
   private server: ServerController;
 
-  get adb(): Promise<ADBClient> {
+  get adb(): ADBClient {
     if (this.config.enableAndroid) {
       if (this._adb) {
         return this._adb;
@@ -105,22 +105,25 @@ export default class CertificateProvider {
   }
 
   constructor(server: ServerController, config: CertificateProviderConfig) {
-    // TODO: refactor this code to create promise lazily
-    this._adb = config.enableAndroid
-      ? (getAdbClient(config).catch((_e) => {
-          // make sure initialization failure is already logged
-          const msg =
-            'Failed to initialize ADB. Please disable Android support in settings, or configure a correct path';
-          server.flipperServer.emit('notification', {
-            type: 'error',
-            title: 'Failed to initialise ADB',
-            description: msg,
-          });
-          this._adb = undefined; // no adb client available
-        }) as Promise<ADBClient>)
-      : undefined;
-    this.config = config;
     this.server = server;
+    this.config = config;
+  }
+
+  async init() {
+    if (this.config.enableAndroid) {
+      try {
+        this._adb = await getAdbClient(this.config);
+      } catch (_e) {
+        // make sure initialization failure is already logged
+        const msg =
+          'Failed to initialize ADB. Please disable Android support in settings, or configure a correct path';
+        this.server.flipperServer.emit('notification', {
+          type: 'error',
+          title: 'Failed to initialise ADB',
+          description: msg,
+        });
+      }
+    }
   }
 
   private uploadFiles = async (
@@ -255,10 +258,9 @@ export default class CertificateProvider {
 
   private async ensureOpenSSLIsAvailable(): Promise<void> {
     if (!(await opensslInstalled())) {
-      const e = Error(
+      throw new Error(
         "It looks like you don't have OpenSSL installed. Please install it to continue.",
       );
-      this.server.emit('error', e);
     }
   }
 
@@ -321,9 +323,8 @@ export default class CertificateProvider {
         destination,
         csr,
       );
-      const adbClient = await this.adb;
       await androidUtil.push(
-        adbClient,
+        this.adb,
         deviceId,
         appName,
         destination + filename,
@@ -379,7 +380,7 @@ export default class CertificateProvider {
     deviceCsrFilePath: string,
     csr: string,
   ): Promise<string> {
-    const devicesInAdb = await this.adb.then((client) => client.listDevices());
+    const devicesInAdb = await this.adb.listDevices();
     if (devicesInAdb.length === 0) {
       throw new Error('No Android devices found');
     }
@@ -472,9 +473,8 @@ export default class CertificateProvider {
     processName: string,
     csr: string,
   ): Promise<{isMatch: boolean; foundCsr: string}> {
-    const adbClient = await this.adb;
     const deviceCsr = await androidUtil.pull(
-      adbClient,
+      this.adb,
       deviceId,
       processName,
       directory + csrFileName,
@@ -590,6 +590,7 @@ export default class CertificateProvider {
   }
 
   async loadSecureServerConfig(): Promise<SecureServerConfig> {
+    await this.ensureOpenSSLIsAvailable();
     await this.certificateSetup();
     return {
       key: await fs.readFile(serverKey),

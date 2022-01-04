@@ -96,7 +96,6 @@ async function start() {
     keytar,
   );
 
-  await flipperServer.connect();
   const flipperServerConfig = await flipperServer.exec('get-config');
 
   initializeElectron(flipperServer, flipperServerConfig);
@@ -109,6 +108,8 @@ async function start() {
   // but not set yet, which might happen when using normal imports.
   // eslint-disable-next-line import/no-commonjs
   require('flipper-ui-core').startFlipperDesktop(flipperServer);
+
+  await flipperServer.connect();
 
   // Initialize launcher
   setupPrefetcher(flipperServerConfig.settings);
