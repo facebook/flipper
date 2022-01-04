@@ -21,9 +21,6 @@
 
 ## Table of Contents
 
-- [Mobile development](#mobile-development)
-- [Extending Flipper](#extending-flipper)
-- [Contributing to Flipper](#contributing-to-flipper)
 - [In this repo](#in-this-repo)
 - [Getting started](#getting-started)
   - [Requirements](#requirements)
@@ -31,11 +28,14 @@
   - [Desktop](#desktop)
     - [Running from source](#running-from-source)
     - [Building standalone application](#building-standalone-application)
-- [iOS SDK + Sample App](#ios-sdk--sample-app)
-- [Android SDK + Sample app](#android-sdk--sample-app)
+  - [iOS SDK + Sample App](#ios-sdk--sample-app)
+  - [Android SDK + Sample app](#android-sdk--sample-app)
+  - [React Native SDK + Sample app](#react-native-sdk--sample-app)
+  - [JS SDK + Sample React app](#js-sdk--sample-react-app)
+      - [Troubleshooting](#troubleshooting)
 - [Documentation](#documentation)
-- [Contributing](#contributing)
-- [License](#license)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Mobile development
 
@@ -80,6 +80,7 @@ This repository includes all parts of Flipper. This includes:
 Please refer to our
 [Getting Started guide](https://fbflipper.com/docs/getting-started/index) to set
 up Flipper.
+Or, (still experimental) run `npx flipper-server` for a browser based version of Flipper. 
 
 ## Requirements
 

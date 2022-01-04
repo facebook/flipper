@@ -54,7 +54,7 @@ module.exports = {
               'getting-started/react-native-ios',
             ],
           },
-          'getting-started/javascript'
+          'getting-started/javascript',
         ],
       },
       ...fbInternalOnly(['getting-started/fb/connecting-to-flipper']),
@@ -109,11 +109,12 @@ module.exports = {
       'extending/flipper-plugin',
       'extending/styling-components',
       'extending/deeplinks',
+      'extending/node-apis',
       ...fbInternalOnly([
         {
           'QPL linting': ['fb/building-a-linter', 'fb/active-linters'],
         },
-      ]),      
+      ]),
     ],
     'Client plugin APIs': [
       'extending/create-plugin',
