@@ -209,6 +209,7 @@ async function modifyPackageManifest(
   const manifest = require('../flipper-server/package.json');
 
   manifest.version = versionNumber;
+  manifest.private = false; // make this package npm-publishable
   if (hgRevision != null) {
     manifest.revision = hgRevision;
   }
@@ -262,6 +263,7 @@ async function modifyPackageManifest(
   if (argv.npx) {
     // This is a hack, as npx cached very aggressively if package.version
     // didn't change
+
     console.log(`⚙️  Installing flipper-server.tgz using npx`);
     await fs.remove(path.join(homedir(), '.npm', '_npx'));
     await spawn('npx', [archive, argv.open ? '--open' : '--no-open'], {
