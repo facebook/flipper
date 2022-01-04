@@ -477,6 +477,11 @@ export async function buildBrowserBundle(outDir: string, dev: boolean) {
         if (moduleName === 'flipper') {
           return MetroResolver.resolve(context, 'flipper-ui-core', ...rest);
         }
+        // stubbed modules are modules that don't make sense outside a Node / Electron context,
+        // like fs, child_process etc etc.
+        // UI / plugins using these features should use the corresponding RenderHost api's instead
+        // Ideally we'd fail hard on those, but not all plugins are properly converted yet, and some
+        // libraries try to require them for feature detection (e.g. jsbase64)
         if (stubModules.has(moduleName)) {
           console.warn(
             `Found a reference to built-in module '${moduleName}', which will be stubbed out. Referer: ${context.originModulePath}`,

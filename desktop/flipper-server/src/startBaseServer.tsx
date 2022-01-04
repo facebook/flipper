@@ -68,8 +68,16 @@ function addWebsocket(server: http.Server, config: Config) {
     allowRequest(req, callback) {
       const noOriginHeader = req.headers.origin === undefined;
       if (noOriginHeader && req.headers.host === validHost) {
+        // no origin header? Either the request is not cross-origin,
+        // or the request is not originating from a browser, so should be OK to pass through
         callback(null, true);
       } else {
+        // for now we don't allow cross origin request, so that an arbitrary website cannot try to
+        // connect a socket to localhost:serverport, and try to use the all powerful Flipper APIs to read
+        // for example files.
+        // Potentially in the future we do want to allow this, e.g. if we want to connect to a local flipper-server
+        // directly from intern. But before that, we should either authenticate the request somehow,
+        // and discuss security impact and for example scope the files that can be read by Flipper.
         console.warn(
           `Refused sockect connection from cross domain request, origin: ${req.headers.origin}, host: ${req.headers.host}. Expected: ${validHost}`,
         );

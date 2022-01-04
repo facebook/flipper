@@ -145,6 +145,8 @@ async function startWatchChanges() {
   try {
     const watchman = new Watchman(path.resolve(__dirname, '..'));
     await watchman.initialize();
+    // We only watch for changes that might affect the server.
+    // For UI changes, Metro / hot module reloading / fast refresh take care of the changes
     await Promise.all(
       [
         'pkg',
