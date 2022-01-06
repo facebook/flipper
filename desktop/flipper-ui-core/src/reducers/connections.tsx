@@ -473,7 +473,7 @@ export const selectPlugin = (payload: {
 
 export const setMenuEntries = (menuEntries: NormalizedMenuEntry[]): Action => ({
   type: 'SET_MENU_ENTRIES',
-  payload: menuEntries,
+  payload: menuEntries.slice(),
 });
 
 export const selectClient = (clientId: string): Action => ({
