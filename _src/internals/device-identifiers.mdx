@@ -1,0 +1,46 @@
+---
+id: device-identifiers
+title: Device Identifiers
+sidebar_label: Device Identifiers
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+Flipper is capable of discovering and listing available devices for multiple platforms. 
+On itself, it allows users to check for connected devices and quickly use a number of plugins:
+- Logs
+- Mobile Builds
+- Crash Reporter
+
+Device information, including identifiers, are obtained using either `idb list-targets --json` on iOS or 
+`adb devices` on Android.  
+
+On Flipper Desktop, apps are shown alongside the device it's running on.
+
+It seems a trivial problem to solve. Unfortunately, this is not the case.
+On the client side, obtaining the device identifier is a problem.
+
+### How does Flipper map connecting apps to their respective devices?
+
+Over the years, both Apple and Google have locked down their APIs so that apps can't find any value that 
+could be considered unique like a MAC address, serial numbers, etc., for privacy reasons. This means there's no OS API available.   
+
+
+So, to obtain this device identifier, a two-way approached had to be used.
+
+From the Flipper Desktop side, connected devices are discovered and listed using idb or adb as mentioned above, and it sees some tcp connections coming in from apps.
+It is during the certificate exchange process that we do the mapping from apps to device.
+
+In this process, an app creates and sends a CSR to Flipper Desktop alongside some other data 
+including the path in the application sandbox where this CSR was originally written. 
+
+When Flipper Desktop is processing the request, it effectively lists all possible connected devices and proceeds
+to try and pull the CSR from each device. The CSR is then compared with the one sent by the client. If there's a match, 
+we have successfuly made the pairing and the device identifier is sent back to the client.
+
+The client receives the device identifier and uses this information for subsequent secure tcp connections.
+
+When a secure tcp connection is established, the device identifier is passed along and thus Flipper is able to map the connecting app to its running device.
+
+The diagram below depicts this process.
+
+![Device Identifier Sequence](/img/sequence_device_id.png)
