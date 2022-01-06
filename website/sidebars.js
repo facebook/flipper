@@ -130,6 +130,7 @@ module.exports = {
       'extending/public-releases',
       'extending/testing-rn',
       'internals/linters',
+      'internals/device-identifiers',
       ...fbInternalOnly([
         'fb/release-infra',
         'fb/LauncherConfig',
