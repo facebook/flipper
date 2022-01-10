@@ -8206,10 +8206,10 @@ linkifyjs@^2.1.6:
   resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-2.1.9.tgz#af06e45a2866ff06c4766582590d098a4d584702"
   integrity sha512-74ivurkK6WHvHFozVaGtQWV38FzBwSTGNmJolEgFp7QgR2bl6ArUWlvT4GcHKbPe1z3nWYi+VUdDZk16zDOVug==
 
-live-plugin-manager@^0.17.0:
-  version "0.17.0"
-  resolved "https://registry.yarnpkg.com/live-plugin-manager/-/live-plugin-manager-0.17.0.tgz#c6ba93551ae1330784dd2bfdc5533a60f85ef5c4"
-  integrity sha512-78exdZiCDDbXZKeEtezaB1/VygpBe8JfZ34XmablcTOkALVoomI7Dd1DPCdQKvMKc96g1EfhlR1GrejkBFUW6g==
+live-plugin-manager@^0.17.1:
+  version "0.17.1"
+  resolved "https://registry.yarnpkg.com/live-plugin-manager/-/live-plugin-manager-0.17.1.tgz#f40b98a2a155b635e71ae92a9a1332f1e6119339"
+  integrity sha512-gWAjojKD8AWkK8psxpm73q6JiSPeHJwwXjoSJL23CPwp/PejuetQjBWe0hGYBPb9kNYs6s6LA4SZVYuJwXDldg==
   dependencies:
     "@types/debug" "^4.1.7"
     "@types/fs-extra" "^9.0.12"
