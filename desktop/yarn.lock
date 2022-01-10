@@ -3155,10 +3155,10 @@ ansicolors@~0.3.2:
   resolved "https://registry.yarnpkg.com/ansicolors/-/ansicolors-0.3.2.tgz#665597de86a9ffe3aa9bfbe6cae5c6ea426b4979"
   integrity sha1-ZlWX3oap/+Oqm/vmyuXG6kJrSXk=
 
-antd@4.18.0:
-  version "4.18.0"
-  resolved "https://registry.yarnpkg.com/antd/-/antd-4.18.0.tgz#8bb62d7ed6b11d125871a94d4f863368cd42ac8c"
-  integrity sha512-cCc5k7SqL9zCTTH+BwF5CGYCTvfdCukWRzvMc99pp85mpHratSfzIyxb1tcRz9Zs9/gnqJPDGGPuCDo0Y7SPog==
+antd@4.18.2:
+  version "4.18.2"
+  resolved "https://registry.yarnpkg.com/antd/-/antd-4.18.2.tgz#e4d03b2229b1f4b3b204e5e5539693aa653d3b7e"
+  integrity sha512-omezo7dtskrfGoSOoHYbA2jyaSVDd2UsxS5WM8GWyuIDtguMqlTDFKF/5204s3IjXnSUiJLOuDOWSLPMyVwHrA==
   dependencies:
     "@ant-design/colors" "^6.0.0"
     "@ant-design/icons" "^4.7.0"
