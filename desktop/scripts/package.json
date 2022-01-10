@@ -20,7 +20,7 @@
       "detect-port": "^1.1.1",
       "dotenv": "^8.2.0",
       "electron-builder": "22.11.7",
-      "express": "^4.15.2",
+      "express": "^4.17.2",
       "fb-watchman": "^2.0.1",
       "flipper-common": "0.0.0",
       "flipper-pkg-lib": "0.0.0",
