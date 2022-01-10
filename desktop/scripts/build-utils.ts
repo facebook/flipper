@@ -454,7 +454,7 @@ export async function buildBrowserBundle(outDir: string, dev: boolean) {
 
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
-    projectRoot: rootDir,
+    projectRoot: browserUiDir,
     watchFolders,
     transformer: {
       ...baseConfig.transformer,
@@ -553,7 +553,8 @@ function assertSaneImport(context: any, moduleName: string) {
     (moduleName.startsWith('metro') &&
       !moduleName.startsWith('metro-runtime')) ||
     moduleName === 'Metro' ||
-    moduleName.startsWith('babel') ||
+    (moduleName.startsWith('babel') &&
+      !moduleName.startsWith('babel-runtime')) ||
     moduleName.startsWith('typescript') ||
     moduleName.startsWith('electron') ||
     moduleName.startsWith('@testing-library')

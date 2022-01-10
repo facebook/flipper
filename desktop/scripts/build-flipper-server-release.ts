@@ -70,10 +70,17 @@ const argv = yargs
         'Load only specified plugins and skip loading rest. This is useful when you are developing only one or few plugins. Plugins to load can be specified as a comma-separated list with either plugin id or name used as identifier, e.g. "--enabled-plugins network,inspector". The flag is not provided by default which means that all plugins loaded.',
       type: 'array',
     },
+    // options based on build-release
     channel: {
       description: 'Release channel for the build',
       choices: ['stable', 'insiders'],
       default: 'stable',
+    },
+    'bundled-plugins': {
+      describe:
+        'Enables bundling of plugins into Flipper bundle. Env var FLIPPER_NO_BUNDLED_PLUGINS is equivalent to the command-line option "--no-bundled-plugins".',
+      type: 'boolean',
+      default: false,
     },
     'default-plugins-dir': {
       describe:
@@ -96,17 +103,26 @@ if (isFB) {
 
 process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
 
+if (argv['bundled-plugins'] === false) {
+  process.env.FLIPPER_NO_BUNDLED_PLUGINS = 'true';
+} else if (argv['bundled-plugins'] === true) {
+  delete process.env.FLIPPER_NO_BUNDLED_PLUGINS;
+}
+
 if (argv['default-plugins'] === true) {
   delete process.env.FLIPPER_NO_DEFAULT_PLUGINS;
 } else if (argv['default-plugins'] === false) {
   process.env.FLIPPER_NO_DEFAULT_PLUGINS = 'true';
 }
-
 // Don't rebuild default plugins, mostly to speed up testing
 if (argv['rebuild-plugins'] === false) {
   process.env.FLIPPER_NO_REBUILD_PLUGINS = 'true';
 } else if (argv['rebuild-plugins'] === true) {
   delete process.env.FLIPPER_NO_REBUILD_PLUGINS;
+}
+
+if (argv['default-plugins-dir']) {
+  process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];
 }
 
 if (argv['public-build'] === true) {
@@ -116,8 +132,6 @@ if (argv['public-build'] === true) {
   // this variable purely overrides whether imports are from `fb` or `fb-stubs`
   console.log('🐬 Emulating open source build of Flipper');
   process.env.FLIPPER_FORCE_PUBLIC_BUILD = 'true';
-} else if (argv['public-build'] === false) {
-  delete process.env.FLIPPER_FORCE_PUBLIC_BUILD;
 }
 
 if (argv['enabled-plugins'] !== undefined) {
@@ -227,32 +241,7 @@ async function modifyPackageManifest(
   );
 }
 
-(async () => {
-  console.log(`⚙️  Starting build-flipper-server-release`);
-  console.dir(argv);
-  const dir = await buildFolder();
-  console.log('Created build directory', dir);
-
-  if (dotenv && dotenv.parsed) {
-    console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
-  }
-
-  const versionNumber = getVersionNumber(argv.version);
-  const hgRevision = await genMercurialRevision();
-  console.log(
-    `  Building version / revision ${versionNumber} ${hgRevision ?? ''}`,
-  );
-
-  // create static dir
-  await fs.mkdirp(path.join(dir, 'static', 'defaultPlugins'));
-
-  await prepareDefaultPlugins(argv.channel === 'insiders');
-  await compileServerMain(false);
-  await buildBrowserBundle(path.join(dir, 'static'), false);
-  await copyStaticResources(dir);
-  await downloadIcons(path.join(dir, 'static'));
-  await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
-
+async function packNpmArchive(dir: string, versionNumber: any) {
   console.log(`⚙️  Packing flipper-server.tgz`);
   const archive = path.resolve(distDir, 'flipper-server.tgz');
   await spawn('yarn', ['pack', '--filename', archive], {
@@ -263,11 +252,13 @@ async function modifyPackageManifest(
   console.log(
     `✅  flipper-release-build completed, version ${versionNumber} in ${dir}`,
   );
+  return archive;
+}
 
+async function runPostBuildAction(archive: string, dir: string) {
   if (argv.npx) {
     // This is a hack, as npx cached very aggressively if package.version
     // didn't change
-
     console.log(`⚙️  Installing flipper-server.tgz using npx`);
     await fs.remove(path.join(homedir(), '.npm', '_npx'));
     await spawn('npx', [archive, argv.open ? '--open' : '--no-open'], {
@@ -283,7 +274,39 @@ async function modifyPackageManifest(
       stdio: 'inherit',
     });
   }
-})().catch((e) => {
+}
+
+async function buildServerRelease() {
+  console.log(`⚙️  Starting build-flipper-server-release`);
+  console.dir(argv);
+  const dir = await buildFolder();
+  console.log('Created build directory', dir);
+
+  if (dotenv && dotenv.parsed) {
+    console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
+  }
+
+  const versionNumber = getVersionNumber(argv.version);
+  const hgRevision = await genMercurialRevision();
+  console.log(
+    `  Building version / revision ${versionNumber} ${hgRevision ?? ''}`,
+  );
+
+  // create plugin output dir
+  await fs.mkdirp(path.join(dir, 'static', 'defaultPlugins'));
+
+  await compileServerMain(false);
+  await prepareDefaultPlugins(argv.channel === 'insiders');
+  await copyStaticResources(dir);
+  await downloadIcons(path.join(dir, 'static'));
+  await buildBrowserBundle(path.join(dir, 'static'), false);
+  await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
+  const archive = await packNpmArchive(dir, versionNumber);
+
+  await runPostBuildAction(archive, dir);
+}
+
+buildServerRelease().catch((e) => {
   console.error('Failed to build flipper-server', e, e.stack);
   process.exit(1);
 });
