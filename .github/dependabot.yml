@@ -15,7 +15,7 @@ updates:
       update-types: ["version-update:semver-major"]
     - dependency-name: "@types/*"
 - package-ecosystem: npm
-  directory: "/flipper-js-client-sdk"
+  directory: "/js/js-flipper"
   schedule:
     interval: weekly
     time: '13:00'
