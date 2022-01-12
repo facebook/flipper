@@ -10,7 +10,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "@ant-design/colors": "^6.0.0",
-    "@emotion/css": "^11.5.0",
+    "@emotion/css": "^11.7.1",
     "@emotion/react": "^11.6.0",
     "@reach/observe-rect": "^1.2.0",
     "@types/react": "17.0.34",

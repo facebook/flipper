@@ -11,7 +11,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@emotion/css": "^11.5.0",
+    "@emotion/css": "^11.7.1",
     "@emotion/react": "^11.6.0",
     "@emotion/styled": "^11.6.0",
     "@tanishiking/aho-corasick": "^0.0.1",
