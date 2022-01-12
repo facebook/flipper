@@ -1,3 +1,15 @@
+# 0.128.0 (12/1/2022)
+
+ * [D33348923](https://github.com/facebook/flipper/search?q=D33348923&type=Commits) -  More clearly communicate if flipper server failed to start (e.d. due to port already taken, openssl not being available)
+ * [D33364781](https://github.com/facebook/flipper/search?q=D33364781&type=Commits) -  Improved column widths in data tables
+ * [D33364780](https://github.com/facebook/flipper/search?q=D33364780&type=Commits) -  Data tables will now remember their configuration by default and share it across different applications
+ * [D33297125](https://github.com/facebook/flipper/search?q=D33297125&type=Commits) -  [experimental] It is now possible to run a full fledged Flipper as node + browser appication by using `npx flipper-server`
+ * [D33377718](https://github.com/facebook/flipper/search?q=D33377718&type=Commits) -  Fixed an issue where changing settings wasn't persisted when using "Apply + Restart
+ * [D33368216](https://github.com/facebook/flipper/search?q=D33368216&type=Commits) -  most data tables allow for horizontal scrolling now if they run out of space
+ * [D33368215](https://github.com/facebook/flipper/search?q=D33368215&type=Commits) -  make sure database plugin is horizontally scrollable
+ * [D33405760](https://github.com/facebook/flipper/search?q=D33405760&type=Commits) -  Fixes an issue whereas the url encoding was incorrect for UTF-8
+
+
 # 0.127.0 (22/12/2021)
 
  * [D33089810](https://github.com/facebook/flipper/search?q=D33089810&type=Commits) -  Move crash watcher to the server. Add 'device-crash' event. Add 'device-start-crash-watcher', 'device-stop-crash-watcher' commands. Add 'onDeviceCrash' method to Plugin Client.
