@@ -126,13 +126,13 @@ jobs:
       with:
         timeout_minutes: 10
         max_attempts: 3
-        command: cd ${{env.desktop-directory}} && yarn
+        command: (cd ${{env.desktop-directory}}) -and (yarn)
     - name: Build
       uses: nick-invision/retry@v2.6.0
       with:
         timeout_minutes: 30
         max_attempts: 3
-        command: cd ${{env.desktop-directory}} && yarn build --win
+        command: (cd ${{env.desktop-directory}}) -and (yarn build --win)
     - name: Upload Windows
       uses: actions/upload-artifact@v1
       with:
