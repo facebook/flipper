@@ -69,8 +69,8 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",
     "@types/jest": "^26.0.24",
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^5.9.1",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
     "electron": "11.2.3",

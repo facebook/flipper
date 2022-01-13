@@ -21,7 +21,6 @@ export default createESLintRule<Options, MessageIds>({
     type: 'problem',
     docs: {
       description: 'TBD',
-      category: 'Possible Errors',
       recommended: 'warn',
     },
     schema: [],

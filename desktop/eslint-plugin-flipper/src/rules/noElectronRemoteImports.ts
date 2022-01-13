@@ -21,7 +21,6 @@ export default createESLintRule<Options, MessageIds>({
     type: 'suggestion',
     docs: {
       description: '`remote` is slow. Please be careful when using it.',
-      category: 'Possible Errors',
       recommended: 'warn',
     },
     schema: [],

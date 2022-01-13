@@ -38,7 +38,6 @@ export default createESLintRule<Options, MessageIds>({
     type: 'problem',
     docs: {
       description: `Ensure that package boundaries are respected within monorepo`,
-      category: 'Possible Errors',
       recommended: 'error',
     },
     schema: [],
