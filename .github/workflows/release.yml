@@ -175,7 +175,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: 'flipper-server.tgz'
-        path: 'dist/flipper-server.zip'
+        path: 'dist/flipper-server.tgz'
 
   publish:
     needs:
