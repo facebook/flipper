@@ -192,7 +192,6 @@ async function copyStaticResources(outDir: string) {
 
   // static folder, without the things that are only for Electron
   const staticsToCopy = [
-    'facebook',
     'icons',
     'native-modules',
     'PortForwardingMacApp.app',
@@ -206,6 +205,9 @@ async function copyStaticResources(outDir: string) {
     'index.web.html',
     'style.css',
   ];
+  if (isFB) {
+    staticsToCopy.push('facebook');
+  }
 
   await Promise.all(
     staticsToCopy.map((e) =>
