@@ -53,7 +53,7 @@ export async function downloadIcons(buildFolder: string) {
       const url = getPublicIconUrl(icon);
       return fetch(url, {
         retryOptions: {
-          retryMaxDuration: 30 * 1000,
+          retryMaxDuration: 120 * 1000,
           // Be default, only 5xx are retried but we're getting the odd 404
           // which goes away on a retry for some reason.
           retryOnHttpResponse: (res) => res.status >= 400,
