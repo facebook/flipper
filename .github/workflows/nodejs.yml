@@ -61,8 +61,12 @@ jobs:
       working-directory: ${{env.desktop-directory}}
     - name: build windows
       if: matrix.os == 'windows-latest'
-      run: yarn build --win
-      working-directory: ${{env.desktop-directory}}
+      uses: nick-invision/retry@v2.6.0
+      with:
+        timeout_minutes: 30
+        max_attempts: 3
+        command: cd ${{env.desktop-directory}} && yarn build --win
+        shell: pwsh
     - name: upload linux artifact
       uses: actions/upload-artifact@v1
       if: matrix.os == 'ubuntu-latest'

@@ -33,5 +33,6 @@
   "jest.runAllTestsFirst": false,
   "jest.pathToConfig": "desktop/jest.config.js",
   "jest.pathToJest": "desktop/node_modules/.bin/jest",
-  "typescript.tsdk": "desktop/node_modules/typescript/lib"
+  "typescript.tsdk": "desktop/node_modules/typescript/lib",
+  "cmake.configureOnOpen": false
 }
