@@ -33,7 +33,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
     - name: yarn install (with retry)
-      uses: nick-invision/retry@v2.4.0
+      uses: nick-invision/retry@v2.6.0
       with:
         command: cd ${{env.desktop-directory}}; yarn
         timeout_minutes: 30

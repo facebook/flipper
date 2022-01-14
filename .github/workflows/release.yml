@@ -126,28 +126,20 @@ jobs:
       with:
         timeout_minutes: 10
         max_attempts: 3
-        command: (cd ${{env.desktop-directory}}) -and (yarn)
+        shell: pwsh
+        command: cd ${{env.desktop-directory}}; yarn
     - name: Build
       uses: nick-invision/retry@v2.6.0
       with:
         timeout_minutes: 30
         max_attempts: 3
-        command: (cd ${{env.desktop-directory}}) -and (yarn build --win)
+        shell: pwsh
+        command: cd ${{env.desktop-directory}}; yarn build --win
     - name: Upload Windows
       uses: actions/upload-artifact@v1
       with:
         name: 'Flipper-win.zip'
         path: 'dist/Flipper-win.zip'
-    - name: Open issue on failure
-      if: failure()
-      uses: JasonEtco/create-an-issue@v2.4.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPOSITORY: ${{ github.repository }}
-        RUN_ID: ${{ github.run_id }}
-        WORKFLOW_NAME: "Release"
-      with:
-        filename: .github/action-failure-template.md
 
   build-flipper-server:
     needs:
