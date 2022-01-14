@@ -162,9 +162,13 @@ When using Flipper with React Native, two devices should show up:
 
 1. Make sure you are running a debug build. Flipper _only_ supports debug builds.
 1. If you are upgraded from RN < 0.62.2, make sure you've updated all the dependencies and build related files according to the upgrade helper. For example: https://react-native-community.github.io/upgrade-helper/?from=0.61.4&to=0.62.2
-1. If you upgraded, make sure you made a clean build: `cd android && ./gradlew clean`, `cd iOS && pod install --repo-update`
-1. For iOS, make sure it works on a simulator first
+1. If you upgraded, make sure you made a clean build: `cd android && ./gradlew clean`, `cd iOS && pod install --repo-update`.
+1. For iOS, make sure it works on a simulator first.
 1. (Unconfirmed) check the deployment info target in the XCode project settings. Target should be `iOS 9.0`.
+
+#### Q: I'm seeing "certificate verify failed, type = SSL error" in the logs
+
+Ensure that your device is set to the correct time and timezone for TLS verification to work.
 
 #### Q: I see my app, but I don't see the external plugins I've installed
 
