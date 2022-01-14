@@ -33,7 +33,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
     - name: yarn install (with retry)
-      uses: nick-invision/retry@v2.4.0
+      uses: nick-invision/retry@v2.6.0
       with:
         command: cd ${{env.desktop-directory}}; yarn
         timeout_minutes: 30
@@ -61,12 +61,8 @@ jobs:
       working-directory: ${{env.desktop-directory}}
     - name: build windows
       if: matrix.os == 'windows-latest'
-      uses: nick-invision/retry@v2.6.0
-      with:
-        timeout_minutes: 30
-        max_attempts: 3
-        command: cd ${{env.desktop-directory}} && yarn build --win
-        shell: pwsh
+      run: yarn build --win
+      working-directory: ${{env.desktop-directory}}
     - name: upload linux artifact
       uses: actions/upload-artifact@v1
       if: matrix.os == 'ubuntu-latest'
