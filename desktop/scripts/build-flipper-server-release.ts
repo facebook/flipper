@@ -245,6 +245,7 @@ async function modifyPackageManifest(
 
 async function packNpmArchive(dir: string, versionNumber: any) {
   console.log(`⚙️  Packing flipper-server.tgz`);
+  await fs.mkdirp(distDir);
   const archive = path.resolve(distDir, 'flipper-server.tgz');
   await spawn('yarn', ['pack', '--filename', archive], {
     cwd: dir,
