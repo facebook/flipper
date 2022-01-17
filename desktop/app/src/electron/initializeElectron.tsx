@@ -166,8 +166,8 @@ export function initializeElectron(
     shouldUseDarkColors() {
       return remote.nativeTheme.shouldUseDarkColors;
     },
-    restartFlipper() {
-      restart();
+    restartFlipper(update: boolean = false) {
+      restart(update);
     },
     loadDefaultPlugins: getDefaultPluginsIndex,
     serverConfig: flipperServerConfig,
