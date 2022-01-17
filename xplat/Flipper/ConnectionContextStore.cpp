@@ -114,9 +114,16 @@ std::string ConnectionContextStore::getDeviceId() {
 folly::Optional<FlipperCertificateExchangeMedium>
 ConnectionContextStore::getLastKnownMedium() {
   try {
-    std::string config =
-        loadStringFromFile(absoluteFilePath(CONNECTION_CONFIG_FILE));
-    auto maybeMedium = folly::parseJson(config)["medium"];
+    auto configurationFilePath = absoluteFilePath(CONNECTION_CONFIG_FILE);
+    if (!fileExists(configurationFilePath)) {
+      return folly::none;
+    }
+    std::string data = loadStringFromFile(configurationFilePath);
+    auto config = folly::parseJson(data);
+    if (config.count("medium") == 0) {
+      return folly::none;
+    }
+    auto maybeMedium = config["medium"];
     return maybeMedium.isInt()
         ? folly::Optional<FlipperCertificateExchangeMedium>{static_cast<
               FlipperCertificateExchangeMedium>(maybeMedium.getInt())}
