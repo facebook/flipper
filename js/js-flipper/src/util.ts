@@ -66,5 +66,3 @@ export const detectDevice = (): string => {
   }
   return require('os').release();
 };
-
-export const awaitTimeout = (timeout: number) => new Promise(resolve => setTimeout)
