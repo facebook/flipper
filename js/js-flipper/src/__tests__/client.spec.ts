@@ -18,6 +18,10 @@ describe('client', () => {
   let port: number;
   let wsServer: WebSocketServer;
   let client: FlipperClient;
+  let urlBase: string;
+  // TODO: Figure out why we need to convert ot unknown first
+  const websocketFactory = (url: string) =>
+    new WebSocket(url) as unknown as FlipperWebSocket;
 
   let allowConnection = true;
   const verifyClient = jest.fn().mockImplementation(() => allowConnection);
@@ -40,10 +44,7 @@ describe('client', () => {
     await new Promise((resolve) => wsServer.on('listening', resolve));
     port = (wsServer.address() as AddressInfo).port;
     client = new FlipperClient();
-    // TODO: Figure out why we need to convert ot unknown first
-    client.websocketFactory = (url) =>
-      new WebSocket(url) as unknown as FlipperWebSocket;
-    client.urlBase = `localhost:${port}`;
+    urlBase = `localhost:${port}`;
   });
   afterEach(async () => {
     client.stop();
@@ -67,7 +68,7 @@ describe('client', () => {
           onDisconnect: () => undefined,
         });
 
-        await client.start();
+        await client.start('universe', {urlBase, websocketFactory});
 
         const expectedGetPluginsResponse = {
           id: 0,
@@ -84,7 +85,6 @@ describe('client', () => {
 
     it('onError is called if message handling has failed, connection is closed, client reconnects', async () => {
       const onError = jest.fn();
-      client.onError = onError;
 
       let resolveFirstConnectionPromise: () => void;
       const firstConnectionPromise = new Promise<void>((resolve) => {
@@ -98,12 +98,12 @@ describe('client', () => {
 
       // Capturing a moment when the client received an error
       const receivedErrorPromise = new Promise<void>((resolve) =>
-        onError.mockImplementationOnce((e) => {
+        onError.mockImplementationOnce(() => {
           resolve();
         }),
       );
 
-      await client.start();
+      await client.start('universe', {urlBase, websocketFactory, onError});
 
       // Capturing a moment when the client was closed because of the error
       const closedPromise = new Promise<void>((resolve) => {
@@ -147,10 +147,9 @@ describe('client', () => {
       allowConnection = false;
 
       const onError = jest.fn();
-      client.onError = onError;
 
       expect(onError).toBeCalledTimes(0);
-      client.start();
+      client.start('universe', {urlBase, websocketFactory, onError});
 
       // Expect connection request to fail
       await new Promise((resolve) => onError.mockImplementationOnce(resolve));

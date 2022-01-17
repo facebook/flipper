@@ -1,0 +1,75 @@
+name: Desktop Node CI
+
+on: [push, pull_request]
+
+jobs:
+  test-js-flipper:
+    defaults:
+      run:
+        working-directory: js/js-flipper
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14.x'
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+    - uses: actions/cache@v2
+      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: yarn install (with retry)
+      uses: nick-invision/retry@v2.6.0
+      with:
+        command: yarn
+        timeout_minutes: 30
+        max_attempts: 3
+    - name: lint
+      run: yarn lint
+    - name: test
+      run: yarn test --coverage
+    - name: coveralls
+      uses: coverallsapp/github-action@v1.1.2
+      continue-on-error: true
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        base-path: js/js-flipper
+        path-to-lcov: js/js-flipper/coverage/lcov.info
+
+  build-react-example:
+    defaults:
+      run:
+        working-directory: js/react-flipper-example
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14.x'
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+    - uses: actions/cache@v2
+      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: yarn install (with retry)
+      uses: nick-invision/retry@v2.6.0
+      with:
+        command: yarn
+        timeout_minutes: 30
+        max_attempts: 3
+    - name: build
+      run: yarn build
