@@ -10,6 +10,6 @@
 module.exports = {
   preset: 'ts-jest',
   clearMocks: true,
-  coverageReporters: ['json-summary', 'lcov', 'html'],
+  coverageReporters: ['json-summary', 'lcov', 'html', 'text-summary'],
   testMatch: ['**/**.spec.(js|jsx|ts|tsx)'],
 };
