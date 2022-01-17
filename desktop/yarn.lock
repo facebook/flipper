@@ -2189,10 +2189,10 @@
     widest-line "^3.1.0"
     wrap-ansi "^4.0.0"
 
-"@oclif/plugin-warn-if-update-available@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-warn-if-update-available/-/plugin-warn-if-update-available-2.0.3.tgz#ec3deda4f2d8bba229f89fe031ed3cd5c5808761"
-  integrity sha512-s5ZmaskleRLgTEOLFkK0RdezLuLnagXbpK+3XKZUezX5vhfN0qgugeq5ukrXR179XtkMKuFzPTGV80uhDWSxyg==
+"@oclif/plugin-warn-if-update-available@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-warn-if-update-available/-/plugin-warn-if-update-available-2.0.4.tgz#3d509ca2394cccf65e6622be812d7be4065a60aa"
+  integrity sha512-9dprC1CWPjesg0Vf/rDSQH2tzJXhP1ow84cb2My1kj6e6ESulPKpctiCFSZ1WaCQFfq+crKhzlNoP/vRaXNUAg==
   dependencies:
     "@oclif/core" "^1.0.8"
     chalk "^4.1.0"
