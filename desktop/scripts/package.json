@@ -16,7 +16,7 @@
       "@types/node": "^15.12.5",
       "ansi-to-html": "^0.7.2",
       "app-builder-lib": "22.14.12",
-      "chalk": "^4.1.2",
+      "chalk": "^5.0.0",
       "detect-port": "^1.1.1",
       "dotenv": "^8.2.0",
       "electron-builder": "22.11.7",
