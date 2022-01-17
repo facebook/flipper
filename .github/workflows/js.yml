@@ -1,0 +1,44 @@
+name: js-flipper
+
+on: [push, pull_request]
+
+jobs:
+  test-js-flipper:
+    defaults:
+      run:
+        working-directory: js/js-flipper
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14.x'
+    - name: yarn install (with retry)
+      uses: nick-invision/retry@v2.6.0
+      with:
+        command: cd js/js-flipper && yarn
+        timeout_minutes: 30
+        max_attempts: 3
+    - name: lint
+      run: yarn lint
+    - name: test
+      run: yarn test --coverage
+
+  build-react-example:
+    defaults:
+      run:
+        working-directory: js/react-flipper-example
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14.x'
+    - name: yarn install (with retry)
+      uses: nick-invision/retry@v2.6.0
+      with:
+        command: cd js/react-flipper-example && yarn
+        timeout_minutes: 30
+        max_attempts: 3
+    - name: build
+      run: yarn build
