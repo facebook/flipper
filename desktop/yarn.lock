@@ -3217,10 +3217,10 @@ ansicolors@~0.3.2:
   resolved "https://registry.yarnpkg.com/ansicolors/-/ansicolors-0.3.2.tgz#665597de86a9ffe3aa9bfbe6cae5c6ea426b4979"
   integrity sha1-ZlWX3oap/+Oqm/vmyuXG6kJrSXk=
 
-antd@4.18.2:
-  version "4.18.2"
-  resolved "https://registry.yarnpkg.com/antd/-/antd-4.18.2.tgz#e4d03b2229b1f4b3b204e5e5539693aa653d3b7e"
-  integrity sha512-omezo7dtskrfGoSOoHYbA2jyaSVDd2UsxS5WM8GWyuIDtguMqlTDFKF/5204s3IjXnSUiJLOuDOWSLPMyVwHrA==
+antd@4.18.3:
+  version "4.18.3"
+  resolved "https://registry.yarnpkg.com/antd/-/antd-4.18.3.tgz#cb70fe419d2c2cdfe28f6b6dc25ef4fb7f2dff2c"
+  integrity sha512-EoCMY8pFKX9IVAc0Bdi3DWR03IIOHa6mTZALOGjrKbPm3kbrcvoBTCNXq4BMeVA1dZbMeoBw46peeJLyMp2avw==
   dependencies:
     "@ant-design/colors" "^6.0.0"
     "@ant-design/icons" "^4.7.0"
@@ -3243,7 +3243,7 @@ antd@4.18.2:
     rc-image "~5.2.5"
     rc-input-number "~7.3.0"
     rc-mentions "~1.6.1"
-    rc-menu "~9.1.1"
+    rc-menu "~9.2.1"
     rc-motion "^2.4.4"
     rc-notification "~4.5.7"
     rc-pagination "~3.1.9"
@@ -3255,7 +3255,7 @@ antd@4.18.2:
     rc-slider "~9.7.4"
     rc-steps "~4.1.0"
     rc-switch "~3.2.0"
-    rc-table "~7.21.0"
+    rc-table "~7.22.2"
     rc-tabs "~11.10.0"
     rc-textarea "~0.3.0"
     rc-tooltip "~5.1.1"
@@ -10054,10 +10054,10 @@ rc-mentions@~1.6.1:
     rc-trigger "^5.0.4"
     rc-util "^5.0.1"
 
-rc-menu@^9.0.0, rc-menu@~9.1.1:
-  version "9.1.1"
-  resolved "https://registry.yarnpkg.com/rc-menu/-/rc-menu-9.1.1.tgz#c44b9d8a9af6d1c26cf9cfeb9776b216bcee060d"
-  integrity sha512-yavNNsTgWOlUYwOrJtO8s1Hn0haUvc/x5ozx9KA/H0VspOksIFeWOp7lsEQ3juWyBI2VltDxWQ2DHc65OhZ5pg==
+rc-menu@^9.0.0, rc-menu@~9.2.1:
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/rc-menu/-/rc-menu-9.2.1.tgz#6fbe47f4846363bb81a5a21f0960026c3ada497a"
+  integrity sha512-UbEtn3rflJ8zS+etYGTVQuzy7Fm+yWXR5c0Rl6ecNTS/dPknRyWAyhJcbeR0Hu1+RdQT+0VCqrUPrgKnm4iY+w==
   dependencies:
     "@babel/runtime" "^7.10.1"
     classnames "2.x"
@@ -10208,10 +10208,10 @@ rc-switch@~3.2.0:
     classnames "^2.2.1"
     rc-util "^5.0.1"
 
-rc-table@~7.21.0:
-  version "7.21.0"
-  resolved "https://registry.yarnpkg.com/rc-table/-/rc-table-7.21.0.tgz#299b9b70996ab1cefa8e2f5a4baa55dd4c41a82c"
-  integrity sha512-Fza/4PQS+duhyGsYqna694rq9UhnJGx5SsPfP1QOIl53e+wN2G2J3csiFdiCaTh7jqVMsPgCXp2fEye7QbNWYw==
+rc-table@~7.22.2:
+  version "7.22.2"
+  resolved "https://registry.yarnpkg.com/rc-table/-/rc-table-7.22.2.tgz#218f3f53bc91660560a344c8290a91a841a60b0a"
+  integrity sha512-Ng2gNkGi6ybl6dzneRn2H4Gp8XhIbRa5rXQ7ZhZcgWVmfVMok70UHGPXcf68tXW6O0/qckTf/eOVsoviSvK4sw==
   dependencies:
     "@babel/runtime" "^7.10.1"
     classnames "^2.2.5"
