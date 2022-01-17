@@ -8,7 +8,7 @@
  */
 
 module.exports = {
-  preset: "ts-jest",
+  preset: 'ts-jest',
   clearMocks: true,
   coverageReporters: ['json-summary', 'lcov', 'html'],
   testMatch: ['**/**.spec.(js|jsx|ts|tsx)'],

@@ -8,9 +8,9 @@
  */
 
 const fbjs = require('eslint-config-fbjs');
-const prettierConfig = require('./prettierrc.json')
+const prettierConfig = require('./.prettierrc.json');
 
-const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
+const pattern = /^\*\r?\n[\S\s]*Meta[\S\s]* \* @format\r?\n/;
 
 module.exports = {
   parser: 'babel-eslint',
