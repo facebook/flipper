@@ -13,7 +13,10 @@ const prettierConfig = require('./.prettierrc.json');
 const pattern = /^\*\r?\n[\S\s]*Meta[\S\s]* \* @format\r?\n/;
 
 module.exports = {
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
+  parserOptions: {
+    requireConfigFile: false,
+  },
   root: true,
   extends: ['fbjs', 'prettier'],
   plugins: [
