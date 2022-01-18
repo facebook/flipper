@@ -12,7 +12,6 @@ import {
   ClientDescription,
   ClientQuery,
   isTest,
-  GK,
   buildClientId,
   Logger,
   UninitializedClient,
@@ -147,10 +146,9 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       TransportType.WebSocket,
     );
 
-    if (GK.get('comet_enable_flipper_connection')) {
-      console.info('[conn] Browser server (ws) listening at port: ', 8333);
-      this.browserServer = await createBrowserServer(8333, this);
-    }
+    const browserPort = getServerPortsConfig().browserPort;
+    console.info('[conn] Browser server (ws) listening at port: ', browserPort);
+    this.browserServer = await createBrowserServer(browserPort, this);
   }
 
   /**

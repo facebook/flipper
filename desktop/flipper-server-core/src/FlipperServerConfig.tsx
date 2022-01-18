@@ -8,7 +8,10 @@
  */
 
 import {FlipperServerConfig} from 'flipper-common';
-import {parseFlipperPorts} from './utils/environmentVariables';
+import {
+  parseEnvironmentVariableAsNumber,
+  parseFlipperPorts,
+} from './utils/environmentVariables';
 
 let currentConfig: FlipperServerConfig | undefined = undefined;
 
@@ -34,6 +37,7 @@ type ServerPorts = {
 export function getServerPortsConfig(): {
   serverPorts: ServerPorts;
   altServerPorts: ServerPorts;
+  browserPort: number;
 } {
   let portOverrides: ServerPorts | undefined;
   if (process.env.FLIPPER_PORTS) {
@@ -59,6 +63,17 @@ export function getServerPortsConfig(): {
     }
   }
 
+  const portBrowserOverride = parseEnvironmentVariableAsNumber(
+    'FLIPPER_BROWSER_PORT',
+  );
+  if (portBrowserOverride === undefined) {
+    console.error(
+      `Ignoring malformed FLIPPER_BROWSER_PORT env variable:
+          "${process.env.FLIPPER_BROWSER_PORT || ''}".
+          Example expected format: "1111".`,
+    );
+  }
+
   return {
     serverPorts: portOverrides ?? {
       insecure: 8089,
@@ -68,5 +83,6 @@ export function getServerPortsConfig(): {
       insecure: 9089,
       secure: 9088,
     },
+    browserPort: portBrowserOverride ?? 8333,
   };
 }
