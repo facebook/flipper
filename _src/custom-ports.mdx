@@ -4,7 +4,7 @@ title: Running Flipper with different ports
 sidebar_label: Using different ports
 ---
 
-## FLIPPER ports
+## FLIPPER ports (mobile apps that support certificate exchange)
 
 By default Flipper runs its servers on ports 8088 and 8089, and the mobile SDKs look for servers on those ports.
 
@@ -32,6 +32,28 @@ To configure the iOS SDK for custom ports, set the FLIPPER_PORTS environment var
 
 ```
 xcrun simctl spawn booted defaults write "Apple Global Domain" "com.facebook.flipper.ports" -string "1111,2222"
+```
+
+## FLIPPER ports (apps that do not support certificate exchange)
+
+Flipper listens on 8333 for insecure (browser, Node.js) connections.
+
+To run the desktop app using custom ports:
+
+```
+env FLIPPER_BROWSER_PORT=1111 ./flipper
+```
+
+or with a dev build:
+
+```
+env FLIPPER_BROWSER_PORT=1111 yarn start
+```
+
+To connect to Flipper on a different port from [js-flipper](https://github.com/facebook/flipper/tree/main/js/js-flipper), you need to override its `urlBase` when you [start it](https://github.com/facebook/flipper/blob/0993d21f3b52d38969e4d2e330eb97ec4d840a9d/js/react-flipper-example/src/FlipperTicTacToe.tsx#L19).
+
+```ts
+flipperClient.start('React Tic-Tac-Toe', { urlBase: 'localhost:1111' });
 ```
 
 ## METRO SERVER PORTS
