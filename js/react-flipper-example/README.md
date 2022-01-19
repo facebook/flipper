@@ -1,6 +1,6 @@
 # React Flipper Example
 
-Examplary integration of any browser app with Flipper.
+Integration example of any browser app with Flipper.
 
 ## How to start
 
