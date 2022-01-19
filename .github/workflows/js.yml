@@ -34,11 +34,22 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '14.x'
+    - name: js-flipper - yarn install (with retry)
+      uses: nick-invision/retry@v2.6.0
+      with:
+        command: cd js/js-flipper && yarn
+        timeout_minutes: 30
+        max_attempts: 3
+    - name: js-flipper build
+      run: yarn build
+      working-directory: js/js-flipper
     - name: yarn install (with retry)
       uses: nick-invision/retry@v2.6.0
       with:
         command: cd js/react-flipper-example && yarn
         timeout_minutes: 30
         max_attempts: 3
+    - name: link local js-flipper
+      run: yarn relative-deps
     - name: build
       run: yarn build
