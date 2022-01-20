@@ -258,7 +258,6 @@ module.exports = {
         'plugins/**/__tests__/*.ts',
         'plugins/postinstall.ts',
         // TODO: Remove specific plugin overrides down below
-        'plugins/fb/graphql/data/getQueryFromQueryId.tsx',
         'plugins/fb/kaios-portal/kaios-debugger-client/client.tsx',
         'plugins/public/reactdevtools/index.tsx',
       ],
