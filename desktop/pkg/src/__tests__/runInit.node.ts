@@ -58,6 +58,11 @@ test('It generates the correct files for client plugin', async () => {
         ],
     };
     ",
+      "/dev/null/jest-setup.ts": "// See https://github.com/facebook/flipper/pull/3327 for why we need this
+    // @ts-ignore
+    global.electronRequire = require;
+    require(\\"@testing-library/react\\");
+    ",
       "/dev/null/package.json": "{
       \\"$schema\\": \\"https://fbflipper.com/schemas/plugin-package/v2.json\\",
       \\"name\\": \\"flipper-plugin-my-weird-package-name-etc\\",
@@ -104,7 +109,10 @@ test('It generates the correct files for client plugin', async () => {
         \\"typescript\\": \\"latest\\"
       },
       \\"jest\\": {
-        \\"testEnvironment\\": \\"jsdom\\"
+        \\"testEnvironment\\": \\"jsdom\\",
+        \\"setupFiles\\": [
+          \\"<rootDir>/jest-setup.ts\\"
+        ]
       }
     }
     ",

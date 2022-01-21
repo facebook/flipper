@@ -44,6 +44,9 @@
     "typescript": "latest"
   },
   "jest": {
-    "testEnvironment": "jsdom"
+    "testEnvironment": "jsdom",
+    "setupFiles": [
+      "<rootDir>/jest-setup.ts"
+    ]
   }
 }
