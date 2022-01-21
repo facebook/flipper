@@ -413,16 +413,12 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
             return;
           certificateExchangeCompleted_ = true;
           if (isError) {
-            if (response.compare("not implemented")) {
-              auto error =
-                  "Desktop failed to provide certificates. Error from flipper desktop:\n" +
-                  response;
-              log(error);
-              gettingCert->fail(error);
-              client_ = nullptr;
-            } else {
-              sendLegacyCertificateRequest(message);
-            }
+            auto error =
+                "Desktop failed to provide certificates. Error from flipper desktop:\n" +
+                response;
+            log(error);
+            gettingCert->fail(error);
+            client_ = nullptr;
             return;
           }
           if (!response.empty()) {
@@ -466,21 +462,6 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
         });
   });
   failedConnectionAttempts_ = 0;
-}
-
-void FlipperConnectionManagerImpl::sendLegacyCertificateRequest(
-    folly::dynamic message) {
-  // Desktop is using an old version of Flipper.
-  // Fall back to fireAndForget, instead of requestResponse.
-  auto sendingRequest =
-      flipperState_->start("Sending fallback certificate request");
-
-  client_->send(message, [this, sendingRequest]() {
-    sendingRequest->complete();
-    folly::dynamic config = folly::dynamic::object();
-    contextStore_->storeConnectionConfig(config);
-    client_ = nullptr;
-  });
 }
 
 /**

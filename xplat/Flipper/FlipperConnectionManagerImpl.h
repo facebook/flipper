@@ -86,7 +86,6 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   bool isCertificateExchangeNeeded();
   void requestSignedCertFromFlipper();
   bool isRunningInOwnThread();
-  void sendLegacyCertificateRequest(folly::dynamic message);
   void reevaluateSocketProvider();
   std::string getDeviceId();
 };
