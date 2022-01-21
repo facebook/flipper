@@ -63,15 +63,18 @@ export function getServerPortsConfig(): {
     }
   }
 
-  const portBrowserOverride = parseEnvironmentVariableAsNumber(
-    'FLIPPER_BROWSER_PORT',
-  );
-  if (portBrowserOverride === undefined) {
-    console.error(
-      `Ignoring malformed FLIPPER_BROWSER_PORT env variable:
+  let portBrowserOverride: number | undefined;
+  if (process.env.FLIPPER_BROWSER_PORT) {
+    portBrowserOverride = parseEnvironmentVariableAsNumber(
+      'FLIPPER_BROWSER_PORT',
+    );
+    if (!portBrowserOverride) {
+      console.error(
+        `Ignoring malformed FLIPPER_BROWSER_PORT env variable:
           "${process.env.FLIPPER_BROWSER_PORT || ''}".
           Example expected format: "1111".`,
-    );
+      );
+    }
   }
 
   return {
