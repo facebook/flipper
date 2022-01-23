@@ -30,7 +30,7 @@ export default function FpsGraph({sampleRate = 200}: {sampleRate?: number}) {
     const interval = setInterval(() => {
       const ctx = canvasRef.current!.getContext('2d')!;
       ctx.clearRect(0, 0, width, height);
-      ctx.strokeStyle = '#ddd';
+      ctx.fillStyle = '#bbb';
 
       const now = Date.now();
       let missedFrames = 0;
@@ -47,13 +47,12 @@ export default function FpsGraph({sampleRate = 200}: {sampleRate?: number}) {
       fps.shift();
 
       ctx.font = 'lighter 10px arial';
-      ctx.strokeText(
-        '' +
-          (missedFrames
-            ? // if we were chocked, show FPS based on frames missed
-              Math.floor((1000 / sampleRate) * missedFrames)
-            : lastFps) +
-          ' fps',
+      ctx.fillText(
+        (missedFrames
+          ? // if we were chocked, show FPS based on frames missed
+            Math.floor((1000 / sampleRate) * missedFrames)
+          : lastFps) +
+        ' fps',
         0,
         height - 4,
       );
@@ -65,7 +64,7 @@ export default function FpsGraph({sampleRate = 200}: {sampleRate?: number}) {
         ctx.lineTo(idx, graphHeight - (Math.min(60, num) / 60) * graphHeight);
       });
 
-      ctx.strokeStyle = missedFrames ? '#ff0000' : '#ddd';
+      ctx.strokeStyle = missedFrames ? '#ff0000' : '#bbb';
 
       ctx.stroke();
       lastFps = 60;

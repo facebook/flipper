@@ -176,10 +176,10 @@ export const LeftRail = withTrackingScope(function LeftRail({
         </Layout.Container>
         <Layout.Container center gap={10} padh={6}>
           {!isProduction() && (
-            <div>
+            <>
               <FpsGraph />
               <NetworkGraph />
-            </div>
+            </>
           )}
           <UpdateIndicator />
           <SandyRatingButton />
