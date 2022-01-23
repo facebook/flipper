@@ -45,7 +45,7 @@ export default function ToggledSection(props: {
       </FlexRow>
       <IndentedSection>
         {props.children}
-        {props.toggled || props.frozen ? null : <GrayedOutOverlay />}
+        {props.toggled || props.frozen ? null : props.children && <GrayedOutOverlay />}
       </IndentedSection>
     </FlexColumn>
   );
