@@ -17,7 +17,7 @@ import {
   QuestionCircleFilled,
   LoadingOutlined,
 } from '@ant-design/icons';
-import {Layout} from '../ui';
+import {Layout, styled} from '../ui';
 import {theme} from 'flipper-plugin';
 import {
   startHealthchecks,
@@ -161,6 +161,11 @@ function HealthCheckList(props: {report: FlipperDoctor.HealthcheckReport}) {
   );
 }
 
+const FooterContainer = styled(Layout.Horizontal)({
+  justifyContent: 'space-between',
+  alignItems: 'center',
+});
+
 function SetupDoctorFooter(props: {
   onClose: () => void;
   onRerunDoctor: () => Promise<void>;
@@ -172,14 +177,15 @@ function SetupDoctorFooter(props: {
   return (
     <Layout.Right>
       {props.showAcknowledgeCheckbox ? (
-        <Checkbox
-          checked={props.acknowledgeCheck}
-          onChange={(e) => props.onAcknowledgeCheck(e.target.checked)}
-          style={{display: 'flex', alignItems: 'center'}}>
-          <Text style={{fontSize: theme.fontSize.small}}>
-            Do not show warning about these problems at startup
-          </Text>
-        </Checkbox>
+        <FooterContainer>
+          <Checkbox
+            checked={props.acknowledgeCheck}
+            onChange={(e) => props.onAcknowledgeCheck(e.target.checked)}>
+            <Text style={{fontSize: theme.fontSize.small}}>
+              Do not show warning about these problems at startup
+            </Text>
+          </Checkbox>
+        </FooterContainer>
       ) : (
         <Layout.Container />
       )}
