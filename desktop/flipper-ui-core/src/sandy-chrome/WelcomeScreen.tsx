@@ -141,9 +141,7 @@ export function WelcomeScreenStaticView() {
 }
 
 function WelcomeScreenContent() {
-  function isInsidersChannel() {
-    return config.getReleaseChannel() === ReleaseChannel.INSIDERS;
-  }
+  const isInsidersChannel = config.getReleaseChannel() === ReleaseChannel.INSIDERS;
 
   return (
     <TrackingScope scope="welcomescreen">
@@ -153,7 +151,7 @@ function WelcomeScreenContent() {
         style={{width: '100%', padding: '0 32px 32px', alignItems: 'center'}}>
         <Image
           style={{
-            filter: isInsidersChannel() ? 'hue-rotate(230deg)' : 'none',
+            filter: isInsidersChannel ? 'hue-rotate(230deg)' : 'none',
           }}
           width={125}
           height={125}
@@ -169,9 +167,10 @@ function WelcomeScreenContent() {
               padding: 0,
               border: 'none',
               background: 'none',
-              color: isInsidersChannel() ? 'rgb(62, 124, 66)' : '#000',
+              color: isInsidersChannel ? 'rgb(62, 124, 66)' : theme.textColorSecondary,
               textTransform: 'capitalize',
-              fontWeight: isInsidersChannel() ? 'bold' : 'normal',
+              fontSize: theme.fontSize.default,
+              fontWeight: isInsidersChannel ? theme.bold : 'normal',
             }}>
             {config.getReleaseChannel()}
           </code>
