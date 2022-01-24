@@ -8,17 +8,18 @@
  */
 
 // Deliberate use of remote in this context.
+import * as remote from '@electron/remote';
 /* eslint-disable no-restricted-properties, no-restricted-imports */
 import electron, {MenuItemConstructorOptions, webFrame} from 'electron';
 import {getLogger} from 'flipper-common';
 import {_buildInMenuEntries, _wrapInteractionHandler} from 'flipper-plugin';
 
 export function setupMenuBar() {
-  const template = getTemplate(electron.remote.app);
+  const template = getTemplate(remote.app);
   // create actual menu instance
-  const applicationMenu = electron.remote.Menu.buildFromTemplate(template);
+  const applicationMenu = remote.Menu.buildFromTemplate(template);
   // update menubar
-  electron.remote.Menu.setApplicationMenu(applicationMenu);
+  remote.Menu.setApplicationMenu(applicationMenu);
 }
 
 function trackMenuItems(menu: string, items: MenuItemConstructorOptions[]) {

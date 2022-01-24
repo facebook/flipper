@@ -7,6 +7,7 @@
  * @format
  */
 
+import * as remote from '@electron/remote';
 import path from 'path';
 import {
   _NuxManagerContext,
@@ -15,13 +16,7 @@ import {
   _LoggerContext,
 } from 'flipper-plugin';
 // eslint-disable-next-line no-restricted-imports,flipper/no-electron-remote-imports
-import {
-  ipcRenderer,
-  remote,
-  SaveDialogReturnValue,
-  clipboard,
-  shell,
-} from 'electron';
+import {ipcRenderer, SaveDialogReturnValue, clipboard, shell} from 'electron';
 import fs from 'fs';
 import {setupMenuBar} from './setupMenuBar';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';

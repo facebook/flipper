@@ -15,7 +15,7 @@ import {
   _LoggerContext,
 } from 'flipper-plugin';
 // eslint-disable-next-line no-restricted-imports,flipper/no-electron-remote-imports
-import {remote} from 'electron';
+import * as remote from '@electron/remote';
 import os from 'os';
 import {
   FlipperServerImpl,

@@ -32,6 +32,12 @@ import delegateToLauncher from './launcher';
 import yargs from 'yargs';
 import {promisify} from 'util';
 import process from 'process';
+import {
+  initialize as initializeRemote,
+  enable as enableRemote,
+} from '@electron/remote/main';
+
+initializeRemote();
 
 const VERSION: string = (global as any).__VERSION__;
 
@@ -347,7 +353,6 @@ function createWindow(config: Config) {
         ? path.join(__dirname, 'icons/app_64x64.png')
         : undefined,
     webPreferences: {
-      enableRemoteModule: true,
       backgroundThrottling: false,
       webSecurity: false,
       scrollBounce: true,
@@ -358,6 +363,7 @@ function createWindow(config: Config) {
       contextIsolation: false,
     },
   });
+  enableRemote(win.webContents);
   win.once('ready-to-show', () => {
     win.show();
     if (argv['open-dev-tools'] || process.env.FLIPPER_OPEN_DEV_TOOLS) {
