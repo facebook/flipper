@@ -25,7 +25,5 @@
   "bugs": {
     "url": "https://github.com/facebook/flipper/issues"
   },
-  "dependencies": {
-    "fs-extra": "^10.0.0"
-  }
+  "dependencies": {}
 }
