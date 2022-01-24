@@ -31,7 +31,8 @@
     "browserslist": "^4.16.5",
     "ws": "8.2.0",
     "trim": "1.0.1",
-    "immer": "^9.0.6"
+    "immer": "^9.0.6",
+    "shelljs": "^0.8.5"
   },
   "license": "MIT"
 }
