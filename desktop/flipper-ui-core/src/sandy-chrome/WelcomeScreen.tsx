@@ -8,7 +8,7 @@
  */
 
 import React, {cloneElement} from 'react';
-import {styled, FlexRow, FlexColumn} from '../ui';
+import {styled} from '../ui';
 import {Modal, Button, Image, Checkbox, Space, Typography, Tooltip} from 'antd';
 import {
   RocketOutlined,
@@ -29,7 +29,7 @@ import {getFlipperLib} from 'flipper-plugin';
 import {ReleaseChannel} from 'flipper-common';
 import {showChangelog} from '../chrome/ChangelogSheet';
 
-const RowContainer = styled(FlexRow)({
+const RowContainer = styled(Layout.Horizontal)({
   alignItems: 'flex-start',
   padding: `${theme.space.small}px`,
   cursor: 'pointer',
@@ -53,19 +53,19 @@ function Row(props: {
           {cloneElement(props.icon, {
             style: {fontSize: 36, color: theme.primaryColor},
           })}
-          <FlexColumn>
+          <Layout.Container>
             <Title level={3} style={{color: theme.primaryColor}}>
               {props.title}
             </Title>
             <Text type="secondary">{props.subtitle}</Text>
-          </FlexColumn>
+          </Layout.Container>
         </Space>
       </RowContainer>
     </Tracked>
   );
 }
 
-const FooterContainer = styled(FlexRow)({
+const FooterContainer = styled(Layout.Horizontal)({
   justifyContent: 'space-between',
   alignItems: 'center',
 });
