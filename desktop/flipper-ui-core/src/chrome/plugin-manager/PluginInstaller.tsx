@@ -49,7 +49,7 @@ const columns = {
     value: 'Description',
   },
   install: {
-    value: '',
+    value: 'Action',
   },
 };
 

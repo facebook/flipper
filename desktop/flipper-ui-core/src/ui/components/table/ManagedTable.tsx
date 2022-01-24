@@ -155,7 +155,7 @@ type ManagedTableState = {
 };
 
 const Container = styled(FlexColumn)<{canOverflow?: boolean}>((props) => ({
-  overflow: props.canOverflow ? 'scroll' : 'visible',
+  overflow: props.canOverflow ? 'auto' : 'visible',
   flexGrow: 1,
   height: '100%',
 }));

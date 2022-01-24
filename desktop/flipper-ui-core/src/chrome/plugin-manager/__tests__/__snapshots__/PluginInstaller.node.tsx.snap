@@ -53,7 +53,7 @@ exports[`load PluginInstaller list 1`] = `
       </span>
     </div>
     <div
-      class="css-bgfc37-View-FlexBox-FlexColumn-Container emab7y20"
+      class="css-o1pvkz-View-FlexBox-FlexColumn-Container emab7y20"
       tabindex="0"
     >
       <div
@@ -122,7 +122,7 @@ exports[`load PluginInstaller list 1`] = `
               <div
                 class="css-1054ash-TableHeaderColumnContainer eig1lcc2"
               >
-                
+                Action
               </div>
             </div>
           </div>
@@ -429,7 +429,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       </span>
     </div>
     <div
-      class="css-bgfc37-View-FlexBox-FlexColumn-Container emab7y20"
+      class="css-o1pvkz-View-FlexBox-FlexColumn-Container emab7y20"
       tabindex="0"
     >
       <div
@@ -498,7 +498,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               <div
                 class="css-1054ash-TableHeaderColumnContainer eig1lcc2"
               >
-                
+                Action
               </div>
             </div>
           </div>
