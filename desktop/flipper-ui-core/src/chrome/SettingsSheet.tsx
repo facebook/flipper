@@ -98,7 +98,7 @@ class SettingsSheet extends Component<Props, State> {
         title="Settings"
         footer={footer}
         bodyStyle={{
-          overflow: 'scroll',
+          overflow: 'auto',
           maxHeight: 'calc(100vh - 250px)',
         }}>
         {contents}
