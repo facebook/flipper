@@ -93,6 +93,7 @@ class SettingsSheet extends Component<Props, State> {
     return (
       <Modal
         visible
+        centered
         onCancel={this.props.onHide}
         width={570}
         title="Settings"

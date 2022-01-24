@@ -108,6 +108,7 @@ export default function WelcomeScreen({
 }) {
   return (
     <Modal
+      centered
       closable={false}
       visible={visible}
       footer={

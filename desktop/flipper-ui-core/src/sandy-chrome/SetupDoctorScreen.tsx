@@ -251,6 +251,7 @@ export default function SetupDoctorScreen(props: {
 
   return (
     <Modal
+      centered
       width={570}
       title="Setup Doctor"
       visible={props.visible}
