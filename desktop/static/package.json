@@ -9,7 +9,7 @@
     "fix-path": "^3.0.0",
     "mac-ca": "^1.0.6",
     "mkdirp": "^1.0.4",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^2.6.7",
     "ws": "^8.4.2",
     "xdg-basedir": "^4.0.0",
     "yargs": "^16.2.0"
