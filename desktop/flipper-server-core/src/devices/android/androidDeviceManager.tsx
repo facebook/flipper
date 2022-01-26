@@ -10,9 +10,7 @@
 import AndroidDevice from './AndroidDevice';
 import KaiOSDevice from './KaiOSDevice';
 import child_process from 'child_process';
-import {getAdbClient} from './adbClient';
-import which from 'which';
-import {promisify} from 'util';
+import {setAdbClient} from './adbClient';
 import {Client as ADBClient, Device} from 'adbkit';
 import {join} from 'path';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
@@ -172,7 +170,13 @@ export class AndroidDeviceManager {
 
   async watchAndroidDevices() {
     try {
-      const client = await getAdbClient(getFlipperServerConfig().settings);
+      const client = await setAdbClient(getFlipperServerConfig().settings);
+      if (!client) {
+        throw new Error(
+          'AndroidDeviceManager.watchAndroidDevices -> adb not initialized',
+        );
+      }
+
       client
         .trackDevices()
         .then((tracker) => {

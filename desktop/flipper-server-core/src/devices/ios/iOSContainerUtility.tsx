@@ -148,6 +148,7 @@ async function targets(
   if (process.platform !== 'darwin') {
     return [];
   }
+
   const isXcodeInstalled = await isXcodeDetected();
   if (!isXcodeInstalled) {
     if (!isPhysicalDeviceEnabled) {
@@ -203,6 +204,7 @@ async function push(
   idbPath: string,
 ): Promise<void> {
   await memoize(checkIdbIsInstalled)(idbPath);
+
   return wrapWithErrorMessage(
     reportPlatformFailures(
       safeExec(
@@ -225,6 +227,7 @@ async function pull(
   idbPath: string,
 ): Promise<void> {
   await memoize(checkIdbIsInstalled)(idbPath);
+
   return wrapWithErrorMessage(
     reportPlatformFailures(
       safeExec(

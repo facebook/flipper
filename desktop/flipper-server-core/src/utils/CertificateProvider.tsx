@@ -22,12 +22,13 @@ import {reportPlatformFailures} from 'flipper-common';
 import {getAdbClient} from '../devices/android/adbClient';
 import * as androidUtil from '../devices/android/androidContainerUtility';
 import os from 'os';
-import {Client as ADBClient} from 'adbkit';
 import archiver from 'archiver';
 import {timeout, isTest} from 'flipper-common';
 import {v4 as uuid} from 'uuid';
 import {internGraphPOSTAPIRequest} from '../fb-stubs/internRequests';
 import {SERVICE_FLIPPER} from '../FlipperServerImpl';
+import {getIdbConfig} from '../devices/ios/idbConfig';
+import {assertNotNull} from '../comms/Utilities';
 
 export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 
@@ -69,14 +70,6 @@ export type SecureServerConfig = {
   rejectUnauthorized: boolean;
 };
 
-type CertificateProviderConfig = {
-  idbPath: string;
-  enableAndroid: boolean;
-  enableIOS: boolean;
-  androidHome: string;
-  enablePhysicalIOS: boolean;
-};
-
 /*
  * This class is responsible for generating and deploying server and client
  * certificates to allow for secure communication between Flipper and apps.
@@ -89,38 +82,13 @@ type CertificateProviderConfig = {
  * Flipper CA.
  */
 export default class CertificateProvider {
-  private _adb: ADBClient | undefined;
+  private adb = getAdbClient();
+  private idbConfig = getIdbConfig();
   private didCertificateSetup = false;
-  private config: CertificateProviderConfig;
   private server: ServerController;
 
-  get adb(): ADBClient {
-    if (this.config.enableAndroid) {
-      if (this._adb) {
-        return this._adb;
-      }
-      throw new Error(`ADB initialisation was not not successful`);
-    }
-    throw new Error('Android is not enabled in settings');
-  }
-
-  constructor(server: ServerController, config: CertificateProviderConfig) {
+  constructor(server: ServerController) {
     this.server = server;
-    this.config = config;
-  }
-
-  async init() {
-    if (this.config.enableAndroid) {
-      try {
-        this._adb = await getAdbClient(this.config);
-      } catch (_e) {
-        // make sure initialization failure is already logged
-        throw new Error(
-          'Failed to initialize ADB. Please disable Android support in settings, or configure a correct path. ' +
-            _e,
-        );
-      }
-    }
   }
 
   private uploadFiles = async (
@@ -315,6 +283,8 @@ export default class CertificateProvider {
     const appName = await this.extractAppNameFromCSR(csr);
 
     if (os === 'Android') {
+      assertNotNull(this.adb);
+
       const deviceId = await this.getTargetAndroidDeviceId(
         appName,
         destination,
@@ -359,6 +329,8 @@ export default class CertificateProvider {
     filename: string,
     contents: string,
   ): Promise<void> {
+    assertNotNull(this.idbConfig);
+
     const dir = await tmpDir({unsafeCleanup: true});
     const filePath = path.resolve(dir, filename);
     await fs.writeFile(filePath, contents);
@@ -368,7 +340,7 @@ export default class CertificateProvider {
       filePath,
       bundleId,
       destination,
-      this.config.idbPath,
+      this.idbConfig.idbPath,
     );
   }
 
@@ -377,6 +349,8 @@ export default class CertificateProvider {
     deviceCsrFilePath: string,
     csr: string,
   ): Promise<string> {
+    assertNotNull(this.adb);
+
     const devicesInAdb = await this.adb.listDevices();
     if (devicesInAdb.length === 0) {
       throw new Error('No Android devices found');
@@ -432,14 +406,16 @@ export default class CertificateProvider {
     deviceCsrFilePath: string,
     csr: string,
   ): Promise<string> {
+    assertNotNull(this.idbConfig);
+
     const matches = /\/Devices\/([^/]+)\//.exec(deviceCsrFilePath);
     if (matches && matches.length == 2) {
       // It's a simulator, the deviceId is in the filepath.
       return matches[1];
     }
     const targets = await iosUtil.targets(
-      this.config.idbPath,
-      this.config.enablePhysicalIOS,
+      this.idbConfig.idbPath,
+      this.idbConfig.enablePhysicalIOS,
     );
     if (targets.length === 0) {
       throw new Error('No iOS devices found');
@@ -470,6 +446,8 @@ export default class CertificateProvider {
     processName: string,
     csr: string,
   ): Promise<{isMatch: boolean; foundCsr: string}> {
+    assertNotNull(this.adb);
+
     const deviceCsr = await androidUtil.pull(
       this.adb,
       deviceId,
@@ -492,6 +470,8 @@ export default class CertificateProvider {
     bundleId: string,
     csr: string,
   ): Promise<boolean> {
+    assertNotNull(this.idbConfig);
+
     const originalFile = this.getRelativePathInAppContainer(
       path.resolve(directory, csrFileName),
     );
@@ -525,7 +505,7 @@ export default class CertificateProvider {
         originalFile,
         bundleId,
         dir,
-        this.config.idbPath,
+        this.idbConfig.idbPath,
       );
     } catch (e) {
       console.warn(
@@ -537,7 +517,7 @@ export default class CertificateProvider {
         originalFile,
         bundleId,
         path.join(dir, csrFileName),
-        this.config.idbPath,
+        this.idbConfig.idbPath,
       );
       console.info(
         'Subsequent idb pull succeeded. Nevermind previous wranings.',

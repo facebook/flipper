@@ -164,9 +164,18 @@ export class FlipperServerImpl implements FlipperServer {
   }
 
   async startDeviceListeners() {
+    const asyncDeviceListenersPromises: Array<Promise<void>> = [];
+    if (this.config.settings.enableAndroid) {
+      asyncDeviceListenersPromises.push(this.android.watchAndroidDevices());
+    }
+    if (this.config.settings.enableIOS) {
+      asyncDeviceListenersPromises.push(this.ios.watchIOSDevices());
+    }
+    const asyncDeviceListeners = await Promise.all(
+      asyncDeviceListenersPromises,
+    );
     this.disposers.push(
-      await this.android.watchAndroidDevices(),
-      await this.ios.watchIOSDevices(),
+      ...asyncDeviceListeners,
       metroDevice(this),
       desktopDevice(this),
     );

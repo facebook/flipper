@@ -13,19 +13,29 @@ import adbConfig from './adbConfig';
 import adbkit, {Client} from 'adbkit';
 import path from 'path';
 
-let instance: Client;
+let instance: Client | undefined;
 
 type Config = {
   androidHome: string;
 };
 
-export async function getAdbClient(config: Config): Promise<Client> {
-  if (!instance) {
-    instance = await reportPlatformFailures(
-      createClient(config),
-      'createADBClient',
+export function getAdbClient(): Client | undefined {
+  return instance;
+}
+
+export async function setAdbClient(
+  config: Config,
+): Promise<Client | undefined> {
+  instance = await reportPlatformFailures(
+    createClient(config),
+    'createADBClient',
+  ).catch((e) => {
+    console.warn(
+      'Failed to initialize ADB. Please disable Android support in settings, or configure a correct path.',
+      e,
     );
-  }
+    return undefined;
+  });
   return instance;
 }
 

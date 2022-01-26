@@ -22,6 +22,8 @@ import {
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {notNull} from '../../utils/typeUtils';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
+import {IdbConfig, setIdbConfig} from './idbConfig';
+import {assertNotNull} from 'flipper-server-core/src/comms/Utilities';
 
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
@@ -44,6 +46,7 @@ function isAvailable(simulator: iOSSimulatorDevice): boolean {
 
 export class IOSDeviceManager {
   private portForwarders: Array<ChildProcess> = [];
+  private idbConfig?: IdbConfig;
 
   private portforwardingClient = path.join(
     getFlipperServerConfig().paths.staticPath,
@@ -107,14 +110,15 @@ export class IOSDeviceManager {
     isXcodeDetected: boolean,
     isIdbAvailable: boolean,
   ): Array<Promise<any>> {
-    const config = getFlipperServerConfig().settings;
+    assertNotNull(this.idbConfig);
     return [
       isIdbAvailable
-        ? getActiveDevices(config.idbPath, config.enablePhysicalIOS).then(
-            (devices: IOSDeviceParams[]) => {
-              this.processDevices(devices);
-            },
-          )
+        ? getActiveDevices(
+            this.idbConfig.idbPath,
+            this.idbConfig.enablePhysicalIOS,
+          ).then((devices: IOSDeviceParams[]) => {
+            this.processDevices(devices);
+          })
         : null,
       !isIdbAvailable && isXcodeDetected
         ? this.getSimulators(true).then((devices) =>
@@ -126,9 +130,9 @@ export class IOSDeviceManager {
   }
 
   private async queryDevices(): Promise<any> {
-    const config = getFlipperServerConfig().settings;
+    assertNotNull(this.idbConfig);
     const isXcodeInstalled = await iosUtil.isXcodeDetected();
-    const isIdbAvailable = await iosUtil.isAvailable(config.idbPath);
+    const isIdbAvailable = await iosUtil.isAvailable(this.idbConfig.idbPath);
     console.debug(
       `[conn] queryDevices. isXcodeInstalled ${isXcodeInstalled}, isIdbAvailable ${isIdbAvailable}`,
     );
@@ -177,11 +181,8 @@ export class IOSDeviceManager {
   }
 
   public async watchIOSDevices() {
-    // TODO: pull this condition up
     const settings = getFlipperServerConfig().settings;
-    if (!settings.enableIOS) {
-      return;
-    }
+    this.idbConfig = setIdbConfig(settings);
     try {
       const isDetected = await iosUtil.isXcodeDetected();
       this.xcodeCommandLineToolsDetected = isDetected;

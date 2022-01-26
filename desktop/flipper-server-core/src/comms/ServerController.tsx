@@ -89,10 +89,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   constructor(flipperServer: FlipperServerImpl) {
     super();
     this.flipperServer = flipperServer;
-    this.certificateProvider = new CertificateProvider(
-      this,
-      getFlipperServerConfig().settings,
-    );
+    this.certificateProvider = new CertificateProvider(this);
     this.connectionTracker = new ConnectionTracker(this.logger);
   }
 
@@ -116,7 +113,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     if (isTest()) {
       throw new Error('Spawing new server is not supported in test');
     }
-    await this.certificateProvider.init();
     const {insecure, secure} = getServerPortsConfig().serverPorts;
 
     const options = await this.certificateProvider.loadSecureServerConfig();

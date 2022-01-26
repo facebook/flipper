@@ -72,6 +72,7 @@ test('test getAllPromisesForQueryingDevices when xcode detected', () => {
     getLogger(),
   );
   flipperServer.ios.iosBridge = {} as IOSBridge;
+  (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
   const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
     true,
     false,
@@ -85,6 +86,7 @@ test('test getAllPromisesForQueryingDevices when xcode is not detected', () => {
     getLogger(),
   );
   flipperServer.ios.iosBridge = {} as IOSBridge;
+  (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
   const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
     false,
     true,
@@ -98,6 +100,7 @@ test('test getAllPromisesForQueryingDevices when xcode and idb are both unavaila
     getLogger(),
   );
   flipperServer.ios.iosBridge = {} as IOSBridge;
+  (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
   const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
     false,
     false,
@@ -111,6 +114,7 @@ test('test getAllPromisesForQueryingDevices when both idb and xcode are availabl
     getLogger(),
   );
   flipperServer.ios.iosBridge = {} as IOSBridge;
+  (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
   const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
     true,
     true,
