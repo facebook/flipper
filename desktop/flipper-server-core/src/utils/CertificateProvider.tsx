@@ -82,13 +82,19 @@ export type SecureServerConfig = {
  * Flipper CA.
  */
 export default class CertificateProvider {
-  private adb = getAdbClient();
-  private idbConfig = getIdbConfig();
   private didCertificateSetup = false;
   private server: ServerController;
 
   constructor(server: ServerController) {
     this.server = server;
+  }
+
+  private get adb() {
+    return getAdbClient();
+  }
+
+  private get idbConfig() {
+    return getIdbConfig();
   }
 
   private uploadFiles = async (
