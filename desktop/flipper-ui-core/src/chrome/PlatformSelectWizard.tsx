@@ -123,6 +123,7 @@ class PlatformSelectWizard extends Component<Props, State> {
     return (
       <Modal
         visible
+        centered
         onCancel={() => {
           this.props.onHide();
           markWizardAsCompleted();

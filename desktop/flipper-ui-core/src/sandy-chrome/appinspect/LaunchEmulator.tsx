@@ -139,6 +139,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
     return (
       <Modal
         visible
+        centered
         onCancel={onClose}
         title="Launch Emulator"
         footer={null}
