@@ -36,14 +36,17 @@ const argv = yargs
     device: {
       describe: 'The device name or serial/udid to listen to',
       type: 'string',
+      demandOption: true,
     },
     client: {
       describe: 'The application name to listen to',
       type: 'string',
+      demandOption: true,
     },
     plugin: {
       describe: 'Plugin id to listen to',
       type: 'string',
+      demandOption: true,
     },
     // TODO: support filtering events
     // TODO: support verbose mode
@@ -254,18 +257,6 @@ function createLogger(): Logger {
   };
 }
 
-if (!argv.device) {
-  console.error('--device not specified');
-  process.exit(1);
-}
-if (!argv.client) {
-  console.error('--client not specified');
-  process.exit(1);
-}
-if (!argv.plugin) {
-  console.error('--plugin not specified');
-  process.exit(1);
-}
 start(argv.device!, argv.client!, argv.plugin!).catch((e) => {
   // eslint-disable-next-line
   console.error(e);
