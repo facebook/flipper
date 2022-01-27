@@ -34,7 +34,7 @@ const argv = yargs
   .usage('$0 [args]')
   .options({
     device: {
-      describe: 'The device name to listen to',
+      describe: 'The device name or serial/udid to listen to',
       type: 'string',
     },
     client: {
@@ -54,7 +54,7 @@ const argv = yargs
   // .strict()
   .parse(process.argv.slice(1));
 
-async function start(deviceTitle: string, appName: string, pluginId: string) {
+async function start(deviceQuery: string, appName: string, pluginId: string) {
   return new Promise(async (_resolve, reject) => {
     const staticPath = path.resolve(__dirname, '..', '..', 'static');
     let device: DeviceDescription | undefined;
@@ -96,7 +96,7 @@ async function start(deviceTitle: string, appName: string, pluginId: string) {
     );
 
     logger.info(
-      `Waiting for device '${deviceTitle}' client '${appName}' plugin '${pluginId}' ...`,
+      `Waiting for device '${deviceQuery}' client '${appName}' plugin '${pluginId}' ...`,
     );
 
     server.on('notification', ({type, title, description}) => {
@@ -116,8 +116,12 @@ async function start(deviceTitle: string, appName: string, pluginId: string) {
       logger.info(
         `Detected device [${deviceInfo.os}] ${deviceInfo.title} ${deviceInfo.serial}`,
       );
-      if (deviceInfo.title === deviceTitle) {
-        logger.info('Device matched');
+      if (deviceInfo.serial == deviceQuery) {
+        logger.info(`Device matched on device serial ${deviceQuery}`);
+        device = deviceInfo;
+        deviceResolver();
+      } else if (deviceInfo.title === deviceQuery) {
+        logger.info(`Device matched on device title ${deviceQuery}`);
         device = deviceInfo;
         deviceResolver();
       }
