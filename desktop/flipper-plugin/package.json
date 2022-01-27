@@ -23,7 +23,7 @@
     "lodash": "^4.17.21",
     "react-color": "^2.19.3",
     "react-element-to-jsx-string": "^14.3.4",
-    "react-virtual": "^2.10.0",
+    "react-virtual": "^2.10.4",
     "string-natural-compare": "^3.0.0",
     "uuid": "^8.3.2"
   },
