@@ -248,7 +248,11 @@ function ExtrasMenu() {
       <NUX
         title="Find import, export, deeplink, feedback, settings, and help (welcome) here"
         placement="right">
-        <Menu mode="vertical" className={menu} selectable={false}>
+        <Menu
+          mode="vertical"
+          className={menu}
+          selectable={false}
+          style={{backgroundColor: theme.backgroundDefault}}>
           <SubMenu
             popupOffset={[10, 0]}
             key="extras"
