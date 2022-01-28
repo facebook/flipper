@@ -40,7 +40,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
   </div>
   <span
     className="ant-typography"
-    onClick={[Function]}
+    onClick={null}
     style={
       Object {
         "WebkitLineClamp": undefined,
@@ -108,7 +108,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
   </div>
   <span
     className="ant-typography"
-    onClick={[Function]}
+    onClick={null}
     style={
       Object {
         "WebkitLineClamp": undefined,
