@@ -67,6 +67,50 @@ class IDBBridge implements IOSBridge {
   }
 }
 
+class SimctlBridge implements IOSBridge {
+  startLogListener(
+    udid: string,
+    deviceType: DeviceType,
+  ): child_process.ChildProcessWithoutNullStreams {
+    if (deviceType === 'physical') {
+      throw new Error(ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB);
+    }
+    const deviceSetPath = process.env.DEVICE_SET_PATH
+      ? ['--set', process.env.DEVICE_SET_PATH]
+      : [];
+    return child_process.spawn(
+      'xcrun',
+      [
+        'simctl',
+        ...deviceSetPath,
+        'spawn',
+        udid,
+        'log',
+        'stream',
+        ...getLogExtraArgs(deviceType),
+      ],
+      {},
+    );
+  }
+
+  async screenshot(serial: string): Promise<Buffer> {
+    const imagePath = makeTempScreenshotFilePath();
+    const command = `xcrun simctl io ${serial} screenshot ${imagePath}`;
+    return runScreenshotCommand(command, imagePath);
+  }
+
+  async navigate(serial: string, location: string): Promise<void> {
+    exec(`xcrun simctl io ${serial} launch url "${location}"`);
+  }
+
+  recordVideo(serial: string, outputFile: string): child_process.ChildProcess {
+    console.log(`Starting screen record via xcrun to ${outputFile}.`);
+    return exec(
+      `xcrun simctl io ${serial} recordVideo --codec=h264 --force ${outputFile}`,
+    );
+  }
+}
+
 async function isAvailable(idbPath: string): Promise<boolean> {
   if (!idbPath) {
     return false;
@@ -95,28 +139,6 @@ function getLogExtraArgs(deviceType: DeviceType) {
   }
 }
 
-export function xcrunStartLogListener(udid: string, deviceType: DeviceType) {
-  if (deviceType === 'physical') {
-    throw new Error(ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB);
-  }
-  const deviceSetPath = process.env.DEVICE_SET_PATH
-    ? ['--set', process.env.DEVICE_SET_PATH]
-    : [];
-  return child_process.spawn(
-    'xcrun',
-    [
-      'simctl',
-      ...deviceSetPath,
-      'spawn',
-      udid,
-      'log',
-      'stream',
-      ...getLogExtraArgs(deviceType),
-    ],
-    {},
-  );
-}
-
 function makeTempScreenshotFilePath() {
   const imageName = uuid() + '.png';
   return path.join(getFlipperServerConfig().paths.tempPath, imageName);
@@ -132,29 +154,6 @@ async function runScreenshotCommand(
   return buffer;
 }
 
-export async function xcrunScreenshot(serial: string): Promise<Buffer> {
-  const imagePath = makeTempScreenshotFilePath();
-  const command = `xcrun simctl io ${serial} screenshot ${imagePath}`;
-  return runScreenshotCommand(command, imagePath);
-}
-
-export async function xcrunNavigate(
-  serial: string,
-  location: string,
-): Promise<void> {
-  exec(`xcrun simctl io ${serial} launch url "${location}"`);
-}
-
-export function xcrunRecordVideo(
-  serial: string,
-  outputFile: string,
-): child_process.ChildProcess {
-  console.log(`Starting screen record via xcrun to ${outputFile}.`);
-  return exec(
-    `xcrun simctl io ${serial} recordVideo --codec=h264 --force ${outputFile}`,
-  );
-}
-
 export async function makeIOSBridge(
   idbPath: string,
   isXcodeDetected: boolean,
@@ -167,12 +166,7 @@ export async function makeIOSBridge(
 
   // no idb, if it's a simulator and xcode is available, we can use xcrun
   if (isXcodeDetected) {
-    return {
-      startLogListener: xcrunStartLogListener,
-      screenshot: xcrunScreenshot,
-      navigate: xcrunNavigate,
-      recordVideo: xcrunRecordVideo,
-    };
+    return new SimctlBridge();
   }
 
   throw new Error(ERR_NO_IDB_OR_XCODE_AVAILABLE);
