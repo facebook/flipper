@@ -128,7 +128,7 @@ test.unix('uses idb to take screenshots when available', async () => {
   await expect(() => ib.screenshot('deadbeef')).rejects.toThrow();
 
   expect((promisifyChildProcess.exec as any).mock.calls[0][0]).toMatch(
-    'idb screenshot --udid deadbeef ',
+    '/usr/local/bin/idb screenshot --udid deadbeef ',
   );
 });
 
@@ -148,7 +148,7 @@ test('uses idb to navigate when available', async () => {
   await ib.navigate('deadbeef', 'fb://dummy');
 
   expect(promisifyChildProcess.exec).toHaveBeenCalledWith(
-    'idb open --udid deadbeef "fb://dummy"',
+    '/usr/local/bin/idb open --udid deadbeef "fb://dummy"',
   );
 });
 
@@ -168,6 +168,6 @@ test('uses idb to record when available', async () => {
   ib.recordVideo('deadbeef', '/tmo/video.mp4');
 
   expect(promisifyChildProcess.exec).toHaveBeenCalledWith(
-    'idb record-video --udid deadbeef /tmo/video.mp4',
+    '/usr/local/bin/idb record-video --udid deadbeef /tmo/video.mp4',
   );
 });

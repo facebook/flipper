@@ -36,18 +36,19 @@ export interface IOSBridge {
 
 class IDBBridge implements IOSBridge {
   constructor(private idbPath: string) {}
+
   async navigate(serial: string, location: string): Promise<void> {
-    exec(`idb open --udid ${serial} "${location}"`);
+    this._execIdb(`open --udid ${serial} "${location}"`);
   }
 
   recordVideo(serial: string, outputFile: string): child_process.ChildProcess {
     console.log(`Starting screen record via idb to ${outputFile}.`);
-    return exec(`idb record-video --udid ${serial} ${outputFile}`);
+    return this._execIdb(`record-video --udid ${serial} ${outputFile}`);
   }
 
   async screenshot(serial: string): Promise<Buffer> {
     const imagePath = makeTempScreenshotFilePath();
-    await exec(`idb screenshot --udid ${serial} ${imagePath}`);
+    await this._execIdb(`screenshot --udid ${serial} ${imagePath}`);
     return readScreenshotIntoBuffer(imagePath);
   }
 
@@ -64,6 +65,10 @@ class IDBBridge implements IOSBridge {
         },
       },
     );
+  }
+
+  _execIdb(command: string): child_process.ChildProcess {
+    return exec(`${this.idbPath} ${command}`);
   }
 }
 
