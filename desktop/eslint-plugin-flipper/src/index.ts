@@ -16,11 +16,15 @@ import noElectronRemoteImports, {
 import noConsoleErrorWithoutContext, {
   RULE_NAME as noConsoleErrorWithoutContextRuleName,
 } from './rules/noConsoleErrorWithoutContext';
+import noTsFileExtension, {
+  RULE_NAME as noTsFileExtensionRuleName,
+} from './rules/noTsFileExtension';
 
 module.exports = {
   rules: {
     [noRelativeImportsAcrossPackagesRuleName]: noRelativeImportsAcrossPackages,
     [noElectronRemoteImportsRuleName]: noElectronRemoteImports,
     [noConsoleErrorWithoutContextRuleName]: noConsoleErrorWithoutContext,
+    [noTsFileExtensionRuleName]: noTsFileExtension,
   },
 };

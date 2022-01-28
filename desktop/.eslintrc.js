@@ -144,6 +144,7 @@ module.exports = {
     'flipper/no-relative-imports-across-packages': [2],
     'flipper/no-electron-remote-imports': [1],
     'flipper/no-console-error-without-context': [2],
+    'flipper/no-ts-file-extension': 1,
     'communist-spelling/communist-spelling': [1, {allow: ['cancelled']}],
 
     // promise rules, see https://github.com/xjamundx/eslint-plugin-promise for details on each of them
