@@ -47,8 +47,8 @@ class IDBBridge implements IOSBridge {
 
   async screenshot(serial: string): Promise<Buffer> {
     const imagePath = makeTempScreenshotFilePath();
-    const command = `idb screenshot --udid ${serial} ${imagePath}`;
-    return runScreenshotCommand(command, imagePath);
+    await exec(`idb screenshot --udid ${serial} ${imagePath}`);
+    return readScreenshotIntoBuffer(imagePath);
   }
 
   startLogListener(
@@ -95,8 +95,8 @@ class SimctlBridge implements IOSBridge {
 
   async screenshot(serial: string): Promise<Buffer> {
     const imagePath = makeTempScreenshotFilePath();
-    const command = `xcrun simctl io ${serial} screenshot ${imagePath}`;
-    return runScreenshotCommand(command, imagePath);
+    await exec(`xcrun simctl io ${serial} screenshot ${imagePath}`);
+    return readScreenshotIntoBuffer(imagePath);
   }
 
   async navigate(serial: string, location: string): Promise<void> {
@@ -144,11 +144,7 @@ function makeTempScreenshotFilePath() {
   return path.join(getFlipperServerConfig().paths.tempPath, imageName);
 }
 
-async function runScreenshotCommand(
-  command: string,
-  imagePath: string,
-): Promise<Buffer> {
-  await exec(command);
+async function readScreenshotIntoBuffer(imagePath: string): Promise<Buffer> {
   const buffer = await fs.readFile(imagePath);
   await fs.unlink(imagePath);
   return buffer;
