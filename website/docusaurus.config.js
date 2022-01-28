@@ -12,16 +12,17 @@ const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
 // end-import-example
 
 const repoUrl = 'https://github.com/facebook/flipper';
+const siteUrl = fbContent({
+    internal: 'https://flipper.thefacebook.com/',
+    external: 'https://fbflipper.com/',
+});
 const siteConfig = {
   title: fbContent({
     internal: 'Flipper @FB',
     external: 'Flipper',
   }),
   tagline: 'Extensible mobile app debugging',
-  url: fbContent({
-    internal: 'https://flipper.thefacebook.com/',
-    external: 'https://fbflipper.com/',
-  }),
+  url: siteUrl,
   baseUrl: '/',
   trailingSlash: true,
   projectName: 'flipper',
@@ -160,8 +161,8 @@ const siteConfig = {
   scripts: [
     'https://buttons.github.io/buttons.js',
     'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js',
-    'js/code-blocks-buttons.js',
-    'js/google-analytics.js',
+    `${siteUrl}js/code-blocks-buttons.js`,
+    `${siteUrl}js/google-analytics.js`,
   ],
   stylesheets: [],
   // start_config_example
