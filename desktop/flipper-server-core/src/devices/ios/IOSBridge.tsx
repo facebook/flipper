@@ -34,6 +34,39 @@ export interface IOSBridge {
   ) => child_process.ChildProcess;
 }
 
+class IDBBridge implements IOSBridge {
+  constructor(private idbPath: string) {}
+  async navigate(serial: string, location: string): Promise<void> {
+    exec(`idb open --udid ${serial} "${location}"`);
+  }
+
+  recordVideo(serial: string, outputFile: string): child_process.ChildProcess {
+    console.log(`Starting screen record via idb to ${outputFile}.`);
+    return exec(`idb record-video --udid ${serial} ${outputFile}`);
+  }
+
+  async screenshot(serial: string): Promise<Buffer> {
+    const imagePath = makeTempScreenshotFilePath();
+    const command = `idb screenshot --udid ${serial} ${imagePath}`;
+    return runScreenshotCommand(command, imagePath);
+  }
+
+  startLogListener(
+    udid: string,
+    deviceType: DeviceType,
+  ): child_process.ChildProcessWithoutNullStreams {
+    return child_process.spawn(
+      this.idbPath,
+      ['log', '--udid', udid, '--', ...getLogExtraArgs(deviceType)],
+      {
+        env: {
+          PYTHONUNBUFFERED: '1',
+        },
+      },
+    );
+  }
+}
+
 async function isAvailable(idbPath: string): Promise<boolean> {
   if (!idbPath) {
     return false;
@@ -60,22 +93,6 @@ function getLogExtraArgs(deviceType: DeviceType) {
       '--info',
     ];
   }
-}
-
-export function idbStartLogListener(
-  idbPath: string,
-  udid: string,
-  deviceType: DeviceType,
-): child_process.ChildProcessWithoutNullStreams {
-  return child_process.spawn(
-    idbPath,
-    ['log', '--udid', udid, '--', ...getLogExtraArgs(deviceType)],
-    {
-      env: {
-        PYTHONUNBUFFERED: '1',
-      },
-    },
-  );
 }
 
 export function xcrunStartLogListener(udid: string, deviceType: DeviceType) {
@@ -121,24 +138,11 @@ export async function xcrunScreenshot(serial: string): Promise<Buffer> {
   return runScreenshotCommand(command, imagePath);
 }
 
-export async function idbScreenshot(serial: string): Promise<Buffer> {
-  const imagePath = makeTempScreenshotFilePath();
-  const command = `idb screenshot --udid ${serial} ${imagePath}`;
-  return runScreenshotCommand(command, imagePath);
-}
-
 export async function xcrunNavigate(
   serial: string,
   location: string,
 ): Promise<void> {
   exec(`xcrun simctl io ${serial} launch url "${location}"`);
-}
-
-export async function idbNavigate(
-  serial: string,
-  location: string,
-): Promise<void> {
-  exec(`idb open --udid ${serial} "${location}"`);
 }
 
 export function xcrunRecordVideo(
@@ -151,14 +155,6 @@ export function xcrunRecordVideo(
   );
 }
 
-export function idbRecordVideo(
-  serial: string,
-  outputFile: string,
-): child_process.ChildProcess {
-  console.log(`Starting screen record via idb to ${outputFile}.`);
-  return exec(`idb record-video --udid ${serial} ${outputFile}`);
-}
-
 export async function makeIOSBridge(
   idbPath: string,
   isXcodeDetected: boolean,
@@ -166,12 +162,7 @@ export async function makeIOSBridge(
 ): Promise<IOSBridge> {
   // prefer idb
   if (await isAvailableFn(idbPath)) {
-    return {
-      startLogListener: idbStartLogListener.bind(null, idbPath),
-      screenshot: idbScreenshot,
-      navigate: idbNavigate,
-      recordVideo: idbRecordVideo,
-    };
+    return new IDBBridge(idbPath);
   }
 
   // no idb, if it's a simulator and xcode is available, we can use xcrun
