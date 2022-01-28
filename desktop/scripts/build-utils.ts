@@ -327,7 +327,7 @@ export async function compileMain() {
     });
     await Metro.runBuild(config, {
       platform: 'web',
-      entry: path.join(staticDir, 'main.ts'),
+      entry: path.join(staticDir, 'main.tsx'),
       out,
       dev,
       minify: !dev,
