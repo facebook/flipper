@@ -217,7 +217,7 @@ jobs:
       run: echo "//registry.yarnpkg.com/:_authToken=${{ secrets.FLIPPER_NPM_TOKEN }}" >> ~/.npmrc
     - name: Publish flipper-server on NPM
       run: |
-        tar zxvf flipper-server.tgz
+        tar zxvf flipper-server.tgz/flipper-server.tgz
         cd package
         yarn publish
     - name: Open issue on failure
