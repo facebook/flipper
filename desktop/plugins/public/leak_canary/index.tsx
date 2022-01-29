@@ -232,10 +232,10 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
               return (
                 <Panel
                   key={idx}
-                  collapsable={false}
+                  collapsable={true}
                   padded={false}
                   heading={leak.title}
-                  floating={false}
+                  floating={true}
                   accessory={leak.retainedSize}>
                   <ElementsInspector
                     onElementSelected={(eid) => {
@@ -249,6 +249,7 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
                     searchResults={null}
                     root={leak.root}
                     elements={elements}
+                    scrollable={false}
                   />
                 </Panel>
               );
