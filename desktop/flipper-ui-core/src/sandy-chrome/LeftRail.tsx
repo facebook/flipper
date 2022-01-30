@@ -122,7 +122,7 @@ export function LeftRailButton({
           {res}
         </Badge>
       ) : (
-        <Badge count={count} offset={[-4, 6]}>
+        <Badge count={count} offset={[-6, 5]}>
           {res}
         </Badge>
       );
