@@ -97,16 +97,8 @@ export function LeftRailButton({
   title?: string;
   onClick?: React.MouseEventHandler<HTMLElement>;
 }) {
-  let iconElement =
+  const iconElement =
     icon && cloneElement(icon, {style: {fontSize: small ? 16 : 24}});
-  if (count !== undefined) {
-    iconElement =
-      count === true ? (
-        <Badge dot>{iconElement}</Badge>
-      ) : (
-        <Badge count={count}>{iconElement}</Badge>
-      );
-  }
 
   let res = (
     <LeftRailButtonElem
@@ -122,6 +114,19 @@ export function LeftRailButton({
       }}
     />
   );
+
+  if (count !== undefined) {
+    res =
+      count === true ? (
+        <Badge dot offset={[-8, 8]}>
+          {res}
+        </Badge>
+      ) : (
+        <Badge count={count} offset={[-4, 6]}>
+          {res}
+        </Badge>
+      );
+  }
 
   if (title) {
     res = (
