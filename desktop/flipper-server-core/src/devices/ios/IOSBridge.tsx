@@ -12,7 +12,7 @@ import child_process from 'child_process';
 import {DeviceType} from 'flipper-common';
 import {v1 as uuid} from 'uuid';
 import path from 'path';
-import {exec} from 'promisify-child-process';
+import {exec, execFile} from 'promisify-child-process';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
 
 export const ERR_NO_IDB_OR_XCODE_AVAILABLE =
@@ -72,7 +72,7 @@ class IDBBridge implements IOSBridge {
   }
 }
 
-class SimctlBridge implements IOSBridge {
+export class SimctlBridge implements IOSBridge {
   startLogListener(
     udid: string,
     deviceType: DeviceType,
@@ -114,6 +114,11 @@ class SimctlBridge implements IOSBridge {
       `xcrun simctl io ${serial} recordVideo --codec=h264 --force ${outputFile}`,
     );
   }
+
+  async launchSimulator(udid: string): Promise<any> {
+    await execFile('xcrun', ['simctl', ...getDeviceSetPath(), 'boot', udid]);
+    await execFile('open', ['-a', 'simulator']);
+  }
 }
 
 async function isAvailable(idbPath: string): Promise<boolean> {
@@ -153,6 +158,12 @@ async function readScreenshotIntoBuffer(imagePath: string): Promise<Buffer> {
   const buffer = await fs.readFile(imagePath);
   await fs.unlink(imagePath);
   return buffer;
+}
+
+export function getDeviceSetPath() {
+  return process.env.DEVICE_SET_PATH
+    ? ['--set', process.env.DEVICE_SET_PATH]
+    : [];
 }
 
 export async function makeIOSBridge(

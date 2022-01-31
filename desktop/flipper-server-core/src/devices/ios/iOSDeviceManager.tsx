@@ -18,6 +18,8 @@ import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
   IOSBridge,
   makeIOSBridge,
+  getDeviceSetPath,
+  SimctlBridge,
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {notNull} from '../../utils/typeUtils';
@@ -57,6 +59,7 @@ export class IOSDeviceManager {
     'PortForwardingMacApp',
   );
   iosBridge: IOSBridge | undefined;
+  simctlBridge: SimctlBridge = new SimctlBridge();
   private xcodeVersionMismatchFound = false;
   public xcodeCommandLineToolsDetected = false;
 
@@ -287,17 +290,6 @@ export class IOSDeviceManager {
       console.error('Failed to determine Xcode version:', e);
     }
   }
-}
-
-function getDeviceSetPath() {
-  return process.env.DEVICE_SET_PATH
-    ? ['--set', process.env.DEVICE_SET_PATH]
-    : [];
-}
-
-export async function launchSimulator(udid: string): Promise<any> {
-  await execFile('xcrun', ['simctl', ...getDeviceSetPath(), 'boot', udid]);
-  await execFile('open', ['-a', 'simulator']);
 }
 
 function getActiveDevices(

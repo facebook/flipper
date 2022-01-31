@@ -11,10 +11,7 @@ import EventEmitter from 'events';
 import ServerController from './comms/ServerController';
 import {CertificateExchangeMedium} from './utils/CertificateProvider';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
-import {
-  IOSDeviceManager,
-  launchSimulator,
-} from './devices/ios/iOSDeviceManager';
+import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
 import desktopDevice from './devices/desktop/desktopDeviceManager';
 import {
@@ -356,7 +353,8 @@ export class FlipperServerImpl implements FlipperServer {
       launchEmulator(this.config.settings.androidHome, name, coldBoot),
     'ios-get-simulators': async (bootedOnly) =>
       this.ios.getSimulators(bootedOnly),
-    'ios-launch-simulator': async (udid) => launchSimulator(udid),
+    'ios-launch-simulator': async (udid) =>
+      this.ios.simctlBridge.launchSimulator(udid),
     'persist-settings': async (settings) => saveSettings(settings),
     'persist-launcher-settings': async (settings) =>
       saveLauncherSettings(settings),
