@@ -19,6 +19,9 @@ import noConsoleErrorWithoutContext, {
 import noTsFileExtension, {
   RULE_NAME as noTsFileExtensionRuleName,
 } from './rules/noTsFileExtension';
+import noIPrefixInterfaces, {
+  RULE_NAME as noIPrefixInterfacesRuleName,
+} from './rules/noIPrefixInterfaces';
 
 module.exports = {
   rules: {
@@ -26,5 +29,6 @@ module.exports = {
     [noElectronRemoteImportsRuleName]: noElectronRemoteImports,
     [noConsoleErrorWithoutContextRuleName]: noConsoleErrorWithoutContext,
     [noTsFileExtensionRuleName]: noTsFileExtension,
+    [noIPrefixInterfacesRuleName]: noIPrefixInterfaces,
   },
 };
