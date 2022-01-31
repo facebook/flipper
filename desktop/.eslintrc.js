@@ -189,6 +189,14 @@ module.exports = {
             caughtErrorsIgnorePattern: '^_',
           },
         ],
+        '@typescript-eslint/naming-convention': [
+          2,
+          {
+            selector: 'typeLike',
+            format: ['PascalCase', 'UPPER_CASE'],
+            leadingUnderscore: 'allow',
+          },
+        ],
       },
     },
     {

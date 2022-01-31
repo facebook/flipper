@@ -61,6 +61,7 @@ type RawLogEntry = {
 // Mar 25 17:06:38 iPhone symptomsd(SymptomEvaluator)[125] <Notice>: Stuff
 const logRegex = /(^.{15}) ([^ ]+?) ([^\[]+?)\[(\d+?)\] <(\w+?)>: (.*)$/s;
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export class iOSLogListener extends DeviceListener {
   constructor(
     isDeviceConnected: () => boolean,

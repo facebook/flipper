@@ -64,6 +64,7 @@ export function parsePath(content: string): string | null {
   return path.trim();
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export class iOSCrashWatcher extends DeviceListener {
   constructor(private readonly device: ServerDevice) {
     super(() => device.connected);
