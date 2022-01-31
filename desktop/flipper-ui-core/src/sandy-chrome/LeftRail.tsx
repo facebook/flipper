@@ -118,11 +118,11 @@ export function LeftRailButton({
   if (count !== undefined) {
     res =
       count === true ? (
-        <Badge dot offset={[-8, 8]} {...{ onClick }}>
+        <Badge dot offset={[-8, 8]} {...{onClick}}>
           {res}
         </Badge>
       ) : (
-        <Badge count={count} offset={[-6, 5]} {...{ onClick }}>
+        <Badge count={count} offset={[-6, 5]} {...{onClick}}>
           {res}
         </Badge>
       );
