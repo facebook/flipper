@@ -88,7 +88,7 @@ describe('getWatchFolders', () => {
         throw new Error('File not found: ' + file);
       }
       const parts = file.substring(rootDir.length + 1).split(path.sep);
-      let cur = <any>files[rootDir];
+      let cur = files[rootDir] as any;
       for (const part of parts) {
         cur = cur[part];
         if (!cur) {
@@ -99,7 +99,7 @@ describe('getWatchFolders', () => {
     };
     const readReadJson = fs.readJson;
     try {
-      fs.readJson = <any>readJsonMock;
+      fs.readJson = readJsonMock as any;
       const resolvedFolders = await getWatchFolders(
         path.join(rootDir, 'local_module_2'),
       );
