@@ -79,6 +79,7 @@ class ConnectionEvents {
             impl->connectionIsTrusted_ = false;
             impl->callbacks_->onDisconnected();
           }
+          impl->reevaluateSocketProvider();
           impl->reconnect();
           break;
       }
