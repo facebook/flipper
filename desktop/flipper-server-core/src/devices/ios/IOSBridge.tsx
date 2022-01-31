@@ -8,6 +8,8 @@
  */
 
 import fs from 'fs-extra';
+import iosUtil from './iOSContainerUtility';
+
 import child_process from 'child_process';
 import type {IOSDeviceParams} from 'flipper-common';
 import {DeviceType} from 'flipper-common';
@@ -42,10 +44,22 @@ export interface IOSBridge {
     serial: string,
     outputFile: string,
   ) => child_process.ChildProcess;
+  getActiveDevices: (bootedOnly: boolean) => Promise<Array<IOSDeviceParams>>;
 }
 
-class IDBBridge implements IOSBridge {
-  constructor(private idbPath: string) {}
+export class IDBBridge implements IOSBridge {
+  constructor(
+    private idbPath: string,
+    private enablePhysicalDevices: boolean,
+  ) {}
+  async getActiveDevices(_bootedOnly: boolean): Promise<IOSDeviceParams[]> {
+    return iosUtil
+      .targets(this.idbPath, this.enablePhysicalDevices)
+      .catch((e) => {
+        console.error('Failed to get active iOS devices:', e.message);
+        return [];
+      });
+  }
 
   async navigate(serial: string, location: string): Promise<void> {
     this._execIdb(`open --udid ${serial} "${location}"`);
@@ -216,11 +230,12 @@ export function getDeviceSetPath() {
 export async function makeIOSBridge(
   idbPath: string,
   isXcodeDetected: boolean,
+  enablePhysicalDevices: boolean,
   isAvailableFn: (idbPath: string) => Promise<boolean> = isAvailable,
 ): Promise<IOSBridge> {
   // prefer idb
   if (await isAvailableFn(idbPath)) {
-    return new IDBBridge(idbPath);
+    return new IDBBridge(idbPath, enablePhysicalDevices);
   }
 
   // no idb, if it's a simulator and xcode is available, we can use xcrun

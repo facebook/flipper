@@ -26,7 +26,7 @@ afterEach(() => {
 });
 
 test('uses xcrun with no idb when xcode is detected', async () => {
-  const ib = await makeIOSBridge('', true);
+  const ib = await makeIOSBridge('', true, false);
 
   ib.startLogListener('deadbeef', 'emulator');
 
@@ -50,7 +50,12 @@ test('uses xcrun with no idb when xcode is detected', async () => {
 });
 
 test('uses idb when present and xcode detected', async () => {
-  const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
+  const ib = await makeIOSBridge(
+    '/usr/local/bin/idb',
+    true,
+    true,
+    async (_) => true,
+  );
 
   ib.startLogListener('deadbeef', 'emulator');
 
@@ -77,7 +82,12 @@ test('uses idb when present and xcode detected', async () => {
 });
 
 test('uses idb when present and xcode detected and physical device connected', async () => {
-  const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
+  const ib = await makeIOSBridge(
+    '/usr/local/bin/idb',
+    true,
+    true,
+    async (_) => true,
+  );
 
   ib.startLogListener('deadbeef', 'physical');
 
@@ -99,12 +109,12 @@ test('uses idb when present and xcode detected and physical device connected', a
 });
 
 test("without idb physical devices can't log", async () => {
-  const ib = await makeIOSBridge('', true);
+  const ib = await makeIOSBridge('', true, false);
   expect(ib.startLogListener).toBeDefined(); // since we have xcode
 });
 
 test('throws if no iOS support', async () => {
-  await expect(makeIOSBridge('', false)).rejects.toThrow(
+  await expect(makeIOSBridge('', false, false)).rejects.toThrow(
     'Neither Xcode nor idb available. Cannot provide iOS device functionality.',
   );
 });
@@ -112,7 +122,7 @@ test('throws if no iOS support', async () => {
 test.unix(
   'uses xcrun to take screenshots with no idb when xcode is detected',
   async () => {
-    const ib = await makeIOSBridge('', true);
+    const ib = await makeIOSBridge('', true, false);
 
     await expect(() => ib.screenshot('deadbeef')).rejects.toThrow();
 
@@ -123,7 +133,12 @@ test.unix(
 );
 
 test.unix('uses idb to take screenshots when available', async () => {
-  const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
+  const ib = await makeIOSBridge(
+    '/usr/local/bin/idb',
+    true,
+    true,
+    async (_) => true,
+  );
 
   await expect(() => ib.screenshot('deadbeef')).rejects.toThrow();
 
@@ -133,7 +148,7 @@ test.unix('uses idb to take screenshots when available', async () => {
 });
 
 test('uses xcrun to navigate with no idb when xcode is detected', async () => {
-  const ib = await makeIOSBridge('', true);
+  const ib = await makeIOSBridge('', true, false);
 
   await ib.navigate('deadbeef', 'fb://dummy');
 
@@ -143,7 +158,12 @@ test('uses xcrun to navigate with no idb when xcode is detected', async () => {
 });
 
 test('uses idb to navigate when available', async () => {
-  const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
+  const ib = await makeIOSBridge(
+    '/usr/local/bin/idb',
+    true,
+    true,
+    async (_) => true,
+  );
 
   await ib.navigate('deadbeef', 'fb://dummy');
 
@@ -153,7 +173,7 @@ test('uses idb to navigate when available', async () => {
 });
 
 test('uses xcrun to record with no idb when xcode is detected', async () => {
-  const ib = await makeIOSBridge('', true);
+  const ib = await makeIOSBridge('', true, false);
 
   ib.recordVideo('deadbeef', '/tmp/video.mp4');
 
@@ -163,7 +183,12 @@ test('uses xcrun to record with no idb when xcode is detected', async () => {
 });
 
 test('uses idb to record when available', async () => {
-  const ib = await makeIOSBridge('/usr/local/bin/idb', true, async (_) => true);
+  const ib = await makeIOSBridge(
+    '/usr/local/bin/idb',
+    true,
+    true,
+    async (_) => true,
+  );
 
   ib.recordVideo('deadbeef', '/tmo/video.mp4');
 

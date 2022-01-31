@@ -17,6 +17,7 @@ import IOSDevice from './IOSDevice';
 import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
   IOSBridge,
+  IDBBridge,
   makeIOSBridge,
   SimctlBridge,
 } from './IOSBridge';
@@ -174,7 +175,11 @@ export class IOSDeviceManager {
       }
       try {
         // Awaiting the promise here to trigger immediate error handling.
-        this.iosBridge = await makeIOSBridge(settings.idbPath, isDetected);
+        this.iosBridge = await makeIOSBridge(
+          settings.idbPath,
+          isDetected,
+          settings.enablePhysicalIOS,
+        );
         this.queryDevicesForever();
       } catch (err) {
         // This case is expected if both Xcode and idb are missing.
@@ -252,10 +257,7 @@ function getActiveDevices(
   idbPath: string,
   isPhysicalDeviceEnabled: boolean,
 ): Promise<Array<IOSDeviceParams>> {
-  return iosUtil.targets(idbPath, isPhysicalDeviceEnabled).catch((e) => {
-    console.error('Failed to get active iOS devices:', e.message);
-    return [];
-  });
+  return new IDBBridge(idbPath, isPhysicalDeviceEnabled).getActiveDevices(true);
 }
 
 export function parseXcodeFromCoreSimPath(
