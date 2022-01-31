@@ -9,6 +9,7 @@
 
 import fs from 'fs-extra';
 import child_process from 'child_process';
+import type {IOSDeviceParams} from 'flipper-common';
 import {DeviceType} from 'flipper-common';
 import {v1 as uuid} from 'uuid';
 import path from 'path';
@@ -20,6 +21,15 @@ export const ERR_NO_IDB_OR_XCODE_AVAILABLE =
 
 export const ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB =
   'Cannot provide logs from a physical device without idb.';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+type iOSSimulatorDevice = {
+  state: 'Booted' | 'Shutdown' | 'Shutting Down';
+  availability?: string;
+  isAvailable?: 'YES' | 'NO' | true | false;
+  name: string;
+  udid: string;
+};
 
 export interface IOSBridge {
   startLogListener: (
@@ -115,10 +125,47 @@ export class SimctlBridge implements IOSBridge {
     );
   }
 
+  async getActiveDevices(bootedOnly: boolean): Promise<Array<IOSDeviceParams>> {
+    return execFile('xcrun', [
+      'simctl',
+      ...getDeviceSetPath(),
+      'list',
+      'devices',
+      '--json',
+    ])
+      .then(({stdout}) => JSON.parse(stdout!.toString()).devices)
+      .then((simulatorDevices: Array<iOSSimulatorDevice>) => {
+        const simulators = Object.values(simulatorDevices).flat();
+        return simulators
+          .filter(
+            (simulator) =>
+              (!bootedOnly || simulator.state === 'Booted') &&
+              isSimulatorAvailable(simulator),
+          )
+          .map((simulator) => {
+            return {
+              ...simulator,
+              type: 'emulator',
+            } as IOSDeviceParams;
+          });
+      });
+  }
+
   async launchSimulator(udid: string): Promise<any> {
     await execFile('xcrun', ['simctl', ...getDeviceSetPath(), 'boot', udid]);
     await execFile('open', ['-a', 'simulator']);
   }
+}
+
+function isSimulatorAvailable(simulator: iOSSimulatorDevice): boolean {
+  // For some users "availability" is set, for others it's "isAvailable"
+  // It's not clear which key is set, so we are checking both.
+  // We've also seen isAvailable return "YES" and true, depending on version.
+  return (
+    simulator.availability === '(available)' ||
+    simulator.isAvailable === 'YES' ||
+    simulator.isAvailable === true
+  );
 }
 
 async function isAvailable(idbPath: string): Promise<boolean> {

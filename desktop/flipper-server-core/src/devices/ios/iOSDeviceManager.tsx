@@ -11,14 +11,13 @@ import {ChildProcess} from 'child_process';
 import type {IOSDeviceParams} from 'flipper-common';
 import path from 'path';
 import childProcess from 'child_process';
-import {exec, execFile} from 'promisify-child-process';
+import {exec} from 'promisify-child-process';
 import iosUtil from './iOSContainerUtility';
 import IOSDevice from './IOSDevice';
 import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
   IOSBridge,
   makeIOSBridge,
-  getDeviceSetPath,
   SimctlBridge,
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
@@ -26,26 +25,6 @@ import {notNull} from '../../utils/typeUtils';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import {IdbConfig, setIdbConfig} from './idbConfig';
 import {assertNotNull} from 'flipper-server-core/src/comms/Utilities';
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-type iOSSimulatorDevice = {
-  state: 'Booted' | 'Shutdown' | 'Shutting Down';
-  availability?: string;
-  isAvailable?: 'YES' | 'NO' | true | false;
-  name: string;
-  udid: string;
-};
-
-function isAvailable(simulator: iOSSimulatorDevice): boolean {
-  // For some users "availability" is set, for others it's "isAvailable"
-  // It's not clear which key is set, so we are checking both.
-  // We've also seen isAvailable return "YES" and true, depending on version.
-  return (
-    simulator.availability === '(available)' ||
-    simulator.isAvailable === 'YES' ||
-    simulator.isAvailable === true
-  );
-}
 
 export class IOSDeviceManager {
   private portForwarders: Array<ChildProcess> = [];
@@ -214,41 +193,18 @@ export class IOSDeviceManager {
   }
 
   getSimulators(bootedOnly: boolean): Promise<Array<IOSDeviceParams>> {
-    return execFile('xcrun', [
-      'simctl',
-      ...getDeviceSetPath(),
-      'list',
-      'devices',
-      '--json',
-    ])
-      .then(({stdout}) => JSON.parse(stdout!.toString()).devices)
-      .then((simulatorDevices: Array<iOSSimulatorDevice>) => {
-        const simulators = Object.values(simulatorDevices).flat();
-        return simulators
-          .filter(
-            (simulator) =>
-              (!bootedOnly || simulator.state === 'Booted') &&
-              isAvailable(simulator),
-          )
-          .map((simulator) => {
-            return {
-              ...simulator,
-              type: 'emulator',
-            } as IOSDeviceParams;
-          });
-      })
-      .catch((e: Error) => {
-        console.warn('Failed to query simulators:', e);
-        if (e.message.includes('Xcode license agreements')) {
-          this.flipperServer.emit('notification', {
-            type: 'error',
-            title: 'Xcode license requires approval',
-            description:
-              'The Xcode license agreement has changed. You need to either open Xcode and agree to the terms or run `sudo xcodebuild -license` in a Terminal to allow simulators to work with Flipper.',
-          });
-        }
-        return Promise.resolve([]);
-      });
+    return this.simctlBridge.getActiveDevices(bootedOnly).catch((e: Error) => {
+      console.warn('Failed to query simulators:', e);
+      if (e.message.includes('Xcode license agreements')) {
+        this.flipperServer.emit('notification', {
+          type: 'error',
+          title: 'Xcode license requires approval',
+          description:
+            'The Xcode license agreement has changed. You need to either open Xcode and agree to the terms or run `sudo xcodebuild -license` in a Terminal to allow simulators to work with Flipper.',
+        });
+      }
+      return Promise.resolve([]);
+    });
   }
 
   private queryDevicesForever() {
