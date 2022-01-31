@@ -10394,10 +10394,10 @@ react-color@^2.19.3:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
-react-debounce-render@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/react-debounce-render/-/react-debounce-render-7.0.1.tgz#61a9fcb87c1ad94d207b347beacbddac70387926"
-  integrity sha512-jaUGT8QQMPeO09k4YnQne7WCQwZLSTAlvyc4QL1zrIcGIwaq6lgQmzPwqY/1xM4rKQGOP3ihYuGNnctB3BRYuA==
+react-debounce-render@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/react-debounce-render/-/react-debounce-render-8.0.1.tgz#cbe974debf0031892ac80b0c8121d77ff5eed735"
+  integrity sha512-tehXM/jsraGg+13Js7W8eTLc8Ym712ByTGOYHv+df4bsUrZuhIpth8lySV9Gq6UEcH2t8qRdvW66s/roPiCpbA==
   dependencies:
     hoist-non-react-statics "^3.3.2"
     lodash.debounce "^4.0.8"
