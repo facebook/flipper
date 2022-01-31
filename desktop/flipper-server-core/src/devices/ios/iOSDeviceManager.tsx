@@ -25,6 +25,7 @@ import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import {IdbConfig, setIdbConfig} from './idbConfig';
 import {assertNotNull} from 'flipper-server-core/src/comms/Utilities';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
   availability?: string;

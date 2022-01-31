@@ -2,7 +2,7 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 source 'https://github.com/CocoaPods/Specs'
 
-platform :ios, '11.0'
+platform :ios, '11'
 
 # used for automatic bumping
 flipperkit_version = '0.131.0'
@@ -27,7 +27,7 @@ target 'ReactNativeFlipperExample' do
 
   # Versions are explicitly pinned to be able to forcefully test against the latest versions.
   # use_flipper!() should work as well and pick the React Native defaults
-  use_flipper!({ 'Flipper' => flipperkit_version, 'Flipper-Folly' => '2.6.10', 'Flipper-RSocket' => '1.4.3', 'Flipper-DoubleConversion' => '3.1.7', 'Flipper-Glog' => '0.3.9', 'Flipper-PeerTalk' => '0.0.4' })
+  use_flipper!({ 'Flipper' => flipperkit_version, 'Flipper-Folly' => '2.6.10', 'Flipper-RSocket' => '1.4.3', 'Flipper-DoubleConversion' => '3.1.7', 'Flipper-Glog' => '0.3.9', 'Flipper-PeerTalk' => '0.0.4', 'OpenSSL-Universal' => '1.1.1100' })
 
   post_install do |installer|
     react_native_post_install(installer)
