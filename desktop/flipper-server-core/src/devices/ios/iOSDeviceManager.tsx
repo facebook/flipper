@@ -231,21 +231,27 @@ export class IOSDeviceManager {
     try {
       let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
       xcodeCLIVersion = xcodeCLIVersion!.toString().trim();
-      const {stdout} = await exec('ps aux | grep CoreSimulator');
-      for (const line of stdout!.toString().split('\n')) {
-        const match = parseXcodeFromCoreSimPath(line);
-        const runningVersion =
-          match && match.length > 0 ? match[0].trim() : null;
-        if (runningVersion && runningVersion !== xcodeCLIVersion) {
-          const errorMessage = `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this. For example: "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"`;
-          this.flipperServer.emit('notification', {
-            type: 'error',
-            title: 'Xcode version mismatch',
-            description: '' + errorMessage,
-          });
-          this.xcodeVersionMismatchFound = true;
-          break;
+      const {stdout} = await exec(
+        "pgrep Simulator | xargs ps | grep Simulator.app | awk '{print $NF}'",
+      );
+      for (const runningSimulatorApp of stdout!.toString().split('\n')) {
+        if (!runningSimulatorApp) {
+          continue;
         }
+        if (runningSimulatorApp.startsWith(xcodeCLIVersion)) {
+          continue;
+        }
+        const runningVersion =
+          runningSimulatorApp.split('/Contents/Developer')[0] +
+          '/Contents/Developer';
+        const errorMessage = `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this. For example: "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"`;
+        this.flipperServer.emit('notification', {
+          type: 'error',
+          title: 'Xcode version mismatch',
+          description: '' + errorMessage,
+        });
+        this.xcodeVersionMismatchFound = true;
+        break;
       }
     } catch (e) {
       console.error('Failed to determine Xcode version:', e);
@@ -253,15 +259,28 @@ export class IOSDeviceManager {
   }
 }
 
+export function checkXcodeVersionMismatch(
+  runningSimulatorApps: Array<string>,
+  xcodeCLIVersion: string,
+): string | undefined {
+  for (const runningSimulatorApp of runningSimulatorApps) {
+    if (!runningSimulatorApp) {
+      continue;
+    }
+    if (runningSimulatorApp.startsWith(xcodeCLIVersion)) {
+      continue;
+    }
+    return (
+      runningSimulatorApp.split('/Contents/Developer')[0] +
+      '/Contents/Developer'
+    );
+  }
+  return undefined;
+}
+
 function getActiveDevices(
   idbPath: string,
   isPhysicalDeviceEnabled: boolean,
 ): Promise<Array<IOSDeviceParams>> {
   return new IDBBridge(idbPath, isPhysicalDeviceEnabled).getActiveDevices(true);
-}
-
-export function parseXcodeFromCoreSimPath(
-  line: string,
-): RegExpMatchArray | null {
-  return line.match(/\/[\/\w@)(\-\+]*\/Xcode[^/]*\.app\/Contents\/Developer/);
 }
