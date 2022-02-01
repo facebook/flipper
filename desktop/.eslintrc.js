@@ -144,7 +144,7 @@ module.exports = {
     'flipper/no-relative-imports-across-packages': [2],
     'flipper/no-electron-remote-imports': [1],
     'flipper/no-console-error-without-context': [2],
-    'flipper/no-ts-file-extension': 1,
+    'flipper/no-ts-file-extension': 2,
     'flipper/no-i-prefix-interfaces': 2,
     'communist-spelling/communist-spelling': [1, {allow: ['cancelled']}],
 
@@ -266,7 +266,7 @@ module.exports = {
       files: [
         'plugins/**/__tests__/*.tsx',
         'plugins/**/__tests__/*.ts',
-        'plugins/postinstall.ts',
+        'plugins/postinstall.tsx',
         // TODO: Remove specific plugin overrides down below
         'plugins/fb/kaios-portal/kaios-debugger-client/client.tsx',
         'plugins/public/reactdevtools/index.tsx',
