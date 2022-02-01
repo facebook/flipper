@@ -66,15 +66,11 @@ test('test getAllPromisesForQueryingDevices when xcode detected', () => {
   flipperServer.ios.iosBridge = {} as IOSBridge;
   (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
   flipperServer.ios.simctlBridge = fakeSimctlBridge;
-  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
-    true,
-    false,
-  );
-  expect(promises.length).toEqual(2);
+  flipperServer.ios.getPromiseForQueryingDevices(false);
   expect(hasCalledSimctlActiveDevices).toEqual(true);
 });
 
-test('test getAllPromisesForQueryingDevices when xcode is not detected', () => {
+test('test getAllPromisesForQueryingDevices when idb is available', () => {
   const flipperServer = new FlipperServerImpl(
     getFlipperServerConfig(),
     getLogger(),
@@ -82,42 +78,6 @@ test('test getAllPromisesForQueryingDevices when xcode is not detected', () => {
   flipperServer.ios.iosBridge = {} as IOSBridge;
   (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
   flipperServer.ios.simctlBridge = fakeSimctlBridge;
-  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
-    false,
-    true,
-  );
-  expect(promises.length).toEqual(1);
-  expect(hasCalledSimctlActiveDevices).toEqual(false);
-});
-
-test('test getAllPromisesForQueryingDevices when xcode and idb are both unavailable', () => {
-  const flipperServer = new FlipperServerImpl(
-    getFlipperServerConfig(),
-    getLogger(),
-  );
-  flipperServer.ios.iosBridge = {} as IOSBridge;
-  (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
-  flipperServer.ios.simctlBridge = fakeSimctlBridge;
-  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
-    false,
-    false,
-  );
-  expect(promises.length).toEqual(0);
-  expect(hasCalledSimctlActiveDevices).toEqual(false);
-});
-
-test('test getAllPromisesForQueryingDevices when both idb and xcode are available', () => {
-  const flipperServer = new FlipperServerImpl(
-    getFlipperServerConfig(),
-    getLogger(),
-  );
-  flipperServer.ios.iosBridge = {} as IOSBridge;
-  (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
-  flipperServer.ios.simctlBridge = fakeSimctlBridge;
-  const promises = flipperServer.ios.getAllPromisesForQueryingDevices(
-    true,
-    true,
-  );
-  expect(promises.length).toEqual(2);
+  flipperServer.ios.getPromiseForQueryingDevices(true);
   expect(hasCalledSimctlActiveDevices).toEqual(false);
 });

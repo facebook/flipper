@@ -22,7 +22,6 @@ import {
   SimctlBridge,
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
-import {notNull} from '../../utils/typeUtils';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import {IdbConfig, setIdbConfig} from './idbConfig';
 import {assertNotNull} from 'flipper-server-core/src/comms/Utilities';
@@ -40,7 +39,6 @@ export class IOSDeviceManager {
   );
   iosBridge: IOSBridge | undefined;
   simctlBridge: SimctlBridge = new SimctlBridge();
-  private xcodeVersionMismatchFound = false;
   public xcodeCommandLineToolsDetected = false;
 
   constructor(private flipperServer: FlipperServerImpl) {}
@@ -90,39 +88,25 @@ export class IOSDeviceManager {
     ];
   }
 
-  getAllPromisesForQueryingDevices(
-    isXcodeDetected: boolean,
-    isIdbAvailable: boolean,
-  ): Array<Promise<any>> {
+  getPromiseForQueryingDevices(isIdbAvailable: boolean): Promise<any> {
     assertNotNull(this.idbConfig);
-    return [
-      isIdbAvailable
-        ? getActiveDevices(
-            this.idbConfig.idbPath,
-            this.idbConfig.enablePhysicalIOS,
-          ).then((devices: IOSDeviceParams[]) => {
-            this.processDevices(devices);
-          })
-        : null,
-      !isIdbAvailable && isXcodeDetected
-        ? this.getSimulators(true).then((devices) =>
-            this.processDevices(devices),
-          )
-        : null,
-      isXcodeDetected ? this.checkXcodeVersionMismatch() : null,
-    ].filter(notNull);
+    return isIdbAvailable
+      ? getActiveDevices(
+          this.idbConfig.idbPath,
+          this.idbConfig.enablePhysicalIOS,
+        ).then((devices: IOSDeviceParams[]) => {
+          this.processDevices(devices);
+        })
+      : this.getSimulators(true).then((devices) =>
+          this.processDevices(devices),
+        );
   }
 
   private async queryDevices(): Promise<any> {
     assertNotNull(this.idbConfig);
-    const isXcodeInstalled = await iosUtil.isXcodeDetected();
     const isIdbAvailable = await iosUtil.isAvailable(this.idbConfig.idbPath);
-    console.debug(
-      `[conn] queryDevices. isXcodeInstalled ${isXcodeInstalled}, isIdbAvailable ${isIdbAvailable}`,
-    );
-    return Promise.all(
-      this.getAllPromisesForQueryingDevices(isXcodeInstalled, isIdbAvailable),
-    );
+    console.debug(`[conn] queryDevices.  isIdbAvailable ${isIdbAvailable}`);
+    return this.getPromiseForQueryingDevices(isIdbAvailable);
   }
 
   private processDevices(activeDevices: IOSDeviceParams[]) {
@@ -180,6 +164,8 @@ export class IOSDeviceManager {
           isDetected,
           settings.enablePhysicalIOS,
         );
+        // Check for version mismatch now for immediate error handling.
+        await this.checkXcodeVersionMismatch();
         this.queryDevicesForever();
       } catch (err) {
         // This case is expected if both Xcode and idb are missing.
@@ -225,9 +211,6 @@ export class IOSDeviceManager {
   }
 
   async checkXcodeVersionMismatch() {
-    if (this.xcodeVersionMismatchFound) {
-      return;
-    }
     try {
       let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
       xcodeCLIVersion = xcodeCLIVersion!.toString().trim();
@@ -250,7 +233,6 @@ export class IOSDeviceManager {
           title: 'Xcode version mismatch',
           description: '' + errorMessage,
         });
-        this.xcodeVersionMismatchFound = true;
         break;
       }
     } catch (e) {
