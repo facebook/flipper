@@ -36,7 +36,6 @@ export class IOSDeviceManager {
     'PortForwardingMacApp',
   );
   simctlBridge: SimctlBridge = new SimctlBridge();
-  public xcodeCommandLineToolsDetected = false;
 
   constructor(private flipperServer: FlipperServerImpl) {}
 
@@ -132,7 +131,6 @@ export class IOSDeviceManager {
     this.idbConfig = setIdbConfig(settings);
     try {
       const isDetected = await iosUtil.isXcodeDetected();
-      this.xcodeCommandLineToolsDetected = isDetected;
       if (settings.enablePhysicalIOS) {
         this.startDevicePortForwarders();
       }
