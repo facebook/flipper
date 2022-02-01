@@ -9,7 +9,6 @@
 
 import {checkXcodeVersionMismatch} from '../iOSDeviceManager';
 import {getLogger} from 'flipper-common';
-import {IOSBridge} from '../IOSBridge';
 import {FlipperServerImpl} from '../../../FlipperServerImpl';
 // eslint-disable-next-line node/no-extraneous-import
 import {getRenderHostInstance} from 'flipper-ui-core';
@@ -19,13 +18,21 @@ import {
 } from '../../../FlipperServerConfig';
 
 let fakeSimctlBridge: any;
+let fakeIDBBridge: any;
 let hasCalledSimctlActiveDevices = false;
+let hasCalledIDBActiveDevices = false;
 
 beforeEach(() => {
   hasCalledSimctlActiveDevices = false;
   fakeSimctlBridge = {
     getActiveDevices: async (_bootedOnly: boolean) => {
       hasCalledSimctlActiveDevices = true;
+      return [];
+    },
+  };
+  fakeIDBBridge = {
+    getActiveDevices: async (_bootedOnly: boolean) => {
+      hasCalledIDBActiveDevices = true;
       return [];
     },
   };
@@ -58,26 +65,28 @@ test('test checkXcodeVersionMismatch with an incorrect Simulator.app', () => {
   );
 });
 
-test('test getAllPromisesForQueryingDevices when xcode detected', () => {
+test('test queryDevices when simctl used', () => {
   const flipperServer = new FlipperServerImpl(
     getFlipperServerConfig(),
     getLogger(),
   );
-  flipperServer.ios.iosBridge = {} as IOSBridge;
   (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
   flipperServer.ios.simctlBridge = fakeSimctlBridge;
-  flipperServer.ios.getPromiseForQueryingDevices(false);
+  flipperServer.ios.iosBridge = fakeSimctlBridge;
+  flipperServer.ios.queryDevices(fakeSimctlBridge);
   expect(hasCalledSimctlActiveDevices).toEqual(true);
+  expect(hasCalledIDBActiveDevices).toEqual(false);
 });
 
-test('test getAllPromisesForQueryingDevices when idb is available', () => {
+test('test queryDevices when idb used', () => {
   const flipperServer = new FlipperServerImpl(
     getFlipperServerConfig(),
     getLogger(),
   );
-  flipperServer.ios.iosBridge = {} as IOSBridge;
   (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
   flipperServer.ios.simctlBridge = fakeSimctlBridge;
-  flipperServer.ios.getPromiseForQueryingDevices(true);
+  flipperServer.ios.iosBridge = fakeIDBBridge;
+  flipperServer.ios.queryDevices(fakeIDBBridge);
   expect(hasCalledSimctlActiveDevices).toEqual(false);
+  expect(hasCalledIDBActiveDevices).toEqual(true);
 });

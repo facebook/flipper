@@ -17,14 +17,12 @@ import IOSDevice from './IOSDevice';
 import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
   IOSBridge,
-  IDBBridge,
   makeIOSBridge,
   SimctlBridge,
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import {IdbConfig, setIdbConfig} from './idbConfig';
-import {assertNotNull} from 'flipper-server-core/src/comms/Utilities';
 
 export class IOSDeviceManager {
   private portForwarders: Array<ChildProcess> = [];
@@ -88,25 +86,10 @@ export class IOSDeviceManager {
     ];
   }
 
-  getPromiseForQueryingDevices(isIdbAvailable: boolean): Promise<any> {
-    assertNotNull(this.idbConfig);
-    return isIdbAvailable
-      ? getActiveDevices(
-          this.idbConfig.idbPath,
-          this.idbConfig.enablePhysicalIOS,
-        ).then((devices: IOSDeviceParams[]) => {
-          this.processDevices(devices);
-        })
-      : this.getSimulators(true).then((devices) =>
-          this.processDevices(devices),
-        );
-  }
-
-  private async queryDevices(): Promise<any> {
-    assertNotNull(this.idbConfig);
-    const isIdbAvailable = await iosUtil.isAvailable(this.idbConfig.idbPath);
-    console.debug(`[conn] queryDevices.  isIdbAvailable ${isIdbAvailable}`);
-    return this.getPromiseForQueryingDevices(isIdbAvailable);
+  queryDevices(bridge: IOSBridge): Promise<any> {
+    return bridge
+      .getActiveDevices(true)
+      .then((devices) => this.processDevices(devices));
   }
 
   private processDevices(activeDevices: IOSDeviceParams[]) {
@@ -166,7 +149,7 @@ export class IOSDeviceManager {
         );
         // Check for version mismatch now for immediate error handling.
         await this.checkXcodeVersionMismatch();
-        this.queryDevicesForever();
+        this.queryDevicesForever(this.iosBridge);
       } catch (err) {
         // This case is expected if both Xcode and idb are missing.
         if (err.message === ERR_NO_IDB_OR_XCODE_AVAILABLE) {
@@ -198,12 +181,12 @@ export class IOSDeviceManager {
     });
   }
 
-  private queryDevicesForever() {
-    return this.queryDevices()
+  private queryDevicesForever(bridge: IOSBridge) {
+    return this.queryDevices(bridge)
       .then(() => {
         // It's important to schedule the next check AFTER the current one has completed
         // to avoid simultaneous queries which can cause multiple user input prompts.
-        setTimeout(() => this.queryDevicesForever(), 3000);
+        setTimeout(() => this.queryDevicesForever(bridge), 3000);
       })
       .catch((err) => {
         console.warn('Failed to continuously query devices:', err);
@@ -258,11 +241,4 @@ export function checkXcodeVersionMismatch(
     );
   }
   return undefined;
-}
-
-function getActiveDevices(
-  idbPath: string,
-  isPhysicalDeviceEnabled: boolean,
-): Promise<Array<IOSDeviceParams>> {
-  return new IDBBridge(idbPath, isPhysicalDeviceEnabled).getActiveDevices(true);
 }
