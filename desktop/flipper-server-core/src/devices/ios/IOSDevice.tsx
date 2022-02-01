@@ -81,6 +81,12 @@ export default class IOSDevice extends ServerDevice {
   }
 
   async startScreenCapture(destination: string) {
+    const recording = this.recording;
+    if (recording) {
+      throw new Error(
+        `There is already an active recording at ${recording.destination}`,
+      );
+    }
     const process = this.iOSBridge.recordVideo(this.serial, destination);
     this.recording = {process, destination};
   }
