@@ -77,7 +77,7 @@ export default class IOSDevice extends ServerDevice {
   }
 
   async screenCaptureAvailable() {
-    return this.info.deviceType === 'emulator' && this.connected;
+    return this.connected;
   }
 
   async startScreenCapture(destination: string) {
