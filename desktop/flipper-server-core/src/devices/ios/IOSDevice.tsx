@@ -18,8 +18,7 @@ import {iOSLogListener} from './iOSLogListener';
 export default class IOSDevice extends ServerDevice {
   log?: child_process.ChildProcessWithoutNullStreams;
   buffer: string;
-  private recordingProcess?: ChildProcess;
-  private recordingLocation?: string;
+  private recording?: {process: ChildProcess; destination: string};
   private iOSBridge: IOSBridge;
   readonly logListener: iOSLogListener;
   readonly crashWatcher: iOSCrashWatcher;
@@ -82,47 +81,44 @@ export default class IOSDevice extends ServerDevice {
   }
 
   async startScreenCapture(destination: string) {
-    this.recordingProcess = this.iOSBridge.recordVideo(
-      this.serial,
-      destination,
-    );
-    this.recordingLocation = destination;
+    const process = this.iOSBridge.recordVideo(this.serial, destination);
+    this.recording = {process, destination};
   }
 
   async stopScreenCapture(): Promise<string> {
-    if (this.recordingProcess && this.recordingLocation) {
-      const prom = new Promise<void>((resolve, _reject) => {
-        this.recordingProcess!.on(
-          'exit',
-          async (_code: number | null, _signal: NodeJS.Signals | null) => {
-            resolve();
-          },
-        );
-        this.recordingProcess!.kill('SIGINT');
-      });
-
-      const output: string = await timeout<void>(
-        5000,
-        prom,
-        'Timed out to stop a screen capture.',
-      )
-        .then(() => {
-          const {recordingLocation} = this;
-          this.recordingLocation = undefined;
-          return recordingLocation!;
-        })
-        .catch((e) => {
-          this.recordingLocation = undefined;
-          console.warn('Failed to terminate iOS screen recording:', e);
-          throw e;
-        });
-      return output;
+    const recording = this.recording;
+    if (!recording) {
+      throw new Error('No recording in progress');
     }
-    throw new Error('No recording in progress');
+    const prom = new Promise<void>((resolve, _reject) => {
+      recording.process.on(
+        'exit',
+        async (_code: number | null, _signal: NodeJS.Signals | null) => {
+          resolve();
+        },
+      );
+      recording.process.kill('SIGINT');
+    });
+
+    const output: string = await timeout<void>(
+      5000,
+      prom,
+      'Timed out to stop a screen capture.',
+    )
+      .then(() => {
+        this.recording = undefined;
+        return recording.destination;
+      })
+      .catch((e) => {
+        this.recording = undefined;
+        console.warn('Failed to terminate iOS screen recording:', e);
+        throw e;
+      });
+    return output;
   }
 
   disconnect() {
-    if (this.recordingProcess && this.recordingLocation) {
+    if (this.recording) {
       this.stopScreenCapture();
     }
     super.disconnect();
