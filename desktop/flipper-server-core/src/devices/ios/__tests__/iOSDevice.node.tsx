@@ -72,7 +72,6 @@ test('test queryDevices when simctl used', () => {
   );
   (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
   flipperServer.ios.simctlBridge = fakeSimctlBridge;
-  flipperServer.ios.iosBridge = fakeSimctlBridge;
   flipperServer.ios.queryDevices(fakeSimctlBridge);
   expect(hasCalledSimctlActiveDevices).toEqual(true);
   expect(hasCalledIDBActiveDevices).toEqual(false);
@@ -85,7 +84,6 @@ test('test queryDevices when idb used', () => {
   );
   (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
   flipperServer.ios.simctlBridge = fakeSimctlBridge;
-  flipperServer.ios.iosBridge = fakeIDBBridge;
   flipperServer.ios.queryDevices(fakeIDBBridge);
   expect(hasCalledSimctlActiveDevices).toEqual(false);
   expect(hasCalledIDBActiveDevices).toEqual(true);

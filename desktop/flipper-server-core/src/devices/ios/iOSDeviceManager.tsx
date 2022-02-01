@@ -35,7 +35,6 @@ export class IOSDeviceManager {
     'MacOS',
     'PortForwardingMacApp',
   );
-  iosBridge: IOSBridge | undefined;
   simctlBridge: SimctlBridge = new SimctlBridge();
   public xcodeCommandLineToolsDetected = false;
 
@@ -89,14 +88,11 @@ export class IOSDeviceManager {
   queryDevices(bridge: IOSBridge): Promise<any> {
     return bridge
       .getActiveDevices(true)
-      .then((devices) => this.processDevices(devices));
+      .then((devices) => this.processDevices(bridge, devices));
   }
 
-  private processDevices(activeDevices: IOSDeviceParams[]) {
+  private processDevices(bridge: IOSBridge, activeDevices: IOSDeviceParams[]) {
     console.debug('[conn] processDevices', activeDevices);
-    if (!this.iosBridge) {
-      throw new Error('iOS bridge not yet initialized');
-    }
     const currentDeviceIDs = new Set(
       this.flipperServer
         .getDevices()
@@ -116,7 +112,7 @@ export class IOSDeviceManager {
         console.info(`[conn] detected new iOS device ${udid}`, activeDevice);
         const iOSDevice = new IOSDevice(
           this.flipperServer,
-          this.iosBridge,
+          bridge,
           udid,
           type,
           name,
@@ -141,15 +137,15 @@ export class IOSDeviceManager {
         this.startDevicePortForwarders();
       }
       try {
+        // Check for version mismatch now for immediate error handling.
+        await this.checkXcodeVersionMismatch();
         // Awaiting the promise here to trigger immediate error handling.
-        this.iosBridge = await makeIOSBridge(
+        const bridge = await makeIOSBridge(
           settings.idbPath,
           isDetected,
           settings.enablePhysicalIOS,
         );
-        // Check for version mismatch now for immediate error handling.
-        await this.checkXcodeVersionMismatch();
-        this.queryDevicesForever(this.iosBridge);
+        this.queryDevicesForever(bridge);
       } catch (err) {
         // This case is expected if both Xcode and idb are missing.
         if (err.message === ERR_NO_IDB_OR_XCODE_AVAILABLE) {
