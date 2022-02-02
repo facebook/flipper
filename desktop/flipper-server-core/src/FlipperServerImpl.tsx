@@ -46,8 +46,7 @@ import {promises} from 'fs';
 // Electron 11 runs on Node 12 which does not support fs.promises.rm
 import rm from 'rimraf';
 import assert from 'assert';
-import {setAdbClient} from './devices/android/adbClient';
-import {setIdbConfig} from './devices/ios/idbConfig';
+import {initializeAdbClient} from './devices/android/adbClient';
 import {assertNotNull} from './comms/Utilities';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
@@ -163,7 +162,7 @@ export class FlipperServerImpl implements FlipperServer {
     const asyncDeviceListenersPromises: Array<Promise<void>> = [];
     if (this.config.settings.enableAndroid) {
       asyncDeviceListenersPromises.push(
-        setAdbClient(this.config.settings)
+        initializeAdbClient(this.config.settings)
           .then((adbClient) => {
             if (!adbClient) {
               return;
@@ -180,8 +179,7 @@ export class FlipperServerImpl implements FlipperServer {
       );
     }
     if (this.config.settings.enableIOS) {
-      const idbConfig = setIdbConfig(this.config.settings);
-      this.ios = new IOSDeviceManager(this, idbConfig);
+      this.ios = new IOSDeviceManager(this, this.config.settings);
       asyncDeviceListenersPromises.push(
         this.ios.watchIOSDevices().catch((e) => {
           console.error(

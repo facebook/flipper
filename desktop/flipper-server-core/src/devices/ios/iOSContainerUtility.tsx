@@ -19,6 +19,11 @@ import fs from 'fs-extra';
 import path from 'path';
 const exec = promisify(child_process.exec);
 
+export type IdbConfig = {
+  idbPath: string;
+  enablePhysicalIOS: boolean;
+};
+
 // Use debug to get helpful logs when idb fails
 const idbLogLevel = 'DEBUG';
 const operationPrefix = 'iosContainerUtility';

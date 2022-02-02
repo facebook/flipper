@@ -7,9 +7,8 @@
  * @format
  */
 
-import {IdbConfig} from './idbConfig';
 import CertificateProvider from '../../utils/CertificateProvider';
-import iosUtil from './iOSContainerUtility';
+import iosUtil, {IdbConfig} from './iOSContainerUtility';
 import fs from 'fs-extra';
 import {promisify} from 'util';
 import tmp, {DirOptions} from 'tmp';

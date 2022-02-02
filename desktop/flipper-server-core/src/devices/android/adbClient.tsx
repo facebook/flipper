@@ -13,20 +13,14 @@ import adbConfig from './adbConfig';
 import adbkit, {Client} from 'adbkit';
 import path from 'path';
 
-let instance: Client | undefined;
-
 type Config = {
   androidHome: string;
 };
 
-export function getAdbClient(): Client | undefined {
-  return instance;
-}
-
-export async function setAdbClient(
+export async function initializeAdbClient(
   config: Config,
-): Promise<Client | undefined> {
-  instance = await reportPlatformFailures(
+): Promise<Client | void> {
+  const adbClient = await reportPlatformFailures(
     createClient(config),
     'createADBClient',
   ).catch((e) => {
@@ -34,9 +28,8 @@ export async function setAdbClient(
       'Failed to initialize ADB. Please disable Android support in settings, or configure a correct path.',
       e,
     );
-    return undefined;
   });
-  return instance;
+  return adbClient;
 }
 
 /* Adbkit will attempt to start the adb server if it's not already running,

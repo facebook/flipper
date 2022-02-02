@@ -12,7 +12,7 @@ import type {IOSDeviceParams} from 'flipper-common';
 import path from 'path';
 import childProcess from 'child_process';
 import {exec} from 'promisify-child-process';
-import iosUtil from './iOSContainerUtility';
+import iosUtil, {IdbConfig} from './iOSContainerUtility';
 import IOSDevice from './IOSDevice';
 import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
@@ -22,7 +22,6 @@ import {
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
-import {IdbConfig} from './idbConfig';
 import iOSCertificateProvider from './iOSCertificateProvider';
 
 export class IOSDeviceManager {
