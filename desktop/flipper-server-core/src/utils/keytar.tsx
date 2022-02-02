@@ -10,6 +10,8 @@
 import os from 'os';
 import {UserNotSignedInError} from 'flipper-common';
 
+export const SERVICE_FLIPPER = 'flipper.oAuthToken';
+
 export type KeytarModule = {
   getPassword(service: string, username: string): string;
   deletePassword(service: string, username: string): void;

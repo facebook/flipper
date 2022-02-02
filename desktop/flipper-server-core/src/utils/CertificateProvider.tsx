@@ -21,7 +21,6 @@ import archiver from 'archiver';
 import {timeout} from 'flipper-common';
 import {v4 as uuid} from 'uuid';
 import {internGraphPOSTAPIRequest} from '../fb-stubs/internRequests';
-import {SERVICE_FLIPPER} from '../FlipperServerImpl';
 import {getIdbConfig} from '../devices/ios/idbConfig';
 import {assertNotNull} from '../comms/Utilities';
 import {
@@ -33,6 +32,7 @@ import {
   generateClientCertificate,
   getCACertificate,
 } from './certificateUtils';
+import {SERVICE_FLIPPER} from './keytar';
 
 export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 

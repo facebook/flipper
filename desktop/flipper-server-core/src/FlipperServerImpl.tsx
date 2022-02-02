@@ -30,7 +30,7 @@ import {launchEmulator} from './devices/android/AndroidDevice';
 import {setFlipperServerConfig} from './FlipperServerConfig';
 import {saveSettings} from './utils/settings';
 import {saveLauncherSettings} from './utils/launcherSettings';
-import {KeytarManager, KeytarModule} from './utils/keytar';
+import {KeytarManager, KeytarModule, SERVICE_FLIPPER} from './utils/keytar';
 import {PluginManager} from './plugins/PluginManager';
 import {runHealthcheck, getHealthChecks} from './utils/runHealthchecks';
 import {openFile} from './utils/openFile';
@@ -49,8 +49,6 @@ import assert from 'assert';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
-
-export const SERVICE_FLIPPER = 'flipper.oAuthToken';
 
 /**
  * FlipperServer takes care of all incoming device & client connections.
