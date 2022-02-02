@@ -1,3 +1,8 @@
+# 0.132.0 (2/2/2022)
+
+ * [D33890235](https://github.com/facebook/flipper/search?q=D33890235&type=Commits) -  Fallback to RSockets if cert exchange fails even if the connection was successful.
+
+
 # 0.128.0 (12/1/2022)
 
  * [D33348923](https://github.com/facebook/flipper/search?q=D33348923&type=Commits) -  More clearly communicate if flipper server failed to start (e.d. due to port already taken, openssl not being available)
