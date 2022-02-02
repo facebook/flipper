@@ -19,6 +19,15 @@ import {
 export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 
 export default abstract class CertificateProvider {
+  abstract medium: CertificateExchangeMedium;
+  abstract name: string;
+
+  verifyMedium(medium: CertificateExchangeMedium) {
+    if (this.medium !== medium) {
+      throw new Error(`${this.name} does not support medium ${medium}`);
+    }
+  }
+
   async processCertificateSigningRequest(
     unsanitizedCsr: string,
     os: string,

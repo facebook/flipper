@@ -311,6 +311,8 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       }
     }
 
+    certificateProvider.verifyMedium(medium);
+
     return new Promise((resolve, reject) => {
       reportPlatformFailures(
         certificateProvider.processCertificateSigningRequest(

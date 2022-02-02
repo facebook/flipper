@@ -19,6 +19,8 @@ const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export default class iOSCertificateProvider extends CertificateProvider {
+  name = 'iOSCertificateProvider';
+  medium = 'FS_ACCESS' as const;
   constructor(private idbConfig: IdbConfig) {
     super();
   }

@@ -15,6 +15,9 @@ import {csrFileName, extractAppNameFromCSR} from '../../utils/certificateUtils';
 const logTag = 'AndroidCertificateProvider';
 
 export default class AndroidCertificateProvider extends CertificateProvider {
+  name = 'AndroidCertificateProvider';
+  medium = 'FS_ACCESS' as const;
+
   constructor(private adb: Client) {
     super();
   }

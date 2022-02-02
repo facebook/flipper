@@ -11,6 +11,8 @@ import CertificateProvider from '../../utils/CertificateProvider';
 import fs from 'fs-extra';
 
 export default class DesktopCertificateProvider extends CertificateProvider {
+  name = 'DesktopCertificateProvider';
+  medium = 'FS_ACCESS' as const;
   async getTargetDeviceId(): Promise<string> {
     // TODO: Could we use some real device serial? Currently, '' corresponds to a local device.
     // Whats if some app connects from a remote device?
