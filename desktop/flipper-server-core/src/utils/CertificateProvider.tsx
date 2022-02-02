@@ -82,7 +82,6 @@ export type SecureServerConfig = {
  * Flipper CA.
  */
 export default class CertificateProvider {
-  private didCertificateSetup = false;
   private server: ServerController;
 
   constructor(server: ServerController) {
@@ -127,9 +126,6 @@ export default class CertificateProvider {
   };
 
   async certificateSetup() {
-    if (this.didCertificateSetup) {
-      return;
-    }
     if (isTest()) {
       throw new Error('Server certificates not available in test');
     } else {
@@ -138,7 +134,6 @@ export default class CertificateProvider {
         'ensureServerCertExists',
       );
     }
-    this.didCertificateSetup = true;
   }
 
   async processCertificateSigningRequest(
@@ -155,7 +150,6 @@ export default class CertificateProvider {
     const rootFolder = await promisify(tmp.dir)();
     const certFolder = rootFolder + '/FlipperCerts/';
     const certsZipPath = rootFolder + '/certs.zip';
-    await this.certificateSetup();
     const caCert = await this.getCACertificate();
     await this.deployOrStageFileForMobileApp(
       appDirectory,
