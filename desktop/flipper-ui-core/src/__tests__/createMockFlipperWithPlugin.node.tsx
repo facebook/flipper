@@ -12,9 +12,9 @@ import {FlipperPlugin} from '../plugin';
 import {TestIdler} from '../utils/Idler';
 import {getAllClients} from '../reducers/connections';
 
-interface PersistedState {
+type PersistedState = {
   count: 1;
-}
+};
 
 class TestPlugin extends FlipperPlugin<any, any, any> {
   static id = 'TestPlugin';

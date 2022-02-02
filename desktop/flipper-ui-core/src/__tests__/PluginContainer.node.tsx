@@ -29,9 +29,9 @@ import {updateSettings} from '../reducers/settings';
 import {switchPlugin} from '../reducers/pluginManager';
 import {awaitPluginCommandQueueEmpty} from '../dispatcher/pluginManager';
 
-interface PersistedState {
+type PersistedState = {
   count: 1;
-}
+};
 
 class TestPlugin extends FlipperPlugin<any, any, any> {
   static id = 'TestPlugin';

@@ -213,12 +213,12 @@ export const DataList: (<T extends object>(
   enableArrow: true,
 };
 
-interface DataListItemProps {
+type DataListItemProps = {
   // TODO: add icon support
   title?: string | React.ReactElement;
   description?: string | React.ReactElement;
   enableArrow?: boolean;
-}
+};
 
 const ArrowWrapper = styled.div({
   flex: 0,

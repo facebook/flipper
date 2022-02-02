@@ -22,6 +22,9 @@ import noTsFileExtension, {
 import noIPrefixInterfaces, {
   RULE_NAME as noIPrefixInterfacesRuleName,
 } from './rules/noIPrefixInterfaces';
+import noInterfaceProps, {
+  RULE_NAME as noInterfacePropsRuleName,
+} from './rules/noInterfacePropsOrState';
 
 module.exports = {
   rules: {
@@ -30,5 +33,6 @@ module.exports = {
     [noConsoleErrorWithoutContextRuleName]: noConsoleErrorWithoutContext,
     [noTsFileExtensionRuleName]: noTsFileExtension,
     [noIPrefixInterfacesRuleName]: noIPrefixInterfaces,
+    [noInterfacePropsRuleName]: noInterfaceProps,
   },
 };

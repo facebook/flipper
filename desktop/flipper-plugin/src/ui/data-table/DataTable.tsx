@@ -53,7 +53,7 @@ import {debounce} from 'lodash';
 import {useInUnitTest} from '../../utils/useInUnitTest';
 import {createDataSource} from '../../state/createDataSource';
 
-interface DataTableBaseProps<T = any> {
+type DataTableBaseProps<T = any> = {
   columns: DataTableColumn<T>[];
   enableSearchbar?: boolean;
   enableAutoScroll?: boolean;
@@ -73,7 +73,7 @@ interface DataTableBaseProps<T = any> {
   onRenderEmpty?:
     | null
     | ((dataSource?: DataSource<T, T[keyof T]>) => React.ReactElement);
-}
+};
 
 export type ItemRenderer<T> = (
   item: T,
