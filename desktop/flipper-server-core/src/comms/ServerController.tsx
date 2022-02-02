@@ -45,6 +45,7 @@ import {
   extractAppNameFromCSR,
   loadSecureServerConfig,
 } from '../utils/certificateUtils';
+import DesktopCertificateProvider from '../devices/desktop/DesktopCertificateProvider';
 
 type ClientTimestampTracker = {
   insecureStart?: number;
@@ -83,7 +84,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   altInsecureServer: ServerAdapter | null = null;
   browserServer: ServerAdapter | null = null;
 
-  certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
 
   flipperServer: FlipperServerImpl;
@@ -93,7 +93,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   constructor(flipperServer: FlipperServerImpl) {
     super();
     this.flipperServer = flipperServer;
-    this.certificateProvider = new CertificateProvider(this);
     this.connectionTracker = new ConnectionTracker(this.logger);
   }
 
@@ -278,9 +277,35 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     appDirectory: string,
     medium: CertificateExchangeMedium,
   ): Promise<{deviceId: string}> {
+    let certificateProvider: CertificateProvider;
+    switch (clientQuery.os) {
+      case 'Android': {
+        certificateProvider = this.flipperServer.android.certificateProvider;
+        break;
+      }
+      case 'iOS': {
+        certificateProvider = this.flipperServer.ios.certificateProvider;
+        break;
+      }
+      // Used by Spark AR studio (search for SkylightFlipperClient)
+      // See D30992087
+      case 'MacOS':
+      case 'Windows': {
+        certificateProvider = new DesktopCertificateProvider(
+          this.flipperServer.keytarManager,
+        );
+        break;
+      }
+      default: {
+        throw new Error(
+          `ServerController.onProcessCSR -> os ${clientQuery.os} does not support certificate exchange.`,
+        );
+      }
+    }
+
     return new Promise((resolve, reject) => {
       reportPlatformFailures(
-        this.certificateProvider.processCertificateSigningRequest(
+        certificateProvider.processCertificateSigningRequest(
           unsanitizedCSR,
           clientQuery.os,
           appDirectory,
@@ -350,8 +375,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       const app_name = await extractAppNameFromCSR(csr);
       // TODO: allocate new object, kept now as is to keep changes minimal
       (query as any).device_id =
-        await this.certificateProvider.getTargetDeviceId(
-          query.os,
+        await this.flipperServer.android.certificateProvider.getTargetDeviceId(
           app_name,
           csr_path,
           csr,

@@ -19,9 +19,23 @@ import {
   getServerPortsConfig,
   getFlipperServerConfig,
 } from '../../FlipperServerConfig';
+import AndroidCertificateProvider from './AndroidCertificateProvider';
+import {assertNotNull} from '../../comms/Utilities';
 
 export class AndroidDeviceManager {
+  private adbClient?: ADBClient;
   constructor(public flipperServer: FlipperServerImpl) {}
+
+  public get certificateProvider() {
+    assertNotNull(
+      this.adbClient,
+      'AndroidDeviceManager.certificateProvider -> missing adbClient',
+    );
+    return new AndroidCertificateProvider(
+      this.flipperServer.keytarManager,
+      this.adbClient,
+    );
+  }
 
   private createDevice(
     adbClient: ADBClient,
@@ -176,6 +190,8 @@ export class AndroidDeviceManager {
           'AndroidDeviceManager.watchAndroidDevices -> adb not initialized',
         );
       }
+
+      this.adbClient = client;
 
       client
         .trackDevices()

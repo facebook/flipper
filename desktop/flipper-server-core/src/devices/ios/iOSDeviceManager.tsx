@@ -23,6 +23,8 @@ import {
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import {IdbConfig, setIdbConfig} from './idbConfig';
+import {assertNotNull} from '../../comms/Utilities';
+import iOSCertificateProvider from './iOSCertificateProvider';
 
 export class IOSDeviceManager {
   private portForwarders: Array<ChildProcess> = [];
@@ -38,6 +40,17 @@ export class IOSDeviceManager {
   simctlBridge: SimctlBridge = new SimctlBridge();
 
   constructor(private flipperServer: FlipperServerImpl) {}
+
+  public get certificateProvider() {
+    assertNotNull(
+      this.idbConfig,
+      'IOSDeviceManager.certificateProvider -> missing idbConfig',
+    );
+    return new iOSCertificateProvider(
+      this.flipperServer.keytarManager,
+      this.idbConfig,
+    );
+  }
 
   private forwardPort(port: number, multiplexChannelPort: number) {
     const child = childProcess.execFile(
