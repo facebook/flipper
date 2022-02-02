@@ -10,28 +10,20 @@
 import AndroidDevice from './AndroidDevice';
 import KaiOSDevice from './KaiOSDevice';
 import child_process from 'child_process';
-import {setAdbClient} from './adbClient';
 import {Client as ADBClient, Device} from 'adbkit';
 import {join} from 'path';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {notNull} from '../../utils/typeUtils';
-import {
-  getServerPortsConfig,
-  getFlipperServerConfig,
-} from '../../FlipperServerConfig';
+import {getServerPortsConfig} from '../../FlipperServerConfig';
 import AndroidCertificateProvider from './AndroidCertificateProvider';
-import {assertNotNull} from '../../comms/Utilities';
 
 export class AndroidDeviceManager {
-  private adbClient?: ADBClient;
-  constructor(public flipperServer: FlipperServerImpl) {}
-
-  public get certificateProvider() {
-    assertNotNull(
-      this.adbClient,
-      'AndroidDeviceManager.certificateProvider -> missing adbClient',
-    );
-    return new AndroidCertificateProvider(this.adbClient);
+  readonly certificateProvider: AndroidCertificateProvider;
+  constructor(
+    private readonly flipperServer: FlipperServerImpl,
+    private readonly adbClient: ADBClient,
+  ) {
+    this.certificateProvider = new AndroidCertificateProvider(this.adbClient);
   }
 
   private createDevice(
@@ -181,16 +173,7 @@ export class AndroidDeviceManager {
 
   async watchAndroidDevices() {
     try {
-      const client = await setAdbClient(getFlipperServerConfig().settings);
-      if (!client) {
-        throw new Error(
-          'AndroidDeviceManager.watchAndroidDevices -> adb not initialized',
-        );
-      }
-
-      this.adbClient = client;
-
-      client
+      this.adbClient
         .trackDevices()
         .then((tracker) => {
           tracker.on('error', (err) => {
@@ -212,7 +195,7 @@ export class AndroidDeviceManager {
 
           tracker.on('add', async (device) => {
             if (device.type !== 'offline') {
-              this.registerDevice(client, device);
+              this.registerDevice(this.adbClient, device);
             } else {
               console.warn(
                 `[conn] Found device ${device.id}, but it has status offline. If this concerns an emulator and the problem persists, try these solutins: https://stackoverflow.com/a/21330228/1983583, https://stackoverflow.com/a/56053223/1983583`,
@@ -224,7 +207,7 @@ export class AndroidDeviceManager {
             if (device.type === 'offline') {
               this.flipperServer.unregisterDevice(device.id);
             } else {
-              this.registerDevice(client, device);
+              this.registerDevice(this.adbClient, device);
             }
           });
 

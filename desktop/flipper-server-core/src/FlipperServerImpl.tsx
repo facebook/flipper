@@ -46,6 +46,9 @@ import {promises} from 'fs';
 // Electron 11 runs on Node 12 which does not support fs.promises.rm
 import rm from 'rimraf';
 import assert from 'assert';
+import {setAdbClient} from './devices/android/adbClient';
+import {setIdbConfig} from './devices/ios/idbConfig';
+import {assertNotNull} from './comms/Utilities';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
@@ -66,8 +69,8 @@ export class FlipperServerImpl implements FlipperServer {
   private readonly devices = new Map<string, ServerDevice>();
   state: FlipperServerState = 'pending';
   stateError: string | undefined = undefined;
-  android: AndroidDeviceManager;
-  ios: IOSDeviceManager;
+  android?: AndroidDeviceManager;
+  ios?: IOSDeviceManager;
   keytarManager: KeytarManager;
   pluginManager: PluginManager;
 
@@ -81,8 +84,6 @@ export class FlipperServerImpl implements FlipperServer {
       'Loaded flipper config, paths: ' + JSON.stringify(config.paths, null, 2),
     );
     const server = (this.server = new ServerController(this));
-    this.android = new AndroidDeviceManager(this);
-    this.ios = new IOSDeviceManager(this);
     this.keytarManager = new KeytarManager(keytarModule);
     // given flipper-dump, it might make more sense to have the plugin command
     // handling (like download, install, etc) moved to flipper-server & app,
@@ -161,10 +162,34 @@ export class FlipperServerImpl implements FlipperServer {
   async startDeviceListeners() {
     const asyncDeviceListenersPromises: Array<Promise<void>> = [];
     if (this.config.settings.enableAndroid) {
-      asyncDeviceListenersPromises.push(this.android.watchAndroidDevices());
+      asyncDeviceListenersPromises.push(
+        setAdbClient(this.config.settings)
+          .then((adbClient) => {
+            if (!adbClient) {
+              return;
+            }
+            this.android = new AndroidDeviceManager(this, adbClient);
+            return this.android.watchAndroidDevices();
+          })
+          .catch((e) => {
+            console.error(
+              'FlipperServerImpl.startDeviceListeners.watchAndroidDevices -> unexpected error',
+              e,
+            );
+          }),
+      );
     }
     if (this.config.settings.enableIOS) {
-      asyncDeviceListenersPromises.push(this.ios.watchIOSDevices());
+      const idbConfig = setIdbConfig(this.config.settings);
+      this.ios = new IOSDeviceManager(this, idbConfig);
+      asyncDeviceListenersPromises.push(
+        this.ios.watchIOSDevices().catch((e) => {
+          console.error(
+            'FlipperServerImpl.startDeviceListeners.watchIOSDevices -> unexpected error',
+            e,
+          );
+        }),
+      );
     }
     const asyncDeviceListeners = await Promise.all(
       asyncDeviceListenersPromises,
@@ -346,13 +371,20 @@ export class FlipperServerImpl implements FlipperServer {
         },
       };
     },
-    'android-get-emulators': async () => this.android.getAndroidEmulators(),
+    'android-get-emulators': async () => {
+      assertNotNull(this.android);
+      return this.android.getAndroidEmulators();
+    },
     'android-launch-emulator': async (name, coldBoot) =>
       launchEmulator(this.config.settings.androidHome, name, coldBoot),
-    'ios-get-simulators': async (bootedOnly) =>
-      this.ios.getSimulators(bootedOnly),
-    'ios-launch-simulator': async (udid) =>
-      this.ios.simctlBridge.launchSimulator(udid),
+    'ios-get-simulators': async (bootedOnly) => {
+      assertNotNull(this.ios);
+      return this.ios.getSimulators(bootedOnly);
+    },
+    'ios-launch-simulator': async (udid) => {
+      assertNotNull(this.ios);
+      return this.ios.simctlBridge.launchSimulator(udid);
+    },
     'persist-settings': async (settings) => saveSettings(settings),
     'persist-launcher-settings': async (settings) =>
       saveLauncherSettings(settings),

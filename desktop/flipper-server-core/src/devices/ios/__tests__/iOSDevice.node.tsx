@@ -88,8 +88,10 @@ test('test checkXcodeVersionMismatch with an incorrect Simulator.app', () => {
 });
 
 test('test queryDevices when simctl used', async () => {
-  const ios = new IOSDeviceManager(fakeFlipperServer);
-  (ios as any).idbConfig = getFlipperServerConfig().settings;
+  const ios = new IOSDeviceManager(
+    fakeFlipperServer,
+    getFlipperServerConfig().settings,
+  );
   ios.simctlBridge = fakeSimctlBridge;
 
   await ios.queryDevices(fakeSimctlBridge);
@@ -109,8 +111,10 @@ test('test queryDevices when simctl used', async () => {
 });
 
 test('test queryDevices when idb used', async () => {
-  const ios = new IOSDeviceManager(fakeFlipperServer);
-  (ios as any).idbConfig = getFlipperServerConfig().settings;
+  const ios = new IOSDeviceManager(
+    fakeFlipperServer,
+    getFlipperServerConfig().settings,
+  );
   ios.simctlBridge = fakeSimctlBridge;
 
   await ios.queryDevices(fakeIDBBridge);

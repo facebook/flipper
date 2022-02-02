@@ -24,6 +24,7 @@ import invariant from 'invariant';
 import DummyDevice from '../devices/DummyDevice';
 import {
   appNameWithUpdateHint,
+  assertNotNull,
   cloneClientQuerySafeForLogging,
   transformCertificateExchangeMediumToType,
 } from './Utilities';
@@ -281,10 +282,12 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     let certificateProvider: CertificateProvider;
     switch (clientQuery.os) {
       case 'Android': {
+        assertNotNull(this.flipperServer.android);
         certificateProvider = this.flipperServer.android.certificateProvider;
         break;
       }
       case 'iOS': {
+        assertNotNull(this.flipperServer.ios);
         certificateProvider = this.flipperServer.ios.certificateProvider;
 
         if (medium === 'WWW') {
@@ -377,6 +380,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     // For Android, device id might change
     if (csr_path && csr && query.os === 'Android') {
       const app_name = await extractAppNameFromCSR(csr);
+      assertNotNull(this.flipperServer.android);
       // TODO: allocate new object, kept now as is to keep changes minimal
       (query as any).device_id =
         await this.flipperServer.android.certificateProvider.getTargetDeviceId(

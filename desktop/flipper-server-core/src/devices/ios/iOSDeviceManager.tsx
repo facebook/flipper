@@ -22,14 +22,11 @@ import {
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
-import {IdbConfig, setIdbConfig} from './idbConfig';
-import {assertNotNull} from '../../comms/Utilities';
+import {IdbConfig} from './idbConfig';
 import iOSCertificateProvider from './iOSCertificateProvider';
 
 export class IOSDeviceManager {
   private portForwarders: Array<ChildProcess> = [];
-  private idbConfig?: IdbConfig;
-
   private portforwardingClient = path.join(
     getFlipperServerConfig().paths.staticPath,
     'PortForwardingMacApp.app',
@@ -39,14 +36,13 @@ export class IOSDeviceManager {
   );
   simctlBridge: SimctlBridge = new SimctlBridge();
 
-  constructor(private flipperServer: FlipperServerImpl) {}
+  readonly certificateProvider: iOSCertificateProvider;
 
-  public get certificateProvider() {
-    assertNotNull(
-      this.idbConfig,
-      'IOSDeviceManager.certificateProvider -> missing idbConfig',
-    );
-    return new iOSCertificateProvider(this.idbConfig);
+  constructor(
+    private readonly flipperServer: FlipperServerImpl,
+    private readonly idbConfig: IdbConfig,
+  ) {
+    this.certificateProvider = new iOSCertificateProvider(this.idbConfig);
   }
 
   private forwardPort(port: number, multiplexChannelPort: number) {
@@ -137,11 +133,9 @@ export class IOSDeviceManager {
   }
 
   public async watchIOSDevices() {
-    const settings = getFlipperServerConfig().settings;
-    this.idbConfig = setIdbConfig(settings);
     try {
       const isDetected = await iosUtil.isXcodeDetected();
-      if (settings.enablePhysicalIOS) {
+      if (this.idbConfig.enablePhysicalIOS) {
         this.startDevicePortForwarders();
       }
       try {
@@ -149,9 +143,9 @@ export class IOSDeviceManager {
         await this.checkXcodeVersionMismatch();
         // Awaiting the promise here to trigger immediate error handling.
         const bridge = await makeIOSBridge(
-          settings.idbPath,
+          this.idbConfig.idbPath,
           isDetected,
-          settings.enablePhysicalIOS,
+          this.idbConfig.enablePhysicalIOS,
         );
         this.queryDevicesForever(bridge);
       } catch (err) {
