@@ -7,7 +7,7 @@
  * @format
  */
 
-import {SecureServerConfig} from '../utils/CertificateProvider';
+import {SecureServerConfig} from '../utils/certificateUtils';
 import ServerAdapter, {ServerEventsListener} from './ServerAdapter';
 import ServerRSocket from './ServerRSocket';
 import SecureServerWebSocket from './SecureServerWebSocket';

@@ -41,6 +41,10 @@ import {
   getServerPortsConfig,
   getFlipperServerConfig,
 } from '../FlipperServerConfig';
+import {
+  extractAppNameFromCSR,
+  loadSecureServerConfig,
+} from '../utils/certificateUtils';
 
 type ClientTimestampTracker = {
   insecureStart?: number;
@@ -115,7 +119,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     }
     const {insecure, secure} = getServerPortsConfig().serverPorts;
 
-    const options = await this.certificateProvider.loadSecureServerConfig();
+    const options = await loadSecureServerConfig();
 
     console.info('[conn] secure server listening at port: ', secure);
     this.secureServer = await createServer(secure, this, options);
@@ -343,9 +347,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
 
     // For Android, device id might change
     if (csr_path && csr && query.os === 'Android') {
-      const app_name = await this.certificateProvider.extractAppNameFromCSR(
-        csr,
-      );
+      const app_name = await extractAppNameFromCSR(csr);
       // TODO: allocate new object, kept now as is to keep changes minimal
       (query as any).device_id =
         await this.certificateProvider.getTargetDeviceId(

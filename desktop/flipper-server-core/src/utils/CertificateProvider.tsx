@@ -11,64 +11,34 @@ import ServerController from '../comms/ServerController';
 import {promisify} from 'util';
 import fs from 'fs-extra';
 
-import {
-  openssl,
-  isInstalled as opensslInstalled,
-} from './openssl-wrapper-with-promises';
 import path from 'path';
-import tmp, {DirOptions, FileOptions} from 'tmp';
+import tmp, {DirOptions} from 'tmp';
 import iosUtil from '../devices/ios/iOSContainerUtility';
 import {reportPlatformFailures} from 'flipper-common';
 import {getAdbClient} from '../devices/android/adbClient';
 import * as androidUtil from '../devices/android/androidContainerUtility';
-import os from 'os';
 import archiver from 'archiver';
-import {timeout, isTest} from 'flipper-common';
+import {timeout} from 'flipper-common';
 import {v4 as uuid} from 'uuid';
 import {internGraphPOSTAPIRequest} from '../fb-stubs/internRequests';
 import {SERVICE_FLIPPER} from '../FlipperServerImpl';
 import {getIdbConfig} from '../devices/ios/idbConfig';
 import {assertNotNull} from '../comms/Utilities';
+import {
+  csrFileName,
+  deviceCAcertFile,
+  deviceClientCertFile,
+  ensureOpenSSLIsAvailable,
+  extractAppNameFromCSR,
+  generateClientCertificate,
+  getCACertificate,
+} from './certificateUtils';
 
 export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 
-const tmpFile = promisify(tmp.file) as (
-  options?: FileOptions,
-) => Promise<string>;
 const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
 
-// Desktop file paths
-const caKey = getFilePath('ca.key');
-const caCert = getFilePath('ca.crt');
-const serverKey = getFilePath('server.key');
-const serverCsr = getFilePath('server.csr');
-const serverSrl = getFilePath('server.srl');
-const serverCert = getFilePath('server.crt');
-
-// Device file paths
-const csrFileName = 'app.csr';
-const deviceCAcertFile = 'sonarCA.crt';
-const deviceClientCertFile = 'device.crt';
-
-const caSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=SonarCA';
-const serverSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=localhost';
-const minCertExpiryWindowSeconds = 24 * 60 * 60;
-const allowedAppNameRegex = /^[\w.-]+$/;
 const logTag = 'CertificateProvider';
-/*
- * RFC2253 specifies the unamiguous x509 subject format.
- * However, even when specifying this, different openssl implementations
- * wrap it differently, e.g "subject=X" vs "subject= X".
- */
-const x509SubjectCNRegex = /[=,]\s*CN=([^,]*)(,.*)?$/;
-
-export type SecureServerConfig = {
-  key: Buffer;
-  cert: Buffer;
-  ca: Buffer;
-  requestCert: boolean;
-  rejectUnauthorized: boolean;
-};
 
 /*
  * This class is responsible for generating and deploying server and client
@@ -125,17 +95,6 @@ export default class CertificateProvider {
     );
   };
 
-  async certificateSetup() {
-    if (isTest()) {
-      throw new Error('Server certificates not available in test');
-    } else {
-      await reportPlatformFailures(
-        this.ensureServerCertExists(),
-        'ensureServerCertExists',
-      );
-    }
-  }
-
   async processCertificateSigningRequest(
     unsanitizedCsr: string,
     os: string,
@@ -146,11 +105,11 @@ export default class CertificateProvider {
     if (csr === '') {
       return Promise.reject(new Error(`Received empty CSR from ${os} device`));
     }
-    await this.ensureOpenSSLIsAvailable();
+    await ensureOpenSSLIsAvailable();
     const rootFolder = await promisify(tmp.dir)();
     const certFolder = rootFolder + '/FlipperCerts/';
     const certsZipPath = rootFolder + '/certs.zip';
-    const caCert = await this.getCACertificate();
+    const caCert = await getCACertificate();
     await this.deployOrStageFileForMobileApp(
       appDirectory,
       deviceCAcertFile,
@@ -160,7 +119,7 @@ export default class CertificateProvider {
       medium,
       certFolder,
     );
-    const clientCert = await this.generateClientCertificate(csr);
+    const clientCert = await generateClientCertificate(csr);
     await this.deployOrStageFileForMobileApp(
       appDirectory,
       deviceClientCertFile,
@@ -170,7 +129,7 @@ export default class CertificateProvider {
       medium,
       certFolder,
     );
-    const appName = await this.extractAppNameFromCSR(csr);
+    const appName = await extractAppNameFromCSR(csr);
     const deviceId =
       medium === 'FS_ACCESS'
         ? await this.getTargetDeviceId(os, appName, appDirectory, csr)
@@ -221,33 +180,6 @@ export default class CertificateProvider {
     return Promise.resolve('unknown');
   }
 
-  private async ensureOpenSSLIsAvailable(): Promise<void> {
-    if (!(await opensslInstalled())) {
-      throw new Error(
-        "It looks like you don't have OpenSSL installed. Please install it to continue.",
-      );
-    }
-  }
-
-  private getCACertificate(): Promise<string> {
-    return fs.readFile(caCert, 'utf-8');
-  }
-
-  private generateClientCertificate(csr: string): Promise<string> {
-    console.debug('Creating new client cert', logTag);
-
-    return this.writeToTempFile(csr).then((path) => {
-      return openssl('x509', {
-        req: true,
-        in: path,
-        CA: caCert,
-        CAkey: caKey,
-        CAcreateserial: true,
-        CAserial: serverSrl,
-      });
-    });
-  }
-
   private getRelativePathInAppContainer(absolutePath: string) {
     const matches = /Application\/[^/]+\/(.*)/.exec(absolutePath);
     if (matches && matches.length === 2) {
@@ -280,7 +212,7 @@ export default class CertificateProvider {
       }
     }
 
-    const appName = await this.extractAppNameFromCSR(csr);
+    const appName = await extractAppNameFromCSR(csr);
 
     if (os === 'Android') {
       assertNotNull(this.adb);
@@ -542,168 +474,4 @@ export default class CertificateProvider {
   private santitizeString(csrString: string): string {
     return csrString.replace(/\r/g, '').trim();
   }
-
-  async extractAppNameFromCSR(csr: string): Promise<string> {
-    const path = await this.writeToTempFile(csr);
-    const subject = await openssl('req', {
-      in: path,
-      noout: true,
-      subject: true,
-      nameopt: true,
-      RFC2253: false,
-    });
-    await fs.unlink(path);
-    const matches = subject.trim().match(x509SubjectCNRegex);
-    if (!matches || matches.length < 2) {
-      throw new Error(`Cannot extract CN from ${subject}`);
-    }
-    const appName = matches[1];
-    if (!appName.match(allowedAppNameRegex)) {
-      throw new Error(
-        `Disallowed app name in CSR: ${appName}. Only alphanumeric characters and '.' allowed.`,
-      );
-    }
-    return appName;
-  }
-
-  async loadSecureServerConfig(): Promise<SecureServerConfig> {
-    await this.ensureOpenSSLIsAvailable();
-    await this.certificateSetup();
-    return {
-      key: await fs.readFile(serverKey),
-      cert: await fs.readFile(serverCert),
-      ca: await fs.readFile(caCert),
-      requestCert: true,
-      rejectUnauthorized: true, // can be false if necessary as we don't strictly need to verify the client
-    };
-  }
-
-  async ensureCertificateAuthorityExists(): Promise<void> {
-    if (!(await fs.pathExists(caKey))) {
-      return this.generateCertificateAuthority();
-    }
-    return this.checkCertIsValid(caCert).catch(() =>
-      this.generateCertificateAuthority(),
-    );
-  }
-
-  private async checkCertIsValid(filename: string): Promise<void> {
-    if (!(await fs.pathExists(filename))) {
-      throw new Error(`${filename} does not exist`);
-    }
-    // openssl checkend is a nice feature but it only checks for certificates
-    // expiring in the future, not those that have already expired.
-    // So we need a separate check for certificates that have already expired
-    // but since this involves parsing date outputs from openssl, which is less
-    // reliable, keeping both checks for safety.
-    try {
-      await openssl('x509', {
-        checkend: minCertExpiryWindowSeconds,
-        in: filename,
-      });
-    } catch (e) {
-      console.warn(
-        `Checking if certificate expire soon: ${filename}`,
-        logTag,
-        e,
-      );
-      const endDateOutput = await openssl('x509', {
-        enddate: true,
-        in: filename,
-        noout: true,
-      });
-      const dateString = endDateOutput.trim().split('=')[1].trim();
-      const expiryDate = Date.parse(dateString);
-      if (isNaN(expiryDate)) {
-        console.error(
-          'Unable to parse certificate expiry date: ' + endDateOutput,
-        );
-        throw new Error(
-          'Cannot parse certificate expiry date. Assuming it has expired.',
-        );
-      }
-      if (expiryDate <= Date.now() + minCertExpiryWindowSeconds * 1000) {
-        throw new Error('Certificate has expired or will expire soon.');
-      }
-    }
-  }
-
-  private async verifyServerCertWasIssuedByCA() {
-    const options: {
-      [key: string]: any;
-    } = {CAfile: caCert};
-    options[serverCert] = false;
-    const output = await openssl('verify', options);
-    const verified = output.match(/[^:]+: OK/);
-    if (!verified) {
-      // This should never happen, but if it does, we need to notice so we can
-      // generate a valid one, or no clients will trust our server.
-      throw new Error('Current server cert was not issued by current CA');
-    }
-  }
-
-  private async generateCertificateAuthority(): Promise<void> {
-    if (!(await fs.pathExists(getFilePath('')))) {
-      await fs.mkdir(getFilePath(''));
-    }
-    console.log('Generating new CA', logTag);
-    await openssl('genrsa', {out: caKey, '2048': false});
-    await openssl('req', {
-      new: true,
-      x509: true,
-      subj: caSubject,
-      key: caKey,
-      out: caCert,
-    });
-  }
-
-  private async ensureServerCertExists(): Promise<void> {
-    const allExist = await Promise.all([
-      fs.pathExists(serverKey),
-      fs.pathExists(serverCert),
-      fs.pathExists(caCert),
-    ]).then((exist) => exist.every(Boolean));
-    if (!allExist) {
-      return this.generateServerCertificate();
-    }
-
-    try {
-      await this.checkCertIsValid(serverCert);
-      await this.verifyServerCertWasIssuedByCA();
-    } catch (e) {
-      console.warn('Not all certs are valid, generating new ones', e);
-      await this.generateServerCertificate();
-    }
-  }
-
-  private async generateServerCertificate(): Promise<void> {
-    await this.ensureCertificateAuthorityExists();
-    console.warn('Creating new server cert', logTag);
-    await openssl('genrsa', {out: serverKey, '2048': false});
-    await openssl('req', {
-      new: true,
-      key: serverKey,
-      out: serverCsr,
-      subj: serverSubject,
-    });
-    await openssl('x509', {
-      req: true,
-      in: serverCsr,
-      CA: caCert,
-      CAkey: caKey,
-      CAcreateserial: true,
-      CAserial: serverSrl,
-      out: serverCert,
-    });
-  }
-
-  private async writeToTempFile(content: string): Promise<string> {
-    const path = await tmpFile();
-    await fs.writeFile(path, content);
-    return path;
-  }
-}
-
-function getFilePath(fileName: string): string {
-  return path.resolve(os.homedir(), '.flipper', 'certs', fileName);
 }
