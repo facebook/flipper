@@ -57,7 +57,6 @@ export async function downloadIcons(buildFolder: string) {
           // Be default, only 5xx are retried but we're getting the odd 404
           // which goes away on a retry for some reason.
           retryOnHttpResponse: (res) => res.status >= 400,
-          // @ts-expect-error not available in typings, but provided in docs (if this errors in future, remove the comment!)
           retryOnHttpError: () => true,
         },
       })

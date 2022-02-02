@@ -7,7 +7,7 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "devDependencies": {
-    "@adobe/node-fetch-retry": "^2.0.0",
+    "@adobe/node-fetch-retry": "^2.1.0",
     "@babel/code-frame": "^7.16.7",
     "@types/adobe__node-fetch-retry": "^1.0.3",
     "@types/babel__code-frame": "^7.0.3",
