@@ -7,34 +7,56 @@
  * @format
  */
 
-import {checkXcodeVersionMismatch} from '../iOSDeviceManager';
-import {getLogger} from 'flipper-common';
-import {FlipperServerImpl} from '../../../FlipperServerImpl';
+import {checkXcodeVersionMismatch, IOSDeviceManager} from '../iOSDeviceManager';
 // eslint-disable-next-line node/no-extraneous-import
 import {getRenderHostInstance} from 'flipper-ui-core';
 import {
   getFlipperServerConfig,
   setFlipperServerConfig,
 } from '../../../FlipperServerConfig';
+import {IOSDeviceParams} from 'flipper-common';
 
 let fakeSimctlBridge: any;
 let fakeIDBBridge: any;
-let hasCalledSimctlActiveDevices = false;
-let hasCalledIDBActiveDevices = false;
+let fakeFlipperServer: any;
+const fakeDevices: IOSDeviceParams[] = [
+  {
+    udid: 'luke',
+    type: 'emulator',
+    name: 'Luke',
+  },
+  {
+    udid: 'yoda',
+    type: 'emulator',
+    name: 'Yoda',
+  },
+];
+const fakeExistingDevices = [
+  {
+    info: {os: 'iOS'},
+    serial: 'luke',
+  },
+  {
+    info: {os: 'Android'},
+    serial: 'yoda',
+  },
+  {
+    info: {os: 'iOS'},
+    serial: 'plapatine',
+  },
+];
 
 beforeEach(() => {
-  hasCalledSimctlActiveDevices = false;
   fakeSimctlBridge = {
-    getActiveDevices: async (_bootedOnly: boolean) => {
-      hasCalledSimctlActiveDevices = true;
-      return [];
-    },
+    getActiveDevices: jest.fn().mockImplementation(async () => fakeDevices),
   };
   fakeIDBBridge = {
-    getActiveDevices: async (_bootedOnly: boolean) => {
-      hasCalledIDBActiveDevices = true;
-      return [];
-    },
+    getActiveDevices: jest.fn().mockImplementation(async () => fakeDevices),
+  };
+  fakeFlipperServer = {
+    getDevices: jest.fn().mockImplementation(() => fakeExistingDevices),
+    registerDevice: jest.fn(),
+    unregisterDevice: jest.fn(),
   };
   setFlipperServerConfig(getRenderHostInstance().serverConfig);
 });
@@ -65,26 +87,44 @@ test('test checkXcodeVersionMismatch with an incorrect Simulator.app', () => {
   );
 });
 
-test('test queryDevices when simctl used', () => {
-  const flipperServer = new FlipperServerImpl(
-    getFlipperServerConfig(),
-    getLogger(),
+test('test queryDevices when simctl used', async () => {
+  const ios = new IOSDeviceManager(fakeFlipperServer);
+  (ios as any).idbConfig = getFlipperServerConfig().settings;
+  ios.simctlBridge = fakeSimctlBridge;
+
+  await ios.queryDevices(fakeSimctlBridge);
+
+  expect(fakeSimctlBridge.getActiveDevices).toBeCalledTimes(1);
+  expect(fakeIDBBridge.getActiveDevices).toBeCalledTimes(0);
+
+  expect(fakeFlipperServer.registerDevice).toBeCalledTimes(1);
+  expect(fakeFlipperServer.registerDevice).toBeCalledWith(
+    expect.objectContaining({
+      serial: 'yoda',
+    }),
   );
-  (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
-  flipperServer.ios.simctlBridge = fakeSimctlBridge;
-  flipperServer.ios.queryDevices(fakeSimctlBridge);
-  expect(hasCalledSimctlActiveDevices).toEqual(true);
-  expect(hasCalledIDBActiveDevices).toEqual(false);
+
+  expect(fakeFlipperServer.unregisterDevice).toBeCalledTimes(1);
+  expect(fakeFlipperServer.unregisterDevice).toBeCalledWith('plapatine');
 });
 
-test('test queryDevices when idb used', () => {
-  const flipperServer = new FlipperServerImpl(
-    getFlipperServerConfig(),
-    getLogger(),
+test('test queryDevices when idb used', async () => {
+  const ios = new IOSDeviceManager(fakeFlipperServer);
+  (ios as any).idbConfig = getFlipperServerConfig().settings;
+  ios.simctlBridge = fakeSimctlBridge;
+
+  await ios.queryDevices(fakeIDBBridge);
+
+  expect(fakeSimctlBridge.getActiveDevices).toBeCalledTimes(0);
+  expect(fakeIDBBridge.getActiveDevices).toBeCalledTimes(1);
+
+  expect(fakeFlipperServer.registerDevice).toBeCalledTimes(1);
+  expect(fakeFlipperServer.registerDevice).toBeCalledWith(
+    expect.objectContaining({
+      serial: 'yoda',
+    }),
   );
-  (flipperServer.ios as any).idbConfig = getFlipperServerConfig().settings;
-  flipperServer.ios.simctlBridge = fakeSimctlBridge;
-  flipperServer.ios.queryDevices(fakeIDBBridge);
-  expect(hasCalledSimctlActiveDevices).toEqual(false);
-  expect(hasCalledIDBActiveDevices).toEqual(true);
+
+  expect(fakeFlipperServer.unregisterDevice).toBeCalledTimes(1);
+  expect(fakeFlipperServer.unregisterDevice).toBeCalledWith('plapatine');
 });
