@@ -46,6 +46,7 @@ import {
   loadSecureServerConfig,
 } from '../utils/certificateUtils';
 import DesktopCertificateProvider from '../devices/desktop/DesktopCertificateProvider';
+import WWWCertificateProvider from '../fb-stubs/WWWCertificateProvider';
 
 type ClientTimestampTracker = {
   insecureStart?: number;
@@ -285,15 +286,19 @@ class ServerController extends EventEmitter implements ServerEventsListener {
       }
       case 'iOS': {
         certificateProvider = this.flipperServer.ios.certificateProvider;
+
+        if (medium === 'WWW') {
+          certificateProvider = new WWWCertificateProvider(
+            this.flipperServer.keytarManager,
+          );
+        }
         break;
       }
       // Used by Spark AR studio (search for SkylightFlipperClient)
       // See D30992087
       case 'MacOS':
       case 'Windows': {
-        certificateProvider = new DesktopCertificateProvider(
-          this.flipperServer.keytarManager,
-        );
+        certificateProvider = new DesktopCertificateProvider();
         break;
       }
       default: {
@@ -309,7 +314,6 @@ class ServerController extends EventEmitter implements ServerEventsListener {
           unsanitizedCSR,
           clientQuery.os,
           appDirectory,
-          medium,
         ),
         'processCertificateSigningRequest',
       )

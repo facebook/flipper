@@ -31,10 +31,7 @@ export class AndroidDeviceManager {
       this.adbClient,
       'AndroidDeviceManager.certificateProvider -> missing adbClient',
     );
-    return new AndroidCertificateProvider(
-      this.flipperServer.keytarManager,
-      this.adbClient,
-    );
+    return new AndroidCertificateProvider(this.adbClient);
   }
 
   private createDevice(

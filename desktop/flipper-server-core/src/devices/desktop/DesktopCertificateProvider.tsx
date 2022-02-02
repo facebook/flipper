@@ -18,7 +18,7 @@ export default class DesktopCertificateProvider extends CertificateProvider {
     return '';
   }
 
-  protected async handleFSBasedDeploy(
+  protected async deployOrStageFileForDevice(
     destination: string,
     filename: string,
     contents: string,

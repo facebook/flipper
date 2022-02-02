@@ -8,21 +8,20 @@
  */
 
 import {IdbConfig} from './idbConfig';
-import {KeytarManager} from '../../utils/keytar';
 import CertificateProvider from '../../utils/CertificateProvider';
 import iosUtil from './iOSContainerUtility';
 import fs from 'fs-extra';
 import {promisify} from 'util';
 import tmp, {DirOptions} from 'tmp';
-import {csrFileName} from '../../utils/certificateUtils';
+import {csrFileName, extractAppNameFromCSR} from '../../utils/certificateUtils';
 import path from 'path';
 
 const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export default class iOSCertificateProvider extends CertificateProvider {
-  constructor(keytarManager: KeytarManager, private idbConfig: IdbConfig) {
-    super(keytarManager);
+  constructor(private idbConfig: IdbConfig) {
+    super();
   }
 
   async getTargetDeviceId(
@@ -62,13 +61,13 @@ export default class iOSCertificateProvider extends CertificateProvider {
     return matchingIds[0];
   }
 
-  protected async handleFSBasedDeploy(
+  protected async deployOrStageFileForDevice(
     destination: string,
     filename: string,
     contents: string,
     csr: string,
-    appName: string,
   ) {
+    const appName = await extractAppNameFromCSR(csr);
     try {
       await fs.writeFile(destination + filename, contents);
     } catch (err) {

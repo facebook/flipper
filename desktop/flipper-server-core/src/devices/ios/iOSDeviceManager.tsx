@@ -46,10 +46,7 @@ export class IOSDeviceManager {
       this.idbConfig,
       'IOSDeviceManager.certificateProvider -> missing idbConfig',
     );
-    return new iOSCertificateProvider(
-      this.flipperServer.keytarManager,
-      this.idbConfig,
-    );
+    return new iOSCertificateProvider(this.idbConfig);
   }
 
   private forwardPort(port: number, multiplexChannelPort: number) {

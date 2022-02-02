@@ -9,15 +9,14 @@
 
 import CertificateProvider from '../../utils/CertificateProvider';
 import {Client} from 'adbkit';
-import {KeytarManager} from '../../utils/keytar';
 import * as androidUtil from './androidContainerUtility';
-import {csrFileName} from '../../utils/certificateUtils';
+import {csrFileName, extractAppNameFromCSR} from '../../utils/certificateUtils';
 
 const logTag = 'AndroidCertificateProvider';
 
 export default class AndroidCertificateProvider extends CertificateProvider {
-  constructor(keytarManager: KeytarManager, private adb: Client) {
-    super(keytarManager);
+  constructor(private adb: Client) {
+    super();
   }
 
   async getTargetDeviceId(
@@ -75,13 +74,13 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     return matchingIds[0];
   }
 
-  protected async handleFSBasedDeploy(
+  protected async deployOrStageFileForDevice(
     destination: string,
     filename: string,
     contents: string,
     csr: string,
-    appName: string,
   ) {
+    const appName = await extractAppNameFromCSR(csr);
     const deviceId = await this.getTargetDeviceId(appName, destination, csr);
     await androidUtil.push(
       this.adb,
