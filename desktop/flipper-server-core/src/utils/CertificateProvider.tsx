@@ -255,9 +255,9 @@ export default class CertificateProvider {
   }
 
   private getRelativePathInAppContainer(absolutePath: string) {
-    const matches = /Application\/[^/]+\/(.*)/.exec(absolutePath);
-    if (matches && matches.length === 2) {
-      return matches[1];
+    const matches = /Application( Support)?\/[^/]+\/(.*)/.exec(absolutePath);
+    if (matches && matches.length === 3) {
+      return matches[2];
     }
     throw new Error("Path didn't match expected pattern: " + absolutePath);
   }
