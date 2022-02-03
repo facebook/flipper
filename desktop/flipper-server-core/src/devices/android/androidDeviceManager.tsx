@@ -91,16 +91,14 @@ export class AndroidDeviceManager {
           reject(e);
         }
       } catch (e) {
+        const message = `${e.message ?? e}`;
         if (
-          e &&
-          e.message &&
-          e.message === `Failure: 'device still connecting'`
+          message.includes('device still connecting') ||
+          message.includes('device still authorizing')
         ) {
-          console.debug('Device still connecting: ' + device.id);
+          console.log('[conn] Device still connecting: ' + device.id);
         } else {
-          const isAuthorizationError = (e?.message as string)?.includes(
-            'device unauthorized',
-          );
+          const isAuthorizationError = message.includes('device unauthorized');
           if (!isAuthorizationError) {
             console.error('Failed to connect to android device', e);
           }
@@ -109,7 +107,7 @@ export class AndroidDeviceManager {
             title: 'Could not connect to ' + device.id,
             description: isAuthorizationError
               ? 'Make sure to authorize debugging on the phone'
-              : 'Failed to setup connection: ' + e,
+              : 'Failed to setup connection: ' + message,
           });
         }
         resolve(undefined); // not ready yet, we will find it in the next tick
