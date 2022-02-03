@@ -12,6 +12,7 @@ import {execFile} from 'promisify-child-process';
 import adbConfig from './adbConfig';
 import adbkit, {Client} from 'adbkit';
 import path from 'path';
+import {pathExists} from 'fs-extra';
 
 type Config = {
   androidHome: string;
@@ -37,7 +38,11 @@ export async function initializeAdbClient(
    manually before requesting a client. */
 async function createClient(config: Config): Promise<Client> {
   const androidHome = config.androidHome;
-  const adbPath = path.resolve(androidHome, 'platform-tools', 'adb');
+  let adbPath = path.resolve(androidHome, 'platform-tools', 'adb');
+  if (!(await pathExists(adbPath))) {
+    console.info('falling back to the alternative adb path');
+    adbPath = path.resolve(androidHome, 'adb');
+  }
   return reportPlatformFailures<Client>(
     execFile(adbPath, ['start-server']).then(() =>
       adbkit.createClient(adbConfig()),
