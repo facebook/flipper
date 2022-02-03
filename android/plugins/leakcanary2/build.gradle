@@ -20,9 +20,9 @@ android {
     }
 
     dependencies {
-        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+        compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
         implementation project(':android')
-        implementation deps.leakcanary2
+        compileOnly deps.leakcanary2
         compileOnly deps.jsr305
     }
 }
