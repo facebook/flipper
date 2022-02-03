@@ -145,7 +145,7 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
         new FlipperReceiver() {
           @Override
           public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
-            if (!ensureFrescoInitialized(responder)) {
+            if (!ensureFrescoInitialized()) {
               return;
             }
 
@@ -166,7 +166,7 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
         new FlipperReceiver() {
           @Override
           public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
-            if (!ensureFrescoInitialized(responder)) {
+            if (!ensureFrescoInitialized()) {
               return;
             }
 
@@ -200,7 +200,7 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
           @Override
           public void onReceive(FlipperObject params, final FlipperResponder responder)
               throws Exception {
-            if (!ensureFrescoInitialized(responder)) {
+            if (!ensureFrescoInitialized()) {
               return;
             }
 
@@ -325,7 +325,7 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
         new FlipperReceiver() {
           @Override
           public void onReceive(FlipperObject params, FlipperResponder responder) {
-            if (!ensureFrescoInitialized(responder)) {
+            if (!ensureFrescoInitialized()) {
               return;
             }
 
@@ -349,7 +349,7 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
         new FlipperReceiver() {
           @Override
           public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
-            if (!ensureFrescoInitialized(responder)) {
+            if (!ensureFrescoInitialized()) {
               return;
             }
 
@@ -365,7 +365,7 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
         new FlipperReceiver() {
           @Override
           public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
-            if (!ensureFrescoInitialized(responder)) {
+            if (!ensureFrescoInitialized()) {
               return;
             }
 
@@ -457,13 +457,12 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
         .build();
   }
 
-  private boolean ensureFrescoInitialized(FlipperResponder responder) {
+  private boolean ensureFrescoInitialized() {
     mPerfLogger.startMarker("Sonar.Fresco.ensureFrescoInitialized");
     try {
       Fresco.getImagePipelineFactory();
       return true;
     } catch (NullPointerException e) {
-      respondError(responder, "Fresco is not initialized yet");
       return false;
     } finally {
       mPerfLogger.endMarker("Sonar.Fresco.ensureFrescoInitialized");
