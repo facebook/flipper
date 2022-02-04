@@ -125,7 +125,9 @@ export function sortPluginsByName(
   if (isDevicePluginDefinition(b) && !isDevicePluginDefinition(a)) {
     return 1;
   }
-  return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
+  return getPluginTitle(a).toLowerCase() > getPluginTitle(b).toLocaleLowerCase()
+    ? 1
+    : -1;
 }
 
 export function isDevicePlugin(activePlugin: ActivePluginListItem) {
