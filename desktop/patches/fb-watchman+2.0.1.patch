@@ -1,0 +1,13 @@
+diff --git a/node_modules/fb-watchman/index.js b/node_modules/fb-watchman/index.js
+index 9f46e16..b7625cf 100644
+--- a/node_modules/fb-watchman/index.js
++++ b/node_modules/fb-watchman/index.js
+@@ -166,7 +166,7 @@ Client.prototype.connect = function() {
+           'https://facebook.github.io/watchman/docs/install.html ' +
+           'for installation instructions';
+     }
+-    console.error('Watchman: ', error.message);
++    console.warn('Watchman: ', error.message);
+     self.emit('error', error);
+   }
+ 
