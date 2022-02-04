@@ -72,6 +72,7 @@ export class FlipperServerImpl implements FlipperServer {
   ios?: IOSDeviceManager;
   keytarManager: KeytarManager;
   pluginManager: PluginManager;
+  unresponsiveClients: Set<string> = new Set();
 
   constructor(
     public config: FlipperServerConfig,
@@ -118,14 +119,22 @@ export class FlipperServerImpl implements FlipperServer {
         medium: CertificateExchangeMedium;
         deviceID: string;
       }) => {
-        this.emit('notification', {
-          type: 'error',
-          title: `Timed out establishing connection with "${client.appName}" on "${client.deviceName}".`,
-          description:
-            medium === 'WWW'
-              ? `Verify that both your computer and mobile device are on Lighthouse/VPN that you are logged in to Facebook Intern so that certificates can be exhanged. See: https://fburl.com/flippervpn`
-              : 'Verify that your client is connected to Flipper and that there is no error related to idb or adb.',
-        });
+        const clientIdentifier = `${client.deviceName}#${client.appName}`;
+        if (!this.unresponsiveClients.has(clientIdentifier)) {
+          this.unresponsiveClients.add(clientIdentifier);
+          this.emit('notification', {
+            type: 'error',
+            title: `Timed out establishing connection with "${client.appName}" on "${client.deviceName}".`,
+            description:
+              medium === 'WWW'
+                ? `Verify that both your computer and mobile device are on Lighthouse/VPN that you are logged in to Facebook Intern so that certificates can be exhanged. See: https://fburl.com/flippervpn`
+                : 'Verify that your client is connected to Flipper and that there is no error related to idb or adb.',
+          });
+        } else {
+          console.warn(
+            `[conn] Client still unresponsive: "${client.appName}" on "${client.deviceName}"`,
+          );
+        }
       },
     );
   }
