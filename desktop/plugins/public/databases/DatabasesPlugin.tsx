@@ -216,7 +216,7 @@ const DataTable = React.memo(
     currentStructure: Structure | null;
     onRowEdited: (changes: {[key: string]: string | null}) => void;
   }) =>
-    page ? (
+    page && page.columns ? (
       <Layout.Horizontal grow>
         <ManagedTable
           tableKey={`databases-${page.databaseId}-${page.table}`}
