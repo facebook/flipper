@@ -43,18 +43,19 @@ export function buildClientId(clientInfo: {
   device: string;
   device_id: string;
 }): string {
+  const escapedName = escape(clientInfo.app);
+  const result = `${escapedName}#${clientInfo.os}#${clientInfo.device}#${clientInfo.device_id}`;
   // N.B.: device_id can be empty, which designates the host device
   for (const key of ['app', 'os', 'device'] as Array<
     keyof ClientIdConstituents
   >) {
     if (!clientInfo[key]) {
       console.error(
-        `Attempted to build clientId with invalid ${key}: "${clientInfo[key]}`,
+        `Attempted to build clientId with invalid ${key}: "${clientInfo[key]} (identifier: ${result})`,
       );
     }
   }
-  const escapedName = escape(clientInfo.app);
-  return `${escapedName}#${clientInfo.os}#${clientInfo.device}#${clientInfo.device_id}`;
+  return result;
 }
 
 export function deconstructClientId(clientId: string): ClientIdConstituents {
