@@ -33,7 +33,15 @@ class FlipperConnectionImpl : public FlipperConnection {
       responder->error(folly::dynamic::object("message", errorMessage));
       return;
     }
-    receivers_.at(method)(params, responder);
+    try {
+      receivers_.at(method)(params, responder);
+    } catch (const std::exception& ex) {
+      std::string errorMessage = "Receiver " + method + " failed with error. ";
+      std::string reason = ex.what();
+      errorMessage += "Error: '" + reason + "'.";
+      log("Error: " + errorMessage);
+      responder->error(folly::dynamic::object("message", errorMessage));
+    }
   }
 
   void send(const std::string& method, const folly::dynamic& params) override {
