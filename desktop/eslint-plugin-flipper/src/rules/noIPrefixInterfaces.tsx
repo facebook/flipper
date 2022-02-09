@@ -47,7 +47,7 @@ export default createESLintRule<Options, MessageIds>({
       },
     };
   },
-});
+}) as any /* unnameable return type */;
 
 function isLetter(x: string | undefined): boolean {
   return typeof x === 'string' && /^[a-z]$/i.test(x);
