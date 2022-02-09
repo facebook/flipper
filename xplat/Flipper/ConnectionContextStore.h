@@ -19,6 +19,14 @@ namespace flipper {
 
 class ConnectionContextStore {
  public:
+  enum StoreItem {
+    CSR,
+    FLIPPER_CA,
+    CLIENT_CERT,
+    PRIVATE_KEY,
+    CERTIFICATE,
+    CONNECTION_CONFIG,
+  };
   ConnectionContextStore(DeviceData deviceData);
   bool hasRequiredFiles();
   std::string getCertificateSigningRequest();
@@ -26,6 +34,7 @@ class ConnectionContextStore {
   std::string getCertificateDirectoryPath();
   std::string getCACertificatePath();
   std::string getDeviceId();
+  std::string getPath(StoreItem storeItem);
   /**
    * Get medium over which the certificate was received.
    */

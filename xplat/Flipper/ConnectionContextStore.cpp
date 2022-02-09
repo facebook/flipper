@@ -150,6 +150,23 @@ std::string ConnectionContextStore::getCACertificatePath() {
   return absoluteFilePath(FLIPPER_CA_FILE_NAME);
 }
 
+std::string ConnectionContextStore::getPath(StoreItem storeItem) {
+  switch (storeItem) {
+    case CSR:
+      return absoluteFilePath(CSR_FILE_NAME);
+    case FLIPPER_CA:
+      return absoluteFilePath(FLIPPER_CA_FILE_NAME);
+    case CLIENT_CERT:
+      return absoluteFilePath(CLIENT_CERT_FILE_NAME);
+    case PRIVATE_KEY:
+      return absoluteFilePath(PRIVATE_KEY_FILE);
+    case CERTIFICATE:
+      return absoluteFilePath(CERTIFICATE_FILE_NAME);
+    case CONNECTION_CONFIG:
+      return absoluteFilePath(CONNECTION_CONFIG_FILE);
+  }
+}
+
 bool ConnectionContextStore::resetState() {
   // Clear in-memory state
   csr = "";
