@@ -105,6 +105,8 @@ export interface ServerEventsListener {
    * // TODO: payload should become JSON
    */
   onClientMessage(clientId: string, payload: string): void;
+
+  onClientSetupError(clientQuery: ClientQuery, error: any): void;
 }
 
 /**
@@ -178,12 +180,7 @@ abstract class ServerAdapter {
         });
         return response;
       } catch (e) {
-        console.warn(
-          `[conn] Failed to exchange certificate with ${clientQuery.app} on ${
-            clientQuery.device || clientQuery.device_id
-          }`,
-          e,
-        );
+        this.listener.onClientSetupError(clientQuery, e);
       }
     }
 

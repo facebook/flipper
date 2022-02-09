@@ -64,10 +64,6 @@ type ClientCsrQuery = {
   csr_path?: string | undefined;
 };
 
-interface ServerController {
-  on(event: 'error', callback: (err: Error) => void): this;
-}
-
 /**
  * Responsible of creating and managing the actual underlying servers:
  * - Insecure (used for certificate exchange)
@@ -76,7 +72,10 @@ interface ServerController {
  *
  * Additionally, it manages client connections.
  */
-class ServerController extends EventEmitter implements ServerEventsListener {
+export class ServerController
+  extends EventEmitter
+  implements ServerEventsListener
+{
   connections: Map<string, ClientInfo> = new Map();
   timestamps: Map<string, ClientTimestampTracker> = new Map();
 
@@ -168,7 +167,7 @@ class ServerController extends EventEmitter implements ServerEventsListener {
   onConnectionCreated(
     clientQuery: SecureClientQuery,
     clientConnection: ClientConnection,
-    downgrade: boolean,
+    downgrade?: boolean,
   ): Promise<ClientDescription> {
     const {app, os, device, device_id, sdk_version, csr, csr_path, medium} =
       clientQuery;
@@ -361,6 +360,26 @@ class ServerController extends EventEmitter implements ServerEventsListener {
     return null;
   }
 
+  onClientSetupError(clientQuery: ClientQuery, e: any) {
+    console.warn(
+      `[conn] Failed to exchange certificate with ${clientQuery.app} on ${
+        clientQuery.device || clientQuery.device_id
+      }`,
+      e,
+    );
+    const client: UninitializedClient = {
+      os: clientQuery.os,
+      deviceName: clientQuery.device,
+      appName: appNameWithUpdateHint(clientQuery),
+    };
+    this.emit('client-setup-error', {
+      client,
+      error: `[conn] Failed to exchange certificate with ${
+        clientQuery.app
+      } on ${clientQuery.device || clientQuery.device_id}: ${e}`,
+    });
+  }
+
   /**
    * Creates a Client and sets the underlying connection.
    * @param connection A client connection to communicate between server and client.
@@ -526,8 +545,6 @@ class ConnectionTracker {
     }
   }
 }
-
-export default ServerController;
 
 function clientQueryToKey(clientQuery: ClientQuery): string {
   return `${clientQuery.app}/${clientQuery.os}/${clientQuery.device}/${clientQuery.device_id}`;

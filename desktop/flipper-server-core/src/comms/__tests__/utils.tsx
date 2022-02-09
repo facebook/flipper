@@ -62,4 +62,5 @@ export const createMockSEListener = (): ServerEventsListener => ({
   onConnectionClosed: jest.fn(),
   onError: jest.fn(),
   onClientMessage: jest.fn(),
+  onClientSetupError: jest.fn(),
 });

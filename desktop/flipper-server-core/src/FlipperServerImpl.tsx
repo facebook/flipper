@@ -8,7 +8,7 @@
  */
 
 import EventEmitter from 'events';
-import ServerController from './comms/ServerController';
+import {ServerController} from './comms/ServerController';
 import {CertificateExchangeMedium} from './utils/CertificateProvider';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
 import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
