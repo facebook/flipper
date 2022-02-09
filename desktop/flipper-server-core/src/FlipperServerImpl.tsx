@@ -333,9 +333,13 @@ export class FlipperServerImpl implements FlipperServer {
       return Array.from(this.devices.values()).map((d) => d.info);
     },
     'device-supports-screenshot': async (serial: string) =>
-      this.getDevice(serial).screenshotAvailable(),
+      this.devices.has(serial)
+        ? this.getDevice(serial).screenshotAvailable()
+        : false,
     'device-supports-screencapture': async (serial: string) =>
-      this.getDevice(serial).screenCaptureAvailable(),
+      this.devices.has(serial)
+        ? this.getDevice(serial).screenCaptureAvailable()
+        : false,
     'device-take-screenshot': async (serial: string) =>
       Base64.fromUint8Array(await this.getDevice(serial).screenshot()),
     'device-start-screencapture': async (serial, destination) =>
