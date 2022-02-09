@@ -18,7 +18,7 @@
     "@babel/core": "^7.16.12",
     "@babel/runtime": "^7.16.7",
     "babel-jest": "^27.5.0",
-    "jest": "^27.4.5",
+    "jest": "^27.5.0",
     "metro-react-native-babel-preset": "^0.67.0",
     "react-test-renderer": "17.0.2",
     "relative-deps": "^1.0.7"
