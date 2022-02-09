@@ -106,4 +106,4 @@ export default createESLintRule<Options, MessageIds>({
       },
     };
   },
-});
+}) as any /* unnameable return type */;

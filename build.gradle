@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.0'
+        classpath 'com.android.tools.build:gradle:7.1.1'
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.18.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.6.10"
@@ -20,7 +20,7 @@ buildscript {
 
 plugins {
     id 'de.undercouch.download' version '4.1.2'
-    id 'com.github.ben-manes.versions' version '0.41.0'
+    id 'com.github.ben-manes.versions' version '0.42.0'
 }
 
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
@@ -67,7 +67,7 @@ ext.deps = [
         // First-party
         soloader           : 'com.facebook.soloader:soloader:0.10.3',
         fbjni              : 'com.facebook.fbjni:fbjni:0.3.0',
-        screenshot         : 'com.facebook.testing.screenshot:core:0.14.0',
+        screenshot         : 'com.facebook.testing.screenshot:core:0.15.0',
         boltsTasks         : 'com.parse.bolts:bolts-tasks:1.4.0',
         websocket          : 'org.java-websocket:Java-WebSocket:1.5.2',
         // Annotations

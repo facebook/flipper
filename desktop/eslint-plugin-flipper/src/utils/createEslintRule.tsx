@@ -9,4 +9,6 @@
 
 import {ESLintUtils} from '@typescript-eslint/experimental-utils';
 
-export const createESLintRule = ESLintUtils.RuleCreator(() => ``);
+export type RuleCreator = ReturnType<typeof ESLintUtils.RuleCreator>;
+
+export const createESLintRule: RuleCreator = ESLintUtils.RuleCreator(() => ``);

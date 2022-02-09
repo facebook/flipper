@@ -239,6 +239,8 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
 }
 
 bool FlipperConnectionManagerImpl::connectSecurely() {
+  client_ = nullptr;
+
   auto port = useLegacySocketProvider ? securePort : altSecurePort;
   auto endpoint = FlipperConnectionEndpoint(deviceData_.host, port, true);
 
