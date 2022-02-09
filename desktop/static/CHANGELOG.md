@@ -1,3 +1,10 @@
+# 0.133.0 (9/2/2022)
+
+ * [D33976028](https://github.com/facebook/flipper/search?q=D33976028&type=Commits) -  Fixed 'device still authorizing' errors showing up while connecting to an Android device
+ * [D33976460](https://github.com/facebook/flipper/search?q=D33976460&type=Commits) -  Don't show errors for clients that fail to connect in a timely fashion repeatedly.
+ * [D34080726](https://github.com/facebook/flipper/search?q=D34080726&type=Commits) -  Release an existing client before attempting a secure connection
+
+
 # 0.132.0 (2/2/2022)
 
  * [D33890235](https://github.com/facebook/flipper/search?q=D33890235&type=Commits) -  Fallback to RSockets if cert exchange fails even if the connection was successful.
