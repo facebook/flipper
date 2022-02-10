@@ -32,7 +32,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
     appDirectory: string,
     csr: string,
   ): Promise<string> {
-    const matches = /\/Devices\/([^/]+)\//.exec(appName);
+    const matches = /\/Devices\/([^/]+)\//.exec(appDirectory);
     if (matches && matches.length == 2) {
       // It's a simulator, the deviceId is in the filepath.
       return matches[1];
