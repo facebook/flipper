@@ -17,6 +17,8 @@ import path from 'path';
 
 const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
 
+const logTag = 'iOSCertificateProvider';
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export default class iOSCertificateProvider extends CertificateProvider {
   name = 'iOSCertificateProvider';
@@ -43,13 +45,22 @@ export default class iOSCertificateProvider extends CertificateProvider {
       throw new Error('No iOS devices found');
     }
     const deviceMatchList = targets.map(async (target) => {
-      const isMatch = await this.iOSDeviceHasMatchingCSR(
-        appDirectory,
-        target.udid,
-        appName,
-        csr,
-      );
-      return {id: target.udid, isMatch};
+      try {
+        const isMatch = await this.iOSDeviceHasMatchingCSR(
+          appDirectory,
+          target.udid,
+          appName,
+          csr,
+        );
+        return {id: target.udid, isMatch};
+      } catch (e) {
+        console.info(
+          `Unable to check for matching CSR in ${target.udid}:${appName}`,
+          logTag,
+          e,
+        );
+        return {id: target.udid, isMatch: false};
+      }
     });
     const devices = await Promise.all(deviceMatchList);
     const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
