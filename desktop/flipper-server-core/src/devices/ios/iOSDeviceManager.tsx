@@ -192,11 +192,14 @@ export class IOSDeviceManager {
 
   async checkXcodeVersionMismatch() {
     try {
-      const {stdout: xcodeSelectStdout} = await exec('xcode-select -p');
+      const [{stdout: xcodeSelectStdout}, {stdout: simulatorProcessStdout}] =
+        await Promise.all([
+          exec('xcode-select -p'),
+          exec(
+            "pgrep Simulator | xargs ps -o command | grep -v grep | grep Simulator.app | awk '{print $1}'",
+          ),
+        ]);
       const xcodeCLIVersion = xcodeSelectStdout!.toString().trim();
-      const {stdout: simulatorProcessStdout} = await exec(
-        "pgrep Simulator | xargs ps -o command | grep -v grep | grep Simulator.app | awk '{print $1}'",
-      );
       const runningSimulatorApplications = simulatorProcessStdout!
         .toString()
         .split('\n')
