@@ -195,7 +195,7 @@ export class IOSDeviceManager {
       let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
       xcodeCLIVersion = xcodeCLIVersion!.toString().trim();
       const {stdout} = await exec(
-        "pgrep Simulator | xargs ps | grep Simulator.app | awk '{print $NF}'",
+        "pgrep Simulator | xargs ps -o command | grep -v grep | grep Simulator.app | awk '{print $1}'",
       );
       for (const runningSimulatorApp of stdout!.toString().split('\n')) {
         if (!runningSimulatorApp) {
