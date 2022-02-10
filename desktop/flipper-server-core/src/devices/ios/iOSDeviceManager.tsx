@@ -192,29 +192,28 @@ export class IOSDeviceManager {
 
   async checkXcodeVersionMismatch() {
     try {
-      let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
-      xcodeCLIVersion = xcodeCLIVersion!.toString().trim();
-      const {stdout} = await exec(
+      const {stdout: xcodeSelectStdout} = await exec('xcode-select -p');
+      const xcodeCLIVersion = xcodeSelectStdout!.toString().trim();
+      const {stdout: simulatorProcessStdout} = await exec(
         "pgrep Simulator | xargs ps -o command | grep -v grep | grep Simulator.app | awk '{print $1}'",
       );
-      for (const runningSimulatorApp of stdout!.toString().split('\n')) {
-        if (!runningSimulatorApp) {
-          continue;
-        }
-        if (runningSimulatorApp.startsWith(xcodeCLIVersion)) {
-          continue;
-        }
-        const runningVersion =
-          runningSimulatorApp.split('/Contents/Developer')[0] +
-          '/Contents/Developer';
-        const errorMessage = `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this. For example: "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"`;
-        this.flipperServer.emit('notification', {
-          type: 'error',
-          title: 'Xcode version mismatch',
-          description: '' + errorMessage,
-        });
-        break;
+      const runningSimulatorApplications = simulatorProcessStdout!
+        .toString()
+        .split('\n')
+        .filter((application) => application.length > 0);
+      const mismatchedVersion = checkXcodeVersionMismatch(
+        runningSimulatorApplications,
+        xcodeCLIVersion,
+      );
+      if (mismatchedVersion === undefined) {
+        return;
       }
+      const errorMessage = `Xcode version mismatch: Simulator is running from "${mismatchedVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${xcodeCLIVersion}" can fix this. For example: "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"`;
+      this.flipperServer.emit('notification', {
+        type: 'error',
+        title: 'Xcode version mismatch',
+        description: '' + errorMessage,
+      });
     } catch (e) {
       console.error('Failed to determine Xcode version:', e);
     }
