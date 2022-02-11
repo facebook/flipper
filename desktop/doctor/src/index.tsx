@@ -16,6 +16,7 @@ import * as watchman from 'fb-watchman';
 import * as fs from 'fs';
 import * as path from 'path';
 import type {FlipperDoctor} from 'flipper-common';
+import * as fs_extra from 'fs-extra';
 
 export function getHealthchecks(): FlipperDoctor.Healthchecks {
   return {
@@ -186,6 +187,12 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                     return {
                       hasProblem: true,
                       message: `xcode-select has no Xcode selected, You can select it using command "sudo xcode-select -switch <path/to/>Xcode.app".`,
+                    };
+                  }
+                  if ((await fs_extra.pathExists(selectedXcode)) == false) {
+                    return {
+                      hasProblem: true,
+                      message: `xcode-select has path of ${selectedXcode}, however this path does not exist on disk. Run "sudo xcode-select --switch" with a valid Xcode.app path.`,
                     };
                   }
                   return {
