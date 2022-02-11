@@ -204,18 +204,17 @@ export class IOSDeviceManager {
         .toString()
         .split('\n')
         .filter((application) => application.length > 0);
-      const mismatchedVersion = checkXcodeVersionMismatch(
+      const errorMessage = checkXcodeVersionMismatch(
         runningSimulatorApplications,
         xcodeCLIVersion,
       );
-      if (mismatchedVersion === undefined) {
+      if (errorMessage === undefined) {
         return;
       }
-      const errorMessage = `Xcode version mismatch: Simulator is running from "${mismatchedVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${xcodeCLIVersion}" can fix this. For example: "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"`;
       this.flipperServer.emit('notification', {
         type: 'error',
         title: 'Xcode version mismatch',
-        description: '' + errorMessage,
+        description: errorMessage,
       });
     } catch (e) {
       console.error('Failed to determine Xcode version:', e);
@@ -223,7 +222,7 @@ export class IOSDeviceManager {
   }
 }
 
-export function checkXcodeVersionMismatch(
+function confirmSimulatorAppMatchesThatOfXcodeSelect(
   runningSimulatorApps: Array<string>,
   xcodeCLIVersion: string,
 ): string | undefined {
@@ -240,4 +239,24 @@ export function checkXcodeVersionMismatch(
     );
   }
   return undefined;
+}
+
+export function checkXcodeVersionMismatch(
+  runningSimulatorApps: Array<string>,
+  xcodeCLIVersion: string,
+): string | undefined {
+  if (runningSimulatorApps.length === 0) {
+    return undefined;
+  }
+  if (xcodeCLIVersion == '/Library/Developer/CommandLineTools') {
+    return `A Simulator is running and "xcode-select" has not been used, please run "xcode-select" for the Xcode that is running the simulator at ${runningSimulatorApps}`;
+  }
+  const mismatchedVersion = confirmSimulatorAppMatchesThatOfXcodeSelect(
+    runningSimulatorApps,
+    xcodeCLIVersion,
+  );
+  if (mismatchedVersion === undefined) {
+    return;
+  }
+  return `Xcode version mismatch: Simulator is running from "${mismatchedVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${xcodeCLIVersion}" can fix this. For example: "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"`;
 }

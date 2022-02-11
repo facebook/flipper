@@ -75,6 +75,14 @@ test('test checkXcodeVersionMismatch with correct Simulator.app', () => {
   expect(invalidVersion).toEqual(undefined);
 });
 
+test('test checkXcodeVersionMismatch with no running Simulator.app', () => {
+  const invalidVersion = checkXcodeVersionMismatch(
+    [],
+    '/Applications/Xcode.app/Contents/Developer',
+  );
+  expect(invalidVersion).toEqual(undefined);
+});
+
 test('test checkXcodeVersionMismatch with an incorrect Simulator.app', () => {
   const invalidVersion = checkXcodeVersionMismatch(
     [
@@ -82,8 +90,28 @@ test('test checkXcodeVersionMismatch with an incorrect Simulator.app', () => {
     ],
     '/Applications/Xcode.app/Contents/Developer',
   );
-  expect(invalidVersion).toEqual(
+  expect(invalidVersion).toContain(
     '/Applications/Xcode_Incorrect.app/Contents/Developer',
+  );
+});
+
+test('test checkXcodeVersionMismatch with no sims running and no xcode-select', () => {
+  const invalidVersion = checkXcodeVersionMismatch(
+    [],
+    '/Library/Developer/CommandLineTools',
+  );
+  expect(invalidVersion).toEqual(undefined);
+});
+
+test('test checkXcodeVersionMismatch with no sims running and no xcode-select', () => {
+  const invalidVersion = checkXcodeVersionMismatch(
+    [
+      '/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator',
+    ],
+    '/Library/Developer/CommandLineTools',
+  );
+  expect(invalidVersion).toContain(
+    'A Simulator is running and "xcode-select" has not been used',
   );
 });
 
