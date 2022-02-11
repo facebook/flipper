@@ -175,13 +175,22 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 isRequired: true,
                 run: async (_: FlipperDoctor.EnvironmentInfo) => {
                   const result = await tryExecuteCommand('xcode-select -p');
-                  const hasProblem = result.hasProblem;
-                  const message = hasProblem
-                    ? `Xcode version is not selected. You can select it using command "sudo xcode-select -switch <path/to/>Xcode.app". ${result.message}.`
-                    : `Xcode version is selected. ${result.message}.`;
+                  if (result.hasProblem) {
+                    return {
+                      hasProblem: true,
+                      message: `Xcode version is not selected. You can select it using command "sudo xcode-select -switch <path/to/>Xcode.app". ${result.message}.`,
+                    };
+                  }
+                  const selectedXcode = result.stdout!.toString().trim();
+                  if (selectedXcode == '/Library/Developer/CommandLineTools') {
+                    return {
+                      hasProblem: true,
+                      message: `xcode-select has no Xcode selected, You can select it using command "sudo xcode-select -switch <path/to/>Xcode.app".`,
+                    };
+                  }
                   return {
-                    hasProblem,
-                    message,
+                    hasProblem: false,
+                    message: `xcode-select has path of ${selectedXcode}.`,
                   };
                 },
               },
@@ -290,12 +299,13 @@ export async function runHealthchecks(): Promise<
 
 async function tryExecuteCommand(
   command: string,
-): Promise<FlipperDoctor.HealthcheckRunResult> {
+): Promise<FlipperDoctor.SubprocessHealtcheckRunResult> {
   try {
     const output = await promisify(exec)(command);
     return {
       hasProblem: false,
       message: `Command "${command}" successfully executed with output: ${output.stdout}`,
+      stdout: output.stdout,
     };
   } catch (err) {
     return {

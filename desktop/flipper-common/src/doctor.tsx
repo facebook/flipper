@@ -69,6 +69,10 @@ export namespace FlipperDoctor {
     message: string;
   };
 
+  export type SubprocessHealtcheckRunResult = HealthcheckRunResult & {
+    stdout?: string;
+  };
+
   export type CategoryResult = [
     string,
     {
