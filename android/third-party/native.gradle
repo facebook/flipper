@@ -193,48 +193,6 @@ task finalizeLibEvent(dependsOn: [prepareLibEvent2], type: Copy) {
     into "$externalDir/LibEvent/libevent-2.1.11-stable/"
 }
 
-task downloadOpenSSLSource(dependsOn: [], type: Download) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    src 'https://github.com/passy/openssl-android/releases/download/1.1.1k/openssl-1.1.1k.tar.gz'
-    onlyIfNewer true
-    overwrite false
-    dest new File(downloadsDir, getDownloadFileName(src))
-}
-
-task downloadOpenSSLLibs(dependsOn: [], type: Download) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    src 'https://github.com/passy/openssl-android/releases/download/1.1.1k/openssl-1.1.1k-prebuilt.tar.gz'
-    onlyIfNewer true
-    overwrite false
-    dest new File(downloadsDir, getDownloadFileName(src))
-}
-
-task prepareOpenSSL(dependsOn: [downloadOpenSSLSource, downloadOpenSSLLibs], type: Copy) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    from tarTree(downloadOpenSSLSource.dest)
-    from tarTree(downloadOpenSSLLibs.dest)
-    from './overrides/OpenSSL/'
-    include 'openssl-1.1.1k/**/*'
-    include 'libs/**/*'
-    includeEmptyDirs = false
-    into "$externalDir/OpenSSL/"
-}
-
-task configureOpenSSL(dependsOn: [prepareOpenSSL], type: Exec) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    workingDir "$externalDir/OpenSSL/openssl-1.1.1k/"
-    // This is only to generate a buildconfig.h in the next step. I **believe**
-    // that the options here don't really matter for that file.
-    commandLine './Configure', 'linux-generic64'
-}
-
-task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    workingDir "$externalDir/OpenSSL/openssl-1.1.1k/"
-    commandLine 'make', 'build_generated'
-    onlyIf { !file("$externalDir/OpenSSL/openssl-1.1.1k/include/openssl/opensslconf.h").exists() }
-}
-
 task downloadRSocket(dependsOn: [], type: Download) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.7.tar.gz'
@@ -265,7 +223,6 @@ def allTasks = [
     prepareBoost,
     finalizeFolly,
     finalizeLibEvent,
-    finalizeOpenSSL,
     prepareRSocket,
     writeCacheRevision,
 ]

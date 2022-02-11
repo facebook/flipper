@@ -23,23 +23,30 @@ android {
             }
         }
     }
+
     lintOptions {
         abortOnError false
     }
+
     sourceSets {
         main {
             manifest.srcFile './ApplicationManifest.xml'
         }
     }
+
     externalNativeBuild {
         cmake {
             path './CMakeLists.txt'
         }
     }
 
+    buildFeatures {
+        prefab true
+    }
+
     dependencies {
         implementation project(':glog')
         implementation project(':doubleconversion')
-
+        implementation deps.openssl
     }
 }

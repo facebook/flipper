@@ -12,7 +12,6 @@ set(glog_DIR ${third_party_ndk}/glog)
 set(BOOST_DIR ${third_party_ndk}/boost/boost_1_63_0/)
 set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-2.1.11-stable/)
 set(DOUBLECONVERSION_DIR ${third_party_ndk}/double-conversion/double-conversion-3.0.0/)
-set(OPENSSL_DIR ${third_party_ndk}/OpenSSL/openssl-1.1.1k/)
 
 set(RSOCKET_ROOT_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-${RSOCKET_VERSION})
 set(RSOCKET_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-${RSOCKET_VERSION}/rsocket)
@@ -61,6 +60,8 @@ add_compile_options(
     -Wno-tautological-constant-compare
     )
 
+find_package(openssl REQUIRED CONFIG)
+
 add_library(${PACKAGE_NAME} STATIC ${SRC_FILES})
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
@@ -77,15 +78,9 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
         ${LIBEVENT_DIR}/
         ${LIBEVENT_DIR}/include/
         ${LIBEVENT_DIR}/include/event2
-        ${OPENSSL_DIR}/include/
         ${glog_DIR}
         ${glog_DIR}/../
         ${glog_DIR}/glog-0.3.5/src/
     )
 
-
-set(OPENSSL_LINK_DIRECTORIES ${third_party_ndk}/OpenSSL/libs/${ANDROID_ABI}/)
-
-find_path(OPENSSL_LIBRARY libssl.a HINTS ${OPENSSL_LINK_DIRECTORIES})
-
-target_link_libraries(${PACKAGE_NAME}  folly glog double-conversion log event ${OPENSSL_LINK_DIRECTORIES}/libssl.a ${OPENSSL_LINK_DIRECTORIES}/libcrypto.a)
+target_link_libraries(${PACKAGE_NAME}  folly glog double-conversion log event openssl::ssl openssl::crypto)

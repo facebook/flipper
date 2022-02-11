@@ -62,6 +62,7 @@ android {
 
     dependencies {
         compileOnly deps.proguardAnnotations
+        implementation deps.openssl
         implementation deps.fbjni
         implementation deps.soloader
         implementation deps.jsr305
