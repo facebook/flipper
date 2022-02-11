@@ -17,7 +17,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang'
+                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared'
             }
         }
     }
@@ -29,9 +29,18 @@ android {
             manifest.srcFile './ApplicationManifest.xml'
         }
     }
+
     externalNativeBuild {
         cmake {
             path './CMakeLists.txt'
         }
+    }
+
+    buildFeatures {
+        prefab true
+    }
+
+    dependencies {
+        implementation deps.openssl
     }
 }

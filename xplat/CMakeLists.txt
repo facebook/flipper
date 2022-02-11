@@ -42,6 +42,7 @@ add_compile_options(-DFOLLY_NO_CONFIG
                     -Wno-tautological-constant-compare
                     )
 
+find_package(openssl REQUIRED CONFIG)
 
 file(GLOB SOURCES Flipper/*.cpp)
 add_library(${PACKAGE_NAME} STATIC ${SOURCES})
@@ -70,7 +71,4 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
         ${glog_DIR}/glog-0.3.5/src/
     )
 
-set(OPENSSL_LINK_DIRECTORIES ${external_DIR}/OpenSSL/libs/${ANDROID_ABI}/)
-find_path(OPENSSL_LIBRARY libssl.a HINTS ${OPENSSL_LINK_DIRECTORIES})
-
-target_link_libraries(${PACKAGE_NAME} folly rsocket glog double-conversion log event ${OPENSSL_LINK_DIRECTORIES}/libssl.a ${OPENSSL_LINK_DIRECTORIES}/libcrypto.a)
+target_link_libraries(${PACKAGE_NAME} folly rsocket glog double-conversion log event openssl::ssl openssl::crypto)
