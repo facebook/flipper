@@ -11,7 +11,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "@typescript-eslint/experimental-utils": "^5.10.2",
-    "@typescript-eslint/parser": "^5.10.2",
+    "@typescript-eslint/parser": "^5.11.0",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {},
