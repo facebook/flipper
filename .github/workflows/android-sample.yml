@@ -1,33 +1,36 @@
-name: Build Sample App
+name: Build Android Sample App
 
 on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: set up JDK
-      uses: actions/setup-java@v1
-      with:
-        java-version: 11
-    - name: Compute build cache
-      run: ./scripts/checksum-android.sh checksum-android.txt
-    - uses: actions/cache@v2
-      with:
-        path: |
-          ~/.gradle/caches/modules-*
-          ~/.gradle/caches/jars-*
-          ~/.gradle/caches/build-cache-*
-        key: gradle-${{ hashFiles('checksum-android.txt') }}
-    - name: Build sample apps with Gradle
-      run: ./gradlew :sample:assembleDebug :tutorial:assembleDebug
-    - name: Build remaining artifacts with Gradle
-      run: ./gradlew assembleDebug
-    - name: upload artifact
-      uses: actions/upload-artifact@v1
-      with:
-        name: sample-app.apk
-        path: android/sample/build/outputs/apk/debug/sample-debug.apk
+      - uses: actions/checkout@v2
+      - name: set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Compute build cache
+        run: ./scripts/checksum-android.sh checksum-android.txt
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches/modules-*
+            ~/.gradle/caches/jars-*
+            ~/.gradle/caches/build-cache-*
+          key: gradle-${{ hashFiles('checksum-android.txt') }}
+      - name: Build debug artifact
+        run: ./gradlew :android:assembleDebug
+      - name: Verify libraries in artifact
+        run: scripts/verify-android-libraries.sh
+      - name: Build sample apps with Gradle
+        run: ./gradlew :sample:assembleDebug :tutorial:assembleDebug
+      - name: Build remaining artifacts with Gradle
+        run: ./gradlew assembleDebug
+      - name: upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: sample-app.apk
+          path: android/sample/build/outputs/apk/debug/sample-debug.apk
