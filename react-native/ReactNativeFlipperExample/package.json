@@ -15,11 +15,11 @@
     "react-native-flipper": "^0.131.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.0",
-    "@babel/runtime": "^7.17.0",
-    "babel-jest": "^27.5.0",
-    "jest": "^27.5.0",
-    "metro-react-native-babel-preset": "^0.67.0",
+    "@babel/core": "^7.17.2",
+    "@babel/runtime": "^7.17.2",
+    "babel-jest": "^27.5.1",
+    "jest": "^27.5.1",
+    "metro-react-native-babel-preset": "^0.68.0",
     "react-test-renderer": "17.0.2",
     "relative-deps": "^1.0.7"
   },
