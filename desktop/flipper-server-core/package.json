@@ -16,7 +16,7 @@
     "adbkit-logcat": "^2.0.1",
     "archiver": "^5.3.0",
     "async-mutex": "^0.3.2",
-    "axios": "^0.25.0",
+    "axios": "^0.26.0",
     "flipper-common": "0.0.0",
     "flipper-doctor": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
@@ -51,8 +51,8 @@
     "@types/rsocket-tcp-server": "^0.0.2",
     "@types/split2": "^3.2.1",
     "@types/tmp": "^0.2.2",
-    "@types/ws": "^8.2.2",
     "@types/which": "^2.0.1",
+    "@types/ws": "^8.2.2",
     "memorystream": "^0.3.1",
     "tmp": "^0.2.1"
   },
