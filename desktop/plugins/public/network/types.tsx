@@ -28,6 +28,7 @@ export interface Request {
   responseHeaders?: Array<Header>;
   responseData?: string | Uint8Array | undefined;
   responseLength?: number;
+  requestLength?: number;
   responseIsMock?: boolean;
   duration?: number;
   insights?: Insights;

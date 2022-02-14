@@ -197,14 +197,26 @@ function escapedString(str: string) {
   return "'" + str + "'";
 }
 
-export function getResponseLength(request: ResponseInfo): number {
-  const lengthString = request.headers
-    ? getHeaderValue(request.headers, 'content-length')
+export function getResponseLength(response: ResponseInfo): number {
+  const lengthString = response.headers
+    ? getHeaderValue(response.headers, 'content-length')
     : undefined;
   if (lengthString) {
     return parseInt(lengthString, 10);
-  } else if (request.data) {
-    return Buffer.byteLength(request.data, 'base64');
+  } else if (response.data) {
+    return Buffer.byteLength(response.data, 'base64');
+  }
+  return 0;
+}
+
+export function getRequestLength(request: Request): number {
+  const lengthString = request.requestHeaders
+    ? getHeaderValue(request.requestHeaders, 'content-length')
+    : undefined;
+  if (lengthString) {
+    return parseInt(lengthString, 10);
+  } else if (request.requestData) {
+    return Buffer.byteLength(request.requestData, 'base64');
   }
   return 0;
 }

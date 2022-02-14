@@ -49,6 +49,7 @@ import {
   convertRequestToCurlCommand,
   getHeaderValue,
   getResponseLength,
+  getRequestLength,
   formatStatus,
   formatBytes,
   formatDuration,
@@ -553,6 +554,7 @@ function updateRequestWithResponseInfo(
     responseData: decodeBody(response.headers, response.data),
     responseIsMock: response.isMock,
     responseLength: getResponseLength(response),
+    requestLength: getRequestLength(request),
     duration: response.timestamp - request.requestTime.getTime(),
     insights: response.insights ?? undefined,
   };
@@ -676,8 +678,15 @@ const baseColumns: DataTableColumn<Request>[] = [
     align: 'right',
   },
   {
+    key: 'requestLength',
+    title: 'Request Size',
+    width: 100,
+    formatters: formatBytes,
+    align: 'right',
+  },
+  {
     key: 'responseLength',
-    title: 'Size',
+    title: 'Response Size',
     width: 100,
     formatters: formatBytes,
     align: 'right',
