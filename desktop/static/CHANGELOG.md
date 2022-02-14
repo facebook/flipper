@@ -1,3 +1,8 @@
+# 0.134.0 (14/2/2022)
+
+ * [D34143349](https://github.com/facebook/flipper/search?q=D34143349&type=Commits) -  Consume openssl from maven (prefab)
+
+
 # 0.133.0 (9/2/2022)
 
  * [D33976028](https://github.com/facebook/flipper/search?q=D33976028&type=Commits) -  Fixed 'device still authorizing' errors showing up while connecting to an Android device
