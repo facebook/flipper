@@ -86,6 +86,8 @@ export class IOSDeviceManager {
     this.portForwarders = [
       this.forwardPort(8089, 8079),
       this.forwardPort(8088, 8078),
+      this.forwardPort(9089, 9079),
+      this.forwardPort(9088, 9078),
     ];
   }
 
