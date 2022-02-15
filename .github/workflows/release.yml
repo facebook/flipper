@@ -216,6 +216,7 @@ jobs:
     - name: Set up npm token
       run: echo "//registry.yarnpkg.com/:_authToken=${{ secrets.FLIPPER_NPM_TOKEN }}" >> ~/.npmrc
     - name: Publish flipper-server on NPM
+      if: ${{ needs.release.outputs.tag != '' }}
       run: |
         tar zxvf flipper-server.tgz/flipper-server.tgz
         cd package
