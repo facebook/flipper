@@ -17,8 +17,8 @@ class FlipperProps {
 
   private static final String FLIPPER_PORTS_PROP_NAME = "flipper.ports";
   private static final String FLIPPER_ALT_PORTS_PROP_NAME = "flipper.alt.ports";
-  private static final int DEFAULT_INSECURE_PORT = 8089;
-  private static final int DEFAULT_SECURE_PORT = 8088;
+  private static final int DEFAULT_INSECURE_PORT = 9089;
+  private static final int DEFAULT_SECURE_PORT = 9088;
   private static final int DEFAULT_ALT_INSECURE_PORT = 9089;
   private static final int DEFAULT_ALT_SECURE_PORT = 9088;
   private static final String TAG = "Flipper";

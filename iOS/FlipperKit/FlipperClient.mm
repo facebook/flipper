@@ -154,11 +154,11 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 - (void)start {
 #if !TARGET_OS_OSX && !TARGET_OS_SIMULATOR
   _secureServer = [FKPortForwardingServer new];
-  [_secureServer forwardConnectionsFromPort:8088];
-  [_secureServer listenForMultiplexingChannelOnPort:8078];
+  [_secureServer forwardConnectionsFromPort:9088];
+  [_secureServer listenForMultiplexingChannelOnPort:9078];
   _insecureServer = [FKPortForwardingServer new];
-  [_insecureServer forwardConnectionsFromPort:8089];
-  [_insecureServer listenForMultiplexingChannelOnPort:8079];
+  [_insecureServer forwardConnectionsFromPort:9089];
+  [_insecureServer listenForMultiplexingChannelOnPort:9079];
 #endif
   _cppClient->start();
 }

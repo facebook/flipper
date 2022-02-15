@@ -75,8 +75,6 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   int failedConnectionAttempts_ = 0;
   int failedSocketConnectionAttempts = 0;
 
-  bool useLegacySocketProvider = false;
-
   std::shared_ptr<ConnectionContextStore> contextStore_;
   std::shared_ptr<FlipperConnectionManagerWrapper> implWrapper_;
 

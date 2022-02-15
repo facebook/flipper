@@ -39,8 +39,8 @@ struct FlipperInitConfig {
   */
   folly::EventBase* connectionWorker;
 
-  int insecurePort = 8089;
-  int securePort = 8088;
+  int insecurePort = 9089;
+  int securePort = 9088;
   int altInsecurePort = 9089;
   int altSecurePort = 9088;
 };

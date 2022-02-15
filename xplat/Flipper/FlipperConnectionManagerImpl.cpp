@@ -31,8 +31,6 @@ static constexpr int reconnectIntervalSeconds = 2;
 // To be bumped for every core platform interface change.
 static constexpr int sdkVersion = 4;
 
-static constexpr int maxFailedSocketConnectionAttempts = 3;
-
 using namespace folly;
 
 namespace facebook {
@@ -79,7 +77,6 @@ class ConnectionEvents {
             impl->connectionIsTrusted_ = false;
             impl->callbacks_->onDisconnected();
           }
-          impl->reevaluateSocketProvider();
           impl->reconnect();
           break;
       }
@@ -199,7 +196,7 @@ void FlipperConnectionManagerImpl::startSync() {
 }
 
 bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
-  auto port = useLegacySocketProvider ? insecurePort : altInsecurePort;
+  auto port = insecurePort;
   auto endpoint = FlipperConnectionEndpoint(deviceData_.host, port, false);
 
   int medium = certProvider_ != nullptr
@@ -222,7 +219,6 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
   connectionIsTrusted_ = false;
 
   if (!newClient->connect(this)) {
-    reevaluateSocketProvider();
     connectingInsecurely->fail("Failed to connect");
     return false;
   }
@@ -241,7 +237,7 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
 bool FlipperConnectionManagerImpl::connectSecurely() {
   client_ = nullptr;
 
-  auto port = useLegacySocketProvider ? securePort : altSecurePort;
+  auto port = securePort;
   auto endpoint = FlipperConnectionEndpoint(deviceData_.host, port, true);
 
   int medium = certProvider_ != nullptr
@@ -289,7 +285,6 @@ bool FlipperConnectionManagerImpl::connectSecurely() {
   connectionIsTrusted_ = true;
 
   if (!newClient->connect(this)) {
-    reevaluateSocketProvider();
     connectingSecurely->fail("Failed to connect");
     return false;
   }
@@ -465,28 +460,6 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
         });
   });
   failedConnectionAttempts_ = 0;
-}
-
-/**
-    Check for the maximum number of failed socket connection attempts.
-    If exceeded, then swap the default socket provider. If the maximum
-    number of failed attempts is reached again, swap again the socket provider.
-
-    WebSocket -> RSocket -> WebSocket -> ...
- */
-void FlipperConnectionManagerImpl::reevaluateSocketProvider() {
-  if (failedSocketConnectionAttempts < maxFailedSocketConnectionAttempts) {
-    ++failedSocketConnectionAttempts;
-  } else {
-    failedSocketConnectionAttempts = 0;
-    useLegacySocketProvider = !useLegacySocketProvider;
-
-    if (useLegacySocketProvider) {
-      FlipperSocketProvider::shelveDefault();
-    } else {
-      FlipperSocketProvider::unshelveDefault();
-    }
-  }
 }
 
 bool FlipperConnectionManagerImpl::isRunningInOwnThread() {

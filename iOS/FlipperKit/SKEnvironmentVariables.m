@@ -9,8 +9,8 @@
 
 #import "SKEnvironmentVariables.h"
 
-static int const DEFAULT_INSECURE_PORT = 8089;
-static int const DEFAULT_SECURE_PORT = 8088;
+static int const DEFAULT_INSECURE_PORT = 9089;
+static int const DEFAULT_SECURE_PORT = 9088;
 
 static int const DEFAULT_ALT_INSECURE_PORT = 9089;
 static int const DEFAULT_ALT_SECURE_PORT = 9088;
