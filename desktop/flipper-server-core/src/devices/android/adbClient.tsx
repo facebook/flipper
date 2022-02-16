@@ -12,7 +12,6 @@ import {execFile} from 'promisify-child-process';
 import adbConfig from './adbConfig';
 import adbkit, {Client} from 'adbkit';
 import path from 'path';
-import {pathExists} from 'fs-extra';
 
 type Config = {
   androidHome: string;
@@ -37,16 +36,24 @@ export async function initializeAdbClient(
    however, it sometimes fails with ENOENT errors. So instead, we start it
    manually before requesting a client. */
 async function createClient(config: Config): Promise<Client> {
-  const androidHome = config.androidHome;
-  let adbPath = path.resolve(androidHome, 'platform-tools', 'adb');
-  if (!(await pathExists(adbPath))) {
-    console.info('falling back to the alternative adb path');
-    adbPath = path.resolve(androidHome, 'adb');
-  }
   return reportPlatformFailures<Client>(
-    execFile(adbPath, ['start-server']).then(() =>
+    startAdbServer(config.androidHome).then(() =>
       adbkit.createClient(adbConfig()),
     ),
     'createADBClient.shell',
   );
+}
+
+async function startAdbServer(androidHome: string) {
+  const adbPath = path.resolve(androidHome, 'platform-tools', 'adb');
+  const args = ['start-server'];
+
+  return execFile(adbPath, args).catch((error) => {
+    if (error.code == 'ENOENT') {
+      console.info('falling back to the alternative adb path');
+      return execFile(path.resolve(androidHome, 'adb'), args);
+    }
+
+    throw error;
+  });
 }
