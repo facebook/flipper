@@ -46,7 +46,7 @@ export function connectFlipperServerToStore(
 
   server.on('server-error', (err) => {
     notification.error({
-      message: 'Failed to start connection server',
+      message: 'Connection error',
       description:
         err.code === 'EADDRINUSE' ? (
           <>
@@ -62,7 +62,7 @@ export function connectFlipperServerToStore(
             {'' + err}
           </>
         ) : (
-          <>Failed to start Flipper server: {err.message ?? err}</>
+          <>{err.message ?? err}</>
         ),
       duration: null,
     });
