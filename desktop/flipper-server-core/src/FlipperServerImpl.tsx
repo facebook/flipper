@@ -473,7 +473,8 @@ export class FlipperServerImpl implements FlipperServer {
   getDevice(serial: string): ServerDevice {
     const device = this.devices.get(serial);
     if (!device) {
-      throw new Error('No device with serial: ' + serial);
+      console.warn(`No device with serial ${serial}.`);
+      throw new Error('No device with matching serial.');
     }
     return device;
   }
