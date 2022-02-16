@@ -21,4 +21,5 @@ static dispatch_data_t NSDataToGCDData(NSData* data) {
   return dispatch_data_create(data.bytes, data.length, nil, ^{
     retainedData = nil;
   });
+  (void)retainedData;
 }
