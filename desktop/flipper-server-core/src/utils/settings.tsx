@@ -13,7 +13,16 @@ import xdg from 'xdg-basedir';
 import {Settings, Tristate} from 'flipper-common';
 import {readFile, writeFile, pathExists, mkdirp} from 'fs-extra';
 
-export async function loadSettings(): Promise<Settings> {
+export async function loadSettings(
+  settingsString: string = '',
+): Promise<Settings> {
+  if (settingsString !== '') {
+    try {
+      return replaceDefaultSettings(JSON.parse(settingsString));
+    } catch (e) {
+      throw new Error("couldn't read the user settingsString");
+    }
+  }
   if (!pathExists(getSettingsFile())) {
     return getDefaultSettings();
   }
@@ -73,4 +82,8 @@ function getDefaultAndroidSdkPath() {
 
 function getWindowsSdkPath() {
   return `${os.homedir()}\\AppData\\Local\\android\\sdk`;
+}
+
+function replaceDefaultSettings(userSettings: Partial<Settings>): Settings {
+  return {...getDefaultSettings(), ...userSettings};
 }

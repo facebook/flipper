@@ -28,6 +28,8 @@ import fs from 'fs';
 export async function startFlipperServer(
   rootDir: string,
   staticPath: string,
+  settingsString: string,
+  enableLauncherSettings: boolean,
 ): Promise<FlipperServerImpl> {
   if (os.platform() === 'darwin') {
     // By default Node.JS has its internal certificate storage and doesn't use
@@ -85,9 +87,9 @@ export async function startFlipperServer(
         tempPath: os.tmpdir(),
         desktopPath: desktopPath,
       },
-      launcherSettings: await loadLauncherSettings(),
+      launcherSettings: await loadLauncherSettings(enableLauncherSettings),
       processConfig: loadProcessConfig(env),
-      settings: await loadSettings(),
+      settings: await loadSettings(settingsString),
       validWebSocketOrigins: ['localhost:', 'http://localhost:'],
     },
     logger,

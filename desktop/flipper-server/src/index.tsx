@@ -44,6 +44,17 @@ const argv = yargs
       type: 'boolean',
       default: false,
     },
+    settingsString: {
+      describe: `override the existing defaults settings of flipper (settings.json file) e.g "{"androidHome":"/usr/local/bin","enableAndroid":true}"`,
+      type: 'string',
+      default: '',
+    },
+    launcherSettings: {
+      describe:
+        'Open Flipper with the configuration stored in .config folder for the launcher',
+      type: 'boolean',
+      default: true,
+    },
   })
   .version('DEV')
   .help()
@@ -71,7 +82,12 @@ async function start() {
     staticDir,
     entry: 'index.web.dev.html',
   });
-  const flipperServer = await startFlipperServer(rootDir, staticDir);
+  const flipperServer = await startFlipperServer(
+    rootDir,
+    staticDir,
+    argv.settingsString,
+    argv.launcherSettings,
+  );
   if (argv.failFast) {
     flipperServer.on('server-state', ({state}) => {
       if (state === 'error') {

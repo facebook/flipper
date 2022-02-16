@@ -65,7 +65,13 @@ function deserialize(content: string): LauncherSettings {
   };
 }
 
-export async function loadLauncherSettings(): Promise<LauncherSettings> {
+export async function loadLauncherSettings(
+  enableLauncherSettings: boolean = true,
+): Promise<LauncherSettings> {
+  if (!enableLauncherSettings) {
+    return defaultLauncherSettings;
+  }
+
   const fileName = getLauncherSettingsFile();
   try {
     const content = (await fs.readFile(fileName)).toString();

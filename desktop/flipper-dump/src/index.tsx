@@ -48,6 +48,17 @@ const argv = yargs
       type: 'string',
       demandOption: true,
     },
+    settingsString: {
+      describe: `override the existing defaults settings of flipper (settings.json file) e.g "{"androidHome":"/usr/local/bin","enableAndroid":true}"`,
+      type: 'string',
+      default: '',
+    },
+    launcherSettings: {
+      describe:
+        'Open Flipper with the configuration stored in .config folder for the launcher',
+      type: 'boolean',
+      default: true,
+    },
     // TODO: support filtering events
     // TODO: support verbose mode
     // TODO: support post processing messages
@@ -90,9 +101,9 @@ async function start(deviceQuery: string, appName: string, pluginId: string) {
           execPath: process.execPath,
           desktopPath: `/dev/null`,
         },
-        launcherSettings: await loadLauncherSettings(),
+        launcherSettings: await loadLauncherSettings(argv.launcherSettings),
         processConfig: loadProcessConfig(process.env),
-        settings: await loadSettings(),
+        settings: await loadSettings(argv.settingsString),
         validWebSocketOrigins: [],
       },
       logger,
