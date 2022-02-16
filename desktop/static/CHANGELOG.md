@@ -1,3 +1,8 @@
+# 0.135.0 (16/2/2022)
+
+ * [D33655430](https://github.com/facebook/flipper/search?q=D33655430&type=Commits) -  Removes rsocket-fallback for mobile clients
+
+
 # 0.134.0 (14/2/2022)
 
  * [D34143349](https://github.com/facebook/flipper/search?q=D34143349&type=Commits) -  Consume openssl from maven (prefab)

@@ -158,7 +158,7 @@
     "tsc-plugins": "./ts-node scripts/tsc-plugins.tsx",
     "watch": "cross-env TZ=Pacific/Pohnpei node --expose-gc --stack-trace-limit=40 ./node_modules/.bin/jest --watch"
   },
-  "version": "0.134.0",
+  "version": "0.135.0",
   "workspaces": {
     "packages": [
       "scripts",
