@@ -114,18 +114,18 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
 - (void)recordRequestWillBeSentWithRequestID:(NSString*)requestID
                                      request:(NSURLRequest*)request
                             redirectResponse:(NSURLResponse*)redirectResponse {
-  if (![self.identifierDict objectForKey:requestID]) {
-    self.identifierDict[requestID] = [NSNumber random];
-  }
-  NSDate* startDate = [NSDate date];
-
-  if (redirectResponse) {
-    [self recordResponseReceivedWithRequestID:requestID
-                                     response:redirectResponse];
-    [self recordLoadingFinishedWithRequestID:requestID responseBody:nil];
-  }
-
   dispatch_async(self.queue, ^{
+    if (![self.identifierDict objectForKey:requestID]) {
+      self.identifierDict[requestID] = [NSNumber random];
+    }
+    NSDate* startDate = [NSDate date];
+
+    if (redirectResponse) {
+      [self recordResponseReceivedWithRequestID:requestID
+                                      response:redirectResponse];
+      [self recordLoadingFinishedWithRequestID:requestID responseBody:nil];
+    }
+
     SKRequestInfo* info = [[SKRequestInfo alloc]
         initWithIdentifier:self.identifierDict[requestID].longLongValue
                  timestamp:[NSDate timestamp]
