@@ -14,7 +14,7 @@
     "@docusaurus/plugin-client-redirects": "2.0.0-beta.9",
     "@docusaurus/preset-classic": "^2.0.0-beta.9",
     "@types/fs-extra": "^9.0.13",
-    "docusaurus-plugin-internaldocs-fb": "0.10.5",
+    "docusaurus-plugin-internaldocs-fb": "0.10.6",
     "file-cli": "^1.2.0",
     "fs-extra": "^10.0.0",
     "mermaid": "^8.13.4",
