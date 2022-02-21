@@ -5,21 +5,21 @@ title: Implementing a Flipper Client
 
 In the GitHub repo, you'll find Flipper clients for Android, iOS and C++ code, but there's nothing to stop you from writing a FlipperClient for another device or OS.
 
-Flipper clients communicate with the Flipper desktop app using JSON RPC messages over an [RSocket](http://rsocket.io/) connection.
+Flipper clients communicate with the Flipper desktop app using JSON RPC messages over a [WebSocket](https://datatracker.ietf.org/doc/html/rfc6455) connection.
 
 This page documents the API, and you can use [FlipperConnectionManagerImpl.cpp](https://github.com/facebook/flipper/blob/main/xplat/Flipper/FlipperConnectionManagerImpl.cpp) for reference.
 
 ## Establishing a connection
 Start by connecting to the Flipper server running within the desktop app. Connecting to the server registers your application with Flipper and enables plugins to interact with it. As the Flipper desktop has a different lifecycle than your app and may connect and disconnect at any time it is important that you attempt to reconnect to the Flipper server until it accepts your connection.
 
-We use the RSocket protocol for communication between desktop and client, because it allows for easy certificate pinning and functionality like request-response messages.
+We use the WebSocket protocol for communication between desktop and client, because it allows for easy certificate pinning and functionality like request-response messages.
 
 In order to securely connect to Flipper, your client should first [obtain a certificate](establishing-a-connection.mdx).
 
-After the client certificate has been obtained, connect to the following URL with an RSocket client:
+After the client certificate has been obtained, connect to the following URL with a WebSocket client:
 
 ```
-localhost:8088/sonar?os={OS}
+localhost:9088/sonar?os={OS}
                      &device={DEVICE}
                      &device_id={DEVICE_ID}
                      &app={APP}
@@ -99,7 +99,7 @@ Request = {
 ```
 
 ### deinit
-Opposite of init. A call to deinit is made when a plugin is no longer needed and should release any resources. Don't rely only on deinit to release plugin resources as Flipper may quit without having the chance to issue a deinit call. In those cases, you should also rely on the RSocket disconnect callbacks. This call is mainly for allowing the desktop app to control the lifecycle of plugins.
+Opposite of init. A call to deinit is made when a plugin is no longer needed and should release any resources. Don't rely only on deinit to release plugin resources as Flipper may quit without having the chance to issue a deinit call. In those cases, you should also rely on the WebSocket disconnect callbacks. This call is mainly for allowing the desktop app to control the lifecycle of plugins.
 ```js
 Request = {
   "method": "deinit",
@@ -148,7 +148,7 @@ Request = {
 While in development mode, Flipper will display any client errors next to javascript errors in the Electron/Chrome DevTools console.
 
 ## Testing
-Testing is incredibly important when building core infrastructure and tools. The following is pseudo code for tests we would expect any new FlipperClient implementation to implement and correctly execute. To run tests we strongly encourage you to build a mock for the RSocket connection to mock out the desktop side of the protocol and to not have any network dependencies in your test code.
+Testing is incredibly important when building core infrastructure and tools. The following is pseudo code for tests we would expect any new FlipperClient implementation to implement and correctly execute. To run tests we strongly encourage you to build a mock for the WebSocket connection to mock out the desktop side of the protocol and to not have any network dependencies in your test code.
 
 ```js
 test("GetPlugins", {
