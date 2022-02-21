@@ -4,9 +4,136 @@
         <title>Flipper Blog</title>
         <link>https://fbflipper.com/blog</link>
         <description>Flipper Blog</description>
-        <lastBuildDate>Thu, 14 Oct 2021 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 21 Feb 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
+        <item>
+            <title><![CDATA[Flipper is coming to your web and Node.js apps]]></title>
+            <link>https://fbflipper.com/blog/2022/02/21/js-flipper-announcement</link>
+            <guid>Flipper is coming to your web and Node.js apps</guid>
+            <pubDate>Mon, 21 Feb 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Flipper now provides an official JavaScript client. We will see what `js-flipper` is, go over Flipper communication protocol, talk about what it takes to build a new Flipper client.]]></description>
+            <content:encoded><![CDATA[<p><img src="/img/js-flipper.jpg" alt="Cover image"/></p><p>For quite some time already, Flipper has secretly provided an experimental
+JavaScript SDK to support connections from browsers and Node.js under the name
+of <code>flipper-js-client-sdk</code>. With the ongoing migration of all our clients to
+WebSockets, we have committed to providing an official documented SDK for
+JavaScript clients. Without further ado, welcome
+<a href="https://www.npmjs.com/package/js-flipper">js-flipper</a>!</p><p>In this post we will:</p><ul><li>See what <code>js-flipper</code> is</li><li>Get acquainted with how to build a Flipper plugin for a React app</li><li>Learn how Flipper talks to a mobile device</li><li>Dive deeper into the message structure</li><li>Glance at what it takes to support a new platform</li></ul><h2>What <code>js-flipper</code> is and why it matters</h2><p>Flipper supports native iOS, native Android apps and React Native apps out of
+the box. Now with <code>js-flipper</code>, Flipper also supports JavaScript apps. Any
+JavaScript app, whether they run in your browser or on your Node.js server, can
+now connect to Flipper for a debugging session.</p><p><code>js-flipper</code> is a new NPM package that exposes a Flipper client to your
+JavaScript apps. Any Flipper client, in its turn, is a set of abstractions that
+let your device connect and talk to Flipper. Long story short, <code>js-flipper</code>
+allows you to easily write Flipper plugins for your web and Node.js apps.</p><blockquote><p><a href="https://fbflipper.com/docs/tutorial/javascript/">Here</a> is how you can write
+your first simple plugin.</p></blockquote><p>Why does it matter?</p><p>It&#x27;s a huge deal for two reasons:</p><ol><li>Flipper at its core is just a device discovery service with a message bus.
+Its power comes from the plugins and the ecosystem.</li><li>It brings us one step closer to our goal of running Flipper everywhere. Bring
+Flipper to your microwave! On a serious note, more platforms -&gt; bigger
+community -&gt; more developers -&gt; more plugins -&gt; better Flipper for everyone.</li></ol><p>Let&#x27;s take a quick look at the principal architecture of Flipper:</p><p><img src="/img/flipper-arch.svg" alt="Flipper architecture"/></p><p>Here is what happens there:</p><ol><li>Flipper constantly polls
+<a href="https://developer.android.com/studio/command-line/adb">ADB</a> for available
+Android devices and <a href="https://fbidb.io/">IDB</a> for available iOS devices.</li><li>If the device is running an app with an enabled Flipper client, the client
+tries to connect to Flipper on your laptop. It lets Flipper know that there
+is an app that it can talk to. Flipper and app chit-chat a bit negotiating
+the security and the list of supported plugins.</li><li>The developer picks one of the connected apps / devices. Say, it&#x27;s the app.</li><li>The developer clicks one of the available plugins.</li><li>The plugin starts talking to the app on the device via the message bus
+exposed by Flipper. The plugin asks for necessary data from the app and shows
+it in a pretty UI.</li></ol><p>At Meta, we have many active plugins, across a wide variety of devices, not just
+phones, but also Quests, desktop applications, etc. At its core, Flipper is
+data-agnostic and connect data flows to plugin displays. All Flipper core (we
+call it Flipper Server) knows is what devices and Flipper-enabled apps are out
+there. I hope it gets us on the same page regarding why plugins (and plugin
+developers!) are crucial for Flipper.</p><p>Another important conclusion you could draw from the diagram is that the state
+of Flipper plugins is ephemeral and lives in the UI.</p><h2>How Flipper talks to a mobile device</h2><p>Let&#x27;s dive a bit deeper into how exactly the device and Flipper talk. Flipper
+pulls device logs from ADB/IDB. For everything else, Flipper expects the app
+(Flipper client inside of the app) to open a WebSocket connection to Flipper.</p><p>The algorithm looks like this:</p><ol><li>The app opens a WebSocket connection to Flipper.</li><li>They exchange certificates. Flipper connects to the app using ADB/IDB and
+writes a certificate to the app storage.</li><li>The app opens a secure WebSocket connection to Flipper using the certificate.</li></ol><p>Why do we even bother with the certificate exchange process? One of the
+potential attack vectors is that a developer could install a malicious app on
+the testing device. That app could spin up a WebSocket server and mask itself as
+Flipper. However, unlike Flipper, the malicious app can&#x27;t access the file
+storage of another app. As a result, it can&#x27;t complete the certificate exchange
+process.</p><p>On mobile devices certificate exchange is important, so that other apps on the
+phone can&#x27;t impersonate Flipper. For browser apps this isn&#x27;t an issue as the
+browser already makes sure a malicious page cannot act as Flipper server. For
+platforms like this, we use a simplified connection algorithm:</p><ol><li>The app opens a WebSocket connection to Flipper.</li><li>Bingo!</li></ol><p><code>js-flipper</code> implements the second algorithm, without the certificate exchange.</p><h2>Message protocol and structure</h2><p>Once the final WebSocket connection is established, Flipper starts talking to
+the app:</p><ol><li>It sends <code>getPlugins</code> and <code>getBackgroundPlugins</code> messages to get a list of
+plugins supported by the app.</li><li>Flipper displays the available plugins to the developer.</li><li>Developer clicks on one of the plugins (enables a plugin).</li><li>Flipper loads the UI for the plugin. Let&#x27;s settle on calling the part of the
+plugin &quot;desktop plugin&quot; and the device part of the plugin &quot;client plugin&quot;.</li><li>Flipper sends <code>init</code> message to the app.</li><li>Client plugin <code>onConnect</code> code is executed. Read more about Client Plugin API
+<a href="https://fbflipper.com/docs/extending/create-plugin/">here</a>.</li><li>Whenever a &quot;desktop plugin&quot; needs some data from the device it sends an
+<code>execute</code> message to the &quot;client plugin&quot; on the device.</li><li>&quot;Client plugin&quot; replies with the data.</li><li>&quot;Client plugin&quot; might force the &quot;desktop plugin&quot; to do something as well by
+sending an <code>execute</code> message as well. However, it is rare. In the current
+implementation, the &quot;client plugin&quot; can never expect a reply back from the
+&quot;desktop plugin&quot;. In other words, consider it as an event sink, not as a way
+to extract some data from the &quot;desktop plugin&quot;.</li><li>When the plugin is deactivated a <code>deinit</code> message is sent to the &quot;client
+plugin&quot;.</li><li>Client plugin <code>onDisconnect</code> code is executed.</li></ol><blockquote><p>The process above is for the insecure WebSocket connections we currently use
+in <code>js-flipper</code>. It is more complicated for secure WebSocket connections that
+require certificate exchange.</p></blockquote><p>Flipper expects each message to have the following structure:</p><pre><code class="language-ts">export interface FlipperRequest {
+  method: string; // &#x27;getPlugins&#x27; | &#x27;getBackgroundPlugins&#x27; | &#x27;init&#x27; | &#x27;deinit&#x27; | &#x27;execute&#x27; | &#x27;isMethodSupported&#x27;
+  params?: {
+    api: string; // Plugin ID (name)
+    // These nested `method` and `params` could be anything.
+    // You set them yourself as you see fit to support the data exchange between the &quot;desktop plugin&quot; and the &quot;client plugin&quot;.
+    // For example, for &#x27;ReactNativeTicTacToe&#x27; we support 2 methods: &#x27;SetState&#x27; and &#x27;GetState&#x27;.
+    // We pass a game state with a &#x27;SetState&#x27; message. See https://fbflipper.com/docs/tutorial/javascript/#step-3-call-addplugin-to-add-your-plugin
+    method: string;
+    params?: unknown;
+  };
+}
+</code></pre><p>The only exception is the response message the &quot;client plugin&quot; sends back when
+the data is requested.</p><pre><code class="language-ts">export type FlipperResponse = {
+  id: number;
+  success?: object | string | number | boolean | null;
+  error?: {
+    message: string;
+    stacktrace?: string;
+    name?: string;
+  };
+};
+</code></pre><h2>Building a new client</h2><p>At this point, you know what messages your client needs to support in a Flipper
+client:</p><ul><li><code>getPlugins</code></li><li><code>getBackgroundPlugins</code></li><li><code>init</code></li><li><code>deinit</code></li><li><code>execute</code></li></ul><p>One other message we did not mention before is <code>isMethodSupported</code>. Its job is
+to reply back to a &quot;desktop plugin&quot; whether a &quot;client plugin&quot; supports one of
+plugin messages (that nested <code>method</code> field). It&#x27;s useful when you have a single
+&quot;desktop plugin&quot; implementation, but different &quot;client plugin&quot; implementations.
+For example, some operations might not be supported on iOS, but are supported on
+Android. Alternatively, it can address version differences between the plugin
+installed on the device and the one loaded into Flipper.</p><p>If you want to build a proper Flipper client, you also need to provide an
+abstraction for plugin developers. Consider matching
+<a href="https://fbflipper.com/docs/extending/create-plugin/#flipperplugin">what we have for existing clients</a>.</p><p>Most of the groundwork for handling connections and doing certificate exchange
+is already done in our
+<a href="https://github.com/facebook/flipper/tree/main/xplat">C++ engine</a>. Our iOS,
+Android, React Native clients use it under the hood. <code>js-flipper</code> implements
+everything from scratch using native browser APIs (for Node.js apps we
+<a href="https://github.com/facebook/flipper/tree/main/js/js-flipper#nodejs">require developers to provide a WebSocket implementation</a>).</p><p>Here is a detailed document on how to
+<a href="https://fbflipper.com/docs/extending/new-clients/">implement a client</a>. You
+might also want to check the source code of our existing clients:</p><ul><li><a href="https://github.com/facebook/flipper/tree/main/iOS/FlipperKit">iOS</a></li><li><a href="https://github.com/facebook/flipper/tree/main/android/src/main">Android</a></li><li><a href="https://github.com/facebook/flipper/tree/main/react-native/react-native-flipper">React Native</a></li><li><a href="https://github.com/facebook/flipper/tree/main/js/js-flipper">JavaScript</a></li></ul><h2>What&#x27;s next?</h2><p>As of now, we do not provide any default plugins you might be used to for
+<code>js-flipper</code> (Layout, Logs, Navigation, Crash Reporter, and others). We hope
+this will change in the future with the help of ur beloved open-source
+community!</p><p><em>Call to action!</em></p><p>We would like to encourage you to play with <code>js-flipper</code>. See how it fits your
+use-case and get back back to us with your feedback on
+<a href="https://github.com/facebook/flipper/issues">GitHub</a>. If you find yourself
+implementing one of your favorite Flipper plugins for <code>js-flipper</code>, do not
+hesitate and raise a PR!</p><p>Plugins can be either generic or very application specific. Plugins can interact
+with Redux or MobX stores, read performance data or console logs from the
+browser. At Meta, we also see a lot of plugins that are very application
+specific. For example, plugins that allow logging in as specific test users with
+a single click, reading the internal state of NewsFeed and interacting with it,
+simulating photos captured by a smartphone, etc. A Flipper plugin can be any
+form of UI that is useful to speed up debugging and tasks on things you work on
+frequently!</p><h2>P.S. Flipper needs you!</h2><p>Flipper is maintained by a small team at Meta, yet is serving over a hundred
+plugins and dozens of different targets. Our team&#x27;s goal is to support Flipper
+as a plugin-based platform for which we maintain the infrastructure. We don&#x27;t
+typically invest in individual plugins, but we do love plugin improvements. For
+example, the support for mocking network requests (on Android) was entirely
+contributed by the community (thanks
+<a href="https://github.com/bizzguy">James Harmon</a>!). As was Protobuf support (thanks
+<a href="https://github.com/hbmartin">Harold Martin</a>!).</p><p>For that reason, we&#x27;ve marked many requests in the issue tracker as
+<a href="https://github.com/facebook/flipper/issues?q=is%3Aissue+is%3Aopen+label%3A%22PR+welcome%22">PR Welcome</a>.
+Contributing changes should be as simple as cloning the
+<a href="https://github.com/facebook/flipper">repository</a> and running
+<code>yarn &amp;&amp; yarn start</code> in the <code>desktop/</code> folder.</p><p>Investing in debugging tools, both generic ones or just for specific apps, will
+benefit iteration speed. And we hope Flipper will make it as hassle free as
+possible to create your debugging tools. For an overview of Flipper for React
+Native, and why and how to build your own plugins, we recommend checking out the
+<a href="https://youtu.be/WltZTn3ODW4">Flipper: The Extensible DevTool Platform for React Native</a>
+talk.</p><p>Happy debugging!</p>]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[Flipper 2021 Roadmap Update]]></title>
             <link>https://fbflipper.com/blog/2021/10/14/roadmap</link>
