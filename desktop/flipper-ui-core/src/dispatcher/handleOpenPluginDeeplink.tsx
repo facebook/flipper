@@ -23,7 +23,7 @@ import {
 import {getUpdateAvailableMessage} from '../chrome/UpdateIndicator';
 import {Typography} from 'antd';
 import {getPluginStatus, PluginStatus} from '../utils/pluginUtils';
-import {loadPluginsFromMarketplace} from './fb-stubs/pluginMarketplace';
+import {loadPluginsFromMarketplace} from './pluginMarketplace';
 import {loadPlugin, switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
 import isProduction from '../utils/isProduction';
