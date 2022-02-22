@@ -182,7 +182,7 @@ class ServerWebSocket extends ServerAdapter {
     const clientQuery = this.parseClientQuery(query);
 
     if (!clientQuery) {
-      console.error(
+      console.warn(
         '[conn] Unable to extract the client query from the request URL.',
       );
       throw new Error(
