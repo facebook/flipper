@@ -96,6 +96,8 @@ export interface DownloadablePluginDetails extends ConcretePluginDetails {
   isBundled: false;
   downloadUrl: string;
   lastUpdated: Date;
+  // Indicates whether plugin should be enabled by default for new users
+  isEnabledByDefault: boolean;
 }
 
 export type UpdateResult =
