@@ -23,7 +23,7 @@
 
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
-#if !TARGET_OS_SIMULATOR
+#if !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST
 #import <FKPortForwarding/FKPortForwardingServer.h>
 #endif
 #endif
@@ -35,7 +35,7 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
   folly::ScopedEventBaseThread sonarThread;
   folly::ScopedEventBaseThread connectionThread;
   id<FlipperKitCertificateProvider> _certProvider;
-#if !TARGET_OS_OSX && !TARGET_OS_SIMULATOR
+#if !TARGET_OS_OSX && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST
   FKPortForwardingServer* _secureServer;
   FKPortForwardingServer* _insecureServer;
 #endif
@@ -74,7 +74,11 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
     NSString* deviceOS;
     NSString* deviceName;
 #if !TARGET_OS_OSX
+#if !TARGET_OS_MACCATALYST
     deviceOS = @"iOS";
+#else
+    deviceOS = @"MacOS";
+#endif
     deviceName = [[UIDevice currentDevice] name];
 #if TARGET_OS_SIMULATOR
     deviceName = [NSString stringWithFormat:@"%@ %@",
@@ -152,7 +156,7 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 }
 
 - (void)start {
-#if !TARGET_OS_OSX && !TARGET_OS_SIMULATOR
+#if !TARGET_OS_OSX && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST
   _secureServer = [FKPortForwardingServer new];
   [_secureServer forwardConnectionsFromPort:9088];
   [_secureServer listenForMultiplexingChannelOnPort:9078];
@@ -165,7 +169,7 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 
 - (void)stop {
   _cppClient->stop();
-#if !TARGET_OS_OSX && !TARGET_OS_SIMULATOR
+#if !TARGET_OS_OSX && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST
   [_secureServer close];
   _secureServer = nil;
   [_insecureServer close];
