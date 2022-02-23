@@ -19,6 +19,7 @@
 #include <folly/json.h>
 #include <websocketpp/common/memory.hpp>
 #include <websocketpp/common/thread.hpp>
+#include <websocketpp/config/asio.hpp>
 #include <cctype>
 #include <iomanip>
 #include <sstream>
@@ -278,30 +279,28 @@ void WebSocketTLSClient::onClose(
 SocketTLSContext WebSocketTLSClient::onTLSInit(
     const char* hostname,
     websocketpp::connection_hdl) {
-  SocketTLSContext ctx =
-      websocketpp::lib::make_shared<boost::asio::ssl::context>(
-          boost::asio::ssl::context::sslv23);
+  namespace asio = websocketpp::lib::asio;
+  SocketTLSContext ctx = websocketpp::lib::make_shared<asio::ssl::context>(
+      asio::ssl::context::sslv23);
 
   ctx->set_options(
-      boost::asio::ssl::context::default_workarounds |
-      boost::asio::ssl::context::no_sslv2 |
-      boost::asio::ssl::context::no_sslv3 |
-      boost::asio::ssl::context::single_dh_use);
+      asio::ssl::context::default_workarounds | asio::ssl::context::no_sslv2 |
+      asio::ssl::context::no_sslv3 | asio::ssl::context::single_dh_use);
 
-  ctx->set_verify_mode(boost::asio::ssl::verify_peer);
+  ctx->set_verify_mode(asio::ssl::verify_peer);
   ctx->load_verify_file(connectionContextStore_->getPath(
       ConnectionContextStore::StoreItem::FLIPPER_CA));
 
-  boost::system::error_code error;
+  asio::error_code error;
   ctx->use_certificate_file(
       connectionContextStore_->getPath(
           ConnectionContextStore::StoreItem::CLIENT_CERT),
-      boost::asio::ssl::context::pem,
+      asio::ssl::context::pem,
       error);
   ctx->use_private_key_file(
       connectionContextStore_->getPath(
           ConnectionContextStore::StoreItem::PRIVATE_KEY),
-      boost::asio::ssl::context::pem,
+      asio::ssl::context::pem,
       error);
 
   return ctx;
