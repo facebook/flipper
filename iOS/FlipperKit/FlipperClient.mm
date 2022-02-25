@@ -110,7 +110,6 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
            [SKEnvironmentVariables getAltSecurePort]});
       _cppClient = facebook::flipper::FlipperClient::instance();
 
-      // To switch to a websocket provider, uncomment the line below.
       facebook::flipper::FlipperSocketProvider::setDefaultProvider(
           std::make_unique<facebook::flipper::FlipperWebSocketProvider>());
 

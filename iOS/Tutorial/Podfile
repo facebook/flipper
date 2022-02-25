@@ -19,7 +19,7 @@ target 'Tutorial' do
   # be dynamic.
   $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
     'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
-    'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+    'Flipper-Glog', 'Flipper-PeerTalk', 'Yoga', 'YogaKit',
     'CocoaLibEvent', 'OpenSSL-Universal', 'Flipper-Boost-iOSX', 'Flipper-Fmt']
 
   pre_install do |installer|

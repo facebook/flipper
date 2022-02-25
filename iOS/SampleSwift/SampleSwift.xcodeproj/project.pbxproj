@@ -366,7 +366,6 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/Flipper-Folly\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/Flipper-Glog\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/Flipper-PeerTalk\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Flipper-RSocket\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/FlipperKit\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/RenderCore\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/Yoga\"",
