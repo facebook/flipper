@@ -137,6 +137,20 @@ export interface BasePluginClient<
   logger: Logger;
 
   /**
+   * Triggered when a server add-on starts.
+   * You should send messages to the server add-on only after it connects.
+   * Do not forget to stop all communication when the add-on stops.
+   * See `onServerAddStop`.
+   */
+  onServerAddOnStart(callback: () => void): void;
+
+  /**
+   * Triggered when a server add-on stops.
+   * You should stop all communication with the server add-on when the add-on stops.
+   */
+  onServerAddOnStop(callback: () => void): void;
+
+  /**
    * Subscribe to a specific event arriving from the server add-on.
    *
    * Messages can only arrive if the plugin is enabled and connected.
@@ -216,6 +230,8 @@ export abstract class BasePluginInstance {
 
   activated = false;
   destroyed = false;
+  private serverAddOnStarted = false;
+  private serverAddOnStopped = false;
   readonly events = new EventEmitter();
 
   // temporarily field that is used during deserialization
@@ -379,6 +395,18 @@ export abstract class BasePluginInstance {
         this.flipperLib.showNotification(this.pluginKey, notification);
       },
       logger: this.flipperLib.logger,
+      onServerAddOnStart: (cb) => {
+        this.events.on('serverAddOnStart', batched(cb));
+        if (this.serverAddOnStarted) {
+          batched(cb)();
+        }
+      },
+      onServerAddOnStop: (cb) => {
+        this.events.on('serverAddOnStop', batched(cb));
+        if (this.serverAddOnStopped) {
+          batched(cb)();
+        }
+      },
       sendToServerAddOn: (method, params) =>
         this.serverAddOnControls.sendMessage(
           this.definition.packageName,
@@ -519,6 +547,10 @@ export abstract class BasePluginInstance {
             : {path: pluginDetails.serverAddOnEntry!},
           this.serverAddOnOwner,
         )
+        .then(() => {
+          this.events.emit('serverAddOnStart');
+          this.serverAddOnStarted = true;
+        })
         .catch((e) => {
           console.warn(
             'Failed to start a server add on',
@@ -533,14 +565,20 @@ export abstract class BasePluginInstance {
   protected stopServerAddOn() {
     const {serverAddOn, name} = this.definition.details;
     if (serverAddOn) {
-      this.serverAddOnControls.stop(name, this.serverAddOnOwner).catch((e) => {
-        console.warn(
-          'Failed to start a server add on',
-          name,
-          this.serverAddOnOwner,
-          e,
-        );
-      });
+      this.serverAddOnControls
+        .stop(name, this.serverAddOnOwner)
+        .finally(() => {
+          this.events.emit('serverAddOnStop');
+          this.serverAddOnStopped = true;
+        })
+        .catch((e) => {
+          console.warn(
+            'Failed to stop a server add on',
+            name,
+            this.serverAddOnOwner,
+            e,
+          );
+        });
     }
   }
 }
