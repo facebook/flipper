@@ -49,7 +49,6 @@ const loadPlugin = (
   return serverAddOnModule;
 };
 
-// TODO: Fix potential race conditions when starting/stopping concurrently
 export class ServerAddOn {
   private owners: Set<string>;
 
@@ -66,7 +65,6 @@ export class ServerAddOn {
     pluginName: string,
     details: ServerAddOnStartDetails,
     initialOwner: string,
-    onStop: () => void,
     flipperServer: FlipperServerForServerAddOn,
   ): Promise<ServerAddOn> {
     console.info('ServerAddOn.start', pluginName, details);
@@ -89,11 +87,6 @@ export class ServerAddOn {
       `ServerAddOn ${pluginName} must return a clean up function, instead it returned ${typeof cleanup}.`,
     );
 
-    const onStopCombined = async () => {
-      onStop();
-      await cleanup();
-    };
-
     const desktopToModuleConnection = new ServerAddOnDesktopToModuleConnection(
       serverAddOnModuleToDesktopConnection,
       flipperServer,
@@ -101,7 +94,7 @@ export class ServerAddOn {
 
     return new ServerAddOn(
       pluginName,
-      onStopCombined,
+      cleanup,
       desktopToModuleConnection,
       initialOwner,
     );
@@ -115,22 +108,12 @@ export class ServerAddOn {
     const ownerExisted = this.owners.delete(owner);
 
     if (!this.owners.size && ownerExisted) {
-      this.stop().catch((e) => {
-        console.error(
-          'ServerAddOn.removeOwner -> failed to stop automatically when no owners left',
-          this.pluginName,
-          e,
-        );
-      });
+      return this.stop();
     }
   }
 
-  private async stop() {
+  async stop() {
     console.info('ServerAddOn.stop', this.pluginName);
-    try {
-      await this.cleanup();
-    } catch (e) {
-      console.error('ServerAddOn.stop -> failed to clean up', this.pluginName);
-    }
+    await this.cleanup();
   }
 }

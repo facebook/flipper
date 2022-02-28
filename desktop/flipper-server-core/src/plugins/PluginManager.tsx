@@ -33,7 +33,7 @@ import {
   getInstalledPlugin,
   installPluginFromNpm,
 } from 'flipper-plugin-lib';
-import {ServerAddOn} from './ServerAddOn';
+import {ServerAddOnManager} from './ServerAddManager';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
@@ -50,7 +50,7 @@ const isExecuteMessage = (message: object): message is ExecuteMessage =>
   (message as ExecuteMessage).method === 'execute';
 
 export class PluginManager {
-  private readonly serverAddOns = new Map<string, ServerAddOn>();
+  private readonly serverAddOns = new Map<string, ServerAddOnManager>();
 
   constructor(private readonly flipperServer: FlipperServerForServerAddOn) {}
 
@@ -178,43 +178,89 @@ export class PluginManager {
     pluginName: string,
     details: ServerAddOnStartDetails,
     owner: string,
-  ) {
+  ): Promise<void> {
     console.debug('PluginManager.startServerAddOn', pluginName);
     const existingServerAddOn = this.serverAddOns.get(pluginName);
+
     if (existingServerAddOn) {
+      if (existingServerAddOn.state.is('stopping')) {
+        console.debug(
+          'PluginManager.startServerAddOn -> currently stropping',
+          pluginName,
+          owner,
+          existingServerAddOn.state.currentState,
+        );
+        await existingServerAddOn.state.wait(['inactive', 'zombie']);
+        return this.startServerAddOn(pluginName, details, owner);
+      }
+
       console.debug(
-        'PluginManager.startServerAddOn -> already started, adding an owner',
+        'PluginManager.startServerAddOn -> already started',
         pluginName,
         owner,
+        existingServerAddOn.state.currentState,
       );
-      existingServerAddOn.addOwner(owner);
+      await existingServerAddOn.addOwner(owner);
       return;
     }
 
-    const newServerAddOn = await ServerAddOn.start(
+    const newServerAddOn = new ServerAddOnManager(
       pluginName,
       details,
       owner,
-      () => this.serverAddOns.delete(pluginName),
       this.flipperServer,
     );
     this.serverAddOns.set(pluginName, newServerAddOn);
+
+    newServerAddOn.state.once(['fatal', 'zombie', 'inactive'], () => {
+      this.serverAddOns.delete(pluginName);
+    });
+
+    await newServerAddOn.state.wait(['active', 'fatal']);
+
+    if (newServerAddOn.state.is('fatal')) {
+      this.serverAddOns.delete(pluginName);
+      throw newServerAddOn.state.error;
+    }
   }
 
-  stopServerAddOn(pluginName: string, owner: string) {
+  async stopServerAddOn(pluginName: string, owner: string): Promise<void> {
     console.debug('PluginManager.stopServerAddOn', pluginName);
     const serverAddOn = this.serverAddOns.get(pluginName);
+
     if (!serverAddOn) {
-      console.debug('PluginManager.stopServerAddOn -> not started', pluginName);
+      console.warn('PluginManager.stopServerAddOn -> not started', pluginName);
       return;
     }
-    serverAddOn.removeOwner(owner);
+
+    try {
+      await serverAddOn.removeOwner(owner);
+    } catch (e) {
+      console.error(
+        'PluginManager.stopServerAddOn -> error',
+        pluginName,
+        owner,
+        e,
+      );
+      this.serverAddOns.delete(pluginName);
+      throw e;
+    }
   }
 
   stopAllServerAddOns(owner: string) {
-    console.debug('PluginManager.stopAllServerAddOns');
-    this.serverAddOns.forEach((serverAddOn) => {
-      serverAddOn.removeOwner(owner);
+    console.debug('PluginManager.stopAllServerAddOns', owner);
+    this.serverAddOns.forEach(async (serverAddOnPromise) => {
+      try {
+        const serverAddOn = await serverAddOnPromise;
+        serverAddOn.removeOwner(owner);
+      } catch (e) {
+        // It is OK to use a debug level here because any failure would be logged in "stopServerAddOn"
+        console.debug(
+          'PluginManager.stopAllServerAddOns -> failed to remove owner',
+          owner,
+          e,
+        );
+      }
     });
   }
 }
