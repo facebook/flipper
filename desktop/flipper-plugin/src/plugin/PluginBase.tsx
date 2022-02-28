@@ -510,16 +510,24 @@ export abstract class BasePluginInstance {
   protected abstract serverAddOnOwner: string;
 
   protected startServerAddOn() {
-    const {serverAddOn, name} = this.definition.details;
-    if (serverAddOn) {
-      this.serverAddOnControls.start(name, this.serverAddOnOwner).catch((e) => {
-        console.warn(
-          'Failed to start a server add on',
-          name,
+    const pluginDetails = this.definition.details;
+    if (pluginDetails.serverAddOn) {
+      this.serverAddOnControls
+        .start(
+          pluginDetails.name,
+          pluginDetails.isBundled
+            ? {isBundled: true}
+            : {path: pluginDetails.serverAddOnEntry!},
           this.serverAddOnOwner,
-          e,
-        );
-      });
+        )
+        .catch((e) => {
+          console.warn(
+            'Failed to start a server add on',
+            pluginDetails.name,
+            this.serverAddOnOwner,
+            e,
+          );
+        });
     }
   }
 

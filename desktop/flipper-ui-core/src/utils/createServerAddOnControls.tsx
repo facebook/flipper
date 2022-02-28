@@ -45,8 +45,13 @@ export const createServerAddOnControls = (
   };
 
   return {
-    start: (pluginName, owner) =>
-      flipperServer.exec('plugins-server-add-on-start', pluginName, owner),
+    start: (pluginName, details, owner) =>
+      flipperServer.exec(
+        'plugins-server-add-on-start',
+        pluginName,
+        details,
+        owner,
+      ),
     stop: (pluginName, owner) =>
       flipperServer.exec('plugins-server-add-on-stop', pluginName, owner),
     sendMessage: async (pluginName, method, params) => {

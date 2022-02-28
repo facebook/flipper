@@ -18,6 +18,7 @@ import {
   ExecuteMessage,
   FlipperServerForServerAddOn,
   InstalledPluginDetails,
+  ServerAddOnStartDetails,
 } from 'flipper-common';
 import {getStaticPath} from '../utils/pathUtils';
 import {loadDynamicPlugins} from './loadDynamicPlugins';
@@ -173,7 +174,11 @@ export class PluginManager {
     return this.serverAddOns.get(message.params.api);
   }
 
-  async startServerAddOn(pluginName: string, owner: string) {
+  async startServerAddOn(
+    pluginName: string,
+    details: ServerAddOnStartDetails,
+    owner: string,
+  ) {
     console.debug('PluginManager.startServerAddOn', pluginName);
     const existingServerAddOn = this.serverAddOns.get(pluginName);
     if (existingServerAddOn) {
@@ -188,6 +193,7 @@ export class PluginManager {
 
     const newServerAddOn = await ServerAddOn.start(
       pluginName,
+      details,
       owner,
       () => this.serverAddOns.delete(pluginName),
       this.flipperServer,

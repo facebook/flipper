@@ -17,6 +17,7 @@ import {
   OS as PluginOS,
   UpdatablePluginDetails,
 } from './PluginDetails';
+import {ServerAddOnStartDetails} from './ServerAddOn';
 import {
   EnvironmentInfo,
   LauncherSettings,
@@ -252,6 +253,7 @@ export type FlipperServerCommands = {
   'plugins-remove-plugins': (names: string[]) => Promise<void>;
   'plugins-server-add-on-start': (
     pluginName: string,
+    details: ServerAddOnStartDetails,
     owner: string,
   ) => Promise<void>;
   'plugins-server-add-on-stop': (

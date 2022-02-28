@@ -13,6 +13,7 @@ import {
   FlipperServerForServerAddOn,
   ServerAddOnCleanup,
   ServerAddOn as ServerAddOnFn,
+  ServerAddOnStartDetails,
 } from 'flipper-common';
 import {ServerAddOnDesktopToModuleConnection} from './ServerAddOnDesktopToModuleConnection';
 import {ServerAddOnModuleToDesktopConnection} from './ServerAddOnModuleToDesktopConnection';
@@ -23,16 +24,29 @@ interface ServerAddOnModule {
   default: ServerAddOnFn;
 }
 
-const loadPlugin = (pluginName: string): ServerAddOnModule => {
-  console.debug('loadPlugin', pluginName);
+const loadPlugin = (
+  pluginName: string,
+  details: ServerAddOnStartDetails,
+): ServerAddOnModule => {
+  console.debug('loadPlugin', pluginName, details);
 
-  const bundledPlugin = defaultPlugins[pluginName];
-  if (bundledPlugin) {
+  if (details.isBundled) {
+    const bundledPlugin = defaultPlugins[pluginName];
+    assertNotNull(
+      bundledPlugin,
+      `loadPlugin (isBundled = true) -> plugin ${pluginName} not found.`,
+    );
     return bundledPlugin;
   }
 
-  // TODO: Use getInstalledPlugin
-  return {default: async () => async () => {}};
+  assertNotNull(
+    details.path,
+    `loadPlugin (isBundled = false) -> server add-on path is empty plugin ${pluginName}.`,
+  );
+
+  // eslint-disable-next-line no-eval
+  const serverAddOnModule = eval(`require("${details.path}")`);
+  return serverAddOnModule;
 };
 
 // TODO: Fix potential race conditions when starting/stopping concurrently
@@ -50,13 +64,14 @@ export class ServerAddOn {
 
   static async start(
     pluginName: string,
+    details: ServerAddOnStartDetails,
     initialOwner: string,
     onStop: () => void,
     flipperServer: FlipperServerForServerAddOn,
   ): Promise<ServerAddOn> {
-    console.info('ServerAddOn.start', pluginName);
+    console.info('ServerAddOn.start', pluginName, details);
 
-    const {default: serverAddOn} = loadPlugin(pluginName);
+    const {default: serverAddOn} = loadPlugin(pluginName, details);
     assertNotNull(serverAddOn);
     assert(
       typeof serverAddOn === 'function',
