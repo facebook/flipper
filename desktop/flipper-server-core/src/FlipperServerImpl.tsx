@@ -424,6 +424,22 @@ export class FlipperServerImpl implements FlipperServer {
     // TODO: Figure out if it needs to be async
     'plugins-server-add-on-stop': async (pluginName, owner) =>
       this.pluginManager.stopServerAddOn(pluginName, owner),
+    'plugins-server-add-on-request-response': async (payload) => {
+      const serverAddOn = this.pluginManager.getServerAddOnForMessage(payload);
+      if (serverAddOn) {
+        return await serverAddOn.connection.sendExpectResponse(payload);
+      }
+      return {
+        length: 0,
+        error: {
+          message: `Server add-on for message '${JSON.stringify(
+            payload,
+          )} is no longer running.`,
+          name: 'SERVER_ADDON_STOPPED',
+          stacktrace: '',
+        },
+      };
+    },
     'doctor-get-healthchecks': getHealthChecks,
     'doctor-run-healthcheck': runHealthcheck,
     'open-file': openFile,

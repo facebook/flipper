@@ -15,6 +15,7 @@ import {default as axios} from 'axios';
 import {
   BundledPluginDetails,
   DownloadablePluginDetails,
+  ExecuteMessage,
   InstalledPluginDetails,
 } from 'flipper-common';
 import {getStaticPath} from '../utils/pathUtils';
@@ -42,6 +43,9 @@ const axiosHttpAdapter = require('axios/lib/adapters/http'); // eslint-disable-l
 const getTempDirName = promisify(tmp.dir) as (
   options?: tmp.DirOptions,
 ) => Promise<string>;
+
+const isExecuteMessage = (message: object): message is ExecuteMessage =>
+  (message as ExecuteMessage).method === 'execute';
 
 export class PluginManager {
   private readonly serverAddOns = new Map<string, ServerAddOn>();
@@ -153,6 +157,17 @@ export class PluginManager {
     } finally {
       await fs.remove(tmpDir);
     }
+  }
+
+  getServerAddOnForMessage(message: object) {
+    if (!isExecuteMessage(message)) {
+      throw new Error(
+        `PluginManager.getServerAddOnForMessage supports only "execute" messages. Received ${JSON.stringify(
+          message,
+        )}`,
+      );
+    }
+    return this.serverAddOns.get(message.params.api);
   }
 
   async startServerAddOn(pluginName: string, owner: string) {

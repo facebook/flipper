@@ -8,6 +8,7 @@
  */
 
 import assert from 'assert';
+import {ClientResponseType, ExecuteMessage} from 'flipper-common';
 import {assertNotNull} from '../comms/Utilities';
 
 type ServerAddOnCleanup = () => Promise<void>;
@@ -20,9 +21,15 @@ const loadPlugin = (_pluginName: string): ServerAddOnModule => {
   return {serverAddOn: async () => async () => {}};
 };
 
+interface ServerAddOnConnection {
+  sendExpectResponse(payload: ExecuteMessage): Promise<ClientResponseType>;
+}
+
 // TODO: Fix potential race conditions when starting/stopping concurrently
 export class ServerAddOn {
   private owners: Set<string>;
+  // TODO: Implement connection
+  public readonly connection!: ServerAddOnConnection;
 
   constructor(
     public readonly pluginName: string,

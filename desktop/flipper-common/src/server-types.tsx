@@ -125,6 +125,9 @@ export type FlipperServerEvents = {
     id: string;
     message: string;
   };
+  'plugins-server-add-on-message': {
+    payload: ExecuteMessage;
+  };
   'download-file-update': DownloadFileUpdate;
 };
 
@@ -257,6 +260,9 @@ export type FlipperServerCommands = {
     pluginName: string,
     owner: string,
   ) => Promise<void>;
+  'plugins-server-add-on-request-response': (
+    payload: ExecuteMessage,
+  ) => Promise<ClientResponseType>;
   'doctor-get-healthchecks': (
     settings: FlipperDoctor.HealthcheckSettings,
   ) => Promise<FlipperDoctor.Healthchecks>;
