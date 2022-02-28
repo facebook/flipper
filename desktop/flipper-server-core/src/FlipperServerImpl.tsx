@@ -7,6 +7,7 @@
  * @format
  */
 
+import './utils/fetch-polyfill';
 import EventEmitter from 'events';
 import {ServerController} from './comms/ServerController';
 import {CertificateExchangeMedium} from './utils/CertificateProvider';
