@@ -142,7 +142,7 @@ export interface BasePluginClient<
    * Messages can only arrive if the plugin is enabled and connected.
    * For background plugins messages will be batched and arrive the next time the plugin is connected.
    */
-  onServerAddOnMessage<Event extends keyof ServerAddOnEvents>(
+  onServerAddOnMessage<Event extends keyof ServerAddOnEvents & string>(
     event: Event,
     callback: (params: ServerAddOnEvents[Event]) => void,
   ): void;
@@ -159,7 +159,7 @@ export interface BasePluginClient<
   /**
    * Send a message to the server add-on
    */
-  sendToServerAddOn<Method extends keyof ServerAddOnMethods>(
+  sendToServerAddOn<Method extends keyof ServerAddOnMethods & string>(
     method: Method,
     ...params: Parameters<ServerAddOnMethods[Method]> extends []
       ? []
@@ -382,14 +382,13 @@ export abstract class BasePluginInstance {
       sendToServerAddOn: (method, params) =>
         this.serverAddOnControls.sendMessage(
           this.definition.packageName,
-          // TODO: Remove type cast
-          method as string,
+          method,
           params,
         ),
       onServerAddOnMessage: (event, cb) => {
         this.serverAddOnControls.receiveMessage(
           this.definition.packageName,
-          event as string,
+          event,
           batched(cb),
         );
       },
