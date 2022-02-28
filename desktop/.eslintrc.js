@@ -203,6 +203,10 @@ module.exports = {
     },
     {
       files: ['plugins/**/*.ts', 'plugins/**/*.tsx'],
+      excludedFiles: [
+        'plugins/**/serverAddOn.ts',
+        'plugins/**/serverAddOn.tsx',
+      ],
       rules: {
         'no-restricted-imports': [
           'error',
