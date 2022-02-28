@@ -50,7 +50,7 @@ const isExecuteMessage = (message: object): message is ExecuteMessage =>
   (message as ExecuteMessage).method === 'execute';
 
 export class PluginManager {
-  private readonly serverAddOns = new Map<string, ServerAddOnManager>();
+  public readonly serverAddOns = new Map<string, ServerAddOnManager>();
 
   constructor(private readonly flipperServer: FlipperServerForServerAddOn) {}
 

@@ -11,34 +11,18 @@ import {ServerAddOnStartDetails} from 'flipper-common';
 import {loadServerAddOn} from '../loadServerAddOn';
 import {ServerAddOn} from '../ServerAddOn';
 import {ServerAddOnModuleToDesktopConnection} from '../ServerAddOnModuleToDesktopConnection';
+import {
+  createControlledPromise,
+  detailsBundled,
+  detailsInstalled,
+  initialOwner,
+  pluginName,
+} from './utils';
 
 jest.mock('../loadServerAddOn');
 const loadServerAddOnMock = loadServerAddOn as jest.Mock;
 
-const createControlledPromise = () => {
-  let resolve!: () => void;
-  let reject!: (reason: unknown) => void;
-  const promise = new Promise<void>((resolveP, rejectP) => {
-    resolve = resolveP;
-    reject = rejectP;
-  });
-  return {
-    promise,
-    resolve,
-    reject,
-  };
-};
-
 describe('ServerAddOn', () => {
-  const pluginName = 'lightSaber';
-  const initialOwner = 'yoda';
-  const detailsBundled: ServerAddOnStartDetails = {
-    isBundled: true,
-  };
-  const detailsInstalled: ServerAddOnStartDetails = {
-    path: '/dagobar/',
-  };
-
   const startServerAddOn = async (details: ServerAddOnStartDetails) => {
     const addOnCleanupMock = jest.fn();
     const addOnMock = jest.fn().mockImplementation(() => addOnCleanupMock);
@@ -91,7 +75,7 @@ describe('ServerAddOn', () => {
     test('stops the add-on when the initial owner is removed', async () => {
       const {serverAddOn, addOnCleanupMock} = await startServerAddOn(details);
 
-      const controlledP = createControlledPromise();
+      const controlledP = createControlledPromise<void>();
       addOnCleanupMock.mockImplementation(() => controlledP.promise);
 
       const removeOwnerRes = serverAddOn.removeOwner(initialOwner);
@@ -109,7 +93,7 @@ describe('ServerAddOn', () => {
       const newOwner = 'luke';
       serverAddOn.addOwner(newOwner);
 
-      const controlledP = createControlledPromise();
+      const controlledP = createControlledPromise<void>();
       addOnCleanupMock.mockImplementation(() => controlledP.promise);
 
       const removeOwnerRes1 = serverAddOn.removeOwner(initialOwner);
@@ -138,7 +122,7 @@ describe('ServerAddOn', () => {
     test('calls stop only once when removeOwner is called twice with the same owner', async () => {
       const {serverAddOn, addOnCleanupMock} = await startServerAddOn(details);
 
-      const controlledP = createControlledPromise();
+      const controlledP = createControlledPromise<void>();
       addOnCleanupMock.mockImplementation(() => controlledP.promise);
 
       const removeOwnerRes1 = serverAddOn.removeOwner(initialOwner);
