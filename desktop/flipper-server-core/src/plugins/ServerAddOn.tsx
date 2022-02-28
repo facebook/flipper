@@ -12,42 +12,11 @@ import {assertNotNull} from '../comms/Utilities';
 import {
   FlipperServerForServerAddOn,
   ServerAddOnCleanup,
-  ServerAddOn as ServerAddOnFn,
   ServerAddOnStartDetails,
 } from 'flipper-common';
 import {ServerAddOnDesktopToModuleConnection} from './ServerAddOnDesktopToModuleConnection';
 import {ServerAddOnModuleToDesktopConnection} from './ServerAddOnModuleToDesktopConnection';
-// @ts-ignore
-import defaultPlugins from '../defaultPlugins';
-
-interface ServerAddOnModule {
-  default: ServerAddOnFn;
-}
-
-const loadPlugin = (
-  pluginName: string,
-  details: ServerAddOnStartDetails,
-): ServerAddOnModule => {
-  console.debug('loadPlugin', pluginName, details);
-
-  if (details.isBundled) {
-    const bundledPlugin = defaultPlugins[pluginName];
-    assertNotNull(
-      bundledPlugin,
-      `loadPlugin (isBundled = true) -> plugin ${pluginName} not found.`,
-    );
-    return bundledPlugin;
-  }
-
-  assertNotNull(
-    details.path,
-    `loadPlugin (isBundled = false) -> server add-on path is empty plugin ${pluginName}.`,
-  );
-
-  // eslint-disable-next-line no-eval
-  const serverAddOnModule = eval(`require("${details.path}")`);
-  return serverAddOnModule;
-};
+import {loadServerAddOn} from './loadServerAddOn';
 
 export class ServerAddOn {
   private owners: Set<string>;
@@ -69,7 +38,7 @@ export class ServerAddOn {
   ): Promise<ServerAddOn> {
     console.info('ServerAddOn.start', pluginName, details);
 
-    const {default: serverAddOn} = loadPlugin(pluginName, details);
+    const {default: serverAddOn} = loadServerAddOn(pluginName, details);
     assertNotNull(serverAddOn);
     assert(
       typeof serverAddOn === 'function',
