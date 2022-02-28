@@ -15,42 +15,49 @@ interface ServerAddOnModule {
   serverAddOn?: () => Promise<ServerAddOnCleanup>;
 }
 
-// TODO: Metro does not like dynamic requires. Figure out how to properly configure metro to handle them.
-// https://github.com/webpack/webpack/issues/4175#issuecomment-323023911
-function requireDynamically(path: string) {
-  // eslint-disable-next-line no-eval
-  return eval(`require('${path}');`); // Ensure Metro does not analyze the require statement
-}
+const loadPlugin = (_pluginName: string): ServerAddOnModule => {
+  // TODO: Implement me
+  return {serverAddOn: async () => async () => {}};
+};
 
 // TODO: Fix potential race conditions when starting/stopping concurrently
 export class ServerAddOn {
   private owners: Set<string>;
 
   constructor(
-    public readonly path: string,
+    public readonly pluginName: string,
     private readonly cleanup: ServerAddOnCleanup,
     initialOwner: string,
   ) {
     this.owners = new Set(initialOwner);
   }
 
-  static async start(path: string, initialOwner: string): Promise<ServerAddOn> {
-    console.info('ServerAddOn.start', path);
+  static async start(
+    pluginName: string,
+    initialOwner: string,
+    onStop: () => void,
+  ): Promise<ServerAddOn> {
+    console.info('ServerAddOn.start', pluginName);
 
-    const {serverAddOn} = requireDynamically(path) as ServerAddOnModule;
+    const {serverAddOn} = loadPlugin(pluginName);
     assertNotNull(serverAddOn);
     assert(
       typeof serverAddOn === 'function',
-      `ServerAddOn ${path} must export "serverAddOn" function.`,
+      `ServerAddOn ${pluginName} must export "serverAddOn" function.`,
     );
 
     const cleanup = await serverAddOn();
     assert(
       typeof cleanup === 'function',
-      `ServerAddOn ${path} must return a clean up function, instead it returned ${typeof cleanup}.`,
+      `ServerAddOn ${pluginName} must return a clean up function, instead it returned ${typeof cleanup}.`,
     );
 
-    return new ServerAddOn(path, cleanup, initialOwner);
+    const onStopCombined = async () => {
+      onStop();
+      await cleanup();
+    };
+
+    return new ServerAddOn(pluginName, onStopCombined, initialOwner);
   }
 
   addOwner(owner: string) {
@@ -58,13 +65,13 @@ export class ServerAddOn {
   }
 
   removeOwner(owner: string) {
-    this.owners.delete(owner);
+    const ownerExisted = this.owners.delete(owner);
 
-    if (!this.owners.size) {
+    if (!this.owners.size && ownerExisted) {
       this.stop().catch((e) => {
         console.error(
           'ServerAddOn.removeOwner -> failed to stop automatically when no owners left',
-          this.path,
+          this.pluginName,
           e,
         );
       });
@@ -72,11 +79,11 @@ export class ServerAddOn {
   }
 
   private async stop() {
-    console.info('ServerAddOn.stop', this.path);
+    console.info('ServerAddOn.stop', this.pluginName);
     try {
       await this.cleanup();
     } catch (e) {
-      console.error('ServerAddOn.stop -> failed to clean up', this.path);
+      console.error('ServerAddOn.stop -> failed to clean up', this.pluginName);
     }
   }
 }

@@ -12,8 +12,8 @@ import {FlipperServer, ServerAddOnControls} from 'flipper-common';
 export const createServerAddOnControls = (
   flipperServer: Pick<FlipperServer, 'exec'>,
 ): ServerAddOnControls => ({
-  start: (pluginName) =>
-    flipperServer.exec('plugins-server-add-on-start', pluginName),
-  stop: (pluginName) =>
-    flipperServer.exec('plugins-server-add-on-stop', pluginName),
+  start: (pluginName, owner) =>
+    flipperServer.exec('plugins-server-add-on-start', pluginName, owner),
+  stop: (pluginName, owner) =>
+    flipperServer.exec('plugins-server-add-on-stop', pluginName, owner),
 });

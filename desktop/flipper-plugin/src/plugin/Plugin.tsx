@@ -233,8 +233,13 @@ export class SandyPluginInstance extends BasePluginInstance {
     if (!this.connected.get()) {
       const {serverAddOn, name} = this.definition.details;
       if (serverAddOn) {
-        this.serverAddOnControls.start(name).catch((e) => {
-          console.warn('Failed to start a server add on', name, e);
+        this.serverAddOnControls.start(name, this.realClient.id).catch((e) => {
+          console.warn(
+            'Failed to start a server add on',
+            name,
+            this.realClient.id,
+            e,
+          );
         });
       }
 
@@ -248,8 +253,13 @@ export class SandyPluginInstance extends BasePluginInstance {
     if (this.connected.get()) {
       const {serverAddOn, name} = this.definition.details;
       if (serverAddOn) {
-        this.serverAddOnControls.stop(name).catch((e) => {
-          console.warn('Failed to stop a server add on', name, e);
+        this.serverAddOnControls.stop(name, this.realClient.id).catch((e) => {
+          console.warn(
+            'Failed to stop a server add on',
+            name,
+            this.realClient.id,
+            e,
+          );
         });
       }
 

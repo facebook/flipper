@@ -249,8 +249,14 @@ export type FlipperServerCommands = {
     path: string,
   ) => Promise<InstalledPluginDetails>;
   'plugins-remove-plugins': (names: string[]) => Promise<void>;
-  'plugins-server-add-on-start': (pluginName: string) => Promise<void>;
-  'plugins-server-add-on-stop': (pluginName: string) => Promise<void>;
+  'plugins-server-add-on-start': (
+    pluginName: string,
+    owner: string,
+  ) => Promise<void>;
+  'plugins-server-add-on-stop': (
+    pluginName: string,
+    owner: string,
+  ) => Promise<void>;
   'doctor-get-healthchecks': (
     settings: FlipperDoctor.HealthcheckSettings,
   ) => Promise<FlipperDoctor.Healthchecks>;

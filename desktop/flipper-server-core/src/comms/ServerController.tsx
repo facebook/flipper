@@ -510,6 +510,7 @@ export class ServerController
       );
       this.flipperServer.emit('client-disconnected', {id});
       this.connections.delete(id);
+      this.flipperServer.pluginManager.stopAllServerAddOns(id);
     }
   }
 }

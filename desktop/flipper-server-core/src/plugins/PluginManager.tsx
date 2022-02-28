@@ -155,34 +155,39 @@ export class PluginManager {
     }
   }
 
-  async startServerAddOn(pluginName: string) {
+  async startServerAddOn(pluginName: string, owner: string) {
     console.debug('PluginManager.startServerAddOn', pluginName);
-    // TODO: Get owner from websocket connection ID
-    const fakeOwner = 'test';
     const existingServerAddOn = this.serverAddOns.get(pluginName);
     if (existingServerAddOn) {
       console.debug(
         'PluginManager.startServerAddOn -> already started, adding an owner',
         pluginName,
-        fakeOwner,
+        owner,
       );
-      existingServerAddOn.addOwner(fakeOwner);
+      existingServerAddOn.addOwner(owner);
       return;
     }
 
-    const newServerAddOn = await ServerAddOn.start(pluginName, fakeOwner);
+    const newServerAddOn = await ServerAddOn.start(pluginName, owner, () =>
+      this.serverAddOns.delete(pluginName),
+    );
     this.serverAddOns.set(pluginName, newServerAddOn);
   }
 
-  stopServerAddOn(pluginName: string) {
+  stopServerAddOn(pluginName: string, owner: string) {
     console.debug('PluginManager.stopServerAddOn', pluginName);
     const serverAddOn = this.serverAddOns.get(pluginName);
     if (!serverAddOn) {
       console.debug('PluginManager.stopServerAddOn -> not started', pluginName);
       return;
     }
-    // TODO: Get owner from websocket connection ID
-    const fakeOwner = 'test';
-    serverAddOn.removeOwner(fakeOwner);
+    serverAddOn.removeOwner(owner);
+  }
+
+  stopAllServerAddOns(owner: string) {
+    console.debug('PluginManager.stopAllServerAddOns');
+    this.serverAddOns.forEach((serverAddOn) => {
+      serverAddOn.removeOwner(owner);
+    });
   }
 }

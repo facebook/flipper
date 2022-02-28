@@ -419,10 +419,11 @@ export class FlipperServerImpl implements FlipperServer {
     'plugins-install-from-npm': (name) =>
       this.pluginManager.installPluginFromNpm(name),
     'plugin-source': (path) => this.pluginManager.loadSource(path),
-    'plugins-server-add-on-start': (pluginName) =>
-      this.pluginManager.startServerAddOn(pluginName),
-    'plugins-server-add-on-stop': async (pluginName) =>
-      this.pluginManager.stopServerAddOn(pluginName),
+    'plugins-server-add-on-start': (pluginName, owner) =>
+      this.pluginManager.startServerAddOn(pluginName, owner),
+    // TODO: Figure out if it needs to be async
+    'plugins-server-add-on-stop': async (pluginName, owner) =>
+      this.pluginManager.stopServerAddOn(pluginName, owner),
     'doctor-get-healthchecks': getHealthChecks,
     'doctor-run-healthcheck': runHealthcheck,
     'open-file': openFile,

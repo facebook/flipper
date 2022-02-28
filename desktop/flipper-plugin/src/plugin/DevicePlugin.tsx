@@ -101,8 +101,13 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
   private startServerAddOn() {
     const {serverAddOn, name} = this.definition.details;
     if (serverAddOn) {
-      this.serverAddOnControls.start(name).catch((e) => {
-        console.warn('Failed to start a server add on', name, e);
+      this.serverAddOnControls.start(name, this.device.serial).catch((e) => {
+        console.warn(
+          'Failed to start a server add on',
+          name,
+          this.device.serial,
+          e,
+        );
       });
     }
   }
@@ -110,8 +115,13 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
   private stopServerAddOn() {
     const {serverAddOn, name} = this.definition.details;
     if (serverAddOn) {
-      this.serverAddOnControls.stop(name).catch((e) => {
-        console.warn('Failed to start a server add on', name, e);
+      this.serverAddOnControls.stop(name, this.device.serial).catch((e) => {
+        console.warn(
+          'Failed to start a server add on',
+          name,
+          this.device.serial,
+          e,
+        );
       });
     }
   }
