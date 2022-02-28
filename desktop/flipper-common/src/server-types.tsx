@@ -580,6 +580,8 @@ export type ExecuteMessage = {
     params?: unknown;
   };
 };
+
+// TODO: Could we merge it with ClientResponseType?
 export type ResponseMessage =
   | {
       id: number;

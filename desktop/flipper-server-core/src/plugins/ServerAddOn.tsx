@@ -8,12 +8,15 @@
  */
 
 import assert from 'assert';
-import {ClientResponseType, ExecuteMessage} from 'flipper-common';
 import {assertNotNull} from '../comms/Utilities';
+import {ServerAddOnDesktopToModuleConnection} from './ServerAddOnDesktopToModuleConnection';
+import {ServerAddOnModuleToDesktopConnection} from './ServerAddOnModuleToDesktopConnection';
 
 type ServerAddOnCleanup = () => Promise<void>;
 interface ServerAddOnModule {
-  serverAddOn?: () => Promise<ServerAddOnCleanup>;
+  serverAddOn?: (
+    connection: ServerAddOnModuleToDesktopConnection,
+  ) => Promise<ServerAddOnCleanup>;
 }
 
 const loadPlugin = (_pluginName: string): ServerAddOnModule => {
@@ -21,19 +24,14 @@ const loadPlugin = (_pluginName: string): ServerAddOnModule => {
   return {serverAddOn: async () => async () => {}};
 };
 
-interface ServerAddOnConnection {
-  sendExpectResponse(payload: ExecuteMessage): Promise<ClientResponseType>;
-}
-
 // TODO: Fix potential race conditions when starting/stopping concurrently
 export class ServerAddOn {
   private owners: Set<string>;
-  // TODO: Implement connection
-  public readonly connection!: ServerAddOnConnection;
 
   constructor(
     public readonly pluginName: string,
     private readonly cleanup: ServerAddOnCleanup,
+    public readonly connection: ServerAddOnDesktopToModuleConnection,
     initialOwner: string,
   ) {
     this.owners = new Set(initialOwner);
@@ -53,7 +51,10 @@ export class ServerAddOn {
       `ServerAddOn ${pluginName} must export "serverAddOn" function.`,
     );
 
-    const cleanup = await serverAddOn();
+    const serverAddOnModuleToDesktopConnection =
+      new ServerAddOnModuleToDesktopConnection();
+
+    const cleanup = await serverAddOn(serverAddOnModuleToDesktopConnection);
     assert(
       typeof cleanup === 'function',
       `ServerAddOn ${pluginName} must return a clean up function, instead it returned ${typeof cleanup}.`,
@@ -64,7 +65,14 @@ export class ServerAddOn {
       await cleanup();
     };
 
-    return new ServerAddOn(pluginName, onStopCombined, initialOwner);
+    return new ServerAddOn(
+      pluginName,
+      onStopCombined,
+      new ServerAddOnDesktopToModuleConnection(
+        serverAddOnModuleToDesktopConnection,
+      ),
+      initialOwner,
+    );
   }
 
   addOwner(owner: string) {
