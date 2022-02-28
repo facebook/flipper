@@ -240,7 +240,7 @@ function handleDeviceConnected(
 }
 
 export async function handleClientConnected(
-  server: Pick<FlipperServer, 'exec'>,
+  server: FlipperServer,
   store: Store,
   logger: Logger,
   {id, query}: ClientDescription,

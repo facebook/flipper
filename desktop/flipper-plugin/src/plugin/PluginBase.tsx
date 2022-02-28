@@ -386,11 +386,18 @@ export abstract class BasePluginInstance {
           method as string,
           params,
         ),
-      onServerAddOnMessage: (_event, _cb) => {
-        // TODO: Implement me
+      onServerAddOnMessage: (event, cb) => {
+        this.serverAddOnControls.receiveMessage(
+          this.definition.packageName,
+          event as string,
+          batched(cb),
+        );
       },
-      onServerAddOnUnhandledMessage: (_cb) => {
-        // TODO: Implement me
+      onServerAddOnUnhandledMessage: (cb) => {
+        this.serverAddOnControls.receiveAnyMessage(
+          this.definition.packageName,
+          batched(cb),
+        );
       },
     };
   }
@@ -436,6 +443,7 @@ export abstract class BasePluginInstance {
     this.crashListeners.splice(0).forEach((handle) => {
       this.device.removeCrashListener(handle);
     });
+    this.serverAddOnControls.unsubscribePlugin(this.definition.packageName);
     this.events.emit('destroy');
     this.destroyed = true;
   }

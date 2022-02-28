@@ -21,6 +21,17 @@ export interface ServerAddOnControls {
     method: string,
     params?: unknown,
   ) => Promise<object | string | number | boolean | null>;
+  receiveMessage: (
+    pluginName: string,
+    method: string,
+    receiver: (data: unknown) => void,
+  ) => void;
+  receiveAnyMessage: (
+    pluginName: string,
+    receiver: (method: string, data: unknown) => void,
+  ) => void;
+  unsubscribePlugin: (pluginName: string) => void;
+  unsubscribe: () => void;
 }
 
 // TODO: Share with js-flipper? Is it worth it?

@@ -390,5 +390,6 @@ export default class BaseDevice implements Device {
       instance.destroy();
     });
     this.sandyPluginStates.clear();
+    this.serverAddOnControls.unsubscribe();
   }
 }

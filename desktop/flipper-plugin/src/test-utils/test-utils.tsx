@@ -648,5 +648,9 @@ function createServerAddOnControlsMock(): ServerAddOnControls {
     start: createStubFunction(),
     stop: createStubFunction(),
     sendMessage: createStubFunction(),
+    receiveMessage: createStubFunction(),
+    receiveAnyMessage: createStubFunction(),
+    unsubscribePlugin: createStubFunction(),
+    unsubscribe: createStubFunction(),
   };
 }

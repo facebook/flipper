@@ -126,7 +126,7 @@ export default class Client extends EventEmitter {
   > = {};
   sandyPluginStates = new Map<string /*pluginID*/, _SandyPluginInstance>();
   private readonly serverAddOnControls: ServerAddOnControls;
-  private readonly flipperServer: Pick<FlipperServer, 'exec'>;
+  private readonly flipperServer: FlipperServer;
 
   constructor(
     id: string,
@@ -136,7 +136,7 @@ export default class Client extends EventEmitter {
     store: Store,
     plugins: Plugins | null | undefined,
     device: BaseDevice,
-    flipperServer: Pick<FlipperServer, 'exec'>,
+    flipperServer: FlipperServer,
   ) {
     super();
     this.connected.set(!!conn);
@@ -281,6 +281,7 @@ export default class Client extends EventEmitter {
   destroy() {
     this.disconnect();
     this.plugins.forEach((pluginId) => this.stopPluginIfNeeded(pluginId, true));
+    this.serverAddOnControls.unsubscribe();
   }
 
   // gets a plugin by pluginId
