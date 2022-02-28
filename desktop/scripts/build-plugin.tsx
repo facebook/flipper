@@ -59,6 +59,12 @@ const argv = yargs
       type: 'string',
       alias: 'os',
     },
+    'output-sourcemap-server-addon': {
+      description:
+        'File path for the server add-on sourcemap to be written. Optional.',
+      type: 'string',
+      alias: 'os',
+    },
   })
   .help()
   .strict()
@@ -72,9 +78,13 @@ async function buildPlugin() {
   const outputUnpackedArg = argv['output-unpacked'];
   const minFlipperVersion = argv['min-flipper-version'];
   const outputSourcemapArg = argv['output-sourcemap'];
+  const outputSourcemapServerAddOnArg = argv['output-sourcemap-server-addon'];
   const packageJsonPath = path.join(pluginDir, 'package.json');
   const packageJsonOverridePath = path.join(pluginDir, 'fb', 'package.json');
-  await runBuild(pluginDir, false, {sourceMapPath: outputSourcemapArg});
+  await runBuild(pluginDir, false, {
+    sourceMapPath: outputSourcemapArg,
+    sourceMapPathServerAddOn: outputSourcemapServerAddOnArg,
+  });
   const checksum = await computePackageChecksum(pluginDir);
   if (previousChecksum !== checksum && argv.version) {
     console.log(`Plugin changed. Packaging new version ${argv.version}...`);
