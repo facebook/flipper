@@ -152,4 +152,7 @@ export {
   DeviceLogLevel,
   Logger,
   CrashLog,
+  ServerAddOn,
+  ServerAddOnPluginConnection,
+  FlipperServerForServerAddOn,
 } from 'flipper-common';

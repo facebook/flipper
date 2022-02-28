@@ -109,6 +109,7 @@ test('Correct top level API exposed', () => {
       "FileDescriptor",
       "FileEncoding",
       "FlipperLib",
+      "FlipperServerForServerAddOn",
       "HighlightManager",
       "Idler",
       "InteractionReport",
@@ -119,6 +120,8 @@ test('Correct top level API exposed', () => {
       "Notification",
       "PluginClient",
       "RemoteServerContext",
+      "ServerAddOn",
+      "ServerAddOnPluginConnection",
     ]
   `);
 });

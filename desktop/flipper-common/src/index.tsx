@@ -51,3 +51,4 @@ export * from './clientUtils';
 export * from './settings';
 export * from './PluginDetails';
 export * from './doctor';
+export * from './ServerAddOn';

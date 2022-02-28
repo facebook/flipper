@@ -8,31 +8,18 @@
  */
 
 import EventEmitter from 'events';
-import {ResponseMessage, ClientErrorType, ExecuteMessage} from 'flipper-common';
+import {
+  ResponseMessage,
+  ClientErrorType,
+  ExecuteMessage,
+  ServerAddOnPluginConnection,
+  FlipperPluginReceiver,
+} from 'flipper-common';
 import {safeJSONStringify} from '../utils/safeJSONStringify';
-
-// TODO: Share with js-flipper? Is it worth it?
-type FlipperPluginReceiverRes =
-  | object
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | void;
-
-type FlipperPluginReceiver = (
-  data: any,
-) => FlipperPluginReceiverRes | Promise<FlipperPluginReceiverRes>;
 
 export type ServerAddOnModuleToDesktopConnectionEvents = {
   message: ExecuteMessage;
 };
-
-export interface ServerAddOnPluginConnection {
-  send(method: string, params: unknown): void;
-  receive(method: string, receiver: FlipperPluginReceiver): void;
-}
 
 export class ServerAddOnModuleToDesktopConnection
   extends EventEmitter

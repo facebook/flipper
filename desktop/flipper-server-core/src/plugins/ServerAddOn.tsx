@@ -10,20 +10,15 @@
 import assert from 'assert';
 import {assertNotNull} from '../comms/Utilities';
 import {
-  ServerAddOnDesktopToModuleConnection,
   FlipperServerForServerAddOn,
-} from './ServerAddOnDesktopToModuleConnection';
-import {
-  ServerAddOnModuleToDesktopConnection,
-  ServerAddOnPluginConnection,
-} from './ServerAddOnModuleToDesktopConnection';
+  ServerAddOnCleanup,
+  ServerAddOn as ServerAddOnFn,
+} from 'flipper-common';
+import {ServerAddOnDesktopToModuleConnection} from './ServerAddOnDesktopToModuleConnection';
+import {ServerAddOnModuleToDesktopConnection} from './ServerAddOnModuleToDesktopConnection';
 
-type ServerAddOnCleanup = () => Promise<void>;
 interface ServerAddOnModule {
-  serverAddOn?: (
-    connection: ServerAddOnPluginConnection,
-    {flipperServer}: {flipperServer: FlipperServerForServerAddOn},
-  ) => Promise<ServerAddOnCleanup>;
+  serverAddOn?: ServerAddOnFn;
 }
 
 const loadPlugin = (_pluginName: string): ServerAddOnModule => {

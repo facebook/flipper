@@ -16,6 +16,7 @@ import {
   BundledPluginDetails,
   DownloadablePluginDetails,
   ExecuteMessage,
+  FlipperServerForServerAddOn,
   InstalledPluginDetails,
 } from 'flipper-common';
 import {getStaticPath} from '../utils/pathUtils';
@@ -32,7 +33,6 @@ import {
   installPluginFromNpm,
 } from 'flipper-plugin-lib';
 import {ServerAddOn} from './ServerAddOn';
-import {FlipperServerForServerAddOn} from './ServerAddOnDesktopToModuleConnection';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
