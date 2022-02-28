@@ -125,9 +125,7 @@ export type FlipperServerEvents = {
     id: string;
     message: string;
   };
-  'plugins-server-add-on-message': {
-    payload: ExecuteMessage;
-  };
+  'plugins-server-add-on-message': ExecuteMessage;
   'download-file-update': DownloadFileUpdate;
 };
 

@@ -9,13 +9,17 @@
 
 import assert from 'assert';
 import {assertNotNull} from '../comms/Utilities';
-import {ServerAddOnDesktopToModuleConnection} from './ServerAddOnDesktopToModuleConnection';
+import {
+  ServerAddOnDesktopToModuleConnection,
+  FlipperServerForServerAddOn,
+} from './ServerAddOnDesktopToModuleConnection';
 import {ServerAddOnModuleToDesktopConnection} from './ServerAddOnModuleToDesktopConnection';
 
 type ServerAddOnCleanup = () => Promise<void>;
 interface ServerAddOnModule {
   serverAddOn?: (
     connection: ServerAddOnModuleToDesktopConnection,
+    {flipperServer}: {flipperServer: FlipperServerForServerAddOn},
   ) => Promise<ServerAddOnCleanup>;
 }
 
@@ -34,13 +38,14 @@ export class ServerAddOn {
     public readonly connection: ServerAddOnDesktopToModuleConnection,
     initialOwner: string,
   ) {
-    this.owners = new Set(initialOwner);
+    this.owners = new Set([initialOwner]);
   }
 
   static async start(
     pluginName: string,
     initialOwner: string,
     onStop: () => void,
+    flipperServer: FlipperServerForServerAddOn,
   ): Promise<ServerAddOn> {
     console.info('ServerAddOn.start', pluginName);
 
@@ -54,7 +59,9 @@ export class ServerAddOn {
     const serverAddOnModuleToDesktopConnection =
       new ServerAddOnModuleToDesktopConnection();
 
-    const cleanup = await serverAddOn(serverAddOnModuleToDesktopConnection);
+    const cleanup = await serverAddOn(serverAddOnModuleToDesktopConnection, {
+      flipperServer,
+    });
     assert(
       typeof cleanup === 'function',
       `ServerAddOn ${pluginName} must return a clean up function, instead it returned ${typeof cleanup}.`,
@@ -65,12 +72,15 @@ export class ServerAddOn {
       await cleanup();
     };
 
+    const desktopToModuleConnection = new ServerAddOnDesktopToModuleConnection(
+      serverAddOnModuleToDesktopConnection,
+      flipperServer,
+    );
+
     return new ServerAddOn(
       pluginName,
       onStopCombined,
-      new ServerAddOnDesktopToModuleConnection(
-        serverAddOnModuleToDesktopConnection,
-      ),
+      desktopToModuleConnection,
       initialOwner,
     );
   }

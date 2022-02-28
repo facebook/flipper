@@ -32,6 +32,7 @@ import {
   installPluginFromNpm,
 } from 'flipper-plugin-lib';
 import {ServerAddOn} from './ServerAddOn';
+import {FlipperServerForServerAddOn} from './ServerAddOnDesktopToModuleConnection';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
@@ -49,6 +50,8 @@ const isExecuteMessage = (message: object): message is ExecuteMessage =>
 
 export class PluginManager {
   private readonly serverAddOns = new Map<string, ServerAddOn>();
+
+  constructor(private readonly flipperServer: FlipperServerForServerAddOn) {}
 
   async start() {
     // This needn't happen immediately and is (light) I/O work.
@@ -183,8 +186,11 @@ export class PluginManager {
       return;
     }
 
-    const newServerAddOn = await ServerAddOn.start(pluginName, owner, () =>
-      this.serverAddOns.delete(pluginName),
+    const newServerAddOn = await ServerAddOn.start(
+      pluginName,
+      owner,
+      () => this.serverAddOns.delete(pluginName),
+      this.flipperServer,
     );
     this.serverAddOns.set(pluginName, newServerAddOn);
   }

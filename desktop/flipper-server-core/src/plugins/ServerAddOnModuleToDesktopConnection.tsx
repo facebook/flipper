@@ -7,7 +7,8 @@
  * @format
  */
 
-import {ResponseMessage, ClientErrorType} from 'flipper-common';
+import EventEmitter from 'events';
+import {ResponseMessage, ClientErrorType, ExecuteMessage} from 'flipper-common';
 import {safeJSONStringify} from '../utils/safeJSONStringify';
 
 // TODO: Share with js-flipper? Is it worth it?
@@ -24,11 +25,24 @@ type FlipperPluginReceiver = (
   data: any,
 ) => FlipperPluginReceiverRes | Promise<FlipperPluginReceiverRes>;
 
-export class ServerAddOnModuleToDesktopConnection {
+export type ServerAddOnModuleToDesktopConnectionEvents = {
+  message: ExecuteMessage;
+};
+
+export class ServerAddOnModuleToDesktopConnection extends EventEmitter {
   private subscriptions: Map<string, FlipperPluginReceiver> = new Map();
 
-  send() {
-    // TODO: Implement me
+  send(method: string, params: unknown) {
+    const event = 'message';
+    const message: ServerAddOnModuleToDesktopConnectionEvents[typeof event] = {
+      method: 'execute',
+      params: {
+        method,
+        params,
+        api: '', // TODO: Consider using here pluginId and validate it
+      },
+    };
+    this.emit('message', message);
   }
 
   receive(method: string, receiver: FlipperPluginReceiver) {

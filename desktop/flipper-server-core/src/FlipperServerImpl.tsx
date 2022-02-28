@@ -88,7 +88,7 @@ export class FlipperServerImpl implements FlipperServer {
     // given flipper-dump, it might make more sense to have the plugin command
     // handling (like download, install, etc) moved to flipper-server & app,
     // but let's keep things simple for now
-    this.pluginManager = new PluginManager();
+    this.pluginManager = new PluginManager(this);
 
     server.addListener('error', (err) => {
       this.emit('server-error', err);
