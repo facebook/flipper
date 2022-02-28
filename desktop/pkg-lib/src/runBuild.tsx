@@ -166,9 +166,7 @@ export default async function bundlePlugin(
       dev,
       sourceMapPath: options?.sourceMapPathServerAddOn,
       babelTransformerPath: require.resolve(
-        `flipper-babel-transformer/${
-          dev ? 'lib/transform-server-dev' : 'lib/transform-server-prod'
-        }`,
+        'flipper-babel-transformer/lib/transform-server-add-on',
       ),
     });
   }
