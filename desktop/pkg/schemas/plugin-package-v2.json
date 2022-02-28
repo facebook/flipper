@@ -20,6 +20,15 @@
       "filePathExists": true,
       "description": "Points to the source entry point which will be used for the plugin code bundling. \"flipper-pkg\" takes the path specified in this property as source, transpiles and bundles it, and saves the output to the path specified in property \"main\"."
     },
+    "serverAddOn": {
+      "type": "string",
+      "description": "Path to the bundled and ready-to-execute code of the server add-on."
+    },
+    "flipperBundlerEntryServerAddOn": {
+      "type": "string",
+      "filePathExists": true,
+      "description": "Points to the source entry point which will be used for the server add-on code bundling. \"flipper-pkg\" takes the path specified in this property as source, transpiles and bundles it, and saves the output to the path specified in property \"serverAddOn\"."
+    },
     "title": {
       "type": "string",
       "description": "Shown in the Flipper main sidebar as the human-readable name of the plugin. If omitted, \"id\" is used instead."
