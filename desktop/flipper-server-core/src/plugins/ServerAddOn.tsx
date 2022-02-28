@@ -13,12 +13,15 @@ import {
   ServerAddOnDesktopToModuleConnection,
   FlipperServerForServerAddOn,
 } from './ServerAddOnDesktopToModuleConnection';
-import {ServerAddOnModuleToDesktopConnection} from './ServerAddOnModuleToDesktopConnection';
+import {
+  ServerAddOnModuleToDesktopConnection,
+  ServerAddOnPluginConnection,
+} from './ServerAddOnModuleToDesktopConnection';
 
 type ServerAddOnCleanup = () => Promise<void>;
 interface ServerAddOnModule {
   serverAddOn?: (
-    connection: ServerAddOnModuleToDesktopConnection,
+    connection: ServerAddOnPluginConnection,
     {flipperServer}: {flipperServer: FlipperServerForServerAddOn},
   ) => Promise<ServerAddOnCleanup>;
 }

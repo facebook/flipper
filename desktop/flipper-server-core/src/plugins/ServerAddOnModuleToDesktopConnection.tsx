@@ -29,7 +29,15 @@ export type ServerAddOnModuleToDesktopConnectionEvents = {
   message: ExecuteMessage;
 };
 
-export class ServerAddOnModuleToDesktopConnection extends EventEmitter {
+export interface ServerAddOnPluginConnection {
+  send(method: string, params: unknown): void;
+  receive(method: string, receiver: FlipperPluginReceiver): void;
+}
+
+export class ServerAddOnModuleToDesktopConnection
+  extends EventEmitter
+  implements ServerAddOnPluginConnection
+{
   private subscriptions: Map<string, FlipperPluginReceiver> = new Map();
 
   send(method: string, params: unknown) {
