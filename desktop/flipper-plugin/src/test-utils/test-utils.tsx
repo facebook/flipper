@@ -647,5 +647,6 @@ function createServerAddOnControlsMock(): ServerAddOnControls {
   return {
     start: createStubFunction(),
     stop: createStubFunction(),
+    sendMessage: createStubFunction(),
   };
 }

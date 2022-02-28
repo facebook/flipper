@@ -64,7 +64,7 @@ export class ServerAddOn {
     );
 
     const serverAddOnModuleToDesktopConnection =
-      new ServerAddOnModuleToDesktopConnection();
+      new ServerAddOnModuleToDesktopConnection(pluginName);
 
     const cleanup = await serverAddOn(serverAddOnModuleToDesktopConnection, {
       flipperServer,

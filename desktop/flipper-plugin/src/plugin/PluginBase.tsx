@@ -379,9 +379,13 @@ export abstract class BasePluginInstance {
         this.flipperLib.showNotification(this.pluginKey, notification);
       },
       logger: this.flipperLib.logger,
-      sendToServerAddOn: (_method, _params): any => {
-        // TODO: Implement me
-      },
+      sendToServerAddOn: (method, params) =>
+        this.serverAddOnControls.sendMessage(
+          this.definition.packageName,
+          // TODO: Remove type cast
+          method as string,
+          params,
+        ),
       onServerAddOnMessage: (_event, _cb) => {
         // TODO: Implement me
       },

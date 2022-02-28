@@ -69,7 +69,7 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
   }
 
   /** client that is bound to this instance */
-  readonly client: DevicePluginClient;
+  readonly client: DevicePluginClient<any, any>;
 
   constructor(
     serverAddOnControls: ServerAddOnControls,

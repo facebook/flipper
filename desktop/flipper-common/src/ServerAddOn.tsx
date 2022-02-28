@@ -16,6 +16,11 @@ import {
 export interface ServerAddOnControls {
   start: FlipperServerCommands['plugins-server-add-on-start'];
   stop: FlipperServerCommands['plugins-server-add-on-stop'];
+  sendMessage: (
+    pluginName: string,
+    method: string,
+    params?: unknown,
+  ) => Promise<object | string | number | boolean | null>;
 }
 
 // TODO: Share with js-flipper? Is it worth it?

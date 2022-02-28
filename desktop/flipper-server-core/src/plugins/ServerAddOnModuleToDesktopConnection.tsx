@@ -27,6 +27,10 @@ export class ServerAddOnModuleToDesktopConnection
 {
   private subscriptions: Map<string, FlipperPluginReceiver> = new Map();
 
+  constructor(private readonly pluginName: string) {
+    super();
+  }
+
   send(method: string, params: unknown) {
     const event = 'message';
     const message: ServerAddOnModuleToDesktopConnectionEvents[typeof event] = {
@@ -34,7 +38,7 @@ export class ServerAddOnModuleToDesktopConnection
       params: {
         method,
         params,
-        api: '', // TODO: Consider using here pluginName and validate it
+        api: this.pluginName,
       },
     };
     this.emit('message', message);

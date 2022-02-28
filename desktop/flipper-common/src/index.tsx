@@ -45,6 +45,7 @@ export {
   isAuthError,
   getStringFromErrorLike,
   getErrorFromErrorLike,
+  deserializeRemoteError,
 } from './utils/errors';
 export * from './GK';
 export * from './clientUtils';
