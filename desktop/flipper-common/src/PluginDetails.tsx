@@ -13,6 +13,7 @@ export interface PluginDetails {
   version: string;
   source: string;
   main: string;
+  serverAddOn?: string;
   id: string;
   gatekeeper?: string;
   title: string;
@@ -159,6 +160,7 @@ function getPluginDetailsV2(packageJson: any): PluginDetails {
     name: packageJson.name,
     version: packageJson.version,
     main: packageJson.main,
+    serverAddOn: packageJson.serverAddOn,
     source: packageJson.flipperBundlerEntry,
     id: packageJson.id || packageJson.name,
     gatekeeper: packageJson.gatekeeper,

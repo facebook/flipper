@@ -419,6 +419,10 @@ export class FlipperServerImpl implements FlipperServer {
     'plugins-install-from-npm': (name) =>
       this.pluginManager.installPluginFromNpm(name),
     'plugin-source': (path) => this.pluginManager.loadSource(path),
+    'plugins-server-add-on-start': (pluginName) =>
+      this.pluginManager.startServerAddOn(pluginName),
+    'plugins-server-add-on-stop': (pluginName) =>
+      this.pluginManager.stopServerAddOn(pluginName),
     'doctor-get-healthchecks': getHealthChecks,
     'doctor-run-healthcheck': runHealthcheck,
     'open-file': openFile,

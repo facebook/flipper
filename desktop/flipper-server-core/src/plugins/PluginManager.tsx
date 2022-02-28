@@ -151,4 +151,12 @@ export class PluginManager {
       await fs.remove(tmpDir);
     }
   }
+
+  async startServerAddOn(pluginName: string) {
+    console.debug('PluginManager.startServerAddOn', pluginName);
+  }
+
+  async stopServerAddOn(pluginName: string) {
+    console.debug('PluginManager.stopServerAddOn', pluginName);
+  }
 }
