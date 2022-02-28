@@ -301,6 +301,7 @@ export async function handleClientConnected(
     store,
     undefined,
     device,
+    server,
   );
 
   console.debug(

@@ -11,7 +11,13 @@ import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
 import {Atom, ReadOnlyAtom} from '../state/atom';
-import {DeviceOS, DeviceType, DeviceLogEntry, CrashLog} from 'flipper-common';
+import {
+  DeviceOS,
+  DeviceType,
+  DeviceLogEntry,
+  CrashLog,
+  ServerAddOnControls,
+} from 'flipper-common';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 export type CrashLogListener = (crash: CrashLog) => void;
@@ -59,6 +65,7 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
   readonly client: DevicePluginClient;
 
   constructor(
+    private readonly serverAddOnControls: ServerAddOnControls,
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
     device: Device,
@@ -79,9 +86,33 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
     this.initializePlugin(() =>
       definition.asDevicePluginModule().devicePlugin(this.client),
     );
+    this.startServerAddOn();
   }
 
   toJSON() {
     return '[SandyDevicePluginInstance]';
+  }
+
+  destroy() {
+    this.stopServerAddOn();
+    super.destroy();
+  }
+
+  private startServerAddOn() {
+    const {serverAddOn, name} = this.definition.details;
+    if (serverAddOn) {
+      this.serverAddOnControls.start(name).catch((e) => {
+        console.warn('Failed to start a server add on', name, e);
+      });
+    }
+  }
+
+  private stopServerAddOn() {
+    const {serverAddOn, name} = this.definition.details;
+    if (serverAddOn) {
+      this.serverAddOnControls.stop(name).catch((e) => {
+        console.warn('Failed to start a server add on', name, e);
+      });
+    }
   }
 }

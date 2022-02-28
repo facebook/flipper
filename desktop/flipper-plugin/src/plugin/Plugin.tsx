@@ -13,6 +13,7 @@ import {FlipperLib} from './FlipperLib';
 import {Device} from './DevicePlugin';
 import {batched} from '../state/batch';
 import {Atom, createState, ReadOnlyAtom} from '../state/atom';
+import {ServerAddOnControls} from 'flipper-common';
 
 type EventsContract = Record<string, any>;
 type MethodsContract = Record<string, (params: any) => Promise<any>>;
@@ -141,6 +142,7 @@ export class SandyPluginInstance extends BasePluginInstance {
   readonly connected = createState(false);
 
   constructor(
+    private readonly serverAddOnControls: ServerAddOnControls,
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
     realClient: RealFlipperClient,
@@ -229,6 +231,13 @@ export class SandyPluginInstance extends BasePluginInstance {
   connect() {
     this.assertNotDestroyed();
     if (!this.connected.get()) {
+      const {serverAddOn, name} = this.definition.details;
+      if (serverAddOn) {
+        this.serverAddOnControls.start(name).catch((e) => {
+          console.warn('Failed to start a server add on', name, e);
+        });
+      }
+
       this.connected.set(true);
       this.events.emit('connect');
     }
@@ -237,6 +246,13 @@ export class SandyPluginInstance extends BasePluginInstance {
   disconnect() {
     this.assertNotDestroyed();
     if (this.connected.get()) {
+      const {serverAddOn, name} = this.definition.details;
+      if (serverAddOn) {
+        this.serverAddOnControls.stop(name).catch((e) => {
+          console.warn('Failed to stop a server add on', name, e);
+        });
+      }
+
       this.connected.set(false);
       this.events.emit('disconnect');
     }

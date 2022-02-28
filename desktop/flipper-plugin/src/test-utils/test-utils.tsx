@@ -14,6 +14,7 @@ import {
   BundledPluginDetails,
   fsConstants,
   InstalledPluginDetails,
+  ServerAddOnControls,
 } from 'flipper-common';
 
 import {
@@ -116,6 +117,11 @@ interface BasePluginResult {
    * Trigger menu entry by label
    */
   triggerMenuEntry(label: string): void;
+  // TODO: Refine server add-on test methods
+  /**
+   * Communication with a server add-on
+   */
+  serverAddOnControls: ServerAddOnControls;
 }
 
 interface StartPluginResult<Module extends FlipperPluginModule<any>>
@@ -254,7 +260,10 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     },
   };
 
+  const serverAddOnControls = createServerAddOnControlsMock();
+
   const pluginInstance = new SandyPluginInstance(
+    serverAddOnControls,
     flipperUtils,
     definition,
     fakeFlipperClient,
@@ -263,7 +272,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
   );
 
   const res: StartPluginResult<Module> = {
-    ...createBasePluginResult(pluginInstance),
+    ...createBasePluginResult(pluginInstance, serverAddOnControls),
     instance: pluginInstance.instanceApi,
     module,
     connect: () => pluginInstance.connect(),
@@ -282,6 +291,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
         pluginInstance.receiveMessages(messages as any);
       });
     },
+    serverAddOnControls,
   };
   (res as any)._backingInstance = pluginInstance;
   // we start activated
@@ -337,7 +347,9 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
 
   const flipperLib = createMockFlipperLib(options);
   const testDevice = createMockDevice(options);
+  const serverAddOnControls = createServerAddOnControlsMock();
   const pluginInstance = new SandyDevicePluginInstance(
+    serverAddOnControls,
     flipperLib,
     definition,
     testDevice,
@@ -346,7 +358,7 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
   );
 
   const res: StartDevicePluginResult<Module> = {
-    ...createBasePluginResult(pluginInstance),
+    ...createBasePluginResult(pluginInstance, serverAddOnControls),
     module,
     instance: pluginInstance.instanceApi,
     sendLogEntry: (entry) => {
@@ -444,6 +456,7 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
 
 function createBasePluginResult(
   pluginInstance: BasePluginInstance,
+  serverAddOnControls: ServerAddOnControls,
 ): BasePluginResult {
   return {
     flipperLib: pluginInstance.flipperLib,
@@ -469,6 +482,7 @@ function createBasePluginResult(
       }
       entry.handler();
     },
+    serverAddOnControls,
   };
 }
 
@@ -626,5 +640,12 @@ export function createFlipperServerMock(
         },
       ),
     close: createStubFunction(),
+  };
+}
+
+function createServerAddOnControlsMock(): ServerAddOnControls {
+  return {
+    start: createStubFunction(),
+    stop: createStubFunction(),
   };
 }
