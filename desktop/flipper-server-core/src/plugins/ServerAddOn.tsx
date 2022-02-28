@@ -18,12 +18,12 @@ import {ServerAddOnDesktopToModuleConnection} from './ServerAddOnDesktopToModule
 import {ServerAddOnModuleToDesktopConnection} from './ServerAddOnModuleToDesktopConnection';
 
 interface ServerAddOnModule {
-  serverAddOn?: ServerAddOnFn;
+  default?: ServerAddOnFn;
 }
 
 const loadPlugin = (_pluginName: string): ServerAddOnModule => {
   // TODO: Implement me
-  return {serverAddOn: async () => async () => {}};
+  return {default: async () => async () => {}};
 };
 
 // TODO: Fix potential race conditions when starting/stopping concurrently
@@ -47,7 +47,7 @@ export class ServerAddOn {
   ): Promise<ServerAddOn> {
     console.info('ServerAddOn.start', pluginName);
 
-    const {serverAddOn} = loadPlugin(pluginName);
+    const {default: serverAddOn} = loadPlugin(pluginName);
     assertNotNull(serverAddOn);
     assert(
       typeof serverAddOn === 'function',
