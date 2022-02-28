@@ -8,12 +8,7 @@
  */
 
 import {SandyPluginDefinition} from './SandyPluginDefinition';
-import {
-  BasePluginInstance,
-  BasePluginClient,
-  EventsContract,
-  MethodsContract,
-} from './PluginBase';
+import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
 import {Atom, ReadOnlyAtom} from '../state/atom';
 import {
@@ -22,6 +17,8 @@ import {
   DeviceLogEntry,
   CrashLog,
   ServerAddOnControls,
+  EventsContract,
+  MethodsContract,
 } from 'flipper-common';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;

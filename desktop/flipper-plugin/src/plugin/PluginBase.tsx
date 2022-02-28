@@ -18,10 +18,11 @@ import {Idler} from '../utils/Idler';
 import {Notification} from './Notification';
 import {Logger} from '../utils/Logger';
 import {CreatePasteArgs, CreatePasteResult} from './Paste';
-import {ServerAddOnControls} from 'flipper-common';
-
-export type EventsContract = Record<string, any>;
-export type MethodsContract = Record<string, (params: any) => Promise<any>>;
+import {
+  EventsContract,
+  MethodsContract,
+  ServerAddOnControls,
+} from 'flipper-common';
 
 type StateExportHandler<T = any> = (
   idler: Idler,

@@ -48,13 +48,25 @@ export type FlipperPluginReceiverRes =
   | undefined
   | void;
 
-export type FlipperPluginReceiver = (
-  data: any,
+export type FlipperPluginReceiver<T> = (
+  data: T,
 ) => FlipperPluginReceiverRes | Promise<FlipperPluginReceiverRes>;
 
-export interface ServerAddOnPluginConnection {
-  send(method: string, params: unknown): void;
-  receive(method: string, receiver: FlipperPluginReceiver): void;
+export type EventsContract = Record<string, any>;
+export type MethodsContract = Record<string, (params: any) => Promise<any>>;
+
+export interface ServerAddOnPluginConnection<
+  Events extends EventsContract,
+  Methods extends MethodsContract,
+> {
+  send<T extends keyof Events & string>(
+    method: T,
+    ...params: Events[T] extends never ? [] : [Events[T]]
+  ): void;
+  receive<T extends keyof Methods & string>(
+    method: T,
+    receiver: FlipperPluginReceiver<Parameters<Methods[T]>[0]>,
+  ): void;
 }
 
 export interface FlipperServerForServerAddOn extends FlipperServer {
@@ -65,7 +77,10 @@ export interface FlipperServerForServerAddOn extends FlipperServer {
 }
 
 export type ServerAddOnCleanup = () => Promise<void>;
-export type ServerAddOn = (
-  connection: ServerAddOnPluginConnection,
+export type ServerAddOn<
+  Events extends EventsContract,
+  Methods extends MethodsContract,
+> = (
+  connection: ServerAddOnPluginConnection<Events, Methods>,
   {flipperServer}: {flipperServer: FlipperServerForServerAddOn},
 ) => Promise<ServerAddOnCleanup>;

@@ -23,9 +23,9 @@ export type ServerAddOnModuleToDesktopConnectionEvents = {
 
 export class ServerAddOnModuleToDesktopConnection
   extends EventEmitter
-  implements ServerAddOnPluginConnection
+  implements ServerAddOnPluginConnection<any, any>
 {
-  private subscriptions: Map<string, FlipperPluginReceiver> = new Map();
+  private subscriptions: Map<string, FlipperPluginReceiver<any>> = new Map();
 
   constructor(private readonly pluginName: string) {
     super();
@@ -44,7 +44,7 @@ export class ServerAddOnModuleToDesktopConnection
     this.emit('message', message);
   }
 
-  receive(method: string, receiver: FlipperPluginReceiver) {
+  receive(method: string, receiver: FlipperPluginReceiver<any>) {
     this.subscriptions.set(method, receiver);
   }
 

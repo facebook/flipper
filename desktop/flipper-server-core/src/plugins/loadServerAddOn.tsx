@@ -17,7 +17,7 @@ import {assertNotNull} from '../comms/Utilities';
 import defaultPlugins from '../defaultPlugins';
 
 interface ServerAddOnModule {
-  default: ServerAddOnFn;
+  default: ServerAddOnFn<any, any>;
 }
 
 export const loadServerAddOn = (

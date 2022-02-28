@@ -52,6 +52,7 @@ test('Correct top level API exposed', () => {
       "Tracked",
       "TrackingScope",
       "batch",
+      "createControlledPromise",
       "createDataSource",
       "createState",
       "createTablePlugin",

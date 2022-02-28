@@ -7,12 +7,11 @@
  * @format
  */
 
-import {ServerAddOnStartDetails} from 'flipper-common';
+import {ServerAddOnStartDetails, createControlledPromise} from 'flipper-common';
 import {loadServerAddOn} from '../loadServerAddOn';
 import {ServerAddOn} from '../ServerAddOn';
 import {ServerAddOnModuleToDesktopConnection} from '../ServerAddOnModuleToDesktopConnection';
 import {
-  createControlledPromise,
   detailsBundled,
   detailsInstalled,
   initialOwner,

@@ -146,6 +146,7 @@ export const TestUtils = TestUtilites;
 export {
   sleep,
   timeout,
+  createControlledPromise,
   DeviceOS,
   DeviceType,
   DeviceLogEntry,

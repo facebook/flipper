@@ -8,17 +8,16 @@
  */
 
 import {SandyPluginDefinition} from './SandyPluginDefinition';
-import {
-  BasePluginInstance,
-  BasePluginClient,
-  EventsContract,
-  MethodsContract,
-} from './PluginBase';
+import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
 import {Device} from './DevicePlugin';
 import {batched} from '../state/batch';
 import {Atom, createState, ReadOnlyAtom} from '../state/atom';
-import {ServerAddOnControls} from 'flipper-common';
+import {
+  ServerAddOnControls,
+  EventsContract,
+  MethodsContract,
+} from 'flipper-common';
 
 type PreventIntersectionWith<Contract extends Record<string, any>> = {
   [Key in keyof Contract]?: never;

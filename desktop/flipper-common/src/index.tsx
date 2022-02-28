@@ -47,6 +47,7 @@ export {
   getErrorFromErrorLike,
   deserializeRemoteError,
 } from './utils/errors';
+export {createControlledPromise} from './utils/controlledPromise';
 export * from './GK';
 export * from './clientUtils';
 export * from './settings';
