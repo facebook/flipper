@@ -30,6 +30,7 @@ import {
   getInstalledPlugin,
   installPluginFromNpm,
 } from 'flipper-plugin-lib';
+import {ServerAddOn} from './ServerAddOn';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
@@ -43,6 +44,8 @@ const getTempDirName = promisify(tmp.dir) as (
 ) => Promise<string>;
 
 export class PluginManager {
+  private readonly serverAddOns = new Map<string, ServerAddOn>();
+
   async start() {
     // This needn't happen immediately and is (light) I/O work.
     setTimeout(() => {
@@ -154,9 +157,32 @@ export class PluginManager {
 
   async startServerAddOn(pluginName: string) {
     console.debug('PluginManager.startServerAddOn', pluginName);
+    // TODO: Get owner from websocket connection ID
+    const fakeOwner = 'test';
+    const existingServerAddOn = this.serverAddOns.get(pluginName);
+    if (existingServerAddOn) {
+      console.debug(
+        'PluginManager.startServerAddOn -> already started, adding an owner',
+        pluginName,
+        fakeOwner,
+      );
+      existingServerAddOn.addOwner(fakeOwner);
+      return;
+    }
+
+    const newServerAddOn = await ServerAddOn.start(pluginName, fakeOwner);
+    this.serverAddOns.set(pluginName, newServerAddOn);
   }
 
-  async stopServerAddOn(pluginName: string) {
+  stopServerAddOn(pluginName: string) {
     console.debug('PluginManager.stopServerAddOn', pluginName);
+    const serverAddOn = this.serverAddOns.get(pluginName);
+    if (!serverAddOn) {
+      console.debug('PluginManager.stopServerAddOn -> not started', pluginName);
+      return;
+    }
+    // TODO: Get owner from websocket connection ID
+    const fakeOwner = 'test';
+    serverAddOn.removeOwner(fakeOwner);
   }
 }

@@ -421,7 +421,7 @@ export class FlipperServerImpl implements FlipperServer {
     'plugin-source': (path) => this.pluginManager.loadSource(path),
     'plugins-server-add-on-start': (pluginName) =>
       this.pluginManager.startServerAddOn(pluginName),
-    'plugins-server-add-on-stop': (pluginName) =>
+    'plugins-server-add-on-stop': async (pluginName) =>
       this.pluginManager.stopServerAddOn(pluginName),
     'doctor-get-healthchecks': getHealthChecks,
     'doctor-run-healthcheck': runHealthcheck,

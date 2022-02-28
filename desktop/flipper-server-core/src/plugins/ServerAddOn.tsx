@@ -15,6 +15,13 @@ interface ServerAddOnModule {
   serverAddOn?: () => Promise<ServerAddOnCleanup>;
 }
 
+// TODO: Metro does not like dynamic requires. Figure out how to properly configure metro to handle them.
+// https://github.com/webpack/webpack/issues/4175#issuecomment-323023911
+function requireDynamically(path: string) {
+  // eslint-disable-next-line no-eval
+  return eval(`require('${path}');`); // Ensure Metro does not analyze the require statement
+}
+
 // TODO: Fix potential race conditions when starting/stopping concurrently
 export class ServerAddOn {
   private owners: Set<string>;
@@ -30,7 +37,7 @@ export class ServerAddOn {
   static async start(path: string, initialOwner: string): Promise<ServerAddOn> {
     console.info('ServerAddOn.start', path);
 
-    const {serverAddOn} = require(path) as ServerAddOnModule;
+    const {serverAddOn} = requireDynamically(path) as ServerAddOnModule;
     assertNotNull(serverAddOn);
     assert(
       typeof serverAddOn === 'function',
@@ -66,6 +73,10 @@ export class ServerAddOn {
 
   private async stop() {
     console.info('ServerAddOn.stop', this.path);
-    await this.cleanup();
+    try {
+      await this.cleanup();
+    } catch (e) {
+      console.error('ServerAddOn.stop -> failed to clean up', this.path);
+    }
   }
 }
