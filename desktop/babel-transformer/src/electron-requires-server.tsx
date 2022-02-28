@@ -10,10 +10,20 @@
 import {CallExpression} from '@babel/types';
 import {NodePath} from '@babel/traverse';
 
+import {resolve} from 'path';
+import {BUILTINS} from './electron-requires';
+
+const pluginsRootDir = resolve(__dirname, '../../plugins');
+
+function isPlugin(path: string) {
+  // We should bundle dependencies for plugins
+  return path.startsWith(pluginsRootDir);
+}
+
 module.exports = () => ({
   name: 'change-require-to-electronRequire-in-server',
   visitor: {
-    CallExpression(path: NodePath<CallExpression>) {
+    CallExpression(path: NodePath<CallExpression>, state: any) {
       const node = path.node;
       if (
         node.type === 'CallExpression' &&
@@ -25,13 +35,22 @@ module.exports = () => ({
         const source = node.arguments[0].value;
         if (
           // relative files should be bundled
-          !source.startsWith('./') &&
-          !source.startsWith('../') &&
+          source.startsWith('./') ||
+          source.startsWith('../') ||
           // other packages from the workspace should be bundled up and transformed!
-          !source.startsWith('flipper-')
+          source.startsWith('flipper-') ||
+          // Dependencies for bundled plugins (server add-ons) should be included
+          (isPlugin(state.file.opts.filename) &&
+            // yet we should exclude built-ins
+            !(
+              BUILTINS.includes(source) ||
+              BUILTINS.some((moduleName) => source.startsWith(`${moduleName}/`))
+            ))
         ) {
-          node.callee.name = 'electronRequire';
+          return;
         }
+
+        node.callee.name = 'electronRequire';
       }
       if (
         node.callee.type === 'MemberExpression' &&

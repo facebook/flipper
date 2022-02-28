@@ -19,6 +19,9 @@
       "path": "../flipper-common"
     },
     {
+      "path": "../flipper-plugin"
+    },
+    {
       "path": "../plugin-lib"
     }
   ]

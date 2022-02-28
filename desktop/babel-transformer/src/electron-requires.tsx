@@ -10,7 +10,7 @@
 import {CallExpression, identifier} from '@babel/types';
 import {NodePath} from '@babel/traverse';
 
-const BUILTINS = [
+export const BUILTINS = [
   'electron',
   'buffer',
   'child_process',
