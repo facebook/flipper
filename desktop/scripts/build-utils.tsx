@@ -82,6 +82,7 @@ export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
   await fs.emptyDir(defaultPluginsDir);
   const forcedDefaultPluginsDir = process.env.FLIPPER_DEFAULT_PLUGINS_DIR;
   if (forcedDefaultPluginsDir) {
+    // Used for internal builds. Sandcastle downloads plugins from the marketplace to preserve their versions if they are not updated.
     console.log(
       `⚙️  Copying the provided default plugins dir "${forcedDefaultPluginsDir}"...`,
     );

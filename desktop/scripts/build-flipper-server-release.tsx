@@ -142,7 +142,7 @@ if (argv['default-plugins-dir']) {
   process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];
 }
 
-async function copyStaticResources(outDir: string) {
+async function copyStaticResources(outDir: string, versionNumber: string) {
   console.log(`⚙️  Copying default plugins...`);
 
   const plugins = await fs.readdir(defaultPluginsDir);
@@ -166,12 +166,15 @@ async function copyStaticResources(outDir: string) {
         continue;
       }
 
-      // for plugins, only copy package.json & dist, to keep impact minimal
-      await fs.copy(
-        path.join(source, 'package.json'),
-        path.join(target, 'package.json'),
-      );
+      // Update version number of the default plugins to prevent them from updating from marketplace
+      // Preserve current plugin versions if plugins were previously downloaded from marketplace during the build on Sandcastle.
+      // See build-utils:prepareDefaultPlugins
+      packageJson.version =
+        packageJson.version === '0.0.0' ? versionNumber : packageJson.version;
+
+      // for plugins, only keep package.json & dist, to keep impact minimal
       await fs.copy(path.join(source, 'dist'), path.join(target, 'dist'));
+      await fs.writeJSON(path.join(target, 'package.json'), packageJson);
     } else {
       await fs.copy(source, target);
     }
@@ -300,7 +303,7 @@ async function buildServerRelease() {
 
   await compileServerMain(false);
   await prepareDefaultPlugins(argv.channel === 'insiders');
-  await copyStaticResources(dir);
+  await copyStaticResources(dir, versionNumber);
   await downloadIcons(path.join(dir, 'static'));
   await buildBrowserBundle(path.join(dir, 'static'), false);
   await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
