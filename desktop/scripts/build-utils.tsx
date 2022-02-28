@@ -174,20 +174,18 @@ async function generateDefaultPluginEntryPoints(
   const serverAddOns = defaultPlugins.filter(
     ({serverAddOnSource}) => !!serverAddOnSource,
   );
-  if (serverAddOns.length) {
-    const serverAddOnRequires = serverAddOns
-      .map(
-        (x) =>
-          `  '${x.name}': tryRequire('${x.serverAddOnSource}', () => require('${x.serverAddOnSource}'))`,
-      )
-      .join(',\n');
-    const generatedIndexServerAddOns = getGeneratedIndex(serverAddOnRequires);
-    await fs.ensureDir(path.join(serverCoreDir, 'src', 'defaultPlugins'));
-    await fs.writeFile(
-      path.join(serverCoreDir, 'src', 'defaultPlugins', 'index.tsx'),
-      generatedIndexServerAddOns,
-    );
-  }
+  const serverAddOnRequires = serverAddOns
+    .map(
+      (x) =>
+        `  '${x.name}': tryRequire('${x.name}', () => require('${x.name}/${x.serverAddOnSource}'))`,
+    )
+    .join(',\n');
+  const generatedIndexServerAddOns = getGeneratedIndex(serverAddOnRequires);
+  await fs.ensureDir(path.join(serverCoreDir, 'src', 'defaultPlugins'));
+  await fs.writeFile(
+    path.join(serverCoreDir, 'src', 'defaultPlugins', 'index.tsx'),
+    generatedIndexServerAddOns,
+  );
 
   console.log('✅  Generated bundled plugin entry points.');
 }

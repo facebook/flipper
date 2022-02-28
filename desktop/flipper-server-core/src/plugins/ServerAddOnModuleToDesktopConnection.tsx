@@ -34,7 +34,7 @@ export class ServerAddOnModuleToDesktopConnection
       params: {
         method,
         params,
-        api: '', // TODO: Consider using here pluginId and validate it
+        api: '', // TODO: Consider using here pluginName and validate it
       },
     };
     this.emit('message', message);

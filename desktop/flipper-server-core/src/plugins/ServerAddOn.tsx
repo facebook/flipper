@@ -16,13 +16,22 @@ import {
 } from 'flipper-common';
 import {ServerAddOnDesktopToModuleConnection} from './ServerAddOnDesktopToModuleConnection';
 import {ServerAddOnModuleToDesktopConnection} from './ServerAddOnModuleToDesktopConnection';
+// @ts-ignore
+import defaultPlugins from '../defaultPlugins';
 
 interface ServerAddOnModule {
-  default?: ServerAddOnFn;
+  default: ServerAddOnFn;
 }
 
-const loadPlugin = (_pluginName: string): ServerAddOnModule => {
-  // TODO: Implement me
+const loadPlugin = (pluginName: string): ServerAddOnModule => {
+  console.debug('loadPlugin', pluginName);
+
+  const bundledPlugin = defaultPlugins[pluginName];
+  if (bundledPlugin) {
+    return bundledPlugin;
+  }
+
+  // TODO: Use getInstalledPlugin
   return {default: async () => async () => {}};
 };
 
@@ -51,7 +60,7 @@ export class ServerAddOn {
     assertNotNull(serverAddOn);
     assert(
       typeof serverAddOn === 'function',
-      `ServerAddOn ${pluginName} must export "serverAddOn" function.`,
+      `ServerAddOn ${pluginName} must export "serverAddOn" function as a default export.`,
     );
 
     const serverAddOnModuleToDesktopConnection =
