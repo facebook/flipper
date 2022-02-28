@@ -18,6 +18,10 @@ import {Idler} from '../utils/Idler';
 import {Notification} from './Notification';
 import {Logger} from '../utils/Logger';
 import {CreatePasteArgs, CreatePasteResult} from './Paste';
+import {ServerAddOnControls} from 'flipper-common';
+
+export type EventsContract = Record<string, any>;
+export type MethodsContract = Record<string, (params: any) => Promise<any>>;
 
 type StateExportHandler<T = any> = (
   idler: Idler,
@@ -25,7 +29,10 @@ type StateExportHandler<T = any> = (
 ) => Promise<T | undefined | void>;
 type StateImportHandler<T = any> = (data: T) => void;
 
-export interface BasePluginClient {
+export interface BasePluginClient<
+  ServerAddOnEvents extends EventsContract = {},
+  ServerAddOnMethods extends MethodsContract = {},
+> {
   /**
    * A key that uniquely identifies this plugin instance, captures the current device/client/plugin combination.
    */
@@ -128,6 +135,36 @@ export interface BasePluginClient {
    * Logger instance that logs information to the console, but also to the internal logging (in FB only builds) and which can be used to track performance.
    */
   logger: Logger;
+
+  /**
+   * Subscribe to a specific event arriving from the server add-on.
+   *
+   * Messages can only arrive if the plugin is enabled and connected.
+   * For background plugins messages will be batched and arrive the next time the plugin is connected.
+   */
+  onServerAddOnMessage<Event extends keyof ServerAddOnEvents>(
+    event: Event,
+    callback: (params: ServerAddOnEvents[Event]) => void,
+  ): void;
+
+  /**
+   * Subscribe to all messages arriving from the server add-ons not handled by another listener.
+   *
+   * This handler is untyped, and onMessage should be favored over using onUnhandledMessage if the event name is known upfront.
+   */
+  onServerAddOnUnhandledMessage(
+    callback: (event: string, params: any) => void,
+  ): void;
+
+  /**
+   * Send a message to the server add-on
+   */
+  sendToServerAddOn<Method extends keyof ServerAddOnMethods>(
+    method: Method,
+    ...params: Parameters<ServerAddOnMethods[Method]> extends []
+      ? []
+      : [Parameters<ServerAddOnMethods[Method]>[0]]
+  ): ReturnType<ServerAddOnMethods[Method]>;
 }
 
 let currentPluginInstance: BasePluginInstance | undefined = undefined;
@@ -200,6 +237,7 @@ export abstract class BasePluginInstance {
   readonly instanceId = ++staticInstanceId;
 
   constructor(
+    private readonly serverAddOnControls: ServerAddOnControls,
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
     device: Device,
@@ -269,7 +307,7 @@ export abstract class BasePluginInstance {
     }
   }
 
-  protected createBasePluginClient(): BasePluginClient {
+  protected createBasePluginClient(): BasePluginClient<any, any> {
     return {
       pluginKey: this.pluginKey,
       device: this.device,
@@ -341,6 +379,15 @@ export abstract class BasePluginInstance {
         this.flipperLib.showNotification(this.pluginKey, notification);
       },
       logger: this.flipperLib.logger,
+      sendToServerAddOn: (_method, _params): any => {
+        // TODO: Implement me
+      },
+      onServerAddOnMessage: (_event, _cb) => {
+        // TODO: Implement me
+      },
+      onServerAddOnUnhandledMessage: (_cb) => {
+        // TODO: Implement me
+      },
     };
   }
 
@@ -447,4 +494,34 @@ export abstract class BasePluginInstance {
   }
 
   abstract toJSON(): string;
+
+  protected abstract serverAddOnOwner: string;
+
+  protected startServerAddOn() {
+    const {serverAddOn, name} = this.definition.details;
+    if (serverAddOn) {
+      this.serverAddOnControls.start(name, this.serverAddOnOwner).catch((e) => {
+        console.warn(
+          'Failed to start a server add on',
+          name,
+          this.serverAddOnOwner,
+          e,
+        );
+      });
+    }
+  }
+
+  protected stopServerAddOn() {
+    const {serverAddOn, name} = this.definition.details;
+    if (serverAddOn) {
+      this.serverAddOnControls.stop(name, this.serverAddOnOwner).catch((e) => {
+        console.warn(
+          'Failed to start a server add on',
+          name,
+          this.serverAddOnOwner,
+          e,
+        );
+      });
+    }
+  }
 }

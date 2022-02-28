@@ -8,7 +8,12 @@
  */
 
 import {SandyPluginDefinition} from './SandyPluginDefinition';
-import {BasePluginInstance, BasePluginClient} from './PluginBase';
+import {
+  BasePluginInstance,
+  BasePluginClient,
+  EventsContract,
+  MethodsContract,
+} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
 import {Atom, ReadOnlyAtom} from '../state/atom';
 import {
@@ -46,12 +51,14 @@ export type DevicePluginPredicate = (device: Device) => boolean;
 
 export type DevicePluginFactory = (client: DevicePluginClient) => object;
 
-export interface DevicePluginClient extends BasePluginClient {
+export interface DevicePluginClient<
+  ServerAddOnEvents extends EventsContract = {},
+  ServerAddOnMethods extends MethodsContract = {},
+> extends BasePluginClient<ServerAddOnEvents, ServerAddOnMethods> {
   /**
    * opens a different plugin by id, optionally providing a deeplink to bring the plugin to a certain state
    */
   selectPlugin(pluginId: string, deeplinkPayload?: unknown): void;
-
   readonly isConnected: boolean;
   readonly connected: ReadOnlyAtom<boolean>;
 }
@@ -65,14 +72,21 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
   readonly client: DevicePluginClient;
 
   constructor(
-    private readonly serverAddOnControls: ServerAddOnControls,
+    serverAddOnControls: ServerAddOnControls,
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
     device: Device,
     pluginKey: string,
     initialStates?: Record<string, any>,
   ) {
-    super(flipperLib, definition, device, pluginKey, initialStates);
+    super(
+      serverAddOnControls,
+      flipperLib,
+      definition,
+      device,
+      pluginKey,
+      initialStates,
+    );
     this.client = {
       ...this.createBasePluginClient(),
       selectPlugin(pluginId: string, deeplink?: unknown) {
@@ -98,31 +112,7 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
     super.destroy();
   }
 
-  private startServerAddOn() {
-    const {serverAddOn, name} = this.definition.details;
-    if (serverAddOn) {
-      this.serverAddOnControls.start(name, this.device.serial).catch((e) => {
-        console.warn(
-          'Failed to start a server add on',
-          name,
-          this.device.serial,
-          e,
-        );
-      });
-    }
-  }
-
-  private stopServerAddOn() {
-    const {serverAddOn, name} = this.definition.details;
-    if (serverAddOn) {
-      this.serverAddOnControls.stop(name, this.device.serial).catch((e) => {
-        console.warn(
-          'Failed to start a server add on',
-          name,
-          this.device.serial,
-          e,
-        );
-      });
-    }
+  protected get serverAddOnOwner() {
+    return this.device.serial;
   }
 }

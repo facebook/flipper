@@ -8,15 +8,21 @@
  */
 
 import {SandyPluginDefinition} from './SandyPluginDefinition';
-import {BasePluginInstance, BasePluginClient} from './PluginBase';
+import {
+  BasePluginInstance,
+  BasePluginClient,
+  EventsContract,
+  MethodsContract,
+} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
 import {Device} from './DevicePlugin';
 import {batched} from '../state/batch';
 import {Atom, createState, ReadOnlyAtom} from '../state/atom';
 import {ServerAddOnControls} from 'flipper-common';
 
-type EventsContract = Record<string, any>;
-type MethodsContract = Record<string, (params: any) => Promise<any>>;
+type PreventIntersectionWith<Contract extends Record<string, any>> = {
+  [Key in keyof Contract]?: never;
+};
 
 type Message = {
   method: string;
@@ -29,7 +35,11 @@ type Message = {
 export interface PluginClient<
   Events extends EventsContract = {},
   Methods extends MethodsContract = {},
-> extends BasePluginClient {
+  ServerAddOnEvents extends EventsContract &
+    PreventIntersectionWith<Events> = {},
+  ServerAddOnMethods extends MethodsContract &
+    PreventIntersectionWith<Methods> = {},
+> extends BasePluginClient<ServerAddOnEvents, ServerAddOnMethods> {
   /**
    * Identifier that uniquely identifies the connected application
    */
@@ -125,7 +135,11 @@ export interface RealFlipperClient {
 export type PluginFactory<
   Events extends EventsContract,
   Methods extends MethodsContract,
-> = (client: PluginClient<Events, Methods>) => object;
+  ServerAddOnEvents extends EventsContract & PreventIntersectionWith<Events>,
+  ServerAddOnMethods extends MethodsContract & PreventIntersectionWith<Methods>,
+> = (
+  client: PluginClient<Events, Methods, ServerAddOnEvents, ServerAddOnMethods>,
+) => object;
 
 export type FlipperPluginComponent = React.FC<{}>;
 
@@ -137,19 +151,26 @@ export class SandyPluginInstance extends BasePluginInstance {
   /** base client provided by Flipper */
   readonly realClient: RealFlipperClient;
   /** client that is bound to this instance */
-  readonly client: PluginClient<any, any>;
+  readonly client: PluginClient<any, any, any, any>;
   /** connection alive? */
   readonly connected = createState(false);
 
   constructor(
-    private readonly serverAddOnControls: ServerAddOnControls,
+    serverAddOnControls: ServerAddOnControls,
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
     realClient: RealFlipperClient,
     pluginKey: string,
     initialStates?: Record<string, any>,
   ) {
-    super(flipperLib, definition, realClient.device, pluginKey, initialStates);
+    super(
+      serverAddOnControls,
+      flipperLib,
+      definition,
+      realClient.device,
+      pluginKey,
+      initialStates,
+    );
     this.realClient = realClient;
     this.definition = definition;
     const self = this;
@@ -231,18 +252,7 @@ export class SandyPluginInstance extends BasePluginInstance {
   connect() {
     this.assertNotDestroyed();
     if (!this.connected.get()) {
-      const {serverAddOn, name} = this.definition.details;
-      if (serverAddOn) {
-        this.serverAddOnControls.start(name, this.realClient.id).catch((e) => {
-          console.warn(
-            'Failed to start a server add on',
-            name,
-            this.realClient.id,
-            e,
-          );
-        });
-      }
-
+      this.startServerAddOn();
       this.connected.set(true);
       this.events.emit('connect');
     }
@@ -251,18 +261,7 @@ export class SandyPluginInstance extends BasePluginInstance {
   disconnect() {
     this.assertNotDestroyed();
     if (this.connected.get()) {
-      const {serverAddOn, name} = this.definition.details;
-      if (serverAddOn) {
-        this.serverAddOnControls.stop(name, this.realClient.id).catch((e) => {
-          console.warn(
-            'Failed to stop a server add on',
-            name,
-            this.realClient.id,
-            e,
-          );
-        });
-      }
-
+      this.stopServerAddOn();
       this.connected.set(false);
       this.events.emit('disconnect');
     }
@@ -287,6 +286,10 @@ export class SandyPluginInstance extends BasePluginInstance {
 
   toJSON() {
     return '[SandyPluginInstance]';
+  }
+
+  protected get serverAddOnOwner() {
+    return this.realClient.id;
   }
 
   private assertConnected() {

@@ -505,7 +505,7 @@ export function createMockPluginDetails(
   };
 }
 
-export function createTestPlugin<T extends PluginFactory<any, any>>(
+export function createTestPlugin<T extends PluginFactory<any, any, any, any>>(
   implementation: Pick<FlipperPluginModule<T>, 'plugin'> &
     Partial<FlipperPluginModule<T>>,
   details?: Partial<InstalledPluginDetails>,
