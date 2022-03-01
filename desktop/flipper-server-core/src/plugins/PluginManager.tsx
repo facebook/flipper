@@ -15,7 +15,10 @@ import {default as axios} from 'axios';
 import {
   BundledPluginDetails,
   DownloadablePluginDetails,
+  ExecuteMessage,
+  FlipperServerForServerAddOn,
   InstalledPluginDetails,
+  ServerAddOnStartDetails,
 } from 'flipper-common';
 import {getStaticPath} from '../utils/pathUtils';
 import {loadDynamicPlugins} from './loadDynamicPlugins';
@@ -30,6 +33,7 @@ import {
   getInstalledPlugin,
   installPluginFromNpm,
 } from 'flipper-plugin-lib';
+import {ServerAddOnManager} from './ServerAddManager';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
@@ -42,7 +46,14 @@ const getTempDirName = promisify(tmp.dir) as (
   options?: tmp.DirOptions,
 ) => Promise<string>;
 
+const isExecuteMessage = (message: object): message is ExecuteMessage =>
+  (message as ExecuteMessage).method === 'execute';
+
 export class PluginManager {
+  public readonly serverAddOns = new Map<string, ServerAddOnManager>();
+
+  constructor(private readonly flipperServer: FlipperServerForServerAddOn) {}
+
   async start() {
     // This needn't happen immediately and is (light) I/O work.
     setTimeout(() => {
@@ -150,5 +161,106 @@ export class PluginManager {
     } finally {
       await fs.remove(tmpDir);
     }
+  }
+
+  getServerAddOnForMessage(message: object) {
+    if (!isExecuteMessage(message)) {
+      throw new Error(
+        `PluginManager.getServerAddOnForMessage supports only "execute" messages. Received ${JSON.stringify(
+          message,
+        )}`,
+      );
+    }
+    return this.serverAddOns.get(message.params.api);
+  }
+
+  async startServerAddOn(
+    pluginName: string,
+    details: ServerAddOnStartDetails,
+    owner: string,
+  ): Promise<void> {
+    console.debug('PluginManager.startServerAddOn', pluginName);
+    const existingServerAddOn = this.serverAddOns.get(pluginName);
+
+    if (existingServerAddOn) {
+      if (existingServerAddOn.state.is('stopping')) {
+        console.debug(
+          'PluginManager.startServerAddOn -> currently stropping',
+          pluginName,
+          owner,
+          existingServerAddOn.state.currentState,
+        );
+        await existingServerAddOn.state.wait(['inactive', 'zombie']);
+        return this.startServerAddOn(pluginName, details, owner);
+      }
+
+      console.debug(
+        'PluginManager.startServerAddOn -> already started',
+        pluginName,
+        owner,
+        existingServerAddOn.state.currentState,
+      );
+      await existingServerAddOn.addOwner(owner);
+      return;
+    }
+
+    const newServerAddOn = new ServerAddOnManager(
+      pluginName,
+      details,
+      owner,
+      this.flipperServer,
+    );
+    this.serverAddOns.set(pluginName, newServerAddOn);
+
+    newServerAddOn.state.once(['fatal', 'zombie', 'inactive'], () => {
+      this.serverAddOns.delete(pluginName);
+    });
+
+    await newServerAddOn.state.wait(['active', 'fatal']);
+
+    if (newServerAddOn.state.is('fatal')) {
+      this.serverAddOns.delete(pluginName);
+      throw newServerAddOn.state.error;
+    }
+  }
+
+  async stopServerAddOn(pluginName: string, owner: string): Promise<void> {
+    console.debug('PluginManager.stopServerAddOn', pluginName);
+    const serverAddOn = this.serverAddOns.get(pluginName);
+
+    if (!serverAddOn) {
+      console.warn('PluginManager.stopServerAddOn -> not started', pluginName);
+      return;
+    }
+
+    try {
+      await serverAddOn.removeOwner(owner);
+    } catch (e) {
+      console.error(
+        'PluginManager.stopServerAddOn -> error',
+        pluginName,
+        owner,
+        e,
+      );
+      this.serverAddOns.delete(pluginName);
+      throw e;
+    }
+  }
+
+  stopAllServerAddOns(owner: string) {
+    console.debug('PluginManager.stopAllServerAddOns', owner);
+    this.serverAddOns.forEach(async (serverAddOnPromise) => {
+      try {
+        const serverAddOn = await serverAddOnPromise;
+        serverAddOn.removeOwner(owner);
+      } catch (e) {
+        // It is OK to use a debug level here because any failure would be logged in "stopServerAddOn"
+        console.debug(
+          'PluginManager.stopAllServerAddOns -> failed to remove owner',
+          owner,
+          e,
+        );
+      }
+    });
   }
 }

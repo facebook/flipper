@@ -17,6 +17,7 @@ import {
   OS as PluginOS,
   UpdatablePluginDetails,
 } from './PluginDetails';
+import {ServerAddOnStartDetails} from './ServerAddOn';
 import {
   EnvironmentInfo,
   LauncherSettings,
@@ -125,6 +126,7 @@ export type FlipperServerEvents = {
     id: string;
     message: string;
   };
+  'plugins-server-add-on-message': ExecuteMessage;
   'download-file-update': DownloadFileUpdate;
 };
 
@@ -249,6 +251,18 @@ export type FlipperServerCommands = {
     path: string,
   ) => Promise<InstalledPluginDetails>;
   'plugins-remove-plugins': (names: string[]) => Promise<void>;
+  'plugins-server-add-on-start': (
+    pluginName: string,
+    details: ServerAddOnStartDetails,
+    owner: string,
+  ) => Promise<void>;
+  'plugins-server-add-on-stop': (
+    pluginName: string,
+    owner: string,
+  ) => Promise<void>;
+  'plugins-server-add-on-request-response': (
+    payload: ExecuteMessage,
+  ) => Promise<ClientResponseType>;
   'doctor-get-healthchecks': (
     settings: FlipperDoctor.HealthcheckSettings,
   ) => Promise<FlipperDoctor.Healthchecks>;
@@ -566,6 +580,8 @@ export type ExecuteMessage = {
     params?: unknown;
   };
 };
+
+// TODO: Could we merge it with ClientResponseType?
 export type ResponseMessage =
   | {
       id: number;

@@ -22,7 +22,11 @@ const presets = [
 ];
 
 // In DEV builds, we keep node_modules as is, as to not waste resources on trying to bundle them
-const plugins = [require('./electron-requires-server'), require('./fb-stubs')];
+const plugins = [
+  require('./electron-requires-server'),
+  require('./plugin-flipper-requires'),
+  require('./fb-stubs'),
+];
 
 module.exports = {
   transform,

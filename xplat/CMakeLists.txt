@@ -9,10 +9,8 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 set(PACKAGE_NAME      flippercpp)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(RSOCKET_VERSION 0.10.7)
 set(external_DIR ${PROJECT_SOURCE_DIR}/../android/third-party/external)
 set(libfolly_DIR ${external_DIR}/folly/)
-set(rsocket_DIR ${external_DIR}/RSocket/)
 set(glog_DIR ${external_DIR}/glog)
 set(BOOST_DIR ${external_DIR}/boost/boost_1_63_0/)
 set(LIBEVENT_DIR ${external_DIR}/LibEvent/libevent-2.1.11-stable/)
@@ -49,20 +47,16 @@ add_library(${PACKAGE_NAME} STATIC ${SOURCES})
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 set(libfolly_build_DIR ${build_DIR}/libfolly/${ANDROID_ABI})
-set(rsocket_build_DIR ${build_DIR}/rsocket/${ANDROID_ABI})
 
 file(MAKE_DIRECTORY ${build_DIR})
 
-add_subdirectory(${rsocket_DIR} ${rsocket_build_DIR})
-
-message(STATUS "RSocket DIR:- " ${rsocket_DIR})
+add_subdirectory(${libfolly_DIR} ${libfolly_build_DIR})
 
 target_include_directories(${PACKAGE_NAME} PRIVATE
         ${libfolly_DIR}
         ${BOOST_DIR}
         ${BOOST_DIR}/../
         ${LIBEVENT_DIR}/
-        ${rsocket_DIR}/rsocket-cpp-${RSOCKET_VERSION}
         ${LIBEVENT_DIR}/include/
         ${LIBEVENT_DIR}/include/event2
         ${OPENSSL_DIR}/include
@@ -71,4 +65,4 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
         ${glog_DIR}/glog-0.3.5/src/
     )
 
-target_link_libraries(${PACKAGE_NAME} folly rsocket glog double-conversion log event openssl::ssl openssl::crypto)
+target_link_libraries(${PACKAGE_NAME} folly glog double-conversion log event openssl::ssl openssl::crypto)

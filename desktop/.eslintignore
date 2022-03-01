@@ -14,5 +14,6 @@ scripts/generate-changelog.js
 static/index.js
 static/defaultPlugins/*
 app/src/defaultPlugins/index.tsx
+flipper-server-core/src/defaultPlugins/index.tsx
 generated
 flipper-server/static

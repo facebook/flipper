@@ -198,6 +198,7 @@ export default class MockFlipper {
       this._store,
       new Set(supportedPlugins),
       device,
+      this.flipperServer,
     );
     client.rawCall = async (
       method: string,

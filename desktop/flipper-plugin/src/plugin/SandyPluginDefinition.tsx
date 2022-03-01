@@ -26,7 +26,9 @@ export type FlipperDevicePluginModule = {
 /**
  * FlipperPluginModule describe the exports that are provided by a typical Flipper Desktop plugin
  */
-export type FlipperPluginModule<Factory extends PluginFactory<any, any>> = {
+export type FlipperPluginModule<
+  Factory extends PluginFactory<any, any, any, any>,
+> = {
   /** the factory function that initializes a plugin instance */
   plugin: Factory;
   /** the component type that can render this plugin */

@@ -28,11 +28,6 @@ class FlipperSocket {
   virtual void setEventHandler(SocketEventHandler eventHandler) {}
   /**
     Sets the socket message handler. Used to handle received messages.
-    @discussion Message handler is only ever used for WebSocket connections.
-    RSocket uses a different approach whereas a responder is used instead. We
-    could create an RSocket responder that uses a message handler as well. For
-    simplicity, and given that RSocket will be removed in future releases, it
-    was decided not to follow that path.
     @param messageHandler Received messages handler.
   */
   virtual void setMessageHandler(SocketMessageHandler messageHandler) {}

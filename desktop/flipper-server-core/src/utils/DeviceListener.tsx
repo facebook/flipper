@@ -7,9 +7,9 @@
  * @format
  */
 
-import EventEmitter from 'events';
 import {sleep} from 'flipper-common';
 import {assertNotNull} from '../comms/Utilities';
+import {StateMachine} from './StateMachine';
 
 export const RESTART_CNT = 3;
 const RESTART_SLEEP = 100;
@@ -21,84 +21,13 @@ export type DeviceLogListenerState =
   | 'inactive'
   | 'fatal'
   | 'zombie';
-class State {
-  private _currentState: DeviceLogListenerState = 'inactive';
-  private _error?: Error;
-  private valueEmitter = new EventEmitter();
-
-  get error() {
-    return this._error;
-  }
-
-  get currentState() {
-    return this._currentState;
-  }
-
-  set<T extends DeviceLogListenerState>(
-    ...[newState, error]: T extends 'fatal' | 'zombie' ? [T, Error] : [T]
-  ) {
-    this._currentState = newState;
-    this._error = error;
-    this.valueEmitter.emit(newState);
-  }
-
-  once(
-    state: DeviceLogListenerState | DeviceLogListenerState[],
-    cb: () => void,
-  ): () => void {
-    return this.subscribe(state, cb, {once: true});
-  }
-
-  on(
-    state: DeviceLogListenerState | DeviceLogListenerState[],
-    cb: () => void,
-  ): () => void {
-    return this.subscribe(state, cb);
-  }
-
-  is(targetState: DeviceLogListenerState | DeviceLogListenerState[]) {
-    if (!Array.isArray(targetState)) {
-      targetState = [targetState];
-    }
-    return targetState.includes(this._currentState);
-  }
-
-  private subscribe(
-    state: DeviceLogListenerState | DeviceLogListenerState[],
-    cb: () => void,
-    {once}: {once?: boolean} = {},
-  ): () => void {
-    const statesNormalized = Array.isArray(state) ? state : [state];
-
-    if (statesNormalized.includes(this._currentState)) {
-      cb();
-      return () => {};
-    }
-
-    let executed = false;
-    const wrappedCb = () => {
-      if (!executed) {
-        executed = true;
-        cb();
-      }
-    };
-
-    const fn = once ? 'once' : 'on';
-    statesNormalized.forEach((item) => {
-      this.valueEmitter[fn](item, wrappedCb);
-    });
-
-    return () => {
-      statesNormalized.forEach((item) => {
-        this.valueEmitter.off(item, wrappedCb);
-      });
-    };
-  }
-}
 
 export abstract class DeviceListener {
   private name: string = this.constructor.name;
-  protected _state = new State();
+  protected _state = new StateMachine<
+    DeviceLogListenerState,
+    'fatal' | 'zombie'
+  >('inactive');
 
   private stopLogListener?: () => Promise<void> | void;
 

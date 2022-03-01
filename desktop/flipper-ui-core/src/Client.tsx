@@ -12,7 +12,7 @@
 
 import {PluginDefinition} from './plugin';
 import BaseDevice from './devices/BaseDevice';
-import {Logger} from 'flipper-common';
+import {Logger, FlipperServer, ServerAddOnControls} from 'flipper-common';
 import {Store} from './reducers/index';
 import {
   reportPluginFailures,
@@ -46,6 +46,7 @@ import {
   registerFlipperDebugMessage,
 } from './chrome/FlipperMessages';
 import {waitFor} from './utils/waitFor';
+import {createServerAddOnControls} from './utils/createServerAddOnControls';
 
 type Plugins = Set<string>;
 type PluginsArr = Array<string>;
@@ -124,6 +125,8 @@ export default class Client extends EventEmitter {
     }
   > = {};
   sandyPluginStates = new Map<string /*pluginID*/, _SandyPluginInstance>();
+  private readonly serverAddOnControls: ServerAddOnControls;
+  private readonly flipperServer: FlipperServer;
 
   constructor(
     id: string,
@@ -133,6 +136,7 @@ export default class Client extends EventEmitter {
     store: Store,
     plugins: Plugins | null | undefined,
     device: BaseDevice,
+    flipperServer: FlipperServer,
   ) {
     super();
     this.connected.set(!!conn);
@@ -148,6 +152,8 @@ export default class Client extends EventEmitter {
     this.broadcastCallbacks = new Map();
     this.activePlugins = new Set();
     this.device = device;
+    this.flipperServer = flipperServer;
+    this.serverAddOnControls = createServerAddOnControls(this.flipperServer);
   }
 
   supportsPlugin(pluginId: string): boolean {
@@ -218,6 +224,7 @@ export default class Client extends EventEmitter {
       this.sandyPluginStates.set(
         plugin.id,
         new _SandyPluginInstance(
+          this.serverAddOnControls,
           getFlipperLib(),
           plugin,
           this,
@@ -274,6 +281,7 @@ export default class Client extends EventEmitter {
   destroy() {
     this.disconnect();
     this.plugins.forEach((pluginId) => this.stopPluginIfNeeded(pluginId, true));
+    this.serverAddOnControls.unsubscribe();
   }
 
   // gets a plugin by pluginId

@@ -7,7 +7,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import {
   Typography,
   Button,
@@ -32,9 +32,7 @@ import {
 } from 'flipper-plugin';
 import {css} from '@emotion/css';
 import reactElementToJSXString from 'react-element-to-jsx-string';
-
-import '../../flipper-themes/flipper-theme.css';
-import 'antd/dist/antd.css';
+import {IFrame} from './IFrame';
 
 const {Title, Text, Link} = Typography;
 
@@ -551,9 +549,30 @@ const DesignComponentDemos = () => (
   </Layout.Container>
 );
 
-export default function SandyDesignSystem() {
+function SandyDesignSystem() {
+  const [root, setRoot] = useState(null);
+
+  useLayoutEffect(() => {
+    if (root) {
+      const iframe = window.parent.document.getElementById('styleguide');
+      iframe.style.height = `${root.scrollHeight}px`;
+
+      const observer = new MutationObserver(() => {
+        iframe.style.height = `${root.scrollHeight}px`;
+      });
+      observer.observe(root, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        characterData: true,
+      });
+
+      return () => observer.disconnect();
+    }
+  }, [root]);
+
   return (
-    <Layout.Container className={reset} gap="large">
+    <Layout.Container className={reset} gap="large" ref={setRoot}>
       <Card title="Flipper Design System" bordered={false}>
         <p>
           Welcome to the Flipper Design System. The Flipper design system is
@@ -674,6 +693,16 @@ export default function SandyDesignSystem() {
   );
 }
 
+export default function DesignSystemFramed() {
+  return (
+    <IFrame className={iframe} id="styleguide">
+      <link rel="stylesheet" href="/css/style-guide.css" />
+      <style>{innerCss}</style>
+      <SandyDesignSystem />
+    </IFrame>
+  );
+}
+
 function ColorPreview({name}) {
   return (
     <List.Item>
@@ -705,5 +734,15 @@ const reset = css`
   }
   .ant-card {
     background: transparent;
+  }
+`;
+
+const iframe = css`
+  width: 100%;
+`;
+
+const innerCss = `
+  body {
+    overflow: hidden;
   }
 `;

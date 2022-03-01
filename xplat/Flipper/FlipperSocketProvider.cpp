@@ -6,37 +6,14 @@
  */
 
 #include "FlipperSocketProvider.h"
-#include "FlipperRSocket.h"
+#include "FlipperSocket.h"
 #include "FlipperTransportTypes.h"
 
 namespace facebook {
 namespace flipper {
 
-class FlipperDefaultSocketProvider : public FlipperSocketProvider {
- public:
-  FlipperDefaultSocketProvider() {}
-  virtual std::unique_ptr<FlipperSocket> create(
-      FlipperConnectionEndpoint endpoint,
-      std::unique_ptr<FlipperSocketBasePayload> payload,
-      folly::EventBase* eventBase) override {
-    return std::make_unique<FlipperRSocket>(
-        std::move(endpoint), std::move(payload), eventBase);
-  }
-  virtual std::unique_ptr<FlipperSocket> create(
-      FlipperConnectionEndpoint endpoint,
-      std::unique_ptr<FlipperSocketBasePayload> payload,
-      folly::EventBase* eventBase,
-      ConnectionContextStore* connectionContextStore) override {
-    return std::make_unique<FlipperRSocket>(
-        std::move(endpoint),
-        std::move(payload),
-        eventBase,
-        connectionContextStore);
-  }
-};
-
 std::unique_ptr<FlipperSocketProvider> FlipperSocketProvider::provider_ =
-    std::make_unique<FlipperDefaultSocketProvider>();
+    nullptr;
 
 std::unique_ptr<FlipperSocketProvider> FlipperSocketProvider::shelvedProvider_ =
     nullptr;
@@ -65,13 +42,8 @@ void FlipperSocketProvider::setDefaultProvider(
   provider_ = std::move(provider);
 }
 
-void FlipperSocketProvider::shelveDefault() {
-  shelvedProvider_ = std::move(provider_);
-  provider_ = std::make_unique<FlipperDefaultSocketProvider>();
-}
-
-void FlipperSocketProvider::unshelveDefault() {
-  provider_ = std::move(shelvedProvider_);
+bool FlipperSocketProvider::hasProvider() {
+  return provider_ != nullptr;
 }
 
 } // namespace flipper

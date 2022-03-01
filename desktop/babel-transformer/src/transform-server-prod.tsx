@@ -26,7 +26,11 @@ const presets = [
 // This is also the reason that all server deps are DEV deps
 // electron-requires makes sure that *only* requires of built in node_modules are using "electronRequire"
 // (which effectively makes them external, as electronRequire === require, but not rolled up with Metro)
-const plugins = [require('./electron-requires'), require('./fb-stubs')];
+const plugins = [
+  require('./electron-requires'),
+  require('./plugin-flipper-requires'),
+  require('./fb-stubs'),
+];
 
 module.exports = {
   transform,

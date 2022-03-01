@@ -1174,6 +1174,43 @@ Usage: `safeStringify(dataStructure)`
 
 Serialises the given data structure using `JSON.stringify`, but doesn't throw if the processes failed, but rather returns a `<unserializable ...>` string.
 
+### createControlledPromise
+
+Creates a promise and functions to resolve/reject it externally. Alsoprovides its current state.
+
+Returns:
+```ts
+// When the promise is pending
+type Res<T> = {
+  promise: Promise<T>;
+  resolve: (...res: T extends void ? [] : [T]) => void;
+  reject: (reason: unknown) => void;
+  state: 'pending';
+  promiseVal: undefined;
+} | {
+  promise: Promise<T>;
+  resolve: (...res: T extends void ? [] : [T]) => void;
+  reject: (reason: unknown) => void;
+  state: 'resolved';
+  // Resolved value
+  promiseVal: T;
+} | {
+  promise: Promise<T>;
+  resolve: (...res: T extends void ? [] : [T]) => void;
+  reject: (reason: unknown) => void;
+  state: 'rejected';
+  // Rejection reason
+  promiseVal: unknown;
+}
+```
+
+Usage:
+```js
+const controllerPromise = createControlledPromise()
+someService.on('event', (val) => controllerPromise.resolve(val))
+await controllerPromise.promise
+```
+
 ## TestUtils
 
 The object `TestUtils` as exposed from `flipper-plugin` exposes utilities to write unit tests for Sandy plugins.

@@ -33,7 +33,7 @@ export function usePluginInstanceMaybe():
 }
 
 export function usePlugin<
-  Factory extends PluginFactory<any, any> | DevicePluginFactory,
+  Factory extends PluginFactory<any, any, any, any> | DevicePluginFactory,
 >(plugin: Factory): ReturnType<Factory> {
   const pluginInstance = usePluginInstance();
   // In principle we don't *need* the plugin, but having it passed it makes sure the

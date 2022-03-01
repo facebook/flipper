@@ -46,6 +46,7 @@ export abstract class ServerDevice {
     this.connected = false;
     this.logListener.stop();
     this.crashWatcher.stop();
+    this.flipperServer.pluginManager.stopAllServerAddOns(this.info.serial);
   }
 
   async screenshotAvailable(): Promise<boolean> {

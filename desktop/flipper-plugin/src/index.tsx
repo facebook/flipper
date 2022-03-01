@@ -146,10 +146,14 @@ export const TestUtils = TestUtilites;
 export {
   sleep,
   timeout,
+  createControlledPromise,
   DeviceOS,
   DeviceType,
   DeviceLogEntry,
   DeviceLogLevel,
   Logger,
   CrashLog,
+  ServerAddOn,
+  ServerAddOnPluginConnection,
+  FlipperServerForServerAddOn,
 } from 'flipper-common';
