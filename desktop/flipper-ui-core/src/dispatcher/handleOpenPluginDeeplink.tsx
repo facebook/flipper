@@ -320,7 +320,7 @@ async function verifyPluginStatus(
   if (!isTest() && !store.getState().plugins.marketplacePlugins.length) {
     // plugins not yet fetched
     // updates plugins from marketplace (if logged in), and stores them
-    await loadPluginsFromMarketplace();
+    await loadPluginsFromMarketplace(store);
   }
   // while true loop; after pressing install or add GK, we want to check again if plugin is available
   while (true) {

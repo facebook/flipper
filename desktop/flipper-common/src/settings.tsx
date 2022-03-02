@@ -39,6 +39,12 @@ export type Settings = {
   darkMode: 'dark' | 'light' | 'system';
   showWelcomeAtStartup: boolean;
   suppressPluginErrors: boolean;
+  /**
+   * Plugin marketplace - allow internal plugin distribution
+   */
+  enablePluginMarketplace: boolean;
+  marketplaceURL: string;
+  enablePluginMarketplaceAutoUpdate: boolean;
 };
 
 export enum ReleaseChannel {

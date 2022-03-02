@@ -73,6 +73,9 @@ function getDefaultSettings(): Settings {
     darkMode: 'light',
     showWelcomeAtStartup: true,
     suppressPluginErrors: false,
+    enablePluginMarketplace: false,
+    marketplaceURL: '',
+    enablePluginMarketplaceAutoUpdate: true,
   };
 }
 

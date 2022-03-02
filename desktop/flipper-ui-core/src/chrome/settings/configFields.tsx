@@ -154,3 +154,60 @@ export function ConfigText(props: {content: string; frozen?: boolean}) {
     </ConfigFieldContainer>
   );
 }
+
+export function URLConfigField(props: {
+  label: string;
+  resetValue?: string;
+  defaultValue: string;
+  onChange: (path: string) => void;
+  frozen?: boolean;
+}) {
+  const [value, setValue] = useState(props.defaultValue);
+  const [isValid, setIsValid] = useState(true);
+
+  useEffect(() => {
+    try {
+      const url = new URL(value);
+      const isValid =
+        ['http:', 'https:'].includes(url.protocol) &&
+        url.href.startsWith(value);
+      setIsValid(isValid);
+    } catch (_) {
+      setIsValid(false);
+    }
+  }, [value]);
+
+  return (
+    <ConfigFieldContainer>
+      <InfoText>{props.label}</InfoText>
+      <FileInputBox
+        placeholder={props.label}
+        value={value}
+        isValid={isValid}
+        onChange={(e) => {
+          setValue(e.target.value);
+          props.onChange(e.target.value);
+        }}
+      />
+
+      {props.resetValue && (
+        <FlexColumn
+          title={`Reset to default value ${props.resetValue}`}
+          onClick={() => {
+            setValue(props.resetValue!);
+            props.onChange(props.resetValue!);
+          }}>
+          <CenteredGlyph
+            color={theme.primaryColor}
+            name="undo"
+            variant="outline"
+          />
+        </FlexColumn>
+      )}
+      {isValid ? null : (
+        <CenteredGlyph name="caution-triangle" color={colors.yellow} />
+      )}
+      {props.frozen && <GrayedOutOverlay />}
+    </ConfigFieldContainer>
+  );
+}
