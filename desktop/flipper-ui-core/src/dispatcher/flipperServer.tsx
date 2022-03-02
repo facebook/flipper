@@ -31,7 +31,7 @@ export function connectFlipperServerToStore(
   logger: Logger,
 ) {
   server.on('notification', ({type, title, description}) => {
-    const text = `[$type] ${title}: ${description}`;
+    const text = `[${type}] ${title}: ${description}`;
     console.warn(text);
     notification.open({
       message: title,
@@ -240,7 +240,7 @@ function handleDeviceConnected(
 }
 
 export async function handleClientConnected(
-  server: Pick<FlipperServer, 'exec'>,
+  server: FlipperServer,
   store: Store,
   logger: Logger,
   {id, query}: ClientDescription,
@@ -301,6 +301,7 @@ export async function handleClientConnected(
     store,
     undefined,
     device,
+    server,
   );
 
   console.debug(

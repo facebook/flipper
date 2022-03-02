@@ -108,6 +108,7 @@ module.exports = {
     'Desktop plugin APIs': [
       'extending/flipper-plugin',
       'extending/styling-components',
+      'extending/style-guide',
       'extending/deeplinks',
       'extending/node-apis',
       ...fbInternalOnly([

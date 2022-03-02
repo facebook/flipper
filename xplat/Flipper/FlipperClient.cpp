@@ -14,7 +14,6 @@
 #include "FireAndForgetBasedFlipperResponder.h"
 #include "FlipperConnectionImpl.h"
 #include "FlipperConnectionManagerImpl.h"
-#include "FlipperResponderImpl.h"
 #include "FlipperState.h"
 #include "FlipperStep.h"
 #include "Log.h"

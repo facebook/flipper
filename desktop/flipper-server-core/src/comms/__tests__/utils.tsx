@@ -63,4 +63,5 @@ export const createMockSEListener = (): ServerEventsListener => ({
   onError: jest.fn(),
   onClientMessage: jest.fn(),
   onClientSetupError: jest.fn(),
+  onDeprecationNotice: jest.fn(),
 });

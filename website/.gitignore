@@ -7,6 +7,8 @@ website/translated_docs
 build/
 website/yarn.lock
 website/node_modules
+flipper-themes
+static/css/style-guide.css
 
 website/i18n/*
 !website/i18n/en.json

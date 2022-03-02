@@ -7,6 +7,8 @@
  * @format
  */
 
+import {ClientErrorType} from '../server-types';
+
 export function isAuthError(
   err: any,
 ): err is UserNotSignedInError | UserUnauthorizedError {
@@ -114,3 +116,10 @@ export function getStringFromErrorLike(e: any): string {
     }
   }
 }
+
+export const deserializeRemoteError = (serializedError: ClientErrorType) => {
+  const err = new Error(serializedError.message);
+  err.name = serializedError.name;
+  err.stack += `. Caused by: ${serializedError.stacktrace}`;
+  return err;
+};

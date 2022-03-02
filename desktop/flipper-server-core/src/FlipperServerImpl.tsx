@@ -7,6 +7,7 @@
  * @format
  */
 
+import './utils/fetch-polyfill';
 import EventEmitter from 'events';
 import {ServerController} from './comms/ServerController';
 import {CertificateExchangeMedium} from './utils/CertificateProvider';
@@ -88,7 +89,7 @@ export class FlipperServerImpl implements FlipperServer {
     // given flipper-dump, it might make more sense to have the plugin command
     // handling (like download, install, etc) moved to flipper-server & app,
     // but let's keep things simple for now
-    this.pluginManager = new PluginManager();
+    this.pluginManager = new PluginManager(this);
 
     server.addListener('error', (err) => {
       this.emit('server-error', err);
@@ -419,6 +420,30 @@ export class FlipperServerImpl implements FlipperServer {
     'plugins-install-from-npm': (name) =>
       this.pluginManager.installPluginFromNpm(name),
     'plugin-source': (path) => this.pluginManager.loadSource(path),
+    'plugins-server-add-on-start': (pluginName, details, owner) =>
+      this.pluginManager.startServerAddOn(pluginName, details, owner),
+    // TODO: Figure out if it needs to be async
+    'plugins-server-add-on-stop': async (pluginName, owner) =>
+      this.pluginManager.stopServerAddOn(pluginName, owner),
+    'plugins-server-add-on-request-response': async (payload) => {
+      try {
+        const serverAddOn =
+          this.pluginManager.getServerAddOnForMessage(payload);
+        assertNotNull(serverAddOn);
+        return await serverAddOn.sendExpectResponse(payload);
+      } catch {
+        return {
+          length: 0,
+          error: {
+            message: `Server add-on for message '${JSON.stringify(
+              payload,
+            )} is no longer running.`,
+            name: 'SERVER_ADDON_STOPPED',
+            stacktrace: '',
+          },
+        };
+      }
+    },
     'doctor-get-healthchecks': getHealthChecks,
     'doctor-run-healthcheck': runHealthcheck,
     'open-file': openFile,

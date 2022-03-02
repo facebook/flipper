@@ -63,11 +63,15 @@ export async function getInstalledPluginDetails(
           `${packageJson.name}@${packageJson.version || '0.0.0'}.js`,
         )
       : path.resolve(dir, packageJson.main);
+  const serverAddOnEntry = packageJson.serverAddOn
+    ? path.resolve(dir, packageJson.serverAddOn)
+    : undefined;
   return {
     ...pluginDetails,
     isBundled: false,
     isActivatable: true,
     dir,
     entry,
+    serverAddOnEntry,
   };
 }

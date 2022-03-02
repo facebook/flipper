@@ -39,7 +39,6 @@ android {
 
     dependencies {
         implementation project(':third-party')
-        implementation project(':rsocket')
         implementation project(':folly')
         implementation deps.openssl
     }

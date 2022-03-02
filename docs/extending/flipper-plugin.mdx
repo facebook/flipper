@@ -821,7 +821,7 @@ const [showWhitespace, setShowWhitespace] = useLocalStorageState(
 ### Layout.*
 
 Layout elements can be used to organize the screen layout.
-See `View > Flipper Style Guide` inside the Flipper application for more details.
+See [the style guide](style-guide.mdx) for more details.
 
 ### DataTable
 ### DataFormatter
@@ -933,7 +933,7 @@ Shows a loading spinner. Accept an optional `size` to make the spinner larger / 
 ### NUX
 
 An element that can be used to provide a New User eXperience: Hints that give a one time introduction to new features to the current user.
-See `View > Flipper Style Guide` inside the Flipper application for more details.
+See [the style guide](style-guide.mdx) for more details.
 
 ### FileSelector
 
@@ -964,12 +964,12 @@ It doesn't really matter where exactly this component is used in your layout, as
 An element that can be used to track user interactions.
 An example scuba query can be found [here](https://fburl.com/scuba/infinity_analytics_events/xryoq5j7).
 
-See `View > Flipper Style Guide` inside the Flipper application for more details.
+See [the style guide](style-guide.mdx) for more details.
 
 ### TrackingScope
 
 Defines the location of underlying Tracked elements more precisely.
-See `View > Flipper Style Guide` inside the Flipper application for more details.
+See [the style guide](style-guide.mdx) for more details.
 
 ### withTrackingScope
 
@@ -981,7 +981,7 @@ Higher order component that wraps a component automatically in a [`TrackingScope
 
 Provides a standard set of colors and spacings, used by the Flipper style guide.
 The colors exposed here support dark mode.
-See `View > Flipper Style Guide` inside the Flipper application for more details.
+See [the style guide](style-guide.mdx) for more details.
 
 ## Utilities
 
@@ -1074,7 +1074,7 @@ Given a string or React element, returns a text representation of that element, 
 
 ### path
 
-A set of utilizities to handle file paths. A subset of Node.js' [path](https://nodejs.org/api/path.html). 
+A set of utilizities to handle file paths. A subset of Node.js' [path](https://nodejs.org/api/path.html).
 
 <!-- Docs copied from https://github.com/nodejs/node/blob/master/doc/api/path.md -->
 #### `path.basename(path[, ext])`
@@ -1173,6 +1173,43 @@ Returns UUID V4.
 Usage: `safeStringify(dataStructure)`
 
 Serialises the given data structure using `JSON.stringify`, but doesn't throw if the processes failed, but rather returns a `<unserializable ...>` string.
+
+### createControlledPromise
+
+Creates a promise and functions to resolve/reject it externally. Alsoprovides its current state.
+
+Returns:
+```ts
+// When the promise is pending
+type Res<T> = {
+  promise: Promise<T>;
+  resolve: (...res: T extends void ? [] : [T]) => void;
+  reject: (reason: unknown) => void;
+  state: 'pending';
+  promiseVal: undefined;
+} | {
+  promise: Promise<T>;
+  resolve: (...res: T extends void ? [] : [T]) => void;
+  reject: (reason: unknown) => void;
+  state: 'resolved';
+  // Resolved value
+  promiseVal: T;
+} | {
+  promise: Promise<T>;
+  resolve: (...res: T extends void ? [] : [T]) => void;
+  reject: (reason: unknown) => void;
+  state: 'rejected';
+  // Rejection reason
+  promiseVal: unknown;
+}
+```
+
+Usage:
+```js
+const controllerPromise = createControlledPromise()
+someService.on('event', (val) => controllerPromise.resolve(val))
+await controllerPromise.promise
+```
 
 ## TestUtils
 

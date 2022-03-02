@@ -114,18 +114,18 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
 - (void)recordRequestWillBeSentWithRequestID:(NSString*)requestID
                                      request:(NSURLRequest*)request
                             redirectResponse:(NSURLResponse*)redirectResponse {
-  if (![self.identifierDict objectForKey:requestID]) {
-    self.identifierDict[requestID] = [NSNumber random];
-  }
-  NSDate* startDate = [NSDate date];
-
-  if (redirectResponse) {
-    [self recordResponseReceivedWithRequestID:requestID
-                                     response:redirectResponse];
-    [self recordLoadingFinishedWithRequestID:requestID responseBody:nil];
-  }
-
+  NSDate* requestDate = [NSDate date];
   dispatch_async(self.queue, ^{
+    if (![self.identifierDict objectForKey:requestID]) {
+      self.identifierDict[requestID] = [NSNumber random];
+    }
+
+    if (redirectResponse) {
+      [self recordResponseReceivedWithRequestID:requestID
+                                       response:redirectResponse];
+      [self recordLoadingFinishedWithRequestID:requestID responseBody:nil];
+    }
+
     SKRequestInfo* info = [[SKRequestInfo alloc]
         initWithIdentifier:self.identifierDict[requestID].longLongValue
                  timestamp:[NSDate timestamp]
@@ -136,7 +136,7 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
     FLEXNetworkTransaction* transaction = [FLEXNetworkTransaction new];
     transaction.requestID = requestID;
     transaction.request = request;
-    transaction.startTime = startDate;
+    transaction.startTime = requestDate;
 
     [self.orderedTransactions insertObject:transaction atIndex:0];
     [self.networkTransactionsForRequestIdentifiers setObject:transaction

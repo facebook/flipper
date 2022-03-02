@@ -193,23 +193,6 @@ task finalizeLibEvent(dependsOn: [prepareLibEvent2], type: Copy) {
     into "$externalDir/LibEvent/libevent-2.1.11-stable/"
 }
 
-task downloadRSocket(dependsOn: [], type: Download) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.7.tar.gz'
-    onlyIfNewer true
-    overwrite false
-    dest new File(downloadsDir, 'rsocket-' + getDownloadFileName(src))
-}
-
-task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    from tarTree(downloadRSocket.dest)
-    from './overrides/RSocket/'
-    include 'rsocket-cpp-0.10.7/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
-    includeEmptyDirs = false
-    into "$externalDir/RSocket"
-}
-
 task writeCacheRevision(dependsOn: createNativeDepsDirectories) {
     doLast {
         buildDir.mkdirs()
@@ -223,7 +206,6 @@ def allTasks = [
     prepareBoost,
     finalizeFolly,
     finalizeLibEvent,
-    prepareRSocket,
     writeCacheRevision,
 ]
 

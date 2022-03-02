@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {Button, Dropdown, Menu, Radio, Typography} from 'antd';
+import {Button, Dropdown, Menu, Radio, Tooltip, Typography} from 'antd';
 import {
   AppleOutlined,
   AndroidOutlined,
@@ -102,7 +102,14 @@ export function AppSelector() {
             }>
             <AppInspectButton title="Select the device / app to inspect">
               <Layout.Horizontal gap center>
-                <AppIcon appname={client?.query.app} device={selectedDevice} />
+                {client?.query.rsocket ? (
+                  <DeprecationIcon />
+                ) : (
+                  <AppIcon
+                    appname={client?.query.app}
+                    device={selectedDevice}
+                  />
+                )}
                 <Layout.Container grow shrink>
                   <Text strong>{client?.query.app ?? ''}</Text>
                   <Text>{selectedDevice?.title || 'Available devices'}</Text>
@@ -178,6 +185,21 @@ function AppIcon({
         />
       )}
     </AppIconContainer>
+  );
+}
+
+function DeprecationIcon() {
+  return (
+    <Tooltip title="RSockets are being deprecated at Flipper. Please, use the latest Flipper client in your app to migrate to WebSockets.">
+      <AppIconContainer style={{background: theme.warningColor}}>
+        <Glyph
+          name="caution-triangle"
+          size={24}
+          variant="outline"
+          color="white"
+        />
+      </AppIconContainer>
+    </Tooltip>
   );
 }
 

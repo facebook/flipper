@@ -13,7 +13,6 @@ include ':tutorial'
 include ':doubleconversion'
 include ':glog'
 include ':libevent'
-include ':rsocket'
 include ':third-party'
 include ':noop'
 
@@ -25,7 +24,6 @@ project(':doubleconversion').projectDir = file('android/third-party/external/dou
 project(':glog').projectDir = file('android/third-party/external/glog/')
 project(':folly').projectDir = file('android/third-party/external/folly/')
 project(':libevent').projectDir = file('android/third-party/external/LibEvent/')
-project(':rsocket').projectDir = file('android/third-party/external/RSocket/')
 project(':third-party').projectDir = file('android/third-party/')
 project(':noop').projectDir = file('android/no-op/')
 

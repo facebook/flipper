@@ -17,6 +17,7 @@ export {
   NoopLogger,
 } from './utils/Logger';
 export * from './server-types';
+export * from './ServerAddOn';
 export {sleep} from './utils/sleep';
 export {timeout} from './utils/timeout';
 export {isTest} from './utils/isTest';
@@ -44,9 +45,12 @@ export {
   isAuthError,
   getStringFromErrorLike,
   getErrorFromErrorLike,
+  deserializeRemoteError,
 } from './utils/errors';
+export {createControlledPromise} from './utils/controlledPromise';
 export * from './GK';
 export * from './clientUtils';
 export * from './settings';
 export * from './PluginDetails';
 export * from './doctor';
+export * from './ServerAddOn';
