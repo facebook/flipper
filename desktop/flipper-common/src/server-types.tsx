@@ -80,6 +80,7 @@ export type ClientQuery = {
   readonly device: string;
   readonly device_id: string;
   readonly sdk_version?: number;
+  rsocket?: boolean;
 };
 
 export type ClientDescription = {
@@ -105,7 +106,7 @@ export type FlipperServerEvents = {
   'server-state': {state: FlipperServerState; error?: string};
   'server-error': any;
   notification: {
-    type: 'error';
+    type: 'success' | 'info' | 'error' | 'warning';
     title: string;
     description: string;
   };

@@ -31,7 +31,7 @@ export function connectFlipperServerToStore(
   logger: Logger,
 ) {
   server.on('notification', ({type, title, description}) => {
-    const text = `[$type] ${title}: ${description}`;
+    const text = `[${type}] ${title}: ${description}`;
     console.warn(text);
     notification.open({
       message: title,

@@ -16,6 +16,7 @@ import {
   Logger,
   UninitializedClient,
   reportPlatformFailures,
+  FlipperServerEvents,
 } from 'flipper-common';
 import CertificateProvider from '../utils/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
@@ -169,8 +170,17 @@ export class ServerController
     clientConnection: ClientConnection,
     downgrade?: boolean,
   ): Promise<ClientDescription> {
-    const {app, os, device, device_id, sdk_version, csr, csr_path, medium} =
-      clientQuery;
+    const {
+      app,
+      os,
+      device,
+      device_id,
+      sdk_version,
+      csr,
+      csr_path,
+      medium,
+      rsocket,
+    } = clientQuery;
     const transformedMedium = transformCertificateExchangeMediumToType(medium);
     console.info(
       `[conn] Connection established: ${app} on ${device_id}. Medium ${medium}. CSR: ${csr_path}`,
@@ -185,6 +195,7 @@ export class ServerController
         device_id,
         sdk_version,
         medium: transformedMedium,
+        rsocket,
       },
       {csr, csr_path},
       downgrade,
@@ -512,6 +523,15 @@ export class ServerController
       this.connections.delete(id);
       this.flipperServer.pluginManager.stopAllServerAddOns(id);
     }
+  }
+
+  onDeprecationNotice(message: string) {
+    const notification: FlipperServerEvents['notification'] = {
+      type: 'warning',
+      title: 'Deprecation notice',
+      description: message,
+    };
+    this.flipperServer.emit('notification', notification);
   }
 }
 
