@@ -12,7 +12,7 @@
     "node-fetch": "^2.6.7",
     "ws": "^8.4.2",
     "xdg-basedir": "^4.0.0",
-    "yargs": "^16.2.0"
+    "yargs": "^17.3.1"
   },
   "devDependencies": {
     "@types/mkdirp": "^1.0.2"
