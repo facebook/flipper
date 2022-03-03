@@ -7,8 +7,8 @@
   "types": "lib/index.d.ts",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^16.11.7",
     "@types/fb-watchman": "2.0.1",
+    "@types/node": "^16.11.7",
     "flipper-common": "0.0.0"
   },
   "scripts": {
@@ -28,6 +28,6 @@
   "dependencies": {
     "envinfo": "^7.8.1",
     "fb-watchman": "^2.0.1",
-    "fs-extra": "^10.0.0"
+    "fs-extra": "^10.0.1"
   }
 }
