@@ -214,8 +214,9 @@ export class FlipperClient {
 
   private connectToFlipper() {
     const url = `ws://${this.urlBase}?device_id=${this.device}${this.devicePseudoId}&device=${this.device}&app=${this.appName}&os=${this.os}`;
+    const encodedUrl = encodeURI(url);
 
-    this.ws = this.websocketFactory(url);
+    this.ws = this.websocketFactory(encodedUrl);
 
     this.ws.onerror = (error) => {
       this.onError(error);
