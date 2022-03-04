@@ -41,7 +41,7 @@ export interface Device {
   clearLogs(): Promise<void>;
   sendMetroCommand(command: string): Promise<void>;
   navigateToLocation(location: string): Promise<void>;
-  screenshot(): Promise<Uint8Array>;
+  screenshot(): Promise<Uint8Array | undefined>;
 }
 
 export type DevicePluginPredicate = (device: Device) => boolean;

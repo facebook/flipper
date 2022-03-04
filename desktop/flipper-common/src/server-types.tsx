@@ -43,6 +43,10 @@ export type DeviceDescription = {
   readonly deviceType: DeviceType;
   readonly serial: string;
   readonly icon?: string;
+  readonly features: {
+    screenshotAvailable: boolean;
+    screenCaptureAvailable: boolean;
+  };
   // Android specific information
   readonly specs?: DeviceSpec[];
   readonly abiList?: string[];
@@ -205,8 +209,6 @@ export type FlipperServerCommands = {
   'get-config': () => Promise<FlipperServerConfig>;
   'get-changelog': () => Promise<string>;
   'device-list': () => Promise<DeviceDescription[]>;
-  'device-supports-screenshot': (serial: string) => Promise<boolean>;
-  'device-supports-screencapture': (serial: string) => Promise<boolean>;
   'device-take-screenshot': (serial: string) => Promise<string>; // base64 encoded buffer
   'device-start-screencapture': (
     serial: string,

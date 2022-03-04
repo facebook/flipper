@@ -18,6 +18,10 @@ export default class MacDevice extends ServerDevice {
       title: 'Mac',
       os: 'MacOS',
       icon: 'app-apple',
+      features: {
+        screenCaptureAvailable: false,
+        screenshotAvailable: false,
+      },
     });
   }
 }

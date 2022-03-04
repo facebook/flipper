@@ -45,6 +45,10 @@ export default class ArchivedDevice extends BaseDevice {
         os: options.os,
         serial: options.serial,
         icon: 'box',
+        features: {
+          screenCaptureAvailable: false,
+          screenshotAvailable: false,
+        },
       },
     );
     this.connected.set(false);

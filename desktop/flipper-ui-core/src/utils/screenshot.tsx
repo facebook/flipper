@@ -11,6 +11,7 @@ import BaseDevice from '../devices/BaseDevice';
 import {reportPlatformFailures} from 'flipper-common';
 import {getRenderHostInstance} from '../RenderHost';
 import {getFlipperLib, path} from 'flipper-plugin';
+import {assertNotNull} from './assertNotNull';
 
 export function getCaptureLocation() {
   return (
@@ -27,7 +28,7 @@ export function getFileName(extension: 'png' | 'mp4'): string {
 
 export async function capture(device: BaseDevice): Promise<string> {
   if (!device.connected.get()) {
-    console.log('Skipping screenshot for disconnected device');
+    console.info('Skipping screenshot for disconnected device');
     return '';
   }
   const pngPath = path.join(getCaptureLocation(), getFileName('png'));
@@ -36,9 +37,16 @@ export async function capture(device: BaseDevice): Promise<string> {
     // again to write in a file, probably easier to change screenshot api to `device.screenshot(): path`
     device
       .screenshot()
-      .then((buffer) =>
-        getFlipperLib().remoteServerContext.fs.writeFileBinary(pngPath, buffer),
-      )
+      .then((buffer) => {
+        assertNotNull(
+          buffer,
+          `Device ${device.description.deviceType}:${device.description.os} does not support taking screenshots`,
+        );
+        return getFlipperLib().remoteServerContext.fs.writeFileBinary(
+          pngPath,
+          buffer,
+        );
+      })
       .then(() => pngPath),
     'captureScreenshot',
   );

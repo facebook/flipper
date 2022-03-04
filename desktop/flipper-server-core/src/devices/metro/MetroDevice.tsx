@@ -64,6 +64,10 @@ export default class MetroDevice extends ServerDevice {
       title: 'React Native',
       os: 'Metro',
       icon: 'mobile',
+      features: {
+        screenCaptureAvailable: false,
+        screenshotAvailable: false,
+      },
     });
     if (ws) {
       this.ws = ws;

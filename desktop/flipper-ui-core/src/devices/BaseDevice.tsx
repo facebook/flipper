@@ -235,29 +235,12 @@ export default class BaseDevice implements Device {
     return this.flipperServer.exec('device-navigate', this.serial, location);
   }
 
-  async screenshotAvailable(): Promise<boolean> {
-    if (this.isArchived) {
-      return false;
-    }
-    return this.flipperServer.exec('device-supports-screenshot', this.serial);
-  }
-
-  async screenshot(): Promise<Uint8Array> {
-    if (this.isArchived) {
-      return new Uint8Array();
+  async screenshot(): Promise<Uint8Array | undefined> {
+    if (!this.description.features.screenshotAvailable || this.isArchived) {
+      return;
     }
     return Base64.toUint8Array(
       await this.flipperServer.exec('device-take-screenshot', this.serial),
-    );
-  }
-
-  async screenCaptureAvailable(): Promise<boolean> {
-    if (this.isArchived) {
-      return false;
-    }
-    return this.flipperServer.exec(
-      'device-supports-screencapture',
-      this.serial,
     );
   }
 

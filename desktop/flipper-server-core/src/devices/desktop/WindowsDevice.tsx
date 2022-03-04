@@ -18,6 +18,10 @@ export default class WindowsDevice extends ServerDevice {
       title: 'Windows',
       os: 'Windows',
       icon: 'app-microsoft-windows',
+      features: {
+        screenCaptureAvailable: false,
+        screenshotAvailable: false,
+      },
     });
   }
 }
