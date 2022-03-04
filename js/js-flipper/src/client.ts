@@ -215,7 +215,10 @@ export class FlipperClient {
   private connectToFlipper() {
     const url = `ws://${this.urlBase}?device_id=${this.device}${this.devicePseudoId}&device=${this.device}&app=${this.appName}&os=${this.os}`;
 
-    this.ws = this.websocketFactory(url);
+    // Encode url to form proper WS url
+    const encodedURL = encodeURIComponent(url);
+
+    this.ws = this.websocketFactory(encodedURL);
 
     this.ws.onerror = (error) => {
       this.onError(error);
