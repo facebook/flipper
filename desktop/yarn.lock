@@ -4833,10 +4833,10 @@ connect@^3.6.5:
     parseurl "~1.3.3"
     utils-merge "1.0.1"
 
-console-feed@^3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/console-feed/-/console-feed-3.2.2.tgz#fc19a9ba5eedea2985b4add45f7be2a1d0536fe6"
-  integrity sha512-/DxoNG48E+eIMhD9/lBftpJoFQI1e5TOXCwmwG9VIMXAVJPDyGRoY844eClkZBC4b4Ae24ndua6ui/E0jfrH9Q==
+console-feed@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/console-feed/-/console-feed-3.3.0.tgz#83669d512676b67662f297dfc21eef15bac59fea"
+  integrity sha512-GS0EtpiLyAZGEYBtTih+uI3s3NDmOsfkgpNGhr7UWeM5BzDT+dKgit2nEMFwDb2w7NaT95774/cwAztA1BxrHQ==
   dependencies:
     "@emotion/core" "^10.0.10"
     "@emotion/styled" "^10.0.12"
