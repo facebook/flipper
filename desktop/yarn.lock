@@ -8920,13 +8920,12 @@ metro-cache@0.66.2:
     mkdirp "^0.5.1"
     rimraf "^2.5.4"
 
-metro-cache@^0.67.0:
-  version "0.67.0"
-  resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.67.0.tgz#928db5742542719677468c4d22ea29b71c7ec8fc"
-  integrity sha512-IY5dXiR76L75b2ue/mv+9vW8g5hdQJU6YEe81lj6gTSoUrhcONT0rzY+Gh5QOS2Kk6z9utZQMvd9PRKL9/635A==
+metro-cache@^0.69.0:
+  version "0.69.0"
+  resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.69.0.tgz#9b31e33b11e1a5a91d82a9895710ab49301c33e4"
+  integrity sha512-KVAxeJ2T3T+PiaOJZdH5To9q0YoZxOaIJgTDDvtnaAlMnw5yax1RIQymiZ2Qfo3gawdr0a5ZfJtCqkG+JS8+4Q==
   dependencies:
-    metro-core "0.67.0"
-    mkdirp "^0.5.1"
+    metro-core "0.69.0"
     rimraf "^2.5.4"
 
 metro-config@0.66.2:
@@ -8950,14 +8949,14 @@ metro-core@0.66.2:
     lodash.throttle "^4.1.1"
     metro-resolver "0.66.2"
 
-metro-core@0.67.0:
-  version "0.67.0"
-  resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.67.0.tgz#75066e11b4df220992abf9cd6200279dd87876c8"
-  integrity sha512-TOa/ShE1bUq83fGNfV6rFwyfZ288M8ydmWN3g9C2OW8emOHLhJslYD/SIU4DhDkP/99yaJluIALdZ2g0+pCrvQ==
+metro-core@0.69.0:
+  version "0.69.0"
+  resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.69.0.tgz#139674f7f4f299ebd35668f010d05ad40f0a3580"
+  integrity sha512-VzZwL+xm0QbH8XecsKoJkj7FKt3na843flHqFcOXg0OHpcmYKgOJeXfHBYz/GwpX5PVMByjd55Mx2AU3ufx+xw==
   dependencies:
     jest-haste-map "^27.3.1"
     lodash.throttle "^4.1.1"
-    metro-resolver "0.67.0"
+    metro-resolver "0.69.0"
 
 metro-hermes-compiler@0.66.2:
   version "0.66.2"
@@ -9041,10 +9040,10 @@ metro-resolver@0.66.2:
   dependencies:
     absolute-path "^0.0.0"
 
-metro-resolver@0.67.0:
-  version "0.67.0"
-  resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.67.0.tgz#8143c716f77e468d1d42eca805243706eb349959"
-  integrity sha512-d2KS/zAyOA/z/q4/ff41rAp+1txF4H6qItwpsls/RHStV2j6PqgRHUzq/3ga+VIeoUJntYJ8nGW3+3qSrhFlig==
+metro-resolver@0.69.0:
+  version "0.69.0"
+  resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.69.0.tgz#d1d2147e6771f952f27b1bf5f645dc6b4ca12de0"
+  integrity sha512-vORFDli6dLPygXMnf0x2Pg4Wj3Uyye88Gw0H31/dmkRF/oyz8MwS7SXb3xBwVMpkbdpVz0VRPBrPyR8nY8EV5g==
   dependencies:
     absolute-path "^0.0.0"
 
