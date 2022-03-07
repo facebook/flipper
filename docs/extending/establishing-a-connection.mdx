@@ -11,11 +11,11 @@ The connection process is a little more involved than you might expect, to stop 
 
 ## Transport Protocol
 
-Flipper uses [RSocket](http://rsocket.io/) to communicate between the desktop and mobile apps. RSocket allows for bi-directional communication.
+Flipper uses [WebSocket](https://datatracker.ietf.org/doc/html/rfc6455) to communicate between the desktop and mobile apps. WebSocket allows for bi-directional communication.
 
 ## Client-Server relationship
 
-When the desktop app starts up, it opens a secure socket on port 8088.
+When the desktop app starts up, it opens a secure socket on port 9088.
 The Flipper client will continually attempt to connect to this port on localhost to establish a connection with the desktop app.
 
 ## Certificate Exchange
@@ -24,8 +24,8 @@ To avoid mobile apps from connecting to untrusted ports on localhost, a Flipper 
 In order for the mobile app to know which certificates it can trust, it conducts a certificate exchange with the desktop app before it can make its first secure connection.
 
 This is achieved through the following steps:
-* Desktop app starts an insecure server on port 8089.
-* Mobile app connects to localhost:8089 and sends a Certificate Signing Request to the desktop app.
+* Desktop app starts an insecure server on port 9089.
+* Mobile app connects to localhost:9089 and sends a Certificate Signing Request to the desktop app.
 * Desktop app uses its private key (this is generated once and stored in ~/.flipper) to sign a client certificate for the mobile app.
 * Along with the Certificate Signing Request, mobile app also lets the desktop app know which certificate exchange medium to use.
 * If the chosen Certificate Exchange Medium is FS_ACCESS, the desktop uses ADB (for Android), or the mounted file system (for iOS simulators) to write the following files to the mobile app's private data partition
@@ -40,11 +40,11 @@ This allows the mobile app to trust a certificate if and only if, it is stored i
 
 To get the desktop app to generate a client certificate for your client, and then deploy it, go through the following steps:
 
-Use an RSocket client to connect (insecurely) to the following URL:
+Use a WebSocket client to connect (insecurely) to the following URL:
 
 (Parameters are defined in [Implementing a Flipper Client](new-clients.mdx))
 ```
-localhost:8089/sonar?os={OS}
+localhost:9089/sonar?os={OS}
                      &device={DEVICE}
                      &app={APP}
                      &sdk_version={SDK_VERSION}

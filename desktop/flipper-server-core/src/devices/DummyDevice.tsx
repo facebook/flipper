@@ -26,6 +26,10 @@ export default class DummyDevice extends ServerDevice {
       deviceType: 'dummy',
       title,
       os,
+      features: {
+        screenCaptureAvailable: false,
+        screenshotAvailable: false,
+      },
     });
   }
 }

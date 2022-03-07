@@ -9,7 +9,7 @@
   "devDependencies": {
     "@adobe/node-fetch-retry": "^2.1.3",
     "@babel/code-frame": "^7.16.7",
-    "@types/adobe__node-fetch-retry": "^1.0.3",
+    "@types/adobe__node-fetch-retry": "^1.0.4",
     "@types/babel__code-frame": "^7.0.3",
     "@types/detect-port": "^1.3.2",
     "@types/fs-extra": "^9.0.13",
@@ -20,7 +20,7 @@
     "detect-port": "^1.1.1",
     "dotenv": "^14.2.0",
     "electron-builder": "22.11.7",
-    "express": "^4.17.2",
+    "express": "^4.17.3",
     "fb-watchman": "^2.0.1",
     "flipper-common": "0.0.0",
     "flipper-pkg-lib": "0.0.0",

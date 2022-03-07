@@ -226,13 +226,12 @@ test('new clients replace old ones', async () => {
 
   const client2 = await createClient(device, 'AnotherApp', client.query, true);
   await handleClientConnected(
-    {
-      exec: (async () => {
-        return {
-          success: {}, // {plugins: []},
-        };
-      }) as any,
-    },
+    TestUtils.createFlipperServerMock({
+      'client-request-response': async () => ({
+        success: [],
+        length: 0,
+      }),
+    }),
     store,
     logger,
     client2,

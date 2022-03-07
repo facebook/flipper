@@ -7,10 +7,10 @@
  * @format
  */
 
-export async function loadPluginsFromMarketplace() {
-  // Marketplace is not implemented in public version of Flipper
-}
-
-export default () => {
-  // Marketplace is not implemented in public version of Flipper
+export const safeJSONStringify = (data: unknown): string => {
+  try {
+    return JSON.stringify(data);
+  } catch {
+    return 'Unable to serialize';
+  }
 };

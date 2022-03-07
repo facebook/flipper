@@ -575,6 +575,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
         store,
         clientPlugins,
         archivedDevice,
+        getRenderHostInstance().flipperServer,
       ).initFromImport(sandyPluginStates),
     });
   });

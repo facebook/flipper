@@ -17,7 +17,7 @@
     "@types/express": "^4.17.13",
     "@types/node": "^15.12.5",
     "chalk": "^4.1.2",
-    "express": "^4.17.2",
+    "express": "^4.17.3",
     "flipper-common": "0.0.0",
     "flipper-pkg-lib": "0.0.0",
     "flipper-server-core": "0.0.0",

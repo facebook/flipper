@@ -36,6 +36,10 @@ export default class IOSDevice extends ServerDevice {
       title,
       os: 'iOS',
       icon: 'mobile',
+      features: {
+        screenCaptureAvailable: true,
+        screenshotAvailable: true,
+      },
     });
     this.buffer = '';
     this.iOSBridge = iOSBridge;
@@ -74,10 +78,6 @@ export default class IOSDevice extends ServerDevice {
       console.warn(`Failed to navigate to location ${location}:`, err);
       return err;
     });
-  }
-
-  async screenCaptureAvailable() {
-    return this.connected;
   }
 
   async startScreenCapture(destination: string) {

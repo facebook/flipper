@@ -13,6 +13,8 @@ export interface PluginDetails {
   version: string;
   source: string;
   main: string;
+  serverAddOnSource?: string;
+  serverAddOn?: string;
   id: string;
   gatekeeper?: string;
   title: string;
@@ -83,6 +85,7 @@ export interface InstalledPluginDetails extends ConcretePluginDetails {
   isActivatable: true;
   dir: string;
   entry: string;
+  serverAddOnEntry?: string;
 }
 
 // Describes plugin physically available for activation in Flipper.
@@ -96,6 +99,8 @@ export interface DownloadablePluginDetails extends ConcretePluginDetails {
   isBundled: false;
   downloadUrl: string;
   lastUpdated: Date;
+  // Indicates whether plugin should be enabled by default for new users
+  isEnabledByDefault: boolean;
 }
 
 export type UpdateResult =
@@ -157,7 +162,9 @@ function getPluginDetailsV2(packageJson: any): PluginDetails {
     name: packageJson.name,
     version: packageJson.version,
     main: packageJson.main,
+    serverAddOn: packageJson.serverAddOn,
     source: packageJson.flipperBundlerEntry,
+    serverAddOnSource: packageJson.flipperBundlerEntryServerAddOn,
     id: packageJson.id || packageJson.name,
     gatekeeper: packageJson.gatekeeper,
     icon: packageJson.icon,

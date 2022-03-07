@@ -105,9 +105,10 @@ class ServerRSocket extends ServerAdapter {
     }
 
     const clientQuery: SecureClientQuery = JSON.parse(payload.data);
+    clientQuery.rsocket = true;
     // TODO: Add a migration guide
-    console.warn(
-      `[conn] RSockets are being deprecated at Flipper. Please, migrate to WebSockets. App: ${clientQuery.app}. Device: ${clientQuery.device}.`,
+    this.listener.onDeprecationNotice(
+      `[conn] RSockets are being deprecated at Flipper. Please, use the latest Flipper client in your app to migrate to WebSockets. App: ${clientQuery.app}. Device: ${clientQuery.device}.`,
     );
 
     this.listener.onSecureConnectionAttempt(clientQuery);

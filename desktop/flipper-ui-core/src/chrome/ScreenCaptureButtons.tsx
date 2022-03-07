@@ -8,7 +8,7 @@
  */
 
 import {Button as AntButton, message} from 'antd';
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {capture, getCaptureLocation, getFileName} from '../utils/screenshot';
 import {CameraOutlined, VideoCameraOutlined} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
@@ -22,20 +22,7 @@ async function openFile(path: string) {
 export default function ScreenCaptureButtons() {
   const selectedDevice = useStore((state) => state.connections.selectedDevice);
   const [isTakingScreenshot, setIsTakingScreenshot] = useState(false);
-  const [isRecordingAvailable, setIsRecordingAvailable] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-
-  useEffect(() => {
-    let canceled = false;
-    selectedDevice?.screenCaptureAvailable().then((result) => {
-      if (!canceled) {
-        setIsRecordingAvailable(result);
-      }
-    });
-    return () => {
-      canceled = true;
-    };
-  }, [selectedDevice]);
 
   const handleScreenshot = useCallback(() => {
     setIsTakingScreenshot(true);
@@ -87,7 +74,10 @@ export default function ScreenCaptureButtons() {
         title="Take Screenshot"
         type="ghost"
         onClick={handleScreenshot}
-        disabled={!selectedDevice}
+        disabled={
+          !selectedDevice ||
+          !selectedDevice.description.features.screenshotAvailable
+        }
         loading={isTakingScreenshot}
       />
       <AntButton
@@ -95,7 +85,10 @@ export default function ScreenCaptureButtons() {
         title="Make Screen Recording"
         type={isRecording ? 'primary' : 'ghost'}
         onClick={handleRecording}
-        disabled={!selectedDevice || !isRecordingAvailable}
+        disabled={
+          !selectedDevice ||
+          !selectedDevice.description.features.screenCaptureAvailable
+        }
         danger={isRecording}
       />
     </>

@@ -58,6 +58,7 @@ export function createMockDownloadablePluginDetails(
     lastUpdated: lastUpdated,
     isBundled: false,
     isActivatable: false,
+    isEnabledByDefault: false,
   };
   return details;
 }

@@ -24,10 +24,12 @@ import {
   DeviceDescription,
   FlipperServer,
   CrashLog,
+  ServerAddOnControls,
 } from 'flipper-common';
 import {DeviceSpec, PluginDetails} from 'flipper-common';
 import {getPluginKey} from '../utils/pluginKey';
 import {Base64} from 'js-base64';
+import {createServerAddOnControls} from '../utils/createServerAddOnControls';
 
 type PluginDefinition = _SandyPluginDefinition;
 type PluginMap = Map<string, PluginDefinition>;
@@ -45,10 +47,12 @@ export default class BaseDevice implements Device {
   flipperServer: FlipperServer;
   isArchived = false;
   hasDevicePlugins = false; // true if there are device plugins for this device (not necessarily enabled)
+  private readonly serverAddOnControls: ServerAddOnControls;
 
   constructor(flipperServer: FlipperServer, description: DeviceDescription) {
     this.flipperServer = flipperServer;
     this.description = description;
+    this.serverAddOnControls = createServerAddOnControls(this.flipperServer);
   }
 
   get isConnected(): boolean {
@@ -231,29 +235,12 @@ export default class BaseDevice implements Device {
     return this.flipperServer.exec('device-navigate', this.serial, location);
   }
 
-  async screenshotAvailable(): Promise<boolean> {
-    if (this.isArchived) {
-      return false;
-    }
-    return this.flipperServer.exec('device-supports-screenshot', this.serial);
-  }
-
-  async screenshot(): Promise<Uint8Array> {
-    if (this.isArchived) {
-      return new Uint8Array();
+  async screenshot(): Promise<Uint8Array | undefined> {
+    if (!this.description.features.screenshotAvailable || this.isArchived) {
+      return;
     }
     return Base64.toUint8Array(
       await this.flipperServer.exec('device-take-screenshot', this.serial),
-    );
-  }
-
-  async screenCaptureAvailable(): Promise<boolean> {
-    if (this.isArchived) {
-      return false;
-    }
-    return this.flipperServer.exec(
-      'device-supports-screencapture',
-      this.serial,
     );
   }
 
@@ -349,6 +336,7 @@ export default class BaseDevice implements Device {
         this.sandyPluginStates.set(
           plugin.id,
           new _SandyDevicePluginInstance(
+            this.serverAddOnControls,
             getFlipperLib(),
             plugin,
             this,
@@ -385,5 +373,6 @@ export default class BaseDevice implements Device {
       instance.destroy();
     });
     this.sandyPluginStates.clear();
+    this.serverAddOnControls.unsubscribe();
   }
 }

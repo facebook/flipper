@@ -1,6 +1,6 @@
 project 'Tutorial.xcodeproj'
 swift_version = "4.1"
-flipperkit_version = '0.135.0'
+flipperkit_version = '0.137.0'
 use_frameworks!
 
 target 'Tutorial' do
@@ -19,7 +19,7 @@ target 'Tutorial' do
   # be dynamic.
   $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
     'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
-    'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+    'Flipper-Glog', 'Flipper-PeerTalk', 'Yoga', 'YogaKit',
     'CocoaLibEvent', 'OpenSSL-Universal', 'Flipper-Boost-iOSX', 'Flipper-Fmt']
 
   pre_install do |installer|

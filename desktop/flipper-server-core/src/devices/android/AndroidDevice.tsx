@@ -49,6 +49,10 @@ export default class AndroidDevice extends ServerDevice {
       specs,
       abiList,
       sdkVersion,
+      features: {
+        screenCaptureAvailable: false,
+        screenshotAvailable: false,
+      },
     });
     this.adb = adb;
 
@@ -115,7 +119,7 @@ export default class AndroidDevice extends ServerDevice {
     });
   }
 
-  async screenCaptureAvailable(): Promise<boolean> {
+  async screenRecordAvailable(): Promise<boolean> {
     try {
       await this.executeShellOrDie(
         `[ ! -f /system/bin/screenrecord ] && echo "File does not exist"`,

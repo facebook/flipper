@@ -11,7 +11,15 @@ import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {BasePluginInstance, BasePluginClient} from './PluginBase';
 import {FlipperLib} from './FlipperLib';
 import {Atom, ReadOnlyAtom} from '../state/atom';
-import {DeviceOS, DeviceType, DeviceLogEntry, CrashLog} from 'flipper-common';
+import {
+  DeviceOS,
+  DeviceType,
+  DeviceLogEntry,
+  CrashLog,
+  ServerAddOnControls,
+  EventsContract,
+  MethodsContract,
+} from 'flipper-common';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 export type CrashLogListener = (crash: CrashLog) => void;
@@ -33,19 +41,21 @@ export interface Device {
   clearLogs(): Promise<void>;
   sendMetroCommand(command: string): Promise<void>;
   navigateToLocation(location: string): Promise<void>;
-  screenshot(): Promise<Uint8Array>;
+  screenshot(): Promise<Uint8Array | undefined>;
 }
 
 export type DevicePluginPredicate = (device: Device) => boolean;
 
 export type DevicePluginFactory = (client: DevicePluginClient) => object;
 
-export interface DevicePluginClient extends BasePluginClient {
+export interface DevicePluginClient<
+  ServerAddOnEvents extends EventsContract = {},
+  ServerAddOnMethods extends MethodsContract = {},
+> extends BasePluginClient<ServerAddOnEvents, ServerAddOnMethods> {
   /**
    * opens a different plugin by id, optionally providing a deeplink to bring the plugin to a certain state
    */
   selectPlugin(pluginId: string, deeplinkPayload?: unknown): void;
-
   readonly isConnected: boolean;
   readonly connected: ReadOnlyAtom<boolean>;
 }
@@ -56,16 +66,24 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
   }
 
   /** client that is bound to this instance */
-  readonly client: DevicePluginClient;
+  readonly client: DevicePluginClient<any, any>;
 
   constructor(
+    serverAddOnControls: ServerAddOnControls,
     flipperLib: FlipperLib,
     definition: SandyPluginDefinition,
     device: Device,
     pluginKey: string,
     initialStates?: Record<string, any>,
   ) {
-    super(flipperLib, definition, device, pluginKey, initialStates);
+    super(
+      serverAddOnControls,
+      flipperLib,
+      definition,
+      device,
+      pluginKey,
+      initialStates,
+    );
     this.client = {
       ...this.createBasePluginClient(),
       selectPlugin(pluginId: string, deeplink?: unknown) {
@@ -79,9 +97,19 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
     this.initializePlugin(() =>
       definition.asDevicePluginModule().devicePlugin(this.client),
     );
+    this.startServerAddOn();
   }
 
   toJSON() {
     return '[SandyDevicePluginInstance]';
+  }
+
+  destroy() {
+    this.stopServerAddOn();
+    super.destroy();
+  }
+
+  protected get serverAddOnOwner() {
+    return this.device.serial;
   }
 }

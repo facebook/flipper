@@ -23,7 +23,7 @@ import {
 import {getUpdateAvailableMessage} from '../chrome/UpdateIndicator';
 import {Typography} from 'antd';
 import {getPluginStatus, PluginStatus} from '../utils/pluginUtils';
-import {loadPluginsFromMarketplace} from './fb-stubs/pluginMarketplace';
+import {loadPluginsFromMarketplace} from './pluginMarketplace';
 import {loadPlugin, switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
 import isProduction from '../utils/isProduction';
@@ -320,7 +320,7 @@ async function verifyPluginStatus(
   if (!isTest() && !store.getState().plugins.marketplacePlugins.length) {
     // plugins not yet fetched
     // updates plugins from marketplace (if logged in), and stores them
-    await loadPluginsFromMarketplace();
+    await loadPluginsFromMarketplace(store);
   }
   // while true loop; after pressing install or add GK, we want to check again if plugin is available
   while (true) {

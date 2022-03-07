@@ -25,14 +25,12 @@ type DispatchFromProps = {};
 
 type State = {
   recording: boolean;
-  recordingEnabled: boolean;
 };
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 
 export default class VideoRecordingButton extends Component<Props, State> {
   state: State = {
     recording: false,
-    recordingEnabled: true,
   };
 
   startRecording = async () => {
@@ -80,7 +78,6 @@ export default class VideoRecordingButton extends Component<Props, State> {
     }
   };
   render() {
-    const {recordingEnabled} = this.state;
     const {selectedDevice} = this.props;
     return (
       <Button
@@ -89,7 +86,10 @@ export default class VideoRecordingButton extends Component<Props, State> {
         pulse={this.state.recording}
         selected={this.state.recording}
         title="Make Screen Recording"
-        disabled={!selectedDevice || !recordingEnabled}
+        disabled={
+          !selectedDevice ||
+          !selectedDevice.description.features.screenCaptureAvailable
+        }
         type={this.state.recording ? 'danger' : 'primary'}>
         <Glyph
           name={this.state.recording ? 'stop-playback' : 'camcorder'}

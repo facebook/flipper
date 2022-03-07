@@ -34,31 +34,25 @@ async function getMetroDir() {
   return __dirname;
 }
 
-type Options = {
-  sourceMapPath?: string | undefined;
-};
+interface RunMetroConfig {
+  pluginDir: string;
+  baseConfig: any;
+  entry: string;
+  out: string;
+  dev: boolean;
+  sourceMapPath?: string;
+  babelTransformerPath: string;
+}
 
-export default async function bundlePlugin(
-  pluginDir: string,
-  dev: boolean,
-  options?: Options,
-) {
-  const stat = await fs.lstat(pluginDir);
-  if (!stat.isDirectory()) {
-    throw new Error(`Plugin source ${pluginDir} is not a directory.`);
-  }
-  const packageJsonPath = path.join(pluginDir, 'package.json');
-  if (!(await fs.pathExists(packageJsonPath))) {
-    throw new Error(
-      `package.json is not found in plugin source directory ${pluginDir}.`,
-    );
-  }
-  const plugin = await getInstalledPluginDetails(pluginDir);
-  const entry = plugin.source;
-  const out = path.resolve(pluginDir, plugin.main);
-  await fs.ensureDir(path.dirname(out));
-
-  const baseConfig = await Metro.loadConfig();
+async function runMetro({
+  pluginDir,
+  baseConfig,
+  entry,
+  out,
+  dev,
+  sourceMapPath,
+  babelTransformerPath,
+}: RunMetroConfig) {
   const config = Object.assign({}, baseConfig, {
     reporter: {update: () => {}},
     projectRoot: pluginDir,
@@ -72,7 +66,7 @@ export default async function bundlePlugin(
     },
     transformer: {
       ...baseConfig.transformer,
-      babelTransformerPath: require.resolve('flipper-babel-transformer'),
+      babelTransformerPath,
       minifierPath: require.resolve('metro-minify-terser'),
       minifierConfig: {
         // see: https://www.npmjs.com/package/terser
@@ -98,7 +92,7 @@ export default async function bundlePlugin(
     ],
   });
   const sourceMapUrl = out.replace(/\.js$/, '.map');
-  const sourceMap = dev || !!options?.sourceMapPath;
+  const sourceMap = dev || !!sourceMapPath;
   await Metro.runBuild(config, {
     dev,
     sourceMap,
@@ -113,11 +107,69 @@ export default async function bundlePlugin(
     await stripSourceMapComment(out);
   }
   if (
-    options?.sourceMapPath &&
-    path.resolve(options.sourceMapPath) !== path.resolve(sourceMapUrl)
+    sourceMapPath &&
+    path.resolve(sourceMapPath) !== path.resolve(sourceMapUrl)
   ) {
-    console.log(`Moving plugin sourcemap to ${options.sourceMapPath}`);
-    await fs.ensureDir(path.dirname(options.sourceMapPath));
-    await fs.move(sourceMapUrl, options.sourceMapPath, {overwrite: true});
+    console.log(`Moving plugin sourcemap to ${sourceMapPath}`);
+    await fs.ensureDir(path.dirname(sourceMapPath));
+    await fs.move(sourceMapUrl, sourceMapPath, {overwrite: true});
   }
+}
+
+type Options = {
+  sourceMapPath?: string | undefined;
+  sourceMapPathServerAddOn?: string | undefined;
+};
+
+export default async function bundlePlugin(
+  pluginDir: string,
+  dev: boolean,
+  options?: Options,
+) {
+  const stat = await fs.lstat(pluginDir);
+  if (!stat.isDirectory()) {
+    throw new Error(`Plugin source ${pluginDir} is not a directory.`);
+  }
+  const packageJsonPath = path.join(pluginDir, 'package.json');
+  if (!(await fs.pathExists(packageJsonPath))) {
+    throw new Error(
+      `package.json is not found in plugin source directory ${pluginDir}.`,
+    );
+  }
+  const plugin = await getInstalledPluginDetails(pluginDir);
+  const baseConfig = await Metro.loadConfig();
+
+  const bundleConfigs: RunMetroConfig[] = [];
+
+  await fs.ensureDir(path.dirname(plugin.entry));
+  bundleConfigs.push({
+    pluginDir,
+    baseConfig,
+    entry: plugin.source,
+    out: plugin.entry,
+    dev,
+    sourceMapPath: options?.sourceMapPath,
+    babelTransformerPath: require.resolve('flipper-babel-transformer'),
+  });
+
+  if (
+    plugin.serverAddOnSource &&
+    plugin.serverAddOn &&
+    plugin.serverAddOnEntry
+  ) {
+    await fs.ensureDir(path.dirname(plugin.serverAddOnEntry));
+    bundleConfigs.push({
+      pluginDir,
+      baseConfig,
+      entry: plugin.serverAddOnSource,
+      out: plugin.serverAddOnEntry,
+      dev,
+      sourceMapPath: options?.sourceMapPathServerAddOn,
+      babelTransformerPath: require.resolve(
+        'flipper-babel-transformer/lib/transform-server-add-on',
+      ),
+    });
+  }
+
+  await Promise.all(bundleConfigs.map((config) => runMetro(config)));
 }

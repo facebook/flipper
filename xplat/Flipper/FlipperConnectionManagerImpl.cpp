@@ -15,11 +15,9 @@
 #include <thread>
 #include "ConnectionContextStore.h"
 #include "FireAndForgetBasedFlipperResponder.h"
-#include "FlipperResponderImpl.h"
 #include "FlipperSocketProvider.h"
 #include "FlipperStep.h"
 #include "Log.h"
-#include "yarpl/Single.h"
 
 #define WRONG_THREAD_EXIT_MSG \
   "ERROR: Aborting flipper initialization because it's not running in the flipper thread."
@@ -120,6 +118,11 @@ FlipperConnectionManagerImpl::getCertificateProvider() {
 };
 
 void FlipperConnectionManagerImpl::start() {
+  if (!FlipperSocketProvider::hasProvider()) {
+    log("No socket provider has been set, unable to start");
+    return;
+  }
+
   if (isStarted_) {
     log("Already started");
     return;
@@ -263,10 +266,6 @@ bool FlipperConnectionManagerImpl::connectSecurely() {
   auto newClient = FlipperSocketProvider::socketCreate(
       endpoint, std::move(payload), connectionEventBase_, contextStore_.get());
   newClient->setEventHandler(ConnectionEvents(implWrapper_));
-  /**
-   Message handler is only ever used for WebSocket connections. RSocket uses a
-   different approach whereas a responder is used instead.
-   */
   newClient->setMessageHandler([this](const std::string& msg) {
     std::unique_ptr<FireAndForgetBasedFlipperResponder> responder;
     auto message = folly::parseJson(msg);

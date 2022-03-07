@@ -26,10 +26,4 @@ export default class KaiOSDevice extends AndroidDevice {
       'KaiOS',
     ]);
   }
-
-  async screenCaptureAvailable() {
-    // The default way of capturing screenshots through adb does not seem to work
-    // There is a way of getting a screenshot through KaiOS dev tools though
-    return false;
-  }
 }

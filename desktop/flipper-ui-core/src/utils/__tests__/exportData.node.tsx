@@ -38,6 +38,7 @@ import {
 import {selectPlugin, getAllClients} from '../../reducers/connections';
 import {TestIdler} from '../Idler';
 import {TestDevice} from '../../devices/TestDevice';
+import {FlipperServer} from 'flipper-common';
 
 const testIdler = new TestIdler();
 
@@ -64,6 +65,14 @@ const logger = {
   trackTimeSince: () => {},
 };
 const mockStore = configureStore<State, {}>([])();
+
+const flipperServer = {
+  connect: async () => {},
+  on: () => {},
+  off: () => {},
+  close: () => {},
+  exec: () => {},
+} as FlipperServer;
 
 function generateNotifications(
   id: string,
@@ -725,6 +734,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const client2 = new Client(
     generateClientIdentifier(device1, 'app2'),
@@ -739,6 +749,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     mockStore,
     new Set(['TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const client3 = new Client(
     generateClientIdentifier(device1, 'app3'),
@@ -753,6 +764,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const plugins: PluginsState = {
     clientPlugins: new Map([
@@ -812,6 +824,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const client2 = new Client(
     generateClientIdentifier(device1, 'app2'),
@@ -826,6 +839,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     mockStore,
     new Set(['TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const plugins: PluginsState = {
     clientPlugins: new Map([
@@ -868,6 +882,7 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const client2 = new Client(
     generateClientIdentifier(device1, 'app2'),
@@ -882,6 +897,7 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     mockStore,
     new Set(['TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const plugins: PluginsState = {
     clientPlugins: new Map([['TestPlugin', TestPlugin]]),
@@ -929,6 +945,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const client2Device1 = new Client(
     generateClientIdentifier(device1, 'app2'),
@@ -943,6 +960,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     mockStore,
     new Set(['TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const client1Device2 = new Client(
     generateClientIdentifier(device2, 'app'),
@@ -957,6 +975,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const client2Device2 = new Client(
     generateClientIdentifier(device2, 'app2'),
@@ -971,6 +990,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     mockStore,
     new Set(['TestDevicePlugin']),
     device1,
+    flipperServer,
   );
   const plugins: PluginsState = {
     clientPlugins: new Map([['TestPlugin', TestPlugin]]),
@@ -1042,6 +1062,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
     archivedDevice,
+    flipperServer,
   );
   const archivedClient = new Client(
     generateClientIdentifier(archivedDevice, 'app'),
@@ -1056,6 +1077,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
     archivedDevice,
+    flipperServer,
   );
   const plugins: PluginsState = {
     clientPlugins: new Map([['TestPlugin', TestPlugin]]),

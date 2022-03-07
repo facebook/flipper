@@ -73,7 +73,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
 
     const screenshot = await client.device.screenshot();
-    if (screenshot.byteLength === 0) {
+    if (!screenshot) {
       console.warn(
         '[navigation] Could not retrieve valid screenshot from the device.',
       );

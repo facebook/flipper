@@ -31,15 +31,3 @@ jobs:
         run: pod repo update
       - name: Lint Peertalk
         run: pod spec lint Flipper-PeerTalk.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
-
-  lint-flipper_rsocket_pod:
-    runs-on: macos-latest
-    defaults:
-      run:
-        working-directory: iOS/Podspecs
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Dependences
-        run: pod repo update
-      - name: Lint RSocket
-        run: pod spec lint Flipper-RSocket.podspec --use-libraries --allow-warnings --verbose --skip-import-validation

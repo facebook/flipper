@@ -1,3 +1,16 @@
+# 0.137.0 (2/3/2022)
+
+ * [D34418118](https://github.com/facebook/flipper/search?q=D34418118&type=Commits) -  Remove rsocket references from xplat
+ * [D33656299](https://github.com/facebook/flipper/search?q=D33656299&type=Commits) -  Remove rsocket dependency for iOS
+ * [D34418565](https://github.com/facebook/flipper/search?q=D34418565&type=Commits) -  Remove rsocket dependency for Android
+
+
+# 0.136.0 (23/2/2022)
+
+ * [D34340068](https://github.com/facebook/flipper/search?q=D34340068&type=Commits) -  Log 'Unable to extract the client query from the request URL' as warning
+ * [D34345316](https://github.com/facebook/flipper/search?q=D34345316&type=Commits) -  Remove RSocket documentation references
+
+
 # 0.135.0 (16/2/2022)
 
  * [D33655430](https://github.com/facebook/flipper/search?q=D33655430&type=Commits) -  Removes rsocket-fallback for mobile clients

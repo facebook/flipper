@@ -107,6 +107,8 @@ export interface ServerEventsListener {
   onClientMessage(clientId: string, payload: string): void;
 
   onClientSetupError(clientQuery: ClientQuery, error: any): void;
+
+  onDeprecationNotice: (message: string) => void;
 }
 
 /**

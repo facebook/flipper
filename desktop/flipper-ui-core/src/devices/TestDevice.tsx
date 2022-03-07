@@ -26,6 +26,10 @@ export class TestDevice extends BaseDevice {
       title,
       os,
       specs,
+      features: {
+        screenCaptureAvailable: false,
+        screenshotAvailable: false,
+      },
     });
   }
 
