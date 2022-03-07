@@ -138,7 +138,17 @@ export class PluginManager {
             }
           },
         });
-        if (response.headers['content-type'] !== 'application/octet-stream') {
+        function parseHeaderValue(header: string) {
+          const values = header.split(';');
+          // remove white space
+          return values.map((value) => value.trim());
+        }
+
+        if (
+          !parseHeaderValue(response.headers['content-type']).includes(
+            'application/octet-stream',
+          )
+        ) {
           throw new Error(
             `It looks like you are not on VPN/Lighthouse. Unexpected content type received: ${response.headers['content-type']}.`,
           );

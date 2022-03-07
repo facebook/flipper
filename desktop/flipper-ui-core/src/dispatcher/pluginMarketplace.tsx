@@ -27,6 +27,7 @@ import {isConnectivityOrAuthError} from 'flipper-common';
 import {isLoggedIn} from '../fb-stubs/user';
 import {getRenderHostInstance} from '..';
 
+// TODO: provide this value from settings
 export const pollingIntervalMs = getRenderHostInstance().serverConfig.env
   .FLIPPER_PLUGIN_AUTO_UPDATE_POLLING_INTERVAL
   ? parseInt(
@@ -36,25 +37,31 @@ export const pollingIntervalMs = getRenderHostInstance().serverConfig.env
     ) // for manual testing we could set smaller interval
   : 300000; // 5 min by default
 
-function isAutoUpdateDisabled() {
+function isAutoUpdateDisabled(store: Store) {
   return (
-    !getFlipperLib().isFB ||
+    // for open-source version auto-updates must be explicitly enabled in Settings
+    (!getFlipperLib().isFB &&
+      !store.getState().settingsState.enablePluginMarketplaceAutoUpdate) ||
+    // for internal build we disable auto-updates in case user is not logged
+    (getFlipperLib().isFB && !isLoggedIn().get()) ||
     getRenderHostInstance().GK('flipper_disable_plugin_auto_update') ||
     getRenderHostInstance().serverConfig.env.FLIPPER_NO_PLUGIN_AUTO_UPDATE !==
       undefined
   );
 }
 
-function isPluginMarketplaceDisabled() {
+function isPluginMarketplaceDisabled(store: Store) {
   return (
-    !getFlipperLib().isFB ||
+    // for open-source version marketplace must be explicitly enabled in Settings
+    (!getFlipperLib().isFB &&
+      !store.getState().settingsState.enablePluginMarketplace) ||
     getRenderHostInstance().GK('flipper_disable_plugin_marketplace') ||
     getRenderHostInstance().serverConfig.env.FLIPPER_NO_PLUGIN_MARKETPLACE
   );
 }
 
 export default (store: Store) => {
-  if (isPluginMarketplaceDisabled()) {
+  if (isPluginMarketplaceDisabled(store)) {
     console.warn(
       'Loading plugins from Plugin Marketplace disabled by GK or env var',
     );
@@ -98,10 +105,10 @@ export default (store: Store) => {
   };
 };
 
-export async function loadPluginsFromMarketplace(): Promise<
-  MarketplacePluginDetails[]
-> {
-  const availablePlugins = await loadAvailablePlugins();
+export async function loadPluginsFromMarketplace(
+  store: Store,
+): Promise<MarketplacePluginDetails[]> {
+  const availablePlugins = await loadAvailablePlugins(store);
   return selectCompatibleMarketplaceVersions(availablePlugins);
 }
 
@@ -111,7 +118,7 @@ async function refreshMarketplacePlugins(store: Store): Promise<void> {
     return;
   }
   try {
-    const plugins = await loadPluginsFromMarketplace();
+    const plugins = await loadPluginsFromMarketplace(store);
     store.dispatch(registerMarketplacePlugins(plugins));
     autoUpdatePlugins(store, plugins);
   } catch (err) {
@@ -177,7 +184,7 @@ export function autoUpdatePlugins(
       }
     }
   }
-  if (isAutoUpdateDisabled() || !isLoggedIn().get()) {
+  if (isAutoUpdateDisabled(store)) {
     return;
   }
   for (const plugin of marketplacePlugins) {

@@ -8,9 +8,22 @@
  */
 
 import {MarketplacePluginDetails} from '../reducers/plugins';
+import {Store} from '../reducers/index';
 
-export async function loadAvailablePlugins(): Promise<
-  MarketplacePluginDetails[]
-> {
-  return [];
+export async function loadAvailablePlugins(
+  store: Store,
+): Promise<MarketplacePluginDetails[]> {
+  const {enablePluginMarketplace, marketplaceURL} =
+    store.getState().settingsState;
+  try {
+    if (!enablePluginMarketplace && !marketplaceURL) {
+      throw new Error('Marketplace is not enabled');
+    }
+    const response = await fetch(marketplaceURL);
+    const plugins = await response.json();
+    return plugins;
+  } catch (e) {
+    console.error('Failed while retrieving marketplace plugins', e);
+    return [];
+  }
 }

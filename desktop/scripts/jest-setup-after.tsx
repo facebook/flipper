@@ -150,6 +150,9 @@ function createStubRenderHost(): RenderHost {
       },
       showWelcomeAtStartup: false,
       suppressPluginErrors: false,
+      enablePluginMarketplace: false,
+      marketplaceURL: '',
+      enablePluginMarketplaceAutoUpdate: true,
     },
     validWebSocketOrigins: [],
   };
