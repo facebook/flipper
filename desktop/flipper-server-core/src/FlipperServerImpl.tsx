@@ -53,6 +53,14 @@ import {assertNotNull} from './comms/Utilities';
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
 
+function isHandledStartupError(e: Error) {
+  if (e.message.includes('EADDRINUSE')) {
+    return true;
+  }
+
+  return false;
+}
+
 /**
  * FlipperServer takes care of all incoming device & client connections.
  * It will set up managers per device type, and create the incoming
@@ -163,7 +171,9 @@ export class FlipperServerImpl implements FlipperServer {
       await this.startDeviceListeners();
       this.setServerState('started');
     } catch (e) {
-      console.error('Failed to start FlipperServer', e);
+      if (!isHandledStartupError(e)) {
+        console.error('Failed to start FlipperServer', e);
+      }
       this.setServerState('error', e);
     }
   }
