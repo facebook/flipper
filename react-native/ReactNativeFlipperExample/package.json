@@ -15,7 +15,7 @@
     "react-native-flipper": "^0.131.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.2",
+    "@babel/core": "^7.17.5",
     "@babel/runtime": "^7.17.2",
     "babel-jest": "^27.5.1",
     "jest": "^27.5.1",
