@@ -64,14 +64,18 @@ function startAssetServer(
 function addWebsocket(server: http.Server, config: Config) {
   const localhostIPV4 = `localhost:${config.port}`;
   const localhostIPV6 = `[::1]:${config.port}`;
+  const localhostIPV6NoBrackets = `::1:${config.port}`;
+
+  const possibleHosts = [localhostIPV4, localhostIPV6, localhostIPV6NoBrackets];
+
   const io = new socketio.Server(server, {
     maxHttpBufferSize: WEBSOCKET_MAX_MESSAGE_SIZE,
     allowRequest(req, callback) {
       const noOriginHeader = req.headers.origin === undefined;
       if (
         noOriginHeader &&
-        (req.headers.host === localhostIPV4 ||
-          req.headers.host === localhostIPV6)
+        req.headers.host &&
+        possibleHosts.includes(req.headers.host)
       ) {
         // no origin header? Either the request is not cross-origin,
         // or the request is not originating from a browser, so should be OK to pass through
@@ -84,7 +88,11 @@ function addWebsocket(server: http.Server, config: Config) {
         // directly from intern. But before that, we should either authenticate the request somehow,
         // and discuss security impact and for example scope the files that can be read by Flipper.
         console.warn(
-          `Refused sockect connection from cross domain request, origin: ${req.headers.origin}, host: ${req.headers.host}. Expected: ${localhostIPV4} or ${localhostIPV6}`,
+          `Refused sockect connection from cross domain request, origin: ${
+            req.headers.origin
+          }, host: ${req.headers.host}. Expected: ${possibleHosts.join(
+            ' or ',
+          )}`,
         );
         callback(null, false);
       }
