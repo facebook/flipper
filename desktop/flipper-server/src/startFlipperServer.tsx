@@ -23,7 +23,7 @@ import {
   setLoggerInstance,
 } from 'flipper-common';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs-extra';
 
 export async function startFlipperServer(
   rootDir: string,
@@ -59,13 +59,17 @@ export async function startFlipperServer(
   let keytar: any = undefined;
   try {
     if (!isTest()) {
-      keytar = electronRequire(
-        path.join(
-          staticPath,
-          'native-modules',
-          `keytar-${process.platform}.node`,
-        ),
+      const keytarPath = path.join(
+        staticPath,
+        'native-modules',
+        `keytar-${process.platform}-${process.arch}.node`,
       );
+      if (!(await fs.pathExists(keytarPath))) {
+        throw new Error(
+          `Keytar binary does not exist for platform ${process.platform}-${process.arch}`,
+        );
+      }
+      keytar = electronRequire(keytarPath);
     }
   } catch (e) {
     console.error('Failed to load keytar:', e);

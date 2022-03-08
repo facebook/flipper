@@ -37,7 +37,7 @@ import {
 import constants from './fb-stubs/constants';
 import {initializeElectron} from './electron/initializeElectron';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs-extra';
 
 enableMapSet();
 
@@ -64,9 +64,17 @@ async function start() {
   let keytar: any = undefined;
   try {
     if (!isTest()) {
-      keytar = electronRequire(
-        path.join(appPath, 'native-modules', `keytar-${process.platform}.node`),
+      const keytarPath = path.join(
+        staticPath,
+        'native-modules',
+        `keytar-${process.platform}-${process.arch}.node`,
       );
+      if (!(await fs.pathExists(keytarPath))) {
+        throw new Error(
+          `Keytar binary does not exist for platform ${process.platform}-${process.arch}`,
+        );
+      }
+      keytar = electronRequire(keytarPath);
     }
   } catch (e) {
     console.error('Failed to load keytar:', e);
