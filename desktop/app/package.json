@@ -19,7 +19,7 @@
     "flipper-ui-core": "0.0.0",
     "fs-extra": "^10.0.1",
     "invariant": "^2.2.2",
-    "metro-runtime": "^0.68.0",
+    "metro-runtime": "^0.69.0",
     "pretty-format": "^27.5.0"
   },
   "optionalDependencies": {},

@@ -13,9 +13,9 @@
     "flipper-plugin-lib": "0.0.0",
     "fs-extra": "^10.0.1",
     "metro": "^0.66.2",
-    "metro-cache": "^0.67.0",
+    "metro-cache": "^0.69.0",
     "metro-minify-terser": "^0.66.2",
-    "npm-packlist": "^3.0.0"
+    "npm-packlist": "^4.0.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
