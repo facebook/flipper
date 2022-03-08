@@ -15,7 +15,7 @@
     "@reach/observe-rect": "^1.2.0",
     "@types/react": "17.0.39",
     "@types/react-color": "^3.0.6",
-    "@types/react-dom": "^17.0.12",
+    "@types/react-dom": "^17.0.13",
     "eventemitter3": "^4.0.7",
     "flipper-common": "0.0.0",
     "immer": "^9.0.12",
@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@types/string-natural-compare": "^3.0.2",
-    "@types/uuid": "^8.3.3",
+    "@types/uuid": "^8.3.4",
     "jest-mock-console": "^1.2.3"
   },
   "peerDependencies": {

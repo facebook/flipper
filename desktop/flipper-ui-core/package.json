@@ -56,7 +56,7 @@
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
     "@types/redux-mock-store": "^1.0.3",
-    "@types/uuid": "^8.3.1",
+    "@types/uuid": "^8.3.4",
     "flipper-test-utils": "0.0.0",
     "jest-mock-console": "^1.2.3",
     "redux-mock-store": "^1.0.1"
