@@ -16,7 +16,7 @@ tar = "0.4.38"
 serde = { version = "1.0.136", features = ["derive"] }
 serde_yaml = "0.8.23"
 anyhow = "1.0.55"
-sha2 = "0.10.1"
+sha2 = "0.10.2"
 data-encoding = "2.3.2"
 serde_json = "1.0.67"
 rayon = "1.5.1"
