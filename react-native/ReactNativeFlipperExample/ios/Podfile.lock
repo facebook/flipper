@@ -13,7 +13,7 @@ PODS:
   - Flipper (0.137.0):
     - Flipper-Folly (~> 2.6)
   - Flipper-Boost-iOSX (1.76.0.1.11)
-  - Flipper-DoubleConversion (3.1.7)
+  - Flipper-DoubleConversion (3.2.0)
   - Flipper-Fmt (7.1.7)
   - Flipper-Folly (2.6.10):
     - Flipper-Boost-iOSX
@@ -22,7 +22,7 @@ PODS:
     - Flipper-Glog
     - libevent (~> 2.1.12)
     - OpenSSL-Universal (= 1.1.1100)
-  - Flipper-Glog (0.3.9)
+  - Flipper-Glog (0.5.0.3)
   - Flipper-PeerTalk (0.0.4)
   - Flipper-RSocket (1.4.3):
     - Flipper-Folly (~> 2.6)
@@ -290,7 +290,7 @@ PODS:
   - React-jsinspector (0.67.2)
   - React-logger (0.67.2):
     - glog
-  - react-native-flipper (0.131.1):
+  - react-native-flipper (0.137.0):
     - React-Core
   - React-perflogger (0.67.2)
   - React-RCTActionSheet (0.67.2):
@@ -369,10 +369,10 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - Flipper (= 0.137.0)
   - Flipper-Boost-iOSX (= 1.76.0.1.11)
-  - Flipper-DoubleConversion (= 3.1.7)
+  - Flipper-DoubleConversion (= 3.2.0)
   - Flipper-Fmt (= 7.1.7)
   - Flipper-Folly (= 2.6.10)
-  - Flipper-Glog (= 0.3.9)
+  - Flipper-Glog (= 0.5.0.3)
   - Flipper-PeerTalk (= 0.0.4)
   - Flipper-RSocket (= 1.4.3)
   - FlipperKit (= 0.137.0)
@@ -515,10 +515,10 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: c94002c1d93da3658f4d5119c6994d19961e3d52
   Flipper: 7980d6c11c422bbf2d8d95a6988b7622e2e08ae6
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
-  Flipper-DoubleConversion: 57ffbe81ef95306cc9e69c4aa3aeeeeb58a6a28c
+  Flipper-DoubleConversion: 3d3d04a078d4f3a1b6c6916587f159dc11f232c4
   Flipper-Fmt: 60cbdd92fc254826e61d669a5d87ef7015396a9b
   Flipper-Folly: 584845625005ff068a6ebf41f857f468decd26b3
-  Flipper-Glog: 05579840e2750ec907ee2f81544f41ad76a7cae4
+  Flipper-Glog: 7761f5362d23ead28c19afc2dd1d819f00e40df9
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
   FlipperKit: df5f64f3f04dfccb9c3364b704a377b7dabdb9ec
@@ -540,7 +540,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 52beb652bbc61201bd70cbe4f0b8edb607e8da4f
   React-jsinspector: 595f76eba2176ebd8817a1fffd47b84fbdab9383
   React-logger: 23de8ea0f44fa00ee77e96060273225607fd4d78
-  react-native-flipper: 8d0ada062fbc2c7460cc0d343aded6fc3f9c90dc
+  react-native-flipper: 9ce0e50fc10cb4786901de4fa4c8726b4651b1ad
   React-perflogger: 3c9bb7372493e49036f07a82c44c8cf65cbe88db
   React-RCTActionSheet: 052606483045a408693aa7e864410b4a052f541a
   React-RCTAnimation: 08d4cac13222bb1348c687a0158dfd3b577cdb63
@@ -557,6 +557,6 @@ SPEC CHECKSUMS:
   Yoga: 9b6696970c3289e8dea34b3eda93f23e61fb8121
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 4218eac8fa6e476a92652ec9bd4fd9131b48261d
+PODFILE CHECKSUM: fc50676d99cb4d884fc347cb9f799e42d943d30d
 
 COCOAPODS: 1.11.2
