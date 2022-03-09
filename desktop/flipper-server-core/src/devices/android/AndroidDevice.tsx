@@ -11,7 +11,6 @@ import adb, {Client as ADBClient, PullTransfer} from 'adbkit';
 import {Reader} from 'adbkit-logcat';
 import {createWriteStream} from 'fs';
 import type {DeviceType} from 'flipper-common';
-import which from 'which';
 import {spawn} from 'child_process';
 import {dirname, join} from 'path';
 import {DeviceSpec} from 'flipper-common';
