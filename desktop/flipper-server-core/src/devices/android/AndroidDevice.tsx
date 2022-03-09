@@ -91,7 +91,9 @@ export default class AndroidDevice extends ServerDevice {
   }
 
   clearLogs(): Promise<void> {
-    return this.executeShellOrDie(['logcat', '-c']);
+    return this.executeShellOrDie(['logcat', '-c']).catch((e) => {
+      console.warn('Failed to clear logs:', e);
+    });
   }
 
   async navigateToLocation(location: string) {
