@@ -270,7 +270,7 @@ export async function handleClientConnected(
     getDeviceBySerial(store.getState(), query.device_id) ??
     (await findDeviceForConnection(store, query.app, query.device_id).catch(
       (e) => {
-        console.error(
+        console.warn(
           `[conn] Failed to find device '${query.device_id}' while connection app '${query.app}'`,
           e,
         );
