@@ -8,7 +8,7 @@
  */
 
 import {DeviceType, timeout} from 'flipper-common';
-import child_process, {ChildProcess} from 'child_process';
+import {ChildProcess} from 'child_process';
 import {IOSBridge} from './IOSBridge';
 import {ServerDevice} from '../ServerDevice';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
@@ -16,8 +16,6 @@ import {iOSCrashWatcher} from './iOSCrashUtils';
 import {iOSLogListener} from './iOSLogListener';
 
 export default class IOSDevice extends ServerDevice {
-  log?: child_process.ChildProcessWithoutNullStreams;
-  buffer: string;
   private recording?: {process: ChildProcess; destination: string};
   private iOSBridge: IOSBridge;
   readonly logListener: iOSLogListener;
@@ -41,7 +39,6 @@ export default class IOSDevice extends ServerDevice {
         screenshotAvailable: true,
       },
     });
-    this.buffer = '';
     this.iOSBridge = iOSBridge;
 
     this.logListener = new iOSLogListener(
