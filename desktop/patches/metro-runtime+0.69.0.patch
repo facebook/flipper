@@ -1,9 +1,9 @@
 diff --git a/node_modules/metro-runtime/src/polyfills/require.js b/node_modules/metro-runtime/src/polyfills/require.js
-index f9bb647..d918aa1 100644
+index e7e1e25..25a946a 100644
 --- a/node_modules/metro-runtime/src/polyfills/require.js
 +++ b/node_modules/metro-runtime/src/polyfills/require.js
 @@ -113,11 +113,6 @@ function metroRequire(moduleId) {
-         .map(id => (modules[id] ? modules[id].verboseName : "[unknown]")); // We want to show A -> B -> A:
+         .map((id) => (modules[id] ? modules[id].verboseName : "[unknown]")); // We want to show A -> B -> A:
  
        cycle.push(cycle[0]);
 -      console.warn(

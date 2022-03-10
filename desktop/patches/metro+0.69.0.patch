@@ -1,5 +1,5 @@
 diff --git a/node_modules/metro/src/lib/getPreludeCode.js b/node_modules/metro/src/lib/getPreludeCode.js
-index f73c6ec..fc313ec 100644
+index 56780d7..7da26d1 100644
 --- a/node_modules/metro/src/lib/getPreludeCode.js
 +++ b/node_modules/metro/src/lib/getPreludeCode.js
 @@ -14,7 +14,7 @@ function getPreludeCode({ extraVars, isDev, globalPrefix }) {
@@ -8,6 +8,6 @@ index f73c6ec..fc313ec 100644
      ...formatExtraVars(extraVars),
 -    "process=this.process||{}",
 +    "process=process||this.process||global.process||{}",
-     `__METRO_GLOBAL_PREFIX__='${globalPrefix}'`
+     `__METRO_GLOBAL_PREFIX__='${globalPrefix}'`,
    ];
    return `var ${vars.join(",")};${processEnv(
