@@ -8,8 +8,12 @@
  */
 
 import EventEmitter from 'eventemitter3';
-import {FlipperServer} from 'flipper-common';
-import {io, Socket} from 'socket.io-client';
+import {
+  ExecWebSocketMessage,
+  FlipperServer,
+  ServerWebSocketMessage,
+} from 'flipper-common';
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
 const CONNECTION_TIMEOUT = 30 * 1000;
 const EXEC_TIMOUT = 30 * 1000;
@@ -18,7 +22,7 @@ export function createFlipperServer(): Promise<FlipperServer> {
   // TODO: polish this all!
   window.flipperShowError?.('Connecting to server...');
   return new Promise<FlipperServer>((resolve, reject) => {
-    const initialConnectionTimeout = setTimeout(() => {
+    let initialConnectionTimeout: number | undefined = setTimeout(() => {
       reject(
         new Error('Failed to connect to Flipper server in a timely manner'),
       );
@@ -26,7 +30,7 @@ export function createFlipperServer(): Promise<FlipperServer> {
 
     const eventEmitter = new EventEmitter();
     // TODO: recycle the socket that is created in index.web.dev.html?
-    const socket: Socket = io();
+    const socket = new ReconnectingWebSocket(`ws://${location.host}`);
     const pendingRequests: Map<
       number,
       {
@@ -38,19 +42,20 @@ export function createFlipperServer(): Promise<FlipperServer> {
     let requestId = 0;
     let connected = false;
 
-    socket.on('connect', () => {
+    socket.addEventListener('open', () => {
+      if (initialConnectionTimeout) {
+        // only relevant for the first connect
+        resolve(flipperServer);
+        clearTimeout(initialConnectionTimeout);
+        initialConnectionTimeout = undefined;
+      }
+
       window?.flipperHideError?.();
       console.log('Socket to Flipper server connected');
       connected = true;
     });
 
-    socket.once('connect', () => {
-      // only relevant for the first connect
-      resolve(flipperServer);
-      clearTimeout(initialConnectionTimeout);
-    });
-
-    socket.on('disconnect', () => {
+    socket.addEventListener('close', () => {
       window?.flipperShowError?.('WebSocket connection lost');
       console.warn('Socket to Flipper server disconnected');
       connected = false;
@@ -60,33 +65,48 @@ export function createFlipperServer(): Promise<FlipperServer> {
       pendingRequests.clear();
     });
 
-    socket.on('exec-response', (id: number, data: any) => {
-      console.debug('exec <<<', id, data);
-      const entry = pendingRequests.get(id);
-      if (!entry) {
-        console.warn(`Unknown request id `, id);
-      } else {
-        pendingRequests.delete(id);
-        clearTimeout(entry.timeout);
-        entry.resolve(data);
-      }
-    });
+    socket.addEventListener('message', ({data}) => {
+      const {event, payload} = JSON.parse(
+        data.toString(),
+      ) as ServerWebSocketMessage;
 
-    socket.on('exec-response-error', (id: number, error: any) => {
-      // TODO: Deserialize error
-      console.debug('exec <<< [SERVER ERROR]', id, error);
-      const entry = pendingRequests.get(id);
-      if (!entry) {
-        console.warn(`Unknown request id `, id);
-      } else {
-        pendingRequests.delete(id);
-        clearTimeout(entry.timeout);
-        entry.reject(error);
+      switch (event) {
+        case 'exec-response': {
+          console.debug('exec <<<', payload);
+          const entry = pendingRequests.get(payload.id);
+          if (!entry) {
+            console.warn(`Unknown request id `, payload.id);
+          } else {
+            pendingRequests.delete(payload.id);
+            clearTimeout(entry.timeout);
+            entry.resolve(payload.data);
+          }
+          break;
+        }
+        case 'exec-response-error': {
+          // TODO: Deserialize error
+          console.debug('exec <<< [SERVER ERROR]', payload.id, payload.data);
+          const entry = pendingRequests.get(payload.id);
+          if (!entry) {
+            console.warn(`Unknown request id `, payload.id);
+          } else {
+            pendingRequests.delete(payload.id);
+            clearTimeout(entry.timeout);
+            entry.reject(payload.data);
+          }
+          break;
+        }
+        case 'server-event': {
+          eventEmitter.emit(payload.event, payload.data);
+          break;
+        }
+        default: {
+          console.warn(
+            'createFlipperServer -> unknown message',
+            data.toString(),
+          );
+        }
       }
-    });
-
-    socket.on('event', (eventType, data) => {
-      eventEmitter.emit(eventType, data);
     });
 
     const flipperServer: FlipperServer = {
@@ -107,7 +127,15 @@ export function createFlipperServer(): Promise<FlipperServer> {
               }, EXEC_TIMOUT),
             });
 
-            socket.emit('exec', id, command, args);
+            const execMessage = {
+              event: 'exec',
+              payload: {
+                id,
+                command,
+                args,
+              },
+            } as ExecWebSocketMessage;
+            socket.send(JSON.stringify(execMessage));
           });
           //   socket.
         } else {

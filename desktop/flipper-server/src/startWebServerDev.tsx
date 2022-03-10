@@ -12,7 +12,7 @@ import {Express} from 'express';
 import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
-import socketio from 'socket.io';
+import {WebSocketServer} from 'ws';
 import pFilter from 'p-filter';
 import {homedir} from 'os';
 
@@ -51,7 +51,7 @@ export async function getPluginSourceFolders(): Promise<string[]> {
 export async function startWebServerDev(
   app: Express,
   server: http.Server,
-  socket: socketio.Server,
+  socket: WebSocketServer,
   rootDir: string,
 ) {
   // prevent bundling!
@@ -138,7 +138,11 @@ export async function startWebServerDev(
   connectMiddleware.attachHmrServer(server);
   app.use(function (err: any, _req: any, _res: any, next: any) {
     console.error(chalk.red('\n\nCompile error in client bundle\n'), err);
-    socket.local.emit('hasErrors', err.toString());
+    socket.clients.forEach((client) => {
+      client.send(
+        JSON.stringify({event: 'hasErrors', payload: err.toString()}),
+      );
+    });
     next();
   });
 

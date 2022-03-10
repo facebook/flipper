@@ -1,3 +1,16 @@
+diff --git a/node_modules/metro/src/index.js b/node_modules/metro/src/index.js
+index 1c3a58e..96c7376 100644
+--- a/node_modules/metro/src/index.js
++++ b/node_modules/metro/src/index.js
+@@ -115,8 +115,6 @@ const createConnectMiddleware = async function (config, options) {
+           wss.handleUpgrade(request, socket, head, (ws) => {
+             wss.emit("connection", ws, request);
+           });
+-        } else {
+-          socket.destroy();
+         }
+       });
+     },
 diff --git a/node_modules/metro/src/lib/getPreludeCode.js b/node_modules/metro/src/lib/getPreludeCode.js
 index 56780d7..7da26d1 100644
 --- a/node_modules/metro/src/lib/getPreludeCode.js

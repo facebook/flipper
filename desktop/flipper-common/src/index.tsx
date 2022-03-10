@@ -54,3 +54,4 @@ export * from './settings';
 export * from './PluginDetails';
 export * from './doctor';
 export * from './ServerAddOn';
+export * from './transport';

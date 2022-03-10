@@ -9,7 +9,9 @@
   "types": "lib/index.d.ts",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
-  "dependencies": {},
+  "dependencies": {
+    "reconnecting-websocket": "^4.4.0"
+  },
   "devDependencies": {
     "eventemitter3": "^4.0.7",
     "flipper-common": "0.0.0",
@@ -17,8 +19,7 @@
     "invariant": "^2.2.4",
     "metro-runtime": "^0.69.0",
     "pretty-format": "^27.5.0",
-    "react-refresh": "^0.10.0",
-    "socket.io-client": "^4.4.1"
+    "react-refresh": "^0.10.0"
   },
   "peerDependencies": {},
   "scripts": {

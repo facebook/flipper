@@ -11,7 +11,8 @@
   "dependenciesComment": "mac-ca is required dynamically for darwin, node-fetch is treated special in electron-requires, not sure why",
   "dependencies": {
     "mac-ca": "^1.0.6",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "ws": "^8.5.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
@@ -25,7 +26,6 @@
     "metro": "^0.69.0",
     "open": "^8.3.0",
     "p-filter": "^2.1.0",
-    "socket.io": "^4.4.1",
     "yargs": "^17.0.1"
   },
   "peerDependencies": {},

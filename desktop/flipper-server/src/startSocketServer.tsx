@@ -8,53 +8,91 @@
  */
 
 import chalk from 'chalk';
+import {
+  ClientWebSocketMessage,
+  ExecResponseWebSocketMessage,
+  ExecResponseErrorWebSocketMessage,
+  ServerEventWebSocketMessage,
+} from 'flipper-common';
 import {FlipperServerImpl} from 'flipper-server-core';
-import socketio from 'socket.io';
+import {WebSocketServer} from 'ws';
 
 export function startSocketServer(
   flipperServer: FlipperServerImpl,
-  socket: socketio.Server,
+  socket: WebSocketServer,
 ) {
-  socket.on('connection', (client) => {
-    console.log(chalk.green(`Client connected ${client.id}`));
+  socket.on('connection', (client, req) => {
+    const clientAddress = `${req.socket.remoteAddress}:${req.socket.remotePort}`;
+
+    console.log(chalk.green(`Client connected ${clientAddress}`));
 
     let connected = true;
 
-    function onServerEvent(event: string, payoad: any) {
-      client.emit('event', event, payoad);
+    function onServerEvent(event: string, payload: any) {
+      const message = {
+        event: 'server-event',
+        payload: {
+          event,
+          data: payload,
+        },
+      } as ServerEventWebSocketMessage;
+      client.send(JSON.stringify(message));
     }
 
     flipperServer.onAny(onServerEvent);
 
-    client.on('exec', (id, command, args) => {
-      flipperServer
-        .exec(command, ...args)
-        .then((result: any) => {
-          if (connected) {
-            client.emit('exec-response', id, result);
-          }
-        })
-        .catch((error: any) => {
-          if (connected) {
-            // TODO: Serialize error
-            // TODO: log if verbose console.warn('Failed to handle response', error);
-            client.emit(
-              'exec-response-error',
-              id,
-              error.toString() + (error.stack ? `\n${error.stack}` : ''),
-            );
-          }
-        });
+    client.on('message', (data) => {
+      const {event, payload} = JSON.parse(
+        data.toString(),
+      ) as ClientWebSocketMessage;
+
+      switch (event) {
+        case 'exec': {
+          const {id, command, args} = payload;
+
+          flipperServer
+            .exec(command, ...args)
+            .then((result: any) => {
+              if (connected) {
+                const response: ExecResponseWebSocketMessage = {
+                  event: 'exec-response',
+                  payload: {
+                    id,
+                    data: result,
+                  },
+                };
+
+                client.send(JSON.stringify(response));
+              }
+            })
+            .catch((error: any) => {
+              if (connected) {
+                // TODO: Serialize error
+                // TODO: log if verbose console.warn('Failed to handle response', error);
+                const responseError: ExecResponseErrorWebSocketMessage = {
+                  event: 'exec-response-error',
+                  payload: {
+                    id,
+                    data:
+                      error.toString() +
+                      (error.stack ? `\n${error.stack}` : ''),
+                  },
+                };
+                client.send(JSON.stringify(responseError));
+              }
+            });
+        }
+      }
     });
 
-    client.on('disconnect', () => {
-      console.log(chalk.red(`Client disconnected ${client.id}`));
+    client.on('close', () => {
+      console.log(chalk.red(`Client disconnected ${clientAddress}`));
       connected = false;
       flipperServer.offAny(onServerEvent);
     });
 
     client.on('error', (e) => {
-      console.error(chalk.red(`Socket error ${client.id}`), e);
+      console.error(chalk.red(`Socket error ${clientAddress}`), e);
       connected = false;
       flipperServer.offAny(onServerEvent);
     });

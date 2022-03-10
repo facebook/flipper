@@ -58,24 +58,27 @@
 
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-
     <script>
       (function() {
         // FIXME: needed to make Metro work
         window.global = window;
         let suppressErrors = false;
 
-        const socket = io(location.origin);
+        const socket = new WebSocket(`ws://${location.host}`);
 
-        socket.on('refresh', () => {
-          location.reload();
-        });
+        socket.addEventListener('message', ({ data: dataRaw }) => {
+          const message = JSON.parse(dataRaw.toString())
 
-        socket.on('hasErrors', (html) => {
-          openError(html);
+          if (message.event === 'hasErrors') {
+            openError(message.payload);
+            suppressErrors = true;
+          }
+        })
+
+        socket.addEventListener('error', () => {
+          openError('WebSocket -> error');
           suppressErrors = true;
-        });
+        })
 
 
         function openError(text) {
