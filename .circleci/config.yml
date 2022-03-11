@@ -13,6 +13,7 @@ jobs:
   snapshot:
     executor: default-executor
     steps:
+      - checkout
       - run:
           name: install retry
           command: scripts/install-retry.sh
