@@ -30,6 +30,6 @@
     "react-native-flipper": "../react-native-flipper"
   },
   "resolutions": {
-    "react-devtools-core": "4.23.0"
+    "react-devtools-core": "4.24.0"
   }
 }
