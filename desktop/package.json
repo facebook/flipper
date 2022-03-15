@@ -70,7 +70,7 @@
     "@babel/eslint-parser": "^7.17.0",
     "@types/jest": "^26.0.24",
     "@typescript-eslint/eslint-plugin": "^5.14.0",
-    "@typescript-eslint/parser": "^5.13.0",
+    "@typescript-eslint/parser": "^5.14.0",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
     "electron": "11.2.3",
