@@ -65,6 +65,21 @@ export function startSocketServer(
         case 'exec': {
           const {id, command, args} = payload;
 
+          if (typeof args[Symbol.iterator] !== 'function') {
+            console.warn(
+              'flipperServer -> exec: args argument in payload is not iterable',
+            );
+            const responseError: ExecResponseErrorWebSocketMessage = {
+              event: 'exec-response-error',
+              payload: {
+                id,
+                data: 'Payload args argument is not an iterable.',
+              },
+            };
+            client.send(JSON.stringify(responseError));
+            return;
+          }
+
           flipperServer
             .exec(command, ...args)
             .then((result: any) => {
