@@ -14,6 +14,11 @@ type GenericWebSocketMessage<E = string, T = unknown> = {
   payload: T;
 };
 
+export type GenericWebSocketError = GenericWebSocketMessage<
+  'error',
+  {message: string}
+>;
+
 export type ExecWebSocketMessage = GenericWebSocketMessage<
   'exec',
   {

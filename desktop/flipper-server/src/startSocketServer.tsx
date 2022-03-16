@@ -13,6 +13,7 @@ import {
   ExecResponseWebSocketMessage,
   ExecResponseErrorWebSocketMessage,
   ServerEventWebSocketMessage,
+  GenericWebSocketError,
 } from 'flipper-common';
 import {FlipperServerImpl} from 'flipper-server-core';
 import {WebSocketServer} from 'ws';
@@ -42,9 +43,23 @@ export function startSocketServer(
     flipperServer.onAny(onServerEvent);
 
     client.on('message', (data) => {
-      const {event, payload} = JSON.parse(
-        data.toString(),
-      ) as ClientWebSocketMessage;
+      let [event, payload]: [event: string | null, payload: any | null] = [
+        null,
+        null,
+      ];
+      try {
+        ({event, payload} = JSON.parse(
+          data.toString(),
+        ) as ClientWebSocketMessage);
+      } catch (err) {
+        console.warn('flipperServer -> onMessage: failed to parse JSON', err);
+        const response: GenericWebSocketError = {
+          event: 'error',
+          payload: {message: `Failed to parse JSON request: ${err}`},
+        };
+        client.send(JSON.stringify(response));
+        return;
+      }
 
       switch (event) {
         case 'exec': {
