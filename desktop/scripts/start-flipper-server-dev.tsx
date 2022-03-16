@@ -130,7 +130,7 @@ let startCount = 0;
 async function restartServer() {
   try {
     await compileServerMain(true);
-    await launchServer(true, ++startCount === 1); // only openon the first time
+    await launchServer(true, argv.open && ++startCount === 1); // only open on the first time
   } catch (e) {
     console.error(
       chalk.red(
