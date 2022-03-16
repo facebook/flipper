@@ -100,25 +100,6 @@ describe('ServerWebSocket', () => {
     expect(mockSEListener.onError).toBeCalledTimes(0); // no onError triggered, as start throws already
   });
 
-  test('calls listener onError if a connection attempt fails', async () => {
-    const mockSEListener = createMockSEListener();
-
-    server = new ServerWebSocket(mockSEListener);
-
-    const port = await server.start(0);
-
-    expect(mockSEListener.onError).toBeCalledTimes(0);
-    // We pass a conection URL without required params hoping that it is going to fail
-    wsClient = new WebSocket(`ws://localhost:${port}`);
-    await new Promise<void>((resolve) => {
-      wsClient!.onclose = () => {
-        resolve();
-      };
-    });
-    wsClient = undefined;
-    expect(mockSEListener.onError).toBeCalledTimes(1);
-  });
-
   test('calls listener onError if a message handling fails', async () => {
     const mockSEListener = createMockSEListener();
 

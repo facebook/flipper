@@ -30,6 +30,14 @@ export function isConnectivityOrAuthError(
   );
 }
 
+export class UnableToExtractClientQueryError extends Error {
+  constructor(msg: string) {
+    super(msg);
+    this.name = 'UnableToExtractClientQueryError';
+  }
+  name: 'UnableToExtractClientQueryError';
+}
+
 export class CancelledPromiseError extends Error {
   constructor(msg: string) {
     super(msg);

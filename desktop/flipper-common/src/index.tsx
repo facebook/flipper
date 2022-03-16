@@ -37,6 +37,7 @@ export {
 export {
   ConnectivityError,
   CancelledPromiseError,
+  UnableToExtractClientQueryError,
   UserUnauthorizedError,
   UserNotSignedInError,
   NoLongerConnectedToClientError,

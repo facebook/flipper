@@ -17,7 +17,7 @@ import WebSocket, {
 import {createServer as createHttpsServer} from 'https';
 import {createServer as createHttpServer} from 'http';
 import querystring from 'querystring';
-import {ClientQuery} from 'flipper-common';
+import {ClientQuery, UnableToExtractClientQueryError} from 'flipper-common';
 import {
   assertNotNull,
   parseClientQuery,
@@ -101,14 +101,22 @@ class ServerWebSocket extends ServerAdapter {
         try {
           this.onConnection(ws, request);
         } catch (error) {
+          // TODO: Investigate if we need to close the socket in the `error` listener
+          // DRI: @aigoncharov
+          ws.close(WSCloseCode.InternalError);
+
+          if (error instanceof UnableToExtractClientQueryError) {
+            // If we are unable to extract the client query, do not emit an error.
+            // It cannot be determined if the client is legitimately trying to establish
+            // a connection with Flipper or some other process is trying to connect to
+            // the port currently used by Flipper.
+            return;
+          }
           // If an exception is thrown, an `error` event is not emitted automatically.
           // We need to explicitly handle the error and emit an error manually.
           // If we leave it unhanled, the process just dies
           // https://replit.com/@aigoncharov/WS-error-handling#index.js
           ws.emit('error', error);
-          // TODO: Investigate if we need to close the socket in the `error` listener
-          // DRI: @aigoncharov
-          ws.close(WSCloseCode.InternalError);
         }
       },
     );
@@ -185,7 +193,7 @@ class ServerWebSocket extends ServerAdapter {
       console.warn(
         '[conn] Unable to extract the client query from the request URL.',
       );
-      throw new Error(
+      throw new UnableToExtractClientQueryError(
         '[conn] Unable to extract the client query from the request URL.',
       );
     }
