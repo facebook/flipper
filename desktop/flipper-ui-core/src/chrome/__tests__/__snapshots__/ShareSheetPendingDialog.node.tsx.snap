@@ -56,7 +56,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
   >
     <div />
     <button
-      className="ant-btn"
+      className="ant-btn ant-btn-default"
       onClick={[Function]}
       type="button"
     >
@@ -124,7 +124,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
   >
     <div />
     <button
-      className="ant-btn"
+      className="ant-btn ant-btn-default"
       onClick={[Function]}
       type="button"
     >

@@ -25,7 +25,7 @@ exports[`load PluginInstaller list 1`] = `
             class="ant-input-group-addon"
           >
             <button
-              class="ant-btn ant-btn-icon-only ant-input-search-button"
+              class="ant-btn ant-btn-default ant-btn-icon-only ant-input-search-button"
               type="button"
             >
               <span
@@ -294,7 +294,7 @@ exports[`load PluginInstaller list 1`] = `
           style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto; min-width: 0;"
         >
           <button
-            class="ant-btn ant-btn-icon-only"
+            class="ant-btn ant-btn-default ant-btn-icon-only"
             disabled=""
             title="Reset"
             type="button"
@@ -325,7 +325,7 @@ exports[`load PluginInstaller list 1`] = `
           style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto; min-width: 0;"
         >
           <button
-            class="ant-btn ant-btn-icon-only"
+            class="ant-btn ant-btn-default ant-btn-icon-only"
             title="Select a Flipper package or just drag and drop it here..."
             type="button"
           >
@@ -401,7 +401,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             class="ant-input-group-addon"
           >
             <button
-              class="ant-btn ant-btn-icon-only ant-input-search-button"
+              class="ant-btn ant-btn-default ant-btn-icon-only ant-input-search-button"
               type="button"
             >
               <span
@@ -568,7 +568,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               width="0"
             >
               <button
-                class="ant-btn ant-btn-sm"
+                class="ant-btn ant-btn-default ant-btn-sm"
                 type="button"
               >
                 <span>
@@ -670,7 +670,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
           style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto; min-width: 0;"
         >
           <button
-            class="ant-btn ant-btn-icon-only"
+            class="ant-btn ant-btn-default ant-btn-icon-only"
             disabled=""
             title="Reset"
             type="button"
@@ -701,7 +701,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
           style="padding-left: 4px; padding-right: 4px; flex: 0 0 auto; min-width: 0;"
         >
           <button
-            class="ant-btn ant-btn-icon-only"
+            class="ant-btn ant-btn-default ant-btn-icon-only"
             title="Select a Flipper package or just drag and drop it here..."
             type="button"
           >
