@@ -8897,12 +8897,20 @@ metro-cache-key@0.69.0:
   resolved "https://registry.yarnpkg.com/metro-cache-key/-/metro-cache-key-0.69.0.tgz#b042231678bdc24c2604326047b839db4f372138"
   integrity sha512-79zYpE2M0JPvmzq8R1a+HjbNsGcEQlOUCfLwENyAZslmjJrajXsrF5FxxMVWIIWoMftMRCvz65RD96cuzMJUCw==
 
-metro-cache@0.69.0, metro-cache@^0.69.0:
+metro-cache@0.69.0:
   version "0.69.0"
   resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.69.0.tgz#9b31e33b11e1a5a91d82a9895710ab49301c33e4"
   integrity sha512-KVAxeJ2T3T+PiaOJZdH5To9q0YoZxOaIJgTDDvtnaAlMnw5yax1RIQymiZ2Qfo3gawdr0a5ZfJtCqkG+JS8+4Q==
   dependencies:
     metro-core "0.69.0"
+    rimraf "^2.5.4"
+
+metro-cache@^0.69.1:
+  version "0.69.1"
+  resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.69.1.tgz#678e684655c7a4fb69b98958c2ef6f00041ec341"
+  integrity sha512-n2ErJqO/Vc1UNk+EdRXZDM9nKG7Ga4F8F6/BXbGJ7eoeXO51ItIdMAYm0sVPulkPKkJLX4PTmD7GyP6eQuKIkA==
+  dependencies:
+    metro-core "0.69.1"
     rimraf "^2.5.4"
 
 metro-config@0.69.0:
@@ -8925,6 +8933,15 @@ metro-core@0.69.0:
     jest-haste-map "^27.3.1"
     lodash.throttle "^4.1.1"
     metro-resolver "0.69.0"
+
+metro-core@0.69.1:
+  version "0.69.1"
+  resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.69.1.tgz#f62234159006261bdfad12ccc91286e554b90e8c"
+  integrity sha512-4sVSo88BeI2jaarfUuxDfrx62SElgu+plyJHjv6PiABTWv7UySEs1p9IYkaN4e/iqp+so7T408Pt0MVxp9/WUA==
+  dependencies:
+    jest-haste-map "^27.3.1"
+    lodash.throttle "^4.1.1"
+    metro-resolver "0.69.1"
 
 metro-hermes-compiler@0.69.0:
   version "0.69.0"
@@ -9005,6 +9022,13 @@ metro-resolver@0.69.0:
   version "0.69.0"
   resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.69.0.tgz#d1d2147e6771f952f27b1bf5f645dc6b4ca12de0"
   integrity sha512-vORFDli6dLPygXMnf0x2Pg4Wj3Uyye88Gw0H31/dmkRF/oyz8MwS7SXb3xBwVMpkbdpVz0VRPBrPyR8nY8EV5g==
+  dependencies:
+    absolute-path "^0.0.0"
+
+metro-resolver@0.69.1:
+  version "0.69.1"
+  resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.69.1.tgz#0f01285e9e2683debf6599b91e7bf179f94990dd"
+  integrity sha512-sTUp8n3hP+K6Jm3beqnadPZWj53trzDi0wqLKC2iKNy1+UoBZkiqmHY0dZKaoF8XoOsksoph+aghlBZkchgEng==
   dependencies:
     absolute-path "^0.0.0"
 
