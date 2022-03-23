@@ -45,6 +45,19 @@ export type Settings = {
   enablePluginMarketplace: boolean;
   marketplaceURL: string;
   enablePluginMarketplaceAutoUpdate: boolean;
+  /**
+   * Adbkit settings are needed because localhost can resolve to
+   * 127.0.0.1 or [::1] depending on the machine (IPV4 or IPV6)
+   * this unknown behaviour of which address will be used by the
+   * adbkit may cause it not to connect to the correct address where the
+   * adb server is running. Notice that using the env variable ADB_SERVER_SOCKET
+   * set to tcp:127.0.0.1:5037 would make the adb start-server fail and so
+   * cannot be used as a solution.
+   */
+  adbKitSettings?: {
+    host?: string;
+    port?: number;
+  };
 };
 
 export enum ReleaseChannel {

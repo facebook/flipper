@@ -15,6 +15,10 @@ import path from 'path';
 
 type Config = {
   androidHome: string;
+  adbKitSettings?: {
+    host?: string;
+    port?: number;
+  };
 };
 
 export async function initializeAdbClient(
@@ -38,7 +42,7 @@ export async function initializeAdbClient(
 async function createClient(config: Config): Promise<Client> {
   return reportPlatformFailures<Client>(
     startAdbServer(config.androidHome).then(() =>
-      adbkit.createClient(adbConfig()),
+      adbkit.createClient(adbConfig(config.adbKitSettings)),
     ),
     'createADBClient.shell',
   );

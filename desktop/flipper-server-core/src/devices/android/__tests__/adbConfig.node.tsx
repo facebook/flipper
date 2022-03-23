@@ -45,3 +45,43 @@ test('have defaults', () => {
   expect(port).toBe(5037);
   expect(host).toBe('localhost');
 });
+
+test('prefer settings parameters over ANDROID_ADB_SERVER_PORT', () => {
+  process.env.ANDROID_ADB_SERVER_PORT = '1337';
+  process.env.ADB_SERVER_SOCKET = undefined;
+  const {port, host} = adbConfig({host: '::1', port: 1338});
+  expect(port).toBe(1338);
+  expect(host).toBe('::1');
+});
+
+test('prefer settings parameters over ADB_SERVER_SOCKET', () => {
+  process.env.ANDROID_ADB_SERVER_PORT = undefined;
+  process.env.ADB_SERVER_SOCKET = 'tcp:127.0.0.1:5037';
+  const {port, host} = adbConfig({host: '::1', port: 1338});
+  expect(port).toBe(1338);
+  expect(host).toBe('::1');
+});
+
+test('prefer host settings parameters over ADB_SERVER_SOCKET', () => {
+  process.env.ANDROID_ADB_SERVER_PORT = undefined;
+  process.env.ADB_SERVER_SOCKET = 'tcp:127.0.0.1:5037';
+  const {port, host} = adbConfig({host: '::1'});
+  expect(port).toBe(5037);
+  expect(host).toBe('::1');
+});
+
+test('prefer port settings parameters over ADB_SERVER_SOCKET', () => {
+  process.env.ANDROID_ADB_SERVER_PORT = undefined;
+  process.env.ADB_SERVER_SOCKET = 'tcp:127.0.0.1:5037';
+  const {port, host} = adbConfig({port: 1338});
+  expect(port).toBe(1338);
+  expect(host).toBe('127.0.0.1');
+});
+
+test('prefer port settings parameters over ANDROID_ADB_SERVER_PORT', () => {
+  process.env.ANDROID_ADB_SERVER_PORT = '1337';
+  process.env.ADB_SERVER_SOCKET = undefined;
+  const {port, host} = adbConfig({port: 1338});
+  expect(port).toBe(1338);
+  expect(host).toBe('localhost');
+});
