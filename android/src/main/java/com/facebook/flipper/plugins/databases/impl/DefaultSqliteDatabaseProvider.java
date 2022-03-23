@@ -18,6 +18,7 @@ public class DefaultSqliteDatabaseProvider implements SqliteDatabaseProvider {
 
   private final int fileDirectoryRecursiveDepth;
   private final Context context;
+  private static final List<File> extraDatabaseFiles = new ArrayList<>();
 
   public DefaultSqliteDatabaseProvider(Context context) {
     this(context, MAX_RECURSIVE_TRAVERSAL_DEPTH);
@@ -40,6 +41,9 @@ public class DefaultSqliteDatabaseProvider implements SqliteDatabaseProvider {
         DB_EXTENSION,
         fileDirectoryRecursiveDepth,
         databaseFiles);
+    synchronized (extraDatabaseFiles) {
+      databaseFiles.addAll(extraDatabaseFiles);
+    }
     return databaseFiles;
   }
 
@@ -57,6 +61,12 @@ public class DefaultSqliteDatabaseProvider implements SqliteDatabaseProvider {
           addDatabaseFilesRecursively(f, depth + 1, dbExtension, maxDepth, dbFiles);
         }
       }
+    }
+  }
+
+  public static void registerExtraDatabaseFile(File file) {
+    synchronized (extraDatabaseFiles) {
+      extraDatabaseFiles.add(file);
     }
   }
 }
