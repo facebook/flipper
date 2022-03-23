@@ -1,3 +1,9 @@
+# 0.140.0 (23/3/2022)
+
+ * [D34932896](https://github.com/facebook/flipper/search?q=D34932896&type=Commits) -  Make it possible to recover from malformed JSON in server requests
+ * [D34932895](https://github.com/facebook/flipper/search?q=D34932895&type=Commits) -  Respect --no-open during server startup
+
+
 # 0.138.0 (9/3/2022)
 
  * [D34627820](https://github.com/facebook/flipper/search?q=D34627820&type=Commits) -  Add Support Ukraine banner to website
