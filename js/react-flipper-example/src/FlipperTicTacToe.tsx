@@ -92,7 +92,8 @@ const FlipperTicTacToe: FC = () => {
             key={idx}
             disabled={!connection || gameState.turn !== 'X' || state !== ' '}
             onClick={() => connection?.send('XMove', {move: idx})}
-            className="cell">
+            className="cell"
+          >
             {state}
           </button>
         ))}
