@@ -23,7 +23,7 @@ import {createMockSEListener, WSMessageAccumulator} from './utils';
 
 jest.mock('../../FlipperServerConfig');
 (getFlipperServerConfig as jest.Mock).mockImplementation(() => ({
-  validWebSocketOrigins: ['localhost:'],
+  validWebSocketOrigins: ['http://localhost'],
 }));
 
 describe('BrowserServerWebSocket', () => {
@@ -62,7 +62,7 @@ describe('BrowserServerWebSocket', () => {
     const clientReceivedMessages = new WSMessageAccumulator();
     wsClient = new WebSocket(
       `ws://localhost:${port}?device_id=${deviceId}&device=${device}&app=${app}&os=${os}&sdk_version=${sdkVersion}`,
-      {origin: 'localhost:'},
+      {origin: 'http://localhost'},
     );
     wsClient.onmessage = ({data}) => clientReceivedMessages.add(data);
     await new Promise<void>((resolve, reject) => {
@@ -164,7 +164,7 @@ describe('BrowserServerWebSocket', () => {
     const clientReceivedMessages = new WSMessageAccumulator();
     wsClient = new WebSocket(
       `ws://localhost:${port}?deviceId=${deviceId}&device=${device}`,
-      {origin: 'localhost:'},
+      {origin: 'http://localhost'},
     );
     wsClient.onmessage = ({data}) => clientReceivedMessages.add(data);
     await new Promise<void>((resolve, reject) => {

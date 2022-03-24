@@ -18,6 +18,8 @@ import SecureServerWebSocket, {
 } from './SecureServerWebSocket';
 import {SecureClientQuery} from './ServerAdapter';
 import {ClientDescription, DeviceOS} from 'flipper-common';
+import {URL} from 'url';
+import {isFBBuild} from '../fb-stubs/constants';
 
 interface BrowserConnectionCtx extends SecureConnectionCtx {
   clientConnection?: BrowserClientConnection;
@@ -147,6 +149,15 @@ class BrowserServerWebSocket extends SecureServerWebSocket {
 
   protected verifyClient(): ws.VerifyClientCallbackSync {
     return (info: {origin: string; req: IncomingMessage; secure: boolean}) => {
+      if (isFBBuild) {
+        try {
+          const urlObj = new URL(info.origin);
+          if (urlObj.hostname.endsWith('.facebook.com')) {
+            return true;
+          }
+        } catch {}
+      }
+
       const ok = getFlipperServerConfig().validWebSocketOrigins.some(
         (validPrefix) => info.origin.startsWith(validPrefix),
       );
