@@ -153,13 +153,7 @@ export function createRootReducer() {
     ),
     supportForm,
     pluginManager,
-    user: persistReducer(
-      {
-        key: 'user',
-        storage,
-      },
-      user,
-    ),
+    user: user as any,
     settingsState: settings,
     launcherSettingsState: launcherSettings,
     healthchecks: persistReducer<HealthcheckState, Actions>(
