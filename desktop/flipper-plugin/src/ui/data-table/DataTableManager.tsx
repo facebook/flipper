@@ -37,7 +37,10 @@ type PersistedState = {
   /** The currently applicable sorting, if any */
   sorting: Sorting | undefined;
   /** The default columns, but normalized */
-  columns: Pick<DataTableColumn, 'key' | 'width' | 'filters' | 'visible'>[];
+  columns: Pick<
+    DataTableColumn,
+    'key' | 'width' | 'filters' | 'visible' | 'inversed'
+  >[];
   scrollOffset: number;
   autoScroll: boolean;
   selectedSearchRecord: any;
@@ -471,6 +474,7 @@ export function savePreferences(
       width: c.width,
       filters: c.filters,
       visible: c.visible,
+      inversed: c.inversed,
     })),
     scrollOffset,
     autoScroll: state.autoScroll,
