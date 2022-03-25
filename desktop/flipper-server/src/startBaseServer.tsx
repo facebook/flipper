@@ -53,6 +53,10 @@ function startAssetServer(
     });
   });
 
+  app.get('/health', (_req, res) => {
+    res.end('flipper-ok');
+  });
+
   app.use(express.static(config.staticDir));
 
   const server = http.createServer(app);
