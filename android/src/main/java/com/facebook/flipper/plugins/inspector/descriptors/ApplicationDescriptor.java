@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -239,6 +240,19 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
         descriptor.setHighlighted(topChild, selected, isAlignmentMode);
       }
     }
+  }
+
+  @Override
+  public Bitmap getSnapshot(ApplicationWrapper node, boolean includeChildren) throws Exception {
+    final int childCount = getChildCount(node);
+    if (childCount > 0) {
+      final Object topChild = getChildAt(node, childCount - 1);
+      final NodeDescriptor descriptor = descriptorForClass(topChild.getClass());
+      if (descriptor != null) {
+        return descriptor.getSnapshot(topChild, includeChildren);
+      }
+    }
+    return null;
   }
 
   private void runHitTest(ApplicationWrapper node, Touch touch, boolean ax) {

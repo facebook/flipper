@@ -11,6 +11,8 @@ import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Color;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Enum;
 
 import android.annotation.TargetApi;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -511,6 +513,17 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     }
 
     HighlightedOverlay.setHighlighted(targetView, margin, padding, contentBounds, isAlignmentMode);
+  }
+
+  @Override
+  public Bitmap getSnapshot(View node, boolean includeChildren) throws Exception {
+    if (node.getWidth() == 0 || node.getHeight() == 0) {
+      return null;
+    }
+    Bitmap bitmap = Bitmap.createBitmap(node.getWidth(), node.getHeight(), Bitmap.Config.ARGB_8888);
+    Canvas c = new Canvas(bitmap);
+    node.draw(c);
+    return bitmap;
   }
 
   @Override

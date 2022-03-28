@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.inspector.descriptors;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import androidx.fragment.app.Fragment;
@@ -96,6 +97,16 @@ public class SupportFragmentDescriptor extends NodeDescriptor<Fragment> {
 
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     descriptor.setHighlighted(node.getView(), selected, isAlignmentMode);
+  }
+
+  @Override
+  public Bitmap getSnapshot(Fragment node, boolean includeChildren) throws Exception {
+    if (node.getView() == null) {
+      return null;
+    }
+
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getSnapshot(node.getView(), includeChildren);
   }
 
   @Override

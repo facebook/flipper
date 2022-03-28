@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -128,6 +129,12 @@ public class WindowDescriptor extends NodeDescriptor<Window> {
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     descriptor.setHighlighted(node.getDecorView(), selected, isAlignmentMode);
+  }
+
+  @Override
+  public Bitmap getSnapshot(Window node, boolean includeChildren) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getSnapshot(node.getDecorView(), true);
   }
 
   @Override

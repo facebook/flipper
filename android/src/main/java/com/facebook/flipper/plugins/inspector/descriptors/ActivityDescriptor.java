@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.Window;
 import com.facebook.flipper.core.FlipperDynamic;
@@ -91,6 +92,12 @@ public class ActivityDescriptor extends NodeDescriptor<Activity> {
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Window.class);
     descriptor.setHighlighted(node.getWindow(), selected, isAlignmentMode);
+  }
+
+  @Override
+  public Bitmap getSnapshot(Activity node, boolean includeChildren) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(Window.class);
+    return descriptor.getSnapshot(node.getWindow(), includeChildren);
   }
 
   @Override

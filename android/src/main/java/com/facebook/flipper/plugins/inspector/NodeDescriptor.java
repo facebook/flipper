@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.inspector;
 
+import android.graphics.Bitmap;
 import androidx.annotation.Nullable;
 import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperArray;
@@ -174,6 +175,13 @@ public abstract class NodeDescriptor<T> {
    */
   public abstract void setHighlighted(T node, boolean selected, boolean isAlignmentMode)
       throws Exception;
+
+  /**
+   * Get a snapshot of this node.
+   *
+   * @return A Bitmap representation of the specified node.
+   */
+  public abstract @Nullable Bitmap getSnapshot(T node, boolean includeChildren) throws Exception;
 
   /**
    * Perform hit testing on the given node. Either continue the search in a child with {@link

@@ -11,6 +11,7 @@ import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Color;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Number;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Text;
 
+import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.TextView;
 import com.facebook.flipper.core.FlipperDynamic;
@@ -147,6 +148,12 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     descriptor.setHighlighted(node, selected, isAlignmentMode);
+  }
+
+  @Override
+  public Bitmap getSnapshot(TextView node, boolean includeChildren) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getSnapshot(node, includeChildren);
   }
 
   @Override

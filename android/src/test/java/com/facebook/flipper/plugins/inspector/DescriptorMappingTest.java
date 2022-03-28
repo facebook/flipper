@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.inspector;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import android.graphics.Bitmap;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
@@ -71,6 +72,11 @@ public class DescriptorMappingTest {
 
     @Override
     public void setHighlighted(T t, boolean b, boolean b1) throws Exception {}
+
+    @Override
+    public Bitmap getSnapshot(T t, boolean b) throws Exception {
+      return null;
+    }
 
     @Override
     public void hitTest(T node, Touch touch) {}

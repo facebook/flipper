@@ -489,16 +489,15 @@ export default class LayoutPlugin extends FlipperPlugin<
                 active={this.state.inTargetMode}
               />
             )}
-            {!this.props.isArchivedDevice &&
-              this.realClient.query.os === 'iOS' && (
-                <ToolbarIcon
-                  key="snapshotMode"
-                  onClick={this.onToggleSnapshotMode}
-                  title="Toggle to see view snapshots on the attribute inspector"
-                  icon="eye"
-                  active={this.state.inSnapshotMode}
-                />
-              )}
+            {!this.props.isArchivedDevice && (
+              <ToolbarIcon
+                key="snapshotMode"
+                onClick={this.onToggleSnapshotMode}
+                title="Toggle to see view snapshots on the attribute inspector"
+                icon="eye"
+                active={this.state.inSnapshotMode}
+              />
+            )}
             {this.realClient.query.os === 'Android' && (
               <ToolbarIcon
                 key="axMode"

@@ -7,7 +7,10 @@
 
 package com.facebook.flipper.plugins.inspector.descriptors;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
@@ -130,6 +133,30 @@ public class DrawableDescriptor extends NodeDescriptor<Drawable> {
     } else {
       HighlightedOverlay.removeHighlight(callbackView);
     }
+  }
+
+  @Override
+  public Bitmap getSnapshot(Drawable node, boolean includeChildren) throws Exception {
+    Bitmap bitmap = null;
+
+    if (node instanceof BitmapDrawable) {
+      BitmapDrawable bitmapDrawable = (BitmapDrawable) node;
+      if (bitmapDrawable.getBitmap() != null) {
+        return bitmapDrawable.getBitmap();
+      }
+    }
+
+    if (node.getIntrinsicWidth() <= 0 || node.getIntrinsicHeight() <= 0) {
+      return null;
+    } else {
+      bitmap =
+          Bitmap.createBitmap(
+              node.getIntrinsicWidth(), node.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+    }
+
+    Canvas canvas = new Canvas(bitmap);
+    node.draw(canvas);
+    return bitmap;
   }
 
   @Override

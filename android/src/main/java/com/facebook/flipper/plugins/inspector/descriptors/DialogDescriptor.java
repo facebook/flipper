@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.app.Dialog;
+import android.graphics.Bitmap;
 import android.view.Window;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
@@ -66,6 +67,12 @@ public class DialogDescriptor extends NodeDescriptor<Dialog> {
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Window.class);
     descriptor.setHighlighted(node.getWindow(), selected, isAlignmentMode);
+  }
+
+  @Override
+  public Bitmap getSnapshot(Dialog node, boolean includeChildren) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(Window.class);
+    return descriptor.getSnapshot(node.getWindow(), includeChildren);
   }
 
   @Override
