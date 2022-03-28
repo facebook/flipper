@@ -497,6 +497,21 @@ return dataMutations;
   }
 }
 
+- (UIImage*)getSnapshot:(BOOL)includeChildren forNode:(UIView*)node {
+  if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]) {
+    UIGraphicsBeginImageContextWithOptions(
+        node.bounds.size, node.isOpaque, 0.0);
+  } else {
+    UIGraphicsBeginImageContext(node.bounds.size);
+  }
+
+  [node.layer renderInContext:UIGraphicsGetCurrentContext()];
+
+  UIImage* img = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return img;
+}
+
 - (void)hitTest:(SKTouch*)touch forNode:(UIView*)node {
   bool finish = true;
   for (NSInteger index = [self childCountForNode:node] - 1; index >= 0;

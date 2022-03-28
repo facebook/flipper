@@ -68,6 +68,10 @@
   return @[];
 }
 
+- (UIImage*)getSnapshot:(BOOL)includeChildren forNode:(id)node {
+  return nil;
+}
+
 - (void)setHighlighted:(BOOL)highlighted forNode:(id)node {
 }
 

@@ -106,6 +106,12 @@ typedef void (^SKNodeUpdateData)(id value);
 - (void)setHighlighted:(BOOL)highlighted forNode:(T)node;
 
 /**
+ Used to grab a snapshot of the specified node which is currently selected in
+ the Flipper application.
+ */
+- (UIImage*)getSnapshot:(BOOL)includeChildren forNode:(T)node;
+
+/**
  Perform hit testing on the given node. Either continue the search in
  one of the children of the node, or finish the hit testing on this
  node.

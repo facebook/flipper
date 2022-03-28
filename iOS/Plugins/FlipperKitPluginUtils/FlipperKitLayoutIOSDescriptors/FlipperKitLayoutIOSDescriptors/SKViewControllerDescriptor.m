@@ -36,6 +36,11 @@
   [descriptor setHighlighted:highlighted forNode:node.view];
 }
 
+- (UIImage*)getSnapshot:(BOOL)includeChildren forNode:(UIViewController*)node {
+  SKNodeDescriptor* descriptor = [self descriptorForClass:[UIView class]];
+  return [descriptor getSnapshot:includeChildren forNode:node.view];
+}
+
 - (void)hitTest:(SKTouch*)touch forNode:(UIViewController*)node {
   [touch continueWithChildIndex:0 withOffset:(CGPoint){0, 0}];
 }

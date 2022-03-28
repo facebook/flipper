@@ -87,6 +87,11 @@ return mutations;
   [viewDescriptor setHighlighted:highlighted forNode:node];
 }
 
+- (UIImage*)getSnapshot:(BOOL)includeChildren forNode:(UIButton*)node {
+  SKNodeDescriptor* descriptor = [self descriptorForClass:[UIView class]];
+  return [descriptor getSnapshot:includeChildren forNode:node];
+}
+
 - (void)hitTest:(SKTouch*)touch forNode:(UIButton*)node {
   [touch finish];
 }

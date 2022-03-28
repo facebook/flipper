@@ -32,6 +32,11 @@
   [windowDescriptor setHighlighted:highlighted forNode:[node keyWindow]];
 }
 
+- (UIImage*)getSnapshot:(BOOL)includeChildren forNode:(UIApplication*)node {
+  SKNodeDescriptor* descriptor = [self descriptorForClass:[UIView class]];
+  return [descriptor getSnapshot:includeChildren forNode:[node keyWindow]];
+}
+
 - (void)hitTest:(SKTouch*)touch forNode:(UIApplication*)node {
   bool finish = true;
   for (NSInteger index = [self childCountForNode:node] - 1; index >= 0;

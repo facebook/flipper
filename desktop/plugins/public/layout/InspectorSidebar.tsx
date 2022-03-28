@@ -18,7 +18,7 @@ import {
   Logger,
 } from 'flipper';
 import {Panel} from 'flipper-plugin';
-import {PureComponent} from 'react';
+import {PureComponent, useState} from 'react';
 import React from 'react';
 import {useMemo, useEffect} from 'react';
 import {kebabCase} from 'lodash';
@@ -85,10 +85,18 @@ type Props = {
   client: PluginClient;
   realClient: Client;
   logger: Logger;
+  inSnapshotMode: boolean;
+};
+
+type ElementSnapshot = {
+  element: Element | null;
+  snapshot: String | null;
 };
 
 const Sidebar: React.FC<Props> = (props: Props) => {
   const {element} = props;
+
+  const [elementSnapshot, setElementSnapshot] = useState<ElementSnapshot>();
 
   const [sectionDefs, sectionKeys] = useMemo(() => {
     const sectionKeys = [];
@@ -135,7 +143,36 @@ const Sidebar: React.FC<Props> = (props: Props) => {
     return [sectionDefs, sectionKeys];
   }, [element]);
 
-  const sections: Array<React.ReactNode> = (
+  useEffect(() => {
+    if (
+      props.inSnapshotMode &&
+      (!elementSnapshot || elementSnapshot.element != element)
+    ) {
+      props.client
+        .call('getSnapshot', {
+          id: props.element?.id,
+          name: props.element?.name,
+        })
+        .then((response) => {
+          setElementSnapshot({element: element, snapshot: response.snapshot});
+        })
+        .catch((e) => {
+          console.log(
+            'ElementsInspector unable to obtain screenshot for the selected item',
+            e,
+          );
+        });
+    }
+  }, [
+    element,
+    elementSnapshot,
+    props.client,
+    props.element?.id,
+    props.element?.name,
+    props.inSnapshotMode,
+  ]);
+
+  const sidebarExtensions =
     (SidebarExtensions &&
       element?.data &&
       Object.entries(SidebarExtensions).map(([ext, Comp]) => (
@@ -147,18 +184,32 @@ const Sidebar: React.FC<Props> = (props: Props) => {
           selectedNode={element}
         />
       ))) ||
-    []
-  ).concat(
-    sectionDefs.map((def) => (
-      <InspectorSidebarSection
-        tooltips={props.tooltips}
-        key={def.key}
-        id={def.id}
-        data={def.data}
-        onValueChanged={props.onValueChanged}
-      />
-    )),
-  );
+    [];
+
+  const sidebarInspector = sectionDefs.map((def) => (
+    <InspectorSidebarSection
+      tooltips={props.tooltips}
+      key={def.key}
+      id={def.id}
+      data={def.data}
+      onValueChanged={props.onValueChanged}
+    />
+  ));
+
+  const sidebarPreview =
+    props.inSnapshotMode && elementSnapshot?.snapshot ? (
+      <Panel key="preview" title="Preview" pad>
+        <img
+          style={{
+            display: 'block',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            width: '100%',
+          }}
+          src={'data:image/png;base64,' + elementSnapshot?.snapshot}
+        />
+      </Panel>
+    ) : null;
 
   useEffect(() => {
     sectionKeys.map((key) =>
@@ -169,7 +220,13 @@ const Sidebar: React.FC<Props> = (props: Props) => {
   if (!element || !element.data) {
     return <NoData grow>No data</NoData>;
   }
-  return <>{sections}</>;
+  return (
+    <>
+      {sidebarExtensions}
+      {sidebarInspector}
+      {sidebarPreview}
+    </>
+  );
 };
 
 export default Sidebar;

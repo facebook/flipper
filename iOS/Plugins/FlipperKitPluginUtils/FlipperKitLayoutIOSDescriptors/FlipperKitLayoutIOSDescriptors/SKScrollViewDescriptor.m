@@ -83,6 +83,11 @@
   }
 }
 
+- (UIImage*)getSnapshot:(BOOL)includeChildren forNode:(UIScrollView*)node {
+  SKNodeDescriptor* descriptor = [self descriptorForClass:[UIView class]];
+  return [descriptor getSnapshot:includeChildren forNode:node];
+}
+
 @end
 
 #endif
