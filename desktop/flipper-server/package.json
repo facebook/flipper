@@ -23,7 +23,7 @@
     "flipper-pkg-lib": "0.0.0",
     "flipper-server-core": "0.0.0",
     "fs-extra": "^9.0.0",
-    "metro": "^0.69.0",
+    "metro": "^0.69.1",
     "open": "^8.3.0",
     "p-filter": "^2.1.0",
     "yargs": "^17.0.1"
