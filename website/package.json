@@ -40,7 +40,8 @@
     "ws": "8.2.0",
     "trim": "1.0.1",
     "immer": "^9.0.6",
-    "shelljs": "^0.8.5"
+    "shelljs": "^0.8.5",
+    "ansi-html": "0.0.8"
   },
   "license": "MIT"
 }
