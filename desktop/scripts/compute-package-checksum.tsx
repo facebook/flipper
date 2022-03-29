@@ -30,7 +30,6 @@ const argv = yargs
     },
   })
   .help()
-  .strict()
   .parse(process.argv.slice(1));
 
 computePackageChecksum(argv.dir, argv.out)
