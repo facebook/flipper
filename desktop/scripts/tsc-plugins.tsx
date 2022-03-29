@@ -30,7 +30,6 @@ const argv = yargs
     },
   })
   .help()
-  .strict()
   .parse(process.argv.slice(1));
 
 const pluginsDir = path.join(rootDir, argv.dir);

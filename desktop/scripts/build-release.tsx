@@ -100,7 +100,6 @@ const argv = yargs
     },
   })
   .help()
-  .strict()
   .check((argv) => {
     const targetSpecified =
       argv.mac ||
