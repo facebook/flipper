@@ -292,12 +292,18 @@ export class ServerController
     let certificateProvider: CertificateProvider;
     switch (clientQuery.os) {
       case 'Android': {
-        assertNotNull(this.flipperServer.android);
+        assertNotNull(
+          this.flipperServer.android,
+          'Android settings have not been provided / enabled',
+        );
         certificateProvider = this.flipperServer.android.certificateProvider;
         break;
       }
       case 'iOS': {
-        assertNotNull(this.flipperServer.ios);
+        assertNotNull(
+          this.flipperServer.ios,
+          'iOS settings have not been provided / enabled',
+        );
         certificateProvider = this.flipperServer.ios.certificateProvider;
 
         if (medium === 'WWW') {
