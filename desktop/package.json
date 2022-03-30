@@ -114,7 +114,8 @@
   "productName": "Flipper",
   "resolutions": {
     "adbkit-logcat": "^2.0.1",
-    "node-forge": "^1.0.6"
+    "node-forge": "^1.0.6",
+    "minimist": "1.2.6"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production ./ts-node scripts/build-release.tsx $@",
