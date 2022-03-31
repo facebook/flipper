@@ -18,6 +18,7 @@ import {WEBSOCKET_MAX_MESSAGE_SIZE} from 'flipper-server-core';
 import {parse} from 'url';
 import xdgBasedir from 'xdg-basedir';
 import proxy from 'http-proxy';
+import exitHook from 'exit-hook';
 
 import {userInfo} from 'os';
 
@@ -144,6 +145,13 @@ async function startProxyServer(
   });
   console.log('Starting socket server on ', socketPath);
   console.log(`Starting proxy server on http://localhost:${config.port}`);
+
+  exitHook(() => {
+    console.log('Cleaning up socket on exit:', socketPath);
+    // This *must* run synchronously and we're not blocking any UI loop by definition.
+    // eslint-disable-next-line node/no-sync
+    fs.rmSync(socketPath, {force: true});
+  });
 
   proxyServer.on('error', (err, _req, res) => {
     console.warn('Error in proxy server:', err);
