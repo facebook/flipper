@@ -8,8 +8,8 @@
 #if FB_SONARKIT_ENABLED
 
 #import "SKIOSNetworkAdapter.h"
-#import "FLEXNetworkLib/FLEXNetworkObserver.h"
-#import "FLEXNetworkLib/FLEXNetworkRecorder.h"
+#import "SKFLEXNetworkLib/SKFLEXNetworkObserver.h"
+#import "SKFLEXNetworkLib/SKFLEXNetworkRecorder.h"
 
 @implementation SKIOSNetworkAdapter
 @synthesize delegate = _delegate;
@@ -22,8 +22,8 @@
 
 - (void)setDelegate:(id<SKNetworkReporterDelegate>)delegate {
   _delegate = delegate;
-  [FLEXNetworkObserver start];
-  [FLEXNetworkRecorder defaultRecorder].delegate = _delegate;
+  [SKFLEXNetworkObserver start];
+  [SKFLEXNetworkRecorder defaultRecorder].delegate = _delegate;
 }
 
 @end

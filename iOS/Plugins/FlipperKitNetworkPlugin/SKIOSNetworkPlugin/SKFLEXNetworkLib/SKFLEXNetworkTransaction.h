@@ -46,22 +46,22 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, FLEXNetworkTransactionState) {
-  FLEXNetworkTransactionStateUnstarted,
-  FLEXNetworkTransactionStateAwaitingResponse,
-  FLEXNetworkTransactionStateReceivingData,
-  FLEXNetworkTransactionStateFinished,
-  FLEXNetworkTransactionStateFailed
+typedef NS_ENUM(NSInteger, SKFLEXNetworkTransactionState) {
+  SKFLEXNetworkTransactionStateUnstarted,
+  SKFLEXNetworkTransactionStateAwaitingResponse,
+  SKFLEXNetworkTransactionStateReceivingData,
+  SKFLEXNetworkTransactionStateFinished,
+  SKFLEXNetworkTransactionStateFailed
 };
 
-@interface FLEXNetworkTransaction : NSObject
+@interface SKFLEXNetworkTransaction : NSObject
 
 @property(nonatomic, copy) NSString* requestID;
 
 @property(nonatomic, strong) NSURLRequest* request;
 @property(nonatomic, strong) NSURLResponse* response;
 @property(nonatomic, copy) NSString* requestMechanism;
-@property(nonatomic, assign) FLEXNetworkTransactionState transactionState;
+@property(nonatomic, assign) SKFLEXNetworkTransactionState transactionState;
 @property(nonatomic, strong) NSError* error;
 
 @property(nonatomic, strong) NSDate* startTime;
@@ -74,6 +74,6 @@ typedef NS_ENUM(NSInteger, FLEXNetworkTransactionState) {
 @property(nonatomic, strong, readonly) NSData* cachedRequestBody;
 
 + (NSString*)readableStringFromTransactionState:
-    (FLEXNetworkTransactionState)state;
+    (SKFLEXNetworkTransactionState)state;
 
 @end

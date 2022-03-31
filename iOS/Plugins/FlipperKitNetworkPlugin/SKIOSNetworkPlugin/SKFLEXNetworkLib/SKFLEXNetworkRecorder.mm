@@ -44,43 +44,43 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#import "FLEXNetworkRecorder.h"
+#import "SKFLEXNetworkRecorder.h"
 
-#import "FLEXNetworkTransaction.h"
-#import "FLEXUtility.h"
+#import "SKFLEXNetworkTransaction.h"
+#import "SKFLEXUtility.h"
 
-NSString* const kFLEXNetworkRecorderNewTransactionNotification =
-    @"kFLEXNetworkRecorderNewTransactionNotification";
-NSString* const kFLEXNetworkRecorderTransactionUpdatedNotification =
-    @"kFLEXNetworkRecorderTransactionUpdatedNotification";
-NSString* const kFLEXNetworkRecorderUserInfoTransactionKey = @"transaction";
-NSString* const kFLEXNetworkRecorderTransactionsClearedNotification =
-    @"kFLEXNetworkRecorderTransactionsClearedNotification";
+NSString* const kSKFLEXNetworkRecorderNewTransactionNotification =
+    @"kSKFLEXNetworkRecorderNewTransactionNotification";
+NSString* const kSKFLEXNetworkRecorderTransactionUpdatedNotification =
+    @"kSKFLEXNetworkRecorderTransactionUpdatedNotification";
+NSString* const kSKFLEXNetworkRecorderUserInfoTransactionKey = @"transaction";
+NSString* const kSKFLEXNetworkRecorderTransactionsClearedNotification =
+    @"kSKFLEXNetworkRecorderTransactionsClearedNotification";
 
-NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
-    @"com.flex.responseCacheLimit";
+NSString* const kSKFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
+    @"com.skflex.responseCacheLimit";
 
-@interface FLEXNetworkRecorder ()
+@interface SKFLEXNetworkRecorder ()
 
 @property(nonatomic, strong) NSCache* responseCache;
 @property(nonatomic, strong)
-    NSMutableArray<FLEXNetworkTransaction*>* orderedTransactions;
+    NSMutableArray<SKFLEXNetworkTransaction*>* orderedTransactions;
 @property(nonatomic, strong)
-    NSMutableDictionary<NSString*, FLEXNetworkTransaction*>*
+    NSMutableDictionary<NSString*, SKFLEXNetworkTransaction*>*
         networkTransactionsForRequestIdentifiers;
 @property(nonatomic, strong) dispatch_queue_t queue;
 @property(nonatomic, strong)
     NSMutableDictionary<NSString*, NSNumber*>* identifierDict;
 @end
 
-@implementation FLEXNetworkRecorder
+@implementation SKFLEXNetworkRecorder
 
 - (instancetype)init {
   self = [super init];
   if (self) {
     _responseCache = [NSCache new];
     NSUInteger responseCacheLimit = [[[NSUserDefaults standardUserDefaults]
-        objectForKey:kFLEXNetworkRecorderResponseCacheLimitDefaultsKey]
+        objectForKey:kSKFLEXNetworkRecorderResponseCacheLimitDefaultsKey]
         unsignedIntegerValue];
     if (responseCacheLimit) {
       [_responseCache setTotalCostLimit:responseCacheLimit];
@@ -95,14 +95,14 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
 
     // Serial queue used because we use mutable objects that are not thread safe
     _queue = dispatch_queue_create(
-        "com.flex.FLEXNetworkRecorder", DISPATCH_QUEUE_SERIAL);
+        "com.skflex.SKFLEXNetworkRecorder", DISPATCH_QUEUE_SERIAL);
     _identifierDict = [NSMutableDictionary dictionary];
   }
   return self;
 }
 
 + (instancetype)defaultRecorder {
-  static FLEXNetworkRecorder* defaultRecorder = nil;
+  static SKFLEXNetworkRecorder* defaultRecorder = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     defaultRecorder = [[[self class] alloc] init];
@@ -124,11 +124,11 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
   [self.responseCache setTotalCostLimit:responseCacheByteLimit];
   [[NSUserDefaults standardUserDefaults]
       setObject:@(responseCacheByteLimit)
-         forKey:kFLEXNetworkRecorderResponseCacheLimitDefaultsKey];
+         forKey:kSKFLEXNetworkRecorderResponseCacheLimitDefaultsKey];
 }
 
-- (NSArray<FLEXNetworkTransaction*>*)networkTransactions {
-  __block NSArray<FLEXNetworkTransaction*>* transactions = nil;
+- (NSArray<SKFLEXNetworkTransaction*>*)networkTransactions {
+  __block NSArray<SKFLEXNetworkTransaction*>* transactions = nil;
   dispatch_sync(self.queue, ^{
     transactions = [self.orderedTransactions copy];
   });
@@ -136,7 +136,7 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
 }
 
 - (NSData*)cachedResponseBodyForTransaction:
-    (FLEXNetworkTransaction*)transaction {
+    (SKFLEXNetworkTransaction*)transaction {
   return [self.responseCache objectForKey:transaction.requestID];
 }
 
@@ -167,12 +167,12 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
 
     SKRequestInfo* info = [[SKRequestInfo alloc]
         initWithIdentifier:self.identifierDict[requestID].longLongValue
-                 timestamp:[NSDate timestamp]
+                 timestamp:(uint64_t)[NSDate timestamp]
                    request:request
                       data:request.HTTPBody];
     [self.delegate didObserveRequest:info];
 
-    FLEXNetworkTransaction* transaction = [FLEXNetworkTransaction new];
+    SKFLEXNetworkTransaction* transaction = [SKFLEXNetworkTransaction new];
     transaction.requestID = requestID;
     transaction.request = request;
     transaction.startTime = requestDate;
@@ -180,7 +180,8 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
     [self.orderedTransactions insertObject:transaction atIndex:0];
     [self.networkTransactionsForRequestIdentifiers setObject:transaction
                                                       forKey:requestID];
-    transaction.transactionState = FLEXNetworkTransactionStateAwaitingResponse;
+    transaction.transactionState =
+        SKFLEXNetworkTransactionStateAwaitingResponse;
   });
 }
 
@@ -190,13 +191,13 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
   NSDate* responseDate = [NSDate date];
 
   dispatch_async(self.queue, ^{
-    FLEXNetworkTransaction* transaction =
+    SKFLEXNetworkTransaction* transaction =
         self.networkTransactionsForRequestIdentifiers[requestID];
     if (!transaction) {
       return;
     }
     transaction.response = response;
-    transaction.transactionState = FLEXNetworkTransactionStateReceivingData;
+    transaction.transactionState = SKFLEXNetworkTransactionStateReceivingData;
     transaction.latency =
         -[transaction.startTime timeIntervalSinceDate:responseDate];
   });
@@ -206,7 +207,7 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
 - (void)recordDataReceivedWithRequestID:(NSString*)requestID
                              dataLength:(int64_t)dataLength {
   dispatch_async(self.queue, ^{
-    FLEXNetworkTransaction* transaction =
+    SKFLEXNetworkTransaction* transaction =
         self.networkTransactionsForRequestIdentifiers[requestID];
     if (!transaction) {
       return;
@@ -220,17 +221,17 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
                               responseBody:(NSData*)responseBody {
   NSDate* finishedDate = [NSDate date];
   dispatch_async(self.queue, ^{
-    FLEXNetworkTransaction* transaction =
+    SKFLEXNetworkTransaction* transaction =
         self.networkTransactionsForRequestIdentifiers[requestID];
     if (!transaction) {
       return;
     }
-    transaction.transactionState = FLEXNetworkTransactionStateFinished;
+    transaction.transactionState = SKFLEXNetworkTransactionStateFinished;
     transaction.duration =
         -[transaction.startTime timeIntervalSinceDate:finishedDate];
     SKResponseInfo* responseInfo = [[SKResponseInfo alloc]
         initWithIndentifier:self.identifierDict[requestID].longLongValue
-                  timestamp:[NSDate timestamp]
+                  timestamp:(uint64_t)[NSDate timestamp]
                    response:transaction.response
                        data:responseBody];
     self.identifierDict[requestID] = nil; // Clear the entry
@@ -257,7 +258,7 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
 - (void)recordLoadingFailedWithRequestID:(NSString*)requestID
                                    error:(NSError*)error {
   dispatch_async(self.queue, ^{
-    FLEXNetworkTransaction* transaction =
+    SKFLEXNetworkTransaction* transaction =
         self.networkTransactionsForRequestIdentifiers[requestID];
     if (!transaction) {
       return;
@@ -265,12 +266,12 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
 
     SKResponseInfo* responseInfo = [[SKResponseInfo alloc]
         initWithIndentifier:self.identifierDict[requestID].longLongValue
-                  timestamp:[NSDate timestamp]
+                  timestamp:(uint64_t)[NSDate timestamp]
                    response:transaction.response
                        data:nil];
     self.identifierDict[requestID] = nil; // Clear the entry
     [self.delegate didObserveResponse:responseInfo];
-    transaction.transactionState = FLEXNetworkTransactionStateFailed;
+    transaction.transactionState = SKFLEXNetworkTransactionStateFailed;
     transaction.duration = -[transaction.startTime timeIntervalSinceNow];
     transaction.error = error;
   });
@@ -278,7 +279,7 @@ NSString* const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey =
 
 - (void)recordMechanism:(NSString*)mechanism forRequestID:(NSString*)requestID {
   dispatch_async(self.queue, ^{
-    FLEXNetworkTransaction* transaction =
+    SKFLEXNetworkTransaction* transaction =
         self.networkTransactionsForRequestIdentifiers[requestID];
     if (!transaction) {
       return;

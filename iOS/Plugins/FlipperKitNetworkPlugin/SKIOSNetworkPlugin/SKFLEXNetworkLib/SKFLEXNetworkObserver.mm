@@ -35,38 +35,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "FLEXNetworkObserver.h"
+#import "SKFLEXNetworkObserver.h"
 
 #import <objc/message.h>
 #import <objc/runtime.h>
 
 #import <dispatch/queue.h>
 
-#import "FLEXNetworkRecorder.h"
-#import "FLEXUtility.h"
+#import "SKFLEXNetworkRecorder.h"
+#import "SKFLEXUtility.h"
 
-NSString* const kFLEXNetworkObserverEnabledStateChangedNotification =
-    @"kFLEXNetworkObserverEnabledStateChangedNotification";
-static NSString* const kFLEXNetworkObserverEnabledDefaultsKey =
-    @"com.flex.FLEXNetworkObserver.enableOnLaunch";
+NSString* const kSKFLEXNetworkObserverEnabledStateChangedNotification =
+    @"kSKFLEXNetworkObserverEnabledStateChangedNotification";
+static NSString* const kSKFLEXNetworkObserverEnabledDefaultsKey =
+    @"com.skflex.SKFLEXNetworkObserver.enableOnLaunch";
 
 typedef void (^NSURLSessionAsyncCompletion)(
     id fileURLOrData,
     NSURLResponse* response,
     NSError* error);
 
-@interface FLEXInternalRequestState : NSObject
+@interface SKFLEXInternalRequestState : NSObject
 
 @property(nonatomic, copy) NSURLRequest* request;
 @property(nonatomic, strong) NSMutableData* dataAccumulator;
 
 @end
 
-@implementation FLEXInternalRequestState
+@implementation SKFLEXInternalRequestState
 
 @end
 
-@interface FLEXNetworkObserver (NSURLConnectionHelpers)
+@interface SKFLEXNetworkObserver (NSURLConnectionHelpers)
 
 - (void)connection:(NSURLConnection*)connection
      willSendRequest:(NSURLRequest*)request
@@ -90,7 +90,7 @@ typedef void (^NSURLSessionAsyncCompletion)(
 
 @end
 
-@interface FLEXNetworkObserver (NSURLSessionTaskHelpers)
+@interface SKFLEXNetworkObserver (NSURLSessionTaskHelpers)
 
 - (void)URLSession:(NSURLSession*)session
                           task:(NSURLSessionTask*)task
@@ -132,16 +132,16 @@ typedef void (^NSURLSessionAsyncCompletion)(
 
 @end
 
-@interface FLEXNetworkObserver ()
+@interface SKFLEXNetworkObserver ()
 
 @property(nonatomic, strong)
-    NSMutableDictionary<NSString*, FLEXInternalRequestState*>*
+    NSMutableDictionary<NSString*, SKFLEXInternalRequestState*>*
         requestStatesForRequestIDs;
 @property(nonatomic, strong) dispatch_queue_t queue;
 
 @end
 
-@implementation FLEXNetworkObserver
+@implementation SKFLEXNetworkObserver
 
 #pragma mark - Public Methods
 
@@ -152,7 +152,7 @@ typedef void (^NSURLSessionAsyncCompletion)(
 #pragma mark - Statics
 
 + (instancetype)sharedObserver {
-  static FLEXNetworkObserver* sharedObserver = nil;
+  static SKFLEXNetworkObserver* sharedObserver = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedObserver = [[[self class] alloc] init];
@@ -237,7 +237,7 @@ typedef void (^NSURLSessionAsyncCompletion)(
       for (NSInteger classIndex = 0; classIndex < numClasses; ++classIndex) {
         Class className = classes[classIndex];
 
-        if (className == [FLEXNetworkObserver class]) {
+        if (className == [SKFLEXNetworkObserver class]) {
           continue;
         }
 
@@ -309,11 +309,11 @@ typedef void (^NSURLSessionAsyncCompletion)(
   dispatch_once(&onceToken, ^{
     Class className = [NSURLConnection class];
     SEL selector = @selector(cancel);
-    SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+    SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
     Method originalCancel = class_getInstanceMethod(className, selector);
 
     void (^swizzleBlock)(NSURLConnection*) = ^(NSURLConnection* slf) {
-      [[FLEXNetworkObserver sharedObserver] connectionWillCancel:slf];
+      [[SKFLEXNetworkObserver sharedObserver] connectionWillCancel:slf];
       ((void (*)(id, SEL))objc_msgSend)(slf, swizzledSelector);
     };
 
@@ -349,7 +349,7 @@ typedef void (^NSURLSessionAsyncCompletion)(
     }
 
     SEL selector = @selector(resume);
-    SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+    SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
     Method originalResume = class_getInstanceMethod(className, selector);
 
@@ -362,7 +362,7 @@ typedef void (^NSURLSessionAsyncCompletion)(
       // request won't trigger a race to finalize the parser.
       [slf.currentRequest HTTPBody];
 
-      [[FLEXNetworkObserver sharedObserver] URLSessionTaskWillResume:slf];
+      [[SKFLEXNetworkObserver sharedObserver] URLSessionTaskWillResume:slf];
       ((void (*)(id, SEL))objc_msgSend)(slf, swizzledSelector);
     };
 
@@ -382,7 +382,7 @@ typedef void (^NSURLSessionAsyncCompletion)(
   dispatch_once(&onceToken, ^{
     Class className = objc_getMetaClass(class_getName([NSURLConnection class]));
     SEL selector = @selector(sendAsynchronousRequest:queue:completionHandler:);
-    SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+    SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
     typedef void (^NSURLConnectionAsyncCompletion)(
         NSURLResponse* response, NSData* data, NSError* connectionError);
@@ -397,28 +397,28 @@ typedef void (^NSURLSessionAsyncCompletion)(
           NSOperationQueue* queue,
           NSURLConnectionAsyncCompletion completion) {
           NSString* requestID = [self nextRequestID];
-          [[FLEXNetworkRecorder defaultRecorder]
+          [[SKFLEXNetworkRecorder defaultRecorder]
               recordRequestWillBeSentWithRequestID:requestID
                                            request:request
                                   redirectResponse:nil];
           NSString* mechanism = [self mechanismFromClassMethod:selector
                                                        onClass:className];
-          [[FLEXNetworkRecorder defaultRecorder] recordMechanism:mechanism
-                                                    forRequestID:requestID];
+          [[SKFLEXNetworkRecorder defaultRecorder] recordMechanism:mechanism
+                                                      forRequestID:requestID];
           NSURLConnectionAsyncCompletion completionWrapper = ^(
               NSURLResponse* response, NSData* data, NSError* connectionError) {
-            [[FLEXNetworkRecorder defaultRecorder]
+            [[SKFLEXNetworkRecorder defaultRecorder]
                 recordResponseReceivedWithRequestID:requestID
                                            response:response];
-            [[FLEXNetworkRecorder defaultRecorder]
+            [[SKFLEXNetworkRecorder defaultRecorder]
                 recordDataReceivedWithRequestID:requestID
                                      dataLength:[data length]];
             if (connectionError) {
-              [[FLEXNetworkRecorder defaultRecorder]
+              [[SKFLEXNetworkRecorder defaultRecorder]
                   recordLoadingFailedWithRequestID:requestID
                                              error:connectionError];
             } else {
-              [[FLEXNetworkRecorder defaultRecorder]
+              [[SKFLEXNetworkRecorder defaultRecorder]
                   recordLoadingFinishedWithRequestID:requestID
                                         responseBody:data];
             }
@@ -432,10 +432,10 @@ typedef void (^NSURLSessionAsyncCompletion)(
               slf, swizzledSelector, request, queue, completionWrapper);
         };
 
-    [FLEXUtility replaceImplementationOfKnownSelector:selector
-                                              onClass:className
-                                            withBlock:asyncSwizzleBlock
-                                     swizzledSelector:swizzledSelector];
+    [SKFLEXUtility replaceImplementationOfKnownSelector:selector
+                                                onClass:className
+                                              withBlock:asyncSwizzleBlock
+                                       swizzledSelector:swizzledSelector];
   });
 }
 
@@ -444,7 +444,7 @@ typedef void (^NSURLSessionAsyncCompletion)(
   dispatch_once(&onceToken, ^{
     Class className = objc_getMetaClass(class_getName([NSURLConnection class]));
     SEL selector = @selector(sendSynchronousRequest:returningResponse:error:);
-    SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+    SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
     NSData* (
         ^syncSwizzleBlock)(Class, NSURLRequest*, NSURLResponse**, NSError**) =
@@ -455,31 +455,31 @@ typedef void (^NSURLSessionAsyncCompletion)(
             NSError** error) {
       NSData* data = nil;
       NSString* requestID = [self nextRequestID];
-      [[FLEXNetworkRecorder defaultRecorder]
+      [[SKFLEXNetworkRecorder defaultRecorder]
           recordRequestWillBeSentWithRequestID:requestID
                                        request:request
                               redirectResponse:nil];
       NSString* mechanism = [self mechanismFromClassMethod:selector
                                                    onClass:className];
-      [[FLEXNetworkRecorder defaultRecorder] recordMechanism:mechanism
-                                                forRequestID:requestID];
+      [[SKFLEXNetworkRecorder defaultRecorder] recordMechanism:mechanism
+                                                  forRequestID:requestID];
       NSError* temporaryError = nil;
       NSURLResponse* temporaryResponse = nil;
       data =
           ((id(*)(id, SEL, id, NSURLResponse**, NSError**))
                objc_msgSend)(slf, swizzledSelector, request, &temporaryResponse, &temporaryError);
-      [[FLEXNetworkRecorder defaultRecorder]
+      [[SKFLEXNetworkRecorder defaultRecorder]
           recordResponseReceivedWithRequestID:requestID
                                      response:temporaryResponse];
-      [[FLEXNetworkRecorder defaultRecorder]
+      [[SKFLEXNetworkRecorder defaultRecorder]
           recordDataReceivedWithRequestID:requestID
                                dataLength:[data length]];
       if (temporaryError) {
-        [[FLEXNetworkRecorder defaultRecorder]
+        [[SKFLEXNetworkRecorder defaultRecorder]
             recordLoadingFailedWithRequestID:requestID
                                        error:temporaryError];
       } else {
-        [[FLEXNetworkRecorder defaultRecorder]
+        [[SKFLEXNetworkRecorder defaultRecorder]
             recordLoadingFinishedWithRequestID:requestID
                                   responseBody:data];
       }
@@ -492,10 +492,10 @@ typedef void (^NSURLSessionAsyncCompletion)(
       return data;
     };
 
-    [FLEXUtility replaceImplementationOfKnownSelector:selector
-                                              onClass:className
-                                            withBlock:syncSwizzleBlock
-                                     swizzledSelector:swizzledSelector];
+    [SKFLEXUtility replaceImplementationOfKnownSelector:selector
+                                                onClass:className
+                                              withBlock:syncSwizzleBlock
+                                       swizzledSelector:swizzledSelector];
   });
 }
 
@@ -518,10 +518,12 @@ typedef void (^NSURLSessionAsyncCompletion)(
 
     for (int selectorIndex = 0; selectorIndex < numSelectors; selectorIndex++) {
       SEL selector = selectors[selectorIndex];
-      SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+      SEL swizzledSelector =
+          [SKFLEXUtility swizzledSelectorForSelector:selector];
 
-      if ([FLEXUtility instanceRespondsButDoesNotImplementSelector:selector
-                                                             class:className]) {
+      if ([SKFLEXUtility
+              instanceRespondsButDoesNotImplementSelector:selector
+                                                    class:className]) {
         // iOS 7 does not implement these methods on NSURLSession. We actually
         // want to swizzle __NSCFURLSession, which we can get from the class of
         // the shared session
@@ -559,7 +561,7 @@ typedef void (^NSURLSessionAsyncCompletion)(
         return task;
       };
 
-      [FLEXUtility
+      [SKFLEXUtility
           replaceImplementationOfKnownSelector:selector
                                        onClass:className
                                      withBlock:asyncDataOrDownloadSwizzleBlock
@@ -585,10 +587,12 @@ typedef void (^NSURLSessionAsyncCompletion)(
 
     for (int selectorIndex = 0; selectorIndex < numSelectors; selectorIndex++) {
       SEL selector = selectors[selectorIndex];
-      SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+      SEL swizzledSelector =
+          [SKFLEXUtility swizzledSelectorForSelector:selector];
 
-      if ([FLEXUtility instanceRespondsButDoesNotImplementSelector:selector
-                                                             class:className]) {
+      if ([SKFLEXUtility
+              instanceRespondsButDoesNotImplementSelector:selector
+                                                    class:className]) {
         // iOS 7 does not implement these methods on NSURLSession. We actually
         // want to swizzle __NSCFURLSession, which we can get from the class of
         // the shared session
@@ -629,7 +633,7 @@ typedef void (^NSURLSessionAsyncCompletion)(
         return task;
       };
 
-      [FLEXUtility
+      [SKFLEXUtility
           replaceImplementationOfKnownSelector:selector
                                        onClass:className
                                      withBlock:asyncUploadTaskSwizzleBlock
@@ -650,9 +654,9 @@ typedef void (^NSURLSessionAsyncCompletion)(
                             completion:(NSURLSessionAsyncCompletion)completion {
   NSURLSessionAsyncCompletion completionWrapper =
       ^(id fileURLOrData, NSURLResponse* response, NSError* error) {
-        [[FLEXNetworkRecorder defaultRecorder] recordMechanism:mechanism
-                                                  forRequestID:requestID];
-        [[FLEXNetworkRecorder defaultRecorder]
+        [[SKFLEXNetworkRecorder defaultRecorder] recordMechanism:mechanism
+                                                    forRequestID:requestID];
+        [[SKFLEXNetworkRecorder defaultRecorder]
             recordResponseReceivedWithRequestID:requestID
                                        response:response];
         NSData* data = nil;
@@ -661,15 +665,15 @@ typedef void (^NSURLSessionAsyncCompletion)(
         } else if ([fileURLOrData isKindOfClass:[NSData class]]) {
           data = fileURLOrData;
         }
-        [[FLEXNetworkRecorder defaultRecorder]
+        [[SKFLEXNetworkRecorder defaultRecorder]
             recordDataReceivedWithRequestID:requestID
                                  dataLength:[data length]];
         if (error) {
-          [[FLEXNetworkRecorder defaultRecorder]
+          [[SKFLEXNetworkRecorder defaultRecorder]
               recordLoadingFailedWithRequestID:requestID
                                          error:error];
         } else {
-          [[FLEXNetworkRecorder defaultRecorder]
+          [[SKFLEXNetworkRecorder defaultRecorder]
               recordLoadingFinishedWithRequestID:requestID
                                     responseBody:data];
         }
@@ -684,7 +688,7 @@ typedef void (^NSURLSessionAsyncCompletion)(
 
 + (void)injectWillSendRequestIntoDelegateClass:(Class)cls {
   SEL selector = @selector(connection:willSendRequest:redirectResponse:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLConnectionDataDelegate);
   if (!protocol) {
@@ -702,10 +706,10 @@ typedef void (^NSURLSessionAsyncCompletion)(
       NSURLConnection* connection,
       NSURLRequest* request,
       NSURLResponse* response) {
-    [[FLEXNetworkObserver sharedObserver] connection:connection
-                                     willSendRequest:request
-                                    redirectResponse:response
-                                            delegate:slf];
+    [[SKFLEXNetworkObserver sharedObserver] connection:connection
+                                       willSendRequest:request
+                                      redirectResponse:response
+                                              delegate:slf];
     return request;
   };
 
@@ -731,17 +735,17 @@ typedef void (^NSURLSessionAsyncCompletion)(
     return returnValue;
   };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectDidReceiveResponseIntoDelegateClass:(Class)cls {
   SEL selector = @selector(connection:didReceiveResponse:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLConnectionDataDelegate);
   if (!protocol) {
@@ -760,9 +764,9 @@ typedef void (^NSURLSessionAsyncCompletion)(
       ^(id<NSURLConnectionDelegate> slf,
         NSURLConnection* connection,
         NSURLResponse* response) {
-        [[FLEXNetworkObserver sharedObserver] connection:connection
-                                      didReceiveResponse:response
-                                                delegate:slf];
+        [[SKFLEXNetworkObserver sharedObserver] connection:connection
+                                        didReceiveResponse:response
+                                                  delegate:slf];
       };
 
   NSURLConnectionDidReceiveResponseBlock implementationBlock =
@@ -780,17 +784,17 @@ typedef void (^NSURLSessionAsyncCompletion)(
             }];
       };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectDidReceiveDataIntoDelegateClass:(Class)cls {
   SEL selector = @selector(connection:didReceiveData:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLConnectionDataDelegate);
   if (!protocol) {
@@ -809,9 +813,9 @@ typedef void (^NSURLSessionAsyncCompletion)(
       ^(id<NSURLConnectionDelegate> slf,
         NSURLConnection* connection,
         NSData* data) {
-        [[FLEXNetworkObserver sharedObserver] connection:connection
-                                          didReceiveData:data
-                                                delegate:slf];
+        [[SKFLEXNetworkObserver sharedObserver] connection:connection
+                                            didReceiveData:data
+                                                  delegate:slf];
       };
 
   NSURLConnectionDidReceiveDataBlock implementationBlock =
@@ -829,17 +833,17 @@ typedef void (^NSURLSessionAsyncCompletion)(
             }];
       };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectDidFinishLoadingIntoDelegateClass:(Class)cls {
   SEL selector = @selector(connectionDidFinishLoading:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLConnectionDataDelegate);
   if (!protocol) {
@@ -852,11 +856,12 @@ typedef void (^NSURLSessionAsyncCompletion)(
   typedef void (^NSURLConnectionDidFinishLoadingBlock)(
       id<NSURLConnectionDelegate> slf, NSURLConnection* connection);
 
-  NSURLConnectionDidFinishLoadingBlock undefinedBlock = ^(
-      id<NSURLConnectionDelegate> slf, NSURLConnection* connection) {
-    [[FLEXNetworkObserver sharedObserver] connectionDidFinishLoading:connection
-                                                            delegate:slf];
-  };
+  NSURLConnectionDidFinishLoadingBlock undefinedBlock =
+      ^(id<NSURLConnectionDelegate> slf, NSURLConnection* connection) {
+        [[SKFLEXNetworkObserver sharedObserver]
+            connectionDidFinishLoading:connection
+                              delegate:slf];
+      };
 
   NSURLConnectionDidFinishLoadingBlock implementationBlock =
       ^(id<NSURLConnectionDelegate> slf, NSURLConnection* connection) {
@@ -871,17 +876,17 @@ typedef void (^NSURLSessionAsyncCompletion)(
             }];
       };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectDidFailWithErrorIntoDelegateClass:(Class)cls {
   SEL selector = @selector(connection:didFailWithError:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLConnectionDelegate);
   struct objc_method_description methodDescription =
@@ -896,9 +901,9 @@ typedef void (^NSURLSessionAsyncCompletion)(
       ^(id<NSURLConnectionDelegate> slf,
         NSURLConnection* connection,
         NSError* error) {
-        [[FLEXNetworkObserver sharedObserver] connection:connection
-                                        didFailWithError:error
-                                                delegate:slf];
+        [[SKFLEXNetworkObserver sharedObserver] connection:connection
+                                          didFailWithError:error
+                                                  delegate:slf];
       };
 
   NSURLConnectionDidFailWithErrorBlock implementationBlock =
@@ -916,19 +921,19 @@ typedef void (^NSURLSessionAsyncCompletion)(
             }];
       };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectTaskWillPerformHTTPRedirectionIntoDelegateClass:(Class)cls {
   SEL selector = @selector
       (URLSession:
              task:willPerformHTTPRedirection:newRequest:completionHandler:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLSessionTaskDelegate);
 
@@ -950,12 +955,12 @@ typedef void (^NSURLSessionAsyncCompletion)(
         NSHTTPURLResponse* response,
         NSURLRequest* newRequest,
         void (^completionHandler)(NSURLRequest*)) {
-        [[FLEXNetworkObserver sharedObserver] URLSession:session
-                                                    task:task
-                              willPerformHTTPRedirection:response
-                                              newRequest:newRequest
-                                       completionHandler:completionHandler
-                                                delegate:slf];
+        [[SKFLEXNetworkObserver sharedObserver] URLSession:session
+                                                      task:task
+                                willPerformHTTPRedirection:response
+                                                newRequest:newRequest
+                                         completionHandler:completionHandler
+                                                  delegate:slf];
         completionHandler(newRequest);
       };
 
@@ -969,12 +974,12 @@ typedef void (^NSURLSessionAsyncCompletion)(
     [self sniffWithoutDuplicationForObject:session
         selector:selector
         sniffingBlock:^{
-          [[FLEXNetworkObserver sharedObserver] URLSession:session
-                                                      task:task
-                                willPerformHTTPRedirection:response
-                                                newRequest:newRequest
-                                         completionHandler:completionHandler
-                                                  delegate:slf];
+          [[SKFLEXNetworkObserver sharedObserver] URLSession:session
+                                                        task:task
+                                  willPerformHTTPRedirection:response
+                                                  newRequest:newRequest
+                                           completionHandler:completionHandler
+                                                    delegate:slf];
         }
         originalImplementationBlock:^{
           ((id(*)(
@@ -989,17 +994,17 @@ typedef void (^NSURLSessionAsyncCompletion)(
         }];
   };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectTaskDidReceiveDataIntoDelegateClass:(Class)cls {
   SEL selector = @selector(URLSession:dataTask:didReceiveData:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLSessionDataDelegate);
 
@@ -1017,10 +1022,10 @@ typedef void (^NSURLSessionAsyncCompletion)(
         NSURLSession* session,
         NSURLSessionDataTask* dataTask,
         NSData* data) {
-        [[FLEXNetworkObserver sharedObserver] URLSession:session
-                                                dataTask:dataTask
-                                          didReceiveData:data
-                                                delegate:slf];
+        [[SKFLEXNetworkObserver sharedObserver] URLSession:session
+                                                  dataTask:dataTask
+                                            didReceiveData:data
+                                                  delegate:slf];
       };
 
   NSURLSessionDidReceiveDataBlock implementationBlock =
@@ -1039,17 +1044,17 @@ typedef void (^NSURLSessionAsyncCompletion)(
             }];
       };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectDataTaskDidBecomeDownloadTaskIntoDelegateClass:(Class)cls {
   SEL selector = @selector(URLSession:dataTask:didBecomeDownloadTask:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLSessionDataDelegate);
 
@@ -1067,10 +1072,10 @@ typedef void (^NSURLSessionAsyncCompletion)(
         NSURLSession* session,
         NSURLSessionDataTask* dataTask,
         NSURLSessionDownloadTask* downloadTask) {
-        [[FLEXNetworkObserver sharedObserver] URLSession:session
-                                                dataTask:dataTask
-                                   didBecomeDownloadTask:downloadTask
-                                                delegate:slf];
+        [[SKFLEXNetworkObserver sharedObserver] URLSession:session
+                                                  dataTask:dataTask
+                                     didBecomeDownloadTask:downloadTask
+                                                  delegate:slf];
       };
 
   NSURLSessionDidBecomeDownloadTaskBlock implementationBlock =
@@ -1089,18 +1094,18 @@ typedef void (^NSURLSessionAsyncCompletion)(
             }];
       };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectTaskDidReceiveResponseIntoDelegateClass:(Class)cls {
   SEL selector = @selector(URLSession:
                              dataTask:didReceiveResponse:completionHandler:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLSessionDataDelegate);
 
@@ -1120,11 +1125,11 @@ typedef void (^NSURLSessionAsyncCompletion)(
       NSURLSessionDataTask* dataTask,
       NSURLResponse* response,
       void (^completionHandler)(NSURLSessionResponseDisposition disposition)) {
-    [[FLEXNetworkObserver sharedObserver] URLSession:session
-                                            dataTask:dataTask
-                                  didReceiveResponse:response
-                                   completionHandler:completionHandler
-                                            delegate:slf];
+    [[SKFLEXNetworkObserver sharedObserver] URLSession:session
+                                              dataTask:dataTask
+                                    didReceiveResponse:response
+                                     completionHandler:completionHandler
+                                              delegate:slf];
     completionHandler(NSURLSessionResponseAllow);
   };
 
@@ -1137,11 +1142,11 @@ typedef void (^NSURLSessionAsyncCompletion)(
     [self sniffWithoutDuplicationForObject:session
         selector:selector
         sniffingBlock:^{
-          [[FLEXNetworkObserver sharedObserver] URLSession:session
-                                                  dataTask:dataTask
-                                        didReceiveResponse:response
-                                         completionHandler:completionHandler
-                                                  delegate:slf];
+          [[SKFLEXNetworkObserver sharedObserver] URLSession:session
+                                                    dataTask:dataTask
+                                          didReceiveResponse:response
+                                           completionHandler:completionHandler
+                                                    delegate:slf];
         }
         originalImplementationBlock:^{
           ((void (*)(
@@ -1156,17 +1161,17 @@ typedef void (^NSURLSessionAsyncCompletion)(
         }];
   };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectTaskDidCompleteWithErrorIntoDelegateClass:(Class)cls {
   SEL selector = @selector(URLSession:task:didCompleteWithError:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLSessionTaskDelegate);
   struct objc_method_description methodDescription =
@@ -1183,10 +1188,10 @@ typedef void (^NSURLSessionAsyncCompletion)(
         NSURLSession* session,
         NSURLSessionTask* task,
         NSError* error) {
-        [[FLEXNetworkObserver sharedObserver] URLSession:session
-                                                    task:task
-                                    didCompleteWithError:error
-                                                delegate:slf];
+        [[SKFLEXNetworkObserver sharedObserver] URLSession:session
+                                                      task:task
+                                      didCompleteWithError:error
+                                                  delegate:slf];
       };
 
   NSURLSessionTaskDidCompleteWithErrorBlock implementationBlock =
@@ -1205,18 +1210,18 @@ typedef void (^NSURLSessionAsyncCompletion)(
             }];
       };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 // Used for overriding AFNetworking behavior
 + (void)injectRespondsToSelectorIntoDelegateClass:(Class)cls {
   SEL selector = @selector(respondsToSelector:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   // Protocol *protocol = @protocol(NSURLSessionTaskDelegate);
   Method method = class_getInstanceMethod(cls, selector);
@@ -1237,17 +1242,17 @@ typedef void (^NSURLSessionAsyncCompletion)(
     return ((BOOL(*)(id, SEL, SEL))objc_msgSend)(slf, swizzledSelector, sel);
   };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectDownloadTaskDidFinishDownloadingIntoDelegateClass:(Class)cls {
   SEL selector = @selector(URLSession:downloadTask:didFinishDownloadingToURL:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLSessionDownloadDelegate);
   struct objc_method_description methodDescription =
@@ -1265,11 +1270,11 @@ typedef void (^NSURLSessionAsyncCompletion)(
         NSURLSessionDownloadTask* task,
         NSURL* location) {
         NSData* data = [NSData dataWithContentsOfFile:location.relativePath];
-        [[FLEXNetworkObserver sharedObserver] URLSession:session
-                                                    task:task
-                               didFinishDownloadingToURL:location
-                                                    data:data
-                                                delegate:slf];
+        [[SKFLEXNetworkObserver sharedObserver] URLSession:session
+                                                      task:task
+                                 didFinishDownloadingToURL:location
+                                                      data:data
+                                                  delegate:slf];
       };
 
   NSURLSessionDownloadTaskDidFinishDownloadingBlock implementationBlock =
@@ -1288,19 +1293,19 @@ typedef void (^NSURLSessionAsyncCompletion)(
             }];
       };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
 + (void)injectDownloadTaskDidWriteDataIntoDelegateClass:(Class)cls {
   SEL selector = @selector(
         URLSession:
       downloadTask:didWriteData:totalBytesWritten:totalBytesExpectedToWrite:);
-  SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
+  SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
   Protocol* protocol = @protocol(NSURLSessionDownloadDelegate);
   struct objc_method_description methodDescription =
@@ -1321,12 +1326,12 @@ typedef void (^NSURLSessionAsyncCompletion)(
       int64_t bytesWritten,
       int64_t totalBytesWritten,
       int64_t totalBytesExpectedToWrite) {
-    [[FLEXNetworkObserver sharedObserver] URLSession:session
-                                        downloadTask:task
-                                        didWriteData:bytesWritten
-                                   totalBytesWritten:totalBytesWritten
-                           totalBytesExpectedToWrite:totalBytesExpectedToWrite
-                                            delegate:slf];
+    [[SKFLEXNetworkObserver sharedObserver] URLSession:session
+                                          downloadTask:task
+                                          didWriteData:bytesWritten
+                                     totalBytesWritten:totalBytesWritten
+                             totalBytesExpectedToWrite:totalBytesExpectedToWrite
+                                              delegate:slf];
   };
 
   NSURLSessionDownloadTaskDidWriteDataBlock implementationBlock = ^(
@@ -1359,19 +1364,19 @@ typedef void (^NSURLSessionAsyncCompletion)(
         }];
   };
 
-  [FLEXUtility replaceImplementationOfSelector:selector
-                                  withSelector:swizzledSelector
-                                      forClass:cls
-                         withMethodDescription:methodDescription
-                           implementationBlock:implementationBlock
-                                undefinedBlock:undefinedBlock];
+  [SKFLEXUtility replaceImplementationOfSelector:selector
+                                    withSelector:swizzledSelector
+                                        forClass:cls
+                           withMethodDescription:methodDescription
+                             implementationBlock:implementationBlock
+                                  undefinedBlock:undefinedBlock];
 }
 
-static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
+static char const* const kSKFLEXRequestIDKey = "kSKFLEXRequestIDKey";
 
 + (NSString*)requestIDForConnectionOrTask:(id)connectionOrTask {
   NSString* requestID =
-      objc_getAssociatedObject(connectionOrTask, kFLEXRequestIDKey);
+      objc_getAssociatedObject(connectionOrTask, kSKFLEXRequestIDKey);
   if (!requestID) {
     requestID = [self nextRequestID];
     [self setRequestID:requestID forConnectionOrTask:connectionOrTask];
@@ -1384,7 +1389,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   if (connectionOrTask) {
     objc_setAssociatedObject(
         connectionOrTask,
-        kFLEXRequestIDKey,
+        kSKFLEXRequestIDKey,
         requestID,
         OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   }
@@ -1397,7 +1402,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   if (self) {
     self.requestStatesForRequestIDs = [NSMutableDictionary new];
     self.queue = dispatch_queue_create(
-        "com.flex.FLEXNetworkObserver", DISPATCH_QUEUE_SERIAL);
+        "com.skflex.SKFLEXNetworkObserver", DISPATCH_QUEUE_SERIAL);
   }
   return self;
 }
@@ -1408,11 +1413,11 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   dispatch_async(_queue, block);
 }
 
-- (FLEXInternalRequestState*)requestStateForRequestID:(NSString*)requestID {
-  FLEXInternalRequestState* requestState =
+- (SKFLEXInternalRequestState*)requestStateForRequestID:(NSString*)requestID {
+  SKFLEXInternalRequestState* requestState =
       self.requestStatesForRequestIDs[requestID];
   if (!requestState) {
-    requestState = [FLEXInternalRequestState new];
+    requestState = [SKFLEXInternalRequestState new];
     [self.requestStatesForRequestIDs setObject:requestState forKey:requestID];
   }
   return requestState;
@@ -1424,7 +1429,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
 
 @end
 
-@implementation FLEXNetworkObserver (NSURLConnectionHelpers)
+@implementation SKFLEXNetworkObserver (NSURLConnectionHelpers)
 
 - (void)connection:(NSURLConnection*)connection
      willSendRequest:(NSURLRequest*)request
@@ -1433,17 +1438,17 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   [self performBlock:^{
     NSString* requestID =
         [[self class] requestIDForConnectionOrTask:connection];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
     requestState.request = request;
-    [[FLEXNetworkRecorder defaultRecorder]
+    [[SKFLEXNetworkRecorder defaultRecorder]
         recordRequestWillBeSentWithRequestID:requestID
                                      request:request
                             redirectResponse:response];
     NSString* mechanism = [NSString
         stringWithFormat:@"NSURLConnection (delegate: %@)", [delegate class]];
-    [[FLEXNetworkRecorder defaultRecorder] recordMechanism:mechanism
-                                              forRequestID:requestID];
+    [[SKFLEXNetworkRecorder defaultRecorder] recordMechanism:mechanism
+                                                forRequestID:requestID];
   }];
 }
 
@@ -1453,7 +1458,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   [self performBlock:^{
     NSString* requestID =
         [[self class] requestIDForConnectionOrTask:connection];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
 
     NSMutableData* dataAccumulator = nil;
@@ -1465,7 +1470,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
     }
     requestState.dataAccumulator = dataAccumulator;
 
-    [[FLEXNetworkRecorder defaultRecorder]
+    [[SKFLEXNetworkRecorder defaultRecorder]
         recordResponseReceivedWithRequestID:requestID
                                    response:response];
   }];
@@ -1479,10 +1484,10 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   [self performBlock:^{
     NSString* requestID =
         [[self class] requestIDForConnectionOrTask:connection];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
     [requestState.dataAccumulator appendData:data];
-    [[FLEXNetworkRecorder defaultRecorder]
+    [[SKFLEXNetworkRecorder defaultRecorder]
         recordDataReceivedWithRequestID:requestID
                              dataLength:data.length];
   }];
@@ -1493,9 +1498,9 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   [self performBlock:^{
     NSString* requestID =
         [[self class] requestIDForConnectionOrTask:connection];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
-    [[FLEXNetworkRecorder defaultRecorder]
+    [[SKFLEXNetworkRecorder defaultRecorder]
         recordLoadingFinishedWithRequestID:requestID
                               responseBody:requestState.dataAccumulator];
     [self removeRequestStateForRequestID:requestID];
@@ -1508,7 +1513,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   [self performBlock:^{
     NSString* requestID =
         [[self class] requestIDForConnectionOrTask:connection];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
 
     // Cancellations can occur prior to the willSendRequest:... NSURLConnection
@@ -1516,7 +1521,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
     // record the failure if the recorder already knows about the request
     // through willSendRequest:...
     if (requestState.request) {
-      [[FLEXNetworkRecorder defaultRecorder]
+      [[SKFLEXNetworkRecorder defaultRecorder]
           recordLoadingFailedWithRequestID:requestID
                                      error:error];
     }
@@ -1540,7 +1545,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
 
 @end
 
-@implementation FLEXNetworkObserver (NSURLSessionTaskHelpers)
+@implementation SKFLEXNetworkObserver (NSURLSessionTaskHelpers)
 
 - (void)URLSession:(NSURLSession*)session
                           task:(NSURLSessionTask*)task
@@ -1550,7 +1555,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
                       delegate:(id<NSURLSessionDelegate>)delegate {
   [self performBlock:^{
     NSString* requestID = [[self class] requestIDForConnectionOrTask:task];
-    [[FLEXNetworkRecorder defaultRecorder]
+    [[SKFLEXNetworkRecorder defaultRecorder]
         recordRequestWillBeSentWithRequestID:requestID
                                      request:request
                             redirectResponse:response];
@@ -1565,7 +1570,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
               delegate:(id<NSURLSessionDelegate>)delegate {
   [self performBlock:^{
     NSString* requestID = [[self class] requestIDForConnectionOrTask:dataTask];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
 
     NSMutableData* dataAccumulator = nil;
@@ -1580,10 +1585,10 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
     NSString* requestMechanism =
         [NSString stringWithFormat:@"NSURLSessionDataTask (delegate: %@)",
                                    [delegate class]];
-    [[FLEXNetworkRecorder defaultRecorder] recordMechanism:requestMechanism
-                                              forRequestID:requestID];
+    [[SKFLEXNetworkRecorder defaultRecorder] recordMechanism:requestMechanism
+                                                forRequestID:requestID];
 
-    [[FLEXNetworkRecorder defaultRecorder]
+    [[SKFLEXNetworkRecorder defaultRecorder]
         recordResponseReceivedWithRequestID:requestID
                                    response:response];
   }];
@@ -1609,12 +1614,12 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   data = [data copy];
   [self performBlock:^{
     NSString* requestID = [[self class] requestIDForConnectionOrTask:dataTask];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
 
     [requestState.dataAccumulator appendData:data];
 
-    [[FLEXNetworkRecorder defaultRecorder]
+    [[SKFLEXNetworkRecorder defaultRecorder]
         recordDataReceivedWithRequestID:requestID
                              dataLength:data.length];
   }];
@@ -1626,15 +1631,15 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
                 delegate:(id<NSURLSessionDelegate>)delegate {
   [self performBlock:^{
     NSString* requestID = [[self class] requestIDForConnectionOrTask:task];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
 
     if (error) {
-      [[FLEXNetworkRecorder defaultRecorder]
+      [[SKFLEXNetworkRecorder defaultRecorder]
           recordLoadingFailedWithRequestID:requestID
                                      error:error];
     } else {
-      [[FLEXNetworkRecorder defaultRecorder]
+      [[SKFLEXNetworkRecorder defaultRecorder]
           recordLoadingFinishedWithRequestID:requestID
                                 responseBody:requestState.dataAccumulator];
     }
@@ -1652,7 +1657,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   [self performBlock:^{
     NSString* requestID =
         [[self class] requestIDForConnectionOrTask:downloadTask];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
 
     if (!requestState.dataAccumulator) {
@@ -1661,18 +1666,18 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
           : 0;
       requestState.dataAccumulator =
           [[NSMutableData alloc] initWithCapacity:unsignedBytesExpectedToWrite];
-      [[FLEXNetworkRecorder defaultRecorder]
+      [[SKFLEXNetworkRecorder defaultRecorder]
           recordResponseReceivedWithRequestID:requestID
                                      response:downloadTask.response];
 
       NSString* requestMechanism =
           [NSString stringWithFormat:@"NSURLSessionDownloadTask (delegate: %@)",
                                      [delegate class]];
-      [[FLEXNetworkRecorder defaultRecorder] recordMechanism:requestMechanism
-                                                forRequestID:requestID];
+      [[SKFLEXNetworkRecorder defaultRecorder] recordMechanism:requestMechanism
+                                                  forRequestID:requestID];
     }
 
-    [[FLEXNetworkRecorder defaultRecorder]
+    [[SKFLEXNetworkRecorder defaultRecorder]
         recordDataReceivedWithRequestID:requestID
                              dataLength:bytesWritten];
   }];
@@ -1687,7 +1692,7 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   [self performBlock:^{
     NSString* requestID =
         [[self class] requestIDForConnectionOrTask:downloadTask];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
     [requestState.dataAccumulator appendData:data];
   }];
@@ -1698,12 +1703,12 @@ static char const* const kFLEXRequestIDKey = "kFLEXRequestIDKey";
   // first resume as the equivalent to connection:willSendRequest:...
   [self performBlock:^{
     NSString* requestID = [[self class] requestIDForConnectionOrTask:task];
-    FLEXInternalRequestState* requestState =
+    SKFLEXInternalRequestState* requestState =
         [self requestStateForRequestID:requestID];
     if (!requestState.request) {
       requestState.request = task.currentRequest;
 
-      [[FLEXNetworkRecorder defaultRecorder]
+      [[SKFLEXNetworkRecorder defaultRecorder]
           recordRequestWillBeSentWithRequestID:requestID
                                        request:task.currentRequest
                               redirectResponse:nil];

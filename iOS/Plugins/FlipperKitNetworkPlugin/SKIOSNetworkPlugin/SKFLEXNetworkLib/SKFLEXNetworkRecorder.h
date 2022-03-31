@@ -49,14 +49,14 @@
 #import <FlipperKitNetworkPlugin/SKNetworkReporter.h>
 
 // Notifications posted when the record is updated
-extern NSString* const kFLEXNetworkRecorderNewTransactionNotification;
-extern NSString* const kFLEXNetworkRecorderTransactionUpdatedNotification;
-extern NSString* const kFLEXNetworkRecorderUserInfoTransactionKey;
-extern NSString* const kFLEXNetworkRecorderTransactionsClearedNotification;
+extern NSString* const kSKFLEXNetworkRecorderNewTransactionNotification;
+extern NSString* const kSKFLEXNetworkRecorderTransactionUpdatedNotification;
+extern NSString* const kSKFLEXNetworkRecorderUserInfoTransactionKey;
+extern NSString* const kSKFLEXNetworkRecorderTransactionsClearedNotification;
 
-@class FLEXNetworkTransaction;
+@class SKFLEXNetworkTransaction;
 
-@interface FLEXNetworkRecorder : NSObject
+@interface SKFLEXNetworkRecorder : NSObject
 
 /// In general, it only makes sense to have one recorder for the entire
 /// application.
@@ -76,13 +76,13 @@ extern NSString* const kFLEXNetworkRecorderTransactionsClearedNotification;
 
 // Accessing recorded network activity
 
-/// Array of FLEXNetworkTransaction objects ordered by start time with the
+/// Array of SKFLEXNetworkTransaction objects ordered by start time with the
 /// newest first.
-- (NSArray<FLEXNetworkTransaction*>*)networkTransactions;
+- (NSArray<SKFLEXNetworkTransaction*>*)networkTransactions;
 
 /// The full response data IFF it hasn't been purged due to memory pressure.
 - (NSData*)cachedResponseBodyForTransaction:
-    (FLEXNetworkTransaction*)transaction;
+    (SKFLEXNetworkTransaction*)transaction;
 
 /// Dumps all network transactions and cached response bodies.
 - (void)clearRecordedActivity;

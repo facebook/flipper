@@ -62,7 +62,7 @@
 
 @end
 
-@interface FLEXUtility : NSObject
+@interface SKFLEXUtility : NSObject
 
 // Swizzling utilities
 

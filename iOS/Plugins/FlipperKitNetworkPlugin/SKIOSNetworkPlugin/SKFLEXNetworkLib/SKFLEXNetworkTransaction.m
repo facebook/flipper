@@ -44,15 +44,15 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#import "FLEXNetworkTransaction.h"
+#import "SKFLEXNetworkTransaction.h"
 
-@interface FLEXNetworkTransaction ()
+@interface SKFLEXNetworkTransaction ()
 
 @property(nonatomic, strong, readwrite) NSData* cachedRequestBody;
 
 @end
 
-@implementation FLEXNetworkTransaction
+@implementation SKFLEXNetworkTransaction
 
 - (NSString*)description {
   NSString* description = [super description];
@@ -94,26 +94,26 @@
 }
 
 + (NSString*)readableStringFromTransactionState:
-    (FLEXNetworkTransactionState)state {
+    (SKFLEXNetworkTransactionState)state {
   NSString* readableString = nil;
   switch (state) {
-    case FLEXNetworkTransactionStateUnstarted:
+    case SKFLEXNetworkTransactionStateUnstarted:
       readableString = @"Unstarted";
       break;
 
-    case FLEXNetworkTransactionStateAwaitingResponse:
+    case SKFLEXNetworkTransactionStateAwaitingResponse:
       readableString = @"Awaiting Response";
       break;
 
-    case FLEXNetworkTransactionStateReceivingData:
+    case SKFLEXNetworkTransactionStateReceivingData:
       readableString = @"Receiving Data";
       break;
 
-    case FLEXNetworkTransactionStateFinished:
+    case SKFLEXNetworkTransactionStateFinished:
       readableString = @"Finished";
       break;
 
-    case FLEXNetworkTransactionStateFailed:
+    case SKFLEXNetworkTransactionStateFailed:
       readableString = @"Failed";
       break;
   }

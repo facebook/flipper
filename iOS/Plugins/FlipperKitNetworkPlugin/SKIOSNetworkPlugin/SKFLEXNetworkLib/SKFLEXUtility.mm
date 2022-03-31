@@ -44,7 +44,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#import "FLEXUtility.h"
+#import "SKFLEXUtility.h"
 
 #include <assert.h>
 #include <mach/mach.h>
@@ -54,11 +54,11 @@
 
 #import <ImageIO/ImageIO.h>
 
-@implementation FLEXUtility
+@implementation SKFLEXUtility
 
 + (SEL)swizzledSelectorForSelector:(SEL)selector {
   return NSSelectorFromString(
-      [NSString stringWithFormat:@"_flex_swizzle_%x_%@",
+      [NSString stringWithFormat:@"_skflex_swizzle_%x_%@",
                                  arc4random(),
                                  NSStringFromSelector(selector)]);
 }
