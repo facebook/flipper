@@ -7,6 +7,7 @@
  * @format
  */
 
+import os from 'os';
 import express, {Express} from 'express';
 import http from 'http';
 import path from 'path';
@@ -14,6 +15,10 @@ import fs from 'fs-extra';
 import {VerifyClientCallbackSync, WebSocketServer} from 'ws';
 import {WEBSOCKET_MAX_MESSAGE_SIZE} from 'flipper-server-core';
 import {parse} from 'url';
+import xdgBasedir from 'xdg-basedir';
+import proxy from 'http-proxy';
+
+import {userInfo} from 'os';
 
 type Config = {
   port: number;
@@ -26,7 +31,7 @@ export async function startBaseServer(config: Config): Promise<{
   server: http.Server;
   socket: WebSocketServer;
 }> {
-  const {app, server} = await startAssetServer(config);
+  const {app, server} = await startHTTPServer(config);
   const socket = addWebsocket(server, config);
   return {
     app,
@@ -35,7 +40,7 @@ export async function startBaseServer(config: Config): Promise<{
   };
 }
 
-function startAssetServer(
+async function startHTTPServer(
   config: Config,
 ): Promise<{app: Express; server: http.Server}> {
   const app = express();
@@ -59,10 +64,41 @@ function startAssetServer(
 
   app.use(express.static(config.staticDir));
 
+  return startProxyServer(config, app);
+}
+
+async function startProxyServer(
+  config: Config,
+  app: Express,
+): Promise<{app: Express; server: http.Server}> {
   const server = http.createServer(app);
 
+  // For now, we only support domain socket access on POSIX-like systems.
+  if (os.platform() === 'win32') {
+    return new Promise((resolve) => {
+      console.log(`Starting server on http://localhost:${config.port}`);
+      server.listen(config.port, undefined, () => resolve({app, server}));
+    });
+  }
+
+  const runtimeDir = xdgBasedir.runtime || '/tmp';
+  await fs.mkdirp(runtimeDir);
+  const socketPath = `${runtimeDir}/flipper-server-${userInfo().uid}.sock`;
+
+  // TODO: More careful cleanup.
+  await fs.rm(socketPath, {force: true});
+
+  const proxyServer = proxy.createProxyServer({
+    target: {host: 'localhost', port: 0, socketPath},
+    autoRewrite: true,
+    ws: true,
+  });
+  console.log('Starting socket server on ', socketPath);
+  console.log(`Starting proxy server on http://localhost:${config.port}`);
+
   return new Promise((resolve) => {
-    server.listen(config.port, undefined, () => resolve({app, server}));
+    proxyServer.listen(config.port);
+    server.listen(socketPath, undefined, () => resolve({app, server}));
   });
 }
 

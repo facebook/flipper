@@ -23,9 +23,12 @@ export function startSocketServer(
   socket: WebSocketServer,
 ) {
   socket.on('connection', (client, req) => {
-    const clientAddress = `${req.socket.remoteAddress}:${req.socket.remotePort}`;
+    const clientAddress =
+      (req.socket.remoteAddress &&
+        ` ${req.socket.remoteAddress}:${req.socket.remotePort}`) ||
+      '';
 
-    console.log(chalk.green(`Client connected ${clientAddress}`));
+    console.log(chalk.green(`Client connected${clientAddress}`));
 
     let connected = true;
 

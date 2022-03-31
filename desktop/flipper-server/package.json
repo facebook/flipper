@@ -10,12 +10,15 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependenciesComment": "mac-ca is required dynamically for darwin, node-fetch is treated special in electron-requires, not sure why",
   "dependencies": {
+    "http-proxy": "^1.18.1",
     "mac-ca": "^1.0.6",
     "node-fetch": "^2.6.7",
-    "ws": "^8.5.0"
+    "ws": "^8.5.0",
+    "xdg-basedir": "^4"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "@types/http-proxy": "^1.17.8",
     "@types/node": "^15.12.5",
     "chalk": "^4.1.2",
     "express": "^4.17.3",
