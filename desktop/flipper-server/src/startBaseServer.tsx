@@ -8,6 +8,7 @@
  */
 
 import os from 'os';
+import net from 'net';
 import express, {Express} from 'express';
 import http from 'http';
 import path from 'path';
@@ -67,6 +68,31 @@ async function startHTTPServer(
   return startProxyServer(config, app);
 }
 
+async function checkSocketInUse(path: string): Promise<boolean> {
+  if (!(await fs.pathExists(path))) {
+    return false;
+  }
+  return new Promise((resolve, _reject) => {
+    const client = net
+      .createConnection(path, () => {
+        resolve(true);
+        client.destroy();
+      })
+      .on('error', (e) => {
+        if (e.message.includes('ECONNREFUSED')) {
+          resolve(false);
+        } else {
+          console.warn(
+            `[conn] Socket ${path} is in use, but we don't know why.`,
+            e,
+          );
+          resolve(false);
+        }
+        client.destroy();
+      });
+  });
+}
+
 async function startProxyServer(
   config: Config,
   app: Express,
@@ -85,8 +111,14 @@ async function startProxyServer(
   await fs.mkdirp(runtimeDir);
   const socketPath = `${runtimeDir}/flipper-server-${userInfo().uid}.sock`;
 
-  // TODO: More careful cleanup.
-  await fs.rm(socketPath, {force: true});
+  if (await checkSocketInUse(socketPath)) {
+    console.warn(
+      `Cannot start flipper-server because socket ${socketPath} is in use.`,
+    );
+  } else {
+    console.info(`Cleaning up stale socket ${socketPath}`);
+    await fs.rm(socketPath, {force: true});
+  }
 
   const proxyServer = proxy.createProxyServer({
     target: {host: 'localhost', port: 0, socketPath},
@@ -95,6 +127,10 @@ async function startProxyServer(
   });
   console.log('Starting socket server on ', socketPath);
   console.log(`Starting proxy server on http://localhost:${config.port}`);
+
+  server.on('close', () => {
+    fs.remove(socketPath);
+  });
 
   return new Promise((resolve) => {
     proxyServer.listen(config.port);
