@@ -27,6 +27,7 @@ const presets = [
 // electron-requires makes sure that *only* requires of built in node_modules are using "electronRequire"
 // (which effectively makes them external, as electronRequire === require, but not rolled up with Metro)
 const plugins = [
+  require('./fsevents-dynamic-imports'),
   require('./electron-requires'),
   require('./plugin-flipper-requires'),
   require('./fb-stubs'),

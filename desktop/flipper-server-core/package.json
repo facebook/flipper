@@ -55,8 +55,7 @@
     "@types/tmp": "^0.2.3",
     "@types/which": "^2.0.1",
     "@types/ws": "^8.5.2",
-    "memorystream": "^0.3.1",
-    "tmp": "^0.2.1"
+    "memorystream": "^0.3.1"
   },
   "peerDependencies": {},
   "scripts": {

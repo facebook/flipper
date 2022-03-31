@@ -77,10 +77,15 @@ export interface FlipperServerForServerAddOn extends FlipperServer {
 }
 
 export type ServerAddOnCleanup = () => Promise<void>;
+
+export type ServerAddOnExtras = {
+  flipperServer: FlipperServerForServerAddOn;
+};
+
 export type ServerAddOn<
   Events extends EventsContract,
   Methods extends MethodsContract,
 > = (
   connection: ServerAddOnPluginConnection<Events, Methods>,
-  {flipperServer}: {flipperServer: FlipperServerForServerAddOn},
+  extras: ServerAddOnExtras,
 ) => Promise<ServerAddOnCleanup>;

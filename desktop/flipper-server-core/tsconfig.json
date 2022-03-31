@@ -23,6 +23,9 @@
     },
     {
       "path": "../plugin-lib"
+    },
+    {
+      "path": "../pkg-lib"
     }
   ]
 }

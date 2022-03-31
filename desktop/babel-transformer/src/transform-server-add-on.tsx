@@ -24,6 +24,7 @@ const presets = [
 ];
 
 const plugins = [
+  require('./fsevents-dynamic-imports'),
   require('./electron-requires'),
   require('./plugin-flipper-requires'),
   require('./fb-stubs'),

@@ -17,10 +17,7 @@ import {
 } from './replace-flipper-requires';
 
 // do not apply this transform for these paths
-const EXCLUDE_PATHS = [
-  '/node_modules/react-devtools-core/',
-  'relay-devtools/DevtoolsUI',
-];
+const EXCLUDE_PATHS = ['relay-devtools/DevtoolsUI'];
 function isExcludedPath(path: string) {
   for (const epath of EXCLUDE_PATHS) {
     if (path.indexOf(epath) > -1) {

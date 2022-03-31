@@ -7,7 +7,7 @@
  * @format
  */
 
-import {createRoot} from 'react-dom/client';
+import {createRoot, Root} from 'react-dom/client';
 import {
   Layout,
   usePlugin,
@@ -50,13 +50,17 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
 
   const globalDevToolsAvailable = createState(false);
   let globalDevToolsInstance: DevToolsInstance | undefined;
-  const useGlobalDevTools = createState(false, {
-    persist: 'useGlobalDevTools',
-    persistToLocalStorage: true,
-  });
 
   let devToolsInstance: DevToolsInstance | undefined;
-  const selectedDevToolsInstanceType = createState<DevToolsInstanceType>('oss');
+  const selectedDevToolsInstanceType = createState<DevToolsInstanceType>(
+    'oss',
+    {
+      persist: 'selectedDevToolsInstanceType',
+      persistToLocalStorage: true,
+    },
+  );
+
+  let root: Root | undefined;
 
   let pollHandle: NodeJS.Timeout | undefined = undefined;
 
@@ -87,14 +91,17 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
       );
     }
 
-    if (useGlobalDevTools.get() && globalDevToolsInstance) {
+    if (
+      selectedDevToolsInstanceType.get() === 'global' &&
+      globalDevToolsInstance
+    ) {
       console.debug(
         'flipper-plugin-react-devtools.maybeGetInitialGlobalDevTools -> using global devtools',
       );
       return globalDevToolsInstance;
     }
 
-    useGlobalDevTools.set(false); // disable in case it was enabled
+    selectedDevToolsInstanceType.set('oss'); // disable in case it was enabled
     console.debug(
       'flipper-plugin-react-devtools.maybeGetInitialGlobalDevTools -> using OSS devtools',
     );
@@ -133,7 +140,6 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
       );
       return devToolsInstance.type;
     });
-    useGlobalDevTools.update((v) => !v);
 
     await rebootDevTools();
   }
@@ -144,6 +150,14 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
     // clean old instance
     if (pollHandle) {
       clearTimeout(pollHandle);
+    }
+    const devToolsNode = document.getElementById(DEV_TOOLS_NODE_ID);
+    if (!devToolsNode) {
+      setStatus(ConnectionStatus.Error, 'Failed to find target DOM Node');
+      return;
+    }
+    if (root) {
+      root.unmount();
     }
     await bootDevTools();
   }
@@ -216,7 +230,7 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
           store,
         });
 
-        const root = createRoot(devToolsNode);
+        root = createRoot(devToolsNode);
         root.render(React.createElement(DevTools));
 
         console.debug('flipper-plugin-react-devtools -> connected');
@@ -315,7 +329,6 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
     rebootDevTools,
     metroDevice,
     globalDevToolsAvailable,
-    useGlobalDevTools,
     selectedDevToolsInstanceType,
     toggleUseGlobalDevTools,
     initialized,
@@ -346,13 +359,15 @@ function DevToolsInstanceToolbar() {
   const globalDevToolsAvailable = useValue(instance.globalDevToolsAvailable);
   const connectionStatus = useValue(instance.connectionStatus);
   const statusMessage = useValue(instance.statusMessage);
-  const useGlobalDevTools = useValue(instance.useGlobalDevTools);
+  const selectedDevToolsInstanceType = useValue(
+    instance.selectedDevToolsInstanceType,
+  );
   const initialized = useValue(instance.initialized);
 
   const selectionControl = globalDevToolsAvailable ? (
     <>
       <Switch
-        checked={useGlobalDevTools}
+        checked={selectedDevToolsInstanceType === 'global'}
         onChange={instance.toggleUseGlobalDevTools}
         size="small"
         disabled={!initialized}

@@ -21,6 +21,8 @@ const requireReplacements: any = {
   'flipper-plugin': 'global.FlipperPlugin',
   react: 'global.React',
   'react-dom': 'global.ReactDOM',
+  'react-dom/client': 'global.ReactDOMClient',
+  'react-is': 'global.ReactIs',
   antd: 'global.antd',
   immer: 'global.Immer',
   '@emotion/styled': 'global.emotion_styled',

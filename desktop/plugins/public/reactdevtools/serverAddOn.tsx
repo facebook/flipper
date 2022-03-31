@@ -14,6 +14,9 @@ import {
 } from 'flipper-plugin';
 import path from 'path';
 import {WebSocketServer, WebSocket} from 'ws';
+import {rollup} from 'rollup';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import {Events, Methods} from './contract';
 
 const DEV_TOOLS_PORT = 8097; // hardcoded in RN
@@ -33,7 +36,6 @@ async function findGlobalDevTools(
     const devToolsPath = path.join(
       basePath.trim(),
       'react-devtools-inline',
-      'dist',
       'frontend.js',
     );
     await flipperServer.exec('node-api-fs-stat', devToolsPath);
@@ -131,12 +133,26 @@ const serverAddOn: ServerAddOn<Events, Methods> = async (
       globalDevToolsPath,
     );
 
-    // TODO: Transform ReactDevTools for browsers
-    /*
-    const globalDevToolsSource = globalDevToolsPath;
-    return globalDevToolsSource;
-    */
-    return;
+    const bundle = await rollup({
+      input: globalDevToolsPath,
+      plugins: [resolve(), commonjs()],
+      external: ['react', 'react-is', 'react-dom/client', 'react-dom'],
+    });
+
+    try {
+      const {output} = await bundle.generate({
+        format: 'iife',
+        globals: {
+          react: 'global.React',
+          'react-is': 'global.ReactIs',
+          'react-dom/client': 'global.ReactDOMClient',
+          'react-dom': 'global.ReactDOM',
+        },
+      });
+      return output[0].code;
+    } finally {
+      await bundle.close();
+    }
   });
 
   return async () => {

@@ -34,6 +34,14 @@ test('transform react-dom requires to global object', () => {
   expect(code).toBe('global.ReactDOM;');
 });
 
+test('transform react-dom/client requires to global object', () => {
+  const src = 'require("react-dom/client")';
+  const ast = parse(src);
+  const transformed = transformFromAstSync(ast, src, babelOptions)!.ast;
+  const {code} = generate(transformed!);
+  expect(code).toBe('global.ReactDOMClient;');
+});
+
 test('transform flipper requires to global object', () => {
   const src = 'require("flipper")';
   const ast = parse(src);

@@ -16,6 +16,8 @@ import {
 import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import ReactDOMClient from 'react-dom/client';
+import ReactIs from 'react-is';
 import {
   registerPlugins,
   addGatekeepedPlugins,
@@ -61,6 +63,8 @@ export default async (store: Store, _logger: Logger) => {
   // this list should match `replace-flipper-requires.tsx` and the `builtInModules` in `desktop/.eslintrc`
   globalObject.React = React;
   globalObject.ReactDOM = ReactDOM;
+  globalObject.ReactDOMClient = ReactDOMClient;
+  globalObject.ReactIs = ReactIs;
   globalObject.Flipper = deprecatedExports;
   globalObject.FlipperPlugin = FlipperPluginSDK;
   globalObject.Immer = Immer;
