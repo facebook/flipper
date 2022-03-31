@@ -10,7 +10,7 @@
 import os from 'os';
 import net from 'net';
 import express, {Express} from 'express';
-import http from 'http';
+import http, {ServerResponse} from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import {VerifyClientCallbackSync, WebSocketServer} from 'ws';
@@ -128,7 +128,20 @@ async function startProxyServer(
   console.log('Starting socket server on ', socketPath);
   console.log(`Starting proxy server on http://localhost:${config.port}`);
 
+  proxyServer.on('error', (err, _req, res) => {
+    console.warn('Error in proxy server:', err);
+    if (res instanceof ServerResponse) {
+      res.writeHead(502, 'Failed to proxy request');
+    }
+    res.end('Failed to proxy request: ' + err);
+  });
+
+  proxyServer.on('close', () => {
+    server.close();
+  });
+
   server.on('close', () => {
+    proxyServer.close();
     fs.remove(socketPath);
   });
 
