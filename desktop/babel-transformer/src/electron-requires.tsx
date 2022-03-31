@@ -53,7 +53,7 @@ export const BUILTINS = [
   '@testing-library/dom',
 ];
 
-const IGNORED_MODULES = [
+export const IGNORED_MODULES = [
   'bufferutil',
   'utf-8-validate',
   'spawn-sync',
@@ -92,3 +92,4 @@ module.exports = () => ({
 
 // used by startWebServerDev to know which modules to stub
 module.exports.BUILTINS = BUILTINS;
+module.exports.IGNORED_MODULES = IGNORED_MODULES;

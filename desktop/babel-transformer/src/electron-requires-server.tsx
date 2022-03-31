@@ -11,7 +11,7 @@ import {CallExpression} from '@babel/types';
 import {NodePath} from '@babel/traverse';
 
 import {resolve} from 'path';
-import {BUILTINS} from './electron-requires';
+import {BUILTINS, IGNORED_MODULES} from './electron-requires';
 
 const pluginsRootDir = resolve(__dirname, '../../plugins');
 
@@ -44,7 +44,13 @@ module.exports = () => ({
             // yet we should exclude built-ins
             !(
               BUILTINS.includes(source) ||
-              BUILTINS.some((moduleName) => source.startsWith(`${moduleName}/`))
+              BUILTINS.some((moduleName) =>
+                source.startsWith(`${moduleName}/`),
+              ) ||
+              IGNORED_MODULES.includes(source) ||
+              IGNORED_MODULES.some((moduleName) =>
+                source.startsWith(`${moduleName}/`),
+              )
             ))
         ) {
           return;
