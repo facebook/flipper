@@ -4,7 +4,7 @@
     "outDir": "lib",
     "rootDir": "src",
     "lib": ["dom", "ES2019"],
-    "types": ["jest", "../types/jest-extensions"]
+    "types": ["jest", "../types/jest-extensions", "react/next", "react-dom/next"]
   },
   "references": [
     {

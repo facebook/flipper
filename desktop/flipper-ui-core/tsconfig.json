@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
     "lib": ["dom", "es2019"],
-    "types": ["../types/ReactDebounceRender", "../types/flipperGlobals"]
+    "types": ["react/next", "react-dom/next", "../types/ReactDebounceRender", "../types/flipperGlobals"]
   },
   "references": [
     {

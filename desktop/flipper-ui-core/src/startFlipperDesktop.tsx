@@ -8,7 +8,7 @@
  */
 
 import {Provider} from 'react-redux';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 
 import {init as initLogger} from './fb-stubs/Logger';
 import {SandyApp} from './sandy-chrome/SandyApp';
@@ -164,10 +164,8 @@ function init(flipperServer: FlipperServer) {
 
   connectFlipperServerToStore(flipperServer, store, logger);
 
-  ReactDOM.render(
-    <AppFrame logger={logger} persistor={persistor} />,
-    document.getElementById('root'),
-  );
+  const root = createRoot(document.getElementById('root')!);
+  root.render(<AppFrame logger={logger} persistor={persistor} />);
 
   enableConsoleHook();
 

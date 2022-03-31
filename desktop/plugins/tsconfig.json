@@ -11,7 +11,9 @@
       "../types/ReactDebounceRender",
       "../types/json-format-highlight",
       "../types/memoize-weak",
-      "../types/XmlBeautifier"
+      "../types/XmlBeautifier",
+      "react/next",
+      "react-dom/next"
     ]
   },
   "include": ["public/", "fb/"],

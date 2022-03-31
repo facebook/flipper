@@ -355,6 +355,9 @@ test('plugins can handle import errors', async () => {
           "An error occurred when importing data for plugin 'TestPlugin': 'Error: Oops",
           [Error: Oops],
         ],
+        Array [
+          "Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot",
+        ],
       ]
     `);
   } finally {

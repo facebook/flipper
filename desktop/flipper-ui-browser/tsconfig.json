@@ -4,7 +4,7 @@
     "outDir": "lib",
     "rootDir": "src",
     "lib": ["dom", "ES2019"],
-    "types": ["../types/flipperGlobals"]
+    "types": ["../types/flipperGlobals", "react/next", "react-dom/next"]
   },
   "references": [
     {
