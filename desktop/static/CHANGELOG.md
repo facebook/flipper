@@ -1,3 +1,9 @@
+# 0.141.0 (30/3/2022)
+
+ * [D34990372](https://github.com/facebook/flipper/search?q=D34990372&type=Commits) -  Add view preview/snapshot for the Layout plugin on iOS.
+ * [D35009246](https://github.com/facebook/flipper/search?q=D35009246&type=Commits) -  Add view preview/snapshot for the Layout plugin on Android.
+
+
 # 0.140.0 (23/3/2022)
 
  * [D34932896](https://github.com/facebook/flipper/search?q=D34932896&type=Commits) -  Make it possible to recover from malformed JSON in server requests
