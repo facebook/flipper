@@ -93,6 +93,25 @@ async function checkSocketInUse(path: string): Promise<boolean> {
   });
 }
 
+async function makeSocketPath(): Promise<string> {
+  const runtimeDir = xdgBasedir.runtime || '/tmp';
+  await fs.mkdirp(runtimeDir);
+  const filename = `flipper-server-${os.userInfo().uid}.sock`;
+  const path = `${runtimeDir}/${filename}`;
+
+  // Depending on the OS this is between 104 and 108:
+  // https://unix.stackexchange.com/a/367012/10198
+  if (path.length >= 104) {
+    console.warn(
+      'Ignoring XDG_RUNTIME_DIR as it would exceed the total limit for domain socket paths. See man 7 unix.',
+    );
+    // Even with the INT32_MAX userid, we should have plenty of room.
+    return `/tmp/${filename}`;
+  }
+
+  return path;
+}
+
 async function startProxyServer(
   config: Config,
   app: Express,
@@ -107,9 +126,7 @@ async function startProxyServer(
     });
   }
 
-  const runtimeDir = xdgBasedir.runtime || '/tmp';
-  await fs.mkdirp(runtimeDir);
-  const socketPath = `${runtimeDir}/flipper-server-${userInfo().uid}.sock`;
+  const socketPath = await makeSocketPath();
 
   if (await checkSocketInUse(socketPath)) {
     console.warn(
