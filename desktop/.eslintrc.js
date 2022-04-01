@@ -274,7 +274,6 @@ module.exports = {
         'plugins/postinstall.tsx',
         // TODO: Remove specific plugin overrides down below
         'plugins/fb/kaios-portal/kaios-debugger-client/client.tsx',
-        'plugins/public/reactdevtools/index.tsx',
       ],
       rules: {
         'no-restricted-imports': [
