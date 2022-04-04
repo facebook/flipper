@@ -44,6 +44,7 @@ import {getRenderHostInstance} from './RenderHost';
 import {startGlobalErrorHandling} from './utils/globalErrorHandling';
 import {loadTheme} from './utils/loadTheme';
 import {connectFlipperServerToStore} from './dispatcher/flipperServer';
+import ReactDOM from 'react-dom';
 
 class AppFrame extends React.Component<
   {logger: Logger; persistor: Persistor},
@@ -164,8 +165,14 @@ function init(flipperServer: FlipperServer) {
 
   connectFlipperServerToStore(flipperServer, store, logger);
 
-  const root = createRoot(document.getElementById('root')!);
-  root.render(<AppFrame logger={logger} persistor={persistor} />);
+  // TODO T116224873: Return the following code back instead of ReactDOM.react when the following issue is fixed: https://github.com/react-component/trigger/issues/288
+  // const root = createRoot(document.getElementById('root')!);
+  // root.render(<AppFrame logger={logger} persistor={persistor} />);
+
+  ReactDOM.render(
+    <AppFrame logger={logger} persistor={persistor} />,
+    document.getElementById('root')!,
+  );
 
   enableConsoleHook();
 
