@@ -35,6 +35,10 @@ We hope that Flipper works well out of the box, but the software is a work in pr
 This is a long standing MacOS + Electron issue outside our control. In general restarting your computer fixes the problem.
 For a quick, temporarily work around start Flipper with hardware acceleration disabled. Please note that this will consume a lot of CPU: `FLIPPER_DISABLE_GPU=1 open -a Flipper`.
 
+### iOS Simulator fails to connect with error "Failed to find device..."
+
+Try executing `idb kill` and restarting Flipper. See [this comment](https://fb.workplace.com/groups/flippersupport/posts/1288502608297061/?comment_id=1290222721458383&reply_comment_id=1290374518109870) for details.
+
 ### iOS Simulator missing from devices dropdown
 
 * Check that `xcode-select -p` shows the same XCode version that you're using. If not, see xcode-select for how to select the correct version.
