@@ -3481,6 +3481,37 @@ app-builder-lib@23.0.2:
     semver "^7.3.5"
     temp-file "^3.4.0"
 
+app-builder-lib@23.0.3:
+  version "23.0.3"
+  resolved "https://registry.yarnpkg.com/app-builder-lib/-/app-builder-lib-23.0.3.tgz#44c90237abdc4ad9b34a24658bee022828ad6205"
+  integrity sha512-1qrtXYHXJfXhzJnMtVGjIva3067F1qYQubl2oBjI61gCBoCHvhghdYJ57XxXTQQ0VxnUhg1/Iaez87uXp8mD8w==
+  dependencies:
+    "7zip-bin" "~5.1.1"
+    "@develar/schema-utils" "~2.6.5"
+    "@electron/universal" "1.2.0"
+    "@malept/flatpak-bundler" "^0.4.0"
+    async-exit-hook "^2.0.1"
+    bluebird-lst "^1.0.9"
+    builder-util "23.0.2"
+    builder-util-runtime "9.0.0"
+    chromium-pickle-js "^0.2.0"
+    debug "^4.3.2"
+    ejs "^3.1.6"
+    electron-osx-sign "^0.6.0"
+    electron-publish "23.0.2"
+    form-data "^4.0.0"
+    fs-extra "^10.0.0"
+    hosted-git-info "^4.0.2"
+    is-ci "^3.0.0"
+    isbinaryfile "^4.0.8"
+    js-yaml "^4.1.0"
+    lazy-val "^1.0.5"
+    minimatch "^3.0.4"
+    read-config-file "6.2.0"
+    sanitize-filename "^1.6.3"
+    semver "^7.3.5"
+    temp-file "^3.4.0"
+
 archiver-utils@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/archiver-utils/-/archiver-utils-2.1.0.tgz#e8a460e94b693c3e3da182a098ca6285ba9249e2"
@@ -5224,12 +5255,12 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-dmg-builder@23.0.2:
-  version "23.0.2"
-  resolved "https://registry.yarnpkg.com/dmg-builder/-/dmg-builder-23.0.2.tgz#06ac1a551e9b6ea2826b4b2063dc2f6fc775fd86"
-  integrity sha512-kfJZRKbIN6kM/Vuzrme8SGSA+M/F0VvNrSGa6idWXbqtxIbGZZMF1QxVrXJbxSayf0Jh4hPy6NUNZAfbX9/m3g==
+dmg-builder@23.0.3:
+  version "23.0.3"
+  resolved "https://registry.yarnpkg.com/dmg-builder/-/dmg-builder-23.0.3.tgz#ea94bc76fcd94612641580f3c6ae42c3f07f3fee"
+  integrity sha512-mBYrHHnSM5PC656TDE+xTGmXIuWHAGmmRfyM+dV0kP+AxtwPof4pAXNQ8COd0/exZQ4dqf72FiPS3B9G9aB5IA==
   dependencies:
-    app-builder-lib "23.0.2"
+    app-builder-lib "23.0.3"
     builder-util "23.0.2"
     builder-util-runtime "9.0.0"
     fs-extra "^10.0.0"
@@ -5331,17 +5362,17 @@ ejs@^3.1.6:
   dependencies:
     jake "^10.6.1"
 
-electron-builder@23.0.2:
-  version "23.0.2"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-23.0.2.tgz#55982959ac91b72f397a936afba2eb989cd3fc1a"
-  integrity sha512-NG8ywuoHZpq6uk/2fEo9XVKBnjyGwNCnCyPxgGLdEk6xLAXr6nkF54+kqdhrDw4E8alwxc/TPHxUY3G0B8k/Dw==
+electron-builder@23.0.3:
+  version "23.0.3"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-23.0.3.tgz#16264a0d8e3d40da1467bcc8ef7917538b54a3bc"
+  integrity sha512-0lnTsljAgcOMuIiOjPcoFf+WxOOe/O04hZPgIvvUBXIbz3kolbNu0Xdch1f5WuQ40NdeZI7oqs8Eo395PcuGHQ==
   dependencies:
     "@types/yargs" "^17.0.1"
-    app-builder-lib "23.0.2"
+    app-builder-lib "23.0.3"
     builder-util "23.0.2"
     builder-util-runtime "9.0.0"
     chalk "^4.1.1"
-    dmg-builder "23.0.2"
+    dmg-builder "23.0.3"
     fs-extra "^10.0.0"
     is-ci "^3.0.0"
     lazy-val "^1.0.5"
