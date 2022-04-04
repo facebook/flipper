@@ -39,7 +39,7 @@
     "react-markdown": "^6.0.3",
     "react-player": "^2.10.0",
     "react-redux": "^7.2.6",
-    "react-test-renderer": "^0.0.0-experimental-2bf7c02f0-20220314",
+    "react-test-renderer": "^18.0.0",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "redux": "^4.1.2",
