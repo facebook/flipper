@@ -408,7 +408,7 @@ mod test {
         let tmp_dir = tempdir::TempDir::new("manifest_test")?;
 
         let archive_paths = &[(PackType::Core, artifact_path)];
-        let path = manifest(archive_paths, &None, &tmp_dir.path().to_path_buf())?;
+        let path = manifest(archive_paths, &None, &tmp_dir.path())?;
 
         let manifest_content = std::fs::read_to_string(&path)?;
 
