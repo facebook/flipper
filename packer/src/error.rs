@@ -29,7 +29,7 @@ impl fmt::Display for Error {
             ),
             Self::MissingPlatformDefinition(platform) => write!(
                 f,
-                "Platform {} is not defined in the given packlist.",
+                "Platform {:?} is not defined in the given packlist.",
                 platform
             ),
         }

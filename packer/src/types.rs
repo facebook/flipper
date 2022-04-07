@@ -5,17 +5,24 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-use clap::arg_enum;
 use std::fmt::{self, Display};
 
-arg_enum! {
-    #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Deserialize)]
-    #[serde(rename_all = "lowercase")]
-    pub enum Platform {
-        Mac,
-        Linux,
-        Windows
-    }
+#[derive(
+    Debug,
+    Copy,
+    Clone,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    serde::Deserialize,
+    clap::ArgEnum
+)]
+#[serde(rename_all = "lowercase")]
+pub enum Platform {
+    Mac,
+    Linux,
+    Windows,
 }
 
 #[derive(
