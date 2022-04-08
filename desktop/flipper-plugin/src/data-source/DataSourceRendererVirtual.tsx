@@ -258,10 +258,8 @@ export const DataSourceRendererVirtual: <T extends object, C>(
   /**
    * Render finalization
    */
-  useEffect(function renderCompleted() {
-    renderPending.current = UpdatePrio.NONE;
-    lastRender.current = Date.now();
-  });
+  renderPending.current = UpdatePrio.NONE;
+  lastRender.current = Date.now();
 
   /**
    * Observer parent height
