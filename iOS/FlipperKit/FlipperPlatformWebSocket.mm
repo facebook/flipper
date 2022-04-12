@@ -135,10 +135,6 @@ static constexpr int connectionKeepaliveSeconds = 10;
   return self;
 }
 
-- (void)dealloc {
-  [self disconnect];
-}
-
 - (void)connect {
   if (_socket) {
     return;
