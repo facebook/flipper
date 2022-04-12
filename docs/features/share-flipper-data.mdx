@@ -4,22 +4,32 @@ title: Share Flipper Data
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-Flipper's diagnostic and profiling data is often used for debugging. But sometimes you can not solve the problem on your own and need some help from your colleagues. Rather than just sending screenshots, you can share the data you are seeing in Flipper with them. This includes all logs, the layout hierarchy, network requests, etc. and helps to get the bigger picture of why something didn't work as expected.
+Flipper's diagnostic and profiling data is often used for debugging. However, sometimes you can't solve the problem on your own and need some help from your colleagues. In such cases, rather than just sending screenshots, you can share the data you are seeing in Flipper (such as logs, layout hierarchy, network requests, and other relevant objects) with your colleague, which helps them to get the bigger picture of why something doesn't work as expected.
 
-## Export Flipper Data
+## Export Flipper data
 
-You can export Flipper's data in a `.flipper` file. For the export to work, an active device needs to be connected to Flipper. Make sure you have selected the device you want to export in Flipper's device dropdown:
+:::note
+You can export Flipper's data in a `.flipper` file.
+:::
 
-<img alt="selectedDevice" src={useBaseUrl("img/shareFlipperData/selectedDevice.png")} />
+To export Flipper data, take the following steps:
 
-To export Flipper's into a file, select "File" → "Export" from the menu bar and save it where ever you like. This file now can be shared with your colleagues.
+1. An active device needs to be connected to Flipper, so ensure you've selected the device you want to export in Flipper's device dropdown.
 
-**Caution:** Bear in mind that the file will include all the data available to the plugins, including for example any access tokens in recorded network requests.
+   <img alt="selectedDevice" src={useBaseUrl("img/shareFlipperData/selectedDevice.png")} />
 
-## Import Flipper Data
+2. From the Menu Bar, select 'File' → 'Export"' then save it wherever you like.
 
-Opening a `.flipper` file imports all the data and allows you to use Flipper as if the device was connected. However, note the device is marked as "offline". This means, while you are able to see all the date, you can not interact with it (e.g. change a view's background color), because the actual device is not present.
+The exported data can now be shared with your colleagues.
+
+:::caution
+Bear in mind that the file will include all the data available to the plugins (such as access tokens in recorded network requests)!
+:::
+
+## Import Flipper data
+
+Opening a `.flipper` file imports all the data and allows you to use Flipper as if the device was connected. However, the device is marked as 'offline' (see the following screenshot). Since the device is not present, this means that while you are able to see all the data, you can't interact with it (for example, changing a view's background color).
 
 <img alt="importedDevice" src={useBaseUrl("img/shareFlipperData/importedDevice.png")} />
 
-For advanced users, Flipper also provides a URL handler to import data. Linking to `flipper://import/?url={LINK_TO_FLIPPER_FILE}` will launch Flipper and display the downloaded data.
+For advanced users, Flipper also provides a URL handler to import data. For example, linking to `flipper://import/?url={LINK_TO_FLIPPER_FILE}` will launch Flipper and display the downloaded data.
