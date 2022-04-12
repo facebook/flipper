@@ -40,11 +40,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Send a message to the endpoint.
 /// @param message The message as text to be sent to the endpoint.
-/// @param error  A pointer to variable for an `NSError` object.
-/// If an error occurs, the pointer is set to an `NSError` object containing
-/// information about the error. You may specify `nil` to ignore the error
-/// information.
-- (void)send:(NSString*)message error:(NSError**)error;
+/// @param completionHandler  A completion handler for the send operation.
+/// If an error occurs, the handler will be called with an `NSError` object
+/// containing information about the error. You may specify `nil` to ignore the
+/// error information.
+- (void)send:(NSString*)message
+    withCompletionHandler:(void (^_Nullable)(NSError*))completionHandler;
 
 @end
 

@@ -158,8 +158,10 @@ void FlipperWebSocket::send(
     return;
   }
   NSString* messageObjc = [NSString stringWithUTF8String:message.c_str()];
-  [socket_ send:messageObjc error:NULL];
-  completion();
+  [socket_ send:messageObjc
+      withCompletionHandler:^(NSError*) {
+        completion();
+      }];
 }
 
 /**
@@ -178,12 +180,13 @@ void FlipperWebSocket::sendExpectResponse(
   [socket_ setMessageHandler:^(const std::string& msg) {
     completion(msg, false);
   }];
-  NSError* error = NULL;
-  [socket_ send:messageObjc error:&error];
 
-  if (error != NULL) {
-    completion(error.description.UTF8String, true);
-  }
+  [socket_ send:messageObjc
+      withCompletionHandler:^(NSError* error) {
+        if (error != NULL) {
+          completion(error.description.UTF8String, true);
+        }
+      }];
 }
 
 } // namespace flipper

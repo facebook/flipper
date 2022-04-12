@@ -113,6 +113,8 @@ static constexpr int connectionKeepaliveSeconds = 10;
 #pragma mark - FlipperPlatformWebSocket
 
 @interface FlipperPlatformWebSocket ()<SRWebSocketDelegate> {
+  NSOperationQueue* _dispatchQueue;
+
   NSURL* _url;
   NSTimer* _keepAlive;
 
@@ -130,6 +132,8 @@ static constexpr int connectionKeepaliveSeconds = 10;
   if (self) {
     _url = url;
     _policy = [FlipperClientCertificateSecurityPolicy new];
+    _dispatchQueue = [[NSOperationQueue alloc] init];
+    _dispatchQueue.maxConcurrentOperationCount = 1;
   }
 
   return self;
@@ -140,86 +144,104 @@ static constexpr int connectionKeepaliveSeconds = 10;
     return;
   }
 
-  // Before attempting to establish a connection, check if
-  // there is a process listening at the specified port.
-  // CFNetwork seems to be quite verbose when the host cannot be reached
-  // causing unnecessary and annoying logs to be printed to the console.
-  struct addrinfo hints;
+  __weak auto weakSelf = self;
+  [_dispatchQueue addOperationWithBlock:^{
+    __strong auto strongSelf = weakSelf;
 
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags = AI_PASSIVE;
-  struct addrinfo* address;
-  getaddrinfo(
-      _url.host.UTF8String, _url.port.stringValue.UTF8String, &hints, &address);
+    // Before attempting to establish a connection, check if
+    // there is a process listening at the specified port.
+    // CFNetwork seems to be quite verbose when the host cannot be reached
+    // causing unnecessary and annoying logs to be printed to the console.
+    struct addrinfo hints;
 
-  int sfd =
-      socket(address->ai_family, address->ai_socktype, address->ai_protocol);
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
+    struct addrinfo* address;
+    getaddrinfo(
+        strongSelf->_url.host.UTF8String,
+        strongSelf->_url.port.stringValue.UTF8String,
+        &hints,
+        &address);
 
-  fcntl(sfd, F_SETFL, O_NONBLOCK);
-  connect(sfd, address->ai_addr, address->ai_addrlen);
+    int sfd =
+        socket(address->ai_family, address->ai_socktype, address->ai_protocol);
 
-  fd_set fdset;
-  struct timeval tv;
+    fcntl(sfd, F_SETFL, O_NONBLOCK);
+    connect(sfd, address->ai_addr, address->ai_addrlen);
 
-  FD_ZERO(&fdset);
-  FD_SET(sfd, &fdset);
-  // Set a timeout of 3 seconds.
-  tv.tv_sec = 3;
-  tv.tv_usec = 0;
+    fd_set fdset;
+    struct timeval tv;
 
-  bool listening = false;
-  if (select(sfd + 1, NULL, &fdset, NULL, &tv) == 1) {
-    int so_error;
-    socklen_t len = sizeof so_error;
+    FD_ZERO(&fdset);
+    FD_SET(sfd, &fdset);
+    // Set a timeout of 3 seconds.
+    tv.tv_sec = 3;
+    tv.tv_usec = 0;
 
-    getsockopt(sfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
+    bool listening = false;
+    if (select(sfd + 1, NULL, &fdset, NULL, &tv) == 1) {
+      int so_error;
+      socklen_t len = sizeof so_error;
 
-    if (so_error == 0) {
-      listening = true;
+      getsockopt(sfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
+
+      if (so_error == 0) {
+        listening = true;
+      }
+      // If there's an error, most likely there is no process
+      // listening at the specified host/port (ECONNREFUSED).
     }
-    // If there's an error, most likely there is no process
-    // listening at the specified host/port (ECONNREFUSED).
-  }
 
-  freeaddrinfo(address);
-  close(sfd);
+    freeaddrinfo(address);
+    close(sfd);
 
-  if (!listening) {
-    _eventHandler(facebook::flipper::SocketEvent::ERROR);
-    return;
-  }
+    if (!listening) {
+      strongSelf->_eventHandler(facebook::flipper::SocketEvent::ERROR);
+      return;
+    }
 
-  self.socket = [[SRWebSocket alloc] initWithURL:_url securityPolicy:_policy];
-  [_socket setDelegate:self];
-  [_socket open];
+    strongSelf->_socket = [[SRWebSocket alloc] initWithURL:self->_url
+                                            securityPolicy:self->_policy];
+    strongSelf->_socket.delegate = self;
+    [strongSelf->_socket open];
+  }];
 }
 
 - (void)disconnect {
+  [_dispatchQueue cancelAllOperations];
+
   if ([_keepAlive isValid]) {
     [_keepAlive invalidate];
   }
   _keepAlive = nil;
 
+  // Manually trigger a 'close' event as SocketRocket close method will
+  // not notify the delegate. SocketRocket only triggers the close event
+  // when the connection is closed from the server.
+  _eventHandler(facebook::flipper::SocketEvent::CLOSE);
+
   if (_socket) {
-    // Manually trigger a 'close' event as SocketRocket close method will
-    // not notify the delegate. SocketRocket only triggers the close event
-    // when the connection is closed from the server.
-    _eventHandler(facebook::flipper::SocketEvent::CLOSE);
     // Clear the socket delegate before close. Ensures that we won't get
     // any messages after the disconnect takes place.
     _socket.delegate = nil;
     [_socket close];
     _socket = nil;
-  }
+  };
 }
 
-- (void)send:(NSString*)message error:(NSError**)error {
-  [_socket sendString:message error:error];
-  if (error != nil && *error) {
-    facebook::flipper::log("Unable to send message.");
-  }
+- (void)send:(NSString*)message
+    withCompletionHandler:(void (^_Nullable)(NSError*))completionHandler {
+  __weak auto weakSelf = self;
+  [_dispatchQueue addOperationWithBlock:^{
+    __strong auto strongSelf = weakSelf;
+    NSError* error = nil;
+    [strongSelf->_socket sendString:message error:&error];
+    if (completionHandler) {
+      completionHandler(error);
+    }
+  }];
 }
 
 - (void)setCertificateProvider:
@@ -229,10 +251,15 @@ static constexpr int connectionKeepaliveSeconds = 10;
 }
 
 - (void)sendScheduledKeepAlive:(NSTimer*)timer {
-  [_socket sendPing:nil error:nil];
+  __weak auto weakSelf = self;
+  [_dispatchQueue addOperationWithBlock:^{
+    __strong auto strongSelf = weakSelf;
+    [strongSelf->_socket sendPing:nil error:nil];
+  }];
 }
 
-- (void)webSocketDidOpen:(SRWebSocket*)webSocket {
+#pragma mark - Web Socket internal handlers
+- (void)_webSocketDidOpen {
   _eventHandler(facebook::flipper::SocketEvent::OPEN);
 
   if (!_keepAlive) {
@@ -247,7 +274,7 @@ static constexpr int connectionKeepaliveSeconds = 10;
   }
 }
 
-- (void)webSocket:(SRWebSocket*)webSocket didFailWithError:(NSError*)error {
+- (void)_webSocketDidFailWithError:(NSError*)error {
   /** Check for the error domain and code. Need to filter out SSL handshake
     errors and dispatch them accordingly. CFNetwork SSLHandshake failed:
     - Domain: NSOSStatusErrorDomain
@@ -261,19 +288,57 @@ static constexpr int connectionKeepaliveSeconds = 10;
   _socket = nil;
 }
 
-- (void)webSocket:(SRWebSocket*)webSocket
-    didCloseWithCode:(NSInteger)code
-              reason:(NSString*)reason
-            wasClean:(BOOL)wasClean {
+- (void)_webSocketDidClose {
+  if ([_keepAlive isValid]) {
+    [_keepAlive invalidate];
+  }
+  _keepAlive = nil;
+
   _eventHandler(facebook::flipper::SocketEvent::CLOSE);
   _socket = nil;
 }
 
-- (void)webSocket:(SRWebSocket*)webSocket didReceiveMessage:(id)message {
+- (void)_webSocketDidReceiveMessage:(id)message {
   if (message && _messageHandler) {
     NSString* response = message;
     _messageHandler([response UTF8String]);
   }
+}
+
+#pragma mark - Web Socket
+- (void)webSocketDidOpen:(SRWebSocket*)webSocket {
+  __weak auto weakSelf = self;
+  [_dispatchQueue addOperationWithBlock:^{
+    __strong auto strongSelf = weakSelf;
+    [strongSelf _webSocketDidOpen];
+  }];
+}
+
+- (void)webSocket:(SRWebSocket*)webSocket didFailWithError:(NSError*)error {
+  __weak auto weakSelf = self;
+  [_dispatchQueue addOperationWithBlock:^{
+    __strong auto strongSelf = weakSelf;
+    [strongSelf _webSocketDidFailWithError:error];
+  }];
+}
+
+- (void)webSocket:(SRWebSocket*)webSocket
+    didCloseWithCode:(NSInteger)code
+              reason:(NSString*)reason
+            wasClean:(BOOL)wasClean {
+  __weak auto weakSelf = self;
+  [_dispatchQueue addOperationWithBlock:^{
+    __strong auto strongSelf = weakSelf;
+    [strongSelf _webSocketDidClose];
+  }];
+}
+
+- (void)webSocket:(SRWebSocket*)webSocket didReceiveMessage:(id)message {
+  __weak auto weakSelf = self;
+  [_dispatchQueue addOperationWithBlock:^{
+    __strong auto strongSelf = weakSelf;
+    [strongSelf _webSocketDidReceiveMessage:message];
+  }];
 }
 
 @end
