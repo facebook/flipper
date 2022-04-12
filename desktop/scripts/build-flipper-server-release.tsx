@@ -24,6 +24,16 @@ import fs from 'fs-extra';
 import {downloadIcons} from './build-icons';
 import {spawn} from 'promisify-child-process';
 import {homedir} from 'os';
+import {need} from 'pkg-fetch';
+
+// This needs to be tested individually. As of 2022Q2, node17 is not supported.
+const SUPPORTED_NODE_PLATFORM = 'node16';
+
+enum BuildPlatform {
+  LINUX = 'linux',
+  WINDOWS = 'windows',
+  MAC_X64 = 'mac-x64',
+}
 
 const argv = yargs
   .usage('yarn build-flipper-server [args]')
@@ -91,6 +101,21 @@ const argv = yargs
       description:
         'Unique build identifier to be used as the version patch part for the build',
       type: 'number',
+    },
+    mac: {
+      describe: 'Build a platform-specific bundle for MacOS.',
+      type: 'boolean',
+      default: false,
+    },
+    win: {
+      describe: 'Build a platform-specific bundle for Windows.',
+      type: 'boolean',
+      default: false,
+    },
+    linux: {
+      describe: 'Build a platform-specific bundle for Linux.',
+      type: 'boolean',
+      default: false,
     },
   })
   .help()
@@ -271,14 +296,19 @@ async function runPostBuildAction(archive: string, dir: string) {
     });
   } else if (argv.start) {
     console.log(`⚙️  Starting flipper-server from build dir`);
-    await spawn('yarn', ['install', '--production', '--no-lockfile'], {
-      cwd: dir,
-    });
+    await yarnInstall(dir);
     await spawn('./server.js', [argv.open ? '--open' : '--no-open'], {
       cwd: dir,
       stdio: 'inherit',
     });
   }
+}
+
+async function yarnInstall(dir: string) {
+  console.log(`⚙️  Running yarn install in ${dir}`);
+  await spawn('yarn', ['install', '--production', '--no-lockfile'], {
+    cwd: dir,
+  });
 }
 
 async function buildServerRelease() {
@@ -309,6 +339,65 @@ async function buildServerRelease() {
   const archive = await packNpmArchive(dir, versionNumber);
 
   await runPostBuildAction(archive, dir);
+
+  const platforms: BuildPlatform[] = [];
+  if (argv.linux) {
+    platforms.push(BuildPlatform.LINUX);
+  }
+  // TODO: In the future, also cover aarch64 here.
+  if (argv.mac) {
+    platforms.push(BuildPlatform.MAC_X64);
+  }
+  if (argv.win) {
+    platforms.push(BuildPlatform.WINDOWS);
+  }
+
+  if (platforms.length > 0) {
+    await yarnInstall(dir);
+  }
+  platforms.forEach(bundleServerReleaseForPlatform.bind(null, dir));
+}
+
+function nodeArchFromBuildPlatform(_platform: BuildPlatform): string {
+  // TODO: Change this as we support aarch64.
+  return 'x64';
+}
+
+function nodePlatformFromBuildPlatform(platform: BuildPlatform): string {
+  switch (platform) {
+    case BuildPlatform.LINUX:
+      return 'linux';
+    case BuildPlatform.MAC_X64:
+      return 'macos';
+    case BuildPlatform.WINDOWS:
+      return 'win32';
+    default:
+      throw new Error(`Unsupported platform: ${platform}`);
+  }
+}
+
+async function bundleServerReleaseForPlatform(
+  dir: string,
+  platform: BuildPlatform,
+) {
+  console.log(`⚙️  Building platform-specific bundle for ${platform}`);
+  const outputDir = path.join(
+    distDir,
+    `flipper-server-${platform.toString().toLocaleLowerCase()}`,
+  );
+  await fs.mkdirp(outputDir);
+
+  console.log(`⚙️  Copying from ${dir} to ${outputDir}`);
+  await fs.copy(dir, outputDir);
+
+  console.log(`⚙️  Downloading compatible node version`);
+  await need({
+    arch: nodeArchFromBuildPlatform(platform),
+    platform: nodePlatformFromBuildPlatform(platform),
+    output: path.join(outputDir, 'node'),
+    nodeRange: SUPPORTED_NODE_PLATFORM,
+  });
+  console.log(`✅  Wrote ${platform}-specific server version to ${outputDir}`);
 }
 
 buildServerRelease().catch((e) => {

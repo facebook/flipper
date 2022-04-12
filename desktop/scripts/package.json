@@ -32,6 +32,7 @@
     "metro-minify-terser": "^0.66.2",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
+    "pkg-fetch": "^3.3.0",
     "promisify-child-process": "^4.1.0",
     "socket.io": "^4.4.1",
     "tmp": "^0.2.1",
