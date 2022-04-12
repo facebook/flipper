@@ -82,7 +82,11 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   bool connectAndExchangeCertificate();
   bool connectSecurely();
   bool isCertificateExchangeNeeded();
-  void requestSignedCertFromFlipper();
+  void requestSignedCertificate();
+  void processSignedCertificateResponse(
+      std::shared_ptr<FlipperStep> gettingCertificateStep,
+      std::string response,
+      bool isError);
   bool isRunningInOwnThread();
   void reevaluateSocketProvider();
   std::string getDeviceId();

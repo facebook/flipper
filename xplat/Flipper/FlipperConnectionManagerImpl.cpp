@@ -233,7 +233,7 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
   contextStore_->resetState();
   resettingState->complete();
 
-  requestSignedCertFromFlipper();
+  requestSignedCertificate();
   return true;
 }
 
@@ -377,10 +377,80 @@ bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
   return !hasRequiredFiles;
 }
 
-void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
+void FlipperConnectionManagerImpl::processSignedCertificateResponse(
+    std::shared_ptr<FlipperStep> gettingCert,
+    std::string response,
+    bool isError) {
+  /**
+     Need to keep track of whether the response has been
+     handled. On success, the completion handler deallocates the socket which in
+     turn triggers a disconnect. A disconnect is called within
+     the context of a subscription handler. This means that the completion
+     handler can be called again to notify that the stream has
+     been interrupted because we are effectively still handing the response
+     read. So, if already handled, ignore and return;
+  */
+  if (certificateExchangeCompleted_)
+    return;
+  certificateExchangeCompleted_ = true;
+  if (isError) {
+    auto error =
+        "Desktop failed to provide certificates. Error from flipper desktop:\n" +
+        response;
+    log(error);
+    gettingCert->fail(error);
+    client_ = nullptr;
+    return;
+  }
+  int medium = certProvider_ != nullptr
+      ? certProvider_->getCertificateExchangeMedium()
+      : FlipperCertificateExchangeMedium::FS_ACCESS;
+
+  if (!response.empty()) {
+    folly::dynamic config = folly::parseJson(response);
+    config["medium"] = medium;
+    contextStore_->storeConnectionConfig(config);
+  }
+  if (certProvider_) {
+    certProvider_->setFlipperState(flipperState_);
+    auto gettingCertFromProvider =
+        flipperState_->start("Getting cert from Cert Provider");
+
+    try {
+      // Certificates should be present in app's sandbox after it is
+      // returned. The reason we can't have a completion block here
+      // is because if the certs are not present after it returns
+      // then the flipper tries to reconnect on insecured channel
+      // and recreates the app.csr. By the time completion block is
+      // called the DeviceCA cert doesn't match app's csr and it
+      // throws an SSL error.
+      certProvider_->getCertificates(
+          contextStore_->getCertificateDirectoryPath(),
+          contextStore_->getDeviceId());
+      gettingCertFromProvider->complete();
+    } catch (std::exception& e) {
+      gettingCertFromProvider->fail(e.what());
+      gettingCert->fail(e.what());
+    } catch (...) {
+      gettingCertFromProvider->fail("Exception from certProvider");
+      gettingCert->fail("Exception from certProvider");
+    }
+  }
+  log("Certificate exchange complete.");
+  gettingCert->complete();
+
+  // Disconnect after message sending is complete.
+  // The client destructor will send a disconnected event
+  // which will be handled by Flipper which will initiate
+  // a reconnect sequence.
+  client_ = nullptr;
+}
+
+void FlipperConnectionManagerImpl::requestSignedCertificate() {
   auto generatingCSR = flipperState_->start("Generate CSR");
   std::string csr = contextStore_->getCertificateSigningRequest();
   generatingCSR->complete();
+
   int medium = certProvider_ != nullptr
       ? certProvider_->getCertificateExchangeMedium()
       : FlipperCertificateExchangeMedium::FS_ACCESS;
@@ -388,74 +458,18 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
       "csr", csr.c_str())(
       "destination",
       contextStore_->getCertificateDirectoryPath().c_str())("medium", medium);
+
   auto gettingCert = flipperState_->start("Getting cert from desktop");
 
   certificateExchangeCompleted_ = false;
-
-  flipperEventBase_->add([this, message, gettingCert, medium]() {
+  flipperEventBase_->add([this, message, gettingCert]() {
     client_->sendExpectResponse(
         folly::toJson(message),
-        [this, message, gettingCert, medium](
-            const std::string& response, bool isError) {
-          /**
-            Need to keep track of whether the response has been handled.
-            On success, the completion handler deallocates the socket which in
-            turn triggers a disconnect. A disconnect is called within the
-            context of a subscription handler. This means that the completion
-            handler can be called again to notify that the stream has been
-            interrupted because we are effectively still handing the response
-            read. So, if already handled, ignore and return;
-          */
-          if (certificateExchangeCompleted_)
-            return;
-          certificateExchangeCompleted_ = true;
-          if (isError) {
-            auto error =
-                "Desktop failed to provide certificates. Error from flipper desktop:\n" +
-                response;
-            log(error);
-            gettingCert->fail(error);
-            client_ = nullptr;
-            return;
-          }
-          if (!response.empty()) {
-            folly::dynamic config = folly::parseJson(response);
-            config["medium"] = medium;
-            contextStore_->storeConnectionConfig(config);
-          }
-          if (certProvider_) {
-            certProvider_->setFlipperState(flipperState_);
-            auto gettingCertFromProvider =
-                flipperState_->start("Getting cert from Cert Provider");
-
-            try {
-              // Certificates should be present in app's sandbox after it is
-              // returned. The reason we can't have a completion block here
-              // is because if the certs are not present after it returns
-              // then the flipper tries to reconnect on insecured channel
-              // and recreates the app.csr. By the time completion block is
-              // called the DeviceCA cert doesn't match app's csr and it
-              // throws an SSL error.
-              certProvider_->getCertificates(
-                  contextStore_->getCertificateDirectoryPath(),
-                  contextStore_->getDeviceId());
-              gettingCertFromProvider->complete();
-            } catch (std::exception& e) {
-              gettingCertFromProvider->fail(e.what());
-              gettingCert->fail(e.what());
-            } catch (...) {
-              gettingCertFromProvider->fail("Exception from certProvider");
-              gettingCert->fail("Exception from certProvider");
-            }
-          }
-          log("Certificate exchange complete.");
-          gettingCert->complete();
-
-          // Disconnect after message sending is complete.
-          // The client destructor will send a disconnected event
-          // which will be handled by Flipper which will initiate
-          // a reconnect sequence.
-          client_ = nullptr;
+        [this, gettingCert](const std::string& response, bool isError) {
+          flipperEventBase_->add([this, gettingCert, response, isError]() {
+            this->processSignedCertificateResponse(
+                gettingCert, response, isError);
+          });
         });
   });
   failedConnectionAttempts_ = 0;
