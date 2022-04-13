@@ -1,15 +1,23 @@
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-The Logs plugin shows device logs without any additional setup. This is a device plugin, meaning that it is not tied to any specific app and there is no additional setup needed to see the logs.
+The Logs plugin shows device logs without any additional setup. This is a device plugin, which means it's not tied to any specific app and there is no additional setup needed to see the logs.
+
+The following screenshot shows an example of a device log obtained via the Logs plugin.
 
 <img alt="Logs plugin" src={useBaseUrl("img/logs.png")} />
 
-## Filtering
+## Plugin functionality
 
-The search bar can be used to search for logs and filter for certain types. From the context menu on the table headers you can show more infos like timestamp, PID or TID. Click on a tag, PID or TID in the table to filter only for logs with the same value.
+### Filtering
 
-## Expression watcher
+The search bar can be used to search for logs and act as a filter for certain types.
 
-The expression watcher in the sidebar can be used to watch for certain logs to happen and count how often they occur. An expression can be a simple string, or a regular expression which is matched against the logs.
+From the context menu on the table headers, you can show additional information, such as timestamp, PID or TID.
 
-When the notify checkbox is enabled, Flipper will send notifications once the log is happening. This lets you know when the watcher triggered, even if Flipper is in the background.
+Clicking on a tag, PID or TID in the table filters only for logs with the same value.
+
+### Expression Watcher
+
+The Expression Watcher () in the sidebar can be used to 'watch' for certain logs to happen and count how often they occur. An expression can be a simple string, or a regular expression, matched against the logs.
+
+When the notify checkbox is enabled, Flipper sends notifications once the log is being processed. This lets you know when the 'watcher' triggered, even if Flipper is in the background.
