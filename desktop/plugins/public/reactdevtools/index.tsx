@@ -231,7 +231,13 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
         });
 
         root = createRoot(devToolsNode);
-        root.render(React.createElement(DevTools));
+        root.render(
+          React.createElement(DevTools, {
+            showTabBar: true,
+            hideViewSourceAction: true,
+            hideLogAction: true,
+          }),
+        );
 
         console.debug('flipper-plugin-react-devtools -> connected');
         setStatus(ConnectionStatus.Connected, 'Connected');
