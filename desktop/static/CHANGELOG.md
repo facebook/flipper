@@ -1,3 +1,9 @@
+# 0.143.0 (20/4/2022)
+
+ * [D35546817](https://github.com/facebook/flipper/search?q=D35546817&type=Commits) -  Check if there's a process listening at the specified port before attempting to establish a websocket connection on iOS
+ * [D35548148](https://github.com/facebook/flipper/search?q=D35548148&type=Commits) -  Certificate signing request response to be processed on the right event loop.
+
+
 # 0.141.0 (30/3/2022)
 
  * [D34990372](https://github.com/facebook/flipper/search?q=D34990372&type=Commits) -  Add view preview/snapshot for the Layout plugin on iOS.
