@@ -194,6 +194,11 @@ export class FlipperClient {
       return;
     }
 
+    if (this.reconnectionTimer) {
+      clearTimeout(this.reconnectionTimer);
+      this.reconnectionTimer = undefined;
+    }
+
     // TODO: Why is it not 1000 by default?
     this.ws.close(WSCloseCode.NormalClosure);
     this.ws = undefined;
