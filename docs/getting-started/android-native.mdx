@@ -26,10 +26,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.143.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.142.0'
   debugImplementation 'com.facebook.soloader:soloader:0.10.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.143.0'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.142.0'
 }
 ```
 
@@ -55,6 +55,36 @@ repository, which provides empty implementations for several Flipper plugins.
 Now you can initialize Flipper in your Application's `onCreate` method, which involves
 initializing SoLoader (for loading the C++ part of Flipper) and starting a `FlipperClient`.
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="kt" label="Kotlin">
+
+```kotlin
+import com.facebook.flipper.android.AndroidFlipperClient
+import com.facebook.flipper.android.utils.FlipperUtils
+import com.facebook.flipper.core.FlipperClient
+import com.facebook.flipper.plugins.inspector.DescriptorMapping
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
+
+class MyApplication : Application {
+  override fun onCreate() {
+    super.onCreate()
+    SoLoader.init(this, false)
+
+    if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(this)) {
+      val client = AndroidFlipperClient.getInstance(this)
+      client.addPlugin(InspectorFlipperPlugin(this, DescriptorMapping.withDefaults()))
+      client.start()
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
 ```java
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.android.utils.FlipperUtils;
@@ -79,6 +109,9 @@ public class MyApplication extends Application {
 }
 ```
 
+</TabItem>
+</Tabs>
+
 ## Diagnostics
 
 It's recommended that you add the following activity to the manifest, which can help diagnose integration issues and other problems:
@@ -101,10 +134,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.143.1-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:flipper:0.142.1-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.10.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.143.1-SNAPSHOT'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.142.1-SNAPSHOT'
 }
 ```
 
