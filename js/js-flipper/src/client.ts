@@ -190,13 +190,13 @@ export class FlipperClient {
   }
 
   stop() {
-    if (!this.ws) {
-      return;
-    }
-
     if (this.reconnectionTimer) {
       clearTimeout(this.reconnectionTimer);
       this.reconnectionTimer = undefined;
+    }
+
+    if (!this.ws) {
+      return;
     }
 
     // TODO: Why is it not 1000 by default?
