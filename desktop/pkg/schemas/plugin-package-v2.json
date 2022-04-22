@@ -62,9 +62,9 @@
         "type": "object",
         "properties": {
           "os": {
-            "description": "Device OS: iOS, Android or Metro. Lack of this property means that all OSes supported.",
+            "description": "Device OS: iOS, Android, Metro, MacOS, Linux, Windows. Lack of this property means that all OSes supported.",
             "type": "string",
-            "enum": ["iOS", "Android", "Metro"]
+            "enum": ["iOS", "Android", "Metro", "MacOS", "Linux", "Windows"]
           },
           "type": {
             "description": "Device type: physical or emulator or dummy. Lack of this property means it supports physical, emulator and dummy devices.",
