@@ -116,6 +116,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
       (Object.values(databases)[0] ? Object.values(databases)[0].id : 0);
     const selectedTable =
       state.selectedDatabaseTable &&
+      selectedDatabase > 0 &&
+      databases.length >= selectedDatabase &&
       databases[selectedDatabase - 1].tables.includes(
         state.selectedDatabaseTable,
       )
