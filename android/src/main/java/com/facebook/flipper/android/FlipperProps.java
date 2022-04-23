@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.android;
 
+import android.os.StrictMode;
 import android.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -81,6 +82,9 @@ class FlipperProps {
     String propValue = null;
     Process process = null;
     BufferedReader reader = null;
+
+    // this function does not read from disk and this tool is for debug only
+    StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
     try {
       process = Runtime.getRuntime().exec(new String[] {"/system/bin/getprop", propsName});
       reader =
@@ -107,6 +111,7 @@ class FlipperProps {
       if (process != null) {
         process.destroy();
       }
+      StrictMode.setThreadPolicy(oldPolicy);
     }
     return propValue;
   }

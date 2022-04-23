@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.StrictMode;
 import android.util.Log;
 import androidx.core.content.ContextCompat;
 import com.facebook.flipper.BuildConfig;
@@ -39,6 +40,15 @@ public final class AndroidFlipperClient {
 
       final Context app =
           context.getApplicationContext() == null ? context : context.getApplicationContext();
+
+      // exempt this disk read as this is a debug tool
+      StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
+      String privateAppDirectory;
+      try {
+        privateAppDirectory = context.getFilesDir().getAbsolutePath();
+      } finally {
+        StrictMode.setThreadPolicy(oldPolicy);
+      }
       FlipperClientImpl.init(
           sFlipperThread.getEventBase(),
           sConnectionThread.getEventBase(),
@@ -52,7 +62,7 @@ public final class AndroidFlipperClient {
           getId(),
           getRunningAppName(app),
           getPackageName(app),
-          context.getFilesDir().getAbsolutePath());
+          privateAppDirectory);
       sIsInitialized = true;
     }
     return FlipperClientImpl.getInstance();
