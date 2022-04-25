@@ -190,6 +190,11 @@ export class FlipperClient {
   }
 
   stop() {
+    if (this.reconnectionTimer) {
+      clearTimeout(this.reconnectionTimer);
+      this.reconnectionTimer = undefined;
+    }
+
     if (!this.ws) {
       return;
     }
