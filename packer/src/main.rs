@@ -62,7 +62,7 @@ struct Args {
     no_compression: bool,
 
     /// Platform to build for
-    #[clap(value_name = "PLATFORM", arg_enum)]
+    #[clap(value_name = "PLATFORM")]
     platform: Platform,
 }
 
@@ -71,6 +71,7 @@ type PackListPlatform = BTreeMap<PackType, Vec<String>>;
 #[derive(Debug, serde::Deserialize)]
 struct PackListSpec {
     mode: PackMode,
+    basedir: path::PathBuf,
     files: PackListPlatform,
 }
 
@@ -101,13 +102,12 @@ fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
 }
 
 fn pack(
-    platform: Platform,
+    platform: &Platform,
     dist_dir: &std::path::Path,
     pack_list: &PackList,
     output_directory: &std::path::Path,
 ) -> Result<Vec<(PackType, path::PathBuf)>> {
     let pb = default_progress_bar(pack_list.0.len() as u64 * 2 - 1);
-    let base_dir = platform_base_dir(dist_dir, platform);
     pb.set_prefix(&format!(
         "{:width$}",
         "Packing archives",
@@ -115,8 +115,9 @@ fn pack(
     ));
     let packlist_spec = pack_list
         .0
-        .get(&platform)
-        .ok_or(error::Error::MissingPlatformDefinition(platform))?;
+        .get(platform)
+        .ok_or_else(|| error::Error::MissingPlatformDefinition(platform.clone()))?;
+    let base_dir = path::Path::new(dist_dir).join(&packlist_spec.basedir);
     let files = &packlist_spec.files;
     let res = files
         .into_par_iter()
@@ -148,16 +149,8 @@ fn pack(
     res
 }
 
-fn platform_base_dir(dist_dir: &path::Path, platform: Platform) -> path::PathBuf {
-    match platform {
-        Platform::Mac => path::Path::new(dist_dir).join("mac"),
-        Platform::Linux => path::Path::new(dist_dir).join("linux-unpacked"),
-        Platform::Windows => path::Path::new(dist_dir).join("win-unpacked"),
-    }
-}
-
 fn pack_platform_glob(
-    platform: Platform,
+    platform: &Platform,
     base_dir: &path::Path,
     pack_files: &[String],
     pack_type: PackType,
@@ -185,7 +178,9 @@ fn pack_platform_glob(
         let full_path = path::Path::new(&base_dir).join(&path);
         if !full_path.exists() {
             bail!(error::Error::MissingPackFile(
-                platform, pack_type, full_path,
+                platform.to_string(),
+                pack_type,
+                full_path,
             ));
         }
         if full_path.is_file() {
@@ -199,7 +194,7 @@ fn pack_platform_glob(
 }
 
 fn pack_platform_exact(
-    platform: Platform,
+    platform: &Platform,
     base_dir: &path::Path,
     pack_files: &[String],
     pack_type: PackType,
@@ -209,7 +204,9 @@ fn pack_platform_exact(
         let full_path = path::Path::new(&base_dir).join(f);
         if !full_path.exists() {
             bail!(error::Error::MissingPackFile(
-                platform, pack_type, full_path,
+                platform.to_string(),
+                pack_type,
+                full_path,
             ));
         }
         if full_path.is_file() {
@@ -247,7 +244,7 @@ fn main() -> Result<(), anyhow::Error> {
         serde_yaml::from_str(&pack_list_str).expect("Failed to deserialize YAML packlist.");
     std::fs::create_dir_all(&args.output)
         .with_context(|| format!("Failed to create output directory '{:?}'.", &args.output))?;
-    let archive_paths = pack(args.platform, &args.dist, &pack_list, &args.output)?;
+    let archive_paths = pack(&args.platform, &args.dist, &pack_list, &args.output)?;
     let compressed_archive_paths = if args.no_compression {
         None
     } else {

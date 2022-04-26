@@ -1,5 +1,6 @@
 mac:
   mode: exact
+  basedir: mac
   files:
     frameworks:
       - Flipper.app/Contents/Frameworks/
@@ -11,6 +12,7 @@ mac:
 
 linux:
   mode: glob
+  basedir: linux-unpacked
   files:
     frameworks:
       - '!resources/'
@@ -20,6 +22,7 @@ linux:
 
 windows:
   mode: glob
+  basedir: win-unpacked
   files:
     frameworks:
       - '!resources/'

@@ -6,24 +6,10 @@
  */
 
 use std::fmt::{self, Display};
+use std::str;
 
-#[derive(
-    Debug,
-    Copy,
-    Clone,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    serde::Deserialize,
-    clap::ArgEnum
-)]
-#[serde(rename_all = "lowercase")]
-pub enum Platform {
-    Mac,
-    Linux,
-    Windows,
-}
+// TODO: Make this a newtype.
+pub type Platform = String;
 
 #[derive(
     Debug,
