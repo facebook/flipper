@@ -29,3 +29,14 @@ windows:
     core:
       - '!*'
       - resources
+
+server-mac-x64:
+  mode: glob
+  basedir: flipper-server-mac-x64
+  files:
+    frameworks:
+      - '!*'
+      - 'node'
+    core:
+      - '!node'
+      - '*'
