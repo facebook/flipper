@@ -8,8 +8,22 @@
 use std::fmt::{self, Display};
 use std::str;
 
-// TODO: Make this a newtype.
-pub type Platform = String;
+#[derive(Eq, PartialEq, Debug, PartialOrd, Ord, Clone, serde::Deserialize)]
+pub struct Platform(pub String);
+
+impl str::FromStr for Platform {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Platform(s.to_string()))
+    }
+}
+
+impl Display for Platform {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 #[derive(
     Debug,

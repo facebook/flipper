@@ -178,7 +178,7 @@ fn pack_platform_glob(
         let full_path = path::Path::new(&base_dir).join(&path);
         if !full_path.exists() {
             bail!(error::Error::MissingPackFile(
-                platform.to_string(),
+                platform.clone(),
                 pack_type,
                 full_path,
             ));
@@ -204,7 +204,7 @@ fn pack_platform_exact(
         let full_path = path::Path::new(&base_dir).join(f);
         if !full_path.exists() {
             bail!(error::Error::MissingPackFile(
-                platform.to_string(),
+                platform.clone(),
                 pack_type,
                 full_path,
             ));
