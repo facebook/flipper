@@ -70,7 +70,7 @@ ext.deps = [
         screenshot         : 'com.facebook.testing.screenshot:core:0.15.0',
         boltsTasks         : 'com.parse.bolts:bolts-tasks:1.4.0',
         // Third-party
-        websocket          : 'org.java-websocket:Java-WebSocket:1.5.2',
+        websocket          : 'org.java-websocket:Java-WebSocket:1.5.3',
         openssl            : 'com.android.ndk.thirdparty:openssl:1.1.1l-beta-1',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
