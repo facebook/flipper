@@ -1,8 +1,10 @@
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-The LeakCanary plugin provides developers with Flipper support for [LeakCanary](https://github.com/square/leakcanary), an open source memory leak detection library.
+:::note
+This plugin is only available for Android.
+:::
 
-Leaks detected by LeakCanary will appear automatically in Flipper. Each leak will display a hierarchy of objects, beginning from the garbage collector root and ending at the leaked class.
-Selecting any object in this list will display contents of the object's various fields.
+The LeakCanary plugin provides Developers with Flipper support for [LeakCanary](https://github.com/square/leakcanary), an open source memory leak detection library.
 
-Note: this plugin is only available for Android.
+Leaks detected by LeakCanary appear automatically in Flipper. Each leak displays a hierarchy of objects, beginning with the garbage collector root and ending at the leaked class.
+Selecting any object in this list displays contents of the object's various fields.
