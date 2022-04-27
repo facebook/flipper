@@ -15,7 +15,7 @@ impl str::FromStr for Platform {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Platform(s.to_string()))
+        Ok(Self(s.to_string()))
     }
 }
 
