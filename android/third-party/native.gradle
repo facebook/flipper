@@ -123,45 +123,7 @@ task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
     }
 }
 
-task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    src 'https://github.com/facebook/folly/archive/v2020.02.17.00.tar.gz'
-    onlyIfNewer true
-    overwrite false
-    dest new File(downloadsDir, 'folly-' + getDownloadFileName(src))
-}
-
-task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    from tarTree(downloadFolly.dest)
-    from './overrides/Folly/'
-    include 'folly-2020.02.17.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
-    eachFile { it.path = it.path - "folly-2020.02.17.00/" }
-    includeEmptyDirs = false
-    into "$externalDir/folly/"
-}
-
-//TODO: Get rid off this hack.
-task finalizeFollyWithDemangle(dependsOn: [prepareFolly], type: Copy) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    from './overrides/Folly/'
-    include 'Demangle.h'
-    into "$externalDir/folly/folly/detail/"
-}
-
-// HACK to fix template issue with newest NDK
-task finalizeFollyWithFileUtil(dependsOn: [prepareFolly], type: Copy) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    from './overrides/Folly/'
-    include 'FileUtil.cpp'
-    into "$externalDir/folly/folly/"
-}
-
-task finalizeFolly(dependsOn: [finalizeFollyWithDemangle, finalizeFollyWithFileUtil]) {
-    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-}
-
-task downloadLibEvent(dependsOn: [], type: Download) {
+task downloadLibEvent(dependsOn: [createNativeDepsDirectories], type: Download) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     src 'https://github.com/libevent/libevent/releases/download/release-2.1.11-stable/libevent-2.1.11-stable.tar.gz'
     onlyIfNewer true
@@ -169,7 +131,7 @@ task downloadLibEvent(dependsOn: [], type: Download) {
     dest new File(downloadsDir, 'libevent-' + getDownloadFileName(src))
 }
 
-task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
+task prepareLibEvent1(dependsOn: [downloadLibEvent], type: Copy) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadLibEvent.dest)
     from './overrides/LibEvent/'
@@ -178,7 +140,7 @@ task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
     into "$externalDir/LibEvent"
 }
 
-task prepareLibEvent2(dependsOn: [prepareLibEvent], type: Copy) {
+task prepareLibEvent2(dependsOn: [prepareLibEvent1], type: Copy) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from './overrides/LibEvent/'
     include 'event-config.h'
@@ -193,23 +155,51 @@ task finalizeLibEvent(dependsOn: [prepareLibEvent2], type: Copy) {
     into "$externalDir/LibEvent/libevent-2.1.11-stable/"
 }
 
-task writeCacheRevision(dependsOn: createNativeDepsDirectories) {
+task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+    src 'https://github.com/facebook/folly/archive/v2020.02.17.00.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'folly-' + getDownloadFileName(src))
+}
+
+task prepareFolly(dependsOn: [downloadFolly, prepareBoost, prepareDoubleConversion, finalizeGlog, finalizeLibEvent], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+    from tarTree(downloadFolly.dest)
+    from './overrides/Folly/'
+    include 'folly-2020.02.17.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    eachFile { it.path = it.path - "folly-2020.02.17.00/" }
+    includeEmptyDirs = false
+    into "$externalDir/folly/"
+}
+
+task finalizeFollyWithDemangle(dependsOn: [prepareFolly], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+    from './overrides/Folly/'
+    include 'Demangle.h'
+    into "$externalDir/folly/folly/detail/"
+}
+
+// Fix template issue with newest NDK
+task finalizeFollyWithFileUtil(dependsOn: [prepareFolly], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+    from './overrides/Folly/'
+    include 'FileUtil.cpp'
+    into "$externalDir/folly/folly/"
+}
+
+task finalizeFolly(dependsOn: [finalizeFollyWithDemangle, finalizeFollyWithFileUtil]) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+}
+
+task writeCacheRevision(dependsOn: [finalizeFolly]) {
     doLast {
         buildDir.mkdirs()
         revisionFile.text = CACHE_REVISION.toString()
     }
 }
 
-def allTasks = [
-    finalizeGlog,
-    prepareDoubleConversion,
-    prepareBoost,
-    finalizeFolly,
-    finalizeLibEvent,
-    writeCacheRevision,
-]
-
 task prepareAllLibs() {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
-    dependsOn allTasks
+    dependsOn writeCacheRevision
 }
