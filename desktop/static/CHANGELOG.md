@@ -1,3 +1,8 @@
+# 0.144.0 (27/4/2022)
+
+ * [D35810827](https://github.com/facebook/flipper/search?q=D35810827&type=Commits) -  Fixes an issue on the databases plugin when there is no selected database.
+
+
 # 0.143.0 (20/4/2022)
 
  * [D35546817](https://github.com/facebook/flipper/search?q=D35546817&type=Commits) -  Check if there's a process listening at the specified port before attempting to establish a websocket connection on iOS
