@@ -44,4 +44,12 @@ android {
     }
 }
 
+// Patch below is used in case the 'configureCMake' task
+// gets executed in parallel with the 'preBuild' task.
+// Our CMakeFile expects third-party dependencies to be already
+// in-place and patched.
+tasks.matching { it.name.startsWith("configureCMake") }.all {
+    dependsOn(tasks.getByPath(':third-party:prepare'))
+}
+
 preBuild.dependsOn(tasks.getByPath(':third-party:prepare'))
