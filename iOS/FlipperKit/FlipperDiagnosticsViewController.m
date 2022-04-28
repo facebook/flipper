@@ -63,7 +63,7 @@ static NSString* const kSKCellIdentifier =
                                          self.view.frame.size.width,
                                          self.scrollView.frame.size.height)];
   self.logLabel.numberOfLines = 0;
-  self.logLabel.font = [UIFont fontWithName:@"Arial" size:10];
+  self.logLabel.font = [UIFont systemFontOfSize:10.0f];
   [self.scrollView addSubview:self.logLabel];
 
   self.stateTable = [[UITableView alloc]
@@ -80,7 +80,6 @@ static NSString* const kSKCellIdentifier =
 
   [self.view addSubview:self.stateTable];
   [self.view addSubview:self.scrollView];
-  self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)onUpdate {
