@@ -29,7 +29,7 @@
     "glob": "^7.2.0",
     "ignore": "^5.1.4",
     "metro": "^0.69.1",
-    "metro-minify-terser": "^0.66.2",
+    "metro-minify-terser": "^0.70.2",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
     "pkg-fetch": "^3.3.0",
