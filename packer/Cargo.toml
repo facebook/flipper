@@ -13,7 +13,7 @@ edition = "2021"
 clap = { version = "3.1.9", features = ["derive", "cargo"] }
 shellexpand = "2.1.0"
 tar = "0.4.38"
-serde = { version = "1.0.136", features = ["derive"] }
+serde = { version = "1.0.137", features = ["derive"] }
 serde_yaml = "0.8.23"
 anyhow = "1.0.56"
 sha2 = "0.10.2"
