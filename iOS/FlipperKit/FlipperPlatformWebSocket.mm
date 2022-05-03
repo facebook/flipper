@@ -8,12 +8,9 @@
 #ifdef FB_SONARKIT_ENABLED
 
 #import "FlipperPlatformWebSocket.h"
+#import <Flipper/FlipperConnectionEndpointVerifier.h>
 #import <Flipper/Log.h>
 #import <SocketRocket/SocketRocket.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <unistd.h>
 
 static constexpr int connectionKeepaliveSeconds = 10;
 
@@ -152,52 +149,8 @@ static constexpr int connectionKeepaliveSeconds = 10;
     // there is a process listening at the specified port.
     // CFNetwork seems to be quite verbose when the host cannot be reached
     // causing unnecessary and annoying logs to be printed to the console.
-    struct addrinfo hints;
-
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;
-    struct addrinfo* address;
-    getaddrinfo(
-        strongSelf->_url.host.UTF8String,
-        strongSelf->_url.port.stringValue.UTF8String,
-        &hints,
-        &address);
-
-    int sfd =
-        socket(address->ai_family, address->ai_socktype, address->ai_protocol);
-
-    fcntl(sfd, F_SETFL, O_NONBLOCK);
-    connect(sfd, address->ai_addr, address->ai_addrlen);
-
-    fd_set fdset;
-    struct timeval tv;
-
-    FD_ZERO(&fdset);
-    FD_SET(sfd, &fdset);
-    // Set a timeout of 3 seconds.
-    tv.tv_sec = 3;
-    tv.tv_usec = 0;
-
-    bool listening = false;
-    if (select(sfd + 1, NULL, &fdset, NULL, &tv) == 1) {
-      int so_error;
-      socklen_t len = sizeof so_error;
-
-      getsockopt(sfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
-
-      if (so_error == 0) {
-        listening = true;
-      }
-      // If there's an error, most likely there is no process
-      // listening at the specified host/port (ECONNREFUSED).
-    }
-
-    freeaddrinfo(address);
-    close(sfd);
-
-    if (!listening) {
+    if (!facebook::flipper::ConnectionEndpointVerifier::verify(
+            strongSelf->_url.host.UTF8String, strongSelf->_url.port.intValue)) {
       strongSelf->_eventHandler(facebook::flipper::SocketEvent::ERROR);
       return;
     }
