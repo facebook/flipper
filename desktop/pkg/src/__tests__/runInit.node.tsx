@@ -37,7 +37,8 @@ afterEach(() => {
   // fs.writeFile.mockRestore();
 });
 
-test('It generates the correct files for client plugin', async () => {
+// TODO(T118520416): The test is flaky.
+test.skip('It generates the correct files for client plugin', async () => {
   await initTemplate(
     'my weird Package %name. etc',
     'Nice title',
@@ -52,8 +53,8 @@ test('It generates the correct files for client plugin', async () => {
     ",
       "/dev/null/babel.config.js": "module.exports = {
         presets: [
-            '@babel/preset-typescript', 
-            '@babel/preset-react', 
+            '@babel/preset-typescript',
+            '@babel/preset-react',
             ['@babel/preset-env', {targets: {node: 'current'}}]
         ],
     };
@@ -230,7 +231,8 @@ test('It generates the correct files for client plugin', async () => {
   `);
 });
 
-test('It generates the correct files for device plugin', async () => {
+// TODO(T118520416): The test is flaky.
+test.skip('It generates the correct files for device plugin', async () => {
   await initTemplate(
     'my weird Package %name. etc',
     'Nice title',
@@ -245,8 +247,8 @@ test('It generates the correct files for device plugin', async () => {
     ",
       "/dev/null/babel.config.js": "module.exports = {
         presets: [
-            '@babel/preset-typescript', 
-            '@babel/preset-react', 
+            '@babel/preset-typescript',
+            '@babel/preset-react',
             ['@babel/preset-env', {targets: {node: 'current'}}]
         ],
     };
