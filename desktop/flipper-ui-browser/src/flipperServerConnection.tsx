@@ -22,7 +22,7 @@ export function createFlipperServer(): Promise<FlipperServer> {
   // TODO: polish this all!
   window.flipperShowError?.('Connecting to server...');
   return new Promise<FlipperServer>((resolve, reject) => {
-    let initialConnectionTimeout: number | undefined = setTimeout(() => {
+    let initialConnectionTimeout: number | undefined = window.setTimeout(() => {
       reject(
         new Error('Failed to connect to Flipper server in a timely manner'),
       );

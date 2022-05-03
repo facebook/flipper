@@ -219,7 +219,7 @@ function addWebsocket(server: http.Server, config: Config) {
   });
 
   server.on('upgrade', function upgrade(request, socket, head) {
-    const {pathname} = parse(request.url);
+    const {pathname} = parse(request.url!);
 
     // Handled by Metro
     if (pathname === '/hot') {
