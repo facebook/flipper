@@ -15,7 +15,7 @@
     "yargs": "^17.2.1"
   },
   "devDependencies": {
-    "@types/node": "^16.11.7"
+    "@types/node": "^17.0.31"
   },
   "peerDependencies": {},
   "scripts": {

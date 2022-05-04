@@ -20,7 +20,7 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/http-proxy": "^1.17.8",
-    "@types/node": "^15.12.5",
+    "@types/node": "^17.0.31",
     "chalk": "^4.1.2",
     "express": "^4.17.3",
     "flipper-common": "0.0.0",
