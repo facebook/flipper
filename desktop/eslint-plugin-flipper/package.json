@@ -12,7 +12,7 @@
   "dependencies": {
     "@typescript-eslint/experimental-utils": "^5.15.0",
     "@typescript-eslint/parser": "^5.14.0",
-    "fs-extra": "^10.0.1"
+    "fs-extra": "^10.1.0"
   },
   "devDependencies": {},
   "scripts": {

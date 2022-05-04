@@ -28,6 +28,6 @@
   "dependencies": {
     "envinfo": "^7.8.1",
     "fb-watchman": "^2.0.1",
-    "fs-extra": "^10.0.1"
+    "fs-extra": "^10.1.0"
   }
 }
