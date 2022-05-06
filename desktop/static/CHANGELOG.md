@@ -1,3 +1,8 @@
+# 0.145.0 (5/5/2022)
+
+ * [D36001637](https://github.com/facebook/flipper/search?q=D36001637&type=Commits) -  Execute :third-party:prepare before :configureCMake task on Android
+
+
 # 0.144.0 (27/4/2022)
 
  * [D35810827](https://github.com/facebook/flipper/search?q=D35810827&type=Commits) -  Fixes an issue on the databases plugin when there is no selected database.
