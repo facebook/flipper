@@ -31,12 +31,12 @@ windows:
       - resources
 
 server-mac-x64:
-  mode: glob
+  mode: exact
   basedir: flipper-server-mac-x64
   files:
     frameworks:
-      - '!*'
-      - 'node'
+      - Flipper.app/Contents/MacOS/
+      - Flipper.app/Contents/PkgInfo
     core:
-      - '!node'
-      - '*'
+      - Flipper.app/Contents/Resources
+      - Flipper.app/Contents/Info.plist
