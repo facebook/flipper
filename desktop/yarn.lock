@@ -7137,12 +7137,12 @@ ieee754@^1.1.13:
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
   integrity sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==
 
-ignore-walk@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/ignore-walk/-/ignore-walk-4.0.1.tgz#fc840e8346cf88a3a9380c5b17933cd8f4d39fa3"
-  integrity sha512-rzDQLaW4jQbh2YrOFlJdCtX8qgJTehFRYiUB2r1osqTeDzV/3+Jh8fz1oAPzUThf3iku8Ds4IDqawI5d8mUiQw==
+ignore-walk@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/ignore-walk/-/ignore-walk-5.0.1.tgz#5f199e23e1288f518d90358d461387788a154776"
+  integrity sha512-yemi4pMf51WKT7khInJqAvsIGzoqYXblnsz0ql8tM+yi1EKYTY1evX4NAbJrLL/Aanr2HyZeluqU+Oi7MGHokw==
   dependencies:
-    minimatch "^3.0.4"
+    minimatch "^5.0.1"
 
 ignore@^4.0.6:
   version "4.0.6"
@@ -9528,13 +9528,13 @@ npm-normalize-package-bin@^1.0.1:
   resolved "https://registry.yarnpkg.com/npm-normalize-package-bin/-/npm-normalize-package-bin-1.0.1.tgz#6e79a41f23fd235c0623218228da7d9c23b8f6e2"
   integrity sha512-EPfafl6JL5/rU+ot6P3gRSCpPDW5VmIzX959Ob1+ySFUuuYHWHekXpwdUZcKP5C+DS4GEtdJluwBjnsNDl+fSA==
 
-npm-packlist@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-4.0.0.tgz#ba54713f8ee2ad919a6dc9f1b9ec7aa291466703"
-  integrity sha512-gL6XC/iw9YSmqArmZOGSkyy+yIZf2f7uH0p4Vmxef/irn73vd9/rDkCtvm+a9rh/QK2xGYfCAMOghM06ymzC0A==
+npm-packlist@^5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-5.0.3.tgz#0aec03bc2d6d488ca71396d7afb463563c3274f7"
+  integrity sha512-KuSbzgejxdsAWbNNyEs8EsyDHsO+nJF6k+9WuWzFbSNh5tFHs4lDApXw7kntKpuehfp8lKRzJkMtz0+WmGvTIw==
   dependencies:
-    glob "^7.2.0"
-    ignore-walk "^4.0.1"
+    glob "^8.0.1"
+    ignore-walk "^5.0.1"
     npm-bundled "^1.1.2"
     npm-normalize-package-bin "^1.0.1"
 
