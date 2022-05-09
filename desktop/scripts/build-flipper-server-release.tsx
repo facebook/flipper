@@ -24,7 +24,7 @@ import fs from 'fs-extra';
 import {downloadIcons} from './build-icons';
 import {spawn} from 'promisify-child-process';
 import {homedir} from 'os';
-import {need} from 'pkg-fetch';
+import {need as pkgFetch} from 'pkg-fetch';
 
 // This needs to be tested individually. As of 2022Q2, node17 is not supported.
 const SUPPORTED_NODE_PLATFORM = 'node16';
@@ -114,8 +114,6 @@ const argv = yargs
     },
     linux: {
       describe: 'Build a platform-specific bundle for Linux.',
-      type: 'boolean',
-      default: false,
     },
   })
   .help()
@@ -337,7 +335,6 @@ async function buildServerRelease() {
   await buildBrowserBundle(path.join(dir, 'static'), false);
   await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
   const archive = await packNpmArchive(dir, versionNumber);
-
   await runPostBuildAction(archive, dir);
 
   const platforms: BuildPlatform[] = [];
@@ -355,7 +352,9 @@ async function buildServerRelease() {
   if (platforms.length > 0) {
     await yarnInstall(dir);
   }
-  platforms.forEach(bundleServerReleaseForPlatform.bind(null, dir));
+  platforms.forEach(
+    bundleServerReleaseForPlatform.bind(null, dir, versionNumber),
+  );
 }
 
 function nodeArchFromBuildPlatform(_platform: BuildPlatform): string {
@@ -376,8 +375,58 @@ function nodePlatformFromBuildPlatform(platform: BuildPlatform): string {
   }
 }
 
+async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
+  const nodePath = await buildFolder('flipper-node-download-');
+  const path = await pkgFetch({
+    arch: nodeArchFromBuildPlatform(platform),
+    platform: nodePlatformFromBuildPlatform(platform),
+    output: nodePath,
+    nodeRange: SUPPORTED_NODE_PLATFORM,
+  });
+  await fs.rename(path, outputPath);
+}
+
+async function setUpMacBundle(
+  outputDir: string,
+  versionNumber: string,
+): Promise<{nodePath: string; resourcesPath: string}> {
+  console.log(`⚙️  Creating Mac bundle in ${outputDir}`);
+  await fs.copy(path.join(staticDir, 'flipper-server-app-template'), outputDir);
+
+  console.log(`⚙️  Writing plist`);
+  const pListPath = path.join(
+    outputDir,
+    'Flipper.app',
+    'Contents',
+    'Info.plist',
+  );
+  const pListContents = await fs.readFile(pListPath, 'utf-8');
+  const updatedPlistContents = pListContents.replace(
+    '{flipper-server-version}',
+    versionNumber,
+  );
+  await fs.writeFile(pListPath, updatedPlistContents, 'utf-8');
+
+  const resourcesOutputDir = path.join(
+    outputDir,
+    'Flipper.app',
+    'Contents',
+    'Resources',
+    'server',
+  );
+  const nodeOutputPath = path.join(
+    outputDir,
+    'Flipper.app',
+    'Contents',
+    'MacOS',
+    'node',
+  );
+  return {resourcesPath: resourcesOutputDir, nodePath: nodeOutputPath};
+}
+
 async function bundleServerReleaseForPlatform(
   dir: string,
+  versionNumber: string,
   platform: BuildPlatform,
 ) {
   console.log(`⚙️  Building platform-specific bundle for ${platform}`);
@@ -387,16 +436,23 @@ async function bundleServerReleaseForPlatform(
   );
   await fs.mkdirp(outputDir);
 
-  console.log(`⚙️  Copying from ${dir} to ${outputDir}`);
-  await fs.copy(dir, outputDir);
+  let outputPaths = {
+    nodePath: path.join(outputDir, 'node'),
+    resourcesPath: outputDir,
+  };
+
+  // On the mac, we need to set up a resource bundle which expects paths
+  // to be in different places from Linux/Windows bundles.
+  if (platform === BuildPlatform.MAC_X64) {
+    outputPaths = await setUpMacBundle(outputDir, versionNumber);
+  }
+
+  console.log(`⚙️  Copying from ${dir} to ${outputPaths.resourcesPath}`);
+  await fs.copy(dir, outputPaths.resourcesPath);
 
   console.log(`⚙️  Downloading compatible node version`);
-  await need({
-    arch: nodeArchFromBuildPlatform(platform),
-    platform: nodePlatformFromBuildPlatform(platform),
-    output: path.join(outputDir, 'node'),
-    nodeRange: SUPPORTED_NODE_PLATFORM,
-  });
+  await installNodeBinary(outputPaths.nodePath, platform);
+
   console.log(`✅  Wrote ${platform}-specific server version to ${outputDir}`);
 }
 
