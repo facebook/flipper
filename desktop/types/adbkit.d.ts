@@ -57,7 +57,6 @@ declare module 'adbkit' {
       serial: string,
       command: string | string[],
     ) => Promise<NodeJS.ReadStream>;
-    root: (serial: string) => Promise<true>;
     screencap: (serial: string) => Promise<NodeJS.WriteStream>;
     pull: (serial: string, path: string) => Promise<PullTransfer>;
     openLogcat: (
