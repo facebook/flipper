@@ -6,29 +6,47 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import FbInstallation from './fb/_installation.mdx';
 
-Flipper helps you debug Android, iOS, and even web apps running in an emulator/simulator, connected physical development devices, or in your browser. Flipper consists of two parts:
+Flipper helps you debug in the following environments:
 
-- The desktop app
-- The native mobile SDKs for Android and iOS, the client for JavaScript, or even a third-party client you could implement yourself or find on the web
+* Android and iOS.
+* Web apps running in an emulator/simulator.
+* Connected physical development devices.
+* Your browser.
+
+Flipper consists of two parts:
+
+- The desktop app.
+- The native mobile SDKs for Android and iOS, the client for JavaScript, or even a third-party client you could implement yourself or find on the web.
 
 Once you start Flipper and launch an emulator/simulator or connect a device, you'll start to see the device logs (and any other device-level plugins that work with your device).
-For web apps, we do not ship any built in plugins yet.
+Currently, there are no plugins available for web apps.
 
-To see app specific data, you need to integrate the Flipper SDK into your app. See the relevant section in the sidebar for how to do that.
+To see app-specific data, you need to integrate the Flipper SDK into your app (see the 'Adding Flipper to your app' within the 'Getting Started' section of the SideBar).
 
 ## Installation
 
 <OssOnly>
 
-The desktop part of Flipper doesn't need any particular setup. Simply download the latest build for [Mac](https://www.facebook.com/fbflipper/public/mac), [Linux](https://www.facebook.com/fbflipper/public/linux) or [Windows](https://www.facebook.com/fbflipper/public/windows) and launch it. If you're on macOS, you can run `brew install --cask flipper` to let `homebrew` manage installation and upgrades (simply run `brew upgrade` to upgrade when a new version is released, although it might take a few hours up to a day for the package to be upgraded on `homebrew`). 
+:::note
+The desktop part of Flipper doesn't need a setup. Simply download the latest build for [Mac](https://www.facebook.com/fbflipper/public/mac), [Linux](https://www.facebook.com/fbflipper/public/linux) or [Windows](https://www.facebook.com/fbflipper/public/windows) and launch it.
+:::
 
-To work properly with mobile apps, Flipper requires a working installation of the Android and (if where applicable) iOS development tools on your system, as well as the [OpenSSL](https://www.openssl.org) binary on your `$PATH`. A compatible OpenSSL for Windows can be downloaded [here](https://slproweb.com/products/Win32OpenSSL.html) or from Chocolatey with `choco install openssl`.
+If you're on macOS, you can run `brew install --cask flipper` to let `homebrew` manage installation and upgrades (simply run `brew upgrade` to upgrade when a new version is released, although it might take a few hours up to a day for the package to be upgraded on `homebrew`).
+
+To work properly with mobile apps, Flipper requires the following:
+
+* Working installation of Android development tools
+* [Where applicable] Working installation of iOS development tools
+* [OpenSSL](https://www.openssl.org) binary on your `$PATH`. A compatible OpenSSL for Windows can be downloaded from [slproweb.com](https://slproweb.com/products/Win32OpenSSL.html) or from Chocolatey with `choco install openssl`.
 
 If you are hacking a JS app, you should be good to go without any extra dependencies installed.
 
-[Experimental] Alternatively, it is possible to run a browser based version of Flipper directly from NPM by using `npx flipper-server`. 
+:::information
+[Experimental] Alternatively, it is possible to run a browser based version of Flipper directly from NPM by using `npx flipper-server`.
+:::
 
 </OssOnly>
+
 <FbInternalOnly>
 
 <FbInstallation />
@@ -37,4 +55,5 @@ If you are hacking a JS app, you should be good to go without any extra dependen
 
 ## Troubleshooting
 
-If you run into problems, check out the [troubleshooting page](../troubleshooting.mdx), and failing that, check <OssOnly>[GitHub Issues](https://github.com/facebook/flipper/issues).</OssOnly><FbInternalOnly>the [workplace group](https://fb.workplace.com/groups/230455004101832/).</FbInternalOnly>
+If you run into problems, take a look at the [troubleshooting](../troubleshooting.mdx) page.
+Failing that, check <OssOnly>[GitHub Issues](https://github.com/facebook/flipper/issues).</OssOnly><FbInternalOnly>the [Workplace group](https://fb.workplace.com/groups/230455004101832/).</FbInternalOnly>
