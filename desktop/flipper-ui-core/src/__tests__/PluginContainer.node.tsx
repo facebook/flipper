@@ -111,7 +111,8 @@ test('Plugin container can render plugin and receive updates', async () => {
   expect((await renderer.findByTestId('counter')).textContent).toBe('2');
 });
 
-test('PluginContainer can render Sandy plugins', async () => {
+// TODO(T119353406): Disabled due to flakiness.
+test.skip('PluginContainer can render Sandy plugins', async () => {
   let renders = 0;
 
   function MySandyPlugin() {
