@@ -10,16 +10,21 @@
 #include <fcntl.h>
 #include <folly/portability/Fcntl.h>
 #include <folly/portability/SysStat.h>
+#include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
 #include <openssl/pkcs12.h>
 #include <openssl/rsa.h>
 #include <openssl/x509.h>
+#include <stdio.h>
 #include <cstring>
 #include <stdexcept>
 
 namespace facebook {
 namespace flipper {
+
+BIO* bioFromFile(const char* filename);
+bool bioToFile(const char* filename, BIO* bio);
 
 void generateCertSigningRequest_free(
     EVP_PKEY* pKey,
@@ -34,6 +39,50 @@ void generateCertPKCS12_free(
     EVP_PKEY* pKey,
     STACK_OF(X509) * cacertstack,
     PKCS12* pkcs12bundle);
+
+BIO* bioFromFile(const char* filename) {
+  if (filename == nullptr) {
+    return nullptr;
+  }
+
+  FILE* fp = fopen(filename, "rb");
+  if (fp == nullptr) {
+    return nullptr;
+  }
+
+  BIO* bio = BIO_new(BIO_s_mem());
+#define BUFFER_SIZE 512
+  char buffer[BUFFER_SIZE];
+  size_t r = 0;
+
+  while ((r = fread(buffer, 1, BUFFER_SIZE, fp)) > 0) {
+    BIO_write(bio, buffer, (int)r);
+  }
+
+  fclose(fp);
+  return bio;
+}
+
+bool bioToFile(const char* filename, BIO* bio) {
+  if (bio == nullptr || filename == nullptr) {
+    return false;
+  }
+
+  FILE* fp = fopen(filename, "wb");
+  if (fp == nullptr) {
+    return false;
+  }
+
+  BUF_MEM* bptr;
+  BIO_get_mem_ptr(bio, &bptr);
+
+  if (bptr != nullptr) {
+    fwrite(bptr->data, 1, bptr->length, fp);
+  }
+
+  fclose(fp);
+  return true;
+}
 
 bool generateCertSigningRequest(
     const char* appId,
@@ -62,7 +111,7 @@ bool generateCertSigningRequest(
   BIO* privateKey = NULL;
   BIO* csrBio = NULL;
 
-  EVP_PKEY_assign_RSA(pKey, rsa);
+  EVP_PKEY_assign(pKey, EVP_PKEY_RSA, rsa);
 
   // Generate rsa key
   bne = BN_new();
@@ -70,34 +119,27 @@ bool generateCertSigningRequest(
   ret = BN_set_word(bne, e);
   if (ret != 1) {
     generateCertSigningRequest_free(pKey, x509_req, bne, privateKey, csrBio);
-    return ret;
+    return false;
   }
 
   ret = RSA_generate_key_ex(rsa, bits, bne, NULL);
   if (ret != 1) {
     generateCertSigningRequest_free(pKey, x509_req, bne, privateKey, csrBio);
-    return ret;
+    return false;
   }
 
   {
-    // Write private key to a file
-    int privateKeyFd =
-        open(privateKeyFile, O_CREAT | O_WRONLY, S_IWUSR | S_IRUSR);
-    if (privateKeyFd < 0) {
-      generateCertSigningRequest_free(pKey, x509_req, bne, privateKey, csrBio);
-      return -1;
-    }
-    FILE* privateKeyFp = fdopen(privateKeyFd, "w");
-    if (privateKeyFp == NULL) {
-      generateCertSigningRequest_free(pKey, x509_req, bne, privateKey, csrBio);
-      return -1;
-    }
-    privateKey = BIO_new_fp(privateKeyFp, BIO_CLOSE);
+    privateKey = BIO_new(BIO_s_mem());
     ret =
         PEM_write_bio_RSAPrivateKey(privateKey, rsa, NULL, NULL, 0, NULL, NULL);
     if (ret != 1) {
       generateCertSigningRequest_free(pKey, x509_req, bne, privateKey, csrBio);
-      return ret;
+      return false;
+    }
+
+    if (!bioToFile(privateKeyFile, privateKey)) {
+      generateCertSigningRequest_free(pKey, x509_req, bne, privateKey, csrBio);
+      return false;
     }
   }
 
@@ -197,21 +239,17 @@ bool generateCertSigningRequest(
 
   {
     // Write CSR to a file
-    int csrFd = open(csrFile, O_CREAT | O_WRONLY, S_IWUSR | S_IRUSR);
-    if (csrFd < 0) {
-      generateCertSigningRequest_free(pKey, x509_req, bne, privateKey, csrBio);
-      return -1;
-    }
-    FILE* csrFp = fdopen(csrFd, "w");
-    if (csrFp == NULL) {
-      generateCertSigningRequest_free(pKey, x509_req, bne, privateKey, csrBio);
-      return -1;
-    }
-    csrBio = BIO_new_fp(csrFp, BIO_CLOSE);
+    csrBio = BIO_new(BIO_s_mem());
+
     ret = PEM_write_bio_X509_REQ(csrBio, x509_req);
     if (ret != 1) {
       generateCertSigningRequest_free(pKey, x509_req, bne, privateKey, csrBio);
       return ret;
+    }
+
+    if (!bioToFile(csrFile, csrBio)) {
+      generateCertSigningRequest_free(pKey, x509_req, bne, privateKey, csrBio);
+      return false;
     }
   }
 
@@ -245,73 +283,59 @@ bool generateCertPKCS12(
   STACK_OF(X509)* cacertstack = NULL;
   PKCS12* pkcs12bundle = NULL;
   EVP_PKEY* cert_privkey = NULL;
-  FILE *cacertfile = NULL, *certfile = NULL, *keyfile = NULL,
-       *pkcs12file = NULL;
   int bytes = 0;
 
-  /* 1) These function calls are essential to make PEM_read and
-   *     other openssl functions work.
-   */
   OpenSSL_add_all_algorithms();
   ERR_load_crypto_strings();
 
-  /* 2) load the certificate's private key
-   */
+  // Load the certificate's private key
   if ((cert_privkey = EVP_PKEY_new()) == NULL) {
     return false;
   }
 
-  if (!(keyfile = fopen(keyFilepath, "r"))) {
+  BIO* privateKeyBio = bioFromFile(keyFilepath);
+  if (privateKeyBio == nullptr) {
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
-  if (!(cert_privkey = PEM_read_PrivateKey(keyfile, NULL, NULL, NULL))) {
-    fclose(keyfile);
+  if (!(cert_privkey =
+            PEM_read_bio_PrivateKey(privateKeyBio, NULL, NULL, NULL))) {
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
-  fclose(keyfile);
-
-  /* 3) Load the corresponding certificate
-   */
-  if (!(certfile = fopen(certFilepath, "r"))) {
+  // Load the certificate
+  BIO* certificateBio = bioFromFile(certFilepath);
+  if (certificateBio == nullptr) {
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
-  if (!(cert = PEM_read_X509(certfile, NULL, NULL, NULL))) {
-    fclose(certfile);
+  if (!(cert = PEM_read_bio_X509(certificateBio, NULL, NULL, NULL))) {
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
-  fclose(certfile);
-
-  /* 4) Load the CA certificate who signed it
-   */
-  if (!(cacertfile = fopen(cacertFilepath, "r"))) {
+  // Load the CA certificate who signed it
+  BIO* cacertBio = bioFromFile(cacertFilepath);
+  if (cacertBio == nullptr) {
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
-  if (!(cacert = PEM_read_X509(cacertfile, NULL, NULL, NULL))) {
-    fclose(cacertfile);
+  if (!(cacert = PEM_read_bio_X509(cacertBio, NULL, NULL, NULL))) {
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
-  fclose(cacertfile);
-
-  /* 5) Load the CA certificate on the stack
-   */
+  // Load the CA certificate on the stack
   if ((cacertstack = sk_X509_new_null()) == NULL) {
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
@@ -320,15 +344,14 @@ bool generateCertPKCS12(
 
   sk_X509_push(cacertstack, cacert);
 
-  /* 6) we create the PKCS12 structure and fill it with our data
-   */
+  // Create the PKCS12 structure and fill it with our data
   if ((pkcs12bundle = PKCS12_new()) == NULL) {
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
-  /* values of zero use the openssl default values */
+  // Values of zero use the openssl default values
   pkcs12bundle = PKCS12_create(
       const_cast<char*>(pkcs12Password), // certbundle access password
       const_cast<char*>(pkcs12Name), // friendly certificate name
@@ -348,24 +371,24 @@ bool generateCertPKCS12(
     return false;
   }
 
-  /* 7) Write the PKCS12 structure out to file
-   */
-  if (!(pkcs12file = fopen(pkcs12Filepath, "w"))) {
-    generateCertPKCS12_free(
-        cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
-    return false;
-  }
-
-  bytes = i2d_PKCS12_fp(pkcs12file, pkcs12bundle);
+  // Write the PKCS12 structure out to file
+  BIO* pkcs12Bio = BIO_new(BIO_s_mem());
+  bytes = i2d_PKCS12_bio(pkcs12Bio, pkcs12bundle);
   if (bytes <= 0) {
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
-  /* 8) Done, free resources.
-   */
-  fclose(pkcs12file);
+  if (!bioToFile(pkcs12Filepath, pkcs12Bio)) {
+    BIO_free(pkcs12Bio);
+    generateCertPKCS12_free(
+        cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
+    return false;
+  }
+
+  // Done, free resources
+  BIO_free(pkcs12Bio);
   generateCertPKCS12_free(
       cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
 
