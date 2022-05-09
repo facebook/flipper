@@ -30,7 +30,7 @@
     "metro": "^0.70.2",
     "open": "^8.3.0",
     "p-filter": "^2.1.0",
-    "yargs": "^17.0.1"
+    "yargs": "^17.4.1"
   },
   "peerDependencies": {},
   "scripts": {
