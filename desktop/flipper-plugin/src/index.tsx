@@ -25,7 +25,10 @@ export {
   CrashLogListener,
   SandyDevicePluginInstance as _SandyDevicePluginInstance,
 } from './plugin/DevicePlugin';
-export {SandyPluginDefinition as _SandyPluginDefinition} from './plugin/SandyPluginDefinition';
+export {
+  SandyPluginDefinition as _SandyPluginDefinition,
+  FlipperPluginInstance,
+} from './plugin/SandyPluginDefinition';
 export {SandyPluginRenderer as _SandyPluginRenderer} from './plugin/PluginRenderer';
 export {
   SandyPluginContext as _SandyPluginContext,

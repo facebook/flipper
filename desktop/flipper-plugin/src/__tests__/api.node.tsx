@@ -110,6 +110,7 @@ test('Correct top level API exposed', () => {
       "FileDescriptor",
       "FileEncoding",
       "FlipperLib",
+      "FlipperPluginInstance",
       "FlipperServerForServerAddOn",
       "HighlightManager",
       "Idler",
