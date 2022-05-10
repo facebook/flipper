@@ -171,6 +171,7 @@
       "pkg",
       "pkg-lib",
       "flipper-common",
+      "flipper-frontend-core",
       "flipper-plugin",
       "flipper-server-core",
       "flipper-ui-core",

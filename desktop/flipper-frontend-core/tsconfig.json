@@ -1,0 +1,20 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "lib": ["dom", "ES2019"],
+    "types": ["../types/flipperGlobals"]
+  },
+  "references": [
+    {
+      "path": "../flipper-common"
+    },
+    {
+      "path": "../flipper-plugin"
+    },
+    {
+      "path": "../test-utils"
+    }
+  ]
+}
