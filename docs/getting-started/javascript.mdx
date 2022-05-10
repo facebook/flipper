@@ -6,20 +6,18 @@ sidebar_label: JavaScript (browser / Node.js)
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Link from '@docusaurus/Link';
 
-To set up Flipper in your JavaScript app, you need to add the neccessary dependencies to your
-app, initialize the Flipper client and enable the plugins you want to use.
+To set up Flipper in your JavaScript app, you need to add the necessary dependencies, initialize the Flipper client and enable the plugins you want to use.
+Currently, plugins are not available for JavaScript environments, but you can <Link to={useBaseUrl("/docs/extending/create-plugin")}>create your own</Link>.
 
-Currently, we do not ship any plugins for JavaScript environments you can use right away, but we encourage you to <Link to={useBaseUrl("/docs/extending/create-plugin")}>write your own</Link>!
+## Dependencies
 
-## Dependencies 
-
-Flipper JavaScript SDK is distiributed via NPM. To add it to your app run:
+Flipper JavaScript SDK is distributed via NPM. To add it to your app, use either the following:
 
 ```sh
 npm install js-flipper
 ```
 
-or 
+or
 
 ```sh
 yarn add js-flipper
@@ -27,11 +25,16 @@ yarn add js-flipper
 
 ## Application Setup
 
-Flipper SDK works in browser and Node.js environments. For browsers, it works out-of-the-box as long as your browser supports [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket). For node.js, it requires a compatible WebSocket implementation (e.g. [ws](https://github.com/websockets/ws)). 
+Flipper SDK works in browser and Node.js environments:
 
+* **browsers** - works out-of-the-box if your browser supports [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
+* **node.js** - requires a compatible WebSocket implementation (such as [ws](https://github.com/websockets/ws)).
+
+:::caution
 You MUST NOT start Flipper client in production. In browser environments, you should think about not including it in the final production build at all.
+:::
 
-Here is how you setup Flipper in your browser:
+To setup Flipper in your browser, use the following:
 
 ```ts
 import flipperClient from 'js-flipper';
@@ -40,7 +43,7 @@ import flipperClient from 'js-flipper';
 flipperClient.start('My cool browser app');
 ```
 
-Here is how you can do it in your Node.js app:
+Following is how you can do it in your Node.js app:
 
 ```ts
 import flipperClient from 'js-flipper';
@@ -54,7 +57,7 @@ import WebSocket from 'ws';
 flipperClient.start('My cool nodejs app', { websocketFactory: url => new WebSocket(url, {origin: 'localhost:'}) });
 ```
 
-As you can see, `flipperClient` accepts an options object as a second parameter to its `start` method. Here is what you can pass there:
+`flipperClient` accepts an options object as a second parameter to its `start` method.  The following code shows what you can pass to it:
 
 ```ts
 interface FlipperClientOptions {
@@ -71,13 +74,14 @@ interface FlipperClientOptions {
 
 ## Enabling plugins
 
-Flipper is just a communication channel between the desktop app and your application. Its true power comes from its plugins.
+Flipper is just a communication channel between the desktop app and your application; its true power comes from its plugins.
 
 All plugins must be added to the client. Client communicates the list of available plugins to the desktop upon connection.
-You can add a plugin by calling:
+
+You can add a plugin by calling the following:
 
 ```ts
 flipperClient.addPlugin(/* your plugin */)
 ```
 
-Chekc out <Link to={useBaseUrl("/docs/extending/create-plugin")}>documentation on creating plugins</Link> to write your own!
+Refer to the documentation on <Link to={useBaseUrl("/docs/extending/create-plugin")}>creating plugins</Link> to write your own!
