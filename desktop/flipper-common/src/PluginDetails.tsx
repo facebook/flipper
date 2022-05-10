@@ -30,6 +30,7 @@ export interface PluginDetails {
   };
   flipperSDKVersion?: string;
   pluginType?: PluginType;
+  headless?: boolean;
   supportedDevices?: SupportedDevice[];
   supportedApps?: SupportedApp[];
   publishedDocs?: {
@@ -179,6 +180,7 @@ function getPluginDetailsV2(packageJson: any): PluginDetails {
     supportedApps: packageJson?.supportedApps,
     engines: packageJson.engines,
     publishedDocs: packageJson.publishedDocs,
+    headless: packageJson.headless,
   };
 }
 
