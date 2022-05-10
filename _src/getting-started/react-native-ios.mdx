@@ -1,6 +1,6 @@
 ---
 id: react-native-ios
-title: Manually set up your React Native iOS App
+title: React Native - Manual iOS Setup
 sidebar_label: Manual iOS Setup
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -8,9 +8,10 @@ import Link from '@docusaurus/Link';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-These instructions are aimed at people manually adding Flipper to a React Native 0.62+ app.
-This should only be necessary if you have an existing app that cannot be upgraded with the
+:::note
+These details within this page are for people manually adding Flipper to a React Native 0.62+ app. This should only be necessary if you have an existing app that cannot be upgraded with the
 [React Native Upgrade tool](https://reactnative.dev/docs/upgrading).
+:::
 
 ## Dependencies
 
@@ -39,11 +40,12 @@ target 'your-app-name' do
 end
 ```
 
-Install the dependencies by running `cd ios && pod install`. Then continue to [Initialization](#initialization).
+Install the dependencies by running `cd ios && pod install` then continue to [Initialization](#initialization).
 
 ### React Native 0.62
 
-In 0.62, the setup includes a bit more code (which was moved to a helper in 0.63). Add all of the code below to your `ios/Podfile`:
+In version 0.62, the setup includes a bit more code (which was moved to a helper in 0.63).
+Add all of the code below to your `ios/Podfile`:
 
 ```ruby
 platform :ios, '9.0'
@@ -92,17 +94,16 @@ target 'your-app-name' do
 end
 ```
 
-Install the dependencies by running `cd ios && pod install`. You can now
-import and initialize Flipper in your AppDelegate.
+Install the dependencies by running `cd ios && pod install`. You can now import and initialize Flipper in your AppDelegate.
 
 ## Initialization
 
 The code below enables the following integrations:
 
-- Layout Inspector
-- Network
-- Shared Preferences
-- Crash Reporter
+* Layout Inspector
+* Network
+* Shared Preferences
+* Crash Reporter
 
 <Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
 <TabItem value="ios">
@@ -198,4 +199,4 @@ See the <Link to={useBaseUrl("/docs/troubleshooting")}>troubleshooting page</Lin
 
 ## Further Steps
 
-To create your own plugins and integrate with Flipper using JavaScript, check out our <Link to={useBaseUrl("/docs/tutorial/react-native")}>writing plugins for React Native</Link> tutorial!
+To create your own plugins and integrate with Flipper using JavaScript, check out our <Link to={useBaseUrl("/docs/tutorial/react-native")}>Building a React Native Plugin</Link> tutorial!
