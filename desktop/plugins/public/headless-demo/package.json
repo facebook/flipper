@@ -1,0 +1,30 @@
+{
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-headless-demo",
+  "id": "headless-demo",
+  "pluginType": "device",
+  "version": "0.0.0",
+  "flipperBundlerEntry": "index.tsx",
+  "headless": true,
+  "main": "dist/bundle.js",
+  "license": "MIT",
+  "title": "Headless-demo",
+  "icon": "apps",
+  "keywords": [
+    "flipper-plugin"
+  ],
+  "bugs": {
+    "url": "https://github.com/facebook/flipper/issues"
+  },
+  "peerDependencies": {
+    "flipper-plugin": "*",
+    "antd": "*",
+    "react": "*",
+    "react-dom": "*",
+    "@emotion/styled": "*",
+    "@ant-design/icons": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@types/node": "*"
+  }
+}
