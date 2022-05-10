@@ -624,16 +624,18 @@ export default class Client extends EventEmitter {
 
   initPlugin(pluginId: string) {
     this.activePlugins.add(pluginId);
-    if (this.connected.get()) {
+    const instance = this.sandyPluginStates.get(pluginId);
+    if (this.connected.get() && instance) {
       this.rawSend('init', {plugin: pluginId});
-      this.sandyPluginStates.get(pluginId)?.connect();
+      instance.connect();
     }
   }
 
   deinitPlugin(pluginId: string) {
     this.activePlugins.delete(pluginId);
-    this.sandyPluginStates.get(pluginId)?.disconnect();
-    if (this.connected.get()) {
+    const instance = this.sandyPluginStates.get(pluginId);
+    instance?.disconnect();
+    if (this.connected.get() && instance) {
       this.rawSend('deinit', {plugin: pluginId});
     }
   }
