@@ -18,6 +18,7 @@ import {startWebServerDev} from './startWebServerDev';
 import yargs from 'yargs';
 import open from 'open';
 import {sleep} from 'flipper-common';
+import {initCompanionEnv} from 'flipper-server-companion';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -88,6 +89,7 @@ async function start() {
     argv.settingsString,
     argv.launcherSettings,
   );
+  const companionEnv = await initCompanionEnv(flipperServer);
   if (argv.failFast) {
     flipperServer.on('server-state', ({state}) => {
       if (state === 'error') {
@@ -100,7 +102,7 @@ async function start() {
   if (argv.bundler) {
     await startWebServerDev(app, server, socket, rootDir);
   }
-  startSocketServer(flipperServer, socket);
+  startSocketServer(flipperServer, socket, companionEnv);
 }
 
 start()

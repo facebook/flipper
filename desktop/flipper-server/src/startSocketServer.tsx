@@ -16,13 +16,20 @@ import {
   GenericWebSocketError,
   UserError,
   SystemError,
+  getLogger,
 } from 'flipper-common';
 import {FlipperServerImpl} from 'flipper-server-core';
 import {WebSocketServer} from 'ws';
+import {
+  FlipperServerCompanion,
+  FlipperServerCompanionEnv,
+} from 'flipper-server-companion';
+import {URLSearchParams} from 'url';
 
 export function startSocketServer(
   flipperServer: FlipperServerImpl,
   socket: WebSocketServer,
+  companionEnv: FlipperServerCompanionEnv,
 ) {
   socket.on('connection', (client, req) => {
     const clientAddress =
@@ -34,7 +41,52 @@ export function startSocketServer(
 
     let connected = true;
 
-    function onServerEvent(event: string, payload: any) {
+    let flipperServerCompanion: FlipperServerCompanion | undefined;
+    if (req.url) {
+      const params = new URLSearchParams(req.url.slice(1));
+
+      if (params.get('server_companion')) {
+        flipperServerCompanion = new FlipperServerCompanion(
+          flipperServer,
+          getLogger(),
+          companionEnv.pluginInitializer.loadedPlugins,
+        );
+      }
+    }
+
+    async function onServerEvent(event: string, payload: any) {
+      if (flipperServerCompanion) {
+        switch (event) {
+          case 'client-message': {
+            const client = flipperServerCompanion.getClient(payload.id);
+            if (!client) {
+              console.warn(
+                'flipperServerCompanion.handleClientMessage -> unknown client',
+                event,
+                payload,
+              );
+              return;
+            }
+            client.onMessage(payload.message);
+            return;
+          }
+          case 'client-disconnected': {
+            if (flipperServerCompanion.getClient(payload.id)) {
+              flipperServerCompanion.destroyClient(payload.id);
+            }
+            // We use "break" here instead of "return" because a flipper desktop client still might be interested in the "client-disconnect" event to update its list of active clients
+            break;
+          }
+          case 'device-disconnected': {
+            if (flipperServerCompanion.getDevice(payload.id)) {
+              flipperServerCompanion.destroyDevice(payload.id);
+            }
+            // We use "break" here instead of "return" because a flipper desktop client still might be interested in the "device-disconnect" event to update its list of active devices
+            break;
+          }
+        }
+      }
+
       const message = {
         event: 'server-event',
         payload: {
@@ -85,8 +137,11 @@ export function startSocketServer(
             return;
           }
 
-          flipperServer
-            .exec(command, ...args)
+          const execRes = flipperServerCompanion?.canHandleCommand(command)
+            ? flipperServerCompanion.exec(command, ...args)
+            : flipperServer.exec(command, ...args);
+
+          execRes
             .then((result: any) => {
               if (connected) {
                 const response: ExecResponseWebSocketMessage = {
@@ -138,12 +193,14 @@ export function startSocketServer(
       console.log(chalk.red(`Client disconnected ${clientAddress}`));
       connected = false;
       flipperServer.offAny(onServerEvent);
+      flipperServerCompanion?.destroyAll();
     });
 
     client.on('error', (e) => {
       console.error(chalk.red(`Socket error ${clientAddress}`), e);
       connected = false;
       flipperServer.offAny(onServerEvent);
+      flipperServerCompanion?.destroyAll();
     });
   });
 }
