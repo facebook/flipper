@@ -29,6 +29,11 @@ export class HeadlessClient extends AbstractClient {
     super(id, query, conn, logger, plugins, device, flipperServer);
   }
 
+  isBackgroundPlugin(_pluginId: string) {
+    // In headless context we treat every plugin as a non-background one because we do not want to start anything automatically to preseve resources
+    return false;
+  }
+
   // Headless client never starts plugins automaticaly to preserve server resources
   shouldConnectAsBackgroundPlugin() {
     return false;
