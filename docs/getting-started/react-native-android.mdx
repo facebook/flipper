@@ -1,21 +1,21 @@
 ---
 id: react-native-android
-title: Manually set up your React Native Android App
+title: React Native - Manual Android Setup
 sidebar_label: Manual Android Setup
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Link from '@docusaurus/Link';
 
-These instructions are aimed at people manually adding Flipper to a React Native 0.62+ app.
-This should only be necessary if you have an existing app that cannot be upgraded with the
-[React Native Upgrade tool](https://reactnative.dev/docs/upgrading).
+::note
+The information within this page is meant for people manually adding Flipper to a React Native 0.62+ app.
+This should only be necessary if you have an existing app that cannot be upgraded with the [React Native Upgrade tool](https://reactnative.dev/docs/upgrading).
+:::
 
 ## Dependencies
 
-Flipper is distributed via Maven Central. Add the dependencies to your `build.gradle` file.
-You should also explicitly depend on [`soloader`](https://github.com/facebook/soloader)
-instead of relying on transitive dependency resolution which is getting deprecated
-with Gradle 5.
+Flipper is distributed via Maven Central: add the dependencies to your `build.gradle` file.
+
+You should also explicitly depend on [SoLoader`](https://github.com/facebook/soloader) instead of relying on transitive dependency resolution, which is getting deprecated with Gradle 5.
 
 ```groovy
 repositories {
@@ -33,14 +33,11 @@ dependencies {
 }
 ```
 
-These exclusions are currently necessary to avoid some clashes with FBJNI
-shared libraries.
+These exclusions are currently necessary to avoid some clashes with FBJNI shared libraries.
 
 ## Application Setup
 
-For maximum flexibility, we recommend you move the Flipper initialization to a separate
-class that lives in a `debug/` folder, so that Flipper code never gets referenced in a
-release build.
+For maximum flexibility, it's recommwended you move the Flipper initialization to a separate class that lives in a `debug/` folder, so that Flipper code never gets referenced in a release build.
 
 ```java
 import android.content.Context;
@@ -63,12 +60,10 @@ public class ReactNativeFlipper {
 }
 ```
 
-Note that this only enables the Layout Inspector plugin. Check out [the React Native template](https://github.com/facebook/react-native/blob/6f627f684bb6506a677c9632b2710e4a541690a9/template/android/app/src/debug/java/com/helloworld/ReactNativeFlipper.java) for more plugins.
+Note that this only enables the Layout Inspector plugin. For details of more plugins, see the [React Native template](https://github.com/facebook/react-native/blob/6f627f684bb6506a677c9632b2710e4a541690a9/template/android/app/src/debug/java/com/helloworld/ReactNativeFlipper.java).
 
-In your `Application` implementation, we then call the static method using
-reflection. This gives us a lot of flexibility, but can be quite noisy.
-Alternatively, recreate an empty `ReactNativeFlipper` class in a `release/` folder,
-so you can call into the method directly.
+In your `Application` implementation, call the static method using reflection. This gives us a lot of flexibility, but can be quite noisy.
+Alternatively, recreate an empty `ReactNativeFlipper` class in a `release/` folder, so you can call into the method directly.
 
 ```java
 public class MainApplication extends Application implements ReactApplication {
@@ -116,4 +111,4 @@ public class MainApplication extends Application implements ReactApplication {
 
 ## Further Steps
 
-To create your own plugins and integrate with Flipper using JavaScript, check out our <Link to={useBaseUrl("/docs/tutorial/react-native")}>writing plugins for React Native</Link> tutorial!
+To create your own plugins and integrate with Flipper using JavaScript, take a look at the <Link to={useBaseUrl("/docs/tutorial/react-native")}>Buildiing a React Natuive Plugin</Link> tutorial!
