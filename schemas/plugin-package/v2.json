@@ -109,6 +109,10 @@
           }
         }
       }
+    },
+    "headless": {
+      "type": "boolean",
+      "description": "Specifies if plugin works in a headless mode. Default: false."
     }
   },
   "required": [
