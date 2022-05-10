@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "types": ["node", "../types/flipperGlobals"]
+  },
+  "references": [
+    {
+      "path": "../flipper-common"
+    },
+    {
+      "path": "../flipper-frontend-core"
+    },
+    {
+      "path": "../flipper-plugin"
+    }
+  ]
+}

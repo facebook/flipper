@@ -173,6 +173,7 @@
       "flipper-common",
       "flipper-frontend-core",
       "flipper-plugin",
+      "flipper-server-companion",
       "flipper-server-core",
       "flipper-ui-core",
       "flipper-ui-browser",

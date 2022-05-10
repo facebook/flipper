@@ -22,6 +22,9 @@
       "path": "../flipper-server"
     },
     {
+      "path": "../flipper-server-companion"
+    },
+    {
       "path": "../flipper-server-core"
     },
     {
