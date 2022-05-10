@@ -161,15 +161,6 @@ async function startProxyServer(
     res.end('Failed to proxy request: ' + err);
   });
 
-  proxyServer.on('close', () => {
-    server.close();
-  });
-
-  server.on('close', () => {
-    proxyServer.close();
-    fs.remove(socketPath);
-  });
-
   return new Promise((resolve) => {
     proxyServer.listen(config.port);
     server.listen(socketPath, undefined, () => resolve({app, server}));
