@@ -1,0 +1,290 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import {
+  InstalledPluginDetails,
+  tryCatchReportPluginFailuresAsync,
+  notNull,
+} from 'flipper-common';
+import {
+  ActivatablePluginDetails,
+  BundledPluginDetails,
+  ConcretePluginDetails,
+} from 'flipper-common';
+import {reportUsage} from 'flipper-common';
+import {_SandyPluginDefinition} from 'flipper-plugin';
+import isPluginCompatible from './utils/isPluginCompatible';
+import isPluginVersionMoreRecent from './utils/isPluginVersionMoreRecent';
+import {getRenderHostInstance} from './RenderHost';
+import pMap from 'p-map';
+
+export abstract class AbstractPluginInitializer {
+  protected defaultPluginsIndex: any = null;
+  protected gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
+  protected disabledPlugins: Array<ActivatablePluginDetails> = [];
+  protected failedPlugins: Array<[ActivatablePluginDetails, string]> = [];
+
+  protected _loadedPlugins: _SandyPluginDefinition[] = [];
+
+  async init() {
+    this._loadedPlugins = await this._init();
+  }
+
+  get loadedPlugins(): ReadonlyArray<_SandyPluginDefinition> {
+    return this._loadedPlugins;
+  }
+
+  protected async _init(): Promise<_SandyPluginDefinition[]> {
+    this.loadDefaultPluginIndex();
+    this.loadMarketplacePlugins();
+    const uninstalledPluginNames = this.loadUninstalledPluginNames();
+    const allLocalVersions = await this.loadAllLocalVersions(
+      uninstalledPluginNames,
+    );
+    const pluginsToLoad = await this.filterAllLocalVersions(allLocalVersions);
+    const initialPlugins = await this.loadPlugins(pluginsToLoad);
+    return initialPlugins;
+  }
+
+  protected abstract getFlipperVersion(): Promise<string>;
+
+  protected abstract requirePluginImpl(
+    pluginDetails: ActivatablePluginDetails,
+  ): Promise<_SandyPluginDefinition>;
+
+  protected loadDefaultPluginIndex() {
+    this.defaultPluginsIndex = getRenderHostInstance().loadDefaultPlugins();
+  }
+  protected loadMarketplacePlugins() {}
+  protected loadUninstalledPluginNames(): Set<string> {
+    return new Set();
+  }
+  protected async loadAllLocalVersions(
+    uninstalledPluginNames: Set<string>,
+  ): Promise<(BundledPluginDetails | InstalledPluginDetails)[]> {
+    const bundledPlugins = await getBundledPlugins();
+
+    const allLocalVersions = [
+      ...bundledPlugins,
+      ...(await getDynamicPlugins()),
+    ].filter((p) => !uninstalledPluginNames.has(p.name));
+
+    return allLocalVersions;
+  }
+  protected async filterAllLocalVersions(
+    allLocalVersions: (BundledPluginDetails | InstalledPluginDetails)[],
+  ): Promise<ActivatablePluginDetails[]> {
+    const flipperVersion = await this.getFlipperVersion();
+    const loadedPlugins = getLatestCompatibleVersionOfEachPlugin(
+      allLocalVersions,
+      flipperVersion,
+    );
+
+    const pluginsToLoad = loadedPlugins
+      .map(reportVersion)
+      .filter(checkDisabled(this.disabledPlugins))
+      .filter(checkGK(this.gatekeepedPlugins));
+
+    return pluginsToLoad;
+  }
+
+  protected async loadPlugins(pluginsToLoad: ActivatablePluginDetails[]) {
+    const loader = createRequirePluginFunction(
+      this.requirePluginImpl.bind(this),
+    )(this.failedPlugins);
+    const initialPlugins: _SandyPluginDefinition[] = (
+      await pMap(pluginsToLoad, loader)
+    ).filter(notNull);
+    return initialPlugins;
+  }
+}
+
+export function isDevicePluginDefinition(
+  definition: _SandyPluginDefinition,
+): boolean {
+  return definition.isDevicePlugin;
+}
+
+export function reportVersion(pluginDetails: ActivatablePluginDetails) {
+  reportUsage(
+    'plugin:version',
+    {
+      version: pluginDetails.version,
+    },
+    pluginDetails.id,
+  );
+  return pluginDetails;
+}
+
+export function getLatestCompatibleVersionOfEachPlugin<
+  T extends ConcretePluginDetails,
+>(plugins: T[], flipperVersion: string): T[] {
+  const latestCompatibleVersions: Map<string, T> = new Map();
+  for (const plugin of plugins) {
+    if (isPluginCompatible(plugin, flipperVersion)) {
+      const loadedVersion = latestCompatibleVersions.get(plugin.id);
+      if (
+        !loadedVersion ||
+        isPluginVersionMoreRecent(plugin, loadedVersion, flipperVersion)
+      ) {
+        latestCompatibleVersions.set(plugin.id, plugin);
+      }
+    }
+  }
+  return Array.from(latestCompatibleVersions.values());
+}
+
+export async function getBundledPlugins(): Promise<
+  Array<BundledPluginDetails>
+> {
+  if (getRenderHostInstance().serverConfig.env.NODE_ENV === 'test') {
+    return [];
+  }
+  try {
+    // defaultPlugins that are included in the Flipper distributive.
+    // List of default bundled plugins is written at build time to defaultPlugins/bundled.json.
+    return await getRenderHostInstance().flipperServer!.exec(
+      'plugins-get-bundled-plugins',
+    );
+  } catch (e) {
+    console.error('Failed to load list of bundled plugins', e);
+    return [];
+  }
+}
+
+export async function getDynamicPlugins(): Promise<InstalledPluginDetails[]> {
+  try {
+    return await getRenderHostInstance().flipperServer!.exec(
+      'plugins-load-dynamic-plugins',
+    );
+  } catch (e) {
+    console.error('Failed to load dynamic plugins', e);
+    return [];
+  }
+}
+
+export const checkGK =
+  (gatekeepedPlugins: Array<ActivatablePluginDetails>) =>
+  (plugin: ActivatablePluginDetails): boolean => {
+    try {
+      if (!plugin.gatekeeper) {
+        return true;
+      }
+      const result = getRenderHostInstance().GK(plugin.gatekeeper);
+      if (!result) {
+        gatekeepedPlugins.push(plugin);
+      }
+      return result;
+    } catch (err) {
+      console.error(`Failed to check GK for plugin ${plugin.id}`, err);
+      return false;
+    }
+  };
+
+export const checkDisabled = (
+  disabledPlugins: Array<ActivatablePluginDetails>,
+) => {
+  const config = getRenderHostInstance().serverConfig;
+  let enabledList: Set<string> | null = null;
+  let disabledList: Set<string> = new Set();
+  try {
+    if (config.env.FLIPPER_ENABLED_PLUGINS) {
+      enabledList = new Set<string>(
+        config.env.FLIPPER_ENABLED_PLUGINS.split(','),
+      );
+    }
+    disabledList = new Set(config.processConfig.disabledPlugins);
+  } catch (e) {
+    console.error('Failed to compute enabled/disabled plugins', e);
+  }
+  return (plugin: ActivatablePluginDetails): boolean => {
+    try {
+      if (disabledList.has(plugin.name)) {
+        disabledPlugins.push(plugin);
+        return false;
+      }
+      if (
+        enabledList &&
+        !(
+          enabledList.has(plugin.name) ||
+          enabledList.has(plugin.id) ||
+          enabledList.has(plugin.name.replace('flipper-plugin-', ''))
+        )
+      ) {
+        disabledPlugins.push(plugin);
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.error(
+        `Failed to check whether plugin ${plugin.id} is disabled`,
+        e,
+      );
+      return false;
+    }
+  };
+};
+
+export const createRequirePluginFunction =
+  (
+    requirePluginImpl: (
+      pluginDetails: ActivatablePluginDetails,
+    ) => Promise<_SandyPluginDefinition>,
+  ) =>
+  (failedPlugins: Array<[ActivatablePluginDetails, string]>) => {
+    return async (
+      pluginDetails: ActivatablePluginDetails,
+    ): Promise<_SandyPluginDefinition | null> => {
+      try {
+        const requirePluginImplWrapped = wrapRequirePlugin(requirePluginImpl);
+        const pluginDefinition = await requirePluginImplWrapped(pluginDetails);
+        if (
+          pluginDefinition &&
+          isDevicePluginDefinition(pluginDefinition) &&
+          pluginDefinition.details.pluginType !== 'device'
+        ) {
+          console.warn(
+            `Package ${pluginDefinition.details.name} contains the device plugin "${pluginDefinition.title}" defined in a wrong format. Specify "pluginType" and "supportedDevices" properties and remove exported function "supportsDevice". See details at https://fbflipper.com/docs/extending/desktop-plugin-structure#creating-a-device-plugin.`,
+          );
+        }
+        return pluginDefinition;
+      } catch (e) {
+        failedPlugins.push([pluginDetails, e.message]);
+        console.error(`Plugin ${pluginDetails.id} failed to load`, e);
+        return null;
+      }
+    };
+  };
+
+const wrapRequirePlugin =
+  (
+    requirePluginImpl: (
+      pluginDetails: ActivatablePluginDetails,
+    ) => Promise<_SandyPluginDefinition>,
+  ) =>
+  (
+    pluginDetails: ActivatablePluginDetails,
+  ): Promise<_SandyPluginDefinition> => {
+    reportUsage(
+      'plugin:load',
+      {
+        version: pluginDetails.version,
+      },
+      pluginDetails.id,
+    );
+    return tryCatchReportPluginFailuresAsync(
+      () => requirePluginImpl(pluginDetails),
+      'plugin:load',
+      pluginDetails.id,
+    );
+  };
+
+export const isSandyPlugin = (pluginDetails: ActivatablePluginDetails) => {
+  return !!pluginDetails.flipperSDKVersion;
+};
