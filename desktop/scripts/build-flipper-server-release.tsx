@@ -16,6 +16,7 @@ import {
   genMercurialRevision,
   getVersionNumber,
   prepareDefaultPlugins,
+  prepareHeadlessPlugins,
 } from './build-utils';
 import {defaultPluginsDir, distDir, serverDir, staticDir} from './paths';
 import isFB from './isFB';
@@ -330,6 +331,7 @@ async function buildServerRelease() {
 
   await compileServerMain(false);
   await prepareDefaultPlugins(argv.channel === 'insiders');
+  await prepareHeadlessPlugins();
   await copyStaticResources(dir, versionNumber);
   await downloadIcons(path.join(dir, 'static'));
   await buildBrowserBundle(path.join(dir, 'static'), false);

@@ -18,10 +18,16 @@ const babelOptions = {
   filename: 'index.js',
 };
 
+const babelOptionsPlugin = {
+  ...babelOptions,
+  root: 'plugins/randomPlugin/',
+  filename: 'plugins/randomPlugin/index.js',
+};
+
 test('transform react requires to global object', () => {
   const src = 'require("react")';
   const ast = parse(src);
-  const transformed = transformFromAstSync(ast, src, babelOptions)!.ast;
+  const transformed = transformFromAstSync(ast, src, babelOptionsPlugin)!.ast;
   const {code} = generate(transformed!);
   expect(code).toBe('global.React;');
 });
@@ -29,7 +35,7 @@ test('transform react requires to global object', () => {
 test('transform react-dom requires to global object', () => {
   const src = 'require("react-dom")';
   const ast = parse(src);
-  const transformed = transformFromAstSync(ast, src, babelOptions)!.ast;
+  const transformed = transformFromAstSync(ast, src, babelOptionsPlugin)!.ast;
   const {code} = generate(transformed!);
   expect(code).toBe('global.ReactDOM;');
 });
@@ -37,7 +43,7 @@ test('transform react-dom requires to global object', () => {
 test('transform react-dom/client requires to global object', () => {
   const src = 'require("react-dom/client")';
   const ast = parse(src);
-  const transformed = transformFromAstSync(ast, src, babelOptions)!.ast;
+  const transformed = transformFromAstSync(ast, src, babelOptionsPlugin)!.ast;
   const {code} = generate(transformed!);
   expect(code).toBe('global.ReactDOMClient;');
 });
@@ -45,17 +51,33 @@ test('transform react-dom/client requires to global object', () => {
 test('transform flipper requires to global object', () => {
   const src = 'require("flipper")';
   const ast = parse(src);
-  const transformed = transformFromAstSync(ast, src, babelOptions)!.ast;
+  const transformed = transformFromAstSync(ast, src, babelOptionsPlugin)!.ast;
   const {code} = generate(transformed!);
   expect(code).toBe('global.Flipper;');
+});
+
+test('do NOT transform flipper requires outside of plugins folder', () => {
+  const src = 'require("flipper");';
+  const ast = parse(src);
+  const transformed = transformFromAstSync(ast, src, babelOptions)!.ast;
+  const {code} = generate(transformed!);
+  expect(code).toBe('require("flipper");');
 });
 
 test('transform React identifier to global.React', () => {
   const src = 'React;';
   const ast = parse(src);
-  const transformed = transformFromAstSync(ast, src, babelOptions)!.ast;
+  const transformed = transformFromAstSync(ast, src, babelOptionsPlugin)!.ast;
   const {code} = generate(transformed!);
   expect(code).toBe('global.React;');
+});
+
+test('do NOT transform React identifier to global.React outside of plugins folder', () => {
+  const src = 'React;';
+  const ast = parse(src);
+  const transformed = transformFromAstSync(ast, src, babelOptions)!.ast;
+  const {code} = generate(transformed!);
+  expect(code).toBe('React;');
 });
 
 test('do NOT transform local React namespace import to global.React', () => {
@@ -70,7 +92,7 @@ test('throw error when requiring outside the plugin', () => {
   const src = 'require("../test.js")';
   const ast = parse(src);
   expect(() => {
-    transformFromAstSync(ast, src, babelOptions);
+    transformFromAstSync(ast, src, babelOptionsPlugin);
   }).toThrow();
 });
 

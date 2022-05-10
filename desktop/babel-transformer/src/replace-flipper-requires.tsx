@@ -51,6 +51,7 @@ export function tryReplaceGlobalReactUsage(path: NodePath<Identifier>) {
   if (
     path.node.name === 'React' &&
     (path.parentPath.node as any).id !== path.node &&
+    path.parent.type !== 'ObjectProperty' &&
     !isReactImportIdentifier(path)
   ) {
     path.replaceWith(identifier('global.React'));

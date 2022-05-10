@@ -16,9 +16,16 @@ import {
   tryReplaceGlobalReactUsage,
 } from './replace-flipper-requires';
 
+const sourceRootDir = resolve(__dirname, '../..');
+const pluginRootDir = resolve(__dirname, '../../plugin');
+
 // do not apply this transform for these paths
 const EXCLUDE_PATHS = ['relay-devtools/DevtoolsUI'];
 function isExcludedPath(path: string) {
+  // Replace requires and React for plugins, but not for the Flipper core code which can access bundled React and other Flipper packages
+  if (path.startsWith(sourceRootDir) && !path.startsWith(pluginRootDir)) {
+    return true;
+  }
   for (const epath of EXCLUDE_PATHS) {
     if (path.indexOf(epath) > -1) {
       return true;

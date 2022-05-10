@@ -11,6 +11,7 @@ import {default as doTransform} from './transform';
 import {default as getCacheKey} from './get-cache-key';
 
 const presets = [
+  '@babel/preset-react',
   [
     '@babel/preset-env',
     {

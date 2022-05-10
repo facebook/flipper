@@ -37,6 +37,7 @@ import {
   rootDir,
   browserUiDir,
   serverCoreDir,
+  serverCompanionDir,
 } from './paths';
 import pFilter from 'p-filter';
 import child from 'child_process';
@@ -108,6 +109,14 @@ export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
     }
   }
   console.log('✅  Prepared default plugins.');
+}
+
+export async function prepareHeadlessPlugins() {
+  console.log(`⚙️  Preparing headless plugins...`);
+  const sourcePlugins = await getSourcePlugins();
+  const headlessPlugins = sourcePlugins.filter((p) => p.headless);
+  await generateHeadlessPluginEntryPoints(headlessPlugins);
+  console.log('✅  Prepared headless plugins.');
 }
 
 function getGeneratedIndex(pluginRequires: string) {
@@ -189,6 +198,28 @@ async function generateDefaultPluginEntryPoints(
   );
 
   console.log('✅  Generated bundled plugin entry points.');
+}
+
+async function generateHeadlessPluginEntryPoints(
+  headlessPlugins: InstalledPluginDetails[],
+) {
+  console.log(
+    `⚙️  Generating entry points for ${headlessPlugins.length} headless plugins...`,
+  );
+  const headlessRequires = headlessPlugins
+    .map(
+      (x) =>
+        `  '${x.name}': tryRequire('${x.name}', () => require('${x.name}'))`,
+    )
+    .join(',\n');
+  const generatedIndexHeadless = getGeneratedIndex(headlessRequires);
+  await fs.ensureDir(path.join(serverCompanionDir, 'src', 'defaultPlugins'));
+  await fs.writeFile(
+    path.join(serverCompanionDir, 'src', 'defaultPlugins', 'index.tsx'),
+    generatedIndexHeadless,
+  );
+
+  console.log('✅  Generated headless plugin entry points.');
 }
 
 async function buildDefaultPlugins(defaultPlugins: InstalledPluginDetails[]) {

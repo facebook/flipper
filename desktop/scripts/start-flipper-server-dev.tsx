@@ -14,6 +14,7 @@ import {
   compileServerMain,
   launchServer,
   prepareDefaultPlugins,
+  prepareHeadlessPlugins,
 } from './build-utils';
 import Watchman from './watchman';
 import isFB from './isFB';
@@ -185,6 +186,7 @@ async function startWatchChanges() {
   await prepareDefaultPlugins(
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
   );
+  await prepareHeadlessPlugins();
 
   // watch
   await startWatchChanges();
