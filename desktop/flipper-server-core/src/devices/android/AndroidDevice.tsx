@@ -120,6 +120,37 @@ export default class AndroidDevice extends ServerDevice {
     });
   }
 
+  async setIntoPermissiveMode(): Promise<void> {
+    console.debug('AndroidDevice.setIntoPermissiveMode', this.serial);
+    try {
+      try {
+        await this.adb.root(this.serial);
+      } catch (e) {
+        if (
+          !(e instanceof Error) ||
+          e.message !== 'adbd is already running as root'
+        ) {
+          throw e;
+        }
+      }
+      console.debug(
+        'AndroidDevice.setIntoPermissiveMode -> enabled root',
+        this.serial,
+      );
+      await this.executeShellOrDie('setenforce 0');
+      console.info(
+        'AndroidDevice.setIntoPermissiveMode -> success',
+        this.serial,
+      );
+    } catch (e) {
+      console.info(
+        'AndroidDevice.setIntoPermissiveMode -> failed',
+        this.serial,
+        e,
+      );
+    }
+  }
+
   async screenRecordAvailable(): Promise<boolean> {
     try {
       await this.executeShellOrDie(

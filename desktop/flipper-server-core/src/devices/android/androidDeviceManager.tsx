@@ -87,6 +87,16 @@ export class AndroidDeviceManager {
             });
           }
 
+          // Remote simulators connected via SSH tunnels
+          const isRemoteDevice = device.id.startsWith('localhost');
+          if (
+            androidLikeDevice instanceof AndroidDevice &&
+            type === 'physical' &&
+            !isRemoteDevice
+          ) {
+            await androidLikeDevice.setIntoPermissiveMode();
+          }
+
           // The default way of capturing screenshots through adb does not seem to work
           // There is a way of getting a screenshot through KaiOS dev tools though
           if (androidLikeDevice instanceof AndroidDevice) {
