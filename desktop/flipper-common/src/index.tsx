@@ -41,6 +41,8 @@ export {
   UserUnauthorizedError,
   UserNotSignedInError,
   NoLongerConnectedToClientError,
+  UserError,
+  SystemError,
   isConnectivityOrAuthError,
   isError,
   isAuthError,

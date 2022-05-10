@@ -30,6 +30,24 @@ export function isConnectivityOrAuthError(
   );
 }
 
+export class SystemError extends Error {
+  name = 'SystemError';
+  readonly context?: unknown;
+  constructor(msg: string, ...args: unknown[]) {
+    super(msg);
+    this.context = args;
+  }
+}
+
+export class UserError extends Error {
+  name = 'UserError';
+  readonly context?: unknown;
+  constructor(msg: string, ...args: unknown[]) {
+    super(msg);
+    this.context = args;
+  }
+}
+
 export class UnableToExtractClientQueryError extends Error {
   constructor(msg: string) {
     super(msg);

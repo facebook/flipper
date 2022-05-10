@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlipperServer, Logger} from 'flipper-common';
+import {FlipperServer, Logger, UserError, SystemError} from 'flipper-common';
 import {BaseDevice} from 'flipper-frontend-core';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {HeadlessClient} from './HeadlessClient';
@@ -121,8 +121,9 @@ export class FlipperServerCompanion {
   destroyClient(clientId: string) {
     const client = this.clients.get(clientId);
     if (!client) {
-      throw new Error(
+      throw new UserError(
         'FlipperServerCompanion.destroyClient -> client not found',
+        client,
       );
     }
     client.destroy();
@@ -136,8 +137,9 @@ export class FlipperServerCompanion {
   destroyDevice(deviceSerial: string) {
     const device = this.devices.get(deviceSerial);
     if (!device) {
-      throw new Error(
+      throw new UserError(
         'FlipperServerCompanion.destroyDevice -> device not found',
+        deviceSerial,
       );
     }
     device.destroy();
@@ -159,8 +161,9 @@ export class FlipperServerCompanion {
 
     const clientInfo = await this.flipperServer.exec('client-find', clientId);
     if (!clientInfo) {
-      throw new Error(
+      throw new UserError(
         'FlipperServerCompanion.createHeadlessClientIfNeeded -> client not found',
+        clientId,
       );
     }
 
@@ -206,8 +209,9 @@ export class FlipperServerCompanion {
       deviceSerial,
     );
     if (!deviceInfo) {
-      throw new Error(
+      throw new UserError(
         'FlipperServerCompanion.createHeadlessDeviceIfNeeded -> device not found',
+        deviceSerial,
       );
     }
 
@@ -228,8 +232,9 @@ export class FlipperServerCompanion {
       const handler: (...args: any[]) => Promise<any> =
         this.commandHandler[event];
       if (!handler) {
-        throw new Error(
-          `Unimplemented FlipperServerCompanion command: ${event}`,
+        throw new UserError(
+          `Unimplemented FlipperServerCompanion command`,
+          event,
         );
       }
       const result = await handler(...args);
@@ -267,14 +272,18 @@ export class FlipperServerCompanion {
 
       const pluginInstance = client.sandyPluginStates.get(pluginId);
       if (!pluginInstance) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-plugin-start -> plugin not found',
+          clientId,
+          pluginId,
         );
       }
 
       if (!client.connected.get()) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-plugin-start -> client not connected',
+          clientId,
+          pluginId,
         );
       }
 
@@ -283,15 +292,19 @@ export class FlipperServerCompanion {
     'companion-plugin-stop': async (clientId, pluginId) => {
       const client = this.clients.get(clientId);
       if (!client) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-plugin-stop -> client not found',
+          clientId,
+          pluginId,
         );
       }
 
       const pluginInstance = client.sandyPluginStates.get(pluginId);
       if (!pluginInstance) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-plugin-stop -> plugin not found',
+          clientId,
+          pluginId,
         );
       }
 
@@ -302,8 +315,10 @@ export class FlipperServerCompanion {
       }
 
       if (!pluginInstance.activated) {
-        throw new Error(
+        throw new SystemError(
           'FlipperServerCompanion.companion-plugin-stop -> plugin not activated',
+          clientId,
+          pluginId,
         );
       }
 
@@ -312,33 +327,53 @@ export class FlipperServerCompanion {
     'companion-plugin-exec': async (clientId, pluginId, api, params) => {
       const client = this.clients.get(clientId);
       if (!client) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-plugin-exec -> client not found',
+          clientId,
+          pluginId,
+          api,
+          params,
         );
       }
 
       const pluginInstance = client.sandyPluginStates.get(pluginId);
       if (!pluginInstance) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-plugin-exec -> plugin not found',
+          clientId,
+          pluginId,
+          api,
+          params,
         );
       }
 
       if (!client.connected.get()) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-plugin-exec -> client not connected',
+          clientId,
+          pluginId,
+          api,
+          params,
         );
       }
 
       if (!pluginInstance.companionApi) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-plugin-exec -> plugin does not expose API',
+          clientId,
+          pluginId,
+          api,
+          params,
         );
       }
 
       if (typeof pluginInstance.companionApi[api] !== 'function') {
-        throw new Error(
+        throw new SystemError(
           'FlipperServerCompanion.companion-plugin-exec -> plugin does not expose requested API method or it is not callable',
+          clientId,
+          pluginId,
+          api,
+          params,
         );
       }
 
@@ -368,20 +403,26 @@ export class FlipperServerCompanion {
 
       const pluginDefinition = this.loadablePlugins.get(pluginId);
       if (!pluginDefinition) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-device-plugin-start -> plugin definition not found',
+          deviceSerial,
+          pluginId,
         );
       }
 
       if (!device.connected.get()) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-device-plugin-start -> device not connected',
+          deviceSerial,
+          pluginId,
         );
       }
 
       if (!device.supportsPlugin(pluginDefinition)) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-device-plugin-start -> device does not support plugin',
+          deviceSerial,
+          pluginId,
         );
       }
 
@@ -391,27 +432,35 @@ export class FlipperServerCompanion {
     'companion-device-plugin-stop': async (deviceSerial, pluginId) => {
       const device = this.devices.get(deviceSerial);
       if (!device) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-device-plugin-stop -> client not found',
+          deviceSerial,
+          pluginId,
         );
       }
 
       const pluginInstance = device.sandyPluginStates.get(pluginId);
       if (!pluginInstance) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-device-plugin-stop -> plugin not found',
+          deviceSerial,
+          pluginId,
         );
       }
 
       if (!device.connected.get()) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-device-plugin-stop -> device not connected',
+          deviceSerial,
+          pluginId,
         );
       }
 
       if (!pluginInstance.activated) {
-        throw new Error(
+        throw new SystemError(
           'FlipperServerCompanion.companion-device-plugin-stop -> plugin not activated',
+          deviceSerial,
+          pluginId,
         );
       }
 
@@ -425,33 +474,53 @@ export class FlipperServerCompanion {
     ) => {
       const device = this.devices.get(deviceSerial);
       if (!device) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-device-plugin-exec -> device not found',
+          deviceSerial,
+          pluginId,
+          api,
+          params,
         );
       }
 
       const pluginInstance = device.sandyPluginStates.get(pluginId);
       if (!pluginInstance) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-device-plugin-exec -> plugin not found',
+          deviceSerial,
+          pluginId,
+          api,
+          params,
         );
       }
 
       if (!device.connected.get()) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-plugin-exec -> client not connected',
+          deviceSerial,
+          pluginId,
+          api,
+          params,
         );
       }
 
       if (!pluginInstance.companionApi) {
-        throw new Error(
+        throw new UserError(
           'FlipperServerCompanion.companion-plugin-exec -> plugin does not expose API',
+          deviceSerial,
+          pluginId,
+          api,
+          params,
         );
       }
 
       if (typeof pluginInstance.companionApi[api] !== 'function') {
-        throw new Error(
+        throw new SystemError(
           'FlipperServerCompanion.companion-plugin-exec -> plugin does not expose requested API method or it is not callable',
+          deviceSerial,
+          pluginId,
+          api,
+          params,
         );
       }
 

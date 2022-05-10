@@ -14,6 +14,8 @@ import {
   ExecResponseErrorWebSocketMessage,
   ServerEventWebSocketMessage,
   GenericWebSocketError,
+  UserError,
+  SystemError,
 } from 'flipper-common';
 import {FlipperServerImpl} from 'flipper-server-core';
 import {WebSocketServer} from 'ws';
@@ -99,6 +101,20 @@ export function startSocketServer(
               }
             })
             .catch((error: any) => {
+              if (error instanceof UserError) {
+                console.warn(
+                  `flipper-server.startSocketServer.exec: ${error.message}`,
+                  error.context,
+                  error.stack,
+                );
+              }
+              if (error instanceof SystemError) {
+                console.error(
+                  `flipper-server.startSocketServer.exec: ${error.message}`,
+                  error.context,
+                  error.stack,
+                );
+              }
               if (connected) {
                 // TODO: Serialize error
                 // TODO: log if verbose console.warn('Failed to handle response', error);
