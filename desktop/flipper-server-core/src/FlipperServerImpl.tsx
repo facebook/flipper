@@ -340,6 +340,9 @@ export class FlipperServerImpl implements FlipperServer {
     ),
     'get-config': async () => this.config,
     'get-changelog': getChangelog,
+    'device-find': async (deviceSerial) => {
+      return this.devices.get(deviceSerial)?.info;
+    },
     'device-list': async () => {
       return Array.from(this.devices.values()).map((d) => d.info);
     },
@@ -362,6 +365,9 @@ export class FlipperServerImpl implements FlipperServer {
         throw new Error('Not a Metro device: ' + serial);
       }
       device.sendCommand(command);
+    },
+    'client-find': async (clientId) => {
+      return this.server.connections.get(clientId)?.client;
     },
     'client-list': async () => {
       return Array.from(this.server.connections.values()).map((c) => c.client);

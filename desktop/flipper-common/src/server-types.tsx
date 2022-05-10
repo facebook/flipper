@@ -209,6 +209,9 @@ export type FlipperServerCommands = {
   'get-config': () => Promise<FlipperServerConfig>;
   'get-changelog': () => Promise<string>;
   'device-list': () => Promise<DeviceDescription[]>;
+  'device-find': (
+    deviceSerial: string,
+  ) => Promise<DeviceDescription | undefined>;
   'device-take-screenshot': (serial: string) => Promise<string>; // base64 encoded buffer
   'device-start-screencapture': (
     serial: string,
@@ -225,6 +228,7 @@ export type FlipperServerCommands = {
   'device-navigate': (serial: string, location: string) => Promise<void>;
   'metro-command': (serial: string, command: string) => Promise<void>;
   'client-list': () => Promise<ClientDescription[]>;
+  'client-find': (clientId: string) => Promise<ClientDescription | undefined>;
   'client-request': (clientId: string, payload: any) => Promise<void>;
   'client-request-response': (
     clientId: string,
