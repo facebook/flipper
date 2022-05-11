@@ -1,0 +1,146 @@
+---
+id: general-issues
+title: General Issues
+sidebar_label: General Issues
+custom_edit_url: https://www.internalfb.com/intern/diffusion/FBS/browsefile/master/xplat/sonar/docs/general-issues.mdx
+---
+
+:::note
+There is a public build of Flipper and an internal one. The internal app provides more plugins and earlier access to features, so you should use it.
+
+The latest version of Flipper also has an interactive, self-navigating troubleshooting guide button. Please check that out to help you troubleshoot issues specific to your case.
+:::
+
+## Internal Meta releases
+
+The internal build of Flipper has some extra features that the open source one doesn't. To get the latest version, please install Flipper from the Managed Software Centre rather than the Flipper website.
+
+## Up to date mobile app and Flipper version
+
+Occasionally there are breaking protocol changes, so if you're having trouble, make sure the app you're building is rebased relatively recently onto stable and that the flipper version is also up to date.
+
+## In-app diagnostics
+
+### Android
+
+Run the following:
+
+```bash
+adb shell am start -n <APP_PACKAGE>/com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity
+```
+
+For example, for an FB4A debug build, run:
+`adb shell am start -n com.facebook.wakizashi/com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity`.
+
+Or open Flipper Diagnostics from the internal settings, which is available in some apps.
+
+### iOS
+
+Diagnostics have been added to the Internal Settings of the biggest apps.
+
+Navigate to `Internal settings > Troubleshooting Flipper (Sonar)`
+
+## iOS App in physical device not connecting to Flipper? idb permission issues?
+
+This may be because the app you're trying to connect to is signed by an enterprise certificate. If you've downloaded the builds from Mobile Home or the Mobile Builds Plugin, then the app is signed by enterprise certificates. If the app is built locally, then it's signed by developer certificates and idb can access the app's sandbox.
+
+Flipper does not support all the apps signed by enterprise certificates. Have a look at the following matrix to see, if your app is supported.
+
+<table class="ios-support-matrix">
+<thead>
+<tr>
+  <th></th>
+  <th>Built Locally</th>
+  <th>Mobile Home/Boilerroom builds/builds signed by enterprise certificates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>FB</td>
+  <td class="supported"> </td>
+  <td class="supported">Supported only by WWW cert exchange mode</td>
+</tr>
+<tr>
+  <td>IG</td>
+  <td class="supported"></td>
+  <td class="supported">Supported only by WWW cert exchange mode</td>
+</tr>
+<tr>
+  <td>Messenger</td>
+  <td class="supported"> </td>
+  <td class="not-supported"> Not Supported</td>
+</tr>
+<tr>
+  <td>Workplace</td>
+  <td class="supported"> </td>
+  <td class="not-supported"> Not Supported</td>
+</tr>
+<tr>
+  <td>Workchat</td>
+  <td class="supported"> </td>
+  <td class="not-supported"> Not Supported</td>
+</tr>
+<tr>
+  <td>Other iOS Apps</td>
+  <td class="supported">Supported if Flipper SDK is integrated </td>
+  <td class="not-supported"> Not Supported</td>
+</tr>
+</tbody>
+</table>
+
+In the above table:
+
+* If your app is supported and the cell contains 'Supported only by WWW certificate exchange', then you will have to do the following:
+
+  * Ensure both Flipper and your mobile app are connected to Lighthouse.
+  * In your mobile app, go to Internal Setting -> "Flipper Certificate Exchange", enable the toggle.
+  * Your app will get connected now.
+
+* If your app falls in the red zone, then you can enable the WWW certificate exchange for your app by following [this guide](/docs/fb/www-certificate-exchange).
+
+## Physical SELinux-based device (think Portal) cannot connect
+
+A definitive sign of the issue is if you see `avc: denied ...` in the device logs.
+
+Try running the following:
+
+```bash
+adb root
+adb shell setenforce 0
+```
+
+## Only Logs, Layout and Network plugins showing
+
+You're probably using the public build of Flipper.  Instead, download the internal one from [Flipper Support](https://fb.facebook.com/groups/230455004101832/permalink/470961366717860/).
+
+## iOS Simulator not shown in device list
+
+Ensure that `ps aux | grep CoreSimulator` and `xcode-select -p` have the same Xcode version. If not, update the xcode version by sudo `xcode-select --switch <Path to xcode>`
+
+If it still doesn't function, then post the details in the [Flipper Support](https://fb.facebook.com/groups/230455004101832/) Workplace group.
+
+## Launcher can't download
+
+Flipper downloads need to happen either while on Lighthouse or a VPN connection. To check the status of your connection, visit [bunny i vlaninfo](https://www.internalfb.com/intern/vlaninfo).
+
+## Prefetch unsupported
+
+You may see a message on your terminal about prefetch being unsupported. This means you downloaded Flipper manually and moved it into your `/Applications/` folder. Installing Flipper this way is unsupported. Not
+only may it be missing important plugins for your work at Meta but will also never receive updates and is likely to stop working at some point in the future as the apps receive updates.
+
+Please manually remove `/Applications/Flipper.app` and reinstall Flipper from the [Managed Software Center](https://www.internalfb.com/intern/wiki/Client_Platform_Engineering/Users/Managed_Software_Center_(MSC)/).
+
+## Android app remains in status 'Currently connecting...' status forever
+
+Verify that the application has the right permissions to read the certificates that are used to connect to Flipper (see this Flipper Support [thread](https://fb.workplace.com/groups/flippersupport/permalink/1062569534223704/)).
+
+Try running `adb root && adb shell setenforce 0` as a workaround.
+
+## React Native plugins do not show up for my on-demand running mobile app
+
+1. Make sure that the 'JavaScript bundler' is running in the 'React Native' section of the Mobile Development plugin.
+2. Take the following steps to ensure that the tunnel for port 8081 is connected in the 'Port Tunnels' section as it might incorrectly report that it's connected (see the following [bug](https://www.internalfb.com/intern/bugs/user/100003692117643/)):
+
+   * Press connect.
+   * Perform DUO authentication.
+   * Verify that the terminal reports that the tunnel was created successfully. If it reports 'cannot listen to port 8081', make sure to kill any local processes on that port and try again: `kill -9 $(lsof -t -i tcp:8081)`.

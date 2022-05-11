@@ -1,0 +1,82 @@
+---
+id: mac-desktop-app
+title: Troubleshooting Mac Desktop App Issues
+sidebar_label: Mac Desktop App Issues
+custom_edit_url: https://www.internalfb.com/intern/diffusion/FBS/browsefile/master/xplat/sonar/docs/mac-desktop-app.mdx
+---
+
+Flipper is a work in progress and issues may occur. This page contains known issues associated with the Mac desktop apps and provides steps you can take to try to resolve them.
+
+## Flipper won't launch on Mac
+
+* If the window is appearing, try opening the Chrome DevTools within Flipper. To do so, from the View menu select 'Toggle Developer Tools' or press CMD+Option+I and check if there are any errors on the console.
+* Launch Flipper from the command line using `/Applications/Flipper.app/Contents/MacOS/Flipper`. This should give you some logs, that might be helpful when debugging.
+* Delete `~/.flipper` and try relaunching Flipper.
+* Delete Flipper from your applications folder and redownload [Flipper](https://www.facebook.com/fbflipper/public/mac).
+* If you're using `yarn start` to run from source, make sure all dependencies are installed correctly by running yarn install.
+
+## Flipper shows weird render artifacts
+
+This is a long standing MacOS + Electron issue outside our control. In general, restarting your computer fixes the problem.
+For a quick, temporarily work around start Flipper with hardware acceleration disabled. Please note that this will consume a lot of CPU: `FLIPPER_DISABLE_GPU=1 open -a Flipper`.
+
+## iOS Simulator fails to connect with error "Failed to find device..."
+
+Try executing `idb kill` and restarting Flipper. See [this comment](https://fb.workplace.com/groups/flippersupport/posts/1288502608297061/?comment_id=1290222721458383&reply_comment_id=1290374518109870) for details.
+
+## iOS Simulator missing from devices dropdown
+
+* Check that `xcode-select -p` shows the same XCode version that you're using. If not, see xcode-select for how to select the correct version.
+
+## iOS physical device not showing up
+
+Make sure [`idb`](https://fbidb.io/docs/installation) is installed and configured in the Flipper settings.
+
+## App on physical iOS device stuck in 'connecting...' state
+
+Make sure you are building and installing the application from source.
+
+## No plugins showing up for your device
+
+* Check your device isn't on the list of [known incompatibilities](#known-incompatibilities).
+* Make sure your version of Flipper is up to date.
+* Make sure the mobile SDK you are using is relatively recent (<1 month old).
+* Open Chrome dev tools within Flipper. To do so, from the View menu select Toggle Developer Tools or press CMD+Option+I and check if there are any errors on the console.
+* Delete `~/.flipper`.
+* **Uninstall** and reinstall the mobile app.
+* Make sure the time and date are set correctly on your mobile device and desktop computer.
+* If no app plugins are showing up, there may be a connectivity issue between Flipper and your app. Check [connection issues](#connection-issues) to see if anything is failing.
+
+<OssOnly>
+
+## Connection Issues
+The Flipper SDK includes an in-app connection diagnostics screen to help you diagnose problems.
+
+### Android
+
+Replace `<APP_PACKAGE>` below with the package name of your app, for example, such as `com.facebook.flipper.sample`.
+
+On a terminal, run the following:
+
+```bash
+adb shell am start -n <APP_PACKAGE>/com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity
+```
+
+This will only work if you added `FlipperDiagnosticActivity` to your `AndroidManifest.xml`. See [getting started](./getting-started/android-native.mdx#diagnostics) for help.
+
+### iOS
+
+You'll need to manually add this [ViewController](https://github.com/facebook/flipper/blob/main/iOS/FlipperKit/FlipperDiagnosticsViewController.m) to your app to see the in-app diagnostics.
+
+</OssOnly>
+
+## Known Incompatibilities
+
+The following devices are known to be incompatible or face issues with Flipper:
+
+* Some Samsung devices ([Tracking Issue](https://github.com/facebook/flipper/issues/92)).
+* Genymotion emulators on Android 8+ are reported to have issues.
+
+## File an Issue
+
+Still not working? File an issue on [GitHub](https://github.com/facebook/flipper/issues) with the chrome DevTools logs and the output from the diagnostics screen, if relevant.

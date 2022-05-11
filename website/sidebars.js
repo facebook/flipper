@@ -59,7 +59,16 @@ module.exports = {
       },
       ...fbInternalOnly(['getting-started/fb/connecting-to-flipper']),
       ...fbInternalOnly(['getting-started/fb/flipper-on-demand']),
-      'troubleshooting',
+      {
+        'Troubleshooting': [
+          'getting-started/troubleshooting/troubleshooting',
+          ...fbInternalOnly(['getting-started/troubleshooting/general-issues']),
+          'getting-started/troubleshooting/mac-desktop-app',
+          'getting-started/troubleshooting/android',
+          'getting-started/troubleshooting/react-native',
+          ...fbInternalOnly(['getting-started/troubleshooting/portal']),
+        ],
+      },
       {
         'Other Platforms': [
           'extending/new-clients',

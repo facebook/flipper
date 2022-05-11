@@ -36,7 +36,7 @@ export function NoDevices() {
           <Text>
             Start a fresh emulator <RocketOutlined onClick={onLaunchEmulator} />{' '}
             or check the{' '}
-            <Link href="https://fbflipper.com/docs/troubleshooting">
+            <Link href="https://fbflipper.com/docs/getting-started/troubleshooting/troubleshooting">
               troubleshooting guide
             </Link>
             .

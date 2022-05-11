@@ -219,7 +219,7 @@ const siteConfig = {
       {
         redirects: [
           {
-            to: '/docs/troubleshooting',
+            to: '/docs/getting-started/troubleshooting/troubleshooting',
             from: ['/docs/fb/troubleshooting'],
           },
           {
