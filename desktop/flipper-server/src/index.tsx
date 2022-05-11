@@ -13,7 +13,7 @@ import path from 'path';
 import {startFlipperServer} from './startFlipperServer';
 import {startBaseServer} from './startBaseServer';
 import {startSocketServer} from './startSocketServer';
-import {startWebServerDev} from './startWebServerDev';
+import {startDevServer} from './startDevServer';
 
 import yargs from 'yargs';
 import open from 'open';
@@ -82,6 +82,7 @@ async function start() {
     staticDir,
     entry: 'index.web.dev.html',
   });
+
   const flipperServer = await startFlipperServer(
     rootDir,
     staticDir,
@@ -99,7 +100,7 @@ async function start() {
   await flipperServer.connect();
 
   if (argv.bundler) {
-    await startWebServerDev(app, server, socket, rootDir);
+    await startDevServer(app, server, socket, rootDir);
   }
   startSocketServer(flipperServer, socket, companionEnv);
 }

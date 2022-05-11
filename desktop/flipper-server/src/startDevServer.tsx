@@ -48,7 +48,7 @@ export async function getPluginSourceFolders(): Promise<string[]> {
   return pFilter(pluginFolders, (p) => fs.pathExists(p));
 }
 
-export async function startWebServerDev(
+export async function startDevServer(
   app: Express,
   server: http.Server,
   socket: WebSocketServer,
