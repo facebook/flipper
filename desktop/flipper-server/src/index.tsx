@@ -17,7 +17,6 @@ import {startWebServerDev} from './startWebServerDev';
 
 import yargs from 'yargs';
 import open from 'open';
-import {sleep} from 'flipper-common';
 import {initCompanionEnv} from 'flipper-server-companion';
 
 const argv = yargs
@@ -107,12 +106,14 @@ async function start() {
 
 start()
   .then(() => {
+    console.log(
+      'Flipper server started and listening at port ' + chalk.green(argv.port),
+    );
     const url = `http://localhost:${argv.port}/index.web${
       argv.bundler ? '.dev' : ''
     }.html`;
-    console.log('Flipper server started at ' + chalk.green(chalk.bold(url)));
+    console.log('Go to: ' + chalk.green(chalk.bold(url)));
     if (argv.open) {
-      sleep(1000);
       open(url);
     }
   })
