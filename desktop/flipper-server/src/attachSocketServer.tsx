@@ -26,7 +26,12 @@ import {
 } from 'flipper-server-companion';
 import {URLSearchParams} from 'url';
 
-export function startSocketServer(
+/**
+ * Attach and handle incoming messages from clients.
+ * @param flipperServer A FlipperServer instance.
+ * @param socket A ws socket on which to listen for events.
+ */
+export function attachSocketServer(
   flipperServer: FlipperServerImpl,
   socket: WebSocketServer,
   companionEnv: FlipperServerCompanionEnv,

@@ -12,7 +12,7 @@ import chalk from 'chalk';
 import path from 'path';
 import {startFlipperServer} from './startFlipperServer';
 import {startServer} from './startServer';
-import {startSocketServer} from './startSocketServer';
+import {attachSocketServer} from './attachSocketServer';
 import {attachDevServer} from './attachDevServer';
 
 import yargs from 'yargs';
@@ -102,7 +102,7 @@ async function start() {
   if (argv.bundler) {
     await attachDevServer(app, server, socket, rootDir);
   }
-  startSocketServer(flipperServer, socket, companionEnv);
+  attachSocketServer(flipperServer, socket, companionEnv);
 }
 
 start()
