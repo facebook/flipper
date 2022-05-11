@@ -20,8 +20,6 @@ import xdgBasedir from 'xdg-basedir';
 import proxy from 'http-proxy';
 import exitHook from 'exit-hook';
 
-import {userInfo} from 'os';
-
 type Config = {
   port: number;
   staticDir: string;
