@@ -48,7 +48,15 @@ export async function getPluginSourceFolders(): Promise<string[]> {
   return pFilter(pluginFolders, (p) => fs.pathExists(p));
 }
 
-export async function startDevServer(
+/**
+ * Attaches the necessary routing and middleware to observe
+ * for local changes and apply them to the running instance.
+ * @param app Express app.
+ * @param server HTTP server.
+ * @param socket Web Socket server.
+ * @param rootDir Root directory.
+ */
+export async function attachDevServer(
   app: Express,
   server: http.Server,
   socket: WebSocketServer,

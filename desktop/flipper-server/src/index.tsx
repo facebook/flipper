@@ -13,7 +13,7 @@ import path from 'path';
 import {startFlipperServer} from './startFlipperServer';
 import {startServer} from './startServer';
 import {startSocketServer} from './startSocketServer';
-import {startDevServer} from './startDevServer';
+import {attachDevServer} from './attachDevServer';
 
 import yargs from 'yargs';
 import open from 'open';
@@ -100,7 +100,7 @@ async function start() {
   await flipperServer.connect();
 
   if (argv.bundler) {
-    await startDevServer(app, server, socket, rootDir);
+    await attachDevServer(app, server, socket, rootDir);
   }
   startSocketServer(flipperServer, socket, companionEnv);
 }
