@@ -80,6 +80,12 @@ export function initializeFlipperLibImplementation(
     environmentInfo: {
       os: renderHost.serverConfig.environmentInfo.os,
     },
+    intern: {
+      graphGet: (...args) =>
+        renderHost.flipperServer.exec('intern-graph-get', ...args),
+      graphPost: (...args) =>
+        renderHost.flipperServer.exec('intern-graph-post', ...args),
+    },
     remoteServerContext: {
       childProcess: {
         exec: async (

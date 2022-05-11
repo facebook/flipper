@@ -430,6 +430,10 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
         platform: 'linux',
       },
     },
+    intern: {
+      graphGet: createStubFunction(),
+      graphPost: createStubFunction(),
+    },
     remoteServerContext: {
       childProcess: {
         exec: createStubFunction(),

@@ -25,6 +25,7 @@ import {
   fsConstants,
   EnvironmentInfo,
   FSStatsLike,
+  FlipperServerCommands,
 } from 'flipper-common';
 import {CreatePasteArgs, CreatePasteResult} from './Paste';
 
@@ -179,6 +180,12 @@ export interface FlipperLib {
     os: EnvironmentInfo['os'];
   };
   remoteServerContext: RemoteServerContext;
+  intern: InternAPI;
+}
+
+interface InternAPI {
+  graphGet: FlipperServerCommands['intern-graph-get'];
+  graphPost: FlipperServerCommands['intern-graph-post'];
 }
 
 export let flipperLibInstance: FlipperLib | undefined;
