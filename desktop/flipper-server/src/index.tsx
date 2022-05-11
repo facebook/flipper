@@ -11,7 +11,7 @@ import process from 'process';
 import chalk from 'chalk';
 import path from 'path';
 import {startFlipperServer} from './startFlipperServer';
-import {startBaseServer} from './startBaseServer';
+import {startServer} from './startServer';
 import {startSocketServer} from './startSocketServer';
 import {startDevServer} from './startDevServer';
 
@@ -77,7 +77,7 @@ async function start() {
     // Noop
   };
 
-  const {app, server, socket} = await startBaseServer({
+  const {app, server, socket} = await startServer({
     port: argv.port,
     staticDir,
     entry: 'index.web.dev.html',

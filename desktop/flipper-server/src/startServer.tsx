@@ -26,7 +26,12 @@ type Config = {
   entry: string;
 };
 
-export async function startBaseServer(config: Config): Promise<{
+/**
+ * Orchestrates the creation of the HTTP server, proxy, and web socket.
+ * @param config Server configuration.
+ * @returns Returns a promise to the created server, proxy and web socket.
+ */
+export async function startServer(config: Config): Promise<{
   app: Express;
   server: http.Server;
   socket: WebSocketServer;
@@ -40,6 +45,12 @@ export async function startBaseServer(config: Config): Promise<{
   };
 }
 
+/**
+ * Creates an express app with configured routing and creates
+ * a proxy server.
+ * @param config Server configuration.
+ * @returns A promise to both app and HTTP server.
+ */
 async function startHTTPServer(
   config: Config,
 ): Promise<{app: Express; server: http.Server}> {
@@ -67,6 +78,17 @@ async function startHTTPServer(
   return startProxyServer(config, app);
 }
 
+/**
+ * Checks if a socket is in used for given path.
+ * If the path doesn't exist then is not in use. If it does,
+ * create a socket client and attempt to connect to it.
+ * If the connection is established, then there's a process
+ * already listening. Otherwise, it kind of indicates the
+ * contrary.
+ * @param path Path used instead of port number.
+ * @returns True or false dependning on whether the socket is in
+ * use or not.
+ */
 async function checkSocketInUse(path: string): Promise<boolean> {
   if (!(await fs.pathExists(path))) {
     return false;
@@ -92,6 +114,11 @@ async function checkSocketInUse(path: string): Promise<boolean> {
   });
 }
 
+/**
+ * Creates a socket path. Used to open the socket at location.
+ * Format: flipper-server-${userInfo}.sock
+ * @returns The created socket path.
+ */
 async function makeSocketPath(): Promise<string> {
   const runtimeDir = xdgBasedir.runtime || '/tmp';
   await fs.mkdirp(runtimeDir);
@@ -111,6 +138,13 @@ async function makeSocketPath(): Promise<string> {
   return path;
 }
 
+/**
+ * Creates and starts the HTTP and proxy servers.
+ * @param config Server configuration.
+ * @param app Express app.
+ * @returns Returns both the app and server configured and
+ * listening.
+ */
 async function startProxyServer(
   config: Config,
   app: Express,
@@ -118,6 +152,8 @@ async function startProxyServer(
   const server = http.createServer(app);
 
   // For now, we only support domain socket access on POSIX-like systems.
+  // On Windows, a proxy is not created and the server starts
+  // listening at the specified port.
   if (os.platform() === 'win32') {
     return new Promise((resolve) => {
       console.log(`Starting server on http://localhost:${config.port}`);
@@ -126,7 +162,6 @@ async function startProxyServer(
   }
 
   const socketPath = await makeSocketPath();
-
   if (await checkSocketInUse(socketPath)) {
     console.warn(
       `Cannot start flipper-server because socket ${socketPath} is in use.`,
@@ -165,6 +200,13 @@ async function startProxyServer(
   });
 }
 
+/**
+ * Adds a WS to the existing HTTP server.
+ * @param server HTTP server.
+ * @param config Server configuration. Port is used to verify
+ * incoming connections origin.
+ * @returns Returns the created WS.
+ */
 function addWebsocket(server: http.Server, config: Config) {
   const localhostIPV4 = `localhost:${config.port}`;
   const localhostIPV6 = `[::1]:${config.port}`;
