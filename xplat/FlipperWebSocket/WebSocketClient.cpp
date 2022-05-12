@@ -14,7 +14,6 @@
 #include <Flipper/Log.h>
 #include <folly/String.h>
 #include <folly/futures/Future.h>
-#include <folly/io/async/AsyncSocketException.h>
 #include <folly/io/async/SSLContext.h>
 #include <folly/json.h>
 #include <websocketpp/common/memory.hpp>

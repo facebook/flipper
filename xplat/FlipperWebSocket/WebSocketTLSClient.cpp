@@ -9,12 +9,12 @@
 
 #include "WebSocketTLSClient.h"
 #include <Flipper/ConnectionContextStore.h>
+#include <Flipper/FlipperExceptions.h>
 #include <Flipper/FlipperTransportTypes.h>
 #include <Flipper/FlipperURLSerializer.h>
 #include <Flipper/Log.h>
 #include <folly/String.h>
 #include <folly/futures/Future.h>
-#include <folly/io/async/AsyncSocketException.h>
 #include <folly/io/async/SSLContext.h>
 #include <folly/json.h>
 #include <websocketpp/common/memory.hpp>
@@ -246,9 +246,7 @@ void WebSocketTLSClient::onFail(
     if (sslError) {
       try {
         connected_.set_exception(
-            std::make_exception_ptr(folly::AsyncSocketException(
-                folly::AsyncSocketException::SSL_ERROR,
-                "SSL handshake failed")));
+            std::make_exception_ptr(SSLException("SSL handshake failed")));
       } catch (...) {
         // set_exception() may throw an exception
         // In that case, just set the value to false.

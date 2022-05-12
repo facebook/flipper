@@ -8,13 +8,13 @@
 #include "FlipperConnectionManagerImpl.h"
 #include <folly/String.h>
 #include <folly/futures/Future.h>
-#include <folly/io/async/AsyncSocketException.h>
 #include <folly/io/async/SSLContext.h>
 #include <folly/json.h>
 #include <stdexcept>
 #include <thread>
 #include "ConnectionContextStore.h"
 #include "FireAndForgetBasedFlipperResponder.h"
+#include "FlipperExceptions.h"
 #include "FlipperSocketProvider.h"
 #include "FlipperStep.h"
 #include "Log.h"
@@ -178,16 +178,11 @@ void FlipperConnectionManagerImpl::startSync() {
       }
     }
     step->complete();
-  } catch (const folly::AsyncSocketException& e) {
-    if (e.getType() == folly::AsyncSocketException::SSL_ERROR) {
-      auto message = std::string(e.what()) +
-          "\nMake sure the date and time of your device is up to date.";
-      log(message);
-      step->fail(message);
-    } else {
-      log(e.what());
-      step->fail(e.what());
-    }
+  } catch (const SSLException& e) {
+    auto message = std::string(e.what()) +
+        "\nMake sure the date and time of your device is up to date.";
+    log(message);
+    step->fail(message);
     failedConnectionAttempts_++;
     reconnect();
   } catch (const std::exception& e) {

@@ -9,12 +9,12 @@
 
 #import "FlipperWebSocket.h"
 #import <Flipper/ConnectionContextStore.h>
+#import <Flipper/FlipperExceptions.h>
 #import <Flipper/FlipperTransportTypes.h>
 #import <Flipper/FlipperURLSerializer.h>
 #import <Flipper/Log.h>
 #import <folly/String.h>
 #import <folly/futures/Future.h>
-#import <folly/io/async/AsyncSocketException.h>
 #import <folly/io/async/SSLContext.h>
 #import <folly/json.h>
 #import <cctype>
@@ -94,9 +94,7 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
       } else if (event == SocketEvent::SSL_ERROR) {
         try {
           promise.set_exception(
-              std::make_exception_ptr(folly::AsyncSocketException(
-                  folly::AsyncSocketException::SSL_ERROR,
-                  "SSL handshake failed")));
+              std::make_exception_ptr(SSLException("SSL handshake failed")));
         } catch (...) {
           // set_exception() may throw an exception
           // In that case, just set the value to false.
