@@ -1,11 +1,17 @@
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Link from '@docusaurus/Link';
 
-You do not have to instantiate it in your app in order to use its basic functionality mentioned <Link to={useBaseUrl("/docs/features/plugins/crash-reporter")}>here</Link>. You can also use crash reporter plugin to send the notifications for the exception which you suppress in your Android application. You could even use it to send the notifications when the [Litho Error Boundary](https://fblitho.com/docs/error-boundaries) is triggered. In order to send your custom notification you will have to follow the following steps.
+You don't have to instantiate the <Link to={useBaseUrl("/docs/features/plugins/crash-reporter")}>Crash Reporter plugin</Link> in your app in order to use its basic functionality.
+
+You can use the Crash Reporter plugin to send notifications for exceptions that are suppressed in your Android application.
+You could even use it to send notifications when the [Litho Error Boundary](https://www.internalfb.com/intern/staticdocs/litho/docs/mainconcepts/use-error-boundary/) is triggered.
+
+In order to send custom notifications, take the steps detailed below.
 
 ## Android
 
 Instantiate and add the plugin in `FlipperClient`.
+
 ```java
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
 
@@ -16,5 +22,6 @@ Use the following API to trigger your custom crash notification.
 
 ```java
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
+
 CrashReporterPlugin.getInstance().sendExceptionMessage(Thread.currentThread(), error);
 ```

@@ -1,9 +1,13 @@
-Currently, the images plugin only supports [Fresco](https://frescolib.org/) for Android as backend, but just like the network plugin, support for other image loading libraries
-could easily be added. Send us a PR!
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
+
+Currently, the <Link to={useBaseUrl("/docs/features/plugins/fresco")}>Image plugin</Link> only supports [Fresco](https://frescolib.org/) for Android as backend.
+
+If you'd like to see support for other image loading libraries, please post your request in the [Flipper Support](https://fb.workplace.com/groups/flippersupport) Workplace group.
 
 ## Fresco and Android
 
-The Fresco images plugin is shipped as a separate Maven artifact:
+The Fresco Images plugin is shipped as a separate Maven artifact:
 
 ```groovy
 dependencies {
@@ -11,8 +15,7 @@ dependencies {
 }
 ```
 
-After including the plugin in your dependencies, you can add it to the
-client:
+After including the plugin in your dependencies, you can add it to the client:
 
 ```java
 import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
@@ -20,9 +23,7 @@ import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
 client.addPlugin(new FrescoFlipperPlugin());
 ```
 
-The `FrescoFlipperPlugin` constructor offers a whole lot of configuration options which
-can be useful if you have an advanced setup of Fresco in your application:
-
+The `FrescoFlipperPlugin` constructor offers a range of configuration options that can be useful if you have an advanced setup of Fresco in your application:
 
 ```java
 FrescoFlipperPlugin(
@@ -37,13 +38,9 @@ FrescoFlipperPlugin(
 
 ### Leak Tracking
 
-The Flipper plugin can help you track down `CloseableReferences` who have not had
-`close()` called on them. This can have a negative impact on the performance of
-your application.
+The Flipper plugin can help you track down `CloseableReferences` that have not had `close()` called on them. However, this can have a negative impact on the performance of your application.
 
-To enable this functionality, you need to create a `CloseableReferenceLeakTracker`
-and set it in both your `ImagePipelineConfig` for Fresco and the `FrescoPluginPlugin`
-on creation.
+To enable this functionality, you need to create a `CloseableReferenceLeakTracker` and set it in both your `ImagePipelineConfig` for Fresco and the `FrescoPluginPlugin` on creation:
 
 ```java
 import com.facebook.imagepipeline.debug.FlipperCloseableReferenceLeakTracker;
@@ -70,9 +67,7 @@ client.addPlugin(new FrescoFlipperPlugin(
 
 ### Attribution
 
-In order to annotate images with the context they are used in, you have to set a
-caller context when loading the image. This can be any object, so for the simplest
-case, a String will suffice.
+In order to annotate images with the context they are used in, you have to set a caller context when loading the image. This can be any object; for the simplest case, a String will suffice, as shown below:
 
 ```java
 String callerContext = "my_feature";
@@ -89,5 +84,4 @@ DataSource<CloseableReference<CloseableImage>>
     dataSource = imagePipeline.fetchDecodedImage(imageRequest, callerContext);
 ```
 
-If a caller context is supplied, the image will be properly attributed in the
-Flipper image plugin.
+If a caller context is supplied, the image will be properly attributed in the Flipper image plugin.
