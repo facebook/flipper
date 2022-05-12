@@ -13,5 +13,8 @@
   "icon": "translate",
   "bugs": {
     "url": "https://github.com/facebook/flipper/issues"
+  },
+  "peerDependencies": {
+    "flipper-plugin": "*"
   }
 }

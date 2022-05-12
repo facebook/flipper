@@ -7,26 +7,21 @@
  * @format
  */
 
-import {
-  FlipperPlugin,
-  FlexColumn,
-  ButtonGroup,
-  Button,
-  styled,
-  colors,
-} from 'flipper';
+import {FlexColumn, ButtonGroup, Button, styled, colors} from 'flipper';
 import React, {ChangeEvent} from 'react';
+import {PluginClient, createState, usePlugin, useValue} from 'flipper-plugin';
 
 export type Sandbox = {
   name: string;
   value: string;
 };
 
-type SandboxState = {
-  sandboxes: Array<Sandbox>;
-  customSandbox: string;
-  showFeedback: boolean;
+type ClientMethods = {
+  getSandbox(): Promise<Sandbox[]>;
+  setSandbox(sandbox: {sandbox: string}): Promise<SetSandboxResult>;
 };
+
+type SetSandboxResult = {result: boolean};
 
 const BigButton = styled(Button)({
   flexGrow: 1,
@@ -39,112 +34,114 @@ const ButtonContainer = styled(FlexColumn)({
   padding: 20,
 });
 
-export default class SandboxView extends FlipperPlugin<
-  SandboxState,
-  any,
-  unknown
-> {
-  state: SandboxState = {
-    sandboxes: [],
-    customSandbox: '',
-    showFeedback: false,
-  };
+const TextInput = styled.input({
+  border: `1px solid ${colors.light10}`,
+  fontSize: '1em',
+  padding: '0 5px',
+  borderRight: 0,
+  borderTopLeftRadius: 4,
+  borderBottomLeftRadius: 4,
+  flexGrow: 1,
+});
 
-  static TextInput = styled.input({
-    border: `1px solid ${colors.light10}`,
-    fontSize: '1em',
-    padding: '0 5px',
-    borderRight: 0,
-    borderTopLeftRadius: 4,
-    borderBottomLeftRadius: 4,
-    flexGrow: 1,
-  });
+const FeedbackMessage = styled.span({
+  fontSize: '1.2em',
+  paddingTop: '10px',
+  color: 'green',
+});
 
-  static FeedbackMessage = styled.span({
-    fontSize: '1.2em',
-    paddingTop: '10px',
-    color: 'green',
-  });
+const TextInputLayout = styled(FlexColumn)({
+  float: 'left',
+  justifyContent: 'center',
+  flexGrow: 1,
+  borderRadius: 4,
+  marginRight: 15,
+  marginTop: 15,
+  marginLeft: 15,
+});
 
-  static TextInputLayout = styled(FlexColumn)({
-    float: 'left',
-    justifyContent: 'center',
-    flexGrow: 1,
-    borderRadius: 4,
-    marginRight: 15,
-    marginTop: 15,
-    marginLeft: 15,
-  });
+export function plugin(client: PluginClient<{}, ClientMethods>) {
+  const sandboxes = createState<Array<Sandbox>>([]);
+  const customSandbox = createState<string>('');
+  const showFeedback = createState<boolean>(false);
 
-  init() {
-    if (!this.client.isConnected) {
-      return;
-    }
-    this.client
-      .call('getSandbox', {})
+  client.onConnect(() => {
+    client
+      .send('getSandbox', undefined)
       .then((results: Array<Sandbox>) => {
-        this.setState({sandboxes: results});
+        sandboxes.set(results);
       })
       .catch((e) => console.error('[sandbox] getSandbox call failed:', e));
-  }
+  });
 
-  onSendSandboxEnvironment = (sandbox: string) => {
-    this.client
-      .call('setSandbox', {
-        sandbox: sandbox,
+  const onSendSandboxEnvironment = (sandbox: string) => {
+    client
+      .send('setSandbox', {
+        sandbox,
       })
-      .then((result: {result: boolean}) => {
+      .then((result: SetSandboxResult) => {
         setTimeout(() => {
-          this.setState({showFeedback: false});
+          showFeedback.set(false);
         }, 3000);
-        this.setState({showFeedback: result.result});
+        showFeedback.set(result.result);
       })
       .catch((e) => console.error('[sandbox] setSandbox call failed:', e));
   };
 
-  onChangeSandbox = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({customSandbox: e.target.value});
+  const onChangeSandbox = (e: ChangeEvent<HTMLInputElement>) => {
+    customSandbox.set(e.target.value);
   };
 
-  render() {
-    return (
-      <FlexColumn>
-        <SandboxView.TextInputLayout>
-          <ButtonGroup>
-            <SandboxView.TextInput
-              type="text"
-              placeholder="Sandbox URL (e.g. unixname.sb.facebook.com)"
-              key="sandbox-url"
-              onChange={this.onChangeSandbox}
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  this.onSendSandboxEnvironment(this.state.customSandbox);
-                }
-              }}
-            />
-            <Button
-              key="sandbox-send"
-              icon="download"
-              onClick={() =>
-                this.onSendSandboxEnvironment(this.state.customSandbox)
+  return {
+    client,
+    onChangeSandbox,
+    onSendSandboxEnvironment,
+    customSandbox,
+    sandboxes,
+    showFeedback,
+  };
+}
+
+export function Component() {
+  const instance = usePlugin(plugin);
+  const customSandbox = useValue(instance.customSandbox);
+  const sandboxes = useValue(instance.sandboxes);
+  const showFeedback = useValue(instance.showFeedback);
+
+  return (
+    <FlexColumn>
+      <TextInputLayout>
+        <ButtonGroup>
+          <TextInput
+            type="text"
+            placeholder="Sandbox URL (e.g. unixname.sb.facebook.com)"
+            key="sandbox-url"
+            onChange={instance.onChangeSandbox}
+            onKeyPress={(event) => {
+              if (event.key === 'Enter') {
+                instance.onSendSandboxEnvironment(customSandbox);
               }
-              disabled={this.state.customSandbox == null}
-            />
-          </ButtonGroup>
-          <SandboxView.FeedbackMessage
-            hidden={this.state.showFeedback == false}>
-            Success!
-          </SandboxView.FeedbackMessage>
-        </SandboxView.TextInputLayout>
-        {this.state.sandboxes.map((sandbox) => (
-          <ButtonContainer key={sandbox.value}>
-            <BigButton
-              onClick={() => this.onSendSandboxEnvironment(sandbox.value)}>
-              {sandbox.name}
-            </BigButton>
-          </ButtonContainer>
-        ))}
-      </FlexColumn>
-    );
-  }
+            }}
+          />
+          <Button
+            key="sandbox-send"
+            icon="download"
+            onClick={() => instance.onSendSandboxEnvironment(customSandbox)}
+            disabled={customSandbox == null}
+          />
+        </ButtonGroup>
+        <FeedbackMessage hidden={showFeedback == false}>
+          Success!
+        </FeedbackMessage>
+      </TextInputLayout>
+      {sandboxes.map((sandbox) => (
+        <ButtonContainer key={sandbox.value}>
+          <BigButton
+            onClick={() => instance.onSendSandboxEnvironment(sandbox.value)}>
+            {sandbox.name}
+          </BigButton>
+        </ButtonContainer>
+      ))}
+    </FlexColumn>
+  );
 }
