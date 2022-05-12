@@ -20,9 +20,6 @@ class ConnectionContextStoreMock : public ConnectionContextStore {
   std::string createCertificateSigningRequest() {
     return "thisIsACsr";
   }
-  std::shared_ptr<folly::SSLContext> getSSLContext() {
-    return nullptr;
-  }
   folly::dynamic getConnectionConfig() {
     return nullptr;
   }

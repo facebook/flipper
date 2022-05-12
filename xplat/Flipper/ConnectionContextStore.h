@@ -9,7 +9,6 @@
 
 #include <folly/Optional.h>
 #include <folly/dynamic.h>
-#include <folly/io/async/SSLContext.h>
 #include <string>
 #include "FlipperCertificateExchangeMedium.h"
 #include "FlipperInitConfig.h"
@@ -30,7 +29,6 @@ class ConnectionContextStore {
   ConnectionContextStore(DeviceData deviceData);
   bool hasRequiredFiles();
   std::string getCertificateSigningRequest();
-  std::shared_ptr<folly::SSLContext> getSSLContext();
   std::string getCertificateDirectoryPath();
   std::string getCACertificatePath();
   std::string getDeviceId();

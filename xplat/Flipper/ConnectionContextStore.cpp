@@ -80,20 +80,6 @@ std::string ConnectionContextStore::getCertificateSigningRequest() {
   return csr;
 }
 
-std::shared_ptr<folly::SSLContext> ConnectionContextStore::getSSLContext() {
-  std::shared_ptr<folly::SSLContext> sslContext =
-      std::make_shared<folly::SSLContext>();
-  sslContext->loadTrustedCertificates(
-      absoluteFilePath(FLIPPER_CA_FILE_NAME).c_str());
-  sslContext->setVerificationOption(
-      folly::SSLContext::SSLVerifyPeerEnum::VERIFY);
-  sslContext->loadCertKeyPairFromFiles(
-      absoluteFilePath(CLIENT_CERT_FILE_NAME).c_str(),
-      absoluteFilePath(PRIVATE_KEY_FILE).c_str());
-  sslContext->authenticate(true, false);
-  return sslContext;
-}
-
 std::string ConnectionContextStore::getDeviceId() {
   /* On android we can't reliably get the serial of the current device
      So rely on our locally written config, which is provided by the
