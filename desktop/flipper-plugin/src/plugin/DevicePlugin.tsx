@@ -97,7 +97,10 @@ export class SandyDevicePluginInstance extends BasePluginInstance {
     this.initializePlugin(() =>
       definition.asDevicePluginModule().devicePlugin(this.client),
     );
-    this.startServerAddOn();
+    // Do not start server add-ons for archived devices
+    if (this.device.connected.get()) {
+      this.startServerAddOn();
+    }
   }
 
   toJSON() {
