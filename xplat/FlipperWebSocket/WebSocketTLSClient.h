@@ -13,7 +13,6 @@
 #include <Flipper/FlipperSocketProvider.h>
 #include <Flipper/FlipperTransportTypes.h>
 #include <folly/dynamic.h>
-#include <folly/io/async/EventBase.h>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -39,11 +38,11 @@ class WebSocketTLSClient : public BaseClient {
   WebSocketTLSClient(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      folly::EventBase* eventBase);
+      Scheduler* scheduler);
   WebSocketTLSClient(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      folly::EventBase* eventBase,
+      Scheduler* scheduler,
       ConnectionContextStore* connectionContextStore);
 
   WebSocketTLSClient(const WebSocketTLSClient&) = delete;

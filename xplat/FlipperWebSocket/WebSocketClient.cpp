@@ -14,7 +14,6 @@
 #include <Flipper/Log.h>
 #include <folly/String.h>
 #include <folly/futures/Future.h>
-#include <folly/io/async/SSLContext.h>
 #include <folly/json.h>
 #include <websocketpp/common/memory.hpp>
 #include <websocketpp/common/thread.hpp>
@@ -31,22 +30,22 @@ namespace flipper {
 WebSocketClient::WebSocketClient(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
-    folly::EventBase* eventBase)
+    Scheduler* scheduler)
     : WebSocketClient(
           std::move(endpoint),
           std::move(payload),
-          eventBase,
+          scheduler,
           nullptr) {}
 
 WebSocketClient::WebSocketClient(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
-    folly::EventBase* eventBase,
+    Scheduler* scheduler,
     ConnectionContextStore* connectionContextStore)
     : BaseClient(
           std::move(endpoint),
           std::move(payload),
-          eventBase,
+          scheduler,
           connectionContextStore) {
   status_ = Status::Unconnected;
 
@@ -148,7 +147,7 @@ void WebSocketClient::disconnect() {
     thread_->join();
   }
   thread_ = nullptr;
-  eventBase_->add(
+  scheduler_->schedule(
       [eventHandler = eventHandler_]() { eventHandler(SocketEvent::CLOSE); });
 }
 
@@ -180,12 +179,12 @@ void WebSocketClient::send(
 void WebSocketClient::sendExpectResponse(
     const std::string& message,
     SocketSendExpectResponseHandler completion) {
-  connection_->set_message_handler(
-      [completion, eventBase = eventBase_](
-          websocketpp::connection_hdl hdl, SocketClient::message_ptr msg) {
-        const std::string& payload = msg->get_payload();
-        eventBase->add([completion, payload] { completion(payload, false); });
-      });
+  connection_->set_message_handler([completion, scheduler = scheduler_](
+                                       websocketpp::connection_hdl hdl,
+                                       SocketClient::message_ptr msg) {
+    const std::string& payload = msg->get_payload();
+    scheduler->schedule([completion, payload] { completion(payload, false); });
+  });
   websocketpp::lib::error_code ec;
   socket_.send(
       handle_,
@@ -205,7 +204,7 @@ void WebSocketClient::onOpen(SocketClient* c, websocketpp::connection_hdl hdl) {
   }
 
   status_ = Status::Initializing;
-  eventBase_->add(
+  scheduler_->schedule(
       [eventHandler = eventHandler_]() { eventHandler(SocketEvent::OPEN); });
 }
 
@@ -215,7 +214,7 @@ void WebSocketClient::onMessage(
     SocketClient::message_ptr msg) {
   const std::string& payload = msg->get_payload();
   if (messageHandler_) {
-    eventBase_->add([payload, messageHandler = messageHandler_]() {
+    scheduler_->schedule([payload, messageHandler = messageHandler_]() {
       messageHandler(payload);
     });
   }
@@ -230,7 +229,7 @@ void WebSocketClient::onFail(SocketClient* c, websocketpp::connection_hdl hdl) {
     connected_.set_value(false);
   }
   status_ = Status::Failed;
-  eventBase_->add(
+  scheduler_->schedule(
       [eventHandler = eventHandler_]() { eventHandler(SocketEvent::ERROR); });
 }
 
@@ -238,7 +237,7 @@ void WebSocketClient::onClose(
     SocketClient* c,
     websocketpp::connection_hdl hdl) {
   status_ = Status::Closed;
-  eventBase_->add(
+  scheduler_->schedule(
       [eventHandler = eventHandler_]() { eventHandler(SocketEvent::CLOSE); });
 }
 

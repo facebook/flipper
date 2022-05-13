@@ -33,22 +33,22 @@ namespace flipper {
 WebSocketTLSClient::WebSocketTLSClient(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
-    folly::EventBase* eventBase)
+    Scheduler* scheduler)
     : WebSocketTLSClient(
           std::move(endpoint),
           std::move(payload),
-          eventBase,
+          scheduler,
           nullptr) {}
 
 WebSocketTLSClient::WebSocketTLSClient(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
-    folly::EventBase* eventBase,
+    Scheduler* scheduler,
     ConnectionContextStore* connectionContextStore)
     : BaseClient(
           std::move(endpoint),
           std::move(payload),
-          eventBase,
+          scheduler,
           connectionContextStore) {
   status_ = Status::Unconnected;
 
@@ -157,7 +157,7 @@ void WebSocketTLSClient::disconnect() {
   }
 
   thread_ = nullptr;
-  eventBase_->add(
+  scheduler_->schedule(
       [eventHandler = eventHandler_]() { eventHandler(SocketEvent::CLOSE); });
 }
 
@@ -189,12 +189,12 @@ void WebSocketTLSClient::send(
 void WebSocketTLSClient::sendExpectResponse(
     const std::string& message,
     SocketSendExpectResponseHandler completion) {
-  connection_->set_message_handler(
-      [completion, eventBase = eventBase_](
-          websocketpp::connection_hdl hdl, SocketTLSClient::message_ptr msg) {
-        const std::string& payload = msg->get_payload();
-        eventBase->add([completion, payload] { completion(payload, false); });
-      });
+  connection_->set_message_handler([completion, scheduler = scheduler_](
+                                       websocketpp::connection_hdl hdl,
+                                       SocketTLSClient::message_ptr msg) {
+    const std::string& payload = msg->get_payload();
+    scheduler->schedule([completion, payload] { completion(payload, false); });
+  });
   websocketpp::lib::error_code ec;
   socket_.send(
       handle_,
@@ -216,7 +216,7 @@ void WebSocketTLSClient::onOpen(
   }
 
   status_ = Status::Initializing;
-  eventBase_->add(
+  scheduler_->schedule(
       [eventHandler = eventHandler_]() { eventHandler(SocketEvent::OPEN); });
 }
 
@@ -226,7 +226,7 @@ void WebSocketTLSClient::onMessage(
     SocketTLSClient::message_ptr msg) {
   const std::string& payload = msg->get_payload();
   if (messageHandler_) {
-    eventBase_->add([payload, messageHandler = messageHandler_]() {
+    scheduler_->schedule([payload, messageHandler = messageHandler_]() {
       messageHandler(payload);
     });
   }
@@ -257,7 +257,7 @@ void WebSocketTLSClient::onFail(
     }
   }
   status_ = Status::Failed;
-  eventBase_->add([eventHandler = eventHandler_, sslError]() {
+  scheduler_->schedule([eventHandler = eventHandler_, sslError]() {
     if (sslError) {
       eventHandler(SocketEvent::SSL_ERROR);
     } else {
@@ -270,7 +270,7 @@ void WebSocketTLSClient::onClose(
     SocketTLSClient* c,
     websocketpp::connection_hdl hdl) {
   status_ = Status::Closed;
-  eventBase_->add(
+  scheduler_->schedule(
       [eventHandler = eventHandler_]() { eventHandler(SocketEvent::CLOSE); });
 }
 

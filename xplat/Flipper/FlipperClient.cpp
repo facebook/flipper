@@ -8,6 +8,7 @@
 #include "FlipperClient.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 #include "ConnectionContextStore.h"

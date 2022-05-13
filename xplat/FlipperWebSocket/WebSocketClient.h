@@ -9,11 +9,11 @@
 
 #pragma once
 
+#include <Flipper/FlipperScheduler.h>
 #include <Flipper/FlipperSocket.h>
 #include <Flipper/FlipperSocketProvider.h>
 #include <Flipper/FlipperTransportTypes.h>
 #include <folly/dynamic.h>
-#include <folly/io/async/EventBase.h>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -35,11 +35,11 @@ class WebSocketClient : public BaseClient {
   WebSocketClient(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      folly::EventBase* eventBase);
+      Scheduler* scheduler);
   WebSocketClient(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      folly::EventBase* eventBase,
+      Scheduler* scheduler,
       ConnectionContextStore* connectionContextStore);
 
   WebSocketClient(const WebSocketClient&) = delete;

@@ -13,6 +13,7 @@
 #include <fb/fbjni.h>
 #endif
 
+#include <folly/futures/Future.h>
 #include <folly/io/async/AsyncSocketException.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/EventBaseManager.h>
@@ -23,6 +24,7 @@
 #include <Flipper/FlipperClient.h>
 #include <Flipper/FlipperConnection.h>
 #include <Flipper/FlipperConnectionManager.h>
+#include <Flipper/FlipperFollyScheduler.h>
 #include <Flipper/FlipperResponder.h>
 #include <Flipper/FlipperSocket.h>
 #include <Flipper/FlipperSocketProvider.h>
@@ -41,6 +43,9 @@ void handleException(const std::exception& e) {
   message += e.what();
   __android_log_write(ANDROID_LOG_ERROR, "FLIPPER", message.c_str());
 }
+
+std::unique_ptr<facebook::flipper::Scheduler> sonarScheduler;
+std::unique_ptr<facebook::flipper::Scheduler> connectionScheduler;
 
 class JEventBase : public jni::HybridClass<JEventBase> {
  public:
@@ -412,7 +417,7 @@ class JFlipperSocketProvider : public facebook::flipper::FlipperSocketProvider {
   virtual std::unique_ptr<facebook::flipper::FlipperSocket> create(
       facebook::flipper::FlipperConnectionEndpoint endpoint,
       std::unique_ptr<facebook::flipper::FlipperSocketBasePayload> payload,
-      folly::EventBase* eventBase) override {
+      facebook::flipper::Scheduler* scheduler) override {
     return std::make_unique<JFlipperWebSocket>(
         std::move(endpoint), std::move(payload));
     ;
@@ -420,7 +425,7 @@ class JFlipperSocketProvider : public facebook::flipper::FlipperSocketProvider {
   virtual std::unique_ptr<facebook::flipper::FlipperSocket> create(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      folly::EventBase* eventBase,
+      facebook::flipper::Scheduler* scheduler,
       ConnectionContextStore* connectionContextStore) override {
     return std::make_unique<JFlipperWebSocket>(
         std::move(endpoint), std::move(payload), connectionContextStore);
@@ -939,6 +944,11 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       const std::string app,
       const std::string appId,
       const std::string privateAppDirectory) {
+    sonarScheduler =
+        std::make_unique<FollyScheduler>(callbackWorker->eventBase());
+    connectionScheduler =
+        std::make_unique<FollyScheduler>(connectionWorker->eventBase());
+
     FlipperClient::init(
         {{std::move(host),
           std::move(os),
@@ -947,8 +957,8 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
           std::move(app),
           std::move(appId),
           std::move(privateAppDirectory)},
-         callbackWorker->eventBase(),
-         connectionWorker->eventBase(),
+         sonarScheduler.get(),
+         connectionScheduler.get(),
          insecurePort,
          securePort,
          altInsecurePort,
