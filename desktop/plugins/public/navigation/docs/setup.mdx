@@ -1,6 +1,10 @@
-### Android
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
 
-First, add the plugin to your Flipper client instance:
+## Android
+
+First, add the <Link to={useBaseUrl("/docs/features/plugins/navigation")}>Navigation plugin</Link> to your Flipper client instance:
+
 ```java
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
@@ -9,13 +13,14 @@ final FlipperClient client = AndroidFlipperClient.getInstance(this);
 client.addPlugin(NavigationFlipperPlugin.getInstance());
 ```
 
-Navigation events in the app can then be recorded by calling `sendNavigationEvent` method of the `NavigationFlipperPlugin` instance from anywhere in the app. This allows for the Navigation Plugin to be integrated into existing navigation frameworks.
+Navigation events in the app can then be recorded by calling `sendNavigationEvent` method of the `NavigationFlipperPlugin` instance from anywhere in the app.
+This enables the Navigation Plugin to be integrated into existing navigation frameworks.
 
-#### Using Android Deep Links
+### Using Android deep links
 
 The Navigation Plugin can be used with built in [deep links for Android](https://developer.android.com/training/app-links/deep-linking).
 
-To deep link to an activity, edit the AndroidManifest.xml and add the intent filter for the given activity.
+To deep link to an activity, edit the AndroidManifest.xml and add the intent filter for the given activity, as follows:
 
 ```xml
 <intent-filter>
@@ -26,9 +31,9 @@ To deep link to an activity, edit the AndroidManifest.xml and add the intent fil
 </intent-filter>
 ```
 
-This will allow the user to jump to `flipper://deep_link_activity` within Flipper.
+This enables the user to jump to `flipper://deep_link_activity` within Flipper.
 
-To log that navigation event in  flipper, we can send the navigation event in the Activity's `onCreate` method.
+To log that navigation event in flipper, you can send the navigation event in the Activity's `onCreate` method, as follows:
 
 ```java
 public class DeepLinkActivity extends AppCompatActivity {
@@ -39,11 +44,15 @@ public class DeepLinkActivity extends AppCompatActivity {
     ...
 ```
 
-#### Third Party Solutions
-The Navigation Plugin can easily be integrated into a third party navigation framework.
+### Third party solutions
 
-##### AirBnB Deep Link Dispatch
-[Deep Link Dispatch](https://github.com/airbnb/DeepLinkDispatch) will work out of the box with Flipper for navigating to links, including support for url parameters. To add logging, simply add a BroadcastReceiver to your app that is called on any incoming deep links.
+The Navigation Plugin can easily be integrated into a third-party navigation framework.
+
+#### AirBnB deep link dispatch
+
+[Deep Link Dispatch](https://github.com/airbnb/DeepLinkDispatch) will work out of the box with Flipper for navigating to links, including support for url parameters.
+
+To add logging, simply add a BroadcastReceiver to your app that is called on any incoming deep links:
 
 ```java
 public class DeepLinkReceiver extends BroadcastReceiver {
@@ -66,5 +75,6 @@ public class DeepLinkApplication extends Application {
 }
 ```
 
-### iOS
+## iOS
+
 iOS support is coming soon.
