@@ -1,12 +1,14 @@
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import ProtobufRetrofitSetup from './_protobuf-retrofit.mdx';
 
-To use the network plugin, you need to add the plugin to your Flipper client instance.
+To use the <Link to={useBaseUrl("/docs/features/plugins/network")}>Network plugin</Link>, you need to add the plugin to your Flipper client instance.
 
 ## Android
 
-The network plugin is shipped as a separate Maven artifact:
+The network plugin is shipped as a separate Maven artifact, as follows:
 
 ```groovy
 dependencies {
@@ -14,8 +16,7 @@ dependencies {
 }
 ```
 
-Once added to your dependencies, you can instantiate the plugin and add it to
-the client:
+Once added to your dependencies, you can instantiate the plugin and add it to the client:
 
 ```java
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
@@ -32,7 +33,7 @@ client.addPlugin(networkFlipperPlugin);
 
 ### OkHttp Integration
 
-If you are using the popular OkHttp library, you can use the Interceptors system to automatically hook into your existing stack.
+If you are using the popular OkHttp library, you can use the Interceptors system to automatically hook into your existing stack, as shown in the following snippet:
 
 ```java
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
@@ -54,14 +55,13 @@ dependencies {
 }
 ```
 
-Then call `SendProtobufToFlipperFromRetrofit` for each service class.
+Then call `SendProtobufToFlipperFromRetrofit` for each service class:
 
 ```kotlin
 import com.facebook.flipper.plugins.retrofit2protobuf.SendProtobufToFlipperFromRetrofit
 
 SendProtobufToFlipperFromRetrofit("https://baseurl.com/", MyApiService::class.java)
 ```
-
 
 ## iOS
 
@@ -71,7 +71,7 @@ To enable network inspection, add the following pod to your Podfile:
 pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
 ```
 
-Initialise the plugin in the following way by updating AppDelegate.m:
+Initialize the plugin in the following way by updating AppDelegate.m:
 
 <Tabs defaultValue="objc" values={[{ label: 'ObjC', value: 'objc'}, { label: 'Swift', value: 'swift'}]}>
 <TabItem value="objc">
@@ -80,7 +80,6 @@ Initialise the plugin in the following way by updating AppDelegate.m:
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 
 [[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-
 ```
 
 </TabItem>
@@ -90,7 +89,6 @@ Initialise the plugin in the following way by updating AppDelegate.m:
 import FlipperKit
 
 client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
-
 ```
 
 </TabItem>
