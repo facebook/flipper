@@ -624,6 +624,9 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   }
 
   public SearchResultNode searchTree(String query, Object obj, boolean axEnabled) throws Exception {
+    if (obj == null) {
+      return null;
+    }
     final NodeDescriptor descriptor = descriptorForObject(obj);
     List<SearchResultNode> childTrees = null;
     boolean isMatch = descriptor.matches(query, obj);
