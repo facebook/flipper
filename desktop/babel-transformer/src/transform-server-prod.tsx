@@ -29,6 +29,7 @@ const presets = [
 // (which effectively makes them external, as electronRequire === require, but not rolled up with Metro)
 const plugins = [
   require('./fsevents-dynamic-imports'),
+  require('./prefixed-node-requires'),
   require('./electron-requires'),
   require('./plugin-flipper-requires'),
   require('./fb-stubs'),

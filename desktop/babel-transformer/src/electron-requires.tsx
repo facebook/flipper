@@ -46,10 +46,10 @@ export const BUILTINS = [
   'repl',
   'timers',
   'perf_hooks',
+  'worker_threads',
+  'encoding',
   'fsevents',
   './fsevents.node',
-  // MWE node-fetch looks strange here, not sure what the effect of changing that would be
-  'node-fetch',
   // jest is referred to in source code, like in TestUtils, but we don't want to ever bundle it up!
   'jest',
   '@testing-library/react',

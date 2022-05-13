@@ -8,19 +8,13 @@
   "bin": "server.js",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
-  "dependenciesComment": "mac-ca is required dynamically for darwin, node-fetch is treated special in electron-requires, not sure why",
-  "dependencies": {
-    "exit-hook": "^2.1.1",
-    "http-proxy": "^1.18.1",
-    "mac-ca": "^1.0.6",
-    "node-fetch": "^2.6.7",
-    "ws": "^8.5.0",
-    "xdg-basedir": "^4"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/http-proxy": "^1.17.8",
     "@types/node": "^17.0.31",
+    "exit-hook": "^2.1.1",
+    "http-proxy": "^1.18.1",
     "chalk": "^4",
     "express": "^4.17.3",
     "flipper-common": "0.0.0",
@@ -31,7 +25,9 @@
     "metro": "^0.70.2",
     "open": "^8.3.0",
     "p-filter": "^2.1.0",
-    "yargs": "^17.0.1"
+    "yargs": "^17.0.1",
+    "ws": "^8.5.0",
+    "xdg-basedir": "^4"
   },
   "peerDependencies": {},
   "scripts": {

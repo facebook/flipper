@@ -7,6 +7,7 @@
  * @format
  */
 
+import './utils/macCa';
 import './utils/fetch-polyfill';
 import EventEmitter from 'events';
 import {ServerController} from './comms/ServerController';

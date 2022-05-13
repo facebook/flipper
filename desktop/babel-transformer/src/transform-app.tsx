@@ -13,6 +13,7 @@ import {default as getCacheKey} from './get-cache-key';
 const presets = [require('@babel/preset-react')];
 const plugins = [
   require('./fsevents-dynamic-imports'),
+  require('./prefixed-node-requires'),
   require('./electron-requires'),
   require('./import-react'),
   require('./app-flipper-requires'),
