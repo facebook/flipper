@@ -185,7 +185,7 @@ const ensureCertificateAuthorityExists = async (): Promise<void> => {
 
 const generateCertificateAuthority = async (): Promise<void> => {
   if (!(await fs.pathExists(getFilePath('')))) {
-    await fs.mkdir(getFilePath(''));
+    await fs.mkdir(getFilePath(''), {recursive: true});
   }
   console.log('Generating new CA', logTag);
   await openssl('genrsa', {out: caKey, '2048': false});
