@@ -9,11 +9,11 @@
 
 #pragma once
 
-#include <Flipper/FlipperScheduler.h>
 #include <Flipper/FlipperSocket.h>
 #include <Flipper/FlipperSocketProvider.h>
 #include <Flipper/FlipperTransportTypes.h>
 #include <folly/dynamic.h>
+#include <folly/io/async/EventBase.h>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -29,11 +29,11 @@ class FlipperWebSocket : public FlipperSocket {
   FlipperWebSocket(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler);
+      folly::EventBase* eventBase);
   FlipperWebSocket(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler,
+      folly::EventBase* eventBase,
       ConnectionContextStore* connectionContextStore);
 
   virtual ~FlipperWebSocket();
@@ -62,19 +62,19 @@ class FlipperWebSocketProvider : public FlipperSocketProvider {
   virtual std::unique_ptr<FlipperSocket> create(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler) override {
+      folly::EventBase* eventBase) override {
     return std::make_unique<FlipperWebSocket>(
-        std::move(endpoint), std::move(payload), scheduler);
+        std::move(endpoint), std::move(payload), eventBase);
   }
   virtual std::unique_ptr<FlipperSocket> create(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler,
+      folly::EventBase* eventBase,
       ConnectionContextStore* connectionContextStore) override {
     return std::make_unique<FlipperWebSocket>(
         std::move(endpoint),
         std::move(payload),
-        scheduler,
+        eventBase,
         connectionContextStore);
   }
 };

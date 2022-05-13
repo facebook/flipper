@@ -10,8 +10,9 @@
 #import "FlipperClient.h"
 #import <Flipper/FlipperCertificateProvider.h>
 #import <Flipper/FlipperClient.h>
-#import <Flipper/FlipperFollyScopedThreadScheduler.h>
 #import <Flipper/FlipperSocketProvider.h>
+#include <folly/io/async/EventBase.h>
+#include <folly/io/async/ScopedEventBaseThread.h>
 #include <memory>
 #import "FlipperClient+Testing.h"
 #import "FlipperCppWrapperPlugin.h"
@@ -31,9 +32,8 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 
 @implementation FlipperClient {
   facebook::flipper::FlipperClient* _cppClient;
-  std::unique_ptr<facebook::flipper::Scheduler> sonarScheduler;
-  std::unique_ptr<facebook::flipper::Scheduler> connectionScheduler;
-
+  folly::ScopedEventBaseThread sonarThread;
+  folly::ScopedEventBaseThread connectionThread;
   id<FlipperKitCertificateProvider> _certProvider;
 #if !TARGET_OS_OSX && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST
   FKPortForwardingServer* _secureServer;
@@ -90,10 +90,6 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
     deviceName = [[NSHost currentHost] localizedName];
 #endif
 
-    sonarScheduler =
-        std::make_unique<facebook::flipper::FollyScopedThreadScheduler>();
-    connectionScheduler =
-        std::make_unique<facebook::flipper::FollyScopedThreadScheduler>();
     static const std::string UNKNOWN = std::string("unknown");
     try {
       facebook::flipper::FlipperClient::init(
@@ -106,8 +102,8 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
                [appId UTF8String] ?: UNKNOWN,
                [privateAppDirectory UTF8String],
            },
-           sonarScheduler.get(),
-           connectionScheduler.get(),
+           sonarThread.getEventBase(),
+           connectionThread.getEventBase(),
            [SKEnvironmentVariables getInsecurePort],
            [SKEnvironmentVariables getSecurePort],
            [SKEnvironmentVariables getAltInsecurePort],

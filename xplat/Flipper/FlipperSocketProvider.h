@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <folly/io/async/EventBase.h>
 #include <memory>
-#include "FlipperScheduler.h"
 
 namespace facebook {
 namespace flipper {
@@ -32,37 +32,35 @@ class FlipperSocketProvider {
    @param endpoint Endpoint to connect to.
    @param payload Any configuration payload to establish a connection with
    the specified endpoint.
-   @param scheduler An scheduler used to schedule and execute connection
-   operations.
+   @param eventBase A folly event base used to execute connection operations.
    */
   virtual std::unique_ptr<FlipperSocket> create(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler) = 0;
+      folly::EventBase* eventBase) = 0;
   /**
    Create an instance of FlipperSocket.
    @param endpoint Endpoint to connect to.
    @param payload Any configuration payload to establish a connection with
    the specified endpoint.
-   @param scheduler An scheduler used to schedule and execute connection
-   operations.
+   @param eventBase A folly event base used to execute connection operations.
    @param connectionContextStore A connection context store used for obtaining
    the certificate used for secure connections.
    */
   virtual std::unique_ptr<FlipperSocket> create(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler,
+      folly::EventBase* eventBase,
       ConnectionContextStore* connectionContextStore) = 0;
 
   static std::unique_ptr<FlipperSocket> socketCreate(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler);
+      folly::EventBase* eventBase);
   static std::unique_ptr<FlipperSocket> socketCreate(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler,
+      folly::EventBase* eventBase,
       ConnectionContextStore* connectionContextStore);
 
   static void setDefaultProvider(

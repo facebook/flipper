@@ -21,19 +21,19 @@ std::unique_ptr<FlipperSocketProvider> FlipperSocketProvider::shelvedProvider_ =
 std::unique_ptr<FlipperSocket> FlipperSocketProvider::socketCreate(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
-    Scheduler* scheduler) {
-  return provider_->create(std::move(endpoint), std::move(payload), scheduler);
+    folly::EventBase* eventBase) {
+  return provider_->create(std::move(endpoint), std::move(payload), eventBase);
 }
 
 std::unique_ptr<FlipperSocket> FlipperSocketProvider::socketCreate(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
-    Scheduler* scheduler,
+    folly::EventBase* eventBase,
     ConnectionContextStore* connectionContextStore) {
   return provider_->create(
       std::move(endpoint),
       std::move(payload),
-      scheduler,
+      eventBase,
       connectionContextStore);
 }
 

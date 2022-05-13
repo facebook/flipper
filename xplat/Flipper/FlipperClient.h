@@ -8,7 +8,6 @@
 #pragma once
 
 #include <map>
-#include <memory>
 #include <mutex>
 #include <vector>
 #include "FlipperCertificateProvider.h"

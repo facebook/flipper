@@ -7,10 +7,11 @@
 
 #pragma once
 
+#include <folly/Executor.h>
+#include <folly/io/async/EventBase.h>
 #include <mutex>
 #include "FlipperConnectionManager.h"
 #include "FlipperInitConfig.h"
-#include "FlipperScheduler.h"
 #include "FlipperSocket.h"
 #include "FlipperState.h"
 
@@ -63,8 +64,8 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   int altInsecurePort;
   int altSecurePort;
 
-  Scheduler* flipperScheduler_;
-  Scheduler* connectionScheduler_;
+  folly::EventBase* flipperEventBase_;
+  folly::EventBase* connectionEventBase_;
 
   std::unique_ptr<FlipperSocket> client_;
 

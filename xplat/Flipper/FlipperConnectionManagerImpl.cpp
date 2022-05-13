@@ -95,8 +95,8 @@ FlipperConnectionManagerImpl::FlipperConnectionManagerImpl(
       securePort(config.securePort),
       altInsecurePort(config.altInsecurePort),
       altSecurePort(config.altSecurePort),
-      flipperScheduler_(config.callbackWorker),
-      connectionScheduler_(config.connectionWorker),
+      flipperEventBase_(config.callbackWorker),
+      connectionEventBase_(config.connectionWorker),
       contextStore_(contextStore),
       implWrapper_(std::make_shared<FlipperConnectionManagerWrapper>(this)) {
   CHECK_THROW(config.callbackWorker, std::invalid_argument);
@@ -131,10 +131,13 @@ void FlipperConnectionManagerImpl::start() {
 
   auto step = flipperState_->start("Start connection thread");
 
-  flipperScheduler_->schedule([this, step]() {
-    step->complete();
-    startSync();
-  });
+  folly::makeFuture()
+      .via(flipperEventBase_->getEventBase())
+      .delayed(std::chrono::milliseconds(0))
+      .thenValue([this, step](auto&&) {
+        step->complete();
+        startSync();
+      });
 }
 
 void FlipperConnectionManagerImpl::startSync() {
@@ -207,7 +210,7 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
   payload->medium = medium;
 
   auto newClient = FlipperSocketProvider::socketCreate(
-      endpoint, std::move(payload), flipperScheduler_);
+      endpoint, std::move(payload), connectionEventBase_);
   newClient->setEventHandler(ConnectionEvents(implWrapper_));
 
   auto connectingInsecurely = flipperState_->start("Connect insecurely");
@@ -256,7 +259,7 @@ bool FlipperConnectionManagerImpl::connectSecurely() {
   payload->csr_path = contextStore_->getCertificateDirectoryPath().c_str();
 
   auto newClient = FlipperSocketProvider::socketCreate(
-      endpoint, std::move(payload), connectionScheduler_, contextStore_.get());
+      endpoint, std::move(payload), connectionEventBase_, contextStore_.get());
   newClient->setEventHandler(ConnectionEvents(implWrapper_));
   newClient->setMessageHandler([this](const std::string& msg) {
     std::unique_ptr<FireAndForgetBasedFlipperResponder> responder;
@@ -291,8 +294,10 @@ void FlipperConnectionManagerImpl::reconnect() {
     log("Not started");
     return;
   }
-  flipperScheduler_->scheduleAfter(
-      [this]() { startSync(); }, reconnectIntervalSeconds * 1000.0f);
+  folly::makeFuture()
+      .via(flipperEventBase_->getEventBase())
+      .delayed(std::chrono::seconds(reconnectIntervalSeconds))
+      .thenValue([this](auto&&) { startSync(); });
 }
 
 void FlipperConnectionManagerImpl::stop() {
@@ -320,7 +325,7 @@ void FlipperConnectionManagerImpl::setCallbacks(Callbacks* callbacks) {
 }
 
 void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
-  flipperScheduler_->schedule([this, message]() {
+  flipperEventBase_->add([this, message]() {
     try {
       if (client_) {
         client_->send(message, []() {});
@@ -452,11 +457,11 @@ void FlipperConnectionManagerImpl::requestSignedCertificate() {
   auto gettingCert = flipperState_->start("Getting cert from desktop");
 
   certificateExchangeCompleted_ = false;
-  flipperScheduler_->schedule([this, message, gettingCert]() {
+  flipperEventBase_->add([this, message, gettingCert]() {
     client_->sendExpectResponse(
         folly::toJson(message),
         [this, gettingCert](const std::string& response, bool isError) {
-          flipperScheduler_->schedule([this, gettingCert, response, isError]() {
+          flipperEventBase_->add([this, gettingCert, response, isError]() {
             this->processSignedCertificateResponse(
                 gettingCert, response, isError);
           });
@@ -466,7 +471,7 @@ void FlipperConnectionManagerImpl::requestSignedCertificate() {
 }
 
 bool FlipperConnectionManagerImpl::isRunningInOwnThread() {
-  return flipperScheduler_->isRunningInOwnThread();
+  return flipperEventBase_->isInEventBaseThread();
 }
 
 } // namespace flipper

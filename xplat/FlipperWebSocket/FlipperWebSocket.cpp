@@ -14,6 +14,8 @@
 #include <Flipper/Log.h>
 #include <folly/String.h>
 #include <folly/futures/Future.h>
+#include <folly/io/async/AsyncSocketException.h>
+#include <folly/io/async/SSLContext.h>
 #include <folly/json.h>
 #include <cctype>
 #include <iomanip>
@@ -30,24 +32,24 @@ namespace flipper {
 FlipperWebSocket::FlipperWebSocket(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
-    Scheduler* scheduler)
+    folly::EventBase* eventBase)
     : FlipperWebSocket(
           std::move(endpoint),
           std::move(payload),
-          scheduler,
+          eventBase,
           nullptr) {}
 
 FlipperWebSocket::FlipperWebSocket(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
-    Scheduler* scheduler,
+    folly::EventBase* eventBase,
     ConnectionContextStore* connectionContextStore) {
   if (endpoint.secure) {
     socket_ = std::make_unique<WebSocketTLSClient>(
-        endpoint, std::move(payload), scheduler, connectionContextStore);
+        endpoint, std::move(payload), eventBase, connectionContextStore);
   } else {
     socket_ = std::make_unique<WebSocketClient>(
-        endpoint, std::move(payload), scheduler, connectionContextStore);
+        endpoint, std::move(payload), eventBase, connectionContextStore);
   }
 }
 

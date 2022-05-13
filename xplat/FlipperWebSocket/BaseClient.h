@@ -9,11 +9,11 @@
 
 #pragma once
 
-#include <Flipper/FlipperScheduler.h>
 #include <Flipper/FlipperSocket.h>
 #include <Flipper/FlipperSocketProvider.h>
 #include <Flipper/FlipperTransportTypes.h>
 #include <folly/dynamic.h>
+#include <folly/io/async/EventBase.h>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -37,18 +37,18 @@ class BaseClient {
   BaseClient(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler)
+      folly::EventBase* eventBase)
       : endpoint_(std::move(endpoint)),
         payload_(std::move(payload)),
-        scheduler_(scheduler) {}
+        eventBase_(eventBase) {}
   BaseClient(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler,
+      folly::EventBase* eventBase,
       ConnectionContextStore* connectionContextStore)
       : endpoint_(std::move(endpoint)),
         payload_(std::move(payload)),
-        scheduler_(scheduler),
+        eventBase_(eventBase),
         connectionContextStore_(connectionContextStore) {}
 
   BaseClient(const BaseClient&) = delete;
@@ -84,7 +84,7 @@ class BaseClient {
  protected:
   FlipperConnectionEndpoint endpoint_;
   std::unique_ptr<FlipperSocketBasePayload> payload_;
-  Scheduler* scheduler_;
+  folly::EventBase* eventBase_;
   ConnectionContextStore* connectionContextStore_;
 
   SocketEventHandler eventHandler_;

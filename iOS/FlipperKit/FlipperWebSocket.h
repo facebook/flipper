@@ -9,11 +9,11 @@
 
 #pragma once
 
-#import <Flipper/FlipperScheduler.h>
 #import <Flipper/FlipperSocket.h>
 #import <Flipper/FlipperSocketProvider.h>
 #import <Flipper/FlipperTransportTypes.h>
 #import <folly/dynamic.h>
+#import <folly/io/async/EventBase.h>
 #import <future>
 #import <memory>
 
@@ -67,14 +67,14 @@ class FlipperWebSocketProvider : public FlipperSocketProvider {
   virtual std::unique_ptr<FlipperSocket> create(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler) override {
+      folly::EventBase* eventBase) override {
     return std::make_unique<FlipperWebSocket>(
         std::move(endpoint), std::move(payload));
   }
   virtual std::unique_ptr<FlipperSocket> create(
       FlipperConnectionEndpoint endpoint,
       std::unique_ptr<FlipperSocketBasePayload> payload,
-      Scheduler* scheduler,
+      folly::EventBase* eventBase,
       ConnectionContextStore* connectionContextStore) override {
     return std::make_unique<FlipperWebSocket>(
         std::move(endpoint), std::move(payload), connectionContextStore);
