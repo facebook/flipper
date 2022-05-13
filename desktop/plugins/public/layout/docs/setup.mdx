@@ -1,17 +1,21 @@
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-To use the layout inspector plugin, you need to add the plugin to your Flipper client instance.
+To use the <Link to={useBaseUrl("/docs/features/plugins/inspector")}>Layout Inspector plugin</Link>, you need to add the plugin to your Flipper client instance.
 
 ## Android
 
-### Standard Android View Only
+### Standard Android view only
 
 ```java
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 
 final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
+
 client.addPlugin(new InspectorFlipperPlugin(mApplicationContext, descriptorMapping));
 ```
 
@@ -19,9 +23,7 @@ client.addPlugin(new InspectorFlipperPlugin(mApplicationContext, descriptorMappi
 
 Litho support is provided via an optional plugin.
 
-You also need to compile in the `litho-annotations` package, as Flipper reflects
-on them at runtime. So ensure to not just include them as `compileOnly` in your
-gradle configuration:
+You also need to compile in the `litho-annotations` package, as Flipper reflects on them at runtime. So ensure to not just include them as `compileOnly` in your gradle configuration:
 
 ```groovy
 dependencies {
@@ -31,9 +33,7 @@ dependencies {
 }
 ```
 
-
-If you want to enable Litho support in the layout inspector, you need to augment
-the descriptor with Litho-specific settings and add some addition dependencies.
+If you want to enable Litho support in the layout inspector, you need to augment the descriptor with Litho-specific settings and add some addition dependencies.
 
 ```java
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -55,9 +55,9 @@ client.addPlugin(new InspectorFlipperPlugin(mApplicationContext, descriptorMappi
 
 ### Blocking fullscreen views (Android only)
 
-The issue is that if you have some view that occupies big part of the screen but draws nothing and its Z-position is higher than your main content, then selecting view/component through Layout Inspector doesn't work as you intended, as it will always hit that transparent view and you need to manually navigate to the view you need which is time-consuming and should not be necessary.
+There is an issue that if you have a view that occupies a big part of the screen but draws nothing, and its Z-position is higher than your main content, then selecting view/component through the Layout Inspector doesn't function as you intended. This is because it always hits that transparent view, therefore, you need to manually navigate to the view you need: this is time-consuming and should not be necessary.
 
-Add the following tag to your view to skip it from Flipper's view picker. The view will still be shown in the layout hierarchy, but it will not be selected while using the view picker.
+Add the following tag to your view to skip it from Flipper's view picker. The view is still shown in the layout hierarchy but is selected while using the view picker:
 
 ```java
 view.setTag(R.id.flipper_skip_view_traversal, true);
@@ -65,7 +65,7 @@ view.setTag(R.id.flipper_skip_view_traversal, true);
 
 ### Blocking empty view groups (Android only)
 
-If you have a ViewGroup that only occasionally has visible children, you may find it helpful to block its traversal when it is empty or has no visible children. For example, you might have a FragmentContainerView that currently has no visible fragment.
+If you have a ViewGroup that only occasionally has visible children, you may find it helpful to block its traversal when it's empty or has no visible children. For example, you might have a FragmentContainerView that currently has no visible fragment.
 
 Add the following tag to your view group to skip it from Flipper's view picker only when it has zero children, or none of its children are currently visible. The views will still be shown in the layout hierarchy, but they will not be selected while using the view picker.
 
@@ -110,11 +110,12 @@ client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptor
 
 ### With ComponentKit Support
 
-If you want to enable [ComponentKit support](https://github.com/facebook/componentkit) in the layout inspector, you need to add `FlipperKit/FlipperKitLayoutComponentKitSupport` to your Podfile.
+If you want to enable [ComponentKit support](https://github.com/facebook/componentkit) in the Layout Inspector, you need to add `FlipperKit/FlipperKitLayoutComponentKitSupport` to your Podfile:
 
 ```ruby
 pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
 ```
+
 Once you have added the pod you will then need to augment the descriptor with Componentkit-specific settings as shown below.
 
 <Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
