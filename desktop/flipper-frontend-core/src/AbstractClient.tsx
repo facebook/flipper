@@ -503,6 +503,9 @@ export default abstract class AbstractClient extends EventEmitter {
   }
 
   async supportsMethod(api: string, method: string): Promise<boolean> {
+    if (!this.connected.get()) {
+      return false;
+    }
     const response = await this.rawCall<{
       isSupported: boolean;
     }>('isMethodSupported', true, {

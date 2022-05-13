@@ -207,7 +207,6 @@ export class SandyPluginInstance extends BasePluginInstance {
         this.events.on('unhandled-event', batched(cb));
       },
       supportsMethod: async (method) => {
-        this.assertConnected();
         return await realClient.supportsMethod(
           this.definition.id,
           method as any,
