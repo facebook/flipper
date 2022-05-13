@@ -1,62 +1,60 @@
 ---
 id: intro
-title: Intro
+title: Introduction
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+Flipper was designed with extensibility in mind to enable Engineers to quickly build quality, easy-to-use tools for their own needs and applications.
+In addition to building plugins for the existing platforms, you can also extend the capabilities of Flipper to other platforms by conforming to the `FlipperClient` API.
+After this, you can make use of the existing desktop plugins by writing client plugins that conform to the same API.
+
+In this tutorial, you'll learn how easy it is to build a Flipper plugin for Android and iOS that extracts data from your native application and displays it in a desktop app.
+You'll then be guided through the process of converting a basic table plugin into a full plugin with custom UI components.
+
+At the end of the tutorial, you'll have created a plugin that looks like the following screenshot example.
+
 <img alt="Android App Tutorial" src={useBaseUrl("img/android-tutorial.png")} />
 
-Flipper was designed with extensibility in mind from the start to enable engineers to quickly build quality, easy-to-use tools for their own needs and applications.
-In addition to building plugins for the existing platforms, you can also extend the capabilities of Flipper to other platforms by conforming to the `FlipperClient` API. After this, you can make use of the existing desktop plugins by writing client plugins that conform to the same API.
+Before you get started, here are two terms you'll see frequently throughout this tutorial:
 
-In this tutorial, we show you how easy it is to build a Flipper plugin
-for Android and iOS that extracts data from your native application and
-displays it in the desktop app.
-
-We then guide you through the process of converting a basic table plugin into
-a full plugin with custom UI components.
-
-Before we get started, let's define two terms we will use frequently throughout
-this tutorial:
-
-- **Desktop app**: This is the Electron-based application you run on your desktop.
-- **Mobile client**: This is the mobile app running most likely on a phone or other mobile device. It connects to the desktop app.
+- **Desktop app** - the Electron-based application you run on your desktop.
+- **Mobile client** - mobile app running most likely on a phone or other mobile device: it connects to the desktop app.
 
 <FbInternalOnly>
 
 ## Scaffolding a new plugin
 
-To create your plugin and add it to Wilde / fb4a there are some steps to go through. That's why we made a simple scripts for it.
+To create your plugin and add it to Wilde / fb4a, there are some steps to go through. These steps feature in a simple script, as detailed below:
 
-Go to your terminal and simply run `scarf flipper-plugin`, this will setup all required files for you.
+1. Open a terminal and run `scarf flipper-plugin`, this will setup all required files for you.
+2. On completion, you'll have everything set up ready to start and running it on Flipper. Run `hg diff` to see the following:
 
-On completion you'll have everything set up ready to start and running it on Flipper. Run `hg diff` to see the following:
-
-* **Desktop plugin files**: The UI code for your plugin. Everything starts in the `index.js` file
-* **Native Flipper plugin files**: The Android / iOS code for your plugin
-* **Integration with flagship apps**: Your plugin has already been added into Wilde and/or fb4a!
+   - **Desktop plugin files** - the UI code for your plugin. Everything starts in the `index.js` file.
+   - **Native Flipper plugin files** - the Android / iOS code for your plugin.
+   - **Integration with flagship apps** - your plugin has already been added into Wilde and/or fb4a!
 
 ### Gatekeeper
 
-Depending on the scaffolding choices, we've gated your new plugin behind a GK, so you can go ahead and ship it without premature exposure. You will have to create the gatekeeper, and add yourself to it so you can see your plugin. The GK name is defined in your plugins `package.json`.
+Depending on the scaffolding choices, your new plugin is gated behind a GK, so you can ship it without premature exposure. You'll have to create the gatekeeper and add yourself to it so you can see your plugin. The GK name is defined in your plugin's `package.json`.
 
 ### Let's see something on screen
 
-Now that you have a good ground for your plugin there is nothing better than actually see something on screen. Make sure you build and run fb4a or wilde with your generated changes.
+Now that you have a firm foundation for your plugin, there is nothing better than actually seeing something on screen. Make sure you build and run fb4a or Wilde with your generated changes.
 
-You also need to compile and run the flipper desktop app, with your new plugin.
+You also need to compile and run the Flipper desktop app with your new plugin.
 
-To locally run Flipper just go to your terminal (please use non-atom terminal):
+To locally run Flipper, use the following in a terminal (please use a non-atom terminal):
 
+```bash
+cd ~/fbsource/xplat/sonar/desktop
+yarn install
+yarn start
 ```
-$ cd ~/fbsource/xplat/sonar/desktop
-$ yarn install
-$ yarn start
-```
-This will kickoff a local build of Flipper that will spawn automatically for you once its ready. While you're working on your custom plugin you'll not be using the Flipper build pre-installed on your machine.
+
+This will start a local build of Flipper that spawns automatically for you once its ready. While you're working on your custom plugin, you'll not be using the Flipper build pre-installed on your machine.
 
 As you keep tweaking and improving your desktop plugin, the only thing to do is to save your changes (on your `index.tsx` file) and it will automatically reload flipper with all changes applied for you. This makes it possible to see your changes automatically appear on screen without rebuilding Flipper every time.
 
-To start an IDE we recommend to run `code-fb ~/fbsource/xplat/sonar/`
+To start an IDE, it's recommended to run `code-fb ~/fbsource/xplat/sonar/`
 
 </FbInternalOnly>
