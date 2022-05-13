@@ -4,49 +4,58 @@ title: Running Flipper with different ports
 sidebar_label: Using different ports
 ---
 
-## FLIPPER ports (mobile apps that support certificate exchange)
+## Flipper ports - mobile  apps that support certificate exchange
 
-By default Flipper runs its servers on ports 9088 and 9089, and the mobile SDKs look for servers on those ports.
+:::information
+By default, Flipper runs its servers on ports 9088 and 9089.
+The mobile SDKs look for servers on those ports.
+:::
 
-Each of these can be overridden by setting an environment variable, with the format `${INSECURE_PORT},${SECURE_PORT}`.
+Each of these can be overridden by setting an environment variable, with the format: `${INSECURE_PORT},${SECURE_PORT}`.
 
-To run the desktop app using custom ports:
+To run the desktop app using custom ports, use the following:
 
-```
+```sh
 env FLIPPER_PORTS=1111,2222 ./flipper
 ```
 
 or with a dev build:
 
-```
+```sh
 env FLIPPER_PORTS=1111,2222 yarn start
 ```
 
-To configure the Android SDK for custom ports, set the `flipper.ports` prop to your chosen ports `1111,2222` like so, and then launch the Android app:
+### Android SDK
 
-```
+To configure the Android SDK for custom ports, set the `flipper.ports` prop to your chosen ports `1111,2222` and then launch the Android app:
+
+```sh
 adb shell su 0 setprop flipper.ports 1111,2222
 ```
 
+### iOS SDK
+
 To configure the iOS SDK for custom ports, set the FLIPPER_PORTS environment variable in your app launch script or set it system-wide through User Defaults:
 
-```
+```sh
 xcrun simctl spawn booted defaults write "Apple Global Domain" "com.facebook.flipper.ports" -string "1111,2222"
 ```
 
-## FLIPPER ports (apps that do not support certificate exchange)
+## Flipper ports - apps that do not support certificate exchange
 
-Flipper listens on 8333 for insecure (browser, Node.js) connections.
+:::information
+Flipper listens on port 8333 for unsecure (browser, Node.js) connections.
+:::
 
-To run the desktop app using custom ports:
+To run the desktop app using custom ports, use the following:
 
-```
+```sh
 env FLIPPER_BROWSER_PORT=1111 ./flipper
 ```
 
 or with a dev build:
 
-```
+```sh
 env FLIPPER_BROWSER_PORT=1111 yarn start
 ```
 
@@ -56,18 +65,18 @@ To connect to Flipper on a different port from [js-flipper](https://github.com/f
 flipperClient.start('React Tic-Tac-Toe', { urlBase: 'localhost:1111' });
 ```
 
-## METRO SERVER PORTS
+## Metro Server Ports
 
-You can also setup Flipper to use a different Metro Server port (default=8081) using this environement variable:
+You can also setup Flipper to use a different Metro Server port (default=8081) using this environement variable, as follows:
 
-```
+```sh
 METRO_SERVER_PORT=3333 ./flipper
 ```
 
-## ADB REVERSE PROXY PORTS
+## AD8 Reverse Proxy ports
 
-And setup a different ADB port used for reverse proxying when plugged through USB (default=5037) using:
+You can setup a different ADB port, used for reverse proxying when plugged through USB (default=5037), using the following:
 
-```
+```sh
 ANDROID_ADB_SERVER_PORT=4444 ./flipper
 ```
