@@ -188,7 +188,7 @@ export function initializeElectron(
       return getLocalIconUrl(
         icon,
         url,
-        flipperServerConfig.paths.appPath,
+        flipperServerConfig.paths.staticPath,
         !flipperServerConfig.environmentInfo.isProduction,
       );
     },
