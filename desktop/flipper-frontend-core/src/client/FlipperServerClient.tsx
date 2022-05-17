@@ -25,6 +25,8 @@ export enum FlipperServerState {
 }
 
 export function createFlipperServer(
+  host: string,
+  port: number,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
   onStateChange(FlipperServerState.CONNECTING);
@@ -38,7 +40,7 @@ export function createFlipperServer(
 
     const eventEmitter = new EventEmitter();
 
-    const socket = new ReconnectingWebSocket(`ws://${location.host}`);
+    const socket = new ReconnectingWebSocket(`ws://${host}:${port}`);
     const pendingRequests: Map<
       number,
       {

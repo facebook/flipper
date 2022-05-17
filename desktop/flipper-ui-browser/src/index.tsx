@@ -28,6 +28,8 @@ async function start() {
   setLoggerInstance(logger);
 
   const flipperServer = await createFlipperServer(
+    location.hostname,
+    parseInt(location.port, 10),
     (state: FlipperServerState) => {
       switch (state) {
         case FlipperServerState.CONNECTING:
