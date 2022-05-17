@@ -14,3 +14,4 @@ export {default as BaseDevice} from './devices/BaseDevice';
 export * from './globalObject';
 export * from './plugins';
 export * from './flipperLibImplementation';
+export * from './client/FlipperServerClient';

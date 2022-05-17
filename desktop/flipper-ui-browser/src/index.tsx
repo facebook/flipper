@@ -9,7 +9,7 @@
 
 import {getLogger, Logger, setLoggerInstance} from 'flipper-common';
 import {initializeRenderHost} from './initializeRenderHost';
-import {createFlipperServer} from './flipperServerConnection';
+import {createFlipperServer, FlipperServerState} from 'flipper-frontend-core';
 
 document.getElementById('root')!.innerText = 'flipper-ui-browser started';
 
@@ -27,7 +27,21 @@ async function start() {
   const logger = createDelegatedLogger();
   setLoggerInstance(logger);
 
-  const flipperServer = await createFlipperServer();
+  const flipperServer = await createFlipperServer(
+    (state: FlipperServerState) => {
+      switch (state) {
+        case FlipperServerState.CONNECTING:
+          window.flipperShowError?.('Connecting to flipper-server...');
+          break;
+        case FlipperServerState.CONNECTED:
+          window?.flipperHideError?.();
+          break;
+        case FlipperServerState.DISCONNECTED:
+          window?.flipperShowError?.('Lost connection to flipper-server');
+          break;
+      }
+    },
+  );
 
   await flipperServer.connect();
   const flipperServerConfig = await flipperServer.exec('get-config');

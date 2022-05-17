@@ -11,6 +11,9 @@
       "path": "../flipper-common"
     },
     {
+      "path": "../flipper-frontend-core"
+    },
+    {
       "path": "../flipper-ui-core"
     }
   ]
