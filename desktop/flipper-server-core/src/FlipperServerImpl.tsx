@@ -431,8 +431,7 @@ export class FlipperServerImpl implements FlipperServer {
     'plugin-source': (path) => this.pluginManager.loadSource(path),
     'plugins-server-add-on-start': (pluginName, details, owner) =>
       this.pluginManager.startServerAddOn(pluginName, details, owner),
-    // TODO: Figure out if it needs to be async
-    'plugins-server-add-on-stop': async (pluginName, owner) =>
+    'plugins-server-add-on-stop': (pluginName, owner) =>
       this.pluginManager.stopServerAddOn(pluginName, owner),
     'plugins-server-add-on-request-response': async (payload) => {
       try {
