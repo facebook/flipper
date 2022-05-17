@@ -16,7 +16,7 @@ import {
 } from 'flipper-plugin';
 // eslint-disable-next-line no-restricted-imports,flipper/no-electron-remote-imports
 import {remote} from 'electron';
-import os from 'os';
+import {createFlipperServer, FlipperServerState} from 'flipper-frontend-core';
 import {
   FlipperServerImpl,
   getEnvironmentInfo,
@@ -27,6 +27,7 @@ import {
   setupPrefetcher,
 } from 'flipper-server-core';
 import {
+  FlipperServer,
   getLogger,
   isTest,
   Logger,
@@ -41,7 +42,9 @@ import fs from 'fs-extra';
 
 enableMapSet();
 
-async function start() {
+async function getEmbeddedFlipperServer(
+  logger: Logger,
+): Promise<FlipperServer> {
   const app = remote.app;
   const execPath = process.execPath || remote.process.execPath;
   const appPath = app.getAppPath();
@@ -49,8 +52,6 @@ async function start() {
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
   const env = process.env;
   const environmentInfo = await getEnvironmentInfo(staticPath, isProduction);
-  const logger = createDelegatedLogger();
-  setLoggerInstance(logger);
 
   let keytar: any = undefined;
   try {
@@ -94,6 +95,24 @@ async function start() {
     keytar,
   );
 
+  return flipperServer;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getFlipperServer(_logger: Logger): Promise<FlipperServer> {
+  const flipperServer = await createFlipperServer(
+    'localhost',
+    52342,
+    (_state: FlipperServerState) => {},
+  );
+  return flipperServer;
+}
+
+async function start() {
+  const logger = createDelegatedLogger();
+  setLoggerInstance(logger);
+
+  const flipperServer: FlipperServer = await getEmbeddedFlipperServer(logger);
   const flipperServerConfig = await flipperServer.exec('get-config');
 
   initializeElectron(flipperServer, flipperServerConfig);
