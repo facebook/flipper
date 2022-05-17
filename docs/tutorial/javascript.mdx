@@ -1,36 +1,42 @@
 ---
 id: javascript
-title: Building a JavaScript (browser) Plugin
+title: Building a JavaScript (Browser) Plugin
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Link from '@docusaurus/Link';
 
+:::caution
 This tutorial requires a browser that supports [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
+:::
 
-## Step 1. Install Flipper JavaScript SDK
+This section of the tutorial goes through the three steps required to build a JavaScript plugin.
 
-Add Flipper client to your web application. Run `npm install js-flipper` (`yarn add js-flipper`)
+## Step 1 - install Flipper JavaScript SDK
 
-## Step 2. Start Flipper client
+Add the Flipper client to your web application. Run `npm install js-flipper` (`yarn add js-flipper`)
 
-<div class="warning">
+## Step 2 - start the Flipper client
 
-Do not start Flipper client in production! Preferably, do not even include Flipper in your production builds!
+:::warning
+Do not start the Flipper client in production! Preferably, do not even include Flipper in your production builds!
+:::
 
-</div>
+Use the following to start the Flipper client:
 
 ```tsx file=js/react-flipper-example/src/FlipperTicTacToe.tsx start=DOCS_START_CLIENT_START end=DOCS_START_CLIENT_END
 ```
 
-## Step 3. Call `addPlugin` to add your plugin
+## Step 3 - call `addPlugin` to add your plugin
 
-To register a new plugin with Flipper call `flipperClient.addPlugin` and pass your plugin as an object. Your plugin must conform to the following interface:
+To register a new plugin with Flipper, call `flipperClient.addPlugin` and pass your plugin as an object.
+
+Your plugin must conform to the following interface:
 
 ```ts file=js/js-flipper/src/plugin.ts start=DOCS_FLIPPER_PLUGIN_START end=DOCS_FLIPPER_PLUGIN_END
 ```
 
-These `onConnect` and `onDisconnect` events are triggered every time the plugin becomes (in)active in the Flipper desktop application.
-If the plugin is a <Link to={useBaseUrl("/docs/extending/create-plugin#background-plugins")}>background plugin</Link>, these events are triggered typically only once (they might be triggered never, if the Desktop user didn't enable the plugin, or multiple times if they enabled or disabled the plugin a few times).
+The `onConnect` and `onDisconnect` events, featured in the above snippet, are triggered every time the plugin becomes (in)active in the Flipper desktop application.
+If the plugin is a <Link to={useBaseUrl("/docs/extending/create-plugin#background-plugins")}>background plugin</Link>, these events are triggered typically only once (they might be triggered never if the Desktop user didn't enable the plugin, or multiple times if they enabled or disabled the plugin a few times).
 
 The `onConnect` callback receive a `connection` which can be used to communicate with the backend:
 
@@ -45,5 +51,5 @@ The `connection` object can also be used to listen to messages coming from the D
 
 An example plugin to play a little Tic-Tac-Toe between the Flipper Desktop and a React app can be found inside this repository as well (run `yarn && yarn start` in `js/react-flipper-example` to start the test project):
 
- * The React plugin implementation: [FlipperTicTacToe.tsx](https://github.com/facebook/flipper/tree/main/js/react-flipper-example/src/FlipperTicTacToe.tsx)
- * The Flipper Desktop plugin implementation: [rn-tic-tac-toe/index.tsx](https://github.com/facebook/flipper/blob/main/desktop/plugins/public/rn-tic-tac-toe/index.tsx)
+ * The React plugin implementation - [FlipperTicTacToe.tsx](https://github.com/facebook/flipper/tree/main/js/react-flipper-example/src/FlipperTicTacToe.tsx)
+ * The Flipper Desktop plugin implementation - [rn-tic-tac-toe/index.tsx](https://github.com/facebook/flipper/blob/main/desktop/plugins/public/rn-tic-tac-toe/index.tsx)
