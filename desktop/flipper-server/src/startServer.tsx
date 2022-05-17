@@ -211,8 +211,14 @@ function addWebsocket(server: http.Server, config: Config) {
   const localhostIPV4 = `localhost:${config.port}`;
   const localhostIPV6 = `[::1]:${config.port}`;
   const localhostIPV6NoBrackets = `::1:${config.port}`;
+  const localhostIPV4Electron = 'localhost:3000';
 
-  const possibleHosts = [localhostIPV4, localhostIPV6, localhostIPV6NoBrackets];
+  const possibleHosts = [
+    localhostIPV4,
+    localhostIPV6,
+    localhostIPV6NoBrackets,
+    localhostIPV4Electron,
+  ];
   const possibleOrigins = possibleHosts.map((host) => `http://${host}`);
 
   const verifyClient: VerifyClientCallbackSync = ({origin, req}) => {
