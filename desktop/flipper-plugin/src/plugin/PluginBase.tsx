@@ -153,9 +153,7 @@ export interface BasePluginClient<
 
   /**
    * Subscribe to a specific event arriving from the server add-on.
-   *
    * Messages can only arrive if the plugin is enabled and connected.
-   * For background plugins messages will be batched and arrive the next time the plugin is connected.
    */
   onServerAddOnMessage<Event extends keyof ServerAddOnEvents & string>(
     event: Event,
