@@ -1,3 +1,9 @@
+# 0.146.0 (18/5/2022)
+
+ * [D36060992](https://github.com/facebook/flipper/search?q=D36060992&type=Commits) -  Remove OpenSSL file BIO operations
+ * [D36369508](https://github.com/facebook/flipper/search?q=D36369508&type=Commits) -  Fixed NPE during search in layout plugin (Android)
+
+
 # 0.145.0 (5/5/2022)
 
  * [D36001637](https://github.com/facebook/flipper/search?q=D36001637&type=Commits) -  Execute :third-party:prepare before :configureCMake task on Android
