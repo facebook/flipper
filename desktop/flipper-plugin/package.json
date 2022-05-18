@@ -24,12 +24,10 @@
     "react-color": "^2.19.3",
     "react-element-to-jsx-string": "^14.3.4",
     "react-virtual": "^2.10.4",
-    "string-natural-compare": "^3.0.0",
-    "uuid": "^8.3.2"
+    "string-natural-compare": "^3.0.0"
   },
   "devDependencies": {
     "@types/string-natural-compare": "^3.0.2",
-    "@types/uuid": "^8.3.4",
     "jest-mock-console": "^1.2.3"
   },
   "peerDependencies": {

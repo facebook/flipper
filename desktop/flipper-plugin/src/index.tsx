@@ -137,7 +137,6 @@ export {createTablePlugin} from './utils/createTablePlugin';
 export {textContent} from './utils/textContent';
 import * as path from './utils/path';
 export {path};
-export * from './utils/uuid';
 export {safeStringify} from './utils/safeStringify';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
@@ -150,6 +149,7 @@ export {
   sleep,
   timeout,
   createControlledPromise,
+  uuid,
   DeviceOS,
   DeviceType,
   DeviceLogEntry,

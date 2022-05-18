@@ -12,8 +12,7 @@ import iosUtil from './iOSContainerUtility';
 
 import child_process from 'child_process';
 import type {IOSDeviceParams} from 'flipper-common';
-import {DeviceType} from 'flipper-common';
-import {v1 as uuid} from 'uuid';
+import {DeviceType, uuid} from 'flipper-common';
 import path from 'path';
 import {exec, execFile} from 'promisify-child-process';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';

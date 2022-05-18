@@ -11,13 +11,13 @@
 
 import * as path from './utils/path';
 export {path};
-export * from './utils/uuid';
 export {safeStringify} from './utils/safeStringify';
 
 export {
   sleep,
   timeout,
   createControlledPromise,
+  uuid,
   ServerAddOn,
   ServerAddOnPluginConnection,
   FlipperServerForServerAddOn,

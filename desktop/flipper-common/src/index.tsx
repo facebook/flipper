@@ -52,6 +52,7 @@ export {
 } from './utils/errors';
 export {createControlledPromise} from './utils/controlledPromise';
 export * from './utils/typeUtils';
+export * from './utils/uuid';
 export * from './GK';
 export * from './clientUtils';
 export * from './settings';

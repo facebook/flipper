@@ -7,11 +7,10 @@
  * @format
  */
 
-import {FlipperServerCommands, FlipperServerEvents} from 'flipper-common';
+import {FlipperServerCommands, FlipperServerEvents, uuid} from 'flipper-common';
 import {pathExists} from 'fs-extra';
 import {promises, createWriteStream, ReadStream} from 'fs';
 import axios from 'axios';
-import {v4 as uuid} from 'uuid';
 
 const {unlink} = promises;
 

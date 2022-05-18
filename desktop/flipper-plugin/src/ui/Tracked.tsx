@@ -10,7 +10,7 @@
 import React, {useMemo} from 'react';
 import {Children, cloneElement, createContext, useContext} from 'react';
 import reactElementToJSXString from 'react-element-to-jsx-string';
-import {v4 as uuid} from 'uuid';
+import {uuid} from 'flipper-common';
 
 export type InteractionReport = {
   // Duration of the event handler itself, not including any time the promise handler might have been pending

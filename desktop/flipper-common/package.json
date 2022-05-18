@@ -8,8 +8,12 @@
   "types": "lib/index.d.ts",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/uuid": "^8.3.4"
+  },
   "peerDependencies": {},
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",

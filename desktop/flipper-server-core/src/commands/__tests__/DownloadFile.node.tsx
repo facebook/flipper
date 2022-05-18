@@ -10,8 +10,14 @@
 import axios from 'axios';
 import MemoryStream from 'memorystream';
 import {dirSync} from 'tmp';
-import * as uuid from 'uuid';
+import * as flipperCommon from 'flipper-common';
 import {commandDownloadFileStartFactory} from '../DownloadFile';
+
+// https://stackoverflow.com/a/63374190
+jest.mock('flipper-common', () => ({
+  __esModule: true,
+  ...jest.requireActual('flipper-common'),
+}));
 
 describe('commands', () => {
   describe('DownloadFile', () => {
@@ -60,7 +66,7 @@ describe('commands', () => {
 
       const fakeDownloadURL = 'https://flipper.rocks';
       const fakeUuid = 'flipper42';
-      jest.spyOn(uuid, 'v4').mockImplementation(() => fakeUuid);
+      jest.spyOn(flipperCommon, 'uuid').mockImplementation(() => fakeUuid);
 
       const downloadFileDescriptor = await commandDownloadFileStart(
         fakeDownloadURL,
@@ -135,7 +141,7 @@ describe('commands', () => {
 
       const fakeDownloadURL = 'https://flipper.rocks';
       const fakeUuid = 'flipper42';
-      jest.spyOn(uuid, 'v4').mockImplementation(() => fakeUuid);
+      jest.spyOn(flipperCommon, 'uuid').mockImplementation(() => fakeUuid);
 
       await commandDownloadFileStart(fakeDownloadURL, dest);
 
@@ -177,7 +183,7 @@ describe('commands', () => {
 
       const fakeDownloadURL = 'https://flipper.rocks';
       const fakeUuid = 'flipper42';
-      jest.spyOn(uuid, 'v4').mockImplementation(() => fakeUuid);
+      jest.spyOn(flipperCommon, 'uuid').mockImplementation(() => fakeUuid);
 
       // We provide an invalid path to force write stream to fail
       await commandDownloadFileStart(fakeDownloadURL, '');
