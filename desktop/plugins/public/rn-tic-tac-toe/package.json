@@ -14,5 +14,8 @@
   "category": "Examples",
   "bugs": {
     "url": "https://github.com/facebook/flipper/issues"
+  },
+  "peerDependencies": {
+    "flipper-plugin": "*"
   }
 }

@@ -8,20 +8,17 @@
  */
 
 import React from 'react';
-import {
-  FlipperPlugin,
-  RoundedSection,
-  Button,
-  produce,
-  CenteredView,
-  Info,
-  colors,
-  styled,
-  FlexRow,
-  Text,
-  brandColors,
-} from 'flipper';
+import {Typography, Button, Alert, Space} from 'antd';
 import {Draft} from 'immer';
+import {
+  createState,
+  PluginClient,
+  usePlugin,
+  useValue,
+  styled,
+  theme,
+  Layout,
+} from 'flipper-plugin';
 
 type Player = ' ' | 'X' | 'O';
 
@@ -53,13 +50,12 @@ function initialState(): State {
   } as const;
 }
 
-const computeNextState = produce(
-  (draft: Draft<State>, cell: number, player: 'X' | 'O') => {
+const computeNextState =
+  (cell: number, player: 'X' | 'O') => (draft: Draft<State>) => {
     draft.cells[cell] = player;
     draft.turn = player === 'X' ? 'O' : 'X';
     draft.winner = computeWinner(draft.cells);
-  },
-);
+  };
 
 function computeWinner(c: State['cells']): Player {
   // check the 2 diagonals
@@ -79,110 +75,119 @@ function computeWinner(c: State['cells']): Player {
   return ' ';
 }
 
-export default class ReactNativeTicTacToe extends FlipperPlugin<
-  State,
-  any,
-  any
-> {
-  state = initialState();
+type Events = {
+  XMove: {move: number};
+  GetState: never;
+};
 
-  componentDidMount() {
-    this.client.subscribe('XMove', ({move}: {move: number}) => {
-      this.makeMove('X', move);
-    });
-    this.client.subscribe('GetState', () => {
-      this.sendUpdate();
-    });
-    this.sendUpdate();
-  }
+type Methods = {
+  SetState: (state: State) => Promise<void>;
+};
 
-  makeMove(player: 'X' | 'O', move: number) {
-    if (this.state.turn === player && this.state.cells[move] === ' ') {
-      this.setState(computeNextState(this.state, move, player), () =>
-        this.sendUpdate(),
-      );
+export const plugin = (client: PluginClient<Events, Methods>) => {
+  const state = createState(initialState());
+
+  const sendUpdate = () => {
+    client.send('SetState', state.get());
+  };
+
+  const makeMove = (player: 'X' | 'O', move: number) => {
+    if (state.get().turn === player && state.get().cells[move] === ' ') {
+      state.update(computeNextState(move, player));
+      sendUpdate();
     }
-  }
+  };
 
-  sendUpdate() {
-    this.client.call('SetState', this.state);
-  }
+  const reset = () => {
+    state.set(initialState());
+    sendUpdate();
+  };
 
-  handleCellClick(move: number) {
-    this.makeMove('O', move);
-  }
+  client.onConnect(() => {
+    client.onMessage('XMove', ({move}) => {
+      makeMove('X', move);
+    });
+    client.onMessage('GetState', () => {
+      sendUpdate();
+    });
+    sendUpdate();
+  });
 
-  handleReset() {
-    this.setState(initialState(), () => this.sendUpdate());
-  }
+  return {
+    makeMove,
+    reset,
+    state,
+  };
+};
 
-  render() {
-    const {winner, turn, cells} = this.state;
-    return (
-      <CenteredView>
-        <RoundedSection title="React Native Tic-Tac-Toe">
-          <Info type="info">
-            This plugin demonstrates how to create pure JavaScript Flipper
-            plugins for React Native. Find out how to create a similar plugin at{' '}
-            <a href="https://fbflipper.com/docs/tutorial/intro" target="blank">
-              fbflipper.com
-            </a>
-            .
-          </Info>
-          <Container>
-            <Text size={24}>Flipper Tic-Tac-Toe</Text>
-            <br />
-            <br />
-            <Text size={18}>
-              {winner !== ' '
-                ? `Winner! ${winner}`
-                : turn === 'O'
-                ? 'Your turn'
-                : 'Mobile players turn..'}
-            </Text>
-            <GameBoard>
-              {cells.map((c, idx) => (
-                <Cell
-                  key={idx}
-                  disabled={c !== ' ' || turn != 'O' || winner !== ' '}
-                  onClick={() => this.handleCellClick(idx)}>
-                  {c}
-                </Cell>
-              ))}
-            </GameBoard>
-            <Button onClick={() => this.handleReset()}>Start new game</Button>
-          </Container>
-        </RoundedSection>
-      </CenteredView>
-    );
-  }
-}
+const desktopPlayer = 'O';
 
-const Container = styled('div')({
-  border: `4px solid ${brandColors.Flipper}`,
-  borderRadius: 4,
-  padding: 20,
-  marginTop: 20,
-});
+export const Component = () => {
+  const pluginInstance = usePlugin(plugin);
+  const {winner, turn, cells} = useValue(pluginInstance.state);
 
-const GameBoard = styled(FlexRow)({
-  flexWrap: 'wrap',
-  justifyContent: 'space-between',
-  marginTop: 20,
-  marginBottom: 20,
+  return (
+    <Layout.Container>
+      <Space direction="vertical" align="center">
+        <Alert
+          message={
+            <>
+              This plugin demonstrates how to create pure JavaScript Flipper
+              plugins for React Native. Find out how to create a similar plugin
+              at{' '}
+              <a
+                href="https://fbflipper.com/docs/tutorial/intro"
+                target="blank">
+                fbflipper.com
+              </a>
+              .
+            </>
+          }
+          type="info"
+        />
+        <Typography.Title>Flipper Tic-Tac-Toe</Typography.Title>
+        <Typography.Text>
+          {winner !== ' '
+            ? `Winner! ${winner}`
+            : turn === 'O'
+            ? 'Your turn'
+            : 'Mobile players turn..'}
+        </Typography.Text>
+        <GameBoard>
+          {cells.map((c, idx) => (
+            <Cell
+              key={idx}
+              disabled={c !== ' ' || turn != desktopPlayer || winner !== ' '}
+              onClick={() => pluginInstance.makeMove(desktopPlayer, idx)}>
+              {c}
+            </Cell>
+          ))}
+        </GameBoard>
+        <Button onClick={() => pluginInstance.reset()}>Start new game</Button>
+      </Space>
+    </Layout.Container>
+  );
+};
+
+const GameBoard = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, 80px)',
+  gridTemplateRows: 'repeat(3, 80px)',
+  justifyContent: 'center',
+  gap: 10,
 });
 
 const Cell = styled('button')({
   padding: 20,
-  height: 80,
+  width: '100%',
+  height: '100%',
   minWidth: 80,
   fontSize: 24,
-  margin: 20,
   flex: 0,
   borderRadius: 4,
-  backgroundColor: colors.highlight,
+  backgroundColor: theme.backgroundDefault,
   color: 'white',
   ':disabled': {
-    backgroundColor: colors.grayTint2,
+    backgroundColor: theme.disabledColor,
   },
 });
