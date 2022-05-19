@@ -378,14 +378,12 @@ function nodePlatformFromBuildPlatform(platform: BuildPlatform): string {
 }
 
 async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
-  const nodePath = await buildFolder('flipper-node-download-');
   const path = await pkgFetch({
     arch: nodeArchFromBuildPlatform(platform),
     platform: nodePlatformFromBuildPlatform(platform),
-    output: nodePath,
     nodeRange: SUPPORTED_NODE_PLATFORM,
   });
-  await fs.rename(path, outputPath);
+  await fs.copyFile(path, outputPath);
 }
 
 async function setUpMacBundle(
