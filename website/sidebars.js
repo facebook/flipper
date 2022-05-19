@@ -96,9 +96,13 @@ module.exports = {
       'tutorial/android',
       'tutorial/react-native',
       'tutorial/javascript',
-      'tutorial/js-setup',
-      'tutorial/js-table',
-      'tutorial/js-custom',
+      {
+        'Building a Desktop Plugin': [
+          'tutorial/js-setup',
+          'tutorial/js-table',
+          'tutorial/js-custom',
+        ],
+      },
       'tutorial/js-publishing',
     ],
     'Development workflow': [
