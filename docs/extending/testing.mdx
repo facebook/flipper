@@ -8,15 +8,18 @@ import TabItem from '@theme/TabItem';
 import FbIosTesting from '../fb/_ios-plugin-development-testing-ios-plugins-0.mdx';
 import FbAndroidTesting from '../fb/_android-plugin-development-testing-android-plugins-0.mdx';
 
-Developer tools are only used if they work. We have built APIs to test plugins.
+Developer tools are only used if they work. Testing is important as it discovers defects/bugs and improves the quality, reliability and functionality of software.
+This page details the Flipper APIs that can be used to effectively test plugins.
 
 ## Writing tests
 
-## Desktop plugins
+This section covers [desktop plugins](#desktop-plugins) and [client plugins](#client-plugins).
 
-Flipper uses [Jest](https://jestjs.io/) as unit testing framework.
+### Desktop plugins
 
-Writing unit tests for Flipper Desktop plugins is covered in detail in the [tutorial](../../docs/tutorial/js-custom.mdx#testing-plugin-logic).
+Flipper uses [Jest](https://jestjs.io/) as a unit testing framework.
+
+Writing unit tests for Flipper Desktop plugins is covered in detail in the [Building a Desktop Plugin](../../docs/tutorial/js-custom.mdx#testing-plugin-logic) tutorial.
 
 The `flipper-plugin` package provide several [test utilities](../../docs/extending/flipper-plugin.mdx#testutils) to make testing more convenient.
 
@@ -26,7 +29,10 @@ The `flipper-plugin` package provide several [test utilities](../../docs/extendi
 <TabItem value="android">
 
 <OssOnly>
-Start by creating your first test file in this directory `MyFlipperPluginTest.java`. In the test method body we create our plugin which we want to test as well as a `FlipperConnectionMock`. In this contrived example we simply assert that our plugin's connected status is what we expect.
+
+Start by creating your first test file in this directory `MyFlipperPluginTest.java`. In the test method body, is the plugin to be tested as well as a `FlipperConnectionMock`.
+
+The following example asserts that the plugin's connected status is what is expected:
 
 ```java
 @RunWith(RobolectricTestRunner.class)
@@ -43,7 +49,9 @@ public class MyFlipperPluginTest {
 }
 ```
 
-There are two mock classes that are used to construct tests `FlipperConnectionMock` and `FlipperResponderMock`. Together these can be used to write very powerful tests to verify the end to end behavior of your plugin. For example we can test if for a given incoming message our plugin responds as we expect.
+There are two mock classes that are used to construct tests: `FlipperConnectionMock` and `FlipperResponderMock`. Together these can be used to write very powerful tests to verify the end-to-end functionality of your plugin.
+
+For example, you can test if, for a given incoming message, your plugin responds as expected:
 
 ```java
 @Test
@@ -65,6 +73,7 @@ public void myTest() {
           .build()));
 }
 ```
+
 </OssOnly>
 
 <FbAndroidTesting />
@@ -74,7 +83,7 @@ public void myTest() {
 
 <OssOnly>
 
-Start by creating your first test file in this directory `MyFlipperPluginTests.cpp` and import the testing utilities from `fbsource//xplat/sonar/xplat:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
+Start by creating your first test file `MyFlipperPluginTests.cpp` and import the testing utilities from `fbsource//xplat/sonar/xplat:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
 
 ```objc
 #include <MyFlipperPlugin/MyFlipperPlugin.h>
@@ -97,7 +106,7 @@ TEST(MyFlipperPluginTests, testDummy) {
 } // namespace facebook
 ```
 
-Here is a simple test using these mock utilities to create a plugin, send some data, and assert that the result is as expected.
+Following is a simple test using these mock utilities to create a plugin, send some data, and assert that the result is as expected:
 
 ```objc
 TEST(MyFlipperPluginTests, testDummy) {
@@ -118,6 +127,7 @@ TEST(MyFlipperPluginTests, testDummy) {
   EXPECT_EQ(successfulResponses.back(), expectedResponse);
 }
 ```
+
 </OssOnly>
 
 <FbIosTesting />
@@ -126,6 +136,8 @@ TEST(MyFlipperPluginTests, testDummy) {
 </Tabs>
 
 ## Running (Flipper) tests
+
+This section covers running tests on the [Flipper Desktop](#flipper-desktop) and with the [Flipper SDK](#flipper-sdk).
 
 ### Flipper Desktop
 
@@ -147,11 +159,11 @@ Run `yarn jest` or `yarn jest --watch` in `~/fbsource/xplat/sonar/desktop`
 
 <OssOnly>
 
-##### Gradle:
+##### Gradle
 
 In the root directory of the checkout:
 
-```
+```sh
 ./gradlew android:test
 ```
 
@@ -159,20 +171,20 @@ In the root directory of the checkout:
 
 <FbInternalOnly>
 
-##### Gradle:
+##### Gradle
 
-```
+```sh
 cd fbsource/xplat/sonar
 ./gradlew android:test
 ```
 
-##### Buck:
+##### Buck
 
-I don't know of a way to run them locally 😞 Make a change and submit a diff.
+Make the required changes then submit a diff. With regarding to testing, `buck test ...` should work, but doesn't seem to function when run in xplat on a Mac; it does function  on Mobile On Demand if you use @mode/server.
 
-`buck test ...` should work, but doesn't seem to when run in xplat on mac but they do work on mobile on demand, if you use @mode/server.
-
-*Debugging note: They do work if you copy the files and BUCK file to* `fbandroid/javatests` *and change the rule from* `sonar_android_test` *to* `robolectric3_test`
+:::note Debugging note
+Things do functtion if you copy the files and BUCK file to `fbandroid/javatests` and change the rule from `sonar_android_test` to `robolectric3_test`.
+:::
 
 </FbInternalOnly>
 
@@ -180,14 +192,16 @@ I don't know of a way to run them locally 😞 Make a change and submit a diff.
 
 ### iOS
 
-Focus on the plugins, or flipper code you want but with the --with-tests param.
+Focus on the plugins, or Flipper code you want but with the `--with-tests` param:
 
-`arc focus ... --with-tests`
+```sh
+arc focus ... --with-tests`
+```
 
-Then click the <-> icon  in xcode and you can run them there.
+Then, click the '<->' icon in xcode and you run from there.
 
 </FbInternalOnly>
 
 ### React Native
 
-See [testing React Native](testing-rn.mdx).
+For details, see the [Testing React Native Changes](testing-rn.mdx) page.
