@@ -62,11 +62,10 @@ module.exports = {
       {
         'Troubleshooting': [
           'getting-started/troubleshooting/troubleshooting',
-          ...fbInternalOnly(['getting-started/troubleshooting/general-issues']),
-          'getting-started/troubleshooting/mac-desktop-app',
+          'getting-started/troubleshooting/general',
           'getting-started/troubleshooting/android',
+          'getting-started/troubleshooting/ios',
           'getting-started/troubleshooting/react-native',
-          ...fbInternalOnly(['getting-started/troubleshooting/portal']),
         ],
       },
       {

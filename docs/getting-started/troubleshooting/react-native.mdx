@@ -6,6 +6,8 @@ custom_edit_url: https://www.internalfb.com/intern/diffusion/FBS/browsefile/mast
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import InternalReactNative from './fb/_react-native.mdx';
+
 Flipper is a work in progress and issues may occur. This page contains known issues associated with React Native and provides steps you can take to try to resolve them.
 
 Make sure the project is using the [latest Flipper SDK](getting-started/react-native.mdx#using-the-latest-flipper-sdk).
@@ -14,6 +16,10 @@ When using Flipper with React Native, two devices should show up:
 
 1. **The 'React Native' device** - this is the "device" that talks to the Metro server and shows plugins that connect to or through Metro, such as the React DevTools, the Hermes Debugger and Metro logs.
 2. **The device on which your app is running** - This is the device that Flipper connects to ADB / IDB. Flipper primarily support emulators and USB connected devices (examples: `SM760FS`, `Pixel 3`, `android_emulator`, and `iPhone 11`).
+
+<InternalReactNative />
+
+<OssOnly>
 
 ### I don't see the 'React Native' device
 
@@ -147,3 +153,5 @@ To speed up CI builds, Flipper can be disabled on CI environments by making the 
     end
   end
 ```
+
+</OssOnly>
