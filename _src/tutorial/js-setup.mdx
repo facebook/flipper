@@ -1,27 +1,33 @@
 ---
 id: js-setup
-title: Building a Desktop Plugin
-sidebar_label: Desktop Plugin - Setup
+title: Building a Desktop Plugin - Setup
+sidebar_label: Setup
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-Now that we have the native side covered, let's display the data we're sending
-on the desktop side. 
+Now that the native side is covered (see the previous pages in this tutorial), it's time to display the data you're sending on the desktop side.
 
-<img alt="Custom cards UI for our sea mammals plugin" src={useBaseUrl("img/js-custom.png")} />
+The following desktop screenshot shows the 'Sea-mammals' plugin, of this tutorial, in action.
+
+<img alt="Custom cards UI for the sea mammals plugin" src={useBaseUrl("img/js-custom.png")} />
 
 <FbInternalOnly>
-[FB-Only] After scaffolding and starting Flipper from source, no further steps are needed to setup the desktop plugin. 
+
+After scaffolding and starting Flipper from source, no further steps are needed to setup the desktop plugin.
+
 </FbInternalOnly>
 
 <OssOnly>
 
 ## Scaffolding a new Desktop plugin
 
-A new Flipper Desktop plugin can be scaffolded by running `npx flipper-pkg init` in the directory where you want to store the plugin sources (Don't run this command inside the Flipper repository itself!). 
-Before running this command, make sure Flipper is closed.
+A new Flipper Desktop plugin can be scaffolded by running `npx flipper-pkg init` in the directory where you want to store the plugin sources.
 
-For example:
+:::warning
+Don't run this command inside the Flipper repository!. Before running this command, make sure Flipper is closed.
+:::
+
+The following snippet shows an example:
 
 ```bash
 mkdir ~/FlipperPlugins
@@ -29,14 +35,18 @@ cd ~/FlipperPlugins
 npx flipper-pkg init
 ```
 
-Add the directory to the Flipper watch folder if asked. In this tutorial we will be creating a `client` plugin. `device` plugins are only used when creating plugins that _don't_ connect to a specific application and are pretty rare.
+Add the directory (shown in the snippet) to the Flipper watch folder if asked.
 
-The tool will ask you to provide "id" and "title" for your plugin. Use "sea-mammals" as "id" and "Sea Mammals" as "title". After that the tool will create two files in the directory: `package.json` and `src/index.tsx`.
+In this tutorial, you'll be creating a `client` plugin. `device` plugins are only used when creating plugins that _don't_ connect to a specific application.
 
-After the process has finished, use `yarn watch` in the generated directory to start compiling the plugin on the fly. 
+Take the following steps for npx:
 
-Now that our package has been set up, we are ready to build a UI for our plugin. Either by using a standardized table-based plugin, or by creating a custom UI.
+1. The npx tool asks you to provide the 'id' and 'title' for your plugin. For the sake of this tutorial, use 'sea-mammals' as 'id' and 'Sea Mammals' as the 'title'.
+2. The npx tool creates two files in the directory: `package.json` and `src/index.tsx`.
+3. After the process has finished, use `yarn watch` in the generated directory to start compiling the plugin on the fly.
+
+Now that the package has been set up, you are ready to build a UI for your plugin. This can be achieved either by using a standardized [table-based plugin](js-table.mdx), or by creating a [custom UI](js-custom.mdx).
 
 </OssOnly>
 
-For more background on the generated files and overal plugin structure, see the [Plugin Structure](../extending/desktop-plugin-structure.mdx) page.
+For more background on the generated files and overall plugin structure, see the [Plugin Structure](../extending/desktop-plugin-structure.mdx) page.

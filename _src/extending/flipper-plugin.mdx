@@ -194,12 +194,80 @@ export function plugin(client: PluginClient) {
 }
 ```
 
+#### `onUnhandledMessage`
+
+Usage: `client.onUnhandledMessage(callback: (event: string, params) => void)`
+
+This method subscribe to all messages arriving from the devices which is not handled by an `onMessage` handler.
+This handler is untyped, and onMessage should be favored over using onUnhandledMessage if the event name is known upfront.
+
+#### `onServerAddOnStart`
+
+> Experimental!
+
+Usage: `client.onServerAddOnStart(callback: () => void)`
+
+Triggered when a server add-on starts.
+You should send messages to the server add-on only after it connects.
+Do not forget to stop all communication when the add-on stops.
+
+#### `onServerAddOnStop`
+
+> Experimental!
+
+Usage: `client.onServerAddOnStop(callback: () => void)`
+
+Triggered when a server add-on stops.
+You should stop all communication with the server add-on when the add-on stops.
+
+#### `onServerAddOnMessage`
+
+> Experimental!
+
+Usage: `client.onServerAddOnMessage(event: string, callback: (params) => void)`
+
+This subscribes the plugin to a specific event that is fired from the server add-on.
+
+Example:
+
+```typescript
+type ServerAddOnEvents = {
+  newRow: {
+    id: number;
+    title: string;
+    url: string;
+  };
+};
+
+export function plugin(client: PluginClient<{}, {}, ServerAddOnEvents>) {
+  const rows = createState<Record<string, Row>>({}, {persist: 'rows'});
+
+  client.onServerAddOnMessage('newRow', (row /* type will be inferred correctly */) => {
+    rows.update((draft) => {
+      draft[row.id] = row;
+    });
+  });
+
+  // etc
+}
+```
+
+#### `onServerAddOnUnhandledMessage`
+
+> Experimental!
+
+Usage: `client.onServerAddOnUnhandledMessage(callback: (event: string, params) => void)`
+
+Subscribe to all messages arriving from the server add-ons not handled by another listener.
+This handler is untyped, and onMessage should be favored over using onUnhandledMessage if the event name is known upfront.
+
 ### `onReady`
 
 The `onReady` event is triggered immediately after a plugin has been initialized and any pending state was restored.
 This event fires after `onImport` / the interpretation of any `persist` flags and indicates that the initialization process has finished.
 This event does not signal that the plugin is loaded in the UI yet (see `onActivated`) and does fire before deeplinks (see `onDeeplink`) are handled.
 If a plugin has complex initialization logic it is recommended to put it in the `onReady` hook, as an error in the onReady hook won't cause the plugin not to be loaded.
+
 
 ### Methods
 
@@ -355,6 +423,39 @@ The gatekeepers are cached in `localStorage`. Therefore, you might get the cache
 Logger instance that logs information to the console, but also to the internal logging (in FB only builds) and which can be used to track performance.
 See also [`useLogger`](#uselogger).
 
+#### `sendToServerAddOn`
+
+Usage: `client.sendToServerAddOn(method: string, params: object): Promise<object>`
+
+Send a message to the server add-on.
+
+Example:
+
+```typescript
+type ServerAddOnMethods = {
+  currentLogs(params: {since: number}): Promise<string[]>;
+};
+
+export function plugin(client: PluginClient<{}, {}, {}, ServerAddOnMethods}>) {
+  const logs = createState<string[]>([])
+
+  client.onServerAddOnStart(async () => {
+    try {
+      const currentLogs = await client.sendToServerAddOn('currentLogs', {
+        since: Date.now()
+      })
+      logs.set(currentLogs)
+    } catch (e) {
+      console.error("Failed to retrieve current logs: ", e)
+    }
+  })
+
+  //etc
+}
+```
+
+See [React DevTools plugin](https://github.com/facebook/flipper/blob/main/desktop/plugins/public/reactdevtools/index.tsx) for an example of how to use server add-ons.
+
 ## DevicePluginClient
 
 ### Properties
@@ -389,6 +490,22 @@ See the similarly named event under [`PluginClient`](#pluginclient).
 
 See the similarly named event under [`PluginClient`](#pluginclient).
 
+#### `onServerAddOnStart`
+
+See the similarly named event under [`PluginClient`](#pluginclient).
+
+#### `onServerAddOnStop`
+
+See the similarly named event under [`PluginClient`](#pluginclient).
+
+#### `onServerAddOnMessage`
+
+See the similarly named event under [`PluginClient`](#pluginclient).
+
+#### `onServerAddOnUnhandledMessage`
+
+See the similarly named event under [`PluginClient`](#pluginclient).
+
 ### Methods
 
 #### `addMenuEntry`
@@ -403,11 +520,15 @@ See the similarly named method under [`PluginClient`](#pluginclient).
 
 See the similarly named method under [`PluginClient`](#pluginclient).
 
-### `isPluginAvailable`
+#### `isPluginAvailable`
 
 See the similarly named method under [`PluginClient`](#pluginclient).
 
-### `selectPlugin`
+#### `selectPlugin`
+
+See the similarly named method under [`PluginClient`](#pluginclient).
+
+#### `sendToServerAddOn`
 
 See the similarly named method under [`PluginClient`](#pluginclient).
 

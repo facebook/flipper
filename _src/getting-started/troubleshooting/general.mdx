@@ -1,0 +1,43 @@
+---
+id: general
+title: Troubleshooting General Issues
+sidebar_label: General Issues
+custom_edit_url: https://www.internalfb.com/intern/diffusion/FBS/browsefile/master/xplat/sonar/docs/getting-started/troubleshooting/general.mdx
+---
+
+import InternalGeneral from './fb/_general.mdx';
+
+Flipper is a work in progress and issues may occur. This page contains known issues associated with the Mac desktop apps and provides steps you can take to try to resolve them.
+
+<InternalGeneral />
+
+## Flipper won't launch on Mac
+
+* If the window is appearing, try opening the Chrome DevTools within Flipper. To do so, from the View menu select 'Toggle Developer Tools' or press CMD+Option+I and check if there are any errors on the console.
+* Launch Flipper from the command line using `/Applications/Flipper.app/Contents/MacOS/Flipper`. This should give you some logs, that might be helpful when debugging.
+* Delete `~/.flipper` and try relaunching Flipper.
+* Delete Flipper from your applications folder and [re-install it](../index.mdx#installation).
+* If you're using `yarn start` to run from source, make sure all dependencies are installed correctly by running yarn install.
+
+## Flipper shows weird render artifacts
+
+This is a long standing MacOS + Electron issue outside our control. In general, restarting your computer fixes the problem.
+For a quick, temporarily work around start Flipper with hardware acceleration disabled. Please note that this will consume a lot of CPU: `FLIPPER_DISABLE_GPU=1 open -a Flipper`.
+
+## No plugins showing up for your device
+
+* Check your device isn't on the list of [known incompatibilities](#known-incompatibilities).
+* Make sure your version of Flipper is up to date.
+* Make sure the mobile SDK you are using is relatively recent (<1 month old).
+* Open Chrome dev tools within Flipper. To do so, from the View menu select Toggle Developer Tools or press CMD+Option+I and check if there are any errors on the console.
+* Delete `~/.flipper`.
+* **Uninstall** and reinstall the mobile app.
+* Make sure the time and date are set correctly on your mobile device and desktop computer.
+* If no app plugins are showing up, there may be a connectivity issue between Flipper and your app. Check [connection issues](#connection-issues) to see if anything is failing.
+
+## Known Incompatibilities
+
+The following devices are known to be incompatible or face issues with Flipper:
+
+* Some Samsung devices ([Tracking Issue](https://github.com/facebook/flipper/issues/92)).
+* Genymotion emulators on Android 8+ are reported to have issues.

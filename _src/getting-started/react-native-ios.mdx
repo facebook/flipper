@@ -51,7 +51,7 @@ Add all of the code below to your `ios/Podfile`:
 platform :ios, '9.0'
 
 def flipper_pods()
-  flipperkit_version = '0.145.0' # should match the version of your Flipper client app
+  flipperkit_version = '0.146.0' # should match the version of your Flipper client app
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
@@ -193,9 +193,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 Lastly, open the Flipper desktop app, and run `yarn ios` in your terminal.
 
-## Troubleshooting
+## Isues or questions
 
-See the <Link to={useBaseUrl("/docs/troubleshooting")}>troubleshooting page</Link> for help with known problems.
+If you encounter any issues or have any questions, refer to the [Troubleshooting](troubleshooting/troubleshooting.mdx) section.
 
 ## Further Steps
 

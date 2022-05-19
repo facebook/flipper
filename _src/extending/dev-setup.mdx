@@ -7,15 +7,14 @@ title: Development Setup
 
 <OssOnly>
 
-When developing Flipper plugins we recommend the following IDEs:
+When developing Flipper plugins, the following IDEs are recommended:
 
-1. TypeScript (for Flipper Desktop (plugins)): Visual Studio Code
-    1. Install the "ESLint" (dbaeumer.vscode-eslint) extension from marketplace to enable linting
-    1. Install the "Prettier" (esbenp.prettier-vscode) extension to enable automatic code-formatting
-    1. If for some reason it is not working, the builtin TypeScript extension might be disabled. To enable it, to go to extensions, search for “@builtin typescript” and enable it.
-
-1. Android Studio (for Android plugins)
-1. XCode (for iOS plugins)
+* TypeScript (for Flipper Desktop (plugins)): Visual Studio Code
+  * Install the "ESLint" (dbaeumer.vscode-eslint) extension from marketplace to enable linting.
+  * Install the "Prettier" (esbenp.prettier-vscode) extension to enable automatic code-formatting.
+  * If for some reason it is not working, the builtin TypeScript extension might be disabled. To enable it, to go to extensions, search for “@builtin typescript” and enable it.
+* Android Studio (for Android plugins).
+* XCode (for iOS plugins).
 
 </OssOnly>
 
@@ -24,57 +23,59 @@ When developing Flipper plugins we recommend the following IDEs:
 ### TypeScript
 
 Flipper Desktop is written in TypeScript.
-Using our internal "VSCode @ FB" as IDE is strongly recommended (`code-fb`).
+Use of the internal 'VSCode @ FB' as your 'go to' IDE is strongly recommended (`code-fb`).
 
-Make sure to install and enable extensions `[FB-Internal] ESLint Diagnostics` and `[FB-Internal] Prettier`.
-If for some reason it is not working, the builtin TypeScript extension might be disabled. To enable it, to go to extensions, search for “@builtin typescript” and enable it.
+Make sure to install and enable extensions `[FB-Internal] ESLint Diagnostics` and `[FB-Internal] Prettier`. If it's not working, the builtin TypeScript extension might be disabled. To enable it, go to extensions, search for “@builtin typescript”, and enable it.
 
 ### Android (Java)
 
 IntelliJ is the recommended platform. Focussing on a flipper-enabled app should include the flipper modules as expected.
 
-If you don't have an fbsource checkout (e.g. Whatsapp Team), you can open Android Studio and import project: `fbsource/xplat/sonar`
+If you don't have an fbsource checkout (such as Whatsapp Team), you can open Android Studio and import project: `fbsource/xplat/sonar`
 
 If you're having gradle (or other) problems, make sure you're on the latest Android Studio version.
 
 </FbInternalOnly>
 
-
 ## Running Flipper from source (recommended)
 
-When developing Flipper plugins we strongly recommend to run from Flipper itself from source as well, as this yields several benefits:
+When developing Flipper plugins, it's strongly recommended to run from Flipper itself from source as well, as this yields the following benefits:
 
+* Automatic transpilation and bundling of loaded plugins: ES6, TypeScript, JSX.
+* Automatic refresh after code changes.
+* React and Redux Dev Tools.
+* [Debugging](debugging.mdx) using Chrome Dev Tools or Visual Studio Code.
+* Additional debug information like React warnings and performance metrics.
 
-- Automatic transpilation and bundling of loaded plugins: ES6, TypeScript, JSX.
-- Automatic refresh after code changes.
-- React and Redux Dev Tools.
-- [Debugging](debugging.mdx) using Chrome Dev Tools or Visual Studio Code.
-- Additional debug information like React warnings and performance metrics.
+Prerequisites for a Flipper development build:
 
-Prerequisites for Flipper development build:
-- node ≥ 14
-- yarn ≥ 1.5
-- git
-- watchman
+* node ≥ 14
+* yarn ≥ 1.5
+* git
+* watchman
 
 To run Flipper Desktop from source:
 
 <OssOnly>
 
-```
+```bash
 git clone https://github.com/facebook/flipper.git
 cd flipper/desktop
 yarn
 yarn start
 ```
 
-Tip: start with `yarn start --fast-refresh` for experimental fast refresh.
+:::note Tip
+Start with `yarn start --fast-refresh` for experimental fast refreash.
+:::
 
 </OssOnly>
 
 <FbInternalOnly>
 
-Note: All these steps must be run on a local machine (e.g. laptop) and development cannot be done on a Dev Server or OnDemand as Flipper is a desktop application.
+:::note
+All these steps must be run on a local machine (such as a laptop) and development cannot be done on a Dev Server or OnDemand as Flipper is a desktop application.
+:::
 
 ```bash
 fbclone fbsource --sparse tools/scm/sparse/xplat/flipper-js
@@ -83,21 +84,25 @@ yarn
 yarn start
 ```
 
-A note on sparse profiles: We have a minimal profile for working with the Flipper JavaScript
-files in `fbsource` for plugin developers. This will drastically reduce the size of your checkout, but
+### A note on sparse profiles
+
+There is a minimal profile for working with the Flipper JavaScript files in `fbsource` for plugin Developers. This will drastically reduce the size of your checkout, but
 won't include the files necessary to, for instance, build and work on mobile apps.
 
-If you have an existing sparse checkout, you can add the Flipper profile with
+If you have an existing sparse checkout, you can add the Flipper profile with the following:
 
-```bash
+```sh
 hg sparse enable tools/scm/sparse/xplat/flipper-js
 ```
 
-Tip: start with `yarn start --fast-refresh` for experimental fast refresh.
+:::note Tips
 
-Tip: start wih `yarn start --public-build` to preview changes for public builds.
+* Start with `yarn start --fast-refresh` for an experimental fast refresh.
+* Start with `yarn start --public-build` to preview changes for public builds.
+:::
 
 Use VSCode to hack on Flipper.
+
 To make sure ESLint and Prettier are applied correctly, make sure to open either `sonar` or `sonar/desktop` as workspace folder in VSCode: `code-fb ~/fbsource/xplat/sonar`.
 
 </FbInternalOnly>
@@ -105,8 +110,10 @@ To make sure ESLint and Prettier are applied correctly, make sure to open either
 ### Startup options
 
 You can use several options to customise development build instance. They can be provided as command-line args or environment variables.
+
 You can check all of them by executing `yarn start --help`:
-```
+
+```bash
 yarn start [args]
 
 Options:
@@ -114,15 +121,15 @@ Options:
                         disabled then only installed plugins are loaded. The
                         flag is enabled by default. Env var
                         FLIPPER_NO_EMBEDDED_PLUGINS is equivalent to the
-                        command-line option "--no-embedded-plugins".   [boolean]
+                        command-line option "--no-embedded-plugins".   [Boolean]
   --fast-refresh        Enable Fast Refresh - quick reload of UI component
                         changes without restarting Flipper. The flag is disabled
                         by default. Env var FLIPPER_FAST_REFRESH is equivalent
-                        to the command-line option "--fast-refresh".   [boolean]
+                        to the command-line option "--fast-refresh".   [Boolean]
   --plugin-auto-update  [FB-internal only] Enable plugin auto-updates. The flag
                         is disabled by default in dev mode. Env var
                         FLIPPER_NO_PLUGIN_AUTO_UPDATE is equivalent to the
-                        command-line option "--no-plugin-auto-update"  [boolean]
+                        command-line option "--no-plugin-auto-update"  [Boolean]
   --enabled-plugins     Load only specified plugins and skip loading rest. This
                         is useful when you are developing only one or few
                         plugins. Plugins to load can be specified as a
@@ -135,17 +142,17 @@ Options:
                         to the command-line option "--open-dev-tools". If
                         "FLIPPER_UPDATE_DEV_TOOLS=true" is set additionally,
                         Flipper will try to update the dev tools from the play
-                        store.                                         [boolean]
+                        store.                                         [Boolean]
   --dev-server-port     Dev server port. 3000 by default. Env var "PORT=3001" is
                         equivalent to the command-line option "--dev-server-port
                         3001".                          [number] [default: 3000]
-  --version             Show version number                            [boolean]
-  --help                Show help                                      [boolean]
+  --version             Show version number                            [Boolean]
+  --help                Show help                                      [Boolean]
 ```
 
-You can also create file `.env` in `desktop` subfolder and specify any environment variables to load them automatically on `yarn start` so you don't need to pass command-line args every time, e.g.:
+You can also create an `.env` file in the `desktop` subfolder and specify any environment variables to load them automatically on `yarn start` so you don't need to pass command-line args every time:
 
-```
+```bash
 FLIPPER_FAST_REFRESH=true
 FLIPPER_OPEN_DEV_TOOLS=true
 FLIPPER_ENABLED_PLUGINS=flipper-messages,network,inspector
@@ -153,17 +160,18 @@ FLIPPER_ENABLED_PLUGINS=flipper-messages,network,inspector
 
 <FbInternalOnly>
 
-To start Flipper against a specific OnDemand instance, set FB_ONDEMAND flag, e.g: `FB_ONDEMAND=34435.od yarn start`
+To start Flipper against a specific OnDemand instance, set FB_ONDEMAND flag.  for example, `FB_ONDEMAND=34435.od yarn start`
 
 </FbInternalOnly>
 
 ## Guidelines for writing TypeScript
-* Install 3rd party type definitions as dev dependency (e.g. `yarn add @types/lodash --dev`)
+
+* Install 3rd party type definitions as dev dependency (for example, `yarn add @types/lodash --dev`)
 
 ## Submitting a diff / PR
 
-Make sure your new functionality is covered with tests, and run `yarn test` or `yarn test --watch` in the `desktop/` directory to verify that they pass.
+Make sure your new functionality is covered with tests and run `yarn test` or `yarn test --watch` in the `desktop/` directory to verify that they pass.
 
-See the [testing](testing.mdx) page for more details on writing and running test.
+See the [testing](testing.mdx) page for more details on writing and running tests.
 
-To make sure you don't get any lint/formatting errors, run `yarn lint` before submitting your diff. Some errors (especially formatting errors can be auto-fixed by running `yarn fix`
+To ensure you don't get any lint/formatting errors, run `yarn lint` before submitting your diff. Some errors (especially formatting errors) can be auto-fixed by running `yarn fix`

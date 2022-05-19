@@ -1,0 +1,84 @@
+---
+id: android
+title: Troubleshooting Android Issues
+sidebar_label: Android Issues
+custom_edit_url: https://www.internalfb.com/intern/diffusion/FBS/browsefile/master/xplat/sonar/docs/getting-started/troubleshooting/android.mdx
+---
+
+import InternalAndroid from './fb/_android.mdx';
+
+Flipper is a work in progress and issues may occur. This page contains known issues associated with the Android platform and provides steps you can take to try to resolve them.
+
+<InternalAndroid />
+
+<OssOnly>
+
+## In-app diagnostics
+The Flipper SDK includes an in-app connection diagnostics screen to help you diagnose problems.
+
+Replace `<APP_PACKAGE>` below with the package name of your app, for example, such as `com.facebook.flipper.sample`.
+
+On a terminal, run the following:
+
+```bash
+adb shell am start -n <APP_PACKAGE>/com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity
+```
+
+This will only work if you added `FlipperDiagnosticActivity` to your `AndroidManifest.xml`. See [getting started](./getting-started/android-native.mdx#diagnostics) for help.
+
+## Exception from call site #4 bootstrap method
+
+Build error after including the Flipper dependency:
+
+```
+Exception from call site #4 bootstrap method
+```
+
+This can happen because we include [OkHttp3](https://github.com/square/okhttp/issues/4597#issuecomment-461204144) as dependency which makes use of Java 8 features. There are two ways of dealing with this:
+
+**Enable Java 8 support**
+
+Add this to your Gradle config:
+
+```groovy
+android {
+  compileOptions {
+    targetCompatibility = "8"
+    sourceCompatibility = "8"
+   }
+ }
+ ```
+
+ **Exclude the OkHttp3 dependency**
+
+ Alternatively, if you don't plan on making use of OkHttp, you can exclude the dependency from the build entirely:
+
+ ```
+debugImplementation('com.facebook.flipper:flipper:*') {
+  exclude group: 'com.squareup.okhttp3'
+}
+```
+
+## Duplicate class `com.facebook.jni.*`
+
+This can occur when mixing different versions of [FBJNI](https://github.com/facebookincubator/fbjni),
+a library we use to interact with native C++ code.
+
+Speficially, this can happen when the versions `0.0.x` and `0.1.x` are mixed. Version `0.1.0` of FBJNI
+switched to using [Google Prefab](https://google.github.io/prefab/) for distributing native artifacts,
+which made the split into combined, "java-only" and "header" packages redundant and only requires
+a single dependency in your projects.
+
+When including both "fbjni-java-only:0.0.1" and "fbjni:0.1.0" in one project, you will now
+duplicate class errors during the build process. You must ensure that only one of the two
+versions is used in your entire dependency tree. Start by looking at `./gradlew :myapp:dependencies`
+to see where the different version requirements come from. Then exclude the FBJNI dependency from
+one of them, e.g.
+
+```groovy
+implementation("com.facebook.react:react-native:+") {
+    exclude group:'com.facebook.fbjni'
+}
+```
+
+</OssOnly>
