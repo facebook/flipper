@@ -202,7 +202,7 @@ export class ManagedTable extends React.Component<
       Object.keys(this.props.columns).map((key) => ({key, visible: true}));
     this.state = {
       columnOrder,
-      columnKeys: this.computeColumnKeys(columnOrder),
+      columnKeys: this.computeColumnKeys(columnOrder, this.props.columns),
       columnSizes:
         this.props.tableKey && globalTableState[this.props.tableKey]
           ? globalTableState[this.props.tableKey]
@@ -254,7 +254,10 @@ export class ManagedTable extends React.Component<
       }
       this.setState({
         columnOrder: nextProps.columnOrder,
-        columnKeys: this.computeColumnKeys(nextProps.columnOrder),
+        columnKeys: this.computeColumnKeys(
+          nextProps.columnOrder,
+          this.props.columns,
+        ),
       });
     }
 
@@ -300,8 +303,12 @@ export class ManagedTable extends React.Component<
     this.firstUpdate = false;
   }
 
-  computeColumnKeys(columnOrder: TableColumnOrder) {
-    return columnOrder.map((k) => (k.visible ? k.key : null)).filter(notNull);
+  computeColumnKeys(columnOrder: TableColumnOrder, columns: TableColumns) {
+    return columnOrder
+      .map((k) =>
+        k.visible && Object.keys(columns).includes(k.key) ? k.key : null,
+      )
+      .filter(notNull);
   }
 
   scrollToHighlightedRows = () => {
@@ -676,7 +683,7 @@ export class ManagedTable extends React.Component<
       for (let index = 0; index < columnOrder.length; index++) {
         const col = columnOrder[index];
 
-        if (!col.visible) {
+        if (!col.visible || !columns[col.key]) {
           continue;
         }
 

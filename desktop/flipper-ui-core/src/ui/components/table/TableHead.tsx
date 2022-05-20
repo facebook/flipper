@@ -277,6 +277,10 @@ export default class TableHead extends PureComponent<{
 
       const key = column.key;
       const col = columns[key];
+      if (!col) {
+        console.warn('no column for key: ', key);
+        continue;
+      }
 
       let arrow;
       if (col.sortable === true && sortOrder && sortOrder.key === key) {
