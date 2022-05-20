@@ -14,11 +14,20 @@ import {FlipperClient, FlipperWebSocket} from '../client';
 import {RECONNECT_TIMEOUT} from '../consts';
 import {WSMessageAccumulator} from './utils';
 
+// Jest fake timer doesn't play well with process.nextTick.
+// "ws" since version 8.6.0 uses process.nextTick for emitting "abortHandshake" event:
+// https://github.com/websockets/ws/commit/d086f4bcbbe235f12f6fa2ddba5a8ce1342dac58.
+// Because of that, "error" event is never emitted on websocket client when fake timer is used.
+// To fix that we switched to "sinon" fake timer instead of jest.
+// Sinon work just fine in this case.
+import sinon from 'sinon';
+
 describe('client', () => {
   let port: number;
   let wsServer: WebSocketServer;
   let client: FlipperClient;
   let urlBase: string;
+  let clock: sinon.SinonFakeTimers;
   // TODO: Figure out why we need to convert ot unknown first
   const websocketFactory = (url: string) =>
     new WebSocket(url) as unknown as FlipperWebSocket;
@@ -30,10 +39,10 @@ describe('client', () => {
   });
 
   beforeAll(() => {
-    jest.useFakeTimers();
+    clock = sinon.useFakeTimers();
   });
   afterAll(() => {
-    jest.useRealTimers();
+    clock.restore();
   });
 
   beforeEach(async () => {
@@ -135,7 +144,7 @@ describe('client', () => {
       await closedPromise;
 
       // Now, once the reconnection is scheduled, we can advance timers to do the actual reconnection
-      jest.advanceTimersByTime(RECONNECT_TIMEOUT);
+      clock.tick(RECONNECT_TIMEOUT);
 
       // Make sure that the client reconnects
       await secondConnectionPromise;
@@ -159,7 +168,7 @@ describe('client', () => {
 
       // Exepect reconnection attempts to fail
       for (let i = 2; i < 10; i++) {
-        jest.advanceTimersByTime(RECONNECT_TIMEOUT);
+        clock.tick(RECONNECT_TIMEOUT);
         await new Promise((resolve) => onError.mockImplementationOnce(resolve));
         expect(onError).toBeCalledTimes(i);
         expect(verifyClient).toBeCalledTimes(i);
