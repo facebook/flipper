@@ -351,9 +351,35 @@ export async function moveSourceMaps(
   } else {
     // If we don't move them out of the build folders, they'll get included in the ASAR
     // which we don't want.
+    console.log(`⏭  Removing source maps.`);
     await fs.remove(mainBundleMap);
     await fs.remove(rendererBundleMap);
+  }
+}
+
+export async function moveServerSourceMaps(
+  buildFolder: string,
+  sourceMapFolder: string | undefined,
+) {
+  console.log(`⚙️  Moving server source maps...`);
+  const mainBundleMap = path.join(buildFolder, 'dist', 'index.map');
+  const rendererBundleMap = path.join(buildFolder, 'static', 'bundle.map');
+  if (sourceMapFolder) {
+    await fs.ensureDir(sourceMapFolder);
+    await fs.move(mainBundleMap, path.join(sourceMapFolder, 'bundle.map'), {
+      overwrite: true,
+    });
+    await fs.move(
+      rendererBundleMap,
+      path.join(sourceMapFolder, 'main.bundle.map'),
+      {overwrite: true},
+    );
+    console.log(`✅  Moved to ${sourceMapFolder}.`);
+  } else {
+    // Removing so we don't bundle them up as part of the release.
     console.log(`⏭  Removing source maps.`);
+    await fs.remove(mainBundleMap);
+    await fs.remove(rendererBundleMap);
   }
 }
 

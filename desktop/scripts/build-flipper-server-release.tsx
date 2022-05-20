@@ -17,6 +17,7 @@ import {
   getVersionNumber,
   prepareDefaultPlugins,
   prepareHeadlessPlugins,
+  moveServerSourceMaps,
 } from './build-utils';
 import {defaultPluginsDir, distDir, serverDir, staticDir} from './paths';
 import isFB from './isFB';
@@ -96,6 +97,11 @@ const argv = yargs
     'default-plugins-dir': {
       describe:
         'Directory with prepared list of default plugins which will be included into the Flipper distribution as "defaultPlugins" dir',
+      type: 'string',
+    },
+    'source-map-dir': {
+      describe:
+        'Directory to write the main.bundle.map and bundle.map files for the main and render bundle sourcemaps, respectively',
       type: 'string',
     },
     version: {
@@ -335,6 +341,7 @@ async function buildServerRelease() {
   await copyStaticResources(dir, versionNumber);
   await downloadIcons(path.join(dir, 'static'));
   await buildBrowserBundle(path.join(dir, 'static'), false);
+  await moveServerSourceMaps(dir, argv['source-map-dir']);
   await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
   const archive = await packNpmArchive(dir, versionNumber);
   await runPostBuildAction(archive, dir);
