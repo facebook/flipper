@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[2535],{45641:e=>{e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Flipper is coming to your web and Node.js apps","permalink":"/blog/2022/02/21/js-flipper-announcement"},{"title":"Flipper 2021 Roadmap Update","permalink":"/blog/2021/10/14/roadmap"}]}')}}]);

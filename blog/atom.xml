@@ -2,11 +2,216 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://fbflipper.com/blog</id>
     <title>Flipper Blog</title>
-    <updated>2022-02-21T00:00:00.000Z</updated>
+    <updated>2022-05-20T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://fbflipper.com/blog"/>
     <subtitle>Flipper Blog</subtitle>
     <icon>https://fbflipper.com/img/icon.png</icon>
+    <entry>
+        <title type="html"><![CDATA[Headless Flipper - what it means for plugin developers]]></title>
+        <id>Headless Flipper - what it means for plugin developers</id>
+        <link href="https://fbflipper.com/blog/2022/05/20/preparing-for-headless-flipper"/>
+        <updated>2022-05-20T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Flipper is moving from an Electron monolith to a headless Node.js app with a web UI. It reshapes how we think about plugins and what plugins can do. We talk about what changes and how to prepare our plugins for the migration.]]></summary>
+        <content type="html"><![CDATA[<p><img src="/img/preparing-for-headless-flipper.jpg" alt="Cover image"/></p><p>We know Flipper as an Electron desktop app that serves mobile developers as
+their debugging companion. Thousands of people use Flipper every day to tinker
+with their app and get to the bottom of tricky problems.</p><p>As announced in the previous
+<a href="https://fbflipper.com/blog/2021/10/14/roadmap/">roadmap post</a>, we are committed
+to amplifying how Flipper could improve the quality of our software. We want
+take Flipper beyond its current role as a complementary debugging tool, provide
+a powerful API, and allow using Flipper in more than just the GUI context (we
+call it &quot;headless mode&quot;). Imagine talking to your mobile device (or anything
+else that runs Flipper Client) from your terminal. Imagine deploying Flipper
+remotely in the cloud and interacting with it from your laptop. Imagine using
+your favorite plugins for automated testing.</p><p>In this post we cover:</p><ul><li>How Flipper changes to facilitate the headless mode</li><li>How it affects plugins</li><li>A migration guide</li></ul><h2>How Flipper changes</h2><p>Let us take a look at how it works today as an Electron app.</p><p><img src="/img/flipper-arch-electron.jpg" alt="Flipper Electron architecture"/></p><p>Here is what happens:</p><ol><li>Flipper starts as an Electron application.<ol><li>WebSocket server starts.</li><li>Device discovery starts via adb/idb/metro.</li><li>Electron shows a web view with Flipper UI (React).</li><li>Flipper UI queries the device discovery service for a list of devices.</li></ol></li><li>At this point, Flipper can already run
+<a href="https://fbflipper.com/docs/extending/desktop-plugin-structure/#creating-a-device-plugin">&quot;device&quot; plugins</a>.
+These plugins do not receive a connection to a running app. They talk to the
+device via adb/idb/metro.</li><li>An app starts on the device.</li><li>Flipper Client embedded in the app connects to the WebSocket server.</li><li>Flipper updates the list of known clients and reflects it in the UI.</li><li>Now Flipper can run
+<a href="https://fbflipper.com/docs/extending/desktop-plugin-structure/#creating-a-client-plugin">&quot;client&quot; plugins</a>.</li><li>Client plugins talk to the device application over the WebSocket connection.</li></ol><blockquote><p>You can start Flipper Electron with <code>yarn start</code> from the <code>/desktop</code> folder.</p></blockquote><p>Here is how Flipper Headless works.</p><p><img src="/img/flipper-arch-headless.jpg" alt="Flipper Headless architecture"/></p><ol><li>Flipper starts as a Node.js application.<ol><li>WebSocket server starts.</li><li>Device discovery starts via adb/idb/metro.</li><li>Web server starts.</li><li>It serves Flipper UI to a browser.</li><li>Flipper UI connects to the WebSocket server.</li><li>Flipper UI sends a message over the WebSocket connection to query the
+device discovery service for a list of devices.</li></ol></li><li>At this point, Flipper can already run
+<a href="https://fbflipper.com/docs/extending/desktop-plugin-structure/#creating-a-device-plugin">&quot;device&quot; plugins</a>.
+These plugins do not receive a connection to a running app. They talk to the
+device via adb/idb/metro.</li><li>An app starts on the device.</li><li>Flipper Client embedded in the app connects to the WebSocket server.</li><li>Flipper updates the list of known clients. It sends a message over the
+WebSocket connection to Flipper UI with the information about the new device.</li><li>Now Flipper can run
+<a href="https://fbflipper.com/docs/extending/desktop-plugin-structure/#creating-a-client-plugin">&quot;client&quot; plugins</a>.</li><li>Client plugins talk to the device application over the WebSocket bridge - the
+connection from Flipper UI to Flipper WebSocket server piped to the
+connection from the device application to the Flipper WebSocket server.</li></ol><blockquote><p>You can start Flipper Electron with <code>yarn flipper-server</code> from the <code>/desktop</code>
+folder.</p></blockquote><h2>How it affects plugins</h2><p>Plugins are hosted by Flipper UI. When it was a part of the Electron app, there
+was no problem. Plugins could access any Node.js APIs thanks to Electron magic.
+There were no constraints on what plugins could do. After making Flipper UI a
+proper web app running in a browser, we limited what plugins can do. They no
+longer can access the network stack or the file system because there are no
+corresponding browser APIs. Yet, we want to keep Flipper flexible and provide as
+much freedom to plugin developers as possible. Moreover, we could not leave the
+existing plugins without a clear migration path.</p><p><img src="/img/flipper-node-apis.jpg" alt="Flipper remote Node.js API"/></p><p>Since we already have a WebSocket connection between Flipper UI and Flipper
+Server, we can model almost any request-response and even stream-based Node.js
+APIs over it. So far, we exposed a curated subset of them:</p><ul><li>child_process<ul><li>exec</li></ul></li><li>fs (and <a href="https://www.npmjs.com/package/fs-extra">fs-extra</a>)<ul><li>constants</li><li>access</li><li>pathExists</li><li>unlink</li><li>mkdir</li><li>rm</li><li>copyFile</li><li>stat</li><li>readlink</li><li>readFile</li><li>writeFile</li></ul></li></ul><p>We also provided a way to
+<a href="https://github.com/facebook/flipper/blob/0f038218f893d86e91714cd91eed8e37d756386c/desktop/flipper-plugin/src/plugin/FlipperLib.tsx#L83">download a file</a>
+or send requests to the
+<a href="https://github.com/facebook/flipper/blob/0f038218f893d86e91714cd91eed8e37d756386c/desktop/flipper-plugin/src/plugin/FlipperLib.tsx#L186">internal infrastructure</a>.</p><blockquote><p>Please, find the complete list of available APIs on
+<a href="https://github.com/facebook/flipper/blob/0f038218f893d86e91714cd91eed8e37d756386c/desktop/flipper-plugin/src/plugin/FlipperLib.tsx#L95">GitHub</a>.
+<a href="https://github.com/facebook/flipper/blob/0f038218f893d86e91714cd91eed8e37d756386c/desktop/flipper-plugin/src/plugin/FlipperLib.tsx#L47">Here are Node.js API abstractions</a>
+specifically.</p></blockquote><p>As you might have noticed, all exposed APIs are of the request-response nature.
+They assume a short finite controlled lifespan. Yet, some plugins start
+additional web servers or spawn long-living child processes. To control their
+lifetime we need to track them on Flipper Server side and stop them whenever
+Flipper UI disconnects. Say hello to a new experimental feature - Flipper Server
+Add-ons!</p><p><img src="/img/flipper-add-on.jpg" alt="Flipper Server Add-on"/></p><p>Now, every flipper plugin could have &quot;server add-on&quot; meta-information. Whenever
+a Flipper plugin that has a corresponding Server Add-on starts, it sends a
+command to Flipper Server to start its Server Add-on counterpart. Flipper plugin
+that lives in a browser inside of Flipper UI talks to its server add-on over the
+WebSocket connection. Whenever a user disables a plugin, Flipper sends a command
+to Flipper Server to stop the add-on. At the same time, if Flipper UI crashes or
+the user just closes the tab, Flipper Server can kill the server add-on on its
+own.</p><p>Flipper plugin can talk to its server add-on companion (see
+<code>onServerAddOnMessage</code>, <code>onServerAddOnUnhandledMessage</code>, <code>sendToServerAddOn</code> in
+<a href="https://fbflipper.com/docs/extending/flipper-plugin/#pluginclient">the docs</a>)
+and act whenever it starts or stops (see <code>onServerAddOnStart</code>,
+<code>onServerAddOnStop</code> in
+<a href="https://fbflipper.com/docs/extending/flipper-plugin/#pluginclient">the docs</a>).</p><p>Say, you wrote an ultimate library to find primes. You were cautious of the
+resource consumption, so you did it in Rust. You created a CLI interface for
+your new shiny library. Now, you want your Flipper plugin to use it. It takes a
+long time to find a prime and you want to keep track of the progress. You could
+use <code>getFlipperLib().remoteServerContext.childProcess.exec</code>, but it is not
+flexible enough to monitor progress updates that your CLI sends to stdout. Here
+is how you could approach it:</p><pre><code class="language-tsx">// contract.tsx
+export interface ServerAddOnEvents {
+  // Server add-on sends &quot;progress&quot; events with the progress updates
+  progress: number;
+}
+export interface ServerAddOnMethods {
+  // Client plugin send &quot;findPrime&quot; messages to the server add-on to start finding primes
+  findPrime: () =&gt; Promise&lt;number&gt;;
+}
+
+// index.tsx (your plugin)
+import {usePlugin, useValue, createState, PluginClient} from &#x27;flipper-plugin&#x27;;
+import {ServerAddOnEvents, ServerAddOnMethods} from &#x27;./contract&#x27;;
+
+export const plugin = (
+  client: PluginClient&lt;{}, {}, ServerAddOnEvents, ServerAddOnMethods&gt;,
+) =&gt; {
+  const prime = createState&lt;number | null&gt;(null);
+  const progress = createState&lt;number&gt;(0);
+
+  client.onServerAddOnStart(async () =&gt; {
+    const newPrime = await client.sendToServerAddOn(&#x27;findPrime&#x27;);
+    prime.set(newPrime);
+  });
+
+  client.onServerAddOnStart(() =&gt; {
+    client.onServerAddOnMessage(&#x27;progress&#x27;, progressUpdate =&gt; {
+      progress.set(progressUpdate);
+    });
+  });
+
+  return {
+    prime,
+    progress,
+  };
+};
+
+export const Component = () =&gt; {
+  const pluginInstance = usePlugin(plugin);
+  const prime = useValue(pluginInstance.prime);
+  const progress = useValue(pluginInstance.progress);
+
+  return &lt;div&gt;{prime ?? `Calculating (${progress}%) done...`}&lt;/div&gt;;
+};
+
+// serverAddOn.tsx
+import {ServerAddOn} from &#x27;flipper-plugin&#x27;;
+import {exec, ChildProcess} from &#x27;child_process&#x27;;
+import {ServerAddOnEvents, ServerAddOnMethods} from &#x27;./contract&#x27;;
+
+const serverAddOn: ServerAddOn&lt;ServerAddOnEvents, ServerAddOnMethods&gt; =
+  async connection =&gt; {
+    let findPrimeChildProcess: ChildProcess | undefined;
+
+    connection.receive(&#x27;findPrime&#x27;, () =&gt; {
+      if (findPrimeChildProcess) {
+        // Allow only one findPrime request at a time. Finding primes is expensive!
+        throw new Error(&#x27;Too many requests!&#x27;);
+      }
+
+      // Start our awesome Rust lib
+      findPrimeChildProcess = exec(&#x27;/find-prime-cli&#x27;, {shell: true});
+
+      // Return a Promise that resolves when a prime is found.
+      // Flipper will serialize the value the promise is resolved with and send it oer the wire.
+      return new Promise(resolve =&gt; {
+        // Listen to stdout of the lib for the progress updates and, eventually, the prime
+        findPrimeChildProcess.stdout.on(&#x27;data&#x27;, data =&gt; {
+          // Say, data is a stringified JSON
+          const parsed = JSON.parse(data);
+
+          if (parsed.type === &#x27;progress&#x27;) {
+            connection.send(&#x27;progress&#x27;, parsed.value);
+            return;
+          }
+
+          // Allow new requests to find new primes
+          findPrimeChildProcess = undefined;
+          // If it is not a progress update, then a prime is found.
+          resolve(parsed.value);
+        });
+      });
+    });
+  };
+
+export default serverAddOn;
+</code></pre><h2>Migration guide</h2><ol><li><p>Examine your plugins for Node.js APIs. Replace them with
+<code>getFlipperLib().remoteServerContext.*</code> calls.</p><pre><code class="language-tsx">// before
+import {mkdir} from &#x27;fs/promises&#x27;;
+
+export const plugin = () =&gt; {
+  const myAwesomeFn = async () =&gt; {
+    await mkdir(&#x27;/universe/dagobah&#x27;);
+  };
+
+  return {
+    myAwesomeFn,
+  };
+};
+
+// after
+import {getFlipperLib} from &#x27;flipper-plugin&#x27;;
+
+export const plugin = () =&gt; {
+  const myAwesomeFn = async () =&gt; {
+    await getFlipperLib().remoteServerContext.mkdir(&#x27;/universe/dagobah&#x27;);
+  };
+
+  return {
+    myAwesomeFn,
+  };
+};
+</code></pre></li><li><p>If your plugin uses network stack of spawns a subprocess, consider creating a
+Server Add-on.</p><ol><li><p>In your plugin&#x27;s folder create a new file - <code>serverAddOn.tsx</code></p></li><li><p>In your plugin&#x27;s package.json add fields <code>serverAddOn</code> and
+<code>flipperBundlerEntryServerAddOn</code></p><pre><code class="language-js">{
+   // ...
+   &quot;serverAddOn&quot;: &quot;dist/serverAddOn.js&quot;,
+   &quot;flipperBundlerEntryServerAddOn&quot;: &quot;serverAddOn.tsx&quot;,
+   // ...
+}
+</code></pre></li><li><p>Move your Node.js API calls to <code>serverAddOn.tsx</code></p></li></ol></li><li><p>Verify your plugin works in a browser environment.</p><ol><li>Clone <a href="https://github.com/facebook/flipper">Flipper repo</a>.</li><li>Navigate to the <code>desktop</code> folder.</li><li>In your terminal run <code>yarn</code>.</li><li>Run <code>yarn flipper-server</code>.</li><li>Load your plugin and make sure it works.</li></ol></li></ol><h2>P.S. Flipper needs you!</h2><p>Flipper is maintained by a small team at Meta, yet is serving over a hundred
+plugins and dozens of different targets. Our team&#x27;s goal is to support Flipper
+as a plugin-based platform for which we maintain the infrastructure. We don&#x27;t
+typically invest in individual plugins, but we do love plugin improvements.</p><p>For that reason, we&#x27;ve marked many requests in the issue tracker as
+<a href="https://github.com/facebook/flipper/issues?q=is%3Aissue+is%3Aopen+label%3A%22PR+welcome%22">PR Welcome</a>.
+Contributing changes should be as simple as cloning the
+<a href="https://github.com/facebook/flipper">repository</a> and running
+<code>yarn &amp;&amp; yarn start</code> in the <code>desktop/</code> folder.</p><p>Investing in debugging tools, both generic ones or just for specific apps, will
+benefit iteration speed. And we hope Flipper will make it as hassle free as
+possible to create your debugging tools. For an overview of Flipper for React
+Native, and why and how to build your own plugins, we recommend checking out the
+<a href="https://youtu.be/WltZTn3ODW4">Flipper: The Extensible DevTool Platform for React Native</a>
+talk.</p><p>Happy debugging!</p>]]></content>
+        <author>
+            <name>Andrey Goncharov</name>
+            <uri>https://github.com/aigoncharov</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Flipper is coming to your web and Node.js apps]]></title>
         <id>Flipper is coming to your web and Node.js apps</id>
