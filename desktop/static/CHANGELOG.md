@@ -1,3 +1,8 @@
+# 0.146.1 (20/5/2022)
+
+ * [D36513795](https://github.com/facebook/flipper/search?q=D36513795&type=Commits) -  Refactor tic-tac-toe plugin to Sandy architecture
+
+
 # 0.146.0 (18/5/2022)
 
  * [D36060992](https://github.com/facebook/flipper/search?q=D36060992&type=Commits) -  Remove OpenSSL file BIO operations
