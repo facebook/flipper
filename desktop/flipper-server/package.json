@@ -26,7 +26,7 @@
     "open": "^8.3.0",
     "p-filter": "^2.1.0",
     "yargs": "^17.0.1",
-    "ws": "^8.5.0",
+    "ws": "^8.6.0",
     "xdg-basedir": "^4"
   },
   "peerDependencies": {},
