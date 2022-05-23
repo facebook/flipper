@@ -7,80 +7,25 @@
  * @format
  */
 
-import {FlipperServer, Logger, UserError, SystemError} from 'flipper-common';
+import EventEmitter from 'events';
+import {
+  FlipperServer,
+  Logger,
+  UserError,
+  SystemError,
+  FlipperCompanionCommands,
+  FlipperCompanionEvents,
+  FlipperCompanionAvailablePlugin,
+} from 'flipper-common';
 import {BaseDevice} from 'flipper-frontend-core';
 import {_SandyPluginDefinition} from 'flipper-plugin';
+import {isAtom} from 'flipper-plugin';
 import {HeadlessClient} from './HeadlessClient';
 
-type SerializableFnArg =
-  | null
-  | boolean
-  | number
-  | string
-  | {[prop: string]: SerializableFnArg | SerializableFnArg[]};
-
-interface AvailablePlugin {
-  pluginId: string;
-  /**
-   * `active` if a plugin is connected and running (accepting messages)
-   * `ready` if a plugin can be started: bundled or found on a file system.
-   * `unavailable` if plugin is supported by a device, but it cannot be loaded by Flipper (not bundled, not found on a file system, does not support a headless mode)
-   */
-  state: 'unavailable' | 'ready' | 'active';
-}
-
-export type FlipperCompanionCommands = {
-  'companion-plugin-list': (clientId: string) => Promise<AvailablePlugin[]>;
-  /**
-   * Start a plugin for a client. It triggers 'onConnect' and 'onActivate' listeners for the plugin.
-   */
-  'companion-plugin-start': (
-    clientId: string,
-    pluginId: string,
-  ) => Promise<void>;
-  /**
-   * Stops and destroys a plugin for a client. It triggers 'onDeactivate', 'onDisconnect', and 'onDestroy' listeners for the plugin.
-   */
-  'companion-plugin-stop': (
-    clientId: string,
-    pluginId: string,
-  ) => Promise<void>;
-  /**
-   * Execute a command exposed via `export const API = () => ...` in a plugin.
-   */
-  'companion-plugin-exec': (
-    clientId: string,
-    pluginId: string,
-    api: string,
-    params?: SerializableFnArg[],
-  ) => Promise<any>;
-  'companion-device-plugin-list': (
-    deviceSerial: string,
-  ) => Promise<AvailablePlugin[]>;
-  /**
-   * Start a device plugin for a device. It triggers 'onActivate' listener for the plugin.
-   */
-  'companion-device-plugin-start': (
-    deviceSerial: string,
-    pluginId: string,
-  ) => Promise<void>;
-  /**
-   * Stops and destroys a device plugin for a device. It triggers 'onDeactivate' and 'onDestroy' listeners for the plugin.
-   */
-  'companion-device-plugin-stop': (
-    deviceSerial: string,
-    pluginId: string,
-  ) => Promise<void>;
-  /**
-   * Execute a command exposed via `export const api = () => ...` in a plugin.
-   */
-  'companion-device-plugin-exec': (
-    deviceSerial: string,
-    pluginId: string,
-    api: string,
-    params?: SerializableFnArg[],
-  ) => Promise<any>;
-};
+const companionEvents: Array<keyof FlipperCompanionEvents> = [
+  'companion-plugin-state-update',
+  'companion-device-plugin-state-update',
+];
 
 export class FlipperServerCompanion {
   /**
@@ -96,9 +41,9 @@ export class FlipperServerCompanion {
    *                                                  ------------------------------------------------------------                             --------------------|
    */
   private readonly clients = new Map<string, HeadlessClient>();
-
   private readonly devices = new Map<string, BaseDevice>();
   private readonly loadablePlugins = new Map<string, _SandyPluginDefinition>();
+  private readonly eventBus = new EventEmitter();
 
   constructor(
     private readonly flipperServer: FlipperServer,
@@ -220,6 +165,24 @@ export class FlipperServerCompanion {
     return newDevice;
   }
 
+  private emit<T extends keyof FlipperCompanionEvents>(
+    event: T,
+    data: FlipperCompanionEvents[T],
+  ) {
+    this.eventBus.emit(event, data);
+  }
+
+  onAny(
+    cb: <T extends keyof FlipperCompanionEvents>(
+      event: T,
+      data: FlipperCompanionEvents[T],
+    ) => void,
+  ) {
+    for (const eventName of companionEvents) {
+      this.eventBus.on(eventName, (data) => cb(eventName, data));
+    }
+  }
+
   exec<Event extends keyof FlipperCompanionCommands>(
     event: Event,
     ...args: Parameters<FlipperCompanionCommands[Event]>
@@ -254,7 +217,7 @@ export class FlipperServerCompanion {
       return [...client.plugins].map((pluginId) => {
         const pluginInstance = client.sandyPluginStates.get(pluginId);
 
-        let state: AvailablePlugin['state'] = 'unavailable';
+        let state: FlipperCompanionAvailablePlugin['state'] = 'unavailable';
         if (pluginInstance) {
           state = 'ready';
           if (pluginInstance.activated) {
@@ -379,6 +342,66 @@ export class FlipperServerCompanion {
 
       return pluginInstance.companionApi[api](...(params ?? []));
     },
+    'companion-plugin-subscribe': async (clientId, pluginId, api) => {
+      const client = this.clients.get(clientId);
+      if (!client) {
+        throw new UserError(
+          'FlipperServerCompanion.companion-plugin-subscribe -> client not found',
+          clientId,
+          pluginId,
+          api,
+        );
+      }
+
+      const pluginInstance = client.sandyPluginStates.get(pluginId);
+      if (!pluginInstance) {
+        throw new UserError(
+          'FlipperServerCompanion.companion-plugin-subscribe -> plugin not found',
+          clientId,
+          pluginId,
+          api,
+        );
+      }
+
+      if (!client.connected.get()) {
+        throw new UserError(
+          'FlipperServerCompanion.companion-plugin-subscribe -> client not connected',
+          clientId,
+          pluginId,
+          api,
+        );
+      }
+
+      if (!pluginInstance.companionApi) {
+        throw new UserError(
+          'FlipperServerCompanion.companion-plugin-subscribe -> plugin does not expose API',
+          clientId,
+          pluginId,
+          api,
+        );
+      }
+
+      const stateAtom = pluginInstance.companionApi[api];
+      if (!isAtom(stateAtom)) {
+        throw new SystemError(
+          'FlipperServerCompanion.companion-plugin-subscribe -> plugin does not expose requested state or it is not an Atom (created with `createState`)',
+          clientId,
+          pluginId,
+          api,
+        );
+      }
+
+      stateAtom.subscribe((data) =>
+        this.emit('companion-plugin-state-update', {
+          clientId,
+          pluginId,
+          api,
+          data,
+        }),
+      );
+
+      return stateAtom.get();
+    },
     'companion-device-plugin-list': async (deviceSerial) => {
       const device = await this.createHeadlessDeviceIfNeeded(deviceSerial);
 
@@ -388,7 +411,7 @@ export class FlipperServerCompanion {
       return supportedDevicePlugins.map((plugin) => {
         const pluginInstance = device.sandyPluginStates.get(plugin.id);
 
-        let state: AvailablePlugin['state'] = 'ready';
+        let state: FlipperCompanionAvailablePlugin['state'] = 'ready';
         if (pluginInstance) {
           state = 'active';
         }
@@ -525,6 +548,70 @@ export class FlipperServerCompanion {
       }
 
       return pluginInstance.companionApi[api](...(params ?? []));
+    },
+    'companion-device-plugin-subscribe': async (
+      deviceSerial,
+      pluginId,
+      api,
+    ) => {
+      const device = this.devices.get(deviceSerial);
+      if (!device) {
+        throw new UserError(
+          'FlipperServerCompanion.companion-device-plugin-subscribe -> device not found',
+          deviceSerial,
+          pluginId,
+          api,
+        );
+      }
+
+      const pluginInstance = device.sandyPluginStates.get(pluginId);
+      if (!pluginInstance) {
+        throw new UserError(
+          'FlipperServerCompanion.companion-device-plugin-subscribe -> plugin not found',
+          deviceSerial,
+          pluginId,
+          api,
+        );
+      }
+
+      if (!device.connected.get()) {
+        throw new UserError(
+          'FlipperServerCompanion.companion-device-plugin-subscribe -> client not connected',
+          deviceSerial,
+          pluginId,
+          api,
+        );
+      }
+
+      if (!pluginInstance.companionApi) {
+        throw new UserError(
+          'FlipperServerCompanion.companion-device-plugin-subscribe -> plugin does not expose API',
+          deviceSerial,
+          pluginId,
+          api,
+        );
+      }
+
+      const stateAtom = pluginInstance.companionApi[api];
+      if (!isAtom(stateAtom)) {
+        throw new SystemError(
+          'FlipperServerCompanion.companion-device-plugin-subscribe -> plugin does not expose requested state or it is not an Atom (created with `createState`)',
+          deviceSerial,
+          pluginId,
+          api,
+        );
+      }
+
+      stateAtom.subscribe((data) =>
+        this.emit('companion-device-plugin-state-update', {
+          deviceSerial,
+          pluginId,
+          api,
+          data,
+        }),
+      );
+
+      return stateAtom.get();
     },
   };
 }

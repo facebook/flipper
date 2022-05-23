@@ -17,6 +17,7 @@ export {
   NoopLogger,
 } from './utils/Logger';
 export * from './server-types';
+export * from './companion-types';
 export * from './ServerAddOn';
 export {sleep} from './utils/sleep';
 export {timeout} from './utils/timeout';
