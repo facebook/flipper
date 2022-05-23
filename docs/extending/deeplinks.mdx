@@ -1,34 +1,36 @@
 ---
 id: deeplinks
-title: Using deeplinks
+title: Using Deeplinks
 ---
 
-Flipper supports opening Flipper through deeplinks, by using the `flipper://` protocol. 
+Flipper supports opening Flipper through deeplinks via the `flipper://` protocol.
 
 ## open-plugin
 
-The follow link format can be used to open Flipper, and open a specific plugin:
+The following link format can be used to open Flipper and open a specific plugin:
 
 `flipper://open-plugin?plugin-id=<plugin-id>&client=<client>&devices=<devices>&payload=<payload>`
 
 The parameters are specified as follows:
 
-* `plugin-id` (required) the identifier of the plugin that needs to be opened, as specified by the `id` field in `package.json`.
-* `client` (optional) the name of the application that should be opened. For device plugins, this doesn't need to be specified. If not set, the user will be prompted to select a client.
-* `devices` (optional) comma separated list of device types that are acceptable. E.g. `iOS,Android` or `Metro`. If set, `client` and `plugin-id` must be running on this type of device.
-* `payload` (optional) any additional string argument to pass to the plugin. Note that this argument should be properly URL encoded.   
+* `plugin-id` - [required] the identifier of the plugin that needs to be opened, as specified by the `id` field in `package.json`.
+* `client` - [optional] the name of the application that should be opened. For device plugins, this doesn't need to be specified. If not set, the user will be prompted to select a client.
+* `devices` - [optional] comma separated list of device types that are acceptable. For example, `iOS,Android` or `Metro`. If set, `client` and `plugin-id` must be running on this type of device.
+* `payload` - [optional] any additional string argument to pass to the plugin. Note that this argument should be properly URL encoded.
 
 
-Using this deeplink format will make sure that:
+Using this deeplink format ensures that:
 
 * [FB-ONLY] The user is logged in & connected to Facebook.
-* Verify that Flipper is up to date.
-* [FB-ONLY] Install the specified plugin if not installed already.
-* Make sure the plugin is available on the provided client / device, or will prompt the user for a valid device / client selection is made on which the plugin is available.
-* Enable the plugin if not enabled already.
+* Flipper is up to date.
+* [FB-ONLY] The specified plugin is installed.
+* The plugin is available on the provided client / device, or will prompt the user for a valid device / client selection is made on which the plugin is available.
+* The plugin is enabled.
 
 ### Handling deeplinks in the plugin
 
 If a plugin is opened through a deeplink, for which a `payload` was set, the [`onDeepLink`](flipper-plugin.mdx#ondeeplink) handler will be triggered directly after initializing and rendering the plugin.
 
-Note that the same payload format can also be used to open other plugins programmatically from inside another plugin, by passing the payload as second argument to [`selectPlugin`](flipper-plugin.mdx#selectplugin).
+:::note
+The same payload format can also be used to open other plugins programmatically from inside another plugin, by passing the payload as second argument to [selectPlugin](flipper-plugin.mdx#selectplugin).
+:::
