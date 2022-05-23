@@ -108,7 +108,7 @@ fn pack(
     output_directory: &std::path::Path,
 ) -> Result<Vec<(PackType, path::PathBuf)>> {
     let pb = default_progress_bar(pack_list.0.len() as u64 * 2 - 1);
-    pb.set_prefix(&format!(
+    pb.set_prefix(format!(
         "{:width$}",
         "Packing archives",
         width = PROGRESS_PREFIX_LEN
@@ -262,7 +262,7 @@ fn compress_paths(
     archive_paths: &[(PackType, path::PathBuf)],
 ) -> Result<Vec<(PackType, path::PathBuf)>> {
     let pb = default_progress_bar(archive_paths.len() as u64 - 1);
-    pb.set_prefix(&format!(
+    pb.set_prefix(format!(
         "{:width$}",
         "Compressing archives",
         width = PROGRESS_PREFIX_LEN
@@ -329,7 +329,7 @@ fn gen_manifest_files(
 ) -> Result<BTreeMap<PackType, PackFile>> {
     use std::iter;
     let pb = default_progress_bar((archive_paths.len() as u64 - 1) * 2);
-    pb.set_prefix(&format!(
+    pb.set_prefix(format!(
         "{:width$}",
         "Computing manifest",
         width = PROGRESS_PREFIX_LEN
