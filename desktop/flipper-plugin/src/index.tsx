@@ -34,7 +34,7 @@ export {
   SandyPluginContext as _SandyPluginContext,
   usePlugin,
 } from './plugin/PluginContext';
-export {createState, useValue, Atom} from './state/atom';
+export {createState, useValue, Atom, isAtom} from './state/atom';
 export {batch} from './state/batch';
 export {
   FlipperLib,
