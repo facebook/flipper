@@ -143,7 +143,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
         onCancel={onClose}
         title="Launch Emulator"
         footer={null}
-        bodyStyle={{maxHeight: 400, overflow: 'auto'}}>
+        bodyStyle={{maxHeight: 400, height: 400, overflow: 'auto'}}>
         <Layout.Container gap>
           {items.length ? items : <Alert message="No emulators available" />}
         </Layout.Container>
