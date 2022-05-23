@@ -185,7 +185,7 @@
       "test-utils",
       "eslint-plugin-flipper",
       "types",
-      "examples/headless-tic-tac-toe"
+      "examples/*"
     ]
   }
 }
