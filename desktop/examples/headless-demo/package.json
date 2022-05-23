@@ -1,6 +1,15 @@
 {
-  "name": "headless-demo",
-  "version": "1.0.0",
+  "name": "flipper-headless-demo",
+  "version": "0.0.0",
+  "description": "Headless demo Flipper desktop plugin",
+  "homepage": "https://github.com/facebook/flipper",
+  "keywords": [
+    "Flipper"
+  ],
+  "repository": "facebook/flipper",
+  "bugs": "https://github.com/facebook/flipper/issues",
+  "author": "Facebook, Inc",
+  "bin": "index.js",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
@@ -8,5 +17,9 @@
   },
   "dependencies": {
     "ws": "^8.6.0"
-  }
+  },
+  "files": [
+    "*.js",
+    "README.md"
+  ]
 }
