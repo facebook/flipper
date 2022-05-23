@@ -40,7 +40,7 @@
     "split2": "^4.1.0",
     "tmp": "^0.2.1",
     "which": "^2.0.2",
-    "ws": "^8.5.0",
+    "ws": "^8.6.0",
     "xdg-basedir": "^4.0.0"
   },
   "devDependencies": {
