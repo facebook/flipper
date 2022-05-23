@@ -6,19 +6,17 @@ title: Styling Components
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Link from '@docusaurus/Link';
 
-Flipper ships with its own design system which is based on [Ant Design](https://ant.design/).
-In general, custom styling should be needed rarily, as Ant Design provides a very extensive set of [components](https://ant.design/components/overview/).
+Flipper ships with its own design system that is based on [Ant Design](https://ant.design/).
+In general, custom styling should be needed rarey, as Ant Design provides a very extensive set of [components](https://ant.design/components/overview/).
 
 To build plugin layout and data visualization Flipper ships with an additional set of components through the `flipper-plugin` package.
-The list of available additional components can be found in the <Link to={useBaseUrl('/docs/extending/flipper-plugin#ui-components')}>API Reference</Link> and are further documented
-in [the style guide](style-guide.mdx).
+The list of available additional components can be found in the <Link to={useBaseUrl('/docs/extending/flipper-plugin#ui-components')}>API Reference</Link> and are further documented in the [Style Guide](style-guide.mdx).
 
-In case you still need customly styled components,
-we are using [emotion](https://emotion.sh) to style our components. For more details on how this works, please refer to emotion's documentation. We heavily use their [Styled Components](https://emotion.sh/docs/styled) approach, which allows you to extend our and Ant's built-in components.
+In case you still need custom-styled components, you can use [emotion](https://emotion.sh) to style your components. For more details on how this works, please refer to emotion's documentation. Emotion's [Styled Components](https://emotion.sh/docs/styled) approach enables you to extend our and Ant's built-in components.
 
 ## Basic tags
 
-For basic building blocks (views, texts, ...) you can use the styled object.
+For basic building blocks (views, texts, and so on), you can use the styled object, as shown below:
 
 ```js
 import {styled} from 'flipper-plugin';
@@ -34,8 +32,7 @@ const MyInput = styled.input({ ... });
 
 ## Extending Flipper Components
 
-In some cases it is required to customize Ant or Flipper's components in some way. For example changing colors, alignment, or wrapping behavior.
-Flippers components can be wrapped using the `styled` function which allows adding or overwriting existing style rules.
+In some cases, it's required to customize Ant or Flipper's components in some way. For example, changing colors, alignment, or wrapping behavior. Flippers components can be wrapped using the `styled` function which allows adding or overwriting existing style rules.
 
 ```jsx
 import {Layout, styled} from 'flipper-plugin';
@@ -51,9 +48,9 @@ function MyComponent {
 
 ## CSS
 
-The CSS-in-JS object passed to the styled components takes just any CSS rule, with the difference that it uses camel cased keys for the properties. Pixel-values can be numbers, any other values need to be strings.
+The CSS-in-JS object passed to the styled components takes any CSS rule but uses came-cased keys for the properties. Pixel-values can be numbers. Any other values need to be strings.
 
-The style object can also be returned from a function for dynamic values. Props can be passed to the styled component using React.
+The style object can also be returned from a function for dynamic values. Props can be passed to the styled component using React, as follows:
 
 ```jsx
 const MyView = styled.div(
@@ -67,7 +64,7 @@ const MyView = styled.div(
 <MyView disabled />
 ```
 
-Pseudo-classes can be used like this:
+Pseudo-classes can be as follows:
 
 ```javascript
 '&:hover': {color: 'red'}`
@@ -81,8 +78,7 @@ Children can be matched by using normal CSS selectors. This makes it possible to
 
 ## Colors
 
-The `theme` module contains all standard colors used by Flipper. All available colors can be previewed in [the style guide](style-guide.mdx).
-The colors exposed here will handle dark mode automatically, so it is recommended to use those colors over hardcoded ones.
+The `theme` module contains all standard colors used by Flipper. All available colors can be previewed in [the style guide](style-guide.mdx). The colors exposed here handles dark mode automatically, so it's recommended to use those colors over hardcoded ones.
 
 ```javascript
 import {theme} from 'flipper-plugin'
