@@ -1332,6 +1332,12 @@ someService.on('event', (val) => controllerPromise.resolve(val))
 await controllerPromise.promise
 ```
 
+### isAtom
+
+Usage: `isAtom(value)`
+
+Checks if value is an [Atom](https://github.com/facebook/flipper/blob/566f7108c9efd8aefc8522af645bd0674fb91b20/desktop/flipper-plugin/src/state/atom.tsx#L30). Returns boolean.
+
 ## TestUtils
 
 The object `TestUtils` as exposed from `flipper-plugin` exposes utilities to write unit tests for Sandy plugins.
