@@ -17,6 +17,7 @@ import {
   UserError,
   SystemError,
   getLogger,
+  CompanionEventWebSocketMessage,
 } from 'flipper-common';
 import {FlipperServerImpl} from 'flipper-server-core';
 import {WebSocketServer} from 'ws';
@@ -103,6 +104,19 @@ export function attachSocketServer(
     }
 
     flipperServer.onAny(onServerEvent);
+
+    async function onServerCompanionEvent(event: string, payload: any) {
+      const message = {
+        event: 'companion-event',
+        payload: {
+          event,
+          data: payload,
+        },
+      } as CompanionEventWebSocketMessage;
+      client.send(JSON.stringify(message));
+    }
+
+    flipperServerCompanion?.onAny(onServerCompanionEvent);
 
     client.on('message', (data) => {
       let [event, payload]: [event: string | null, payload: any | null] = [
