@@ -7,8 +7,18 @@
  * @format
  */
 
+const {TicTacToeClient} = require('./ticTacToeClient');
+
 const main = async () => {
-  // TODO: Implement me
+  const ticTacToeClient = new TicTacToeClient();
+  await ticTacToeClient.init();
+
+  const targetClientId = await ticTacToeClient.selectClient();
+  await ticTacToeClient.startTicTacToePlugin(targetClientId);
+  ticTacToeClient.startGame(targetClientId);
 };
 
-main().catch(console.error);
+main().catch((e) => {
+  console.error('main -> error', e);
+  process.exit(1);
+});
