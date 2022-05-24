@@ -9,6 +9,10 @@
 
 export {
   Logger,
+  LoggerExtractError,
+  LoggerFormat,
+  LoggerInfo,
+  LoggerPerformanceEntry,
   LoggerTrackType,
   LoggerTypes,
   LoggerArgs,

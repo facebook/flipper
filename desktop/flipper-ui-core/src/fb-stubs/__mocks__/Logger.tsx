@@ -20,7 +20,7 @@ const instance = {
   debug: jest.fn(),
 };
 
-export function extractError(...data: Array<any>): {
+export function LoggerExtractError(...data: Array<any>): {
   message: string;
   error: Error;
 } {

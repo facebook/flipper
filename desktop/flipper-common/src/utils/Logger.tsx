@@ -8,6 +8,7 @@
  */
 
 import {isTest} from '../utils/isTest';
+import {getErrorFromErrorLike, getStringFromErrorLike} from '../utils/errors';
 
 export type LoggerTypes = 'error' | 'warn' | 'info' | 'debug';
 
@@ -20,6 +21,21 @@ export type LoggerTrackType =
 
 export type LoggerArgs = {
   isTest?: boolean;
+};
+
+export type LoggerInfo = {
+  formatted: Array<any>;
+  namespace: string;
+  type: LoggerTypes;
+  msg: any;
+  time: number;
+};
+
+export type LoggerPerformanceEntry = {
+  startTime: number;
+  name: string;
+  entryType: string;
+  duration: number;
 };
 
 export interface Logger {
@@ -89,4 +105,60 @@ export class NoopLogger implements Logger {
   error(_data: any, _category: string) {}
 
   debug(_data: any, _category: string) {}
+}
+
+export function LoggerExtractError(...data: Array<any>): {
+  message: string;
+  error: Error;
+} {
+  const message = getStringFromErrorLike(data);
+  const error = getErrorFromErrorLike(data) ?? new Error(message);
+  return {
+    message,
+    error,
+  };
+}
+
+export function LoggerFormat(
+  type: LoggerTypes,
+  ...data: Array<any>
+): LoggerInfo {
+  function stringify(value: any) {
+    if (
+      value === undefined ||
+      value === null ||
+      typeof value == 'object' ||
+      typeof value == 'function' ||
+      typeof value == 'symbol'
+    ) {
+      try {
+        return JSON.stringify(value, null, 2);
+      } catch (e) {
+        return JSON.stringify(
+          {
+            error: `Failed to serialise: ${e}`,
+          },
+          null,
+          2,
+        );
+      }
+    }
+    return value;
+  }
+
+  const date = new Date().toISOString();
+  const human = 'flipper';
+  const args = [`[${date}] ${human}`];
+  if (data) {
+    args[0] += ':';
+    data.forEach((e) => args.push(e));
+  }
+  const msg = data.map((e) => stringify(e)).join(' ');
+  return {
+    msg,
+    namespace: 'flipper',
+    time: Date.now(),
+    type,
+    formatted: args,
+  };
 }
