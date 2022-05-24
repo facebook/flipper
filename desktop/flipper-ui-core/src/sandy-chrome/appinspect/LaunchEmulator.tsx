@@ -17,7 +17,12 @@ import {
 } from '@ant-design/icons';
 import {Store} from '../../reducers';
 import {useStore} from '../../utils/useStore';
-import {Layout, renderReactRoot, withTrackingScope} from 'flipper-plugin';
+import {
+  Layout,
+  Spinner,
+  renderReactRoot,
+  withTrackingScope,
+} from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {IOSDeviceParams} from 'flipper-common';
 import {getRenderHostInstance} from '../../RenderHost';
@@ -80,6 +85,9 @@ export const LaunchEmulatorDialog = withTrackingScope(
 
     const [iosEmulators, setIosEmulators] = useState<IOSDeviceParams[]>([]);
     const [androidEmulators, setAndroidEmulators] = useState<string[]>([]);
+    const [waitingForIos, setWaitingForIos] = useState(iosEnabled);
+    const [waitingForAndroid, setWaitingForAndroid] = useState(androidEnabled);
+    const waitingForResults = waitingForIos || waitingForAndroid;
 
     useEffect(() => {
       if (!iosEnabled) {
@@ -88,6 +96,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
       getRenderHostInstance()
         .flipperServer.exec('ios-get-simulators', false)
         .then((emulators) => {
+          setWaitingForIos(false);
           setIosEmulators(
             emulators.filter(
               (device) =>
@@ -108,6 +117,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
       getRenderHostInstance()
         .flipperServer.exec('android-get-emulators')
         .then((emulators) => {
+          setWaitingForAndroid(false);
           setAndroidEmulators(emulators);
         })
         .catch((e) => {
@@ -176,6 +186,15 @@ export const LaunchEmulatorDialog = withTrackingScope(
       )),
     ];
 
+    const loadingSpinner = (
+      <>
+        {waitingForResults && <Spinner />}
+        {!waitingForResults && items.length === 0 && (
+          <Alert message="No emulators available" />
+        )}
+      </>
+    );
+
     return (
       <Modal
         visible
@@ -185,7 +204,8 @@ export const LaunchEmulatorDialog = withTrackingScope(
         footer={null}
         bodyStyle={{maxHeight: 400, height: 400, overflow: 'auto'}}>
         <Layout.Container gap>
-          {items.length ? items : <Alert message="No emulators available" />}
+          {items.length ? items : <></>}
+          {loadingSpinner}
         </Layout.Container>
       </Modal>
     );
