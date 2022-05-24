@@ -47,7 +47,14 @@ test('Can render and launch android apps - no emulators', async () => {
     <div
       class="ant-alert-message"
     >
-      No emulators available
+      No emulators available. 
+      <br />
+      <a
+        class="ant-typography"
+        href="http://fbflipper.com/docs/getting-started/troubleshooting/general/#i-see-no-emulators-available"
+      >
+        Learn more
+      </a>
     </div>
   `);
 });

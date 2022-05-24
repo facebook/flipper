@@ -27,6 +27,7 @@ import {Provider} from 'react-redux';
 import {IOSDeviceParams} from 'flipper-common';
 import {getRenderHostInstance} from '../../RenderHost';
 import SettingsSheet from '../../chrome/SettingsSheet';
+import {Link} from '../../ui';
 
 const COLD_BOOT = 'cold-boot';
 
@@ -190,7 +191,16 @@ export const LaunchEmulatorDialog = withTrackingScope(
       <>
         {waitingForResults && <Spinner />}
         {!waitingForResults && items.length === 0 && (
-          <Alert message="No emulators available" />
+          <Alert
+            message={
+              <>
+                No emulators available. <br />
+                <Link href="http://fbflipper.com/docs/getting-started/troubleshooting/general/#i-see-no-emulators-available">
+                  Learn more
+                </Link>
+              </>
+            }
+          />
         )}
       </>
     );
