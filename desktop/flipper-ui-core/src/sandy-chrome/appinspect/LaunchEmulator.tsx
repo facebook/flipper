@@ -21,6 +21,7 @@ import {Layout, renderReactRoot, withTrackingScope} from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {IOSDeviceParams} from 'flipper-common';
 import {getRenderHostInstance} from '../../RenderHost';
+import SettingsSheet from '../../chrome/SettingsSheet';
 
 const COLD_BOOT = 'cold-boot';
 
@@ -36,12 +37,47 @@ function LaunchEmulatorContainer({onClose}: {onClose: () => void}) {
   return <LaunchEmulatorDialog onClose={onClose} />;
 }
 
+function NoSDKsEnabledAlert({onClose}: {onClose: () => void}) {
+  const [showSettings, setShowSettings] = useState(false);
+  const footer = (
+    <>
+      <Button onClick={onClose}>Close</Button>
+      <Button type="primary" onClick={() => setShowSettings(true)}>
+        Open Settings
+      </Button>
+    </>
+  );
+  return (
+    <>
+      <Modal
+        visible
+        centered
+        onCancel={onClose}
+        title="No Mobile SDKs Enabled"
+        footer={footer}>
+        <Layout.Container gap>
+          <Alert message="You currently have neither Android nor iOS Development support enabled. To use emulators or simulators, you need to enable at least one in the settings." />
+        </Layout.Container>
+      </Modal>
+      {showSettings && (
+        <SettingsSheet
+          platform={
+            getRenderHostInstance().serverConfig.environmentInfo.os.platform
+          }
+          onHide={() => setShowSettings(false)}
+        />
+      )}
+    </>
+  );
+}
+
 export const LaunchEmulatorDialog = withTrackingScope(
   function LaunchEmulatorDialog({onClose}: {onClose: () => void}) {
     const iosEnabled = useStore((state) => state.settingsState.enableIOS);
     const androidEnabled = useStore(
       (state) => state.settingsState.enableAndroid,
     );
+
     const [iosEmulators, setIosEmulators] = useState<IOSDeviceParams[]>([]);
     const [androidEmulators, setAndroidEmulators] = useState<string[]>([]);
 
@@ -78,6 +114,10 @@ export const LaunchEmulatorDialog = withTrackingScope(
           console.warn('Failed to find emulators', e);
         });
     }, [androidEnabled]);
+
+    if (!iosEnabled && !androidEnabled) {
+      return <NoSDKsEnabledAlert onClose={onClose} />;
+    }
 
     const items = [
       ...(androidEmulators.length > 0

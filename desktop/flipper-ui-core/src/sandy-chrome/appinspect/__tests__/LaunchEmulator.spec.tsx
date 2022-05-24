@@ -17,8 +17,16 @@ import {createRootReducer} from '../../../reducers';
 import {sleep} from 'flipper-plugin';
 import {getRenderHostInstance} from '../../../RenderHost';
 
-test('Can render and launch android apps - empty', async () => {
+test('Can render and launch android apps - no emulators', async () => {
   const store = createStore(createRootReducer());
+  store.dispatch({
+    type: 'UPDATE_SETTINGS',
+    payload: {
+      ...store.getState().settingsState,
+      enableAndroid: true,
+      enableIOS: true,
+    },
+  });
 
   const responses: any = {
     'ios-get-simulators': [],
@@ -40,6 +48,43 @@ test('Can render and launch android apps - empty', async () => {
       class="ant-alert-message"
     >
       No emulators available
+    </div>
+  `);
+});
+
+test('Can render and launch android apps - no SDKs', async () => {
+  const store = createStore(createRootReducer());
+  store.dispatch({
+    type: 'UPDATE_SETTINGS',
+    payload: {
+      ...store.getState().settingsState,
+      enableAndroid: false,
+      enableIOS: false,
+    },
+  });
+
+  const responses: any = {
+    'ios-get-simulators': [],
+    'android-get-emulators': [],
+  };
+  getRenderHostInstance().flipperServer.exec = async function (cmd: any) {
+    return responses[cmd];
+  } as any;
+  const onClose = jest.fn();
+
+  const renderer = render(
+    <Provider store={store}>
+      <LaunchEmulatorDialog onClose={onClose} />
+    </Provider>,
+  );
+
+  expect(await renderer.findByText(/No Mobile SDKs Enabled/))
+    .toMatchInlineSnapshot(`
+    <div
+      class="ant-modal-title"
+      id="rcDialogTitle1"
+    >
+      No Mobile SDKs Enabled
     </div>
   `);
 });
