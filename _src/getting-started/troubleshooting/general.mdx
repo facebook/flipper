@@ -41,3 +41,13 @@ The following devices are known to be incompatible or face issues with Flipper:
 
 * Some Samsung devices ([Tracking Issue](https://github.com/facebook/flipper/issues/92)).
 * Genymotion emulators on Android 8+ are reported to have issues.
+
+## I see "No emulators available"
+
+For **Android**, you first need to set up Android Virtual Devices, called AVDs. You
+can do this in Android Studio using the [Virtual Device Manager](https://developer.android.com/studio/run/managing-avds).
+
+For **iOS**, after installing Xcode, you should have a default set of simulators set up. However,
+it is possible to delete them and there is no easy way to restore them afterwards. You can use
+[a script like this one](https://gist.github.com/dynamicguy/e8756a9f0f50af86d6e746d4b1ab6a09) to
+recreate the default set.
