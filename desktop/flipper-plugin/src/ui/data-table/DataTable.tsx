@@ -339,11 +339,21 @@ export function DataTable<T extends object>(
   });
   useEffect(
     function updateFilter() {
-      debouncedSetFilter(
-        tableState.searchValue,
-        tableState.useRegex,
-        tableState.columns,
-      );
+      if (!dataSource.view.isFiltered) {
+        dataSource.view.setFilter(
+          computeDataTableFilter(
+            tableState.searchValue,
+            tableState.useRegex,
+            tableState.columns,
+          ),
+        );
+      } else {
+        debouncedSetFilter(
+          tableState.searchValue,
+          tableState.useRegex,
+          tableState.columns,
+        );
+      }
     },
     // Important dep optimization: we don't want to recalc filters if just the width or visibility changes!
     // We pass entire state.columns to computeDataTableFilter, but only changes in the filter are a valid cause to compute a new filter function
