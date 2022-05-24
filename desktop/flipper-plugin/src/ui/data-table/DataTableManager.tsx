@@ -51,6 +51,8 @@ type Action<Name extends string, Args = {}> = {type: Name} & Args;
 type DataManagerActions<T> =
   /** Reset the current table preferences, including column widths an visibility, back to the default */
   | Action<'reset'>
+  /** Disable the current column filters */
+  | Action<'resetFilters'>
   /** Resizes the column with the given key to the given width */
   | Action<'resizeColumn', {column: keyof T; width: number | Percentage}>
   /** Sort by the given column. This toggles statefully between ascending, descending, none (insertion order of the data source) */
@@ -140,6 +142,13 @@ export const dataTableManagerReducer = produce<
       draft.sorting = undefined;
       draft.searchValue = '';
       draft.selection = castDraft(emptySelection);
+      break;
+    }
+    case 'resetFilters': {
+      draft.columns.forEach((c) =>
+        c.filters?.forEach((f) => (f.enabled = false)),
+      );
+      draft.searchValue = '';
       break;
     }
     case 'resizeColumn': {
@@ -288,6 +297,7 @@ export const dataTableManagerReducer = produce<
  */
 export type DataTableManager<T> = {
   reset(): void;
+  resetFilters(): void;
   selectItem(
     index: number | ((currentSelection: number) => number),
     addToSelection?: boolean,
@@ -318,6 +328,9 @@ export function createDataTableManager<T>(
   return {
     reset() {
       dispatch({type: 'reset'});
+    },
+    resetFilters() {
+      dispatch({type: 'resetFilters'});
     },
     selectItem(index: number, addToSelection = false, allowUnselect = false) {
       dispatch({

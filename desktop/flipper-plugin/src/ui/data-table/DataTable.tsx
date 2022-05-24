@@ -534,8 +534,9 @@ export function DataTable<T extends object>(
 
   const emptyRenderer =
     props.onRenderEmpty === undefined
-      ? props.onRenderEmpty
+      ? createDefaultEmptyRenderer(tableManager)
       : props.onRenderEmpty;
+
   let mainSection: JSX.Element;
   if (props.scrollable) {
     const dataSourceRenderer = (
@@ -620,7 +621,7 @@ DataTable.defaultProps = {
   enableMultiSelect: true,
   enableContextMenu: true,
   enablePersistSettings: true,
-  onRenderEmpty: emptyRenderer,
+  onRenderEmpty: undefined,
 } as Partial<DataTableProps<any>>;
 
 /* eslint-disable react-hooks/rules-of-hooks */
@@ -662,16 +663,27 @@ function syncRecordsToDataSource<T>(
   }
 }
 
-function emptyRenderer(dataSource: DataSource<any>) {
-  return <EmptyTable dataSource={dataSource} />;
+function createDefaultEmptyRenderer<T>(dataTableManager?: DataTableManager<T>) {
+  return (dataSource?: DataSource<T, T[keyof T]>) => (
+    <EmptyTable dataSource={dataSource} dataManager={dataTableManager} />
+  );
 }
 
-function EmptyTable({dataSource}: {dataSource: DataSource<any>}) {
+function EmptyTable<T>({
+  dataSource,
+  dataManager,
+}: {
+  dataSource?: DataSource<T, T[keyof T]>;
+  dataManager?: DataTableManager<T>;
+}) {
+  const resetFilters = useCallback(() => {
+    dataManager?.resetFilters();
+  }, [dataManager]);
   return (
     <Layout.Container
       center
       style={{width: '100%', padding: 40, color: theme.textColorSecondary}}>
-      {dataSource.size === 0 ? (
+      {dataSource?.size === 0 ? (
         <>
           <CoffeeOutlined style={{fontSize: '2em', margin: 8}} />
           <Typography.Text type="secondary">No records yet</Typography.Text>
@@ -680,7 +692,12 @@ function EmptyTable({dataSource}: {dataSource: DataSource<any>}) {
         <>
           <SearchOutlined style={{fontSize: '2em', margin: 8}} />
           <Typography.Text type="secondary">
-            No records match the current search / filter criteria
+            No records match the current search / filter criteria.
+          </Typography.Text>
+          <Typography.Text>
+            <Typography.Link onClick={resetFilters}>
+              Reset filters
+            </Typography.Link>
           </Typography.Text>
         </>
       )}

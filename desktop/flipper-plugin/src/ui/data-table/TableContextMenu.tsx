@@ -161,6 +161,13 @@ export function tableContextMenuFactory<T>(
         ))}
       </SubMenu>
       <Menu.Item
+        key="resetFilters"
+        onClick={() => {
+          dispatch({type: 'resetFilters'});
+        }}>
+        Reset filters
+      </Menu.Item>
+      <Menu.Item
         key="reset"
         onClick={() => {
           dispatch({type: 'reset'});
