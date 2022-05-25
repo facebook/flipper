@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <folly/io/async/EventBase.h>
 #include <map>
+#include "FlipperScheduler.h"
 
 namespace facebook {
 namespace flipper {
@@ -30,14 +30,14 @@ struct FlipperInitConfig {
   DeviceData deviceData;
 
   /**
-  EventBase on which client callbacks should be called.
+  Scheduler on which client callbacks should be called.
   */
-  folly::EventBase* callbackWorker;
+  Scheduler* callbackWorker;
 
   /**
-  EventBase to be used to maintain the network connection.
+  Scheduler to be used to maintain the network connection.
   */
-  folly::EventBase* connectionWorker;
+  Scheduler* connectionWorker;
 
   int insecurePort = 9089;
   int securePort = 9088;

@@ -6,10 +6,11 @@
  */
 
 #include <Flipper/FlipperConnectionManagerImpl.h>
+#include <Flipper/FlipperFollyScheduler.h>
 #include <FlipperTestLib/ConnectionContextStoreMock.h>
 #include <folly/Singleton.h>
-
 #include <gtest/gtest.h>
+#include <memory>
 
 namespace facebook {
 namespace flipper {
@@ -21,12 +22,16 @@ class FlipperConnectionManagerImplTerminationTest : public ::testing::Test {
  protected:
   std::shared_ptr<FlipperState> state;
   std::shared_ptr<ConnectionContextStore> contextStore;
+  std::unique_ptr<Scheduler> sonarScheduler;
+  std::unique_ptr<Scheduler> connectionScheduler;
   void SetUp() override {
     // Folly singletons must be registered before they are used.
     // Without this, test fails in phabricator.
     folly::SingletonVault::singleton()->registrationComplete();
     state = std::make_shared<FlipperState>();
     contextStore = std::make_shared<ConnectionContextStoreMock>();
+    sonarScheduler = std::make_unique<FollyScheduler>(new EventBase());
+    connectionScheduler = std::make_unique<FollyScheduler>(new EventBase());
   }
 };
 
@@ -35,7 +40,7 @@ TEST_F(
     testNullEventBaseGetsRejected) {
   try {
     auto instance = std::make_shared<FlipperConnectionManagerImpl>(
-        FlipperInitConfig{DeviceData{}, nullptr, new EventBase()},
+        FlipperInitConfig{DeviceData{}, nullptr, connectionScheduler.get()},
         state,
         contextStore);
     FAIL();
@@ -44,7 +49,7 @@ TEST_F(
   }
   try {
     auto instance = std::make_shared<FlipperConnectionManagerImpl>(
-        FlipperInitConfig{DeviceData{}, new EventBase(), nullptr},
+        FlipperInitConfig{DeviceData{}, sonarScheduler.get(), nullptr},
         state,
         contextStore);
     FAIL();
@@ -56,8 +61,8 @@ TEST_F(
 TEST_F(
     FlipperConnectionManagerImplTerminationTest,
     testNonStartedEventBaseDoesntHang) {
-  auto config =
-      FlipperInitConfig{DeviceData{}, new EventBase(), new EventBase()};
+  auto config = FlipperInitConfig{
+      DeviceData{}, sonarScheduler.get(), connectionScheduler.get()};
   auto instance = std::make_shared<FlipperConnectionManagerImpl>(
       config, state, contextStore);
   instance->start();
@@ -72,8 +77,11 @@ TEST_F(
       std::thread([flipperEventBase]() { flipperEventBase->loopForever(); });
   auto connectionThread = std::thread(
       [connectionEventBase]() { connectionEventBase->loopForever(); });
-  auto config =
-      FlipperInitConfig{DeviceData{}, flipperEventBase, connectionEventBase};
+  auto localSonarScheduler = std::make_unique<FollyScheduler>(flipperEventBase);
+  auto localConnectionScheduler =
+      std::make_unique<FollyScheduler>(connectionEventBase);
+  auto config = FlipperInitConfig{
+      DeviceData{}, localSonarScheduler.get(), localConnectionScheduler.get()};
   auto instance = std::make_shared<FlipperConnectionManagerImpl>(
       config, state, contextStore);
 
