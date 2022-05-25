@@ -1,3 +1,12 @@
+# 0.147.0 (25/5/2022)
+
+ * [D36600535](https://github.com/facebook/flipper/search?q=D36600535&type=Commits)
+ * [D36602929](https://github.com/facebook/flipper/search?q=D36602929&type=Commits)
+ * [D36596972](https://github.com/facebook/flipper/search?q=D36596972&type=Commits) -  Show alert in Launch Emulator dialogue if no SDKs are enabled
+ * [D36598855](https://github.com/facebook/flipper/search?q=D36598855&type=Commits) -  Loading state for emulator launch dialogue
+ * [D36599925](https://github.com/facebook/flipper/search?q=D36599925&type=Commits) -  Add link to troubleshooting page when no emulators are available.
+
+
 # 0.146.1 (20/5/2022)
 
  * [D36513795](https://github.com/facebook/flipper/search?q=D36513795&type=Commits) -  Refactor tic-tac-toe plugin to Sandy architecture
