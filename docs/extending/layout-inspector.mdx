@@ -1,32 +1,29 @@
 ---
 id: layout-inspector
-title: Extending Layout Inspector
+title: Extending the Layout Inspector
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 The Layout Inspector plugin can be extended to support new kinds of UI components. You can also extend it to customize the data made available in the sidebar.
-Depending on whether you want to expose new data on Android or iOS, there are different interfaces you can use.
+Depending on whether or not you want to expose new data on Android or iOS, there are different interfaces you can use.
+
+The following screenshot shows the Layout Inspector in action.
 
 <img alt="Layout Inspector" src={useBaseUrl("img/layoutinspector.png")} />
 
 ## Android
 
-### Node Descriptor
-To expose an object to the Layout Inspector in Flipper you have to implement a `NodeDescriptor` which describes your object. For example the `ViewDescriptor` describes `View` objects and the `FragmentDescriptor` describe `Fragment` instances. These descriptors have a set of callbacks used to expose children and data associated with the object they describe. See [`NodeDescriptor`](https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/android/src/main/java/com/facebook/flipper/plugins/inspector/NodeDescriptor.java) for the full API.
+### NodeDescriptor
 
-`NodeDescriptor` implementations should not subclass other `NodeDescriptor` implementations. Instead to re-use existing behavior from a more generic descriptor, you should prefer to use delegate.
+To expose an object to the Layout Inspector in Flipper, you have to implement a `NodeDescriptor` that describes your object. For example, the `ViewDescriptor` describes `View` objects and the `FragmentDescriptor` describe `Fragment` instances. These descriptors have a set of callbacks used to expose children and data associated with the object they describe.
 
-**Don't**
+For the full API, see See [NodeDescriptor.java](https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/android/src/main/java/com/facebook/flipper/plugins/inspector/NodeDescriptor.java) in GitHub.
 
-```java
-class ViewGroupDescriptor extends ViewDescriptor<ViewGroup> {
-  public String getName(ViewGroup node) {
-    return super.getName(node);
-  }
-}
-```
+`NodeDescriptor` implementations should not subclass other `NodeDescriptor` implementations. Instead, re-use existing behavior from a more generic descriptor, it's best to use a delegate.
 
-**Do**
+Following are code snippets that illustrate [how to use](#how-to-use-the-nodedescriptor-on-android) and [how not to use](#how-not-to-use-the-nodedescriptor-on-android) the NodeDescriptor on Android.
+
+### How to use the NodeDescriptor on Android
 
 ```java
 class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
@@ -37,9 +34,19 @@ class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
 }
 ```
 
-### Register a Descriptor
+### How not to use the NodeDescriptor on Android
 
-Register your descriptor in the `DescriptorMapping` used to instantiate the `InspectorFlipperPlugin`.
+```java
+class ViewGroupDescriptor extends ViewDescriptor<ViewGroup> {
+  public String getName(ViewGroup node) {
+    return super.getName(node);
+  }
+}
+```
+
+### Register a descriptor
+
+Register your descriptor in the `DescriptorMapping` used to instantiate the `InspectorFlipperPlugin`:
 
 ```java
 final FlipperClient client = FlipperClient.createInstance(mContext);
@@ -48,37 +55,23 @@ descriptorMapping.register(MyObject.class, new MyObjectDescriptor());
 client.addPlugin(new InspectorFlipperPlugin(mContext, descriptorMapping));
 ```
 
-### Extending an existing Descriptor
+### Extending an existing descriptor
 
-You may not need to create a whole new descriptor but instead you may just want to change extend an existing one to expose some new piece of data. In that case just locate the correct descriptor and edit its `getData`, `getAttributes` and perhaps `setData` methods.
+You may not need to create a whole new descriptor. Instead, you may just want to change extend an existing one to expose some new piece of data. In such a case, just locate the correct descriptor and edit its `getData`, `getAttributes`, and perhaps `setData` methods.
 
 ## iOS
 
 ### SKNodeDescriptor
 
-To expose an object to the layout inspector in Sonar you have to implement a `SKNodeDescriptor` which describes the object. For example `SKViewDescriptor` describes `UIView` objects, and the `SKComponentDescriptor` describes `CKComponent` objects. These descriptors have necessary callbacks which is used to expose its children and data associated with the object they describe. See [SKNodeDescriptor](https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNodeDescriptor.h) for the full available API.
+To expose an object to the layout inspector in Sonar, you have to implement a `SKNodeDescriptor` that describes the object. For example, `SKViewDescriptor` describes `UIView` objects, and the `SKComponentDescriptor` describes `CKComponent` objects. These descriptors have necessary callbacks that are used to expose its children and data associated with the object they describe.
 
-`SKNodeDescriptor` implementations should **never** be subclass other `SKNodeDescriptor` implementations. Instead re-use existing behaviour by explicitly using other descriptors and delegate behaviour.
+For the full available API, see [SKNodeDescriptor.h](https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNodeDescriptor.h) in GitHub.
 
-**Don't**
+`SKNodeDescriptor` implementations should **never** be subclass other `SKNodeDescriptor` implementations. Instead, re-use existing behaviour by explicitly using other descriptors and delegate behaviour.
 
-```objectivec
-@interface SKArbitraryViewDescriptor : SKViewDescriptor<ArbitraryView *>
+Following are code snippets that illustrate [how to use](#how-to-use-the-sknodedescriptor-on-ios) and [how not to use](#how-not-to-use-the-sknodedescriptor-on-ios) the SKNodeDescriptor on iOS.
 
-@end
-
-@implementation SKArbitraryViewDescriptor
-
-- (NSString *)identifierForNode:(ArbitraryView *)node
-{
-  return [super identifierForNode:node];
-}
-
-@end
-```
-
-
-**Do**
+### How to use the SKNodeDescriptor on iOS
 
 ```objectivec
 @interface SKArbitraryViewDescriptor : SKNodeDescriptor<ArbitraryView *>
@@ -95,9 +88,26 @@ To expose an object to the layout inspector in Sonar you have to implement a `SK
 @end
 ```
 
+### How not to use the SKNodeDescriptor on iOS
+
+```objectivec
+@interface SKArbitraryViewDescriptor : SKViewDescriptor<ArbitraryView *>
+
+@end
+
+@implementation SKArbitraryViewDescriptor
+
+- (NSString *)identifierForNode:(ArbitraryView *)node
+{
+  return [super identifierForNode:node];
+}
+
+@end
+```
+
 ### Register a Descriptor
 
-In order to register your descriptor for an object, you use `SKDescriptorMapper`. After registering all descriptors you pass on the descriptor-mapper object to the plugin during initialisation.
+In order to register your descriptor for an object, use `SKDescriptorMapper`. After registering all descriptors, pass on the descriptor-mapper object to the plugin during initialisation:
 
 ```objectivec
 [descriptorMapper registerDescriptor:[SKArbitraryViewDescriptor new]
@@ -105,18 +115,15 @@ In order to register your descriptor for an object, you use `SKDescriptorMapper`
 
 ```
 
-There's already a set of descriptors registered by default in
-`SKDescriptorMapper`, and if you want to add a descriptor to the default set
-you can do it in [`SKDescriptorMapper`](https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKDescriptorMapper.mm).
+There's already a set of descriptors registered by default in `SKDescriptorMapper`. If you want to add a descriptor to the default set, you can do it in the [SKDescriptorMapper](https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKDescriptorMapper.mm).
 
 ### Extending an existing Descriptor
 
-Sometimes all you need is to extend the functionality of an existing descriptor. In that case you just need to locate the correct descriptor and edit the methods `dataForNode`, `attributesForNode`, and possibly `dataMutationsForNode`.
-
+Sometimes, all you need is to extend the functionality of an existing descriptor. In such as case, you just need to locate the correct descriptor and edit the methods `dataForNode`, `attributesForNode`, and possibly `dataMutationsForNode`.
 
 ### Subdescriptors
 
-If you want to extend the `SKComponentKitLayoutDescriptor` and add an additional section based on the nodes of the `SKComponentLayoutDescriptor`, you can use `SKSubDescriptor`.
+If you want to extend the `SKComponentKitLayoutDescriptor` and add an additional section based on the nodes of the `SKComponentLayoutDescriptor`, you can use `SKSubDescriptor`:
 
 ```objectivec
 #import <FlipperKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h>
