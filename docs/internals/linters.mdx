@@ -4,23 +4,21 @@ title: Linters
 sidebar_label: Linters
 ---
 
-Flipper Desktop comes with a variety of ESLint checks pre-enabled. This allows us
-to enforce sustainable coding practices and skip over discussions in code reviews.
+Flipper Desktop comes with a variety of ESLint checks pre-enabled. This enables us to enforce sustainable coding practices and skip over discussions in code reviews.
 
 ## Specific Linters
 
-A short and incomplete list of unusual linters we deploy, why we do it and how to fix them.
+This section contains an incomplete list of unusual linters we deploy, why we use them, and how to fix them (where relevant).
 
 ### `promise/no-nesting`
 
-- **Summary:** Avoid nested then() or catch() statements. [More details.](https://github.com/xjamundx/eslint-plugin-promise/blob/development/docs/rules/no-nesting.md)
-- **Why:** Nested promise chains can be difficult to read and reason about. Often, you can
-    achieve the same by either returning the promise and handling them on a higher level
-    or converting them to an async function.
+- **Summary**  - avoid nested then() or catch() statements. For more details, see [no-nesting.md](https://github.com/xjamundx/eslint-plugin-promise/blob/development/docs/rules/no-nesting.md) on GitHub.
+- **Why** - nested promise chains can be difficult to read and understand. Often, you can achieve the same result by either returning the promise and handling them on a higher level or converting them to an async function.
 
-**Example**
+#### Example
 
 *Before*
+
 ```js
 private pushFileToiOSDevice(
   udid: string,
@@ -67,18 +65,17 @@ async pushFileToiOSDevice(
 }
 ```
 
-In addition to less indentation, you also maintain the promise chain
-here, meaning that you can handle potential errors on the call-side.
+In addition to less indentation, you also maintain the promise chain here, meaning that you can handle potential errors on the call-side.
 
 ### `flipper/no-console-error-without-context`
 
-- **Summary:** Avoid "Naked" console.error calls. Prefer `console.error("Failed to connect open iOS connection socket", e)` to `console.error(e)`.
-- **Why:** We create error tasks internally for every `console.error` call. It can be hard
-    to find the origin of the error without context.
+- **Summary** - avoid 'naked' console.error calls. Prefer `console.error("Failed to connect open iOS connection socket", e)` to `console.error(e)`.
+- **Why** - we create error tasks internally for every `console.error` call. It can be hard to find the origin of the error without context.
 
-**Example**
+#### Example
 
 *Before*
+
 ```js
 try {
     // ...
@@ -99,19 +96,13 @@ try {
 
 ### `promise/catch-or-return`
 
-- **Summary:** Ensure that each time a `then()` is applied to a promise, a
-    `catch()` is applied as well. Exceptions are made if you are returning that
-    promise. [More
-    details.](https://github.com/xjamundx/eslint-plugin-promise/blob/development/docs/rules/catch-or-return.md)
-- **Why:** Unhandled exceptions have no stack trace and will just show up as
-    "Unhandled promise rejection", making them very hard to triage and reproduce. By
-    always ensuring that promises are returned (ensuring they are a chain) or
-    explicitly catching errors, we can improve the user experience by acting more
-    quickly on errors.
+- **Summary** - ensure that each time a `then()` is applied to a promise, a `catch()` is applied as well. Exceptions are made if you are returning that promise. For more details, see [catch-or-return.md](https://github.com/xjamundx/eslint-plugin-promise/blob/development/docs/rules/catch-or-return.md) on GitHub.
+- **Why:** Unhandled exceptions have no stack trace and will just show up as "Unhandled promise rejection", making them very hard to triage and reproduce. By always ensuring that promises are returned (ensuring they are a chain) or explicitly catching errors, we can improve the user experience by acting more quickly on errors.
 
-**Example**
+#### Example
 
 *Before*
+
 ```js
 function request() {
     // If fetch() fails, the exception will bubble to the top.
@@ -122,6 +113,7 @@ function request() {
 ```
 
 *After*
+
 ```js
 // Option 1
 function request() {
@@ -143,12 +135,13 @@ function request() {
 
 ### `communist-spelling/communist-spelling`
 
-- **Summary**: We try to avoid using British spellings for identifiers.
-- **Why**: This is clearly controversial, but it's very inconvenient when you have to
-    bridge American and British APIs. `const greyColour = COLORS.GRAY;` is something
-    nobody should have to read or write.
+- **Summary** - we try to avoid using British spellings for identifiers.
+- **Why** - this is clearly controversial, but it's very inconvenient when you have to bridge American and British APIs. `const greyColour = COLORS.GRAY;` is something nobody should have to read or write.
+
+#### Example
 
 *Before*
+
 ```js
 const GreyedOutOverlay = initialiseComponent();
 ```
@@ -161,12 +154,14 @@ const GrayedOutOverlay = initializeComponent();
 
 ### `no-restricted-properties`
 
-- **Summary**: Why try to avoid using `electron.remote` directly.
-- **Why**: Using [`electron.remote`](https://nornagon.medium.com/electrons-remote-module-considered-harmful-70d69500f31) is considered harmful.
-    Not only is accessing it slow, but it also makes it harder to abstract away from Electron which we're planning to do.
-- **How to fix it**: For now, the best way is to use utilities whereever possible which cache the access. This is not always possible. Adding ignores for legitimate accesses is fine.
+- **Summary** - try to avoid using `electron.remote` directly.
+- **Why** - using [electron.remote](https://nornagon.medium.com/electrons-remote-module-considered-harmful-70d69500f31) is considered harmful. Not only is accessing it slow but it also makes it harder to abstract away from Electron, which we're planning to do.
+- **How to fix it** - for now, the best way is to use utilities, wherever possible, which cache to access. This is not always possible. Adding ignores for legitimate accesses is fine.
+
+#### Example
 
 *Before*
+
 ```js
 import electron from 'electron';
 const portforwardingClient =
@@ -195,13 +190,12 @@ const portforwardingClient = getStaticPath(
 
 ### `node/no-sync`
 
-- **Summary**: Use asynchronous methods whereever possible. [More details.](https://github.com/mysticatea/eslint-plugin-node/blob/master/docs/rules/no-sync.md)
-- **Why**: Synchronous method calls block the event loop. Even innocous calls like `fs.existsSync()` can cause
-    frame drops for users or even long stalls.
-- **How to fix it**: We have `fs-extra` as a dependency, which provides Promise-based alternatives for all `fs` functions.
-    Most often, replacing a sync call with an async call and adding an `await` is all that's needed.
+- **Summary**: Use asynchronous methods wherever possible. [More details.](https://github.com/mysticatea/eslint-plugin-node/blob/master/docs/rules/no-sync.md)
+- **Why**: Synchronous method calls block the event loop. Even innocuous calls like `fs.existsSync()` can cause frame drops for users or even long stalls.
+- **How to fix it**: We have `fs-extra` as a dependency, which provides Promise-based alternatives for all `fs` functions. Most often, replacing a sync call with an async call and adding an `await` is all that's needed.
 
 *Before*
+
 ```js
 import fs from 'fs';
 function ensureCertsExist() {
