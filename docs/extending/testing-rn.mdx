@@ -5,22 +5,17 @@ sidebar_label: Testing RN Changes
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-When making changes to the React Native integration, it can be helpful to
-test them directly in the [sample
-app](https://github.com/facebook/flipper/tree/main/react-native/ReactNativeFlipperExample)
-we provide in the repository. However, the app is building against a production release
-of Flipper and not the version checked in in the repository.
+When making changes to the React Native integration, it can be helpful to test them directly in the [ReactNativeFlipperExample](https://github.com/facebook/flipper/tree/main/react-native/ReactNativeFlipperExample) we provide in the repository. However, the app builds against a production release of Flipper and not the version checked in in the repository.
 
-In order to test against the changes you have made, you need to publish a Flipper
-release locally.
+In order to test against the changes you have made, you need to publish a Flipper release locally.
 
 ## Publishing a Local Release
 
-First, create a unique version number. This step is optional but is helpful
-to prevent accidentally testing against the wrong version.
+First, create a unique version number. This step is optional but is helpful to prevent accidentally testing against the wrong version.
 
 In the top-level `gradle.properties`, change the version:
-```
+
+```bash
 ...
 # POM publishing constants
 VERSION_NAME=0.44.99-SNAPSHOT # Change this one.
@@ -28,16 +23,14 @@ GROUP=com.facebook.flipper
 ...
 ```
 
-Now, run `./gradlew installArchives -PRELEASE_SIGNING_ENABLED=false` in the root of the repository. This will
-place the artifact files in your local `~/.m2/repository` folder.
+Now, run `./gradlew installArchives -PRELEASE_SIGNING_ENABLED=false` in the root of the repository. This will place the artifact files in your local `~/.m2/repository` folder.
 
 ## Using the new Release
 
-Usually, you need to change your project to also pick up files in `mavenLocal()`.
-As this is already done, you can directly change the `FLIPPER_VERSION` to the previously used identifier
+Usually, you need to change your project to also pick up files in `mavenLocal()`. As this is already done, you can directly change the `FLIPPER_VERSION` to the previously used identifier
 in `react-native/ReactNativeFlipperExample/android/gradle.properties`:
 
-```
+```bash
 # Version of flipper SDK to use with React Native
 FLIPPER_VERSION=0.30.2
 FLIPPER_VERSION=0.44.99-SNAPSHOT
