@@ -15,3 +15,4 @@ export * from './globalObject';
 export * from './plugins';
 export * from './flipperLibImplementation';
 export * from './client/FlipperServerClient';
+export * from './utils/tail';
