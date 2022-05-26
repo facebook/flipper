@@ -5,42 +5,37 @@ sidebar_label: Device Identifiers
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-Flipper is capable of discovering and listing available devices for multiple platforms. 
-On itself, it allows users to check for connected devices and quickly use a number of plugins:
+Flipper is capable of discovering and listing available devices for multiple platforms. It enables users to check for connected devices and quickly access a number of plugins:
+
 - Logs
 - Mobile Builds
 - Crash Reporter
 
-Device information, including identifiers, are obtained using either `idb list-targets --json` on iOS or 
-`adb devices` on Android.  
+Device information, including identifiers, is obtained using either `idb list-targets --json` on iOS or `adb devices` on Android.
 
 On Flipper Desktop, apps are shown alongside the device it's running on.
 
-It seems a trivial problem to solve. Unfortunately, this is not the case.
-On the client side, obtaining the device identifier is a problem.
+Unfortunately, on the client side, obtaining the device identifier is a problem.
 
-### How does Flipper map connecting apps to their respective devices?
+## How does Flipper map connecting apps to their respective devices?
 
-Over the years, both Apple and Google have locked down their APIs so that apps can't find any value that 
-could be considered unique like a MAC address, serial numbers, etc., for privacy reasons. This means there's no OS API available.   
+Over the years, for security reasons, both Apple and Google have locked down their APIs so that apps can't find any value that could be considered unique such as a MAC address or serial numbers. This means there's no OS API available.
 
+To obtain this device identifier, a two-way approached had to be used.
 
-So, to obtain this device identifier, a two-way approached had to be used.
+### Obtaining the device identifier
 
-From the Flipper Desktop side, connected devices are discovered and listed using idb or adb as mentioned above, and it sees some tcp connections coming in from apps.
+From the Flipper Desktop side, connected devices are discovered and listed using idb or adb as mentioned above, by which it sees some TCP connections coming in from apps.
 It is during the certificate exchange process that we do the mapping from apps to device.
 
-In this process, an app creates and sends a CSR to Flipper Desktop alongside some other data 
-including the path in the application sandbox where this CSR was originally written. 
+In this process, an app creates and sends a Certificate Signing Request (CSR) to Flipper Desktop alongside some other data including the path in the application sandbox where this CSR was originally written.
 
-When Flipper Desktop is processing the request, it effectively lists all possible connected devices and proceeds
-to try and pull the CSR from each device. The CSR is then compared with the one sent by the client. If there's a match, 
-we have successfuly made the pairing and the device identifier is sent back to the client.
+When Flipper Desktop is processing the request, it effectively lists all possible connected devices and proceeds to try and pull the CSR from each device. The CSR is then compared with the one sent by the client. If there's a match, we have successfully made the pairing and the device identifier is sent back to the client.
 
-The client receives the device identifier and uses this information for subsequent secure tcp connections.
+The client receives the device identifier and uses this information for subsequent secure TCP connections.
 
-When a secure tcp connection is established, the device identifier is passed along and thus Flipper is able to map the connecting app to its running device.
+When a secure TCP connection is established, the device identifier is passed along and thus Flipper is able to map the connecting app to its running device.
 
-The diagram below depicts this process.
+The following diagram depicts this process.
 
 ![Device Identifier Sequence](/img/sequence_device_id.png)
