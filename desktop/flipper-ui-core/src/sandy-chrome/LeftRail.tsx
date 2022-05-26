@@ -68,6 +68,7 @@ import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
 import {getRenderHostInstance} from '../RenderHost';
 import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
+import {StyleGuide} from './StyleGuide';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -216,10 +217,6 @@ const submenu = css`
   }
 `;
 
-const MenuDividerPadded = styled(Menu.Divider)({
-  marginBottom: '8px !important',
-});
-
 function ExtrasMenu() {
   const store = useStore();
 
@@ -280,14 +277,24 @@ function ExtrasMenu() {
                 Export shareable link
               </Menu.Item>
             ) : null}
-            <Menu.Item
-              key="triggerDeeplink"
-              onClick={() => openDeeplinkDialog(store)}>
-              Trigger deeplink
-            </Menu.Item>
+            <Menu.Divider />
+            <SubMenu title="Plugin developers">
+              <Menu.Item
+                key="styleguide"
+                onClick={() => {
+                  store.dispatch(setStaticView(StyleGuide));
+                }}>
+                Flipper Style Guide
+              </Menu.Item>
+              <Menu.Item
+                key="triggerDeeplink"
+                onClick={() => openDeeplinkDialog(store)}>
+                Trigger deeplink
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Divider />
             {config.isFBBuild ? (
               <>
-                <MenuDividerPadded />
                 <Menu.Item
                   key="feedback"
                   onClick={() => {
@@ -307,11 +314,9 @@ function ExtrasMenu() {
                 </Menu.Item>
               </>
             ) : null}
-            <MenuDividerPadded />
             <Menu.Item key="settings" onClick={() => setShowSettings(true)}>
               Settings
             </Menu.Item>
-            <Menu.Divider />
             <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
               Help
             </Menu.Item>
