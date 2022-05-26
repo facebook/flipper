@@ -77,6 +77,16 @@ const demos: PreviewProps[] = [
     title: 'Layout.Container',
     description: `Layout.Container can be used to organize the UI in regions. It takes care of paddings and borders. Children will be arranged vertically. Use Layout.Horizontal instead for arranging children horizontally. If you need a margin on this component, try to wrap it in other Layout component instead.`,
     props: [
+      [
+        'grow',
+        'boolean (false)',
+        "Should the container use all available size (true), or rather take the size of it's content? (false).",
+      ],
+      [
+        'shrink',
+        'boolean (false)',
+        'Is the container allowed to become smaller than the space the children need? If e.g. text content needs to be ellipsed, this should be set to true',
+      ],
       ['rounded', 'boolean (false)', 'Make the corners rounded'],
       [
         'padv / padh / pad',
