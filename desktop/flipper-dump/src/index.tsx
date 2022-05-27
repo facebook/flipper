@@ -85,7 +85,7 @@ async function start(deviceQuery: string, appName: string, pluginId: string) {
     console.debug = () => {};
     console.info = console.error;
 
-    const environmentInfo = await getEnvironmentInfo(staticPath, false);
+    const environmentInfo = await getEnvironmentInfo(staticPath, false, true);
     // TODO: initialise FB user manager to be able to do certificate exchange
 
     const server = new FlipperServerImpl(

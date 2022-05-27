@@ -51,7 +51,11 @@ async function getEmbeddedFlipperServer(
   const staticPath = getStaticDir();
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
   const env = process.env;
-  const environmentInfo = await getEnvironmentInfo(staticPath, isProduction);
+  const environmentInfo = await getEnvironmentInfo(
+    staticPath,
+    isProduction,
+    false,
+  );
 
   let keytar: any = undefined;
   try {

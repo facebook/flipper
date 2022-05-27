@@ -101,6 +101,7 @@ function createStubRenderHost(): RenderHost {
       processId: process.pid,
       appVersion: '0.0.0',
       isProduction: false,
+      isHeadlessBuild: false,
       releaseChannel: ReleaseChannel.DEFAULT,
       flipperReleaseRevision: '000',
       os: {
