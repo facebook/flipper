@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -192,10 +193,7 @@ public class FlipperOkhttpInterceptor
     final String method = request.method();
     final PartialRequestInfo partialRequest = new PartialRequestInfo(url, method);
 
-    if (!mMockResponseMap.containsKey(partialRequest)) {
-      return null;
-    }
-    ResponseInfo mockResponse = mMockResponseMap.get(partialRequest);
+    ResponseInfo mockResponse = getMockResponse(partialRequest);
     if (mockResponse == null) {
       return null;
     }
@@ -217,6 +215,17 @@ public class FlipperOkhttpInterceptor
       }
     }
     return builder.build();
+  }
+
+  private ResponseInfo getMockResponse(PartialRequestInfo partialRequestInfo) {
+    for (Map.Entry<PartialRequestInfo, ResponseInfo> entry : mMockResponseMap.entrySet()) {
+      PartialRequestInfo mockRequestInfo = entry.getKey();
+      if (partialRequestInfo.first.contains(mockRequestInfo.first) &&
+              Objects.equals(partialRequestInfo.second, mockRequestInfo.second)) {
+        return entry.getValue();
+      }
+    }
+    return null;
   }
 
   @Nullable
