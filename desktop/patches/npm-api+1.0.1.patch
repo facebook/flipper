@@ -1,0 +1,15 @@
+diff --git a/node_modules/npm-api/lib/registry.js b/node_modules/npm-api/lib/registry.js
+index daca66a..38e0ae9 100644
+--- a/node_modules/npm-api/lib/registry.js
++++ b/node_modules/npm-api/lib/registry.js
+@@ -1,6 +1,9 @@
+ 'use strict';
+ 
+-const fetch = require('node-fetch');
++let fetch = require('node-fetch');
++if (fetch.default) {
++  fetch = fetch.default
++}
+ const utils = require('./utils');
+ const config = require('./config');
+ 
