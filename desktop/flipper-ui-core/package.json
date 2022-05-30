@@ -49,7 +49,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@testing-library/dom": "^8.11.3",
+    "@testing-library/dom": "^8.13.0",
     "@testing-library/react": "^12.1.4",
     "@types/deep-equal": "^1.0.1",
     "@types/lodash.memoize": "^4.1.7",
