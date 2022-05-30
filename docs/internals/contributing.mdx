@@ -1,0 +1,43 @@
+---
+id: contributing
+title: Contributing
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+Some notes about making contributions to the Flipper codebase.
+
+## Changelog Entries
+
+We show a changelog dialog when a new version of Flipper is started for the first time.
+It can also be seem by clicking on the button next to the version number in the welcome screen.
+
+<img alt="The changelog dialog in Flipper" src={useBaseUrl("img/changelog.png")} />
+
+The content is automatically generated during the release process. You should
+always include a changelog entry if there is a user-visible change in your commit.
+
+To contribute a message, include a note in the body of your commit like in example below.
+Please note that unlike other blocks that Phabricator expects (e.g. "Summary" and "Test Plan"),
+the changelog can only be a single line. The spelling is not case-sensitive.
+
+```
+[layout] Add Unicorn support
+
+Summary:
+Finally, the moment we've all been waiting for: Unicorn support!
+
+Changelog: Unicorns can be inspected in the Layout Plugin
+
+Test Plan:
+...
+```
+
+<FbInternalOnly>
+For internal-only changes, prefix your line with `Facebook Changelog:`.
+Entries made this way will only show up in internal builds.
+</FbInternalOnly>
+
+### Implementation
+
+You can find the code for the changelog generation in
+[`desktop/scripts/generate-changelog.js`](https://github.com/facebook/flipper/blob/main/desktop/scripts/generate-changelog.js).

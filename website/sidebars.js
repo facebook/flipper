@@ -140,6 +140,7 @@ module.exports = {
   internals: {
     Internals: [
       'internals/index',
+      'internals/contributing',
       'extending/public-releases',
       'extending/testing-rn',
       'internals/linters',
