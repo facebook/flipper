@@ -50,23 +50,23 @@ test('update and append', async () => {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
-      <div
-        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-      >
-        <div
-          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-          width="50%"
-        >
-          test DataTable
-        </div>
-        <div
-          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-          width="50%"
-        >
-          true
-        </div>
-      </div>
-    `);
+       <div
+         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+       >
+         <div
+           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+           width="50%"
+         >
+           test DataTable
+         </div>
+         <div
+           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+           width="50%"
+         >
+           true
+         </div>
+       </div>
+     `);
   }
 
   act(() => {
@@ -104,23 +104,23 @@ test('column visibility', async () => {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
-      <div
-        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-      >
-        <div
-          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-          width="50%"
-        >
-          test DataTable
-        </div>
-        <div
-          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-          width="50%"
-        >
-          true
-        </div>
-      </div>
-    `);
+       <div
+         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+       >
+         <div
+           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+           width="50%"
+         >
+           test DataTable
+         </div>
+         <div
+           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+           width="50%"
+         >
+           true
+         </div>
+       </div>
+     `);
   }
 
   // hide done
@@ -131,17 +131,17 @@ test('column visibility', async () => {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
     expect(elem[0].parentElement).toMatchInlineSnapshot(`
-      <div
-        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-      >
-        <div
-          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-          width="50%"
-        >
-          test DataTable
-        </div>
-      </div>
-    `);
+       <div
+         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+       >
+         <div
+           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+           width="50%"
+         >
+           test DataTable
+         </div>
+       </div>
+     `);
   }
 
   // reset
@@ -285,15 +285,26 @@ test('search', async () => {
 });
 
 test('compute filters', () => {
+  const levelCol = {key: 'level'};
+  const titleCol = {key: 'title'};
+  const doneCol = {key: 'done'};
+  const baseColumns = [levelCol, titleCol, doneCol];
+
   const coffee = {
     level: 'info',
     title: 'Drink coffee',
     done: true,
+    extras: {
+      comment: 'tasty',
+    },
   };
   const espresso = {
     level: 'info',
     title: 'Make espresso',
     done: false,
+    extras: {
+      comment: 'dull',
+    },
   };
   const meet = {
     level: 'error',
@@ -320,52 +331,64 @@ test('compute filters', () => {
   ).toBeUndefined();
 
   {
-    const filter = computeDataTableFilter('tEsT', false, [])!;
+    const filter = computeDataTableFilter('tEsT', false, baseColumns)!;
     expect(data.filter(filter)).toEqual([]);
   }
 
   {
-    const filter = computeDataTableFilter('EE', false, [])!;
+    const filter = computeDataTableFilter('EE', false, baseColumns)!;
     expect(data.filter(filter)).toEqual([coffee, meet]);
   }
 
   {
-    const filter = computeDataTableFilter('D', false, [])!;
+    const filter = computeDataTableFilter('D', false, baseColumns)!;
+    expect(data.filter(filter)).toEqual([coffee]);
+  }
+
+  const commentCol = {key: 'extras.comment'};
+  {
+    // free search on value tasty in nested column
+    const filter = computeDataTableFilter('tasty', false, [
+      ...baseColumns,
+      commentCol,
+    ])!;
     expect(data.filter(filter)).toEqual([coffee]);
   }
 
   {
     // regex, positive (mind the double escaping of \\b)
-    const filter = computeDataTableFilter('..t', true, [])!;
+    const filter = computeDataTableFilter('..t', true, baseColumns)!;
     expect(data.filter(filter)).toEqual([meet]);
   }
   {
     // regex, words with 6 chars
-    const filter = computeDataTableFilter('\\w{6}', true, [])!;
+    const filter = computeDataTableFilter('\\w{6}', true, baseColumns)!;
     expect(data.filter(filter)).toEqual([coffee, espresso]);
   }
   {
     // no match
-    const filter = computeDataTableFilter('\\w{18}', true, [])!;
+    const filter = computeDataTableFilter('\\w{18}', true, baseColumns)!;
     expect(data.filter(filter)).toEqual([]);
   }
   {
     // invalid regex
-    const filter = computeDataTableFilter('bla/[', true, [])!;
+    const filter = computeDataTableFilter('bla/[', true, baseColumns)!;
     expect(data.filter(filter)).toEqual([]);
   }
   {
-    const filter = computeDataTableFilter('true', false, [])!;
+    const filter = computeDataTableFilter('true', false, baseColumns)!;
     expect(data.filter(filter)).toEqual([coffee]);
   }
 
   {
-    const filter = computeDataTableFilter('false', false, [])!;
+    const filter = computeDataTableFilter('false', false, baseColumns)!;
     expect(data.filter(filter)).toEqual([espresso, meet]);
   }
 
   {
     const filter = computeDataTableFilter('EE', false, [
+      levelCol,
+      titleCol,
       {
         key: 'level',
         filters: [
@@ -381,6 +404,8 @@ test('compute filters', () => {
   }
   {
     const filter = computeDataTableFilter('EE', false, [
+      doneCol,
+      titleCol,
       {
         key: 'level',
         filters: [
@@ -401,6 +426,8 @@ test('compute filters', () => {
   }
   {
     const filter = computeDataTableFilter('', false, [
+      doneCol,
+      titleCol,
       {
         key: 'level',
         filters: [
@@ -421,6 +448,8 @@ test('compute filters', () => {
   }
   {
     const filter = computeDataTableFilter('', false, [
+      levelCol,
+      titleCol,
       {
         key: 'done',
         filters: [
@@ -437,6 +466,8 @@ test('compute filters', () => {
   {
     // nothing selected anything will not filter anything out for that column
     const filter = computeDataTableFilter('', false, [
+      doneCol,
+      titleCol,
       {
         key: 'level',
         filters: [
@@ -455,8 +486,30 @@ test('compute filters', () => {
     ])!;
     expect(filter).toBeUndefined();
   }
+
   {
+    //nested filter on comment
     const filter = computeDataTableFilter('', false, [
+      ...baseColumns,
+      {
+        key: 'extras.comment',
+        filters: [
+          {
+            enabled: true,
+            value: 'dull',
+            label: 'dull',
+          },
+        ],
+      },
+    ])!;
+    expect(data.filter(filter)).toEqual([espresso]);
+  }
+
+  {
+    //filter 'level' on values info and error which will match all records
+    const filter = computeDataTableFilter('', false, [
+      doneCol,
+      titleCol,
       {
         key: 'level',
         filters: [
@@ -477,6 +530,7 @@ test('compute filters', () => {
   }
   {
     const filter = computeDataTableFilter('', false, [
+      titleCol,
       {
         key: 'level',
         filters: [
@@ -503,6 +557,8 @@ test('compute filters', () => {
   {
     // inverse filter
     const filter = computeDataTableFilter('', false, [
+      doneCol,
+      titleCol,
       {
         key: 'level',
         filters: [
@@ -520,6 +576,8 @@ test('compute filters', () => {
   {
     // inverse filter with search
     const filter = computeDataTableFilter('coffee', false, [
+      doneCol,
+      titleCol,
       {
         key: 'level',
         filters: [
@@ -536,6 +594,7 @@ test('compute filters', () => {
   }
   {
     const filter = computeDataTableFilter('nonsense', false, [
+      titleCol,
       {
         key: 'level',
         filters: [

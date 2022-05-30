@@ -13,6 +13,7 @@ import {
   DataTableDispatch,
   getSelectedItem,
   getSelectedItems,
+  getValueAtPath,
   Selection,
 } from './DataTableManager';
 import React from 'react';
@@ -136,7 +137,9 @@ export function tableContextMenuFactory<T>(
               const items = getSelectedItems(datasource, selection);
               if (items.length) {
                 lib.writeTextToClipboard(
-                  items.map((item) => '' + item[column.key]).join('\n'),
+                  items
+                    .map((item) => '' + getValueAtPath(item, column.key))
+                    .join('\n'),
                 );
               }
             }}>

@@ -250,7 +250,7 @@ export const dataTableManagerReducer = produce<
         addColumnFilter(
           draft.columns,
           action.column,
-          (item as any)[action.column],
+          getValueAtPath(item, String(action.column)),
           index === 0, // remove existing filters before adding the first
         );
       });
@@ -541,6 +541,25 @@ function computeInitialColumns(
   }));
 }
 
+/**
+ * A somewhat primitive and unsafe way to access nested fields an object.
+ * @param obj keys should only be strings
+ * @param keyPath dotted string path, e.g foo.bar
+ * @returns value at the key path
+ */
+export function getValueAtPath(obj: any, keyPath: string): any {
+  let res = obj;
+  for (const key of keyPath.split('.')) {
+    if (res == null) {
+      return null;
+    } else {
+      res = res[key];
+    }
+  }
+
+  return res;
+}
+
 export function computeDataTableFilter(
   searchValue: string,
   useRegex: boolean,
@@ -563,7 +582,10 @@ export function computeDataTableFilter(
     for (const column of filteringColumns) {
       const rowMatchesFilter = column.filters!.some(
         (f) =>
-          f.enabled && String(item[column.key]).toLowerCase().includes(f.value),
+          f.enabled &&
+          String(getValueAtPath(item, column.key))
+            .toLowerCase()
+            .includes(f.value),
       );
       if (column.inversed && rowMatchesFilter) {
         return false;
@@ -572,11 +594,14 @@ export function computeDataTableFilter(
         return false;
       }
     }
-    return Object.values(item).some((v) =>
-      searchRegex
-        ? searchRegex.test(String(v))
-        : String(v).toLowerCase().includes(searchString),
-    );
+
+    return columns
+      .map((c) => getValueAtPath(item, c.key))
+      .some((v) =>
+        searchRegex
+          ? searchRegex.test(String(v))
+          : String(v).toLowerCase().includes(searchString),
+      );
   };
 }
 

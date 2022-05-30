@@ -94,6 +94,7 @@ type DataTableInput<T = any> =
     };
 
 export type DataTableColumn<T = any> = {
+  //this can be a dotted path into a nest objects. e.g foo.bar
   key: keyof T & string;
   // possible future extension: getValue(row) (and free-form key) to support computed columns
   onRender?: (row: T, selected: boolean, index: number) => React.ReactNode;

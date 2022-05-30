@@ -15,6 +15,7 @@ import {Width} from '../../utils/widthUtils';
 import {DataFormatter} from '../DataFormatter';
 import {Dropdown} from 'antd';
 import {contextMenuTrigger} from '../data-inspector/DataInspectorNode';
+import {getValueAtPath} from './DataTableManager';
 
 // heuristic for row estimation, should match any future styling updates
 export const DEFAULT_ROW_HEIGHT = 24;
@@ -159,5 +160,5 @@ export function renderColumnValue<T>(
 ) {
   return col.onRender
     ? col.onRender(record, highlighted, itemIndex)
-    : DataFormatter.format((record as any)[col.key], col.formatters);
+    : DataFormatter.format(getValueAtPath(record, col.key), col.formatters);
 }
