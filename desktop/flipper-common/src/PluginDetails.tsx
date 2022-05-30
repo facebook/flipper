@@ -37,6 +37,8 @@ export interface PluginDetails {
     overview?: boolean;
     setup?: boolean;
   };
+  /** Provided by NPM. Allows developers to deprecated packages. Its value is the deprecation reason. */
+  deprecated?: string;
 }
 
 export interface SupportedDevice {
@@ -153,6 +155,7 @@ function getPluginDetailsV1(packageJson: any): PluginDetails {
     supportedDevices: packageJson?.supportedDevices,
     supportedApps: packageJson?.supportedApps,
     engines: packageJson.engines,
+    deprecated: packageJson.deprecated,
   };
 }
 
@@ -181,6 +184,7 @@ function getPluginDetailsV2(packageJson: any): PluginDetails {
     engines: packageJson.engines,
     publishedDocs: packageJson.publishedDocs,
     headless: packageJson.headless,
+    deprecated: packageJson.deprecated,
   };
 }
 

@@ -40,6 +40,7 @@ test('getPluginDetailsV1', async () => {
     Object {
       "bugs": undefined,
       "category": undefined,
+      "deprecated": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
       "engines": undefined,
@@ -83,6 +84,7 @@ test('getPluginDetailsV2', async () => {
     Object {
       "bugs": undefined,
       "category": undefined,
+      "deprecated": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
       "engines": undefined,
@@ -130,6 +132,7 @@ test('id used as title if the latter omited', async () => {
     Object {
       "bugs": undefined,
       "category": undefined,
+      "deprecated": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
       "engines": undefined,
@@ -176,6 +179,7 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
     Object {
       "bugs": undefined,
       "category": undefined,
+      "deprecated": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
       "engines": undefined,
@@ -225,6 +229,7 @@ test('flipper-plugin-version is parsed', async () => {
     Object {
       "bugs": undefined,
       "category": undefined,
+      "deprecated": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
       "engines": undefined,
@@ -278,6 +283,7 @@ test('plugin type and supported devices parsed', async () => {
     Object {
       "bugs": undefined,
       "category": undefined,
+      "deprecated": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
       "engines": undefined,
@@ -347,6 +353,7 @@ test('plugin type and supported apps parsed', async () => {
     Object {
       "bugs": undefined,
       "category": undefined,
+      "deprecated": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
       "engines": undefined,
@@ -436,6 +443,7 @@ test('can merge two package.json files', async () => {
         "url": "https://fb.com/groups/flippersupport",
       },
       "category": undefined,
+      "deprecated": undefined,
       "description": "Description of Test Plugin",
       "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-test",
       "engines": undefined,

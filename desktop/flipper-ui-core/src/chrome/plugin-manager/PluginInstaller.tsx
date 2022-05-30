@@ -26,6 +26,7 @@ import PluginPackageInstaller from './PluginPackageInstaller';
 import {Toolbar} from 'flipper-plugin';
 import {Alert, Button, Input, Tooltip, Typography} from 'antd';
 import {getRenderHostInstance} from '../../RenderHost';
+import {WarningOutlined} from '@ant-design/icons';
 
 const {Text, Link} = Typography;
 
@@ -256,7 +257,26 @@ function useNPMSearch(
       key: h.name,
       columns: {
         name: {
-          value: <Text ellipsis>{h.name.replace(/^flipper-plugin-/, '')}</Text>,
+          value: (
+            // Copy-paste from antd/Space. We cannot use Space directly as it wraps children with divs, and we cannot easily set styles fro the wrapper child divs.
+            // Yet, we want to set min-width: 0 for the child with the Text. Otherwise, ellipsis does not work.
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                overflow: 'hidden',
+                gap: theme.space.small,
+              }}>
+              {h.deprecated != null ? (
+                <Tooltip title={h.deprecated || 'Plugin is deprecated'}>
+                  <WarningOutlined style={{color: theme.errorColor}} />
+                </Tooltip>
+              ) : null}
+              <Text style={{minWidth: 0}} ellipsis>
+                {h.name.replace(/^flipper-plugin-/, '')}
+              </Text>
+            </div>
+          ),
         },
         version: {
           value: <Text ellipsis>{h.version}</Text>,

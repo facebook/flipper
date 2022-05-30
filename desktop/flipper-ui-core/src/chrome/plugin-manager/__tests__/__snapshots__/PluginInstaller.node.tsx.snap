@@ -143,11 +143,16 @@ exports[`load PluginInstaller list 1`] = `
               title=""
               width="0"
             >
-              <span
-                class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
+              <div
+                style="display: inline-flex; align-items: center; overflow: hidden; gap: 8px;"
               >
-                hello
-              </span>
+                <span
+                  class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
+                  style="min-width: 0;"
+                >
+                  hello
+                </span>
+              </div>
             </div>
             <div
               class="css-pfp0fy-TableBodyColumnContainer e1pvjj0s0"
@@ -210,11 +215,16 @@ exports[`load PluginInstaller list 1`] = `
               title=""
               width="0"
             >
-              <span
-                class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
+              <div
+                style="display: inline-flex; align-items: center; overflow: hidden; gap: 8px;"
               >
-                world
-              </span>
+                <span
+                  class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
+                  style="min-width: 0;"
+                >
+                  world
+                </span>
+              </div>
             </div>
             <div
               class="css-pfp0fy-TableBodyColumnContainer e1pvjj0s0"
@@ -519,11 +529,16 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               title=""
               width="0"
             >
-              <span
-                class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
+              <div
+                style="display: inline-flex; align-items: center; overflow: hidden; gap: 8px;"
               >
-                hello
-              </span>
+                <span
+                  class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
+                  style="min-width: 0;"
+                >
+                  hello
+                </span>
+              </div>
             </div>
             <div
               class="css-pfp0fy-TableBodyColumnContainer e1pvjj0s0"
@@ -586,11 +601,16 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               title=""
               width="0"
             >
-              <span
-                class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
+              <div
+                style="display: inline-flex; align-items: center; overflow: hidden; gap: 8px;"
               >
-                world
-              </span>
+                <span
+                  class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
+                  style="min-width: 0;"
+                >
+                  world
+                </span>
+              </div>
             </div>
             <div
               class="css-pfp0fy-TableBodyColumnContainer e1pvjj0s0"
