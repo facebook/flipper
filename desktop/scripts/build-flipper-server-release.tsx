@@ -391,6 +391,8 @@ async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
     nodeRange: SUPPORTED_NODE_PLATFORM,
   });
   await fs.copyFile(path, outputPath);
+  // Set +x on the binary as copyFile doesn't maintain the bit.
+  await fs.chmod(outputPath, 0o755);
 }
 
 async function setUpMacBundle(
