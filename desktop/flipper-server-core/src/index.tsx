@@ -12,6 +12,7 @@ export {loadSettings} from './utils/settings';
 export {loadLauncherSettings} from './utils/launcherSettings';
 export {loadProcessConfig} from './utils/processConfig';
 export {getEnvironmentInfo} from './utils/environmentInfo';
+export * from './utils/tail';
 
 import GKImplementation from './fb-stubs/GK';
 export {setupPrefetcher} from './fb-stubs/Prefetcher';

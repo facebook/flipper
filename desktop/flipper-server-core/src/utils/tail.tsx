@@ -7,7 +7,7 @@
  * @format
  */
 
-import EventEmitter from 'eventemitter3';
+import EventEmitter from 'events';
 import fs, {FSWatcher} from 'fs-extra';
 import path from 'path';
 
