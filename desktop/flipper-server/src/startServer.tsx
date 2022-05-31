@@ -8,7 +8,7 @@
  */
 
 import os from 'os';
-import net from 'net';
+
 import express, {Express} from 'express';
 import http, {ServerResponse} from 'http';
 import path from 'path';
@@ -16,7 +16,8 @@ import fs from 'fs-extra';
 import {VerifyClientCallbackSync, WebSocketServer} from 'ws';
 import {WEBSOCKET_MAX_MESSAGE_SIZE} from 'flipper-server-core';
 import {parse} from 'url';
-import xdgBasedir from 'xdg-basedir';
+import {makeSocketPath, checkSocketInUse} from './utilities';
+
 import proxy from 'http-proxy';
 import exitHook from 'exit-hook';
 
@@ -76,66 +77,6 @@ async function startHTTPServer(
   app.use(express.static(config.staticDir));
 
   return startProxyServer(config, app);
-}
-
-/**
- * Checks if a socket is in used for given path.
- * If the path doesn't exist then is not in use. If it does,
- * create a socket client and attempt to connect to it.
- * If the connection is established, then there's a process
- * already listening. Otherwise, it kind of indicates the
- * contrary.
- * @param path Path used instead of port number.
- * @returns True or false dependning on whether the socket is in
- * use or not.
- */
-async function checkSocketInUse(path: string): Promise<boolean> {
-  if (!(await fs.pathExists(path))) {
-    return false;
-  }
-  return new Promise((resolve, _reject) => {
-    const client = net
-      .createConnection(path, () => {
-        resolve(true);
-        client.destroy();
-      })
-      .on('error', (e) => {
-        if (e.message.includes('ECONNREFUSED')) {
-          resolve(false);
-        } else {
-          console.warn(
-            `[conn] Socket ${path} is in use, but we don't know why.`,
-            e,
-          );
-          resolve(false);
-        }
-        client.destroy();
-      });
-  });
-}
-
-/**
- * Creates a socket path. Used to open the socket at location.
- * Format: flipper-server-${userInfo}.sock
- * @returns The created socket path.
- */
-async function makeSocketPath(): Promise<string> {
-  const runtimeDir = xdgBasedir.runtime || '/tmp';
-  await fs.mkdirp(runtimeDir);
-  const filename = `flipper-server-${os.userInfo().uid}.sock`;
-  const path = `${runtimeDir}/${filename}`;
-
-  // Depending on the OS this is between 104 and 108:
-  // https://unix.stackexchange.com/a/367012/10198
-  if (path.length >= 104) {
-    console.warn(
-      'Ignoring XDG_RUNTIME_DIR as it would exceed the total limit for domain socket paths. See man 7 unix.',
-    );
-    // Even with the INT32_MAX userid, we should have plenty of room.
-    return `/tmp/${filename}`;
-  }
-
-  return path;
 }
 
 /**
