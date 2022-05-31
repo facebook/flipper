@@ -202,7 +202,15 @@ module.exports = {
       },
     },
     {
-      files: ['plugins/**/*.ts', 'plugins/**/*.tsx'],
+      files: [
+        'plugins/**/*.ts',
+        'plugins/**/*.tsx',
+        'flipper-ui-core/**/*.tsx',
+        'flipper-common/**/*.tsx',
+        'flipper-frontend-core/**/*.tsx',
+        'flipper-ui-browser/**/*.tsx',
+        'flipper-plugin/**/*.tsx',
+      ],
       excludedFiles: [
         'plugins/**/serverAddOn.ts',
         'plugins/**/serverAddOn.tsx',
@@ -269,8 +277,13 @@ module.exports = {
     // Overide rules for tests and service scripts (postinstall). Allow Node APIs usage there.
     {
       files: [
-        'plugins/**/__tests__/*.tsx',
-        'plugins/**/__tests__/*.ts',
+        'plugins/**/__tests__/**/*.tsx',
+        'plugins/**/__tests__/**/*.ts',
+        'flipper-ui-core/**/__tests__/**/*.tsx',
+        'flipper-common/**/__tests__/**/*.tsx',
+        'flipper-frontend-core/**/__tests__/**/*.tsx',
+        'flipper-ui-browser/**/__tests__/**/*.tsx',
+        'flipper-plugin/**/__tests__/**/*.tsx',
         'plugins/postinstall.tsx',
         // TODO: Remove specific plugin overrides down below
         'plugins/fb/kaios-portal/kaios-debugger-client/client.tsx',
