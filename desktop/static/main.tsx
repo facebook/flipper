@@ -32,6 +32,8 @@ import delegateToLauncher from './launcher';
 import yargs from 'yargs';
 import {promisify} from 'util';
 import process from 'process';
+import {setupMenuBar} from './setupMenuBar';
+import {ElectronIpcClientMain} from './electronIpcMain';
 
 const VERSION: string = (global as any).__VERSION__;
 
@@ -347,14 +349,12 @@ function createWindow(config: Config) {
         ? path.join(__dirname, 'icons/app_64x64.png')
         : undefined,
     webPreferences: {
-      enableRemoteModule: true,
       backgroundThrottling: false,
       webSecurity: false,
       scrollBounce: true,
       experimentalFeatures: true,
       nodeIntegration: true,
       webviewTag: true,
-      nativeWindowOpen: true,
       contextIsolation: false,
     },
   });
@@ -410,6 +410,9 @@ function createWindow(config: Config) {
       slashes: true,
     });
   win.loadURL(entryUrl);
+
+  const electronIpcClient = new ElectronIpcClientMain(win);
+  setupMenuBar(electronIpcClient);
 }
 
 function processConfig(config: Config) {

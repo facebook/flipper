@@ -14,8 +14,6 @@ import {
   _setGlobalInteractionReporter,
   _LoggerContext,
 } from 'flipper-plugin';
-// eslint-disable-next-line no-restricted-imports,flipper/no-electron-remote-imports
-import {remote} from 'electron';
 import {createFlipperServer, FlipperServerState} from 'flipper-frontend-core';
 import {
   FlipperServerImpl,
@@ -39,16 +37,18 @@ import constants from './fb-stubs/constants';
 import {initializeElectron} from './electron/initializeElectron';
 import path from 'path';
 import fs from 'fs-extra';
+import {ElectronIpcClientRenderer} from './electronIpc';
 
 enableMapSet();
 
 async function getEmbeddedFlipperServer(
   logger: Logger,
+  electronIpcClient: ElectronIpcClientRenderer,
 ): Promise<FlipperServer> {
-  const app = remote.app;
-  const execPath = process.execPath || remote.process.execPath;
-  const appPath = app.getAppPath();
-  const staticPath = getStaticDir();
+  const execPath =
+    process.execPath || (await electronIpcClient.send('getProcess')).execPath;
+  const appPath = await electronIpcClient.send('getPath', 'app');
+  const staticPath = getStaticDir(appPath);
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
   const env = process.env;
   const environmentInfo = await getEnvironmentInfo(
@@ -84,11 +84,11 @@ async function getEmbeddedFlipperServer(
       gatekeepers: getGatekeepers(environmentInfo.os.unixname),
       paths: {
         appPath,
-        homePath: app.getPath('home'),
+        homePath: await electronIpcClient.send('getPath', 'home'),
         execPath,
         staticPath,
-        tempPath: app.getPath('temp'),
-        desktopPath: app.getPath('desktop'),
+        tempPath: await electronIpcClient.send('getPath', 'temp'),
+        desktopPath: await electronIpcClient.send('getPath', 'desktop'),
       },
       launcherSettings: await loadLauncherSettings(),
       processConfig: loadProcessConfig(env),
@@ -116,10 +116,19 @@ async function start() {
   const logger = createDelegatedLogger();
   setLoggerInstance(logger);
 
-  const flipperServer: FlipperServer = await getEmbeddedFlipperServer(logger);
+  const electronIpcClient = new ElectronIpcClientRenderer();
+
+  const flipperServer: FlipperServer = await getEmbeddedFlipperServer(
+    logger,
+    electronIpcClient,
+  );
   const flipperServerConfig = await flipperServer.exec('get-config');
 
-  initializeElectron(flipperServer, flipperServerConfig);
+  await initializeElectron(
+    flipperServer,
+    flipperServerConfig,
+    electronIpcClient,
+  );
 
   setProcessState(flipperServerConfig.settings);
 
@@ -142,7 +151,7 @@ start().catch((e) => {
     'Failed to start Flipper desktop: ' + e;
 });
 
-function getStaticDir() {
+function getStaticDir(appPath: string) {
   let _staticPath = path.resolve(__dirname, '..', '..', 'static');
   // fs.existSync used here, as fs-extra doesn't resovle properly in the app.asar
   /* eslint-disable node/no-sync*/
@@ -150,8 +159,8 @@ function getStaticDir() {
     // True in unit tests
     return _staticPath;
   }
-  if (remote && fs.existsSync(remote.app.getAppPath())) {
-    _staticPath = path.join(remote.app.getAppPath());
+  if (fs.existsSync(appPath)) {
+    _staticPath = path.join(appPath);
   }
   if (!fs.existsSync(_staticPath)) {
     throw new Error('Static path does not exist: ' + _staticPath);

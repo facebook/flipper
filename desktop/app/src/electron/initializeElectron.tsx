@@ -15,26 +15,27 @@ import {
   _LoggerContext,
 } from 'flipper-plugin';
 // eslint-disable-next-line no-restricted-imports,flipper/no-electron-remote-imports
-import {
-  ipcRenderer,
-  remote,
-  SaveDialogReturnValue,
-  clipboard,
-  shell,
-} from 'electron';
+import {ipcRenderer, SaveDialogReturnValue, clipboard, shell} from 'electron';
 import fs from 'fs';
-import {setupMenuBar} from './setupMenuBar';
+import {setupMenuBarTracking} from './setupMenuBar';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
 import type {Icon, RenderHost} from 'flipper-ui-core';
 import {getLocalIconUrl} from '../utils/icons';
 import {getCPUUsage} from 'process';
+import {ElectronIpcClientRenderer} from '../electronIpc';
 
-export function initializeElectron(
+export async function initializeElectron(
   flipperServer: FlipperServer,
   flipperServerConfig: FlipperServerConfig,
+  electronIpcClient: ElectronIpcClientRenderer,
 ) {
-  const execPath = process.execPath || remote.process.execPath;
+  const electronProcess = await electronIpcClient.send('getProcess');
+  const electronTheme = await electronIpcClient.send('getNativeTheme');
+
+  const execPath = process.execPath || electronProcess.execPath;
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
+
+  setupMenuBarTracking(electronIpcClient);
 
   function restart(update: boolean = false) {
     if (isProduction) {
@@ -44,11 +45,11 @@ export function initializeElectron(
             .splice(0, 1)
             .filter((arg) => arg !== '--no-launcher' && arg !== '--no-updater'),
         };
-        remote.app.relaunch(options);
+        electronIpcClient.send('relaunch', options);
       } else {
-        remote.app.relaunch();
+        electronIpcClient.send('relaunch');
       }
-      remote.app.exit();
+      electronIpcClient.send('exit');
     } else {
       // Relaunching the process with the standard way doesn't work in dev mode.
       // So instead we're sending a signal to dev server to kill the current instance of electron and launch new.
@@ -59,7 +60,7 @@ export function initializeElectron(
   }
 
   FlipperRenderHostInstance = {
-    processId: remote.process.pid,
+    processId: electronProcess.pid,
     isProduction,
     readTextFromClipboard() {
       return clipboard.readText();
@@ -68,10 +69,11 @@ export function initializeElectron(
       clipboard.writeText(text);
     },
     async showSaveDialog(options) {
-      return (await remote.dialog.showSaveDialog(options))?.filePath;
+      return (await electronIpcClient.send('showSaveDialog', options))
+        ?.filePath;
     },
     async showOpenDialog({filter, defaultPath}) {
-      const result = await remote.dialog.showOpenDialog({
+      const result = await electronIpcClient.send('showOpenDialog', {
         defaultPath,
         properties: ['openFile'],
         filters: filter ? [filter] : undefined,
@@ -79,8 +81,8 @@ export function initializeElectron(
       return result.filePaths?.[0];
     },
     showSelectDirectoryDialog(defaultPath = path.resolve('/')) {
-      return remote.dialog
-        .showOpenDialog({
+      return electronIpcClient
+        .send('showOpenDialog', {
           properties: ['openDirectory'],
           defaultPath,
         })
@@ -104,7 +106,7 @@ export function initializeElectron(
       encoding = 'utf-8',
       multi,
     } = {}) => {
-      let {filePaths} = await remote.dialog.showOpenDialog({
+      let {filePaths} = await electronIpcClient.send('showOpenDialog', {
         defaultPath,
         properties: [
           'openFile',
@@ -138,7 +140,7 @@ export function initializeElectron(
       return multi ? descriptors : descriptors[0];
     }) as RenderHost['importFile'],
     async exportFile(data, {defaultPath, encoding = 'utf-8'} = {}) {
-      const {filePath} = await remote.dialog.showSaveDialog({
+      const {filePath} = await electronIpcClient.send('showSaveDialog', {
         defaultPath,
       });
 
@@ -153,7 +155,8 @@ export function initializeElectron(
       shell.openExternal(url);
     },
     hasFocus() {
-      return remote.getCurrentWindow().isFocused();
+      // eslint-disable-next-line node/no-sync
+      return electronIpcClient.sendSync('getCurrentWindowState').isFocused;
     },
     onIpcEvent(event, callback) {
       ipcRenderer.on(event, (_ev, ...args: any[]) => {
@@ -164,7 +167,7 @@ export function initializeElectron(
       ipcRenderer.send(event, ...args);
     },
     shouldUseDarkColors() {
-      return remote.nativeTheme.shouldUseDarkColors;
+      return electronTheme.shouldUseDarkColors;
     },
     restartFlipper(update: boolean = false) {
       restart(update);
@@ -203,8 +206,6 @@ export function initializeElectron(
       return getCPUUsage().percentCPUUsage;
     },
   } as RenderHost;
-
-  setupMenuBar();
 }
 
 function getDefaultPluginsIndex() {
