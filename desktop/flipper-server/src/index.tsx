@@ -14,6 +14,7 @@ import {startFlipperServer} from './startFlipperServer';
 import {startServer} from './startServer';
 import {attachSocketServer} from './attachSocketServer';
 import {attachDevServer} from './attachDevServer';
+import {initializeLogger} from './logger';
 
 import yargs from 'yargs';
 import open from 'open';
@@ -72,10 +73,7 @@ const rootDir = argv.bundler
 const staticDir = path.join(rootDir, 'static');
 
 async function start() {
-  // supress debug messages by default. TODO: make CLI flag
-  console.debug = function () {
-    // Noop
-  };
+  initializeLogger(staticDir);
 
   const {app, server, socket} = await startServer({
     port: argv.port,

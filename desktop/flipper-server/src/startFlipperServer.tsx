@@ -16,12 +16,7 @@ import {
   loadSettings,
   getEnvironmentInfo,
 } from 'flipper-server-core';
-import {
-  parseEnvironmentVariables,
-  isTest,
-  Logger,
-  setLoggerInstance,
-} from 'flipper-common';
+import {parseEnvironmentVariables, isTest, getLogger} from 'flipper-common';
 import path from 'path';
 import fs from 'fs-extra';
 
@@ -52,9 +47,6 @@ export async function startFlipperServer(
     console.warn('Failed to find desktop path, falling back to homedir');
     desktopPath = os.homedir();
   }
-
-  const logger = createLogger();
-  setLoggerInstance(logger);
 
   let keytar: any = undefined;
   try {
@@ -96,35 +88,7 @@ export async function startFlipperServer(
       settings: await loadSettings(settingsString),
       validWebSocketOrigins: ['localhost:', 'http://localhost:'],
     },
-    logger,
+    getLogger(),
     keytar,
   );
-}
-
-function createLogger(): Logger {
-  return {
-    track(..._args: [any, any, any?, any?]) {
-      // TODO: only if verbose console.debug(...args);
-      // console.warn('(skipper track)', args);
-    },
-    trackTimeSince(..._args: [any, any, any?]) {
-      // TODO: only if verbose console.debug(...args);
-      // console.warn('(skipped trackTimeSince)', args);
-    },
-    debug(..._args: any[]) {
-      // TODO: only if double verbose console.debug(...args);
-    },
-    error(...args: any[]) {
-      console.error(...args);
-      console.warn('(skipped error reporting)');
-    },
-    warn(...args: any[]) {
-      console.warn(...args);
-      console.warn('(skipped error reporting)');
-    },
-    info(..._args: any[]) {
-      // TODO: only if  verbose console.debug(...args);
-      // console.info(...args);
-    },
-  };
 }
