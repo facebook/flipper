@@ -23,10 +23,12 @@ import {
   loadProcessConfig,
   loadSettings,
   setupPrefetcher,
+  Tail,
 } from 'flipper-server-core';
 import {
   FlipperServer,
   getLogger,
+  LoggerInfo,
   isTest,
   Logger,
   parseEnvironmentVariables,
@@ -103,7 +105,16 @@ async function getEmbeddedFlipperServer(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getFlipperServer(_logger: Logger): Promise<FlipperServer> {
+async function getFlipperServer(
+  _logger: Logger,
+  electronIpcClient: ElectronIpcClientRenderer,
+): Promise<FlipperServer> {
+  const appPath = await electronIpcClient.send('getPath', 'app');
+  const staticPath = getStaticDir(appPath);
+
+  const loggerOutputFile = 'flipper-server-log.out';
+  tailServerLogs(path.join(staticPath, loggerOutputFile));
+
   const flipperServer = await createFlipperServer(
     'localhost',
     52342,
@@ -167,6 +178,18 @@ function getStaticDir(appPath: string) {
   }
   /* eslint-enable node/no-sync*/
   return _staticPath;
+}
+
+function tailServerLogs(logsPath: string) {
+  console.info('flipper-server logs located at: ', logsPath);
+  const tail = new Tail(logsPath);
+  tail.on('line', (line: any) => {
+    try {
+      const loggerInfo: LoggerInfo = JSON.parse(line);
+      console[loggerInfo.type](loggerInfo.msg);
+    } catch (_) {}
+  });
+  tail.watch();
 }
 
 // getLogger() is not  yet created when the electron app starts.
