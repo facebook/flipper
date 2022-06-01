@@ -8,3 +8,4 @@
  */
 
 export const RECONNECT_TIMEOUT = 1000;
+export const DEVICE_ID_STORAGE_KEY = 'js-flipper-device-id';

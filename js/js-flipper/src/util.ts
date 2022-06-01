@@ -7,6 +7,8 @@
  * @format
  */
 
+import {DEVICE_ID_STORAGE_KEY} from './consts';
+
 // https://github.com/microsoft/TypeScript/issues/36931#issuecomment-846131999
 type Assert = (condition: unknown) => asserts condition;
 export const assert: Assert = (condition) => {
@@ -65,4 +67,23 @@ export const detectDevice = (): string => {
     return window.navigator.userAgent;
   }
   return require('os').release();
+};
+
+export const getDeviceId = () => {
+  // localStorage is not defined in Node.js env
+  const persistedId =
+    typeof localStorage === 'object'
+      ? localStorage?.getItem(DEVICE_ID_STORAGE_KEY)
+      : undefined;
+
+  if (persistedId) {
+    return persistedId;
+  }
+
+  const newId = `${Date.now()}.${Math.random()}`;
+  if (typeof localStorage === 'object') {
+    localStorage?.setItem(DEVICE_ID_STORAGE_KEY, newId);
+  }
+
+  return newId;
 };

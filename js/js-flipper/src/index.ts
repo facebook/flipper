@@ -9,6 +9,7 @@
 
 import {FlipperClient} from './client';
 
+export * from './consts';
 export * from './client';
 export * from './plugin';
 

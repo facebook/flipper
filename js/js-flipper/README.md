@@ -24,8 +24,8 @@ if the corresponding desktop plugin is selected in the Flipper Desktop. The full
 plugin API is documented
 [here](https://fbflipper.com/docs/extending/create-plugin).
 - `start` method. It starts the client. It has two arguments:
-   - `appName` - (required) the name dsplayed in Flipper
-   - `options` which conforms to the infterface
+   - `appName` - (required) the name displayed in Flipper
+   - `options` which conforms to the interface
       ```ts
       interface FlipperClientOptions {
         // Make the client connect to a different URL
@@ -36,6 +36,8 @@ plugin API is documented
         onError?: (e: unknown) => void;
         // Timeout after which client tries to reconnect to Flipper
         reconnectTimeout?: number;
+        // Set device ID. Default: random ID persisted to local storage.
+        getDeviceId?: () => Promise<string> | string
       }
       ```
 
@@ -54,7 +56,7 @@ The sources of the corresponding Desktop plugin can be found
 ## Node.js
 
 Node.js does not have a built-in WebSocket implementation. You need to install
-any implmentation of WebSockets for Node.js that is compatible with the
+any implementation of WebSockets for Node.js that is compatible with the
 interface of the
 [web version](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
 
