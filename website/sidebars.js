@@ -28,7 +28,7 @@ module.exports = {
     Setup: [
       'getting-started/index',
       {
-        'Adding Flipper to your app': [
+        'Adding Flipper to your App': [
           ...fbContent({
             external: [
               'getting-started/android-native',
@@ -129,7 +129,7 @@ module.exports = {
           'extending/node-apis',
           ...fbInternalOnly([
             {
-              'QPL linting': ['fb/building-a-linter', 'fb/active-linters'],
+              'QPL Linting': ['fb/building-a-linter', 'fb/active-linters'],
             },
           ]),
         ],
