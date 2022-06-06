@@ -1,3 +1,9 @@
+# 0.148.0 (1/6/2022)
+
+ * [D36760209](https://github.com/facebook/flipper/search?q=D36760209&type=Commits) -  Add a deprecation warning for deprecated plugins.
+ * [D36593625](https://github.com/facebook/flipper/search?q=D36593625&type=Commits) -  Upgrade electron to 18.2.0.
+
+
 # 0.147.0 (25/5/2022)
 
  * [D36600535](https://github.com/facebook/flipper/search?q=D36600535&type=Commits)
