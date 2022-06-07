@@ -5,4 +5,5 @@ NODE_PATH="${SCRIPT_PATH}/node"
 SERVER_RESOURCES="$SCRIPT_PATH/../Resources/server"
 
 cd "$SERVER_RESOURCES" || exit 1
+echo "Starting flipper-server ..."
 "$NODE_PATH" .
