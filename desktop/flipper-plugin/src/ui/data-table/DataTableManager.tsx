@@ -555,7 +555,8 @@ function computeInitialColumns(
  * @param keyPath dotted string path, e.g foo.bar
  * @returns value at the key path
  */
-export function getValueAtPath(obj: any, keyPath: string): any {
+
+export function getValueAtPath(obj: Record<string, any>, keyPath: string): any {
   let res = obj;
   for (const key of keyPath.split('.')) {
     if (res == null) {
