@@ -18,6 +18,7 @@ import {
   createContext,
   useContext,
   ReactElement,
+  SyntheticEvent,
 } from 'react';
 import styled from '@emotion/styled';
 import DataPreview, {DataValueExtractor, InspectorName} from './DataPreview';
@@ -621,6 +622,7 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
     return (
       <Dropdown overlay={getContextMenu} trigger={contextMenuTrigger}>
         <BaseContainer
+          onContextMenu={stopPropagation}
           depth={depth}
           disabled={!!setValueProp && !!setValue === false}>
           <PropertyContainer onClick={isExpandable ? handleClick : undefined}>
@@ -715,4 +717,9 @@ function isValueExpandable(data: any) {
   return (
     typeof data === 'object' && data !== null && Object.keys(data).length > 0
   );
+}
+
+function stopPropagation(e: SyntheticEvent) {
+  //without this the parent element will receive the context menu event and multiple context menus overlap
+  e.stopPropagation();
 }
