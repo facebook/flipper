@@ -512,6 +512,7 @@ export function DataTable<T extends object>(
           searchValue={searchValue}
           useRegex={tableState.useRegex}
           dispatch={dispatch as any}
+          searchHistory={tableState.searchHistory}
           contextMenu={props.enableContextMenu ? contexMenu : undefined}
           extraActions={props.extraActions}
         />

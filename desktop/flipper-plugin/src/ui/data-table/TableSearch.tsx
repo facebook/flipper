@@ -7,9 +7,9 @@
  * @format
  */
 
-import {MenuOutlined} from '@ant-design/icons';
-import {Button, Dropdown, Input} from 'antd';
-import React, {memo, useCallback, useMemo} from 'react';
+import {HistoryOutlined, MenuOutlined} from '@ant-design/icons';
+import {Button, Dropdown, Input, AutoComplete} from 'antd';
+import React, {memo, useCallback, useMemo, useState} from 'react';
 import styled from '@emotion/styled';
 
 import {Layout} from '../Layout';
@@ -20,18 +20,21 @@ export const TableSearch = memo(function TableSearch({
   searchValue,
   useRegex,
   dispatch,
+  searchHistory,
   extraActions,
   contextMenu,
 }: {
   searchValue: string;
   useRegex: boolean;
   dispatch: DataTableDispatch<any>;
+  searchHistory: string[];
   extraActions?: React.ReactElement;
   contextMenu: undefined | (() => JSX.Element);
 }) {
+  const [showHistory, setShowHistory] = useState(false);
   const onSearch = useCallback(
-    (value: string) => {
-      dispatch({type: 'setSearchValue', value});
+    (value: string, addToHistory: boolean) => {
+      dispatch({type: 'setSearchValue', value, addToHistory});
     },
     [dispatch],
   );
@@ -54,38 +57,72 @@ export const TableSearch = memo(function TableSearch({
     }
   }, [useRegex, searchValue]);
 
+  const options = useMemo(
+    () => searchHistory.map((value) => ({label: value, value})),
+    [searchHistory],
+  );
+
   return (
     <Searchbar gap>
-      <Input.Search
-        allowClear
-        placeholder="Search..."
-        onSearch={onSearch}
-        value={searchValue}
-        suffix={
-          <RegexButton
-            size="small"
-            onClick={onToggleRegex}
-            style={
-              useRegex
-                ? {
-                    background: regexError
-                      ? theme.errorColor
-                      : theme.successColor,
-                    color: theme.white,
-                  }
-                : {
-                    color: theme.disabledColor,
-                  }
-            }
-            type="default"
-            title={regexError || 'Search using Regex'}>
-            .*
-          </RegexButton>
+      <AutoComplete
+        defaultOpen={false}
+        open={showHistory}
+        options={options}
+        filterOption={(inputValue, option) =>
+          option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
         }
-        onChange={(e) => {
-          onSearch(e.target.value);
+        onSelect={(value: string) => {
+          setShowHistory(false);
+          onSearch(value, false);
         }}
-      />
+        onDropdownVisibleChange={(open) => {
+          if (!open) {
+            setShowHistory(false);
+          }
+        }}>
+        <Input.Search
+          allowClear
+          placeholder="Search..."
+          value={searchValue}
+          suffix={
+            <>
+              {options.length ? (
+                <RegexButton
+                  onClick={() => {
+                    setShowHistory((v) => !v);
+                  }}>
+                  <HistoryOutlined />
+                </RegexButton>
+              ) : null}
+              <RegexButton
+                size="small"
+                onClick={onToggleRegex}
+                style={
+                  useRegex
+                    ? {
+                        background: regexError
+                          ? theme.errorColor
+                          : theme.successColor,
+                        color: theme.white,
+                      }
+                    : {
+                        color: theme.disabledColor,
+                      }
+                }
+                type="default"
+                title={regexError || 'Search using Regex'}>
+                .*
+              </RegexButton>
+            </>
+          }
+          onChange={(e) => {
+            onSearch(e.target.value, false);
+          }}
+          onSearch={(value) => {
+            onSearch(value, true);
+          }}
+        />
+      </AutoComplete>
       {extraActions}
       {contextMenu && (
         <Dropdown overlay={contextMenu} placement="bottomRight">
@@ -108,17 +145,21 @@ const Searchbar = styled(Layout.Horizontal)({
     padding: `${theme.space.tiny}px ${theme.space.small}px`,
     background: 'transparent',
   },
+  '> .ant-select': {
+    flex: 1,
+  },
 });
 
 const RegexButton = styled(Button)({
   padding: '0px !important',
   borderRadius: 4,
-  marginRight: -6,
-  marginLeft: 4,
+  // marginRight: -6,
+  // marginLeft: 4,
   lineHeight: '20px',
-  width: 20,
+  width: 16,
   height: 20,
   border: 'none',
+  color: theme.disabledColor,
   '& :hover': {
     color: theme.primaryColor,
   },

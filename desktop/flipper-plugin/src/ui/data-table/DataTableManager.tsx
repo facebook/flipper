@@ -28,6 +28,8 @@ const emptySelection: Selection = {
   current: -1,
 };
 
+const MAX_HISTORY = 1000;
+
 type PersistedState = {
   /** Active search value */
   search: string;
@@ -43,6 +45,7 @@ type PersistedState = {
   >[];
   scrollOffset: number;
   autoScroll: boolean;
+  searchHistory: string[];
 };
 
 type Action<Name extends string, Args = {}> = {type: Name} & Args;
@@ -58,7 +61,7 @@ type DataManagerActions<T> =
   | Action<'sortColumn', {column: keyof T; direction: SortDirection}>
   /** Show / hide the given column */
   | Action<'toggleColumnVisibility', {column: keyof T}>
-  | Action<'setSearchValue', {value: string}>
+  | Action<'setSearchValue', {value: string; addToHistory: boolean}>
   | Action<
       'selectItem',
       {
@@ -96,7 +99,8 @@ type DataManagerActions<T> =
   | Action<'toggleUseRegex'>
   | Action<'toggleAutoScroll'>
   | Action<'setAutoScroll', {autoScroll: boolean}>
-  | Action<'toggleSearchValue'>;
+  | Action<'toggleSearchValue'>
+  | Action<'clearSearchHistory'>;
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T, T[keyof T]>;
@@ -116,11 +120,12 @@ export type DataManagerState<T> = {
   columns: DataTableColumn[];
   sorting: Sorting<T> | undefined;
   selection: Selection;
-  searchValue: string;
   useRegex: boolean;
   autoScroll: boolean;
+  searchValue: string;
   /** Used to remember the record entry to lookup when user presses ctrl */
   previousSearchValue: string;
+  searchHistory: string[];
 };
 
 export type DataTableReducer<T> = Reducer<
@@ -173,6 +178,17 @@ export const dataTableManagerReducer = produce<
     case 'setSearchValue': {
       draft.searchValue = action.value;
       draft.previousSearchValue = '';
+      if (
+        action.addToHistory &&
+        action.value &&
+        !draft.searchHistory.includes(action.value)
+      ) {
+        draft.searchHistory.unshift(action.value);
+        // FIFO if history too large
+        if (draft.searchHistory.length > MAX_HISTORY) {
+          draft.searchHistory.length = MAX_HISTORY;
+        }
+      }
       break;
     }
     case 'toggleSearchValue': {
@@ -183,6 +199,10 @@ export const dataTableManagerReducer = produce<
         draft.searchValue = draft.previousSearchValue;
         draft.previousSearchValue = '';
       }
+      break;
+    }
+    case 'clearSearchHistory': {
+      draft.searchHistory = [];
       break;
     }
     case 'toggleUseRegex': {
@@ -305,7 +325,7 @@ export type DataTableManager<T> = {
   getSelectedItems(): readonly T[];
   toggleColumnVisibility(column: keyof T): void;
   sortColumn(column: keyof T, direction?: SortDirection): void;
-  setSearchValue(value: string): void;
+  setSearchValue(value: string, addToHistory?: boolean): void;
   dataSource: DataSource<T, T[keyof T]>;
   toggleSearchValue(): void;
 };
@@ -351,8 +371,8 @@ export function createDataTableManager<T>(
     sortColumn(column, direction) {
       dispatch({type: 'sortColumn', column, direction});
     },
-    setSearchValue(value) {
-      dispatch({type: 'setSearchValue', value});
+    setSearchValue(value, addToHistory = false) {
+      dispatch({type: 'setSearchValue', value, addToHistory});
     },
     toggleSearchValue() {
       dispatch({type: 'toggleSearchValue'});
@@ -399,6 +419,7 @@ export function createInitialState<T>(
       : emptySelection,
     searchValue: prefs?.search ?? '',
     previousSearchValue: '',
+    searchHistory: prefs?.searchHistory ?? [],
     useRegex: prefs?.useRegex ?? false,
     autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
   };
@@ -478,6 +499,7 @@ export function savePreferences(
     })),
     scrollOffset,
     autoScroll: state.autoScroll,
+    searchHistory: state.searchHistory,
   };
   localStorage.setItem(state.storageKey, JSON.stringify(prefs));
 }

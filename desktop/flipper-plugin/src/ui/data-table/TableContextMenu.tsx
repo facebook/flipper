@@ -177,6 +177,13 @@ export function tableContextMenuFactory<T>(
         }}>
         Reset view
       </Menu.Item>
+      <Menu.Item
+        key="clear history"
+        onClick={() => {
+          dispatch({type: 'clearSearchHistory'});
+        }}>
+        Clear search history
+      </Menu.Item>
     </Menu>
   );
 }
