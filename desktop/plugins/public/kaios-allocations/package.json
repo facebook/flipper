@@ -14,6 +14,7 @@
   ],
   "main": "dist/bundle.js",
   "flipperBundlerEntry": "index.tsx",
+  "deprecated": "Pending migration to server add-ons. No throughput to address it at this point.",
   "license": "MIT",
   "title": "KaiOS: big allocations",
   "icon": "apps",
