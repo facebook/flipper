@@ -37,18 +37,21 @@ export const RootDataContext = createContext<() => any>(() => ({}));
 
 export const contextMenuTrigger = ['contextMenu' as const];
 
-const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
-  (props) => ({
-    fontFamily: 'Menlo, monospace',
-    fontSize: 11,
-    lineHeight: '17px',
-    filter: props.disabled ? 'grayscale(100%)' : '',
-    margin: props.depth === 0 ? '7.5px 0' : '0',
-    paddingLeft: 10,
-    userSelect: 'text',
-    width: '100%',
-  }),
-);
+const BaseContainer = styled.div<{
+  depth?: number;
+  disabled?: boolean;
+  hovered: boolean;
+}>((props) => ({
+  fontFamily: 'Menlo, monospace',
+  fontSize: 11,
+  lineHeight: '17px',
+  filter: props.disabled ? 'grayscale(100%)' : '',
+  margin: props.depth === 0 ? '7.5px 0' : '0',
+  paddingLeft: 10,
+  userSelect: 'text',
+  width: '100%',
+  backgroundColor: props.hovered ? '#f9f9f9' : '',
+}));
 BaseContainer.displayName = 'DataInspector:BaseContainer';
 
 const RecursiveBaseWrapper = styled.span({
@@ -177,6 +180,10 @@ type DataInspectorProps = {
     value: any,
     name?: string,
   ) => ReactElement[];
+
+  onMouseEnter?: () => void;
+
+  onMouseExit?: () => void;
 };
 
 const defaultValueExtractor: DataValueExtractor = (value: any) => {
@@ -308,11 +315,14 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
     tooltips,
     setValue: setValueProp,
     additionalContextMenuItems,
+    onMouseEnter,
+    onMouseExit,
   }) {
     const highlighter = useHighlighter();
     const getRoot = useContext(RootDataContext);
     const isUnitTest = useInUnitTest();
 
+    const [hover, setHover] = useState(false);
     const shouldExpand = useRef(false);
     const expandHandle = useRef(undefined as any);
     const [renderExpanded, setRenderExpanded] = useState(false);
@@ -418,6 +428,37 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
       [onDelete],
     );
 
+    const thisOnMouseEnter = useCallback(
+      (e: SyntheticEvent) => {
+        onMouseEnter?.();
+        e.stopPropagation();
+        setHover(true);
+      },
+      [onMouseEnter],
+    );
+
+    const thisOnMouseLeave = useCallback(
+      (e: SyntheticEvent) => {
+        onMouseExit?.();
+        e.stopPropagation();
+        setHover(false);
+      },
+      [onMouseExit],
+    );
+
+    const childOnMouseEnter = useCallback(() => {
+      //when a child is hovered we are in both child and parents bounds so
+      //manually disable our own hover state so we focus on child
+      setHover(false);
+    }, []);
+
+    const childOnMouseExit = useCallback(() => {
+      //If a child has been unhovered then it means we have left the childs bounds and mouse should still be in parents
+      //(current element's) bounds. However the mouse enter callback wont fire again in this element since we never left the bounds.
+      //Therefore we manually set hovered back to true
+      setHover(true);
+    }, []);
+
     /**
      * RENDERING
      */
@@ -461,6 +502,8 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
           const metaKey = key + index;
           const dataInspectorNode = (
             <DataInspectorNode
+              onMouseEnter={childOnMouseEnter}
+              onMouseExit={childOnMouseExit}
               parentAncestry={ancestry}
               extractValue={extractValue}
               setValue={setValue}
@@ -623,6 +666,9 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
       <Dropdown overlay={getContextMenu} trigger={contextMenuTrigger}>
         <BaseContainer
           onContextMenu={stopPropagation}
+          hovered={hover}
+          onMouseEnter={thisOnMouseEnter}
+          onMouseLeave={thisOnMouseLeave}
           depth={depth}
           disabled={!!setValueProp && !!setValue === false}>
           <PropertyContainer onClick={isExpandable ? handleClick : undefined}>
