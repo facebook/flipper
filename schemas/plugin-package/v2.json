@@ -113,6 +113,10 @@
     "headless": {
       "type": "boolean",
       "description": "Specifies if plugin works in a headless mode. Default: false."
+    },
+    "deprecated": {
+      "type": "string",
+      "description": "Mark plugin as deprecated and exclude it from the bundle. Optionally, provide a reason for deprecation. Set to '' to use the default deprecation reason."
     }
   },
   "required": [
