@@ -14,7 +14,7 @@ import http, {ServerResponse} from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import {VerifyClientCallbackSync, WebSocketServer} from 'ws';
-import {WEBSOCKET_MAX_MESSAGE_SIZE} from 'flipper-server-core';
+import {WEBSOCKET_MAX_MESSAGE_SIZE} from '../comms/ServerWebSocket';
 import {parse} from 'url';
 import {makeSocketPath, checkSocketInUse} from './utilities';
 

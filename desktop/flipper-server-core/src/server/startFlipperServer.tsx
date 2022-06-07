@@ -8,17 +8,16 @@
  */
 
 import os from 'os';
-import {
-  FlipperServerImpl,
-  getGatekeepers,
-  loadLauncherSettings,
-  loadProcessConfig,
-  loadSettings,
-  getEnvironmentInfo,
-} from 'flipper-server-core';
-import {parseEnvironmentVariables, isTest, getLogger} from 'flipper-common';
+import {parseEnvironmentVariables, getLogger} from 'flipper-common';
 import path from 'path';
 import fs from 'fs-extra';
+import {KeytarModule} from '../utils/keytar';
+import {FlipperServerImpl} from '../FlipperServerImpl';
+import {getEnvironmentInfo} from '../utils/environmentInfo';
+import {getGatekeepers} from '../gk';
+import {loadLauncherSettings} from '../utils/launcherSettings';
+import {loadProcessConfig} from '../utils/processConfig';
+import {loadSettings} from '../utils/settings';
 
 /**
  * Creates an instance of FlipperServer (FlipperServerImpl). This is the
@@ -34,6 +33,7 @@ export async function startFlipperServer(
   staticPath: string,
   settingsString: string,
   enableLauncherSettings: boolean,
+  keytarModule: KeytarModule,
 ): Promise<FlipperServerImpl> {
   const execPath = process.execPath;
   const appPath = rootDir;
@@ -46,25 +46,6 @@ export async function startFlipperServer(
   if (!fs.existsSync(desktopPath)) {
     console.warn('Failed to find desktop path, falling back to homedir');
     desktopPath = os.homedir();
-  }
-
-  let keytar: any = undefined;
-  try {
-    if (!isTest()) {
-      const keytarPath = path.join(
-        staticPath,
-        'native-modules',
-        `keytar-${process.platform}-${process.arch}.node`,
-      );
-      if (!(await fs.pathExists(keytarPath))) {
-        throw new Error(
-          `Keytar binary does not exist for platform ${process.platform}-${process.arch}`,
-        );
-      }
-      keytar = electronRequire(keytarPath);
-    }
-  } catch (e) {
-    console.error('Failed to load keytar:', e);
   }
 
   const environmentInfo = await getEnvironmentInfo(appPath, isProduction, true);
@@ -89,6 +70,6 @@ export async function startFlipperServer(
       validWebSocketOrigins: ['localhost:', 'http://localhost:'],
     },
     getLogger(),
-    keytar,
+    keytarModule,
   );
 }

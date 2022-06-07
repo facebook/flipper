@@ -13,19 +13,11 @@ export {loadLauncherSettings} from './utils/launcherSettings';
 export {loadProcessConfig} from './utils/processConfig';
 export {getEnvironmentInfo} from './utils/environmentInfo';
 export * from './utils/tail';
-
-import GKImplementation from './fb-stubs/GK';
+export {getGatekeepers} from './gk';
 export {setupPrefetcher} from './fb-stubs/Prefetcher';
-
-let loaded = false;
-
-export function getGatekeepers(username: string): Record<string, boolean> {
-  if (!loaded) {
-    // this starts fetching gatekeepers, note that they will only be available on next restart!
-    GKImplementation.init(username);
-    loaded = true;
-  }
-  return GKImplementation.allGKs();
-}
+export * from './server/attachSocketServer';
+export * from './server/startFlipperServer';
+export * from './server/startServer';
+export * from './server/utilities';
 
 export {WEBSOCKET_MAX_MESSAGE_SIZE} from './comms/ServerWebSocket';

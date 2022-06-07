@@ -21,6 +21,7 @@
     "flipper-doctor": "0.0.0",
     "flipper-plugin": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
+    "flipper-server-companion": "0.0.0",
     "form-data": "^4.0.0",
     "fs-extra": "^10.1.0",
     "invariant": "^2.2.4",
@@ -44,6 +45,8 @@
     "xdg-basedir": "^4.0.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/http-proxy": "^1.17.8",
     "@types/archiver": "^5.3.1",
     "@types/invariant": "^2.2.35",
     "@types/memorystream": "^0.3.0",
@@ -56,7 +59,10 @@
     "@types/tmp": "^0.2.3",
     "@types/which": "^2.0.1",
     "@types/ws": "^8.5.3",
-    "memorystream": "^0.3.1"
+    "memorystream": "^0.3.1",
+    "exit-hook": "^2.1.1",
+    "http-proxy": "^1.18.1",
+    "express": "^4.17.3"
   },
   "peerDependencies": {},
   "scripts": {

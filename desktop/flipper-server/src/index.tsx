@@ -10,15 +10,18 @@
 import process from 'process';
 import chalk from 'chalk';
 import path from 'path';
-import {startFlipperServer} from './startFlipperServer';
-import {startServer} from './startServer';
-import {attachSocketServer} from './attachSocketServer';
 import {attachDevServer} from './attachDevServer';
 import {initializeLogger} from './logger';
-
+import fs from 'fs-extra';
 import yargs from 'yargs';
 import open from 'open';
 import {initCompanionEnv} from 'flipper-server-companion';
+import {
+  attachSocketServer,
+  startFlipperServer,
+  startServer,
+} from 'flipper-server-core';
+import {isTest} from 'flipper-common';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -75,6 +78,25 @@ const staticDir = path.join(rootDir, 'static');
 async function start() {
   initializeLogger(staticDir);
 
+  let keytar: any = undefined;
+  try {
+    if (!isTest()) {
+      const keytarPath = path.join(
+        staticDir,
+        'native-modules',
+        `keytar-${process.platform}-${process.arch}.node`,
+      );
+      if (!(await fs.pathExists(keytarPath))) {
+        throw new Error(
+          `Keytar binary does not exist for platform ${process.platform}-${process.arch}`,
+        );
+      }
+      keytar = electronRequire(keytarPath);
+    }
+  } catch (e) {
+    console.error('Failed to load keytar:', e);
+  }
+
   const {app, server, socket} = await startServer({
     port: argv.port,
     staticDir,
@@ -86,6 +108,7 @@ async function start() {
     staticDir,
     argv.settingsString,
     argv.launcherSettings,
+    keytar,
   );
   const companionEnv = await initCompanionEnv(flipperServer);
   if (argv.failFast) {

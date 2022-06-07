@@ -7,7 +7,6 @@
  * @format
  */
 
-import chalk from 'chalk';
 import {
   ClientWebSocketMessage,
   ExecResponseWebSocketMessage,
@@ -19,7 +18,7 @@ import {
   getLogger,
   CompanionEventWebSocketMessage,
 } from 'flipper-common';
-import {FlipperServerImpl} from 'flipper-server-core';
+import {FlipperServerImpl} from '../FlipperServerImpl';
 import {WebSocketServer} from 'ws';
 import {
   FlipperServerCompanion,
@@ -43,7 +42,7 @@ export function attachSocketServer(
         ` ${req.socket.remoteAddress}:${req.socket.remotePort}`) ||
       '';
 
-    console.log(chalk.green(`Client connected${clientAddress}`));
+    console.log(`Client connected${clientAddress}`);
 
     let connected = true;
 
@@ -209,14 +208,14 @@ export function attachSocketServer(
     });
 
     client.on('close', () => {
-      console.log(chalk.red(`Client disconnected ${clientAddress}`));
+      console.log(`Client disconnected ${clientAddress}`);
       connected = false;
       flipperServer.offAny(onServerEvent);
       flipperServerCompanion?.destroyAll();
     });
 
     client.on('error', (e) => {
-      console.error(chalk.red(`Socket error ${clientAddress}`), e);
+      console.error(`Socket error ${clientAddress}`, e);
       connected = false;
       flipperServer.offAny(onServerEvent);
       flipperServerCompanion?.destroyAll();

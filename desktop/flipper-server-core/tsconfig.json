@@ -22,6 +22,9 @@
       "path": "../flipper-plugin"
     },
     {
+      "path": "../flipper-server-companion"
+    },
+    {
       "path": "../plugin-lib"
     },
     {
