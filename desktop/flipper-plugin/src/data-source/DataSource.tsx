@@ -582,6 +582,21 @@ class DataSourceView<T, KeyType> {
     return this._output[this.normalizeIndex(viewIndex)]?.value;
   }
 
+  public getEntry(viewIndex: number): Entry<T> {
+    return this._output[this.normalizeIndex(viewIndex)];
+  }
+
+  public getViewIndexOfEntry(entry: Entry<T>) {
+    // Note: this function leverages the fact that entry is an internal structure that is mutable,
+    // so any changes in the entry being moved around etc will be reflected in the original `entry` object,
+    // and we just want to verify that this entry is indeed still the same element, visible, and still present in
+    // the output data set.
+    if (entry.visible && entry.id === this._output[entry.approxIndex]?.id) {
+      return this.normalizeIndex(entry.approxIndex);
+    }
+    return -1;
+  }
+
   public [Symbol.iterator](): IterableIterator<T> {
     const self = this;
     let offset = this.windowStart;
@@ -797,6 +812,10 @@ class DataSourceView<T, KeyType> {
       output = lodashSort(output, sortHelper); // uses array.sort under the hood
     }
 
+    // write approx indexes for faster lookup of entries in visible output
+    for (let i = 0; i < output.length; i++) {
+      output[i].approxIndex = i;
+    }
     this._output = output;
     this.notifyReset(output.length);
   }

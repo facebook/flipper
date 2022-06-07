@@ -33,6 +33,7 @@ import {
   computeDataTableFilter,
   createDataTableManager,
   createInitialState,
+  DataManagerState,
   DataTableManager,
   dataTableManagerReducer,
   DataTableReducer,
@@ -323,37 +324,52 @@ export function DataTable<T extends object>(
     [dataSource, tableManager, props.scrollable],
   );
 
+  const [setFilter] = useState(() => (tableState: DataManagerState<T>) => {
+    const selectedEntry =
+      tableState.selection.current >= 0
+        ? dataSource.view.getEntry(tableState.selection.current)
+        : null;
+    dataSource.view.setFilter(
+      computeDataTableFilter(
+        tableState.searchValue,
+        tableState.useRegex,
+        tableState.columns,
+      ),
+    );
+    // TODO: in the future setFilter effects could be async, at the moment it isn't,
+    // so we can safely assume the internal state of the dataSource.view is updated with the
+    // filter changes and try to find the same entry back again
+    if (selectedEntry) {
+      const selectionIndex = dataSource.view.getViewIndexOfEntry(selectedEntry);
+      tableManager.selectItem(selectionIndex, false, false);
+      // we disable autoScroll as is it can accidentally be annoying if it was never turned off and
+      // filter causes items to not fill the available space
+      dispatch({type: 'setAutoScroll', autoScroll: false});
+      virtualizerRef.current?.scrollToIndex(selectionIndex, {align: 'center'});
+      setTimeout(() => {
+        virtualizerRef.current?.scrollToIndex(selectionIndex, {
+          align: 'center',
+        });
+      }, 0);
+    }
+    // TODO: could do the same for multiselections, doesn't seem to be requested so far
+  });
+
   const [debouncedSetFilter] = useState(() => {
     // we don't want to trigger filter changes too quickly, as they can be pretty expensive
     // and would block the user from entering text in the search bar for example
     // (and in the future would really benefit from concurrent mode here :))
-    const setFilter = (
-      search: string,
-      useRegex: boolean,
-      columns: DataTableColumn<T>[],
-    ) => {
-      dataSource.view.setFilter(
-        computeDataTableFilter(search, useRegex, columns),
-      );
-    };
+    // leading is set to true so that an initial filter is immediately applied and a flash of wrong content is prevented
+    // this also makes clear act faster
     return isUnitTest ? setFilter : debounce(setFilter, 250);
   });
+
   useEffect(
     function updateFilter() {
       if (!dataSource.view.isFiltered) {
-        dataSource.view.setFilter(
-          computeDataTableFilter(
-            tableState.searchValue,
-            tableState.useRegex,
-            tableState.columns,
-          ),
-        );
+        setFilter(tableState);
       } else {
-        debouncedSetFilter(
-          tableState.searchValue,
-          tableState.useRegex,
-          tableState.columns,
-        );
+        debouncedSetFilter(tableState);
       }
     },
     // Important dep optimization: we don't want to recalc filters if just the width or visibility changes!

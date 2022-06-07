@@ -110,7 +110,7 @@ type DataManagerConfig<T> = {
   enablePersistSettings?: boolean;
 };
 
-type DataManagerState<T> = {
+export type DataManagerState<T> = {
   config: DataManagerConfig<T>;
   usesWrapping: boolean;
   storageKey: string;
