@@ -22,6 +22,7 @@ export const theme = {
   textColorPlaceholder: 'var(--flipper-text-color-placeholder)',
   textColorActive: 'var(--light-color-button-active)',
   searchHighlightBackground: antColors.yellow[3],
+  selectionBackgroundColor: 'var(--flipper-primary-background-wash)',
   disabledColor: 'var(--flipper-disabled-color)',
   backgroundDefault: 'var(--flipper-background-default)',
   backgroundWash: 'var(--flipper-background-wash)',

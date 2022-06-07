@@ -26,7 +26,7 @@ type TableBodyRowContainerProps = {
 
 const backgroundColor = (props: TableBodyRowContainerProps) => {
   if (props.highlighted) {
-    return theme.backgroundWash;
+    return theme.selectionBackgroundColor;
   }
   return undefined;
 };
