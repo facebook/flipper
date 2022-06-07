@@ -37,7 +37,10 @@ export interface PluginDetails {
     overview?: boolean;
     setup?: boolean;
   };
-  /** Provided by NPM. Allows developers to deprecated packages. Its value is the deprecation reason. */
+  /**
+   * Provided by NPM. Allows developers to deprecated packages. Its value is the deprecation reason.
+   * Alternatively, might be a part of the plugin's package JSON. In this case, the plugin is excluded from bundling.
+   */
   deprecated?: string;
 }
 

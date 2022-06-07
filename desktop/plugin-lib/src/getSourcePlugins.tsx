@@ -77,7 +77,11 @@ async function entryPointForPluginFolder(
         }
       }),
     )
-    .then((plugins) => plugins.filter(notNull))
+    .then((plugins) =>
+      plugins
+        .filter(notNull)
+        .filter(({deprecated}) => typeof deprecated !== 'string'),
+    )
     .then((plugins) =>
       plugins.reduce<{[key: string]: InstalledPluginDetails}>((acc, cv) => {
         acc[cv!.name] = cv!;
