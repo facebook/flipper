@@ -8,7 +8,7 @@
  */
 
 import {DataInspectorExpanded, RootDataContext} from './DataInspectorNode';
-import {PureComponent} from 'react';
+import {PureComponent, ReactElement} from 'react';
 import {DataInspectorNode} from './DataInspectorNode';
 import React from 'react';
 import {DataValueExtractor} from './DataPreview';
@@ -66,6 +66,15 @@ export type DataInspectorProps = {
    * Filter nodes by some search text
    */
   filter?: string;
+
+  /**
+   * these should be ant design Menu.Item's
+   */
+  additionalContextMenuItems?: (
+    parentPath: string[],
+    value: any,
+    name?: string,
+  ) => ReactElement[];
 };
 
 type DataInspectorState = {
@@ -198,6 +207,7 @@ export class DataInspector extends PureComponent<
               parentPath={EMPTY_ARRAY}
               depth={0}
               parentAncestry={EMPTY_ARRAY}
+              additionalContextMenuItems={this.props.additionalContextMenuItems}
             />
           </HighlightProvider>
         </RootDataContext.Provider>

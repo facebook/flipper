@@ -17,6 +17,7 @@ import {
   useCallback,
   createContext,
   useContext,
+  ReactElement,
 } from 'react';
 import styled from '@emotion/styled';
 import DataPreview, {DataValueExtractor, InspectorName} from './DataPreview';
@@ -170,6 +171,11 @@ type DataInspectorProps = {
    * Object of properties that will have tooltips
    */
   tooltips?: any;
+  additionalContextMenuItems?: (
+    parentPath: string[],
+    value: any,
+    name?: string,
+  ) => ReactElement[];
 };
 
 const defaultValueExtractor: DataValueExtractor = (value: any) => {
@@ -300,6 +306,7 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
     collapsed,
     tooltips,
     setValue: setValueProp,
+    additionalContextMenuItems,
   }) {
     const highlighter = useHighlighter();
     const getRoot = useContext(RootDataContext);
@@ -469,6 +476,7 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
               data={metadata.data}
               diff={metadata.diff}
               tooltips={tooltips}
+              additionalContextMenuItems={additionalContextMenuItems}
             />
           );
 
@@ -564,8 +572,15 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
 
     function getContextMenu() {
       const lib = tryGetFlipperLibImplementation();
+      const extraItems = additionalContextMenuItems
+        ? [
+            additionalContextMenuItems(parentPath, value, name),
+            <Menu.Divider key="extradivider" />,
+          ]
+        : [];
       return (
         <Menu>
+          {extraItems}
           <Menu.Item
             key="copyClipboard"
             onClick={() => {

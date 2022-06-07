@@ -12,6 +12,7 @@ import {render, fireEvent, waitFor, act} from '@testing-library/react';
 
 import {DataInspector} from '../DataInspector';
 import {sleep} from 'flipper-common';
+import {Menu} from 'antd';
 
 const json = {
   data: {
@@ -36,6 +37,30 @@ test('changing collapsed property works', async () => {
 
   res.rerender(<DataInspector data={json} collapsed expandRoot />);
   expect(res.queryAllByText(/cool/).length).toBe(0);
+});
+
+test('additional context menu items are rendered', async () => {
+  const res = render(
+    <DataInspector
+      data={json}
+      expandRoot
+      additionalContextMenuItems={(parentPath, value, name) => {
+        return [
+          <Menu.Item key="test">
+            path={[...parentPath, name].join('->')}
+          </Menu.Item>,
+        ];
+      }}
+    />,
+  );
+
+  expect(await res.queryByText('path=data')).toBeFalsy;
+  fireEvent.contextMenu(await res.findByText(/data/), {});
+  expect(await res.findByText('path=data')).toBeTruthy;
+
+  //try on a nested element
+  fireEvent.contextMenu(await res.findByText(/awesomely/), {});
+  expect(await res.findByText('path=data->is->awesomely')).toBeTruthy;
 });
 
 test('can manually collapse properties', async () => {
