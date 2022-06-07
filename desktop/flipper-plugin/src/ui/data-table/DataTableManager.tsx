@@ -43,7 +43,6 @@ type PersistedState = {
   >[];
   scrollOffset: number;
   autoScroll: boolean;
-  selectedSearchRecord: any;
 };
 
 type Action<Name extends string, Args = {}> = {type: Name} & Args;
@@ -97,8 +96,7 @@ type DataManagerActions<T> =
   | Action<'toggleUseRegex'>
   | Action<'toggleAutoScroll'>
   | Action<'setAutoScroll', {autoScroll: boolean}>
-  | Action<'clearSelectedSearchRecord'>
-  | Action<'setSelectedSearchRecord'>;
+  | Action<'toggleSearchValue'>;
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T, T[keyof T]>;
@@ -122,7 +120,7 @@ export type DataManagerState<T> = {
   useRegex: boolean;
   autoScroll: boolean;
   /** Used to remember the record entry to lookup when user presses ctrl */
-  selectedSearchRecord: any;
+  previousSearchValue: string;
 };
 
 export type DataTableReducer<T> = Reducer<
@@ -174,6 +172,17 @@ export const dataTableManagerReducer = produce<
     }
     case 'setSearchValue': {
       draft.searchValue = action.value;
+      draft.previousSearchValue = '';
+      break;
+    }
+    case 'toggleSearchValue': {
+      if (draft.searchValue) {
+        draft.previousSearchValue = draft.searchValue;
+        draft.searchValue = '';
+      } else {
+        draft.searchValue = draft.previousSearchValue;
+        draft.previousSearchValue = '';
+      }
       break;
     }
     case 'toggleUseRegex': {
@@ -268,24 +277,6 @@ export const dataTableManagerReducer = produce<
       draft.autoScroll = action.autoScroll;
       break;
     }
-    case 'setSelectedSearchRecord': {
-      if (draft.searchValue !== '') {
-        // Clear search to get unfiltered list of records
-        draft.searchValue = '';
-
-        // Save the record to map back in DataTable
-        draft.selectedSearchRecord = config.dataSource.view.get(
-          draft.selection.current,
-        );
-
-        draft.selection = castDraft(emptySelection);
-      }
-      break;
-    }
-    case 'clearSelectedSearchRecord': {
-      draft.selectedSearchRecord = null;
-      break;
-    }
     default: {
       throw new Error('Unknown action ' + (action as any).type);
     }
@@ -316,8 +307,7 @@ export type DataTableManager<T> = {
   sortColumn(column: keyof T, direction?: SortDirection): void;
   setSearchValue(value: string): void;
   dataSource: DataSource<T, T[keyof T]>;
-  setSelectedSearchRecord(): void;
-  clearSelectedSearchRecord(): void;
+  toggleSearchValue(): void;
 };
 
 export function createDataTableManager<T>(
@@ -364,11 +354,8 @@ export function createDataTableManager<T>(
     setSearchValue(value) {
       dispatch({type: 'setSearchValue', value});
     },
-    setSelectedSearchRecord() {
-      dispatch({type: 'setSelectedSearchRecord'});
-    },
-    clearSelectedSearchRecord() {
-      dispatch({type: 'clearSelectedSearchRecord'});
+    toggleSearchValue() {
+      dispatch({type: 'toggleSearchValue'});
     },
     dataSource,
   };
@@ -411,9 +398,9 @@ export function createInitialState<T>(
         }
       : emptySelection,
     searchValue: prefs?.search ?? '',
+    previousSearchValue: '',
     useRegex: prefs?.useRegex ?? false,
     autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
-    selectedSearchRecord: null,
   };
   // @ts-ignore
   res.config[immerable] = false; // optimization: never proxy anything in config
@@ -491,7 +478,6 @@ export function savePreferences(
     })),
     scrollOffset,
     autoScroll: state.autoScroll,
-    selectedSearchRecord: state.selectedSearchRecord,
   };
   localStorage.setItem(state.storageKey, JSON.stringify(prefs));
 }

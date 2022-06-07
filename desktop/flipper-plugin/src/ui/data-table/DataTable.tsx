@@ -311,7 +311,7 @@ export function DataTable<T extends object>(
           tableManager.clearSelection();
           break;
         case 'Control':
-          tableManager.setSelectedSearchRecord();
+          tableManager.toggleSearchValue();
           break;
         default:
           handled = false;
@@ -504,30 +504,6 @@ export function DataTable<T extends object>(
     // dataSource, tableManager, tableManagerRef
     // eslint-disable-next-line
   }, []);
-
-  useEffect(
-    function findMappedIndex() {
-      // Hardcoded delay to give dataSource.view time to update, otherwise
-      // the entries we loop over here won't be the list of unfiltered records
-      // the user sees, so there won't be a match found
-      const delay = 300;
-
-      if (tableState.selectedSearchRecord) {
-        const timer = setTimeout(() => {
-          for (let i = 0; i < dataSource.view.size; i++) {
-            if (dataSource.view.get(i) === tableState.selectedSearchRecord) {
-              tableManager.clearSelectedSearchRecord();
-              tableManager.selectItem(i, false, true);
-              break;
-            }
-          }
-        }, delay);
-
-        return () => clearTimeout(timer);
-      }
-    },
-    [dataSource, selection, tableManager, tableState.selectedSearchRecord],
-  );
 
   const header = (
     <Layout.Container>
