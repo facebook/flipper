@@ -190,5 +190,8 @@
       "types",
       "examples/*"
     ]
+  },
+  "dependencies": {
+    "js-flipper": "^0.146.1"
   }
 }
