@@ -147,6 +147,9 @@ module.exports = {
     'Under the Hood': [
       'internals/index',
       'internals/contributing',
+      {
+        'Contributing to the Documentation': ['internals/documentation-formatting', 'internals/documentation-writing-guide'],
+      },
       'extending/public-releases',
       'extending/testing-rn',
       'internals/linters',
