@@ -18,6 +18,9 @@
       "path": "../flipper-frontend-core"
     },
     {
+      "path": "../flipper-server-companion"
+    },
+    {
       "path": "../flipper-server-core"
     },
     {

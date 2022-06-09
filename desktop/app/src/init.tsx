@@ -16,6 +16,7 @@ import {
 } from 'flipper-plugin';
 import {createFlipperServer, FlipperServerState} from 'flipper-frontend-core';
 import {
+  attachSocketServer,
   FlipperServerImpl,
   getEnvironmentInfo,
   getGatekeepers,
@@ -23,6 +24,8 @@ import {
   loadProcessConfig,
   loadSettings,
   setupPrefetcher,
+  startFlipperServer,
+  startServer,
   Tail,
 } from 'flipper-server-core';
 import {
@@ -40,25 +43,13 @@ import {initializeElectron} from './electron/initializeElectron';
 import path from 'path';
 import fs from 'fs-extra';
 import {ElectronIpcClientRenderer} from './electronIpc';
+import {checkSocketInUse, makeSocketPath} from 'flipper-server-core';
+import {KeytarModule} from 'flipper-server-core/src/utils/keytar';
+import {initCompanionEnv} from 'flipper-server-companion';
 
 enableMapSet();
 
-async function getEmbeddedFlipperServer(
-  logger: Logger,
-  electronIpcClient: ElectronIpcClientRenderer,
-): Promise<FlipperServer> {
-  const execPath =
-    process.execPath || (await electronIpcClient.send('getProcess')).execPath;
-  const appPath = await electronIpcClient.send('getPath', 'app');
-  const staticPath = getStaticDir(appPath);
-  const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
-  const env = process.env;
-  const environmentInfo = await getEnvironmentInfo(
-    staticPath,
-    isProduction,
-    false,
-  );
-
+async function getKeytarModule(staticPath: string): Promise<KeytarModule> {
   let keytar: any = undefined;
   try {
     if (!isTest()) {
@@ -77,50 +68,88 @@ async function getEmbeddedFlipperServer(
   } catch (e) {
     console.error('Failed to load keytar:', e);
   }
-
-  const flipperServer = new FlipperServerImpl(
-    {
-      environmentInfo,
-      env: parseEnvironmentVariables(env),
-      // TODO: make userame parameterizable
-      gatekeepers: getGatekeepers(environmentInfo.os.unixname),
-      paths: {
-        appPath,
-        homePath: await electronIpcClient.send('getPath', 'home'),
-        execPath,
-        staticPath,
-        tempPath: await electronIpcClient.send('getPath', 'temp'),
-        desktopPath: await electronIpcClient.send('getPath', 'desktop'),
-      },
-      launcherSettings: await loadLauncherSettings(),
-      processConfig: loadProcessConfig(env),
-      settings: await loadSettings(),
-      validWebSocketOrigins: constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
-    },
-    logger,
-    keytar,
-  );
-
-  return flipperServer;
+  return keytar;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getFlipperServer(
-  _logger: Logger,
+  logger: Logger,
   electronIpcClient: ElectronIpcClientRenderer,
 ): Promise<FlipperServer> {
+  const execPath =
+    process.execPath || (await electronIpcClient.send('getProcess')).execPath;
   const appPath = await electronIpcClient.send('getPath', 'app');
   const staticPath = getStaticDir(appPath);
-
-  const loggerOutputFile = 'flipper-server-log.out';
-  tailServerLogs(path.join(staticPath, loggerOutputFile));
-
-  const flipperServer = await createFlipperServer(
-    'localhost',
-    52342,
-    (_state: FlipperServerState) => {},
+  const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
+  const env = process.env;
+  const environmentInfo = await getEnvironmentInfo(
+    staticPath,
+    isProduction,
+    false,
   );
-  return flipperServer;
+  const keytar: KeytarModule = await getKeytarModule(staticPath);
+  const gatekeepers = getGatekeepers(environmentInfo.os.unixname);
+  if (gatekeepers['flipper_desktop_use_server']) {
+    const socketPath = await makeSocketPath();
+    if (!(await checkSocketInUse(socketPath))) {
+      console.info('flipper-server: not running/listening, start');
+
+      const {socket} = await startServer({
+        port: 52342,
+        staticDir: staticPath,
+        entry: 'index.web.dev.html',
+      });
+
+      const flipperServer = await startFlipperServer(
+        appPath,
+        staticPath,
+        '',
+        false,
+        keytar,
+      );
+
+      const companionEnv = await initCompanionEnv(flipperServer);
+      await flipperServer.connect();
+
+      attachSocketServer(flipperServer, socket, companionEnv);
+    } else {
+      console.info('flipper-server: already running');
+      const loggerOutputFile = 'flipper-server-log.out';
+      tailServerLogs(path.join(staticPath, loggerOutputFile));
+    }
+
+    const flipperServer = await createFlipperServer(
+      'localhost',
+      52342,
+      (_state: FlipperServerState) => {},
+    );
+    return flipperServer;
+  } else {
+    const flipperServer = new FlipperServerImpl(
+      {
+        environmentInfo,
+        env: parseEnvironmentVariables(env),
+        // TODO: make username parameterizable
+        gatekeepers: gatekeepers,
+        paths: {
+          appPath,
+          homePath: await electronIpcClient.send('getPath', 'home'),
+          execPath,
+          staticPath,
+          tempPath: await electronIpcClient.send('getPath', 'temp'),
+          desktopPath: await electronIpcClient.send('getPath', 'desktop'),
+        },
+        launcherSettings: await loadLauncherSettings(),
+        processConfig: loadProcessConfig(env),
+        settings: await loadSettings(),
+        validWebSocketOrigins:
+          constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
+      },
+      logger,
+      keytar,
+    );
+
+    return flipperServer;
+  }
 }
 
 async function start() {
@@ -129,7 +158,7 @@ async function start() {
 
   const electronIpcClient = new ElectronIpcClientRenderer();
 
-  const flipperServer: FlipperServer = await getEmbeddedFlipperServer(
+  const flipperServer: FlipperServer = await getFlipperServer(
     logger,
     electronIpcClient,
   );
