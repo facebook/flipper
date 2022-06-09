@@ -2,4 +2,164 @@
 id: documentation-formatting
 title: Formatting Tips
 ---
-import useBaseUrl from '@docusaurus/useBaseUrl';
+
+This page provides recommendations on the use of a variety of Markdown features that help you create properly formatted documentation.
+
+## Subsections
+
+Use regular H2..H6 markdown headings for subsections.
+
+```markdown
+## Level 2 title
+
+### Level 3 title
+
+#### Level 4 title
+```
+
+```diff
+- **Testing complex components**
++ ### Testing complex components
+```
+
+:::tip
+
+* The page title will implicitly be formatted with H1, so start with H2.
+
+* Headings appear in the Table of Contents, which gives the reader an overview of the page and assists with navigation.
+:::
+
+## Backticks
+
+Use Markdown backticks ( \` \), to provide emphasis for items such as file names, classes, methods, parameters, and expressions.
+
+```markdown
+Let's use the `TestComponent`, which has one direct child, `InnerComponent`, and one non-direct child, `Text`.
+```
+
+**Result**:
+Let's use the `TestComponent`, which has one direct child, `InnerComponent`, and one non-direct child, `Text`.
+
+## Code Snippets
+
+For code snippets, remember to add the language tag (`javascript` is used in the following example).
+
+````markdown
+```javascript
+import {addPlugin} from "react-native-flipper"
+
+addPlugin({
+  getId() {
+    return 'ReactNativeExamplePlugin';
+  },
+  onConnect(connection) {
+    mammmals.forEach(({ title, pictureUrl }, index) => {
+      connection.send('newRow', {
+          id: index,
+          title,
+          url: pictureUrl
+      })
+    })
+  },
+  onDisconnect() {
+  }
+})
+````
+
+**Result:**
+
+```javascript
+import {addPlugin} from "react-native-flipper"
+
+addPlugin({
+  getId() {
+    return 'ReactNativeExamplePlugin';
+  },
+  onConnect(connection) {
+    mammmals.forEach(({ title, pictureUrl }, index) => {
+      connection.send('newRow', {
+          id: index,
+          title,
+          url: pictureUrl
+      })
+    })
+  },
+  onDisconnect() {
+  }
+})
+
+For more code blocks features, such as line highlighting, see the Docusaurus [Code blocks](https://docusaurus.io/docs/markdown-features/code-blocks) document.
+
+## Links
+
+Docusaurus supports regular Markdown links with absolute URLs, relative URLs, and relative file paths.
+
+However, due to the [trailing slash issue](https://github.com/facebook/docusaurus/pull/4908), it's strongly recommended to link to page files (including their extension) instead of the page's URL.
+
+```diff
+- Don't link to markdown page URLs: [Create a page](create-a-page).
++ Create links using full file names: [Create a page](create-a-page.md).
+other text
+- [Create internal only document](contributing-documentation#internal-only-content]
++ [Create internal only document](contributing-documentation.md#internal-only-content]
+```
+
+:::tip
+Don't use absolute or internal docs links.
+With relative links, the Static Docs engine will automatically use the right host depending on whether docs are accessed externally or internally.
+:::
+
+## Tabs
+
+To organize content in tabs, Docusaurus provides the `Tabs` React component:
+
+```javascript
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  groupId="platform"
+  defaultValue="iOS"
+  values={[
+    {label: 'iOS', value: 'ios'},
+    {label: 'Android', value: 'android'},
+  ]}>
+  <TabItem value="ios">
+    Information about Flipper on iOS.
+  </TabItem>
+  <TabItem value="android">
+    Information about Flipper on Android.
+  </TabItem>
+</Tabs>
+```
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+**Result:**
+<Tabs
+  groupId="platform"
+  defaultValue="ios"
+  values={[
+    {label: 'iOS', value: 'ios'},
+    {label: 'Android', value: 'android'},
+  ]}>
+  <TabItem value="ios">
+    Information about Flipper on iOS.
+  </TabItem>
+  <TabItem value="android">
+    Information about Flipper on Android.
+  </TabItem>
+</Tabs>
+
+:::tip
+To sync several `Tabs` components on the website set the same `groupId` for them. More info in
+Docusaurus [Tabs Syncing](https://docusaurus.io/docs/markdown-features/tabs#syncing-tab-choices) docs.
+:::
+
+## Resources
+
+For additional information, see the following resources:
+
+* [StaticDocs Markdown features](https://www.internalfb.com/intern/staticdocs/staticdocs/docs/documenting/markdown-features)
+* [Docusaurus Markdown features](https://docusaurus.io/docs/markdown-features)
