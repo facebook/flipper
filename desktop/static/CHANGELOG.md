@@ -1,3 +1,13 @@
+# 0.149.0 (8/6/2022)
+
+ * [D36736495](https://github.com/facebook/flipper/search?q=D36736495&type=Commits) -  DataTable: more pronounced background color for selections
+ * [D36736496](https://github.com/facebook/flipper/search?q=D36736496&type=Commits) -  DataTable: Data tables will now preserve the current selection and scroll it into view when changing the search filter.
+ * [D36736494](https://github.com/facebook/flipper/search?q=D36736494&type=Commits) -  DataTable: pressing the control key can be used to temporarily turn the current search filter on and off.
+ * [D36736821](https://github.com/facebook/flipper/search?q=D36736821&type=Commits) -  DataTable will now keep a history of search items when hitting <return> to search. Use the history button to bring up the history.
+ * [D36781555](https://github.com/facebook/flipper/search?q=D36781555&type=Commits) -  Fixed bug when copying value from context menu in detail sidebar
+ * [D36781553](https://github.com/facebook/flipper/search?q=D36781553&type=Commits) -  Added hover state to detail inspector
+
+
 # 0.148.0 (1/6/2022)
 
  * [D36760209](https://github.com/facebook/flipper/search?q=D36760209&type=Commits) -  Add a deprecation warning for deprecated plugins.
