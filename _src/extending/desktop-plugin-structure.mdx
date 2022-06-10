@@ -4,9 +4,8 @@ title: Plugin structure
 ---
 
 import FbNpmDeps from '../fb/_adding-npm-dependencies-0.mdx'
-import FbOnlyParts from '../fb/_fb-only-parts-in-os-plugins.mdx'
 
-Flipper Desktop plugins have a rigid structure. We recommend to scaffold any new plugin using our scaffolding tooling.
+Flipper Desktop plugins have a rigid structure. It's recommended to scaffold any new plugin using the Flipper scaffolding tooling.
 
 ## Scaffolding a new plugin
 
@@ -25,19 +24,21 @@ Note that this should typically _not_ be inside a Flipper checkout, but rather a
 
 ### scarf flipper-plugin
 
-On a FB machine, new plugins can be scaffolded by running `scarf flipper-plugin`.
-This takes care of both the Desktop and Client side setup of plugins.
-Follow the instructions offered by scarf.
+On a Meta machine, new plugins can be scaffolded by running `scarf flipper-plugin`. This takes care of both the Desktop and client-side setup of plugins.
+Follow the instructions offered by Scarf.
 
 </FbInternalOnly>
 
 ## Desktop Plugin structure
 
-All Flipper Desktop plugins must be self-contained in a directory. This directory must contain at a minimum package.json and entry source file, e.g.:
-* package.json
-* src/index.tsx
+All Flipper Desktop plugins must be self-contained in a directory that must contain, at a minimum:
 
-After scaffolding a new plugin has finished, you should have files `package.json` and `src/index.tsx` files in the directory. The first file is the plugin package manifest and the second is the entry point to your plugin. An example `package.json` file could look like this:
+* `package.json` - the plugin packet manifest.
+* An entry source file for your plugin (such as `src/index.tsx`).
+
+After scaffolding a new plugin has finished, those files will exist in the relevant directory.
+
+An example `package.json` file could look like the following:
 
 ```json
 {
@@ -73,31 +74,29 @@ After scaffolding a new plugin has finished, you should have files `package.json
 }
 ```
 
-Important attributes of `package.json`:
+The following are important attributes of `package.json`:
 
-- `$schema` must contain URI identifying scheme according to which the plugin is defined. Currently, Flipper supports plugins defined by the specification version 2 (https://fbflipper.com/schemas/plugin-package/v2.json), while version 1 is being deprecated.
+* `$schema` - must contain the URI identifying scheme according to which the plugin is defined. Currently, Flipper supports plugins defined by the specification [version 2](https://fbflipper.com/schemas/plugin-package/v2.json), while version 1 is being deprecated.
 
-- `name` Npm package name. Should start with `flipper-plugin-` by convention, so Flipper plugins can be easily found on npm.
+* `name` - the NPM package name. Should start with `flipper-plugin-` by convention so the Flipper plugins can be easily find it on NPM.
 
-- `id` Used as the plugin native identifier and **must match the mobile plugin identifier**, e.g. returned by `getId` method of your Java plugin.
+* `id` - the plugin native identifier, which **must match the mobile plugin identifier** returned by the `getId` method of your Java plugin.
 
-- `pluginType` Specifies type of the plugin - client or device. See section [Anatomy of a Desktop plugin](#anatomy-of-a-desktop-plugin) for details.
+* `pluginType` - Specifies the plugin type: client or device. For details, see the [Anatomy of a Desktop plugin](#anatomy-of-a-desktop-plugin), below.
 
-- `main` Points to the plugin bundle which will be loaded by Flipper. The "flipper-pkg" utility uses this field to determine output location during plugin bundling.
+* `main` - points to the plugin bundle which is loaded by Flipper. The "flipper-pkg" utility uses this field to determine output location during plugin bundling.
 
-- `flipperBundlerEntry` Points to the source entry point which will be used for plugin code bundling. "flipper-pkg" takes the path specified in `flipperBundlerEntry` as source, transpiles and bundles it, and saves the output to the path specified in `main`.
+* `flipperBundlerEntry` - points to the source entry point used for plugin code bundling. `flipper-pkg` takes the path specified in `flipperBundlerEntry` as source, transpiles and bundles it, and saves the output to the path specified in `main`.
 
-- `keywords` The field must contain the `flipper-plugin` keyword, otherwise Flipper won't discover the plugin. Additionally, the field can also contain any other keywords for better plugin discoverability.
+* `keywords` - the field must contain the `flipper-plugin` keyword, otherwise Flipper won't discover the plugin. Additionally, the field can also contain any other keywords for better plugin discoverability.
 
-- `title` Shown in the main sidebar as the human-readable name of the plugin.
+* `title` - shown in the main sidebar as the human-readable name of the plugin.
 
-- `icon` Determines the plugin icon which is displayed in the main sidebar. The list of available icons is static for now: https://github.com/facebook/flipper/blob/main/desktop/static/icons.json.
+* `icon` - determines the plugin icon that is displayed in the main sidebar. The list of available icons is static for now (see [icons.json](https://github.com/facebook/flipper/blob/main/desktop/static/icons.json) in GitHub).
 
-- `bugs` Specify an email and/or url, where plugin bugs should be reported.
+* `bugs` - specify an email and/or URL where plugin bugs should be reported.
 
-In `index.tsx` you will define the plugin in JavaScript.
-
-Example `index.tsx`:
+In `index.tsx` you define the plugin in JavaScript, as shwon in the following example:
 
 ```js
 export function plugin(client) {
@@ -109,21 +108,23 @@ export function Component() {
 }
 ```
 
-Some public plugins will use a `FlipperPlugin` base class. This format is deprecated.
+:::note
+Some public plugins use a `FlipperPlugin` base class. That format is deprecated.
+:::
 
 ## Anatomy of a Desktop plugin
 
 Flipper Desktop plugins come in three possible flavors:
 
-1. Client plugins: A plugin that connects to a specific client plugin running in an app (recommended)
-2. Device plugins: A plugin that doesn't connect to a specific client and doesn't have a native counter part, but rather shows data about the device obtained through some other means, like device logs, device temperatures, etc.
-3. Table plugin: A simplified version of a client plugin, that merely displays incoming data from a client plugin in a table.
+1. **Client plugins** - connects to a specific client plugin running in an app (recommended).
+2. **Device plugins** - doesn't connect to a specific client and doesn't have a native counterpart but shows data about the device obtained through some other means, like device logs, device temperatures, and so on.
+3. **Table plugin** - a simplified version of a client plugin that merely displays incoming data from a client plugin in a table.
 
 ### Creating a Client Plugin
 
-A plugin always exposes two elements from its entry module (typically `src/index.tsx`): `plugin` and `Component`:
+A plugin always exposes two elements from its entry module (typically `src/index.tsx`), `plugin` and `Component`, as shown in the following snippet:
 
-```tsx
+```js
 import {PluginClient} from 'flipper-plugin';
 
 export function plugin(client: PluginClient) {
@@ -138,14 +139,20 @@ export function Component() {
 
 <FbInternalOnly>
 
-Client plugins must have the property `pluginType` set to `client` in their package.json. They should also specify supported apps using property `supportedApps`
-in package.json. The property should contain an array of supported apps each defined as conjunction of app properties in the following format:
-`{"appID": <"Facebook" | "Instagram" | "Messenger">,  "os": <"Android" | "iOS" | "Metro">, "type": <"physical" | "emulator"> }`. For example: `{ "appID": "Facebook", "os": "Android", "type": "emulator" }` means
-that app facebook must work on Android AND must be an emulator in order to debug it using the plugin.
+Client plugins must have the property `pluginType` set to `client` and should specify supported apps using the property `supportedApps` in package.json.
 
-Note that if the os field is missing that means both Android and iOS are supported by the app and similarly we assume that a specific plugin working for a physical device will also work for the emulator. Hence the type field is assumed to be true for both physical and emulator devices unless specifically only one of them is written in the .json file.
+The `supportedApps` property should contain an array of supported apps, each defined as a conjunction of app properties, using the following format:
 
-To specify that a plugin supports Facebook on Android/iOS physical/emulator devices, Messenger on only Android physical/emulator and does not support Instagram, the plugin package.json should look like that:
+```sh
+{"appID": <"Facebook" | "Instagram" | "Messenger">,  "os": <"Android" | "iOS" | "Metro">, "type": <"physical" | "emulator"> }
+```
+
+For example, the array `{ "appID": "Facebook", "os": "Android", "type": "emulator" }` indicates that the Facebook app must work on Android AND must be an emulator in order to debug it using the plugin.
+
+Note that if the `os` field is missing, it indicates that both Android and iOS are supported by the app and that a specific plugin, working for a physical device, also works for the emulator. In such a case, the `type` field is assumed to be 'true' for both physical and emulator devices, unless only one of them is specifically stated in the .json file.
+
+To specify that a plugin supports Facebook on Android/iOS physical/emulator devices, Messenger on only Android physical/emulator and does not support Instagram, the plugin package.json should look like the following:
+
 ```json
 {
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
@@ -162,23 +169,28 @@ To specify that a plugin supports Facebook on Android/iOS physical/emulator devi
 
 </FbInternalOnly>
 
-A further guide on how to write custom Flipper plugins can be found here: [tutorial](../tutorial/js-custom.mdx).
+For details on how to write custom Flipper plugins, see the [Building a Desktop Plugin - Custom UI](../tutorial/js-custom.mdx) tutorial page.
 
 <FbInternalOnly>
 
-Note after adding new plugins the metadata of the supportedApps field needs to be updated. This has to be done in the package.json file in the directory by the name of the plugin under plugins/fb/\{directory name\} or plugins/public/\{directory name\}/fb.
-If an App is not listed in the supportedApps definition, it does not always mean flipper doesn't support it. It could just be because the plugin was recently added and the .json files were not updated. 
-Plugins will work for apps that register them, even when they are not registered here in the metadata. The most important reason to add supported apps to the suppertedApps is to allow Flipper to signal to the user which plugins are supposed to work on which apps during troubleshooting.
+:::note
+After adding new plugins, the metadata of the `supportedApps` field needs to be updated.
+This has to be done in the `package.json` file in the directory by the name of the plugin under `plugins/fb/\{directory name\}` or `plugins/public/\{directory name\}/fb`.
+
+If an App is not listed in the supportedApps definition, it may still be supported by Flipper; it could be the case that the plugin was recently added and the .json files were not updated.
+
+Plugins will work for apps that register them, even when they are not registered here in the metadata. The most important reason to add supported apps to the `suppertedApps` is to allow Flipper to signal to the user which plugins are supposed to work on which apps during troubleshooting.
+:::
 
 </FbInternalOnly>
 
 ### Creating a Device Plugin
 
-Flipper also supports so-called device plugins - plugins that are available for an entire device - but don't receive a connection to a running app,
-so are a bit more limited in general.
-Their entry module anatomy is:
+Flipper also supports so-called device plugins (plugins that are available for an entire device) but don't receive a connection to a running app, so are a bit more limited in general.
 
-```tsx
+Their entry module anatomy is as follows:
+
+```js
 import {DevicePluginClient} from 'flipper-plugin';
 
 export function devicePlugin(client: DevicePluginClient) {
@@ -191,11 +203,18 @@ export function Component() {
 }
 ```
 
-Desktop plugins must have the property `pluginType` set to `device` in their package.json. They should also specify supported devices using property `supportedDevices`
-in package.json. The property should contain an array of supported devices each defined as conjunction of device properties in the following format:
-`{ "os": <"Android" | "iOS" | "Metro">, "type": <"physical" | "emulator">, "archived": <true | false> }`. For example: `{ "os": "Android", "type": "emulator" }` means
-that device must work on Android AND must be an emulator in order to debug it using the plugin.
-To specify that plugin supports all types of Android devices, and physical iOS devices, and does not support imported (archived) data, the plugin package.json should look like that:
+Client plugins must have the property `pluginType` set to `device` and should specify supported devices using the property `supportedDevices` in package.json.
+
+The `supportedDevices` property should contain an array of supported devices, each defined as a conjunction of device properties, using the following format:
+
+```sh
+{ "os": <"Android" | "iOS" | "Metro">, "type": <"physical" | "emulator">, "archived": <true | false> }
+```
+
+For example, the array `{ "os": "Android", "type": "emulator" }` indicates that device must work on Android AND must be an emulator in order to debug it using the plugin.
+
+To specify that a plugin supports all types of Android devices, and physical iOS devices, and does not support imported (archived) data, the plugin package.json should look like the following:
+
 ```json
 {
   "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
@@ -210,19 +229,21 @@ To specify that plugin supports all types of Android devices, and physical iOS d
 }
 ```
 
-Device plugins work in general similar to normal client plugins, so aren't worked out in detail in this document.
-The available APIs for device plugins are listed [here](./flipper-plugin.mdx#devicepluginclient).
+:::information
+Generally, device plugins function in a similar manner to normal client plugins.
+:::
+
+The available APIs for device plugins are listed in the [Desktop Plugin API](./flipper-plugin.mdx#devicepluginclient) page.
 
 ### Creating a simple table plugin
 
-Flipper provides a standard abstraction to render data received from a Client plugin in a table, see [creating a table plugin](./flipper-plugin.mdx#createtableplugin).
-
+Flipper provides a standard abstraction to render data received from a Client plugin in a table, see [createTablePlugin](./flipper-plugin.mdx#createtableplugin) in the 'Desktop Plugin API' page.
 
 ## Validation
 
 <OssOnly>
 
-Plugin definition can be validated using command `flipper-pkg lint`. The command shows all the mismatches which should be fixed to make plugin definition valid.
+Plugin definition can be validated using command `flipper-pkg lint`. The command shows all the mismatches that need to be fixed to make the plugin definition valid.
 
 </OssOnly>
 
@@ -237,24 +258,28 @@ To manually run the linter run `yarn lint` in `~/fbsource/xplat/sonar/desktop`.
 
 ## Transpilation and bundling
 
-Flipper has [tooling for transpiling and bundling](#transpiling-and-bundling) which allows writing plugins in plain ES6 JavaScript or [TypeScript](https://www.typescriptlang.org/).
-We recommend you use **TypeScript** for the best development experience. We also recommend you use the file extension `.tsx` when using TypeScript which adds support for inline React expressions.
+Flipper has tooling for transpiling and bundling that enables the creation of plugins in plain ES6 JavaScript or [TypeScript](https://www.typescriptlang.org/).
 
-As we already mentioned, the [Flipper development build](#development-build) automatically transpiles and bundles plugins on loading. It is capable of all the ES6 goodness, Flow annotations, TypeScript, as well as JSX and applies the required babel-transforms.
+The following are recommended:
 
-The Flipper release build, in contrast, does not transpile or bundle plugins on loading. For production usage, plugins should be [bundled before publishing](#packaging-and-publishing) using [flipper-pkg](https://classic.yarnpkg.com/en/package/flipper-pkg). This utility applies the same modifications as the plugin loader of the development build.
+* Use **TypeScript** for the best development experience.
+* Use `.tsx` when using TypeScript, which adds support for inline React expressions.
+
+You may recall that the Flipper development build automatically transpiles and bundles plugins on loading. It's capable of all ES6 functionality, Flow annotations, TypeScript, as well as JSX, and applies the required babel-transforms.
+
+In contrast, the Flipper release build does not transpile or bundle plugins on loading. For production usage, plugins should be bundled before publishing using [flipper-pkg](https://classic.yarnpkg.com/en/package/flipper-pkg). This utility applies the same modifications as the plugin loader of the development build.
 
 The `flipper-pkg` tool is published to npm and should be installed as a `devDependency` for the plugin package.
 
 Then, to bundle the plugin, execute the following command in its folder:
 
-```
+```sh
 yarn flipper-pkg bundle
 ```
 
 This command reads the `package.json`, takes the path specified in the `flipperBundleEntry` field as entry point, transpiles and bundles all the required code, and outputs the produced bundle to the path specified in field `main`.
 
-You can get the list of other available commands by invoking `flipper-pkg help`, and get detailed description for any command by invoking `flipper-pkg help [COMMAND]`. You can also check README on npmjs.com for usage details: https://www.npmjs.com/package/flipper-pkg.
+You can get the list of other available commands by invoking `flipper-pkg help`, and get detailed description for any command by invoking `flipper-pkg help [COMMAND]`. For usage details, see the [flipper-pkg](https://www.npmjs.com/package/flipper-pkg) page on the npmjs.com web site.
 
 </OssOnly>
 
@@ -270,29 +295,8 @@ If you need any dependencies in your plugin, you can install them using `yarn ad
 
 <OssOnly>
 
-<div class="warning">
-
-Flipper plugins should be designed to work inside browsers as well, as Flipper isn't guaranteed to be always running on top of Electron. 
-For that reason it should be avoided to use Node.js APIs directly (e.g. modules like `fs`, `child_process`, `path`), 
-or packages that depend on those. 
-For alternative APIs, see [using Node.js APIs](./node-apis.mdx) in Flipper plugins.
-
-</div>
-
-## Migration to new Plugin Specification
-
-Flipper plugins are defined according to the specification. As with any specification, it is evolving, so new versions of it can be released. Currently Flipper supports plugins defined using version 2 of specification which is described in this page. Previous version of specification is being deprecated, and we encourage all the plugins still using it to migrate.
-
-The main difference of version 2 is that plugins are transpiled and bundled before packaging, while in version 1 this was done in run-time on plugin installation. There are no plugin API changes, so only the `package.json` changes are required to migrate.
-
-The easiest way for migration is using of command `flipper-pkg migrate`. It will automatically migrate your plugin definition to the latest version.
+:::caution
+Flipper plugins should be designed to work inside browsers as well, as Flipper isn't guaranteed to be always running on top of Electron. For that reason, you should avoid using Node.js APIs directly (such as modules like `fs`, `child_process`, `path`), or packages that depend on them. For alternative APIs, see [using Node.js APIs](./node-apis.mdx) in Flipper plugins.
+:::
 
 </OssOnly>
-
-<FbInternalOnly>
-
-## Adding fb-only code to open-sourced plugins
-
-<FbOnlyParts />
-
-</FbInternalOnly>
