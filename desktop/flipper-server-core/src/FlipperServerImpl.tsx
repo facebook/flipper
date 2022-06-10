@@ -50,6 +50,8 @@ import rm from 'rimraf';
 import assert from 'assert';
 import {initializeAdbClient} from './devices/android/adbClient';
 import {assertNotNull} from './comms/Utilities';
+import {mkdirp} from 'fs-extra';
+import {flipperDataFolder, flipperSettingsFolder} from './utils/paths';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
@@ -167,6 +169,7 @@ export class FlipperServerImpl implements FlipperServer {
     this.setServerState('starting');
 
     try {
+      await this.createFolders();
       await this.server.init();
       await this.pluginManager.start();
       await this.startDeviceListeners();
@@ -177,6 +180,11 @@ export class FlipperServerImpl implements FlipperServer {
       }
       this.setServerState('error', e);
     }
+  }
+
+  private async createFolders() {
+    await mkdirp(flipperDataFolder);
+    await mkdirp(flipperSettingsFolder);
   }
 
   async startDeviceListeners() {

@@ -9,9 +9,9 @@
 
 import os from 'os';
 import {resolve} from 'path';
-import xdg from 'xdg-basedir';
 import {Settings, Tristate} from 'flipper-common';
 import {readFile, writeFile, pathExists, mkdirp} from 'fs-extra';
+import {flipperSettingsFolder} from './paths';
 
 export async function loadSettings(
   settingsString: string = '',
@@ -36,21 +36,14 @@ export async function loadSettings(
 }
 
 export async function saveSettings(settings: Settings): Promise<void> {
-  await mkdirp(getSettingsDir());
+  await mkdirp(flipperSettingsFolder);
   await writeFile(getSettingsFile(), JSON.stringify(settings, null, 2), {
     encoding: 'utf8',
   });
 }
 
-function getSettingsDir() {
-  return resolve(
-    ...(xdg.config ? [xdg.config] : [os.homedir(), '.config']),
-    'flipper',
-  );
-}
-
 function getSettingsFile() {
-  return resolve(getSettingsDir(), 'settings.json');
+  return resolve(flipperSettingsFolder, 'settings.json');
 }
 
 export const DEFAULT_ANDROID_SDK_PATH = getDefaultAndroidSdkPath();

@@ -16,15 +16,15 @@ import {
 import path from 'path';
 import tmp, {FileOptions} from 'tmp';
 import {reportPlatformFailures} from 'flipper-common';
-import os from 'os';
 import {isTest} from 'flipper-common';
+import {flipperDataFolder} from './paths';
 
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,
 ) => Promise<string>;
 
 const getFilePath = (fileName: string): string => {
-  return path.resolve(os.homedir(), '.flipper', 'certs', fileName);
+  return path.resolve(flipperDataFolder, 'certs', fileName);
 };
 
 // Desktop file paths
