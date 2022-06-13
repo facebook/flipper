@@ -198,13 +198,6 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       };
     }
 
-    case 'RESET_SUPPORT_FORM_V2_STATE': {
-      return {
-        ...state,
-        staticView: null,
-      };
-    }
-
     case 'SELECT_DEVICE': {
       const {payload} = action;
       return {

@@ -7,7 +7,6 @@
  * @format
  */
 
-import {Group, SUPPORTED_GROUPS} from './reducers/supportForm';
 import {getLogger, Logger} from 'flipper-common';
 import {Store} from './reducers/index';
 import {importDataToStore} from './utils/exportData';
@@ -72,14 +71,6 @@ export async function handleDeeplink(
         });
     }
     throw unknownError();
-  } else if (uri.pathname.match(/^\/*support-form\/*$/)) {
-    const formParam = uri.searchParams.get('form');
-    const grp = deeplinkFormParamToGroups(formParam);
-    if (grp) {
-      grp.handleSupportFormDeeplinks(store);
-      return;
-    }
-    throw unknownError();
   } else if (uri.pathname.match(/^\/*login\/*$/)) {
     const token = uri.searchParams.get('token');
     showLoginDialog(token ?? '');
@@ -125,17 +116,6 @@ export async function handleDeeplink(
   } else {
     throw unknownError();
   }
-}
-
-function deeplinkFormParamToGroups(
-  formParam: string | null,
-): Group | undefined {
-  if (!formParam) {
-    return undefined;
-  }
-  return SUPPORTED_GROUPS.find((grp) => {
-    return grp.deeplinkSuffix.toLowerCase() === formParam.toLowerCase();
-  });
 }
 
 export const uriComponents = (url: string): Array<string> => {

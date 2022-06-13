@@ -22,12 +22,6 @@ import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import {v4 as uuidv4} from 'uuid';
 import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {TestIdler} from './Idler';
-import {setStaticView} from '../reducers/connections';
-import {
-  resetSupportFormV2State,
-  SupportFormRequestDetailsState,
-} from '../reducers/supportForm';
-import {deconstructClientId} from 'flipper-common';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
@@ -38,7 +32,6 @@ import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
 import {getRenderHostInstance} from '../RenderHost';
 import {uploadFlipperMedia} from '../fb-stubs/user';
-import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -66,7 +59,6 @@ export type ExportType = {
   // The GraphQL plugin relies on this format for generating
   // Flipper traces from employee dogfooding. See D28209561.
   pluginStates2: SandyPluginStates;
-  supportRequestDetails?: SupportFormRequestDetailsState;
 };
 
 type ProcessNotificationStatesOptions = {
@@ -482,15 +474,6 @@ export async function exportStore(
     statusUpdate,
     idler,
   );
-  if (includeSupportDetails) {
-    exportData.supportRequestDetails = {
-      ...state.supportForm?.supportFormV2,
-      appName:
-        state.connections.selectedAppId == null
-          ? ''
-          : deconstructClientId(state.connections.selectedAppId).app,
-    };
-  }
 
   statusUpdate && statusUpdate('Serializing Flipper data...');
   const serializedString = JSON.stringify(exportData);
@@ -524,7 +507,6 @@ export const exportStoreToFile = (
         exportFilePath,
         serializedString,
       );
-      store.dispatch(resetSupportFormV2State());
       return {fetchMetaDataErrors};
     },
   );
@@ -533,7 +515,7 @@ export const exportStoreToFile = (
 export function importDataToStore(source: string, data: string, store: Store) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
   const json: ExportType = JSON.parse(data);
-  const {device, clients, supportRequestDetails, deviceScreenshot} = json;
+  const {device, clients, deviceScreenshot} = json;
   if (device == null) {
     return;
   }
@@ -546,7 +528,6 @@ export function importDataToStore(source: string, data: string, store: Store) {
     os,
     screenshotHandle: deviceScreenshot,
     source,
-    supportRequestDetails,
   });
   archivedDevice.loadDevicePlugins(
     store.getState().plugins.devicePlugins,
@@ -579,12 +560,6 @@ export function importDataToStore(source: string, data: string, store: Store) {
       ).initFromImport(sandyPluginStates),
     });
   });
-  if (supportRequestDetails) {
-    store.dispatch(
-      // Late require to avoid circular dependency issue
-      setStaticView(SupportRequestDetails),
-    );
-  }
 }
 
 export const importFileToStore = async (file: string, store: Store) => {

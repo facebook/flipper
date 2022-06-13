@@ -43,7 +43,6 @@ import {logout} from '../reducers/user';
 import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
-import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import {setStaticView} from '../reducers/connections';
 import {getLogger} from 'flipper-common';
 import {SandyRatingButton} from '../chrome/RatingButton';
@@ -302,13 +301,7 @@ function ExtrasMenu() {
                       source: 'sidebar',
                       group: undefined,
                     });
-                    if (
-                      getRenderHostInstance().GK('flipper_support_entry_point')
-                    ) {
-                      openSupportRequestForm(fullState);
-                    } else {
-                      store.dispatch(setStaticView(SupportRequestFormV2));
-                    }
+                    openSupportRequestForm(fullState);
                   }}>
                   Feedback
                 </Menu.Item>

@@ -32,10 +32,6 @@ import plugins, {
   persistMigrations as pluginsPersistMigrations,
   persistVersion as pluginsPersistVersion,
 } from './plugins';
-import supportForm, {
-  State as SupportFormState,
-  Action as SupportFormAction,
-} from './supportForm';
 import settings, {Action as SettingsAction} from './settings';
 import launcherSettings, {
   Action as LauncherSettingsAction,
@@ -74,7 +70,6 @@ export type Actions =
   | UserAction
   | SettingsAction
   | LauncherSettingsAction
-  | SupportFormAction
   | PluginManagerAction
   | HealthcheckAction
   | TrackingAction
@@ -90,7 +85,6 @@ export type State = {
   user: UserState & PersistPartial;
   settingsState: Settings;
   launcherSettingsState: LauncherSettings;
-  supportForm: SupportFormState;
   pluginManager: PluginManagerState;
   healthchecks: HealthcheckState & PersistPartial;
   usageTracking: TrackingState;
@@ -151,7 +145,6 @@ export function createRootReducer() {
       },
       plugins,
     ),
-    supportForm,
     pluginManager,
     user: user as any,
     settingsState: settings,

@@ -26,7 +26,6 @@ import ShareSheetErrorList from './ShareSheetErrorList';
 import {reportPlatformFailures} from 'flipper-common';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {getLogger} from 'flipper-common';
-import {resetSupportFormV2State} from '../reducers/supportForm';
 import {MiddlewareAPI} from '../reducers/index';
 import {getFlipperLib, Layout} from 'flipper-plugin';
 import {Button, Modal} from 'antd';
@@ -121,7 +120,6 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
         });
       }
       this.setState({fetchMetaDataErrors, result});
-      this.store.dispatch(resetSupportFormV2State());
       this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
       const result: DataExportError = {

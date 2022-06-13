@@ -9,7 +9,6 @@
 
 import BaseDevice from './BaseDevice';
 import type {DeviceOS, DeviceType} from 'flipper-plugin';
-import {SupportFormRequestDetailsState} from '../reducers/supportForm';
 
 export default class ArchivedDevice extends BaseDevice {
   isArchived = true;
@@ -21,7 +20,6 @@ export default class ArchivedDevice extends BaseDevice {
     os: DeviceOS;
     screenshotHandle?: string | null;
     source?: string;
-    supportRequestDetails?: SupportFormRequestDetailsState;
   }) {
     super(
       {
@@ -53,7 +51,6 @@ export default class ArchivedDevice extends BaseDevice {
     );
     this.connected.set(false);
     this.source = options.source || '';
-    this.supportRequestDetails = options.supportRequestDetails;
     this.archivedScreenshotHandle = options.screenshotHandle ?? null;
   }
 
@@ -62,8 +59,6 @@ export default class ArchivedDevice extends BaseDevice {
   displayTitle(): string {
     return `${this.title} ${this.source ? '(Imported)' : '(Offline)'}`;
   }
-
-  supportRequestDetails?: SupportFormRequestDetailsState;
 
   getArchivedScreenshotHandle(): string | null {
     return this.archivedScreenshotHandle;
