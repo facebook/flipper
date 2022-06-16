@@ -160,7 +160,9 @@ function addWebsocket(server: http.Server, config: Config) {
     localhostIPV6NoBrackets,
     localhostIPV4Electron,
   ];
-  const possibleOrigins = possibleHosts.map((host) => `http://${host}`);
+  const possibleOrigins = possibleHosts
+    .map((host) => `http://${host}`)
+    .concat(['file://']);
 
   const verifyClient: VerifyClientCallbackSync = ({origin, req}) => {
     const noOriginHeader = origin === undefined;
