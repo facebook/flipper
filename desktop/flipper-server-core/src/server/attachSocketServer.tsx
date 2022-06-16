@@ -19,12 +19,22 @@ import {
   CompanionEventWebSocketMessage,
 } from 'flipper-common';
 import {FlipperServerImpl} from '../FlipperServerImpl';
-import {WebSocketServer} from 'ws';
+import {RawData, WebSocketServer} from 'ws';
 import {
   FlipperServerCompanion,
   FlipperServerCompanionEnv,
 } from 'flipper-server-companion';
 import {URLSearchParams} from 'url';
+
+const safe = (f: () => void) => {
+  try {
+    f();
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.name, error.stack);
+    }
+  }
+};
 
 /**
  * Attach and handle incoming messages from clients.
@@ -42,7 +52,7 @@ export function attachSocketServer(
         ` ${req.socket.remoteAddress}:${req.socket.remotePort}`) ||
       '';
 
-    console.log(`Client connected${clientAddress}`);
+    console.log('Client connected', clientAddress);
 
     let connected = true;
 
@@ -117,7 +127,7 @@ export function attachSocketServer(
 
     flipperServerCompanion?.onAny(onServerCompanionEvent);
 
-    client.on('message', (data) => {
+    async function onClientMessage(data: RawData) {
       let [event, payload]: [event: string | null, payload: any | null] = [
         null,
         null,
@@ -205,20 +215,30 @@ export function attachSocketServer(
             });
         }
       }
+    }
+
+    client.on('message', (data) => {
+      safe(() => onClientMessage(data));
     });
+
+    async function onClientClose(error: Error | undefined = undefined) {
+      if (error) {
+        console.error(`Client disconnected ${clientAddress} with error`, error);
+      } else {
+        console.log(`Client disconnected ${clientAddress}`);
+      }
+
+      connected = false;
+      flipperServer.offAny(onServerEvent);
+      flipperServerCompanion?.destroyAll();
+    }
 
     client.on('close', () => {
-      console.log(`Client disconnected ${clientAddress}`);
-      connected = false;
-      flipperServer.offAny(onServerEvent);
-      flipperServerCompanion?.destroyAll();
+      safe(() => onClientClose());
     });
 
-    client.on('error', (e) => {
-      console.error(`Socket error ${clientAddress}`, e);
-      connected = false;
-      flipperServer.offAny(onServerEvent);
-      flipperServerCompanion?.destroyAll();
+    client.on('error', (error) => {
+      safe(() => onClientClose(error));
     });
   });
 }
