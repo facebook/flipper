@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
-        node-version: '14.x'
+        node-version: '16.x'
     - name: yarn install (with retry)
       uses: nick-invision/retry@v2.6.0
       with:
@@ -33,7 +33,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
-        node-version: '14.x'
+        node-version: '16.x'
     - name: js-flipper - yarn install (with retry)
       uses: nick-invision/retry@v2.6.0
       with:
