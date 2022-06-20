@@ -48,29 +48,25 @@ import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import isPluginCompatible from '../utils/isPluginCompatible';
 import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance, setGlobalObject} from 'flipper-frontend-core';
 import pMap from 'p-map';
 import * as deprecatedExports from '../deprecated-exports';
 
 let defaultPluginsIndex: any = null;
 
 export default async (store: Store, _logger: Logger) => {
-  // expose Flipper and exact globally for dynamically loaded plugins
-  const globalObject = (function (this: any) {
-    return this;
-  })();
-
-  // this list should match `replace-flipper-requires.tsx` and the `builtInModules` in `desktop/.eslintrc`
-  globalObject.React = React;
-  globalObject.ReactDOM = ReactDOM;
-  globalObject.ReactDOMClient = ReactDOMClient;
-  globalObject.ReactIs = ReactIs;
-  globalObject.Flipper = deprecatedExports;
-  globalObject.FlipperPlugin = FlipperPluginSDK;
-  globalObject.Immer = Immer;
-  globalObject.antd = antd;
-  globalObject.emotion_styled = emotion_styled;
-  globalObject.antdesign_icons = antdesign_icons;
+  setGlobalObject({
+    React,
+    ReactDOM,
+    ReactDOMClient,
+    ReactIs,
+    Flipper: deprecatedExports,
+    FlipperPlugin: FlipperPluginSDK,
+    Immer,
+    antd,
+    emotion_styled,
+    antdesign_icons,
+  });
 
   const gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
   const disabledPlugins: Array<ActivatablePluginDetails> = [];
