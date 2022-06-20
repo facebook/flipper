@@ -11,7 +11,7 @@
 
 import {State} from '../../reducers/index';
 import configureStore from 'redux-mock-store';
-import {default as ArchivedDevice} from '../../devices/ArchivedDevice';
+import {ArchivedDevice} from 'flipper-frontend-core';
 import {
   processStore,
   determinePluginsToProcess,

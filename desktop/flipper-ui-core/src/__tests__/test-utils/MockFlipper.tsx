@@ -21,11 +21,10 @@ import {
 import {PluginDefinition} from '../../plugin';
 import {pluginsInitialized, registerPlugins} from '../../reducers/plugins';
 import {getLogger} from 'flipper-common';
-import {ClientConnection} from 'flipper-frontend-core';
+import {ClientConnection, ArchivedDevice} from 'flipper-frontend-core';
 import {initializeFlipperLibImplementation} from '../../utils/flipperLibImplementation';
 import pluginManager from '../../dispatcher/pluginManager';
 import {PluginDetails} from 'flipper-common';
-import ArchivedDevice from '../../devices/ArchivedDevice';
 import {ClientQuery, DeviceOS} from 'flipper-common';
 import {TestDevice} from '../../devices/TestDevice';
 import {getRenderHostInstance} from '../../RenderHost';

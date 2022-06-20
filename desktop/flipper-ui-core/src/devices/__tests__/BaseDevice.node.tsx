@@ -11,7 +11,7 @@ import * as DeviceTestPluginModule from '../../__tests__/test-utils/DeviceTestPl
 import {TestUtils, _SandyPluginDefinition} from 'flipper-plugin';
 import {createMockFlipperWithPlugin} from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {TestDevice} from '../../devices/TestDevice';
-import ArchivedDevice from '../../devices/ArchivedDevice';
+import {ArchivedDevice} from 'flipper-frontend-core';
 
 const physicalDevicePluginDetails = TestUtils.createMockPluginDetails({
   id: 'physicalDevicePlugin',
