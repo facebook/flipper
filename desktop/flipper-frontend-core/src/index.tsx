@@ -16,6 +16,7 @@ export {
 } from './AbstractClient';
 export {default as ArchivedDevice} from './devices/ArchivedDevice';
 export {default as BaseDevice, DeviceExport} from './devices/BaseDevice';
+export {TestDevice} from './devices/TestDevice';
 export * from './globalObject';
 export * from './plugins';
 export {getPluginKey} from './utils/pluginKey';

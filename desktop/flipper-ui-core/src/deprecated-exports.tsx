@@ -31,7 +31,7 @@ export {getPluginKey} from './utils/pluginKey';
 export {Notification, Idler} from 'flipper-plugin';
 export {IdlerImpl} from './utils/Idler';
 export {Store, State as ReduxState} from './reducers/index';
-export {BaseDevice, ArchivedDevice} from 'flipper-frontend-core';
+export {BaseDevice, ArchivedDevice, TestDevice} from 'flipper-frontend-core';
 export {default as isProduction} from './utils/isProduction';
 export {DetailSidebar} from 'flipper-plugin';
 export {BaseDevice as Device} from 'flipper-frontend-core';
@@ -120,5 +120,4 @@ export {callVSCode} from './utils/vscodeUtils';
 export {IDEFileResolver, IDEType} from './fb-stubs/IDEFileResolver';
 export {Tracked} from 'flipper-plugin'; // To be able to use it in legacy plugins
 export {RequireLogin} from './ui/components/RequireLogin';
-export {TestDevice} from './devices/TestDevice';
 export {connect} from 'react-redux';

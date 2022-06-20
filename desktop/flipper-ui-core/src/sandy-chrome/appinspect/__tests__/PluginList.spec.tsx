@@ -12,7 +12,7 @@ import {
   MockFlipperResult,
 } from '../../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {FlipperPlugin} from '../../../plugin';
-import {BaseDevice} from 'flipper-frontend-core';
+import {BaseDevice, TestDevice} from 'flipper-frontend-core';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {TestUtils} from 'flipper-plugin';
 import {selectPlugin} from '../../../reducers/connections';
@@ -32,7 +32,6 @@ import {
   getMetroDevice,
   getPluginLists,
 } from '../../../selectors/connections';
-import {TestDevice} from '../../../devices/TestDevice';
 
 const createMockPluginDetails = TestUtils.createMockPluginDetails;
 

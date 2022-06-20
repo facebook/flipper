@@ -16,7 +16,7 @@ import {
   PluginClient,
 } from 'flipper-plugin';
 import {handleClientConnected} from '../dispatcher/flipperServer';
-import {TestDevice} from '../devices/TestDevice';
+import {TestDevice} from 'flipper-frontend-core';
 
 test('Devices can disconnect', async () => {
   const deviceplugin = new _SandyPluginDefinition(
