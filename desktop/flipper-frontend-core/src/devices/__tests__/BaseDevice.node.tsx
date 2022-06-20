@@ -7,10 +7,22 @@
  * @format
  */
 
-import * as DeviceTestPluginModule from '../../__tests__/test-utils/DeviceTestPlugin';
-import {TestUtils, _SandyPluginDefinition} from 'flipper-plugin';
-import {createMockFlipperWithPlugin} from '../../__tests__/test-utils/createMockFlipperWithPlugin';
-import {ArchivedDevice, TestDevice} from 'flipper-frontend-core';
+import {getLogger} from 'flipper-common';
+import {baseFlipperLibImplementation} from '../../flipperLibImplementation';
+import {getRenderHostInstance} from '../../RenderHost';
+import AbstractClient from '../../AbstractClient';
+import {
+  TestUtils,
+  _SandyPluginDefinition,
+  _setFlipperLibImplementation,
+} from 'flipper-plugin';
+import {default as ArchivedDevice} from '../ArchivedDevice';
+import {TestDevice} from '../TestDevice';
+
+const createDeviceTestPluginModule = () => ({
+  devicePlugin: jest.fn(),
+  Component: jest.fn(),
+});
 
 const physicalDevicePluginDetails = TestUtils.createMockPluginDetails({
   id: 'physicalDevicePlugin',
@@ -31,7 +43,7 @@ const physicalDevicePluginDetails = TestUtils.createMockPluginDetails({
 });
 const physicalDevicePlugin = new _SandyPluginDefinition(
   physicalDevicePluginDetails,
-  DeviceTestPluginModule,
+  createDeviceTestPluginModule(),
 );
 
 const iosPhysicalDevicePluginDetails = TestUtils.createMockPluginDetails({
@@ -48,7 +60,7 @@ const iosPhysicalDevicePluginDetails = TestUtils.createMockPluginDetails({
 });
 const iosPhysicalDevicePlugin = new _SandyPluginDefinition(
   iosPhysicalDevicePluginDetails,
-  DeviceTestPluginModule,
+  createDeviceTestPluginModule(),
 );
 
 const iosEmulatorlDevicePluginDetails = TestUtils.createMockPluginDetails({
@@ -65,7 +77,7 @@ const iosEmulatorlDevicePluginDetails = TestUtils.createMockPluginDetails({
 });
 const iosEmulatorDevicePlugin = new _SandyPluginDefinition(
   iosEmulatorlDevicePluginDetails,
-  DeviceTestPluginModule,
+  createDeviceTestPluginModule(),
 );
 const androiKaiosPhysicalDevicePluginDetails =
   TestUtils.createMockPluginDetails({
@@ -83,7 +95,7 @@ const androiKaiosPhysicalDevicePluginDetails =
   });
 const androidKaiosPhysicalDevicePlugin = new _SandyPluginDefinition(
   androiKaiosPhysicalDevicePluginDetails,
-  DeviceTestPluginModule,
+  createDeviceTestPluginModule(),
 );
 
 const androidEmulatorlDevicePluginDetails = TestUtils.createMockPluginDetails({
@@ -100,7 +112,7 @@ const androidEmulatorlDevicePluginDetails = TestUtils.createMockPluginDetails({
 });
 const androidEmulatorDevicePlugin = new _SandyPluginDefinition(
   androidEmulatorlDevicePluginDetails,
-  DeviceTestPluginModule,
+  createDeviceTestPluginModule(),
 );
 
 const androidOnlyDevicePluginDetails = TestUtils.createMockPluginDetails({
@@ -116,8 +128,35 @@ const androidOnlyDevicePluginDetails = TestUtils.createMockPluginDetails({
 });
 const androidOnlyDevicePlugin = new _SandyPluginDefinition(
   androidOnlyDevicePluginDetails,
-  DeviceTestPluginModule,
+  createDeviceTestPluginModule(),
 );
+
+export class TestClient extends AbstractClient {
+  private pluginDefinitions: _SandyPluginDefinition[];
+  constructor(device: TestDevice, pluginDefinitions: _SandyPluginDefinition[]) {
+    super(
+      'testClient',
+      {} as any,
+      {
+        send: jest.fn(),
+        sendExpectResponse: jest.fn(),
+      },
+      getLogger(),
+      undefined,
+      device,
+      {} as any,
+    );
+    this.pluginDefinitions = pluginDefinitions;
+  }
+
+  shouldConnectAsBackgroundPlugin() {
+    return false;
+  }
+
+  async getPlugin(pluginId: string) {
+    return this.pluginDefinitions.find(({id}) => id === pluginId);
+  }
+}
 
 test('ios physical device compatibility', () => {
   const device = new TestDevice('serial', 'physical', 'test device', 'iOS');
@@ -210,9 +249,18 @@ test('log listeners are resumed and suspended automatically - 1', async () => {
     },
   });
 
-  await createMockFlipperWithPlugin(DevicePlugin, {
-    device,
+  _setFlipperLibImplementation({
+    ...baseFlipperLibImplementation(getRenderHostInstance(), getLogger()),
+    createPaste: jest.fn(),
+    enableMenuEntries: jest.fn(),
+    selectPlugin: jest.fn(),
+    showNotification: jest.fn(),
   });
+
+  device.loadDevicePlugins(
+    new Map([[DevicePlugin.id, DevicePlugin]]),
+    new Set([DevicePlugin.id]),
+  );
   const instance = device.sandyPluginStates.get(DevicePlugin.id);
   expect(instance).toBeDefined();
   const entries = instance?.instanceApi.entries as any[];
@@ -278,10 +326,29 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
     },
   );
 
-  const flipper = await createMockFlipperWithPlugin(DevicePlugin, {
-    device,
-    additionalPlugins: [Plugin],
+  const client = new TestClient(device, [Plugin]);
+
+  _setFlipperLibImplementation({
+    ...baseFlipperLibImplementation(getRenderHostInstance(), getLogger()),
+    createPaste: jest.fn(),
+    enableMenuEntries: jest.fn(),
+    selectPlugin: jest.fn(),
+    showNotification: jest.fn(),
   });
+
+  device.loadDevicePlugins(
+    new Map([[DevicePlugin.id, DevicePlugin]]),
+    new Set([DevicePlugin.id]),
+  );
+
+  (client.connection?.sendExpectResponse as jest.Mock).mockImplementationOnce(
+    () => ({
+      success: {
+        plugins: [Plugin.id],
+      },
+    }),
+  );
+  await client.init();
   const instance = device.sandyPluginStates.get(DevicePlugin.id);
   expect(instance).toBeDefined();
 
@@ -291,20 +358,19 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
   expect(entries.length).toBe(2);
 
   // disable one plugin
-  await flipper.togglePlugin(Plugin.id);
+  client.stopPluginIfNeeded(Plugin.id);
   expect(device.stopLogging).toBeCalledTimes(0);
   device.addLogEntry(message);
   expect(entries.length).toBe(3);
 
   // disable the other plugin
-  await flipper.togglePlugin(DevicePlugin.id);
-
+  device.unloadDevicePlugin(DevicePlugin.id);
   expect(device.stopLogging).toBeCalledTimes(1);
   device.addLogEntry(message);
   expect(entries.length).toBe(3);
 
   // re-enable plugn
-  await flipper.togglePlugin(Plugin.id);
+  client.startPluginIfNeeded(Plugin);
   expect(device.startLogging).toBeCalledTimes(2);
   device.addLogEntry(message);
   expect(entries.length).toBe(4);
