@@ -22,7 +22,7 @@ import {
   selectionChanged,
 } from '../reducers/usageTracking';
 import produce from 'immer';
-import BaseDevice from '../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import {deconstructClientId} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
 import {getSelectionInfo} from '../utils/info';

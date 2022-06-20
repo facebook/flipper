@@ -27,7 +27,7 @@ import {loadPluginsFromMarketplace} from './pluginMarketplace';
 import {loadPlugin, switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
 import isProduction from '../utils/isProduction';
-import BaseDevice from '../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import Client from '../Client';
 import {RocketOutlined} from '@ant-design/icons';
 import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';
@@ -122,8 +122,6 @@ export async function handleOpenPluginDeeplink(
   const client: Client | undefined = isDevicePlugin
     ? undefined
     : (deviceOrClient as Client);
-  // TODO: Remove at the end of migration
-  // @ts-expect-error
   const device: BaseDevice = isDevicePlugin
     ? (deviceOrClient as BaseDevice)
     : (deviceOrClient as Client).device;
@@ -509,8 +507,6 @@ async function selectDevicesAndClient(
             : c.plugins.has(params.pluginId),
       )
       .filter((c) => c.connected.get())
-      // TODO: Remove at the end of migration
-      // @ts-expect-error
       .filter((c) => availableDevices.includes(c.device));
 
     if (validClients.length === 1) {

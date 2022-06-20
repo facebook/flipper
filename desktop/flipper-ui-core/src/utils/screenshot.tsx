@@ -7,7 +7,7 @@
  * @format
  */
 
-import BaseDevice from '../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import {reportPlatformFailures} from 'flipper-common';
 import {getRenderHostInstance} from '../RenderHost';
 import {getFlipperLib, path} from 'flipper-plugin';

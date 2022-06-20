@@ -9,7 +9,7 @@
 
 import {DeviceOS, DeviceType} from 'flipper-plugin';
 import {DeviceSpec} from 'flipper-common';
-import BaseDevice from './BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import {getRenderHostInstance} from '../RenderHost';
 
 export class TestDevice extends BaseDevice {

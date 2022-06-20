@@ -21,7 +21,7 @@ import {
 } from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {Store} from '..';
 import {getActiveClient, getActiveDevice} from '../../selectors/connections';
-import BaseDevice from '../../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import Client from '../../Client';
 import {
   mockConsole,

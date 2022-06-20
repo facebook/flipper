@@ -733,8 +733,6 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     logger,
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -750,8 +748,6 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     logger,
     mockStore,
     new Set(['TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -767,8 +763,6 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     logger,
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -829,8 +823,6 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     logger,
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -846,8 +838,6 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     logger,
     mockStore,
     new Set(['TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -891,8 +881,6 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     logger,
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -908,8 +896,6 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     logger,
     mockStore,
     new Set(['TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -958,8 +944,6 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     logger,
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -975,8 +959,6 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     logger,
     mockStore,
     new Set(['TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -992,8 +974,6 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     logger,
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -1009,8 +989,6 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     logger,
     mockStore,
     new Set(['TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device1,
     flipperServer,
   );
@@ -1083,8 +1061,6 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     logger,
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     archivedDevice,
     flipperServer,
   );
@@ -1100,8 +1076,6 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     logger,
     mockStore,
     new Set(['TestPlugin', 'TestDevicePlugin']),
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     archivedDevice,
     flipperServer,
   );

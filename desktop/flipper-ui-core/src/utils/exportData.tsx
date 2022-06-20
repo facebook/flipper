@@ -10,14 +10,14 @@
 import * as React from 'react';
 import {getLogger} from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
-import {DeviceExport} from '../devices/BaseDevice';
+import {DeviceExport} from 'flipper-frontend-core';
 import {selectedPlugins, State as PluginsState} from '../reducers/plugins';
 import {PluginNotification} from '../reducers/notifications';
 import Client, {ClientExport} from '../Client';
 import {getAppVersion} from './info';
 import {pluginKey} from '../utils/pluginKey';
 import {DevicePluginMap, ClientPluginMap} from '../plugin';
-import {default as BaseDevice} from '../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import {ArchivedDevice} from 'flipper-frontend-core';
 import {v4 as uuidv4} from 'uuid';
 import {tryCatchReportPlatformFailures} from 'flipper-common';
@@ -540,14 +540,10 @@ export async function importDataToStore(
   );
   store.dispatch({
     type: 'REGISTER_DEVICE',
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     payload: archivedDevice,
   });
   store.dispatch({
     type: 'SELECT_DEVICE',
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     payload: archivedDevice,
   });
 

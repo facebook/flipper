@@ -19,7 +19,7 @@ import {
 } from 'flipper-common';
 import Client from '../Client';
 import {notification} from 'antd';
-import BaseDevice from '../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
@@ -300,8 +300,6 @@ export async function handleClientConnected(
     logger,
     store,
     undefined,
-    // TODO: Remove at the end of migration
-    // @ts-expect-error
     device,
     server,
   );

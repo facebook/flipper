@@ -10,7 +10,7 @@
 import {ComponentType} from 'react';
 import {produce} from 'immer';
 
-import type BaseDevice from '../devices/BaseDevice';
+import type {BaseDevice} from 'flipper-frontend-core';
 import type Client from '../Client';
 import type {UninitializedClient, DeviceOS, Logger} from 'flipper-common';
 import type {Actions} from '.';
@@ -243,15 +243,11 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         selectedAppId =
           getAllClients(state).find(
             (c) =>
-              // TODO: Remove after migration
-              // @ts-expect-error
               c.device === payload && c.query.app === state.userPreferredApp,
           )?.id ?? null;
         // nothing found, try first app if any
         if (!selectedAppId) {
           selectedAppId =
-            // TODO: Remove after migration
-            // @ts-expect-error
             getAllClients(state).find((c) => c.device === payload)?.id ?? null;
         }
       }
@@ -284,11 +280,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       return {
         ...state,
         staticView: null,
-        // TODO: Remove after migration
-        // @ts-expect-error
         selectedDevice: device,
-        // TODO: Remove after migration
-        // @ts-expect-error
         userPreferredDevice: canBeDefaultDevice(device)
           ? device.title
           : state.userPreferredDevice,
@@ -345,8 +337,6 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
       return {
         ...state,
         selectedAppId: payload,
-        // TODO: Remove after migration
-        // @ts-expect-error
         selectedDevice: client.device,
         userPreferredDevice: client.device.title,
         userPreferredApp: client.query.app,

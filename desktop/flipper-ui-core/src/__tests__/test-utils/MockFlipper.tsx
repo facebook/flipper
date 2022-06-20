@@ -8,7 +8,7 @@
  */
 
 import {createStore} from 'redux';
-import BaseDevice from '../../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import {createRootReducer} from '../../reducers';
 import {Store} from '../../reducers/index';
 import Client from '../../Client';
@@ -198,8 +198,6 @@ export default class MockFlipper {
       this._logger,
       this._store,
       new Set(supportedPlugins),
-      // TODO: Remove after migration
-      // @ts-expect-error
       device,
       this.flipperServer,
     );

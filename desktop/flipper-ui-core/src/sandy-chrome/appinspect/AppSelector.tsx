@@ -25,7 +25,7 @@ import {
   selectClient,
   selectDevice,
 } from '../../reducers/connections';
-import BaseDevice from '../../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';

@@ -12,7 +12,7 @@ import {
   MockFlipperResult,
 } from '../../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {FlipperPlugin} from '../../../plugin';
-import BaseDevice from '../../../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {TestUtils} from 'flipper-plugin';
 import {selectPlugin} from '../../../reducers/connections';

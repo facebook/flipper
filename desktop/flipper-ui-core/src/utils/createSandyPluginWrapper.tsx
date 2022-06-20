@@ -28,7 +28,7 @@ import {useStore} from './useStore';
 import {setStaticView, StaticView} from '../reducers/connections';
 import {getStore} from '../store';
 import {setActiveNotifications} from '../reducers/notifications';
-import BaseDevice from '../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 
 export type SandyPluginModule = ConstructorParameters<
   typeof _SandyPluginDefinition

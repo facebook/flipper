@@ -9,7 +9,7 @@
 
 import {deconstructClientId} from 'flipper-common';
 import type Client from '../Client';
-import type BaseDevice from '../devices/BaseDevice';
+import type {BaseDevice} from 'flipper-frontend-core';
 
 export function currentActiveApps(
   clients: Array<Client>,

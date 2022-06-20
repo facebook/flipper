@@ -8,7 +8,7 @@
  */
 
 import React, {Component} from 'react';
-import BaseDevice from '../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import {Button, Glyph, colors} from '../ui';
 import {getRenderHostInstance} from '../RenderHost';
 import {path} from 'flipper-plugin';

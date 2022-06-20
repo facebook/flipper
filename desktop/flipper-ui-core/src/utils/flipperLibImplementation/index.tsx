@@ -21,7 +21,7 @@ import {
 } from 'flipper-common';
 import type {Store} from '../../reducers';
 import createPaste from '../../fb-stubs/createPaste';
-import type BaseDevice from '../../devices/BaseDevice';
+import type {BaseDevice} from 'flipper-frontend-core';
 import constants from '../../fb-stubs/constants';
 import {addNotification} from '../../reducers/notifications';
 import {deconstructPluginKey} from 'flipper-common';

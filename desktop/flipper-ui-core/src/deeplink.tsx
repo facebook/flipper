@@ -101,16 +101,12 @@ export async function handleDeeplink(
     const selectedClient = getAllClients(store.getState().connections).find(
       (c) =>
         c.query.app === match[0] &&
-        // TODO: Remove at the end of migration
-        // @ts-expect-error
         (selectedDevice == null || c.device === selectedDevice),
     );
 
     store.dispatch(
       selectPlugin({
         selectedAppId: selectedClient?.id,
-        // TODO: Remove at the end of migration
-        // @ts-expect-error
         selectedDevice: selectedClient ? selectedClient.device : selectedDevice,
         selectedPlugin: match[1],
         deepLinkPayload,
