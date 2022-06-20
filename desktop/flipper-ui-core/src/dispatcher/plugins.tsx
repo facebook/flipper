@@ -30,12 +30,7 @@ import {
   pluginsInitialized,
 } from '../reducers/plugins';
 import {FlipperBasePlugin} from '../plugin';
-import {notNull} from '../utils/typeUtils';
-import {
-  ActivatablePluginDetails,
-  BundledPluginDetails,
-  ConcretePluginDetails,
-} from 'flipper-common';
+import {ActivatablePluginDetails, ConcretePluginDetails} from 'flipper-common';
 import {reportUsage} from 'flipper-common';
 import * as FlipperPluginSDK from 'flipper-plugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
@@ -48,12 +43,69 @@ import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import isPluginCompatible from '../utils/isPluginCompatible';
 import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
-import {getRenderHostInstance, setGlobalObject} from 'flipper-frontend-core';
-import pMap from 'p-map';
+import {
+  AbstractPluginInitializer,
+  getRenderHostInstance,
+  setGlobalObject,
+} from 'flipper-frontend-core';
 import * as deprecatedExports from '../deprecated-exports';
+import {getAppVersion} from '../utils/info';
 
-let defaultPluginsIndex: any = null;
+class UIPluginInitializer extends AbstractPluginInitializer {
+  constructor(private readonly store: Store) {
+    super();
+  }
 
+  async init() {
+    await super.init();
+
+    const classicPlugins = this._initialPlugins.filter(
+      (p) => !isSandyPlugin(p.details),
+    );
+    if (
+      getRenderHostInstance().serverConfig.env.NODE_ENV !== 'test' &&
+      classicPlugins.length
+    ) {
+      console.warn(
+        `${
+          classicPlugins.length
+        } plugin(s) were loaded in legacy mode. Please visit https://fbflipper.com/docs/extending/sandy-migration to learn how to migrate these plugins to the new Sandy architecture: \n${classicPlugins
+          .map((p) => `${p.title} (id: ${p.id})`)
+          .sort()
+          .join('\n')}`,
+      );
+    }
+
+    this.store.dispatch(registerBundledPlugins(this.bundledPlugins));
+    this.store.dispatch(registerLoadedPlugins(this.loadedPlugins));
+    this.store.dispatch(addGatekeepedPlugins(this.gatekeepedPlugins));
+    this.store.dispatch(addDisabledPlugins(this.disabledPlugins));
+    this.store.dispatch(addFailedPlugins(this.failedPlugins));
+    this.store.dispatch(registerPlugins(this._initialPlugins));
+    this.store.dispatch(pluginsInitialized());
+  }
+
+  protected async getFlipperVersion() {
+    return getAppVersion();
+  }
+
+  public requirePluginImpl(pluginDetails: ActivatablePluginDetails) {
+    return requirePluginInternal(this.defaultPluginsIndex, pluginDetails);
+  }
+
+  protected loadMarketplacePlugins() {
+    const marketplacePlugins = selectCompatibleMarketplaceVersions(
+      this.store.getState().plugins.marketplacePlugins,
+    );
+    this.store.dispatch(registerMarketplacePlugins(marketplacePlugins));
+  }
+
+  protected loadUninstalledPluginNames() {
+    return this.store.getState().plugins.uninstalledPluginNames;
+  }
+}
+
+let uiPluginInitializer: UIPluginInitializer;
 export default async (store: Store, _logger: Logger) => {
   setGlobalObject({
     React,
@@ -68,76 +120,9 @@ export default async (store: Store, _logger: Logger) => {
     antdesign_icons,
   });
 
-  const gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
-  const disabledPlugins: Array<ActivatablePluginDetails> = [];
-  const failedPlugins: Array<[ActivatablePluginDetails, string]> = [];
-
-  defaultPluginsIndex = getRenderHostInstance().loadDefaultPlugins();
-
-  const marketplacePlugins = selectCompatibleMarketplaceVersions(
-    store.getState().plugins.marketplacePlugins,
-  );
-  store.dispatch(registerMarketplacePlugins(marketplacePlugins));
-
-  const uninstalledPluginNames =
-    store.getState().plugins.uninstalledPluginNames;
-
-  const bundledPlugins = await getBundledPlugins();
-
-  const allLocalVersions = [
-    ...bundledPlugins,
-    ...(await getDynamicPlugins()),
-  ].filter((p) => !uninstalledPluginNames.has(p.name));
-
-  const loadedPlugins =
-    getLatestCompatibleVersionOfEachPlugin(allLocalVersions);
-
-  const pluginsToLoad = loadedPlugins
-    .map(reportVersion)
-    .filter(checkDisabled(disabledPlugins))
-    .filter(checkGK(gatekeepedPlugins));
-  const loader = createRequirePluginFunction(failedPlugins);
-
-  const initialPlugins: PluginDefinition[] = (
-    await pMap(pluginsToLoad, loader)
-  ).filter(notNull);
-
-  const classicPlugins = initialPlugins.filter(
-    (p) => !isSandyPlugin(p.details),
-  );
-  if (
-    getRenderHostInstance().serverConfig.env.NODE_ENV !== 'test' &&
-    classicPlugins.length
-  ) {
-    console.warn(
-      `${
-        classicPlugins.length
-      } plugin(s) were loaded in legacy mode. Please visit https://fbflipper.com/docs/extending/sandy-migration to learn how to migrate these plugins to the new Sandy architecture: \n${classicPlugins
-        .map((p) => `${p.title} (id: ${p.id})`)
-        .sort()
-        .join('\n')}`,
-    );
-  }
-
-  store.dispatch(registerBundledPlugins(bundledPlugins));
-  store.dispatch(registerLoadedPlugins(loadedPlugins));
-  store.dispatch(addGatekeepedPlugins(gatekeepedPlugins));
-  store.dispatch(addDisabledPlugins(disabledPlugins));
-  store.dispatch(addFailedPlugins(failedPlugins));
-  store.dispatch(registerPlugins(initialPlugins));
-  store.dispatch(pluginsInitialized());
+  uiPluginInitializer = new UIPluginInitializer(store);
+  await uiPluginInitializer.init();
 };
-
-function reportVersion(pluginDetails: ActivatablePluginDetails) {
-  reportUsage(
-    'plugin:version',
-    {
-      version: pluginDetails.version,
-    },
-    pluginDetails.id,
-  );
-  return pluginDetails;
-}
 
 export function getLatestCompatibleVersionOfEachPlugin<
   T extends ConcretePluginDetails,
@@ -152,22 +137,6 @@ export function getLatestCompatibleVersionOfEachPlugin<
     }
   }
   return Array.from(latestCompatibleVersions.values());
-}
-
-async function getBundledPlugins(): Promise<Array<BundledPluginDetails>> {
-  if (getRenderHostInstance().serverConfig.env.NODE_ENV === 'test') {
-    return [];
-  }
-  try {
-    // defaultPlugins that are included in the Flipper distributive.
-    // List of default bundled plugins is written at build time to defaultPlugins/bundled.json.
-    return await getRenderHostInstance().flipperServer!.exec(
-      'plugins-get-bundled-plugins',
-    );
-  } catch (e) {
-    console.error('Failed to load list of bundled plugins', e);
-    return [];
-  }
 }
 
 export async function getDynamicPlugins(): Promise<InstalledPluginDetails[]> {
@@ -280,7 +249,7 @@ export const requirePlugin = (
     pluginDetails.id,
   );
   return tryCatchReportPluginFailuresAsync(
-    () => requirePluginInternal(pluginDetails),
+    () => uiPluginInitializer.requirePluginImpl(pluginDetails),
     'plugin:load',
     pluginDetails.id,
   );
@@ -291,6 +260,7 @@ const isSandyPlugin = (pluginDetails: ActivatablePluginDetails) => {
 };
 
 const requirePluginInternal = async (
+  defaultPluginsIndex: any,
   pluginDetails: ActivatablePluginDetails,
 ): Promise<PluginDefinition> => {
   let plugin = pluginDetails.isBundled

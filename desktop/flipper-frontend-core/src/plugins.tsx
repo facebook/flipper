@@ -29,15 +29,18 @@ export abstract class AbstractPluginInitializer {
   protected gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
   protected disabledPlugins: Array<ActivatablePluginDetails> = [];
   protected failedPlugins: Array<[ActivatablePluginDetails, string]> = [];
-
-  protected _loadedPlugins: _SandyPluginDefinition[] = [];
+  protected bundledPlugins: Array<BundledPluginDetails> = [];
+  protected loadedPlugins: Array<
+    BundledPluginDetails | InstalledPluginDetails
+  > = [];
+  protected _initialPlugins: _SandyPluginDefinition[] = [];
 
   async init() {
-    this._loadedPlugins = await this._init();
+    this._initialPlugins = await this._init();
   }
 
-  get loadedPlugins(): ReadonlyArray<_SandyPluginDefinition> {
-    return this._loadedPlugins;
+  get initialPlugins(): ReadonlyArray<_SandyPluginDefinition> {
+    return this._initialPlugins;
   }
 
   protected async _init(): Promise<_SandyPluginDefinition[]> {
@@ -69,6 +72,7 @@ export abstract class AbstractPluginInitializer {
     uninstalledPluginNames: Set<string>,
   ): Promise<(BundledPluginDetails | InstalledPluginDetails)[]> {
     const bundledPlugins = await getBundledPlugins();
+    this.bundledPlugins = bundledPlugins;
 
     const allLocalVersions = [
       ...bundledPlugins,
@@ -85,6 +89,7 @@ export abstract class AbstractPluginInitializer {
       allLocalVersions,
       flipperVersion,
     );
+    this.loadedPlugins = loadedPlugins;
 
     const pluginsToLoad = loadedPlugins
       .map(reportVersion)
