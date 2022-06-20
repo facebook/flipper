@@ -43,6 +43,10 @@ export abstract class AbstractPluginInitializer {
     return this._initialPlugins;
   }
 
+  get requirePlugin() {
+    return createRequirePluginFunction(this.requirePluginImpl.bind(this));
+  }
+
   protected async _init(): Promise<_SandyPluginDefinition[]> {
     this.loadDefaultPluginIndex();
     this.loadMarketplacePlugins();
@@ -100,9 +104,7 @@ export abstract class AbstractPluginInitializer {
   }
 
   protected async loadPlugins(pluginsToLoad: ActivatablePluginDetails[]) {
-    const loader = createRequirePluginFunction(
-      this.requirePluginImpl.bind(this),
-    )(this.failedPlugins);
+    const loader = this.requirePlugin(this.failedPlugins);
     const initialPlugins: _SandyPluginDefinition[] = (
       await pMap(pluginsToLoad, loader)
     ).filter(notNull);
@@ -267,7 +269,7 @@ export const createRequirePluginFunction =
     };
   };
 
-const wrapRequirePlugin =
+export const wrapRequirePlugin =
   (
     requirePluginImpl: (
       pluginDetails: ActivatablePluginDetails,

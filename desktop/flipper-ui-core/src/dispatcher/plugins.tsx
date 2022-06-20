@@ -8,11 +8,7 @@
  */
 
 import type {Store} from '../reducers/index';
-import {
-  InstalledPluginDetails,
-  Logger,
-  tryCatchReportPluginFailuresAsync,
-} from 'flipper-common';
+import {Logger} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -30,23 +26,21 @@ import {
   pluginsInitialized,
 } from '../reducers/plugins';
 import {FlipperBasePlugin} from '../plugin';
-import {ActivatablePluginDetails, ConcretePluginDetails} from 'flipper-common';
-import {reportUsage} from 'flipper-common';
+import {ActivatablePluginDetails} from 'flipper-common';
 import * as FlipperPluginSDK from 'flipper-plugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import * as Immer from 'immer';
 import * as antd from 'antd';
 import * as emotion_styled from '@emotion/styled';
 import * as antdesign_icons from '@ant-design/icons';
-
-import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import isPluginCompatible from '../utils/isPluginCompatible';
-import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
 import {
   AbstractPluginInitializer,
   getRenderHostInstance,
   setGlobalObject,
+  isSandyPlugin,
+  wrapRequirePlugin,
 } from 'flipper-frontend-core';
 import * as deprecatedExports from '../deprecated-exports';
 import {getAppVersion} from '../utils/info';
@@ -124,142 +118,10 @@ export default async (store: Store, _logger: Logger) => {
   await uiPluginInitializer.init();
 };
 
-export function getLatestCompatibleVersionOfEachPlugin<
-  T extends ConcretePluginDetails,
->(plugins: T[]): T[] {
-  const latestCompatibleVersions: Map<string, T> = new Map();
-  for (const plugin of plugins) {
-    if (isPluginCompatible(plugin)) {
-      const loadedVersion = latestCompatibleVersions.get(plugin.id);
-      if (!loadedVersion || isPluginVersionMoreRecent(plugin, loadedVersion)) {
-        latestCompatibleVersions.set(plugin.id, plugin);
-      }
-    }
-  }
-  return Array.from(latestCompatibleVersions.values());
-}
+export const requirePlugin = (pluginDetails: ActivatablePluginDetails) =>
+  wrapRequirePlugin(uiPluginInitializer!.requirePluginImpl)(pluginDetails);
 
-export async function getDynamicPlugins(): Promise<InstalledPluginDetails[]> {
-  try {
-    return await getRenderHostInstance().flipperServer!.exec(
-      'plugins-load-dynamic-plugins',
-    );
-  } catch (e) {
-    console.error('Failed to load dynamic plugins', e);
-    return [];
-  }
-}
-
-export const checkGK =
-  (gatekeepedPlugins: Array<ActivatablePluginDetails>) =>
-  (plugin: ActivatablePluginDetails): boolean => {
-    try {
-      if (!plugin.gatekeeper) {
-        return true;
-      }
-      const result = getRenderHostInstance().GK(plugin.gatekeeper);
-      if (!result) {
-        gatekeepedPlugins.push(plugin);
-      }
-      return result;
-    } catch (err) {
-      console.error(`Failed to check GK for plugin ${plugin.id}`, err);
-      return false;
-    }
-  };
-
-export const checkDisabled = (
-  disabledPlugins: Array<ActivatablePluginDetails>,
-) => {
-  const config = getRenderHostInstance().serverConfig;
-  let enabledList: Set<string> | null = null;
-  let disabledList: Set<string> = new Set();
-  try {
-    if (config.env.FLIPPER_ENABLED_PLUGINS) {
-      enabledList = new Set<string>(
-        config.env.FLIPPER_ENABLED_PLUGINS.split(','),
-      );
-    }
-    disabledList = new Set(config.processConfig.disabledPlugins);
-  } catch (e) {
-    console.error('Failed to compute enabled/disabled plugins', e);
-  }
-  return (plugin: ActivatablePluginDetails): boolean => {
-    try {
-      if (disabledList.has(plugin.name)) {
-        disabledPlugins.push(plugin);
-        return false;
-      }
-      if (
-        enabledList &&
-        !(
-          enabledList.has(plugin.name) ||
-          enabledList.has(plugin.id) ||
-          enabledList.has(plugin.name.replace('flipper-plugin-', ''))
-        )
-      ) {
-        disabledPlugins.push(plugin);
-        return false;
-      }
-      return true;
-    } catch (e) {
-      console.error(
-        `Failed to check whether plugin ${plugin.id} is disabled`,
-        e,
-      );
-      return false;
-    }
-  };
-};
-
-export const createRequirePluginFunction = (
-  failedPlugins: Array<[ActivatablePluginDetails, string]>,
-) => {
-  return async (
-    pluginDetails: ActivatablePluginDetails,
-  ): Promise<PluginDefinition | null> => {
-    try {
-      const pluginDefinition = await requirePlugin(pluginDetails);
-      if (
-        pluginDefinition &&
-        isDevicePluginDefinition(pluginDefinition) &&
-        pluginDefinition.details.pluginType !== 'device'
-      ) {
-        console.warn(
-          `Package ${pluginDefinition.details.name} contains the device plugin "${pluginDefinition.title}" defined in a wrong format. Specify "pluginType" and "supportedDevices" properties and remove exported function "supportsDevice". See details at https://fbflipper.com/docs/extending/desktop-plugin-structure#creating-a-device-plugin.`,
-        );
-      }
-      return pluginDefinition;
-    } catch (e) {
-      failedPlugins.push([pluginDetails, e.message]);
-      console.error(`Plugin ${pluginDetails.id} failed to load`, e);
-      return null;
-    }
-  };
-};
-
-export const requirePlugin = (
-  pluginDetails: ActivatablePluginDetails,
-): Promise<PluginDefinition> => {
-  reportUsage(
-    'plugin:load',
-    {
-      version: pluginDetails.version,
-    },
-    pluginDetails.id,
-  );
-  return tryCatchReportPluginFailuresAsync(
-    () => uiPluginInitializer.requirePluginImpl(pluginDetails),
-    'plugin:load',
-    pluginDetails.id,
-  );
-};
-
-const isSandyPlugin = (pluginDetails: ActivatablePluginDetails) => {
-  return !!pluginDetails.flipperSDKVersion;
-};
-
-const requirePluginInternal = async (
+export const requirePluginInternal = async (
   defaultPluginsIndex: any,
   pluginDetails: ActivatablePluginDetails,
 ): Promise<PluginDefinition> => {
