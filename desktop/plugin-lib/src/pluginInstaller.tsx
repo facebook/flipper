@@ -22,7 +22,6 @@ import {InstalledPluginDetails} from 'flipper-common';
 import {getInstalledPluginDetails, isPluginDir} from './getPluginDetails';
 import {
   getPluginVersionInstallationDir,
-  getPluginDirNameFromPackageName,
   getPluginInstallationDir,
   pluginInstallationDir,
   legacyPluginInstallationDir,
@@ -102,12 +101,8 @@ export async function installPluginFromNpm(name: string) {
     await fs.ensureDir(tmpDir);
     const plugManNoDep = providePluginManagerNoDependencies();
     plugManNoDep.options.pluginsPath = tmpDir;
-    await plugManNoDep.install(name);
-    const pluginTempDir = path.join(
-      tmpDir,
-      getPluginDirNameFromPackageName(name),
-    );
-    return await installPluginFromTempDir(pluginTempDir);
+    const pluginInfo = await plugManNoDep.install(name);
+    return await installPluginFromTempDir(pluginInfo.location);
   } finally {
     await fs.remove(tmpDir);
   }
