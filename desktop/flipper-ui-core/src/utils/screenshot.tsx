@@ -7,9 +7,8 @@
  * @format
  */
 
-import {BaseDevice} from 'flipper-frontend-core';
+import {BaseDevice, getRenderHostInstance} from 'flipper-frontend-core';
 import {reportPlatformFailures} from 'flipper-common';
-import {getRenderHostInstance} from '../RenderHost';
 import {getFlipperLib, path} from 'flipper-plugin';
 import {assertNotNull} from './assertNotNull';
 

@@ -8,7 +8,6 @@
  */
 
 import {StoreEnhancerStoreCreator} from 'redux';
-import {RenderHost} from './RenderHost';
 
 declare global {
   interface StoreEnhancerStateSanitizer {

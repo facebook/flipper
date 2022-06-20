@@ -38,7 +38,7 @@ import {
   DeeplinkInteractionState,
   OpenPluginParams,
 } from '../deeplinkTracking';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import {waitFor} from '../utils/waitFor';
 
 export function parseOpenPluginParams(query: string): OpenPluginParams {

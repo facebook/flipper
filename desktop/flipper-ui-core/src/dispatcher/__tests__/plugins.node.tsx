@@ -21,7 +21,7 @@ import {getLogger} from 'flipper-common';
 import configureStore from 'redux-mock-store';
 import TestPlugin from './TestPlugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
-import {getRenderHostInstance} from '../../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import path from 'path';
 
 let loadDynamicPluginsMock: jest.Mock;

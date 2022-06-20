@@ -40,7 +40,7 @@ import {
   _NuxManagerContext,
   NUX,
 } from 'flipper-plugin';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import {loadTheme} from '../utils/loadTheme';
 
 type OwnProps = {

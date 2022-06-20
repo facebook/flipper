@@ -27,7 +27,7 @@ import {deconstructClientId} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
 import {getSelectionInfo} from '../utils/info';
 import type {SelectionInfo} from '../utils/info';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 const TIME_SPENT_EVENT = 'time-spent';
 

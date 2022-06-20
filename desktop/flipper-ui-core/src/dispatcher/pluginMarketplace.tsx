@@ -25,7 +25,7 @@ import {selectCompatibleMarketplaceVersions} from './plugins';
 import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {isConnectivityOrAuthError} from 'flipper-common';
 import {isLoggedIn} from '../fb-stubs/user';
-import {getRenderHostInstance} from '..';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 // TODO: provide this value from settings
 export const pollingIntervalMs = getRenderHostInstance().serverConfig.env

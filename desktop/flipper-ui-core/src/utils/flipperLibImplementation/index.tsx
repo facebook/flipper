@@ -26,7 +26,7 @@ import constants from '../../fb-stubs/constants';
 import {addNotification} from '../../reducers/notifications';
 import {deconstructPluginKey} from 'flipper-common';
 import {DetailSidebarImpl} from '../../sandy-chrome/DetailSidebarImpl';
-import {RenderHost} from '../../RenderHost';
+import {RenderHost} from 'flipper-frontend-core';
 import {setMenuEntries} from '../../reducers/connections';
 import {downloadFileFactory} from './downloadFile';
 import {Base64} from 'js-base64';

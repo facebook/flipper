@@ -31,7 +31,7 @@ import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {TroubleshootingGuide} from './fb-stubs/TroubleshootingGuide';
 import {getSelectableDevices} from '../../selectors/connections';
-import {getRenderHostInstance} from '../../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 const {Text} = Typography;
 

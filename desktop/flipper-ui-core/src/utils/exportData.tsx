@@ -30,7 +30,7 @@ import {ClientQuery} from 'flipper-common';
 import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import {uploadFlipperMedia} from '../fb-stubs/user';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';

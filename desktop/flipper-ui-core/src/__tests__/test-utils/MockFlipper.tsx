@@ -8,7 +8,11 @@
  */
 
 import {createStore} from 'redux';
-import {BaseDevice, TestDevice} from 'flipper-frontend-core';
+import {
+  BaseDevice,
+  TestDevice,
+  getRenderHostInstance,
+} from 'flipper-frontend-core';
 import {createRootReducer} from '../../reducers';
 import {Store} from '../../reducers/index';
 import Client from '../../Client';
@@ -26,7 +30,6 @@ import {initializeFlipperLibImplementation} from '../../utils/flipperLibImplemen
 import pluginManager from '../../dispatcher/pluginManager';
 import {PluginDetails} from 'flipper-common';
 import {ClientQuery, DeviceOS} from 'flipper-common';
-import {getRenderHostInstance} from '../../RenderHost';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];

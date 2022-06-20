@@ -18,7 +18,7 @@ import {
 import styled from '@emotion/styled';
 import React, {useState} from 'react';
 import {Toolbar, FileSelector} from 'flipper-plugin';
-import {getRenderHostInstance} from '../../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 const CenteredGlyph = styled(Glyph)({
   margin: 'auto',

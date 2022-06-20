@@ -65,7 +65,7 @@ import {
 } from '../utils/exportData';
 import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
 import {StyleGuide} from './StyleGuide';
 

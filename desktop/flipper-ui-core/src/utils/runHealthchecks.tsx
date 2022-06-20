@@ -12,7 +12,7 @@ import {
   reportPlatformFailures,
   FlipperDoctor,
 } from 'flipper-common';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 let healthcheckIsRunning: boolean;
 let runningHealthcheck: Promise<void>;

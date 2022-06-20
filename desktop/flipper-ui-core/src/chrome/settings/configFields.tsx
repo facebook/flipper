@@ -18,7 +18,7 @@ import {
 } from '../../ui';
 import React, {useState, useEffect} from 'react';
 import {getFlipperLib, theme} from 'flipper-plugin';
-import {getRenderHostInstance} from '../../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 export const ConfigFieldContainer = styled(FlexRow)({
   paddingLeft: 10,

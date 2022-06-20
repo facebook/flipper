@@ -8,7 +8,7 @@
  */
 
 import {Settings} from 'flipper-common';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 export function loadTheme(theme: Settings['darkMode']) {
   let shouldUseDarkMode = false;

@@ -9,7 +9,7 @@
 
 import {assertNever, DownloadFileUpdate} from 'flipper-common';
 import {FlipperLib, DownloadFileResponse} from 'flipper-plugin';
-import {RenderHost} from '../../RenderHost';
+import {RenderHost} from 'flipper-frontend-core';
 
 export const downloadFileFactory =
   (renderHost: RenderHost): FlipperLib['remoteServerContext']['downloadFile'] =>

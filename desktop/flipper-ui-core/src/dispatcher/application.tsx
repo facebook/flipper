@@ -16,7 +16,7 @@ import {
 import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {handleDeeplink} from '../deeplink';
 import {Dialog} from 'flipper-plugin';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 export default (store: Store, logger: Logger) => {
   const renderHost = getRenderHostInstance();
