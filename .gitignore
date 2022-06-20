@@ -16,7 +16,6 @@ desktop-branch-*/
 *.xcworkspace
 **/Pods/
 **/xcuserdata/
-build/
 
 android/third-party/external/
 
