@@ -22,3 +22,4 @@ export * from './plugins';
 export {getPluginKey} from './utils/pluginKey';
 export * from './flipperLibImplementation';
 export * from './client/FlipperServerClient';
+export {default as frontendCoreConstants} from './fb-stubs/constants';
