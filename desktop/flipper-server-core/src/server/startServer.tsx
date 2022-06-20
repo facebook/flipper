@@ -121,6 +121,10 @@ async function startProxyServer(
   console.log(`Starting proxy server on http://localhost:${config.port}`);
 
   exitHook(() => {
+    console.log('Shutdown server');
+    proxyServer.close();
+    server.close();
+
     console.log('Cleaning up socket on exit:', socketPath);
     // This *must* run synchronously and we're not blocking any UI loop by definition.
     // eslint-disable-next-line node/no-sync
