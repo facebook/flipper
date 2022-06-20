@@ -300,6 +300,8 @@ export async function handleClientConnected(
     logger,
     store,
     undefined,
+    // TODO: Remove at the end of migration
+    // @ts-expect-error
     device,
     server,
   );

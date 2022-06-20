@@ -63,7 +63,8 @@ export const getActiveDevice = createSelector(
     }
     // if there is an active app, use device owning the app
     if (client) {
-      return client.device;
+      // TODO: Will be fixed later in the stack
+      return client.device as any;
     }
     return selectedDevice;
   },

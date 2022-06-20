@@ -122,6 +122,8 @@ export async function handleOpenPluginDeeplink(
   const client: Client | undefined = isDevicePlugin
     ? undefined
     : (deviceOrClient as Client);
+  // TODO: Remove at the end of migration
+  // @ts-expect-error
   const device: BaseDevice = isDevicePlugin
     ? (deviceOrClient as BaseDevice)
     : (deviceOrClient as Client).device;
@@ -507,6 +509,8 @@ async function selectDevicesAndClient(
             : c.plugins.has(params.pluginId),
       )
       .filter((c) => c.connected.get())
+      // TODO: Remove at the end of migration
+      // @ts-expect-error
       .filter((c) => availableDevices.includes(c.device));
 
     if (validClients.length === 1) {

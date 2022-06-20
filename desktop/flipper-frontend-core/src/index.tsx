@@ -8,10 +8,16 @@
  */
 
 export {RenderHost, getRenderHostInstance} from './RenderHost';
-export {default as AbstractClient, ClientConnection} from './AbstractClient';
+export {
+  default as AbstractClient,
+  ClientConnection,
+  Params,
+  RequestMetadata,
+} from './AbstractClient';
 export {default as ArchivedDevice} from './devices/ArchivedDevice';
 export {default as BaseDevice} from './devices/BaseDevice';
 export * from './globalObject';
 export * from './plugins';
+export {getPluginKey} from './utils/pluginKey';
 export * from './flipperLibImplementation';
 export * from './client/FlipperServerClient';

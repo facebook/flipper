@@ -11,7 +11,7 @@ import {createStore} from 'redux';
 import BaseDevice from '../../devices/BaseDevice';
 import {createRootReducer} from '../../reducers';
 import {Store} from '../../reducers/index';
-import Client, {ClientConnection} from '../../Client';
+import Client from '../../Client';
 import {
   Logger,
   buildClientId,
@@ -21,6 +21,7 @@ import {
 import {PluginDefinition} from '../../plugin';
 import {pluginsInitialized, registerPlugins} from '../../reducers/plugins';
 import {getLogger} from 'flipper-common';
+import {ClientConnection} from 'flipper-frontend-core';
 import {initializeFlipperLibImplementation} from '../../utils/flipperLibImplementation';
 import pluginManager from '../../dispatcher/pluginManager';
 import {PluginDetails} from 'flipper-common';
@@ -197,6 +198,8 @@ export default class MockFlipper {
       this._logger,
       this._store,
       new Set(supportedPlugins),
+      // TODO: Remove after migration
+      // @ts-expect-error
       device,
       this.flipperServer,
     );
@@ -225,7 +228,7 @@ export default class MockFlipper {
           );
       }
     };
-    client.rawSend = jest.fn();
+    (client as any).rawSend = jest.fn();
     if (!device.isArchived) {
       await client.init();
     } else {

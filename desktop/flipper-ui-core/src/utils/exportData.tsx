@@ -18,7 +18,7 @@ import {getAppVersion} from './info';
 import {pluginKey} from '../utils/pluginKey';
 import {DevicePluginMap, ClientPluginMap} from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
-import {default as ArchivedDevice} from '../devices/ArchivedDevice';
+import {ArchivedDevice} from 'flipper-frontend-core';
 import {v4 as uuidv4} from 'uuid';
 import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {TestIdler} from './Idler';
@@ -512,7 +512,11 @@ export const exportStoreToFile = (
   );
 };
 
-export function importDataToStore(source: string, data: string, store: Store) {
+export async function importDataToStore(
+  source: string,
+  data: string,
+  store: Store,
+) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
   const json: ExportType = JSON.parse(data);
   const {device, clients, deviceScreenshot} = json;
@@ -536,19 +540,22 @@ export function importDataToStore(source: string, data: string, store: Store) {
   );
   store.dispatch({
     type: 'REGISTER_DEVICE',
+    // TODO: Remove at the end of migration
+    // @ts-expect-error
     payload: archivedDevice,
   });
   store.dispatch({
     type: 'SELECT_DEVICE',
+    // TODO: Remove at the end of migration
+    // @ts-expect-error
     payload: archivedDevice,
   });
 
-  clients.forEach((client: {id: string; query: ClientQuery}) => {
-    const sandyPluginStates = json.pluginStates2[client.id] || {};
-    const clientPlugins = new Set(Object.keys(sandyPluginStates));
-    store.dispatch({
-      type: 'NEW_CLIENT',
-      payload: new Client(
+  await Promise.all(
+    clients.map(async (client: {id: string; query: ClientQuery}) => {
+      const sandyPluginStates = json.pluginStates2[client.id] || {};
+      const clientPlugins = new Set(Object.keys(sandyPluginStates));
+      const clientInstance = await new Client(
         client.id,
         client.query,
         null,
@@ -557,9 +564,13 @@ export function importDataToStore(source: string, data: string, store: Store) {
         clientPlugins,
         archivedDevice,
         getRenderHostInstance().flipperServer,
-      ).initFromImport(sandyPluginStates),
-    });
-  });
+      ).initFromImport(sandyPluginStates);
+      store.dispatch({
+        type: 'NEW_CLIENT',
+        payload: clientInstance,
+      });
+    }),
+  );
 }
 
 export const importFileToStore = async (file: string, store: Store) => {

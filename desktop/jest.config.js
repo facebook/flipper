@@ -17,7 +17,8 @@ module.exports = {
   moduleNameMapper: {
     '^flipper$': '<rootDir>/app/src',
     '^flipper-plugin$': '<rootDir>/flipper-plugin/src',
-    '^flipper-(server-core|ui-core|common)$': '<rootDir>/flipper-$1/src',
+    '^flipper-(server-core|ui-core|frontend-core|common)$':
+      '<rootDir>/flipper-$1/src',
     '^flipper-(pkg|pkg-lib|doctor|test-utils)$': '<rootDir>/$1/src',
   },
   clearMocks: true,

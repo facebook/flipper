@@ -311,6 +311,8 @@ export function openNotification(store: Store, noti: PluginNotificationOrig) {
       selectPlugin({
         selectedPlugin: noti.pluginId,
         selectedAppId: client.id,
+        // TODO: Will be fixed later in the stack
+        // @ts-expect-error
         selectedDevice: client.device,
         deepLinkPayload: noti.notification.action,
       }),

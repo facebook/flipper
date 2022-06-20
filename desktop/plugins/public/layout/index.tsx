@@ -258,6 +258,7 @@ export default class LayoutPlugin extends FlipperPlugin<
     if (this.props.isArchivedDevice) {
       Promise.resolve(this.device)
         .then((d) => {
+          // @ts-expect-error
           const handle = (d as ArchivedDevice).getArchivedScreenshotHandle();
           if (!handle) {
             throw new Error('No screenshot attached.');

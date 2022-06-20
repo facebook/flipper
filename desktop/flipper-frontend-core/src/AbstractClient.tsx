@@ -37,11 +37,6 @@ import isProduction from './utils/isProduction';
 type Plugins = Set<string>;
 type PluginsArr = Array<string>;
 
-export type ClientExport = {
-  id: string;
-  query: ClientQuery;
-};
-
 export type Params = {
   api: string;
   method: string;
@@ -108,7 +103,7 @@ export default abstract class AbstractClient extends EventEmitter {
   protected abstract shouldConnectAsBackgroundPlugin(pluginId: string): boolean;
 
   async init() {
-    await this.loadPlugins();
+    await this.loadPlugins('init');
     await Promise.all(
       [...this.plugins].map(async (pluginId) =>
         this.startPluginIfNeeded(await this.getPlugin(pluginId)),
@@ -124,7 +119,7 @@ export default abstract class AbstractClient extends EventEmitter {
   }
 
   // get the supported plugins
-  protected async loadPlugins(): Promise<Plugins> {
+  protected async loadPlugins(_phase: 'init' | 'refresh'): Promise<Plugins> {
     const {plugins} = await timeout(
       30 * 1000,
       this.rawCall<{plugins: Plugins}>('getPlugins', false),
@@ -204,9 +199,9 @@ export default abstract class AbstractClient extends EventEmitter {
   }
 
   // get the plugins, and update the UI
-  protected async refreshPlugins() {
+  async refreshPlugins() {
     const oldBackgroundPlugins = this.backgroundPlugins;
-    await this.loadPlugins();
+    await this.loadPlugins('refresh');
     await Promise.all(
       [...this.plugins].map(async (pluginId) =>
         this.startPluginIfNeeded(await this.getPlugin(pluginId)),
@@ -291,13 +286,7 @@ export default abstract class AbstractClient extends EventEmitter {
           );
         }
 
-        const pluginInstance = this.getPluginInstanceForExecuteMessage(params);
-
-        let handled = false; // This is just for analysis
-        if (pluginInstance) {
-          handled = true;
-          pluginInstance.receiveMessages([params]);
-        }
+        const handled = this.handleExecuteMessage(params);
         if (!handled && !isProduction()) {
           console.warn(`Unhandled message ${params.api}.${params.method}`);
         }
@@ -307,10 +296,13 @@ export default abstract class AbstractClient extends EventEmitter {
     }
   }
 
-  protected getPluginInstanceForExecuteMessage(
-    params: Params,
-  ): _SandyPluginInstance | undefined {
-    return this.sandyPluginStates.get(params.api);
+  protected handleExecuteMessage(params: Params): boolean {
+    const pluginInstance = this.sandyPluginStates.get(params.api);
+    if (!pluginInstance) {
+      return false;
+    }
+    pluginInstance.receiveMessages([params]);
+    return true;
   }
 
   protected onResponse(
@@ -500,6 +492,17 @@ export default abstract class AbstractClient extends EventEmitter {
       `Call-${method}`,
       api,
     );
+  }
+
+  send(api: string, method: string, params?: Object): void {
+    if (!isProduction()) {
+      console.warn(
+        `${api}:${
+          method || ''
+        } client.send() is deprecated. Please use call() instead so you can handle errors.`,
+      );
+    }
+    return this.rawSend('execute', {api, method, params});
   }
 
   async supportsMethod(api: string, method: string): Promise<boolean> {
