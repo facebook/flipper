@@ -16,11 +16,7 @@ import fs from 'fs-extra';
 import yargs from 'yargs';
 import open from 'open';
 import {initCompanionEnv} from 'flipper-server-companion';
-import {
-  attachSocketServer,
-  startFlipperServer,
-  startServer,
-} from 'flipper-server-core';
+import {startFlipperServer, startServer} from 'flipper-server-core';
 import {isTest} from 'flipper-common';
 
 const argv = yargs
@@ -97,7 +93,7 @@ async function start() {
     console.error('Failed to load keytar:', e);
   }
 
-  const {app, server, socket} = await startServer({
+  const {app, server, socket, readyForIncomingConnections} = await startServer({
     port: argv.port,
     staticDir,
     entry: 'index.web.dev.html',
@@ -123,7 +119,7 @@ async function start() {
   if (argv.bundler) {
     await attachDevServer(app, server, socket, rootDir);
   }
-  attachSocketServer(flipperServer, socket, companionEnv);
+  await readyForIncomingConnections(flipperServer, companionEnv);
 }
 
 start()

@@ -42,8 +42,8 @@ const safe = (f: () => void) => {
  * @param socket A ws socket on which to listen for events.
  */
 export function attachSocketServer(
-  flipperServer: FlipperServerImpl,
   socket: WebSocketServer,
+  server: FlipperServerImpl,
   companionEnv: FlipperServerCompanionEnv,
 ) {
   socket.on('connection', (client, req) => {
@@ -53,7 +53,6 @@ export function attachSocketServer(
       '';
 
     console.log('Client connected', clientAddress);
-
     let connected = true;
 
     let flipperServerCompanion: FlipperServerCompanion | undefined;
@@ -62,7 +61,7 @@ export function attachSocketServer(
 
       if (params.get('server_companion')) {
         flipperServerCompanion = new FlipperServerCompanion(
-          flipperServer,
+          server,
           getLogger(),
           companionEnv.pluginInitializer.initialPlugins,
         );
@@ -112,7 +111,7 @@ export function attachSocketServer(
       client.send(JSON.stringify(message));
     }
 
-    flipperServer.onAny(onServerEvent);
+    server.onAny(onServerEvent);
 
     async function onServerCompanionEvent(event: string, payload: any) {
       const message = {
@@ -167,7 +166,7 @@ export function attachSocketServer(
 
           const execRes = flipperServerCompanion?.canHandleCommand(command)
             ? flipperServerCompanion.exec(command, ...args)
-            : flipperServer.exec(command, ...args);
+            : server.exec(command, ...args);
 
           execRes
             .then((result: any) => {
@@ -229,7 +228,7 @@ export function attachSocketServer(
       }
 
       connected = false;
-      flipperServer.offAny(onServerEvent);
+      server.offAny(onServerEvent);
       flipperServerCompanion?.destroyAll();
     }
 

@@ -20,12 +20,20 @@ import {makeSocketPath, checkSocketInUse} from './utilities';
 
 import proxy from 'http-proxy';
 import exitHook from 'exit-hook';
+import {attachSocketServer} from './attachSocketServer';
+import {FlipperServerImpl} from '../FlipperServerImpl';
+import {FlipperServerCompanionEnv} from 'flipper-server-companion';
 
 type Config = {
   port: number;
   staticDir: string;
   entry: string;
 };
+
+type ReadyForConnections = (
+  server: FlipperServerImpl,
+  companionEnv: FlipperServerCompanionEnv,
+) => Promise<void>;
 
 /**
  * Orchestrates the creation of the HTTP server, proxy, and web socket.
@@ -36,14 +44,9 @@ export async function startServer(config: Config): Promise<{
   app: Express;
   server: http.Server;
   socket: WebSocketServer;
+  readyForIncomingConnections: ReadyForConnections;
 }> {
-  const {app, server} = await startHTTPServer(config);
-  const socket = addWebsocket(server, config);
-  return {
-    app,
-    server,
-    socket,
-  };
+  return await startHTTPServer(config);
 }
 
 /**
@@ -52,9 +55,12 @@ export async function startServer(config: Config): Promise<{
  * @param config Server configuration.
  * @returns A promise to both app and HTTP server.
  */
-async function startHTTPServer(
-  config: Config,
-): Promise<{app: Express; server: http.Server}> {
+async function startHTTPServer(config: Config): Promise<{
+  app: Express;
+  server: http.Server;
+  socket: WebSocketServer;
+  readyForIncomingConnections: ReadyForConnections;
+}> {
   const app = express();
 
   app.use((_req, res, next) => {
@@ -89,8 +95,14 @@ async function startHTTPServer(
 async function startProxyServer(
   config: Config,
   app: Express,
-): Promise<{app: Express; server: http.Server}> {
+): Promise<{
+  app: Express;
+  server: http.Server;
+  socket: WebSocketServer;
+  readyForIncomingConnections: ReadyForConnections;
+}> {
   const server = http.createServer(app);
+  const socket = addWebsocket(server, config);
 
   // For now, we only support domain socket access on POSIX-like systems.
   // On Windows, a proxy is not created and the server starts
@@ -98,7 +110,12 @@ async function startProxyServer(
   if (os.platform() === 'win32') {
     return new Promise((resolve) => {
       console.log(`Starting server on http://localhost:${config.port}`);
-      server.listen(config.port, undefined, () => resolve({app, server}));
+      const readyForIncomingConnections = (): Promise<void> => {
+        return new Promise((resolve) => {
+          server.listen(config.port, undefined, () => resolve());
+        });
+      };
+      resolve({app, server, socket, readyForIncomingConnections});
     });
   }
 
@@ -140,8 +157,17 @@ async function startProxyServer(
   });
 
   return new Promise((resolve) => {
-    proxyServer.listen(config.port);
-    server.listen(socketPath, undefined, () => resolve({app, server}));
+    const readyForIncomingConnections = (
+      serverImpl: FlipperServerImpl,
+      companionEnv: FlipperServerCompanionEnv,
+    ): Promise<void> => {
+      attachSocketServer(socket, serverImpl, companionEnv);
+      return new Promise((resolve) => {
+        proxyServer.listen(config.port);
+        server.listen(socketPath, undefined, () => resolve());
+      });
+    };
+    resolve({app, server, socket, readyForIncomingConnections});
   });
 }
 

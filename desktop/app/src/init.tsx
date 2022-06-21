@@ -16,7 +16,6 @@ import {
 } from 'flipper-plugin';
 import {createFlipperServer, FlipperServerState} from 'flipper-frontend-core';
 import {
-  attachSocketServer,
   FlipperServerImpl,
   getEnvironmentInfo,
   getGatekeepers,
@@ -93,13 +92,13 @@ async function getFlipperServer(
     if (!(await checkSocketInUse(socketPath))) {
       console.info('flipper-server: not running/listening, start');
 
-      const {socket} = await startServer({
+      const {readyForIncomingConnections} = await startServer({
         port: 52342,
         staticDir: staticPath,
         entry: 'index.web.dev.html',
       });
 
-      const flipperServer = await startFlipperServer(
+      const server = await startFlipperServer(
         appPath,
         staticPath,
         '',
@@ -107,10 +106,10 @@ async function getFlipperServer(
         keytar,
       );
 
-      const companionEnv = await initCompanionEnv(flipperServer);
-      await flipperServer.connect();
+      const companionEnv = await initCompanionEnv(server);
+      await server.connect();
 
-      attachSocketServer(flipperServer, socket, companionEnv);
+      await readyForIncomingConnections(server, companionEnv);
     } else {
       console.info('flipper-server: already running');
       const loggerOutputFile = 'flipper-server-log.out';
