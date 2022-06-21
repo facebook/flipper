@@ -299,6 +299,7 @@ export type FlipperServerCommands = {
   'intern-upload-scribe-logs': (
     messages: {category: string; message: string}[],
   ) => Promise<void>;
+  shutdown: () => Promise<void>;
 };
 
 export type GraphResponse = {

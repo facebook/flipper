@@ -478,6 +478,9 @@ export class FlipperServerImpl implements FlipperServer {
       return internGraphGETAPIRequest(endpoint, params, options, token);
     },
     'intern-upload-scribe-logs': sendScribeLogs,
+    shutdown: async () => {
+      process.exit(0);
+    },
   };
 
   registerDevice(device: ServerDevice) {
