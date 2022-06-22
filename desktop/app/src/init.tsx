@@ -87,7 +87,11 @@ async function getFlipperServer(
   );
   const keytar: KeytarModule = await getKeytarModule(staticPath);
   const gatekeepers = getGatekeepers(environmentInfo.os.unixname);
-  if (gatekeepers['flipper_desktop_use_server']) {
+
+  const serverUsageEnabled = gatekeepers['flipper_desktop_use_server'];
+  const settings = await loadSettings();
+
+  if (serverUsageEnabled && (!settings.server || settings.server.enabled)) {
     const socketPath = await makeSocketPath();
     if (!(await checkSocketInUse(socketPath))) {
       console.info('flipper-server: not running/listening, start');
@@ -104,6 +108,7 @@ async function getFlipperServer(
         '',
         false,
         keytar,
+        'embedded',
       );
 
       const companionEnv = await initCompanionEnv(server);
@@ -113,6 +118,7 @@ async function getFlipperServer(
     } else {
       console.info('flipper-server: already running');
       const loggerOutputFile = 'flipper-server-log.out';
+
       tailServerLogs(path.join(staticPath, loggerOutputFile));
     }
 
@@ -139,7 +145,7 @@ async function getFlipperServer(
         },
         launcherSettings: await loadLauncherSettings(),
         processConfig: loadProcessConfig(env),
-        settings: await loadSettings(),
+        settings,
         validWebSocketOrigins:
           constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
       },

@@ -58,6 +58,9 @@ export type Settings = {
     host?: string;
     port?: number;
   };
+  server?: {
+    enabled: boolean;
+  };
 };
 
 export enum ReleaseChannel {

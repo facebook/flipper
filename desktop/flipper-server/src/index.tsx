@@ -105,6 +105,7 @@ async function start() {
     argv.settingsString,
     argv.launcherSettings,
     keytar,
+    'external',
   );
   const companionEnv = await initCompanionEnv(flipperServer);
   if (argv.failFast) {

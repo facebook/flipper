@@ -28,6 +28,8 @@ import {
 // In the future, this file would deserve it's own package, as it doesn't really relate to plugins.
 // Since flipper-plugin however is currently shared among server, client and defines a lot of base types, leaving it here for now.
 
+export type FlipperServerType = 'embedded' | 'external';
+
 export type FlipperServerState =
   | 'pending'
   | 'starting'
@@ -454,6 +456,7 @@ export type FlipperServerConfig = {
   processConfig: ProcessConfig;
   validWebSocketOrigins: string[];
   environmentInfo: EnvironmentInfo;
+  type?: FlipperServerType;
 };
 
 export interface FlipperServer {

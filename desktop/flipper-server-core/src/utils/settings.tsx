@@ -69,6 +69,9 @@ function getDefaultSettings(): Settings {
     enablePluginMarketplace: false,
     marketplaceURL: '',
     enablePluginMarketplaceAutoUpdate: true,
+    server: {
+      enabled: false,
+    },
   };
 }
 
