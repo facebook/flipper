@@ -52,7 +52,7 @@ const siteConfig = {
           position: 'right',
         },
         {
-          to: 'docs/getting-started/index',
+          to: 'docs/getting-started',
           label: 'Setup',
           position: 'right',
         },
@@ -89,7 +89,7 @@ const siteConfig = {
           items: [
             {
               label: 'Getting Started',
-              to: 'docs/getting-started/index',
+              to: 'docs/getting-started',
             },
             {
               label: 'Plugin Creation Tutorial',
@@ -147,6 +147,7 @@ const siteConfig = {
     algolia: fbContent({
       internal: undefined,
       external: {
+        appId: 'OFCNCOG2CU',
         apiKey: '2df980e7ffc95c19552790f7cad32666',
         indexName: 'fbflipper',
         algoliaOptions: {
@@ -219,7 +220,7 @@ const siteConfig = {
       {
         redirects: [
           {
-            to: '/docs/getting-started/troubleshooting/troubleshooting',
+            to: '/docs/getting-started/troubleshooting',
             from: ['/docs/fb/troubleshooting'],
           },
           {
@@ -246,7 +247,7 @@ const siteConfig = {
             from: ['/docs/fb/developmentworkflow'],
           },
           {
-            to: '/docs/getting-started/index',
+            to: '/docs/getting-started',
             from: ['/docs/fb/Help-Updating-Flipper'],
           },
           {
@@ -264,11 +265,11 @@ const siteConfig = {
             from: ['/docs/fb/using-gatekeepers'],
           },
           {
-            to: '/docs/getting-started/index',
+            to: '/docs/getting-started',
             from: ['/docs/fb/using-flipper-at-facebook'],
           },
           {
-            to: '/docs/getting-started/index',
+            to: '/docs/getting-started',
             from: ['/docs/fb/index'],
           },
           {
