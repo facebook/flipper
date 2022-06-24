@@ -70,6 +70,15 @@ async function getKeytarModule(staticPath: string): Promise<KeytarModule> {
   return keytar;
 }
 
+async function getExternalServer() {
+  const server = await createFlipperServer(
+    'localhost',
+    52342,
+    (_state: FlipperServerState) => {},
+  );
+  return server;
+}
+
 async function getFlipperServer(
   logger: Logger,
   electronIpcClient: ElectronIpcClientRenderer,
@@ -91,9 +100,45 @@ async function getFlipperServer(
   const serverUsageEnabled = gatekeepers['flipper_desktop_use_server'];
   const settings = await loadSettings();
 
+  const socketPath = await makeSocketPath();
+  const serverRunning = await checkSocketInUse(socketPath);
+
+  const getEmbeddedServer = async () => {
+    if (serverRunning) {
+      const server = await getExternalServer();
+      await server.exec('shutdown').catch(() => {
+        /** shutdown will ultimately make this request fail, ignore error. */
+      });
+    }
+    const server = new FlipperServerImpl(
+      {
+        environmentInfo,
+        env: parseEnvironmentVariables(env),
+        // TODO: make username parameterizable
+        gatekeepers: gatekeepers,
+        paths: {
+          appPath,
+          homePath: await electronIpcClient.send('getPath', 'home'),
+          execPath,
+          staticPath,
+          tempPath: await electronIpcClient.send('getPath', 'temp'),
+          desktopPath: await electronIpcClient.send('getPath', 'desktop'),
+        },
+        launcherSettings: await loadLauncherSettings(),
+        processConfig: loadProcessConfig(env),
+        settings,
+        validWebSocketOrigins:
+          constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
+      },
+      logger,
+      keytar,
+    );
+
+    return server;
+  };
+  // Failed to start Flipper desktop: Error: flipper-server disconnected
   if (serverUsageEnabled && (!settings.server || settings.server.enabled)) {
-    const socketPath = await makeSocketPath();
-    if (!(await checkSocketInUse(socketPath))) {
+    if (!serverRunning) {
       console.info('flipper-server: not running/listening, start');
 
       const {readyForIncomingConnections} = await startServer({
@@ -122,39 +167,9 @@ async function getFlipperServer(
       tailServerLogs(path.join(staticPath, loggerOutputFile));
     }
 
-    const flipperServer = await createFlipperServer(
-      'localhost',
-      52342,
-      (_state: FlipperServerState) => {},
-    );
-    return flipperServer;
-  } else {
-    const flipperServer = new FlipperServerImpl(
-      {
-        environmentInfo,
-        env: parseEnvironmentVariables(env),
-        // TODO: make username parameterizable
-        gatekeepers: gatekeepers,
-        paths: {
-          appPath,
-          homePath: await electronIpcClient.send('getPath', 'home'),
-          execPath,
-          staticPath,
-          tempPath: await electronIpcClient.send('getPath', 'temp'),
-          desktopPath: await electronIpcClient.send('getPath', 'desktop'),
-        },
-        launcherSettings: await loadLauncherSettings(),
-        processConfig: loadProcessConfig(env),
-        settings,
-        validWebSocketOrigins:
-          constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
-      },
-      logger,
-      keytar,
-    );
-
-    return flipperServer;
+    return getExternalServer();
   }
+  return getEmbeddedServer();
 }
 
 async function start() {
