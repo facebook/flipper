@@ -111,6 +111,9 @@ async function start() {
   if (argv.failFast) {
     flipperServer.on('server-state', ({state}) => {
       if (state === 'error') {
+        console.error(
+          '[flipper-server-process-exit] state changed to error, process will exit.',
+        );
         process.exit(1);
       }
     });
@@ -122,6 +125,23 @@ async function start() {
   }
   await readyForIncomingConnections(flipperServer, companionEnv);
 }
+
+process.on('uncaughtException', (error) => {
+  console.error(
+    '[flipper-server-process-exit] uncaught exception, process will exit.',
+    error,
+  );
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.warn(
+    '[flipper-server] unhandled rejection for:',
+    promise,
+    'reason:',
+    reason,
+  );
+});
 
 start()
   .then(() => {
