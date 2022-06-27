@@ -1,3 +1,8 @@
+# 0.151.1 (27/6/2022)
+
+ * [D37417459](https://github.com/facebook/flipper/search?q=D37417459&type=Commits) -  Flipper Server Mac App no longer bounces in Dock
+
+
 # 0.149.0 (8/6/2022)
 
  * [D36736495](https://github.com/facebook/flipper/search?q=D36736495&type=Commits) -  DataTable: more pronounced background color for selections
