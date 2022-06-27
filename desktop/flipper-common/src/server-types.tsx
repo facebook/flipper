@@ -303,6 +303,7 @@ export type FlipperServerCommands = {
   ) => Promise<void>;
   shutdown: () => Promise<void>;
   'is-logged-in': () => Promise<boolean>;
+  'environment-info': () => Promise<EnvironmentInfo>;
 };
 
 export type GraphResponse = {

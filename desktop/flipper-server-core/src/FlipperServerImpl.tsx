@@ -489,6 +489,9 @@ export class FlipperServerImpl implements FlipperServer {
         return false;
       }
     },
+    'environment-info': async () => {
+      return this.config.environmentInfo;
+    },
   };
 
   registerDevice(device: ServerDevice) {
