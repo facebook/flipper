@@ -119,7 +119,9 @@ export default async (store: Store, _logger: Logger) => {
 };
 
 export const requirePlugin = (pluginDetails: ActivatablePluginDetails) =>
-  wrapRequirePlugin(uiPluginInitializer!.requirePluginImpl)(pluginDetails);
+  wrapRequirePlugin(
+    uiPluginInitializer!.requirePluginImpl.bind(uiPluginInitializer),
+  )(pluginDetails);
 
 export const requirePluginInternal = async (
   defaultPluginsIndex: any,
