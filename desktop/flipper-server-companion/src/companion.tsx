@@ -53,6 +53,9 @@ export class FlipperServerCompanion {
     for (const loadablePlugin of loadablePluginsArr) {
       this.loadablePlugins.set(loadablePlugin.id, loadablePlugin);
     }
+    console.debug(`[FlipperServerCompanion] constructor -> loadable plugins`, [
+      ...this.loadablePlugins.keys(),
+    ]);
   }
 
   canHandleCommand(command: string): boolean {
@@ -138,6 +141,10 @@ export class FlipperServerCompanion {
     );
 
     await newClient.init();
+    console.debug(
+      `[FlipperServerCompanion] createHeadlessClientIfNeeded -> new client created with plugins`,
+      [...newClient.sandyPluginStates.keys()],
+    );
 
     this.clients.set(clientInfo.id, newClient);
     return newClient;
@@ -161,6 +168,10 @@ export class FlipperServerCompanion {
     }
 
     const newDevice = new BaseDevice(this.flipperServer, deviceInfo);
+    console.debug(
+      `[FlipperServerCompanion] createHeadlessClientIfNeeded -> new device created with plugins`,
+      [...this.loadablePlugins.keys()],
+    );
     this.devices.set(newDevice.serial, newDevice);
     return newDevice;
   }
@@ -192,6 +203,7 @@ export class FlipperServerCompanion {
     ...args: any[]
   ): Promise<any> {
     try {
+      console.debug(`[FlipperServerCompanion] command '${event}'`, ...args);
       const handler: (...args: any[]) => Promise<any> =
         this.commandHandler[event];
       if (!handler) {
@@ -201,12 +213,10 @@ export class FlipperServerCompanion {
         );
       }
       const result = await handler(...args);
-      console.debug(`[FlipperServerCompanion] command '${event}' - OK`);
+      console.debug(`[FlipperServerCompanion] command '${event}' - OK`, result);
       return result;
     } catch (e) {
-      console.debug(
-        `[FlipperServerCompanion] command '${event}' - ERROR: ${e} `,
-      );
+      console.debug(`[FlipperServerCompanion] command '${event}' - ERROR`, e);
       throw e;
     }
   }
