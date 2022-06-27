@@ -481,6 +481,14 @@ export class FlipperServerImpl implements FlipperServer {
     shutdown: async () => {
       process.exit(0);
     },
+    'is-logged-in': async () => {
+      try {
+        const token = await this.keytarManager.retrieveToken(SERVICE_FLIPPER);
+        return !!token;
+      } catch (e) {
+        return false;
+      }
+    },
   };
 
   registerDevice(device: ServerDevice) {

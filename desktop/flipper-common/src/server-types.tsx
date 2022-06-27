@@ -302,6 +302,7 @@ export type FlipperServerCommands = {
     messages: {category: string; message: string}[],
   ) => Promise<void>;
   shutdown: () => Promise<void>;
+  'is-logged-in': () => Promise<boolean>;
 };
 
 export type GraphResponse = {
