@@ -72,7 +72,7 @@ const rootDir = argv.bundler
 const staticDir = path.join(rootDir, 'static');
 
 async function start() {
-  initializeLogger(staticDir);
+  const enhanceLogger = initializeLogger(staticDir);
 
   let keytar: any = undefined;
   try {
@@ -107,6 +107,11 @@ async function start() {
     keytar,
     'external',
   );
+
+  enhanceLogger((logEntry) => {
+    flipperServer.emit('server-log', logEntry);
+  });
+
   const companionEnv = await initCompanionEnv(flipperServer);
   if (argv.failFast) {
     flipperServer.on('server-state', ({state}) => {
