@@ -24,6 +24,7 @@ import {
   ProcessConfig,
   Settings,
 } from './settings';
+import {LoggerInfo} from './utils/Logger';
 
 // In the future, this file would deserve it's own package, as it doesn't really relate to plugins.
 // Since flipper-plugin however is currently shared among server, client and defines a lot of base types, leaving it here for now.
@@ -135,6 +136,7 @@ export type FlipperServerEvents = {
   };
   'plugins-server-add-on-message': ExecuteMessage;
   'download-file-update': DownloadFileUpdate;
+  'server-log': LoggerInfo;
 };
 
 export type IOSDeviceParams = {

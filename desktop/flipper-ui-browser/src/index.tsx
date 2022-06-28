@@ -45,6 +45,14 @@ async function start() {
     },
   );
 
+  flipperServer.on('server-log', (logEntry) => {
+    console[logEntry.type](
+      `[${logEntry.namespace}] (${new Date(
+        logEntry.time,
+      ).toLocaleTimeString()}): ${logEntry.msg}`,
+    );
+  });
+
   await flipperServer.connect();
   const flipperServerConfig = await flipperServer.exec('get-config');
 

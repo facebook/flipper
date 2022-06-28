@@ -88,8 +88,15 @@ export function initializeLogger(staticDir: string) {
   const logger = createLogger();
   setLoggerInstance(logger);
 
+  let onConsoleEntry: ((entry: LoggerInfo) => void) | undefined;
+
   const file = fs.createWriteStream(path.join(staticDir, loggerOutputFile));
   consoleProxy((entry: LoggerInfo) => {
     file.write(`${JSON.stringify(entry)}\n`);
+    onConsoleEntry?.(entry);
   });
+
+  return (newOnConsoleEntry: (entry: LoggerInfo) => void) => {
+    onConsoleEntry = newOnConsoleEntry;
+  };
 }
