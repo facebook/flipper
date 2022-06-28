@@ -32,6 +32,7 @@ import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {uploadFlipperMedia} from '../fb-stubs/user';
+import {logsAtom} from '../chrome/ConsoleLogs';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -602,6 +603,14 @@ export function showOpenDialog(store: Store) {
 
 export function canFileExport() {
   return !!getRenderHostInstance().showSaveDialog;
+}
+
+export async function startLogsExport() {
+  const serializedLogs = logsAtom
+    .get()
+    .map((item) => JSON.stringify(item))
+    .join('\n');
+  await getRenderHostInstance().exportFile?.(serializedLogs);
 }
 
 export async function startFileExport(dispatch: Store['dispatch']) {
