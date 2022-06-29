@@ -53,6 +53,7 @@ import {usePluginInstanceMaybe} from '../../plugin/PluginContext';
 import {debounce} from 'lodash';
 import {useInUnitTest} from '../../utils/useInUnitTest';
 import {createDataSource} from '../../state/createDataSource';
+import {HighlightProvider} from '../Highlight';
 
 type DataTableBaseProps<T = any> = {
   columns: DataTableColumn<T>[];
@@ -603,7 +604,14 @@ export function DataTable<T extends object>(
 
   return (
     <Layout.Container grow={props.scrollable}>
-      {mainSection}
+      <HighlightProvider
+        text={
+          tableState.highlightSearchSetting.highlightEnabled
+            ? tableState.searchValue
+            : ''
+        }>
+        {mainSection}
+      </HighlightProvider>
       {props.enableAutoScroll && (
         <AutoScroller>
           <PushpinFilled

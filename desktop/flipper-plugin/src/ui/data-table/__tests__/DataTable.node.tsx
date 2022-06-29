@@ -49,24 +49,34 @@ test('update and append', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement).toMatchInlineSnapshot(`
-       <div
-         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-       >
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           test DataTable
-         </div>
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           true
-         </div>
-       </div>
-     `);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              class="css-1cfwmd7-Highlighted eiud9hg0"
+            />
+            test DataTable
+          </span>
+        </div>
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              class="css-1cfwmd7-Highlighted eiud9hg0"
+            />
+            true
+          </span>
+        </div>
+      </div>
+    `);
   }
 
   act(() => {
@@ -103,24 +113,34 @@ test('column visibility', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement).toMatchInlineSnapshot(`
-       <div
-         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-       >
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           test DataTable
-         </div>
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           true
-         </div>
-       </div>
-     `);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              class="css-1cfwmd7-Highlighted eiud9hg0"
+            />
+            test DataTable
+          </span>
+        </div>
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              class="css-1cfwmd7-Highlighted eiud9hg0"
+            />
+            true
+          </span>
+        </div>
+      </div>
+    `);
   }
 
   // hide done
@@ -130,18 +150,23 @@ test('column visibility', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement).toMatchInlineSnapshot(`
-       <div
-         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-       >
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           test DataTable
-         </div>
-       </div>
-     `);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              class="css-1cfwmd7-Highlighted eiud9hg0"
+            />
+            test DataTable
+          </span>
+        </div>
+      </div>
+    `);
   }
 
   // reset
@@ -151,7 +176,7 @@ test('column visibility', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement?.children.length).toBe(2);
+    expect(elem[0].parentElement?.parentElement?.children.length).toBe(2);
   }
 });
 
