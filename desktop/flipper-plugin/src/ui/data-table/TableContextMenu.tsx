@@ -8,12 +8,14 @@
  */
 
 import {CopyOutlined, FilterOutlined, TableOutlined} from '@ant-design/icons';
-import {Checkbox, Menu} from 'antd';
+import {Checkbox, Menu, Switch} from 'antd';
+import {Layout} from 'flipper-plugin';
 import {
   DataTableDispatch,
   getSelectedItem,
   getSelectedItems,
   getValueAtPath,
+  SearchHighlightSetting,
   Selection,
 } from './DataTableManager';
 import React from 'react';
@@ -30,6 +32,7 @@ export function tableContextMenuFactory<T>(
   datasource: DataSource<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   selection: Selection,
+  highlightSearchSetting: SearchHighlightSetting,
   columns: DataTableColumn<T>[],
   visibleColumns: DataTableColumn<T>[],
   onCopyRows: (
@@ -177,13 +180,36 @@ export function tableContextMenuFactory<T>(
         }}>
         Reset view
       </Menu.Item>
-      <Menu.Item
-        key="clear history"
-        onClick={() => {
-          dispatch({type: 'clearSearchHistory'});
-        }}>
-        Clear search history
-      </Menu.Item>
+
+      <SubMenu title="Search Options" key="search options">
+        <Menu.Item
+          key="clear history"
+          onClick={() => {
+            dispatch({type: 'clearSearchHistory'});
+          }}>
+          Clear search history
+        </Menu.Item>
+        <Menu.Item key="highlight search setting">
+          <Layout.Horizontal
+            gap
+            center
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}>
+            <Switch
+              checked={highlightSearchSetting.highlightEnabled}
+              size="small"
+              onChange={() => {
+                dispatch({
+                  type: 'toggleHighlightSearch',
+                });
+              }}
+            />
+            Highlight search terms
+          </Layout.Horizontal>
+        </Menu.Item>
+      </SubMenu>
     </Menu>
   );
 }

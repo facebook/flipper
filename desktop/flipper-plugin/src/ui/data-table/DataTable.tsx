@@ -313,6 +313,9 @@ export function DataTable<T extends object>(
         case 'Control':
           tableManager.toggleSearchValue();
           break;
+        case 'H':
+          tableManager.toggleHighlightSearch();
+          break;
         default:
           handled = false;
       }
@@ -469,6 +472,7 @@ export function DataTable<T extends object>(
             dataSource,
             dispatch,
             selection,
+            tableState.highlightSearchSetting,
             tableState.columns,
             visibleColumns,
             onCopyRows,
@@ -479,6 +483,7 @@ export function DataTable<T extends object>(
           dispatch,
           selection,
           tableState.columns,
+          tableState.highlightSearchSetting,
           visibleColumns,
           onCopyRows,
           onContextMenu,
