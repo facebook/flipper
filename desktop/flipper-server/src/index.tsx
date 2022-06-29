@@ -96,7 +96,7 @@ async function start() {
   const {app, server, socket, readyForIncomingConnections} = await startServer({
     port: argv.port,
     staticDir,
-    entry: 'index.web.dev.html',
+    entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
   });
 
   const flipperServer = await startFlipperServer(
@@ -153,9 +153,7 @@ start()
     console.log(
       'Flipper server started and listening at port ' + chalk.green(argv.port),
     );
-    const url = `http://localhost:${argv.port}/index.web${
-      argv.bundler ? '.dev' : ''
-    }.html`;
+    const url = `http://localhost:${argv.port}`;
     console.log('Go to: ' + chalk.green(chalk.bold(url)));
     if (argv.open) {
       open(url);
