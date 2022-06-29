@@ -8,7 +8,7 @@
  */
 
 import {CopyOutlined, FilterOutlined, TableOutlined} from '@ant-design/icons';
-import {Checkbox, Menu, Switch} from 'antd';
+import {Badge, Checkbox, Menu, Select, Switch} from 'antd';
 import {Layout} from 'flipper-plugin';
 import {
   DataTableDispatch,
@@ -25,8 +25,10 @@ import {toFirstUpper} from '../../utils/toFirstUpper';
 import {DataSource} from '../../data-source/index';
 import {renderColumnValue} from './TableRow';
 import {textContent} from '../../utils/textContent';
+import {theme} from '../theme';
 
 const {Item, SubMenu} = Menu;
+const {Option} = Select;
 
 export function tableContextMenuFactory<T>(
   datasource: DataSource<T, T[keyof T]>,
@@ -197,6 +199,7 @@ export function tableContextMenuFactory<T>(
               e.stopPropagation();
               e.preventDefault();
             }}>
+            Highlight search terms
             <Switch
               checked={highlightSearchSetting.highlightEnabled}
               size="small"
@@ -206,7 +209,42 @@ export function tableContextMenuFactory<T>(
                 });
               }}
             />
-            Highlight search terms
+          </Layout.Horizontal>
+        </Menu.Item>
+        <Menu.Item key="highlight search color">
+          <Layout.Horizontal
+            gap
+            center
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}>
+            Highlight search color
+            <Select
+              style={{width: '7em'}}
+              defaultValue={highlightSearchSetting.color}
+              onChange={(color: string) => {
+                dispatch({
+                  type: 'setSearchHighlightColor',
+                  color: color,
+                });
+              }}>
+              {Object.entries(theme.searchHighlightBackground).map(
+                ([colorName, color]) => (
+                  <Option key={colorName} value={color}>
+                    <Badge
+                      text={
+                        <span style={{backgroundColor: color}}>
+                          {colorName.charAt(0).toUpperCase() +
+                            colorName.slice(1)}
+                        </span>
+                      }
+                      color={color}
+                    />
+                  </Option>
+                ),
+              )}
+            </Select>
           </Layout.Horizontal>
         </Menu.Item>
       </SubMenu>

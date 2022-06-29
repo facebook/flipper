@@ -52,7 +52,7 @@ test('update and append', async () => {
         >
           <span>
             <span
-              class="css-1cfwmd7-Highlighted eiud9hg0"
+              style="background-color: rgb(255, 245, 102);"
             />
             test DataTable
           </span>
@@ -63,7 +63,7 @@ test('update and append', async () => {
         >
           <span>
             <span
-              class="css-1cfwmd7-Highlighted eiud9hg0"
+              style="background-color: rgb(255, 245, 102);"
             />
             true
           </span>

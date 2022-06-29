@@ -129,7 +129,7 @@ test('It can render rows', async () => {
       >
         <span>
           <span
-            class="css-1cfwmd7-Highlighted eiud9hg0"
+            style="background-color: rgb(255, 245, 102);"
           />
           00:00:00.000
         </span>
@@ -140,7 +140,7 @@ test('It can render rows', async () => {
       >
         <span>
           <span
-            class="css-1cfwmd7-Highlighted eiud9hg0"
+            style="background-color: rgb(255, 245, 102);"
           />
           Android Phone
         </span>
@@ -151,7 +151,7 @@ test('It can render rows', async () => {
       >
         <span>
           <span
-            class="css-1cfwmd7-Highlighted eiud9hg0"
+            style="background-color: rgb(255, 245, 102);"
           />
           FB4A
         </span>
@@ -162,7 +162,7 @@ test('It can render rows', async () => {
       >
         <span>
           <span
-            class="css-1cfwmd7-Highlighted eiud9hg0"
+            style="background-color: rgb(255, 245, 102);"
           />
           unique-string
         </span>
@@ -173,7 +173,7 @@ test('It can render rows', async () => {
       >
         <span>
           <span
-            class="css-1cfwmd7-Highlighted eiud9hg0"
+            style="background-color: rgb(255, 245, 102);"
           />
         </span>
       </div>
@@ -183,7 +183,7 @@ test('It can render rows', async () => {
       >
         <span>
           <span
-            class="css-1cfwmd7-Highlighted eiud9hg0"
+            style="background-color: rgb(255, 245, 102);"
           />
         </span>
       </div>
@@ -193,7 +193,7 @@ test('It can render rows', async () => {
       >
         <span>
           <span
-            class="css-1cfwmd7-Highlighted eiud9hg0"
+            style="background-color: rgb(255, 245, 102);"
           />
           toClient:send
         </span>

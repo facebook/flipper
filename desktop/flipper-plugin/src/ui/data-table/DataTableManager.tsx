@@ -12,6 +12,7 @@ import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer} from 'react';
 import {DataSource, DataSourceVirtualizer} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
+import {theme} from '../theme';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting<T = any> = {
@@ -106,7 +107,8 @@ type DataManagerActions<T> =
   | Action<'setAutoScroll', {autoScroll: boolean}>
   | Action<'toggleSearchValue'>
   | Action<'clearSearchHistory'>
-  | Action<'toggleHighlightSearch'>;
+  | Action<'toggleHighlightSearch'>
+  | Action<'setSearchHighlightColor', {color: string}>;
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T, T[keyof T]>;
@@ -309,6 +311,12 @@ export const dataTableManagerReducer = produce<
         !draft.highlightSearchSetting.highlightEnabled;
       break;
     }
+    case 'setSearchHighlightColor': {
+      if (draft.highlightSearchSetting.color !== action.color) {
+        draft.highlightSearchSetting.color = action.color;
+      }
+      break;
+    }
     default: {
       throw new Error('Unknown action ' + (action as any).type);
     }
@@ -341,6 +349,7 @@ export type DataTableManager<T> = {
   dataSource: DataSource<T, T[keyof T]>;
   toggleSearchValue(): void;
   toggleHighlightSearch(): void;
+  setSearchHighlightColor(color: string): void;
 };
 
 export function createDataTableManager<T>(
@@ -393,6 +402,9 @@ export function createDataTableManager<T>(
     toggleHighlightSearch() {
       dispatch({type: 'toggleHighlightSearch'});
     },
+    setSearchHighlightColor(color) {
+      dispatch({type: 'setSearchHighlightColor', color});
+    },
     dataSource,
   };
 }
@@ -440,7 +452,7 @@ export function createInitialState<T>(
     autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
     highlightSearchSetting: prefs?.highlightSearchSetting ?? {
       highlightEnabled: false,
-      color: '',
+      color: theme.searchHighlightBackground.yellow,
     },
   };
   // @ts-ignore

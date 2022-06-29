@@ -609,6 +609,10 @@ export function DataTable<T extends object>(
           tableState.highlightSearchSetting.highlightEnabled
             ? tableState.searchValue
             : ''
+        }
+        highlightColor={
+          tableState.highlightSearchSetting.color ||
+          theme.searchHighlightBackground.yellow
         }>
         {mainSection}
       </HighlightProvider>

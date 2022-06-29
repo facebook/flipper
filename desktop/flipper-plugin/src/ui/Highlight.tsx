@@ -7,7 +7,6 @@
  * @format
  */
 
-import styled from '@emotion/styled';
 import React, {
   useEffect,
   memo,
@@ -19,19 +18,20 @@ import React, {
 import {debounce} from 'lodash';
 import {theme} from './theme';
 
-const Highlighted = styled.span({
-  backgroundColor: theme.searchHighlightBackground,
-});
-
 export interface HighlightManager {
   setFilter(text: string | undefined): void;
   render(text: string): React.ReactNode;
+  setHighlightColor(color: string | undefined): void;
 }
 
-function createHighlightManager(initialText: string = ''): HighlightManager {
+function createHighlightManager(
+  initialText: string = '',
+  initialHighlightColor: string = theme.searchHighlightBackground.yellow,
+): HighlightManager {
   const callbacks = new Set<(prev: string, next: string) => void>();
   let matches = 0;
   let currentFilter = initialText;
+  let currHighlightColor = initialHighlightColor;
 
   const Highlight: React.FC<{text: string}> = memo(({text}) => {
     const [, setUpdate] = useState(0);
@@ -65,9 +65,9 @@ function createHighlightManager(initialText: string = ''): HighlightManager {
         ) : (
           <>
             {text.substr(0, index)}
-            <Highlighted>
+            <span style={{backgroundColor: currHighlightColor}}>
               {text.substr(index, currentFilter.length)}
-            </Highlighted>
+            </span>
             {text.substr(index + currentFilter.length)}
           </>
         )}
@@ -87,6 +87,12 @@ function createHighlightManager(initialText: string = ''): HighlightManager {
     render(text: string) {
       return <Highlight text={text} />;
     },
+    setHighlightColor(color: string) {
+      if (color !== currHighlightColor) {
+        currHighlightColor = color;
+        callbacks.forEach((cb) => cb(currentFilter, currentFilter));
+      }
+    },
   };
 }
 
@@ -98,20 +104,31 @@ export const HighlightContext = createContext<HighlightManager>({
     // stub implementation in case we render a component without a Highlight context
     return text;
   },
+  setHighlightColor(_color: string) {
+    throw new Error('Cannot set the color of a stub highlight manager');
+  },
 });
 
 export function HighlightProvider({
   text,
+  highlightColor,
   children,
 }: {
   text: string | undefined;
+  highlightColor?: string | undefined;
   children: React.ReactElement;
 }) {
-  const [highlightManager] = useState(() => createHighlightManager(text));
+  const [highlightManager] = useState(() =>
+    createHighlightManager(text, highlightColor),
+  );
 
   useEffect(() => {
     highlightManager.setFilter(text);
   }, [text, highlightManager]);
+
+  useEffect(() => {
+    highlightManager.setHighlightColor(highlightColor);
+  }, [highlightColor, highlightManager]);
 
   return (
     <HighlightContext.Provider value={highlightManager}>
