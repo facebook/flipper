@@ -23,7 +23,7 @@ const argv = yargs
   .usage('yarn flipper-server [args]')
   .options({
     port: {
-      describe: 'Port to serve on',
+      describe: 'TCP port to serve on',
       type: 'number',
       default: 52342,
     },
@@ -52,6 +52,12 @@ const argv = yargs
     launcherSettings: {
       describe:
         'Open Flipper with the configuration stored in .config folder for the launcher',
+      type: 'boolean',
+      default: true,
+    },
+    tcp: {
+      describe:
+        'Open a TCP port (--no-tcp can be specified as to use unix-domain-socket exclusively)',
       type: 'boolean',
       default: true,
     },
@@ -94,9 +100,10 @@ async function start() {
   }
 
   const {app, server, socket, readyForIncomingConnections} = await startServer({
-    port: argv.port,
     staticDir,
     entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
+    port: argv.port,
+    tcp: argv.tcp,
   });
 
   const flipperServer = await startFlipperServer(
@@ -150,6 +157,10 @@ process.on('unhandledRejection', (reason, promise) => {
 
 start()
   .then(() => {
+    if (!argv.tcp) {
+      console.log('Flipper server started and listening');
+      return;
+    }
     console.log(
       'Flipper server started and listening at port ' + chalk.green(argv.port),
     );
