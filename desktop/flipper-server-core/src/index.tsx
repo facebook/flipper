@@ -12,7 +12,6 @@ export {loadSettings} from './utils/settings';
 export {loadLauncherSettings} from './utils/launcherSettings';
 export {loadProcessConfig} from './utils/processConfig';
 export {getEnvironmentInfo} from './utils/environmentInfo';
-export * from './utils/tail';
 export {getGatekeepers} from './gk';
 export {setupPrefetcher} from './fb-stubs/Prefetcher';
 export * from './server/attachSocketServer';
