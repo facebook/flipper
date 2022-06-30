@@ -78,7 +78,7 @@ const rootDir = argv.bundler
 const staticDir = path.join(rootDir, 'static');
 
 async function start() {
-  const enhanceLogger = initializeLogger(staticDir);
+  const enhanceLogger = await initializeLogger(staticDir);
 
   let keytar: any = undefined;
   try {
