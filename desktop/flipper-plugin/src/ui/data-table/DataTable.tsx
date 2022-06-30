@@ -54,6 +54,7 @@ import {debounce} from 'lodash';
 import {useInUnitTest} from '../../utils/useInUnitTest';
 import {createDataSource} from '../../state/createDataSource';
 import {HighlightProvider} from '../Highlight';
+import {useLatestRef} from '../../utils/useLatestRef';
 
 type DataTableBaseProps<T = any> = {
   columns: DataTableColumn<T>[];
@@ -178,6 +179,26 @@ export function DataTable<T extends object>(
   }
 
   const {columns, selection, searchValue, sorting} = tableState;
+
+  const latestSelectionRef = useLatestRef(selection);
+  const latestOnSelectRef = useLatestRef(onSelect);
+  useEffect(() => {
+    if (dataSource) {
+      const unsubscribe = dataSource.view.addListener((change) => {
+        if (
+          change.type === 'update' &&
+          latestSelectionRef.current.items.has(change.index)
+        ) {
+          latestOnSelectRef.current?.(
+            getSelectedItem(dataSource, latestSelectionRef.current),
+            getSelectedItems(dataSource, latestSelectionRef.current),
+          );
+        }
+      });
+
+      return unsubscribe;
+    }
+  }, [dataSource, latestSelectionRef, latestOnSelectRef]);
 
   const visibleColumns = useMemo(
     () => columns.filter((column) => column.visible),

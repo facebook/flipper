@@ -170,7 +170,7 @@ export const DataSourceRendererVirtual: <T extends object, C>(
         }
       }
 
-      dataSource.view.setListener((event) => {
+      const unsubscribe = dataSource.view.addListener((event) => {
         switch (event.type) {
           case 'reset':
             rerender(UpdatePrio.HIGH, true);
@@ -201,7 +201,7 @@ export const DataSourceRendererVirtual: <T extends object, C>(
 
       return () => {
         unmounted = true;
-        dataSource.view.setListener(undefined);
+        unsubscribe();
       };
     },
     [dataSource, setForceUpdate, useFixedRowHeight, isUnitTest],

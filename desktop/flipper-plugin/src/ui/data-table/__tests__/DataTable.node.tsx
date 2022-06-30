@@ -737,12 +737,25 @@ test('selection always has the latest state', () => {
   act(() => {
     ds.update(2, item3updated);
   });
+  expect(events.splice(0)).toEqual([[item3updated, [item3updated]]]);
+
   act(() => {
     ref.current!.addRangeToSelection(0, 0);
   });
 
   expect(events.splice(0)).toEqual([
     [item1, [item1, item3updated]], // update reflected in callback!
+  ]);
+
+  const item1updated = {
+    title: 'item 1 updated',
+    done: false,
+  };
+  act(() => {
+    ds.update(0, item1updated);
+  });
+  expect(events.splice(0)).toEqual([
+    [item1updated, [item1updated, item3updated]], // update reflected in callback!
   ]);
 
   rendering.unmount();

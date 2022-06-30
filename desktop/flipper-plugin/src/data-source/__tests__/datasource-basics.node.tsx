@@ -489,9 +489,9 @@ function testEvents<T>(
 ): any[] {
   const ds = createDataSource<T, keyof T>(initial, {key});
   const events: any[] = [];
-  ds.view.setListener((e) => events.push(e));
+  const unsubscribe = ds.view.addListener((e) => events.push(e));
   op(ds);
-  ds.view.setListener(undefined);
+  unsubscribe();
   return events;
 }
 
