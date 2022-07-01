@@ -18,6 +18,7 @@ import open from 'open';
 import {initCompanionEnv} from 'flipper-server-companion';
 import {startFlipperServer, startServer} from 'flipper-server-core';
 import {isTest} from 'flipper-common';
+import exitHook from 'exit-hook';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -114,6 +115,10 @@ async function start() {
     keytar,
     'external',
   );
+
+  exitHook(async () => {
+    await flipperServer.close();
+  });
 
   enhanceLogger((logEntry) => {
     flipperServer.emit('server-log', logEntry);
