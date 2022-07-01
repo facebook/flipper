@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-use std::fmt::{self, Display};
+use std::fmt::Display;
+use std::fmt::{self};
 use std::str;
 
 #[derive(Eq, PartialEq, Debug, PartialOrd, Ord, Clone, serde::Deserialize)]
