@@ -49,24 +49,34 @@ test('update and append', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement).toMatchInlineSnapshot(`
-       <div
-         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-       >
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           test DataTable
-         </div>
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           true
-         </div>
-       </div>
-     `);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            test DataTable
+          </span>
+        </div>
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            true
+          </span>
+        </div>
+      </div>
+    `);
   }
 
   act(() => {
@@ -103,24 +113,34 @@ test('column visibility', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement).toMatchInlineSnapshot(`
-       <div
-         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-       >
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           test DataTable
-         </div>
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           true
-         </div>
-       </div>
-     `);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            test DataTable
+          </span>
+        </div>
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            true
+          </span>
+        </div>
+      </div>
+    `);
   }
 
   // hide done
@@ -130,18 +150,23 @@ test('column visibility', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement).toMatchInlineSnapshot(`
-       <div
-         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-       >
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           test DataTable
-         </div>
-       </div>
-     `);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            test DataTable
+          </span>
+        </div>
+      </div>
+    `);
   }
 
   // reset
@@ -151,7 +176,7 @@ test('column visibility', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement?.children.length).toBe(2);
+    expect(elem[0].parentElement?.parentElement?.children.length).toBe(2);
   }
 });
 
@@ -712,12 +737,25 @@ test('selection always has the latest state', () => {
   act(() => {
     ds.update(2, item3updated);
   });
+  expect(events.splice(0)).toEqual([[item3updated, [item3updated]]]);
+
   act(() => {
     ref.current!.addRangeToSelection(0, 0);
   });
 
   expect(events.splice(0)).toEqual([
     [item1, [item1, item3updated]], // update reflected in callback!
+  ]);
+
+  const item1updated = {
+    title: 'item 1 updated',
+    done: false,
+  };
+  act(() => {
+    ds.update(0, item1updated);
+  });
+  expect(events.splice(0)).toEqual([
+    [item1updated, [item1updated, item3updated]], // update reflected in callback!
   ]);
 
   rendering.unmount();

@@ -66,7 +66,7 @@ export const DataSourceRendererStatic: <T extends object, C>(
       let unmounted = false;
 
       dataSource.view.setWindow(0, dataSource.limit);
-      dataSource.view.setListener((_event) => {
+      const unsubscribe = dataSource.view.addListener((_event) => {
         if (unmounted) {
           return;
         }
@@ -75,7 +75,7 @@ export const DataSourceRendererStatic: <T extends object, C>(
 
       return () => {
         unmounted = true;
-        dataSource.view.setListener(undefined);
+        unsubscribe();
       };
     },
     [dataSource, setForceUpdate, useFixedRowHeight],

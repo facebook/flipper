@@ -8,12 +8,14 @@
  */
 
 import {CopyOutlined, FilterOutlined, TableOutlined} from '@ant-design/icons';
-import {Checkbox, Menu} from 'antd';
+import {Badge, Checkbox, Menu, Select, Switch} from 'antd';
+import {Layout} from 'flipper-plugin';
 import {
   DataTableDispatch,
   getSelectedItem,
   getSelectedItems,
   getValueAtPath,
+  SearchHighlightSetting,
   Selection,
 } from './DataTableManager';
 import React from 'react';
@@ -23,13 +25,16 @@ import {toFirstUpper} from '../../utils/toFirstUpper';
 import {DataSource} from '../../data-source/index';
 import {renderColumnValue} from './TableRow';
 import {textContent} from '../../utils/textContent';
+import {theme} from '../theme';
 
 const {Item, SubMenu} = Menu;
+const {Option} = Select;
 
 export function tableContextMenuFactory<T>(
   datasource: DataSource<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   selection: Selection,
+  highlightSearchSetting: SearchHighlightSetting,
   columns: DataTableColumn<T>[],
   visibleColumns: DataTableColumn<T>[],
   onCopyRows: (
@@ -177,13 +182,72 @@ export function tableContextMenuFactory<T>(
         }}>
         Reset view
       </Menu.Item>
-      <Menu.Item
-        key="clear history"
-        onClick={() => {
-          dispatch({type: 'clearSearchHistory'});
-        }}>
-        Clear search history
-      </Menu.Item>
+
+      <SubMenu title="Search Options" key="search options">
+        <Menu.Item
+          key="clear history"
+          onClick={() => {
+            dispatch({type: 'clearSearchHistory'});
+          }}>
+          Clear search history
+        </Menu.Item>
+        <Menu.Item key="highlight search setting">
+          <Layout.Horizontal
+            gap
+            center
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}>
+            Highlight search terms
+            <Switch
+              checked={highlightSearchSetting.highlightEnabled}
+              size="small"
+              onChange={() => {
+                dispatch({
+                  type: 'toggleHighlightSearch',
+                });
+              }}
+            />
+          </Layout.Horizontal>
+        </Menu.Item>
+        <Menu.Item key="highlight search color">
+          <Layout.Horizontal
+            gap
+            center
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}>
+            Highlight search color
+            <Select
+              style={{width: '7em'}}
+              defaultValue={highlightSearchSetting.color}
+              onChange={(color: string) => {
+                dispatch({
+                  type: 'setSearchHighlightColor',
+                  color: color,
+                });
+              }}>
+              {Object.entries(theme.searchHighlightBackground).map(
+                ([colorName, color]) => (
+                  <Option key={colorName} value={color}>
+                    <Badge
+                      text={
+                        <span style={{backgroundColor: color}}>
+                          {colorName.charAt(0).toUpperCase() +
+                            colorName.slice(1)}
+                        </span>
+                      }
+                      color={color}
+                    />
+                  </Option>
+                ),
+              )}
+            </Select>
+          </Layout.Horizontal>
+        </Menu.Item>
+      </SubMenu>
     </Menu>
   );
 }

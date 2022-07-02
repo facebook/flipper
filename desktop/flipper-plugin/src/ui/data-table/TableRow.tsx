@@ -16,6 +16,7 @@ import {DataFormatter} from '../DataFormatter';
 import {Dropdown} from 'antd';
 import {contextMenuTrigger} from '../data-inspector/DataInspectorNode';
 import {getValueAtPath} from './DataTableManager';
+import {HighlightManager, useHighlighter} from '../Highlight';
 
 // heuristic for row estimation, should match any future styling updates
 export const DEFAULT_ROW_HEIGHT = 24;
@@ -109,6 +110,7 @@ export const TableRow = memo(function TableRow<T>({
   highlighted,
   config,
 }: TableRowProps<T>) {
+  const highlighter = useHighlighter();
   const row = (
     <TableBodyRowContainer
       highlighted={highlighted}
@@ -127,6 +129,7 @@ export const TableRow = memo(function TableRow<T>({
             record,
             highlighted,
             itemIndex,
+            highlighter,
           );
 
           return (
@@ -157,8 +160,13 @@ export function renderColumnValue<T>(
   record: T,
   highlighted: boolean,
   itemIndex: number,
+  highlighter?: HighlightManager,
 ) {
   return col.onRender
     ? col.onRender(record, highlighted, itemIndex)
-    : DataFormatter.format(getValueAtPath(record, col.key), col.formatters);
+    : DataFormatter.format(
+        getValueAtPath(record, col.key),
+        col.formatters,
+        highlighter,
+      );
 }

@@ -44,8 +44,8 @@ function getTemplate(
     {
       label: 'Reload',
       accelerator: 'CmdOrCtrl+R',
-      click: function (_, _focusedWindow: electron.BrowserWindow | undefined) {
-        window.location.reload();
+      click: function (_, focusedWindow: electron.BrowserWindow | undefined) {
+        focusedWindow?.reload();
       },
     },
     {

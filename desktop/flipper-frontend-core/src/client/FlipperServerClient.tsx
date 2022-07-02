@@ -29,6 +29,14 @@ export function createFlipperServer(
   port: number,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
+  const socket = new ReconnectingWebSocket(`ws://${host}:${port}`);
+  return createFlipperServerWithSocket(socket, onStateChange);
+}
+
+export function createFlipperServerWithSocket(
+  socket: ReconnectingWebSocket,
+  onStateChange: (state: FlipperServerState) => void,
+): Promise<FlipperServer> {
   onStateChange(FlipperServerState.CONNECTING);
 
   return new Promise<FlipperServer>((resolve, reject) => {
@@ -40,7 +48,6 @@ export function createFlipperServer(
 
     const eventEmitter = new EventEmitter();
 
-    const socket = new ReconnectingWebSocket(`ws://${host}:${port}`);
     const pendingRequests: Map<
       number,
       {

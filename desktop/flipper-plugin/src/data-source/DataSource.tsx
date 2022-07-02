@@ -472,7 +472,7 @@ class DataSourceView<T, KeyType> {
    */
   public windowEnd = 0;
 
-  private outputChangeListener?: (change: OutputChange) => void;
+  private outputChangeListeners = new Set<(change: OutputChange) => void>();
 
   /**
    * This is the base view data, that is filtered and sorted, but not reversed or windowed
@@ -520,11 +520,11 @@ class DataSourceView<T, KeyType> {
     this.windowEnd = end;
   }
 
-  public setListener(listener?: (change: OutputChange) => void) {
-    if (this.outputChangeListener && listener) {
-      console.warn('outputChangeListener already set');
-    }
-    this.outputChangeListener = listener;
+  public addListener(listener: (change: OutputChange) => void) {
+    this.outputChangeListeners.add(listener);
+    return () => {
+      this.outputChangeListeners.delete(listener);
+    };
   }
 
   public setSortBy(sortBy: undefined | keyof T | ((a: T) => Primitive)) {
@@ -617,23 +617,27 @@ class DataSourceView<T, KeyType> {
     };
   }
 
+  private notifyAllListeners(change: OutputChange) {
+    this.outputChangeListeners.forEach((listener) => listener(change));
+  }
+
   private notifyItemUpdated(viewIndex: number) {
     viewIndex = this.normalizeIndex(viewIndex);
     if (
-      !this.outputChangeListener ||
+      !this.outputChangeListeners.size ||
       viewIndex < this.windowStart ||
       viewIndex >= this.windowEnd
     ) {
       return;
     }
-    this.outputChangeListener({
+    this.notifyAllListeners({
       type: 'update',
       index: viewIndex,
     });
   }
 
   private notifyItemShift(index: number, delta: number) {
-    if (!this.outputChangeListener) {
+    if (!this.outputChangeListeners.size) {
       return;
     }
     let viewIndex = this.normalizeIndex(index);
@@ -641,7 +645,7 @@ class DataSourceView<T, KeyType> {
       viewIndex -= delta; // we need to correct for normalize already using the new length after applying this change
     }
     // Idea: we could add an option to automatically shift the window for before events.
-    this.outputChangeListener({
+    this.notifyAllListeners({
       type: 'shift',
       delta,
       index: viewIndex,
@@ -656,7 +660,7 @@ class DataSourceView<T, KeyType> {
   }
 
   private notifyReset(count: number) {
-    this.outputChangeListener?.({
+    this.notifyAllListeners({
       type: 'reset',
       newCount: count,
     });

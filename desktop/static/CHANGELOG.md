@@ -1,3 +1,8 @@
+# 0.152.0 (29/6/2022)
+
+ * [D37485571](https://github.com/facebook/flipper/search?q=D37485571&type=Commits) -  Add Flipper logs export to file
+
+
 # 0.151.1 (27/6/2022)
 
  * [D37417459](https://github.com/facebook/flipper/search?q=D37417459&type=Commits) -  Flipper Server Mac App no longer bounces in Dock

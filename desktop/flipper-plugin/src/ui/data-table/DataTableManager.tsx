@@ -12,11 +12,16 @@ import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer} from 'react';
 import {DataSource, DataSourceVirtualizer} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
+import {theme} from '../theme';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting<T = any> = {
   key: keyof T;
   direction: Exclude<SortDirection, undefined>;
+};
+export type SearchHighlightSetting = {
+  highlightEnabled: boolean;
+  color: string;
 };
 
 export type SortDirection = 'asc' | 'desc' | undefined;
@@ -46,6 +51,7 @@ type PersistedState = {
   scrollOffset: number;
   autoScroll: boolean;
   searchHistory: string[];
+  highlightSearchSetting: SearchHighlightSetting;
 };
 
 type Action<Name extends string, Args = {}> = {type: Name} & Args;
@@ -100,7 +106,9 @@ type DataManagerActions<T> =
   | Action<'toggleAutoScroll'>
   | Action<'setAutoScroll', {autoScroll: boolean}>
   | Action<'toggleSearchValue'>
-  | Action<'clearSearchHistory'>;
+  | Action<'clearSearchHistory'>
+  | Action<'toggleHighlightSearch'>
+  | Action<'setSearchHighlightColor', {color: string}>;
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T, T[keyof T]>;
@@ -126,6 +134,7 @@ export type DataManagerState<T> = {
   /** Used to remember the record entry to lookup when user presses ctrl */
   previousSearchValue: string;
   searchHistory: string[];
+  highlightSearchSetting: SearchHighlightSetting;
 };
 
 export type DataTableReducer<T> = Reducer<
@@ -297,6 +306,17 @@ export const dataTableManagerReducer = produce<
       draft.autoScroll = action.autoScroll;
       break;
     }
+    case 'toggleHighlightSearch': {
+      draft.highlightSearchSetting.highlightEnabled =
+        !draft.highlightSearchSetting.highlightEnabled;
+      break;
+    }
+    case 'setSearchHighlightColor': {
+      if (draft.highlightSearchSetting.color !== action.color) {
+        draft.highlightSearchSetting.color = action.color;
+      }
+      break;
+    }
     default: {
       throw new Error('Unknown action ' + (action as any).type);
     }
@@ -328,6 +348,8 @@ export type DataTableManager<T> = {
   setSearchValue(value: string, addToHistory?: boolean): void;
   dataSource: DataSource<T, T[keyof T]>;
   toggleSearchValue(): void;
+  toggleHighlightSearch(): void;
+  setSearchHighlightColor(color: string): void;
 };
 
 export function createDataTableManager<T>(
@@ -377,6 +399,12 @@ export function createDataTableManager<T>(
     toggleSearchValue() {
       dispatch({type: 'toggleSearchValue'});
     },
+    toggleHighlightSearch() {
+      dispatch({type: 'toggleHighlightSearch'});
+    },
+    setSearchHighlightColor(color) {
+      dispatch({type: 'setSearchHighlightColor', color});
+    },
     dataSource,
   };
 }
@@ -422,6 +450,10 @@ export function createInitialState<T>(
     searchHistory: prefs?.searchHistory ?? [],
     useRegex: prefs?.useRegex ?? false,
     autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
+    highlightSearchSetting: prefs?.highlightSearchSetting ?? {
+      highlightEnabled: false,
+      color: theme.searchHighlightBackground.yellow,
+    },
   };
   // @ts-ignore
   res.config[immerable] = false; // optimization: never proxy anything in config
@@ -500,6 +532,7 @@ export function savePreferences(
     scrollOffset,
     autoScroll: state.autoScroll,
     searchHistory: state.searchHistory,
+    highlightSearchSetting: state.highlightSearchSetting,
   };
   localStorage.setItem(state.storageKey, JSON.stringify(prefs));
 }

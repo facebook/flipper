@@ -12,3 +12,5 @@ node_modules/
 .env
 tsc-error.log
 /flipper-server/static/
+/static/flipper-server-log*
+/static/.audit.json

@@ -13,14 +13,23 @@ mod error;
 mod tarsum;
 mod types;
 
-use anyhow::{bail, Context, Result};
-use rayon::prelude::{IntoParallelIterator, ParallelIterator};
+use anyhow::bail;
+use anyhow::Context;
+use anyhow::Result;
+use rayon::prelude::IntoParallelIterator;
+use rayon::prelude::ParallelIterator;
 use std::collections::BTreeMap;
 use std::ffi;
 use std::fs::File;
-use std::io::{self, BufReader, BufWriter, Write};
+use std::io::BufReader;
+use std::io::BufWriter;
+use std::io::Write;
+use std::io::{self};
 use std::path;
-use types::{HashSum, PackMode, PackType, Platform};
+use types::HashSum;
+use types::PackMode;
+use types::PackType;
+use types::Platform;
 
 const DEFAULT_PACKLIST: &str = include_str!("packlist.yaml");
 // This is to ensure that all progress bar prefixes are aligned.
@@ -221,7 +230,8 @@ fn pack_platform_exact(
 
 /// Calculate the sha256 checksum of a file represented by a Reader.
 fn sha256_digest<R: io::Read>(mut reader: &mut R) -> Result<HashSum> {
-    use sha2::{Digest, Sha256};
+    use sha2::Digest;
+    use sha2::Sha256;
 
     let mut sha256 = Sha256::new();
     std::io::copy(&mut reader, &mut sha256)?;

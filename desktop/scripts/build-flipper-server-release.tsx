@@ -71,6 +71,11 @@ const argv = yargs
       type: 'boolean',
       default: false,
     },
+    tcp: {
+      describe: 'Enable TCP connections on flipper-server.',
+      type: 'boolean',
+      default: true,
+    },
     'rebuild-plugins': {
       describe:
         'Enables rebuilding of default plugins on Flipper build. Only make sense in conjunction with "--no-bundled-plugins". Enabled by default, but if disabled using "--no-plugin-rebuild", then plugins are just released as is without rebuilding. This can save some time if you know plugin bundles are already up-to-date.',
@@ -296,16 +301,28 @@ async function runPostBuildAction(archive: string, dir: string) {
     // didn't change
     console.log(`⚙️  Installing flipper-server.tgz using npx`);
     await fs.remove(path.join(homedir(), '.npm', '_npx'));
-    await spawn('npx', [archive, argv.open ? '--open' : '--no-open'], {
-      stdio: 'inherit',
-    });
+    await spawn(
+      'npx',
+      [
+        archive,
+        argv.open ? '--open' : '--no-open',
+        argv.tcp ? '--tcp' : '--no-tcp',
+      ],
+      {
+        stdio: 'inherit',
+      },
+    );
   } else if (argv.start) {
     console.log(`⚙️  Starting flipper-server from build dir`);
     await yarnInstall(dir);
-    await spawn('./server.js', [argv.open ? '--open' : '--no-open'], {
-      cwd: dir,
-      stdio: 'inherit',
-    });
+    await spawn(
+      './server.js',
+      [argv.open ? '--open' : '--no-open', argv.tcp ? '--tcp' : '--no-tcp'],
+      {
+        cwd: dir,
+        stdio: 'inherit',
+      },
+    );
   }
 }
 
