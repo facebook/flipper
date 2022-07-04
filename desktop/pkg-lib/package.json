@@ -15,7 +15,7 @@
     "metro": "^0.70.2",
     "metro-cache": "^0.70.2",
     "metro-minify-terser": "^0.70.2",
-    "npm-packlist": "^4.0.0"
+    "npm-packlist": "^5.1.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
