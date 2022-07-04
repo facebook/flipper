@@ -502,7 +502,7 @@ export function getSelectedItems<T>(
   selection: Selection,
 ): T[] {
   return [...selection.items]
-    .sort()
+    .sort((a, b) => a - b) // https://stackoverflow.com/a/15765283/1983583
     .map((i) => dataSource.view.get(i))
     .filter(Boolean) as any[];
 }
