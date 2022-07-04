@@ -637,13 +637,19 @@ export function computeDataTableFilter(
       }
     }
 
-    return columns
-      .map((c) => getValueAtPath(item, c.key))
-      .some((v) =>
-        searchRegex
+    //free search all top level keys as well as any (nested) columns in the table
+    const nestedColumns = columns
+      .map((col) => col.key)
+      .filter((path) => path.includes('.'));
+
+    return [...Object.keys(item), ...nestedColumns]
+      .map((key) => getValueAtPath(item, key))
+      .filter((val) => typeof val !== 'object')
+      .some((v) => {
+        return searchRegex
           ? searchRegex.test(String(v))
-          : String(v).toLowerCase().includes(searchString),
-      );
+          : String(v).toLowerCase().includes(searchString);
+      });
   };
 }
 
