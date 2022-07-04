@@ -359,7 +359,11 @@ test('compute filters', () => {
     const filter = computeDataTableFilter('tEsT', false, baseColumns)!;
     expect(data.filter(filter)).toEqual([]);
   }
-
+  {
+    //no columns but should still find rows
+    const filter = computeDataTableFilter('EE', false, [])!;
+    expect(data.filter(filter)).toEqual([coffee, meet]);
+  }
   {
     const filter = computeDataTableFilter('EE', false, baseColumns)!;
     expect(data.filter(filter)).toEqual([coffee, meet]);
