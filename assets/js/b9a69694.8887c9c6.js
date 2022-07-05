@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[925],{46607:a=>{a.exports=JSON.parse('{"label":"react-native","permalink":"/blog/tags/react-native","allTagsPath":"/blog/tags","count":1}')}}]);
