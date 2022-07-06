@@ -1,3 +1,10 @@
+# 0.153.0 (6/7/2022)
+
+ * [D37383163](https://github.com/facebook/flipper/search?q=D37383163&type=Commits) -  DataTable will now have option to have its search terms highlighted in the search results by toggling and customizing the highlight colors in the menu bar
+ * [D37516868](https://github.com/facebook/flipper/search?q=D37516868&type=Commits) -  Rotate flipper-server logs
+ * [D37552492](https://github.com/facebook/flipper/search?q=D37552492&type=Commits) -  Fixed 'free text search' for data table. E.g network plugin
+
+
 # 0.152.0 (29/6/2022)
 
  * [D37485571](https://github.com/facebook/flipper/search?q=D37485571&type=Commits) -  Add Flipper logs export to file
