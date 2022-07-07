@@ -575,6 +575,16 @@ function createMockDevice(options?: StartPluginOptions): Device & {
   const crashListeners: (undefined | CrashLogListener)[] = [];
   return {
     os: 'Android',
+    description: {
+      os: 'Android',
+      deviceType: 'emulator',
+      features: {
+        screenCaptureAvailable: false,
+        screenshotAvailable: false,
+      },
+      serial: '123',
+      title: 'Test device',
+    },
     deviceType: 'emulator',
     serial: 'serial-000',
     isArchived: !!options?.isArchived,
