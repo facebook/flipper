@@ -62,6 +62,7 @@ interface StartPluginOptions {
    * Provide a set of GKs that are enabled in this test.
    */
   GKs?: string[];
+  testDevice?: Device;
 }
 
 type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
@@ -587,6 +588,7 @@ function createMockDevice(options?: StartPluginOptions): Device & {
     },
     deviceType: 'emulator',
     serial: 'serial-000',
+    ...options?.testDevice,
     isArchived: !!options?.isArchived,
     connected: createState(true),
     addLogListener(cb) {
