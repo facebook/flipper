@@ -32,5 +32,10 @@
   "jest.runAllTestsFirst": false,
   "jest.pathToConfig": "jest.config.js",
   "jest.pathToJest": "node_modules/.bin/jest",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "jest.jestCommandLine": "export TZ=Pacific/Pohnpei; node_modules/.bin/jest --config jest.config.js",
+  "jest.autoRun": {
+    "watch": true,
+    "onStartup": ["all-tests"]
+  }
 }
