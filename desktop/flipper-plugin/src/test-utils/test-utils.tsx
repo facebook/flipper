@@ -602,6 +602,9 @@ function createMockDevice(options?: StartPluginOptions): Device & {
     get isConnected() {
       return this.connected.get();
     },
+    installApp(_: string) {
+      return Promise.resolve();
+    },
     navigateToLocation: createStubFunction(),
     screenshot: createStubFunction(),
     sendMetroCommand: createStubFunction(),

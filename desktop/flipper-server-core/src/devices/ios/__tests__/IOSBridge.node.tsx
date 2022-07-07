@@ -196,3 +196,18 @@ test('uses idb to record when available', async () => {
     '/usr/local/bin/idb record-video --udid deadbeef /tmo/video.mp4',
   );
 });
+
+test('uses idb to install when available', async () => {
+  const ib = await makeIOSBridge(
+    '/usr/local/bin/idb',
+    true,
+    true,
+    async (_) => true,
+  );
+
+  await ib.installApp('sim1', '/tmp/foo/bar.zip', '/tmp/hello');
+
+  expect(promisifyChildProcess.exec).toHaveBeenCalledWith(
+    '/usr/local/bin/idb install /tmp/foo/bar.zip --udid sim1',
+  );
+});

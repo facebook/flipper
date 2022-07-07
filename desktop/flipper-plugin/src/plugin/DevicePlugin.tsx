@@ -42,6 +42,7 @@ export interface Device {
   sendMetroCommand(command: string): Promise<void>;
   navigateToLocation(location: string): Promise<void>;
   screenshot(): Promise<Uint8Array | undefined>;
+  installApp(appBundlePath: string): Promise<void>;
 }
 
 export type DevicePluginPredicate = (device: Device) => boolean;

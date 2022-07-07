@@ -120,6 +120,14 @@ export default class IOSDevice extends ServerDevice {
     return output;
   }
 
+  async installApp(ipaPath: string): Promise<void> {
+    return this.iOSBridge.installApp(
+      this.serial,
+      ipaPath,
+      this.flipperServer.config.paths.tempPath,
+    );
+  }
+
   disconnect() {
     if (this.recording) {
       this.stopScreenCapture();

@@ -285,6 +285,9 @@ export class FlipperServerImpl implements FlipperServer {
   }
 
   private commandHandler: FlipperServerCommands = {
+    'device-install-app': async (serial, bundlePath) => {
+      return this.devices.get(serial)?.installApp(bundlePath);
+    },
     'get-server-state': async () => ({
       state: this.state,
       error: this.stateError,
