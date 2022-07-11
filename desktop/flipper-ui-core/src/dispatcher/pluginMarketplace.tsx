@@ -9,12 +9,12 @@
 
 import {Store} from '../reducers/index';
 import {loadAvailablePlugins} from '../fb-stubs/pluginMarketplaceAPI';
-import {
-  MarketplacePluginDetails,
-  registerMarketplacePlugins,
-} from '../reducers/plugins';
+import {registerMarketplacePlugins} from '../reducers/plugins';
 import {getFlipperLib} from 'flipper-plugin';
-import {DownloadablePluginDetails} from 'flipper-common';
+import {
+  DownloadablePluginDetails,
+  MarketplacePluginDetails,
+} from 'flipper-common';
 import semver from 'semver';
 import {startPluginDownload} from '../reducers/pluginDownloads';
 import {sideEffect} from '../utils/sideEffect';

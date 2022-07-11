@@ -17,15 +17,12 @@ import type {
   ActivatablePluginDetails,
   BundledPluginDetails,
   InstalledPluginDetails,
+  MarketplacePluginDetails,
 } from 'flipper-common';
 import type {Actions} from '.';
 import produce from 'immer';
 import {isDevicePluginDefinition} from '../utils/pluginUtils';
 import semver from 'semver';
-
-export interface MarketplacePluginDetails extends DownloadablePluginDetails {
-  availableVersions?: DownloadablePluginDetails[];
-}
 
 export type State = StateV1;
 

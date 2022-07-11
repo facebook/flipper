@@ -7,7 +7,7 @@
  * @format
  */
 
-import {MarketplacePluginDetails} from '../reducers/plugins';
+import {MarketplacePluginDetails} from 'flipper-common';
 import {Store} from '../reducers/index';
 
 export async function loadAvailablePlugins(
