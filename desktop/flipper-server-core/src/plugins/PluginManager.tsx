@@ -34,6 +34,7 @@ import {
   installPluginFromNpm,
 } from 'flipper-plugin-lib';
 import {ServerAddOnManager} from './ServerAddManager';
+import {loadMarketplacePlugins} from './loadMarketplacePlugins';
 
 const maxInstalledPluginVersionsToKeep = 2;
 
@@ -96,6 +97,30 @@ export class PluginManager {
       console.error('Failed to load list of bundled plugins', e);
     }
     return bundledPlugins;
+  }
+
+  async loadMarketplacePlugins() {
+    console.info('Load available plugins from marketplace');
+    return loadMarketplacePlugins(this.flipperServer, '');
+  }
+
+  async installPluginForMarketplace(name: string) {
+    console.info(`Install plugin '${name}' from marketplace`);
+
+    const plugins = await this.loadMarketplacePlugins();
+    const plugin = plugins.find((p) => p.id === name);
+    if (plugin) {
+      console.info(`Plugin '${name}' is available, attempt to install`);
+      try {
+        return await this.downloadPlugin(plugin);
+      } catch (e) {
+        console.warn(`Unable to install plugin '${name}'. Error:`, e);
+      }
+    } else {
+      console.info('Plugin not available in marketplace');
+    }
+
+    throw new Error(`Unable to install plugin '${name}' from marketplace`);
   }
 
   async downloadPlugin(
