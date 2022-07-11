@@ -426,6 +426,8 @@ export class FlipperServerImpl implements FlipperServer {
     'keychain-unset': (service) => this.keytarManager.unsetKeychain(service),
     'plugins-load-dynamic-plugins': () =>
       this.pluginManager.loadDynamicPlugins(),
+    'plugins-load-marketplace-plugins': () =>
+      this.pluginManager.loadMarketplacePlugins(),
     'plugins-get-bundled-plugins': () => this.pluginManager.getBundledPlugins(),
     'plugins-get-installed-plugins': () =>
       this.pluginManager.getInstalledPlugins(),
@@ -437,6 +439,8 @@ export class FlipperServerImpl implements FlipperServer {
       this.pluginManager.getUpdatablePlugins(query),
     'plugins-install-from-file': (path) =>
       this.pluginManager.installPluginFromFile(path),
+    'plugins-install-from-marketplace': (name: string) =>
+      this.pluginManager.installPluginForMarketplace(name),
     'plugins-install-from-npm': (name) =>
       this.pluginManager.installPluginFromNpm(name),
     'plugin-source': (path) => this.pluginManager.loadSource(path),
