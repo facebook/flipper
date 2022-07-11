@@ -29,6 +29,7 @@ const builtInModules = [
   'immer',
   '@emotion/styled',
   '@ant-design/icons',
+  '@testing-library/react',
   'jest',
   'ts-jest',
 ];

@@ -51,7 +51,6 @@
   },
   "devDependencies": {
     "@testing-library/dom": "^8.11.3",
-    "@testing-library/react": "^12.1.4",
     "@types/deep-equal": "^1.0.1",
     "@types/lodash.memoize": "^4.1.7",
     "@types/react": "^17.0.39",
