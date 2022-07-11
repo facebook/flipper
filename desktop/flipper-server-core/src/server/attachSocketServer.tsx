@@ -63,7 +63,7 @@ export function attachSocketServer(
         flipperServerCompanion = new FlipperServerCompanion(
           server,
           getLogger(),
-          companionEnv.pluginInitializer.initialPlugins,
+          companionEnv,
         );
       }
     }

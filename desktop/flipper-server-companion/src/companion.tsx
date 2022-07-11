@@ -21,6 +21,7 @@ import {BaseDevice} from 'flipper-frontend-core';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {isAtom} from 'flipper-plugin';
 import {HeadlessClient} from './HeadlessClient';
+import {FlipperServerCompanionEnv} from './init';
 
 const companionEvents: Array<keyof FlipperCompanionEvents> = [
   'companion-plugin-state-update',
@@ -48,8 +49,9 @@ export class FlipperServerCompanion {
   constructor(
     private readonly flipperServer: FlipperServer,
     private readonly logger: Logger,
-    loadablePluginsArr: ReadonlyArray<_SandyPluginDefinition>,
+    private readonly env: FlipperServerCompanionEnv,
   ) {
+    const loadablePluginsArr = env.pluginInitializer.initialPlugins;
     for (const loadablePlugin of loadablePluginsArr) {
       this.loadablePlugins.set(loadablePlugin.id, loadablePlugin);
     }
@@ -176,6 +178,30 @@ export class FlipperServerCompanion {
     return newDevice;
   }
 
+  private async loadPluginIfNeeded(pluginId: string) {
+    if (!this.loadablePlugins.has(pluginId)) {
+      console.info(
+        'FlipperServerCompanion.loadPluginIfNeeded -> plugin not found, attempt to install from marketplace',
+      );
+
+      const plugin = await this.flipperServer.exec(
+        'plugins-install-from-marketplace',
+        pluginId,
+      );
+      if (plugin) {
+        const sandyPlugin = await this.env.pluginInitializer.installPlugin(
+          plugin,
+        );
+        if (sandyPlugin) {
+          console.info(
+            'FlipperServerCompanion.loadPluginIfNeeded -> plugin successfully installed',
+          );
+          this.loadablePlugins.set(pluginId, sandyPlugin);
+        }
+      }
+    }
+  }
+
   private emit<T extends keyof FlipperCompanionEvents>(
     event: T,
     data: FlipperCompanionEvents[T],
@@ -241,6 +267,8 @@ export class FlipperServerCompanion {
       });
     },
     'companion-plugin-start': async (clientId, pluginId) => {
+      await this.loadPluginIfNeeded(pluginId);
+
       const client = await this.createHeadlessClientIfNeeded(clientId);
 
       const pluginInstance = client.sandyPluginStates.get(pluginId);
