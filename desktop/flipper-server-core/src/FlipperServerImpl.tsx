@@ -235,6 +235,13 @@ export class FlipperServerImpl implements FlipperServer {
     this.events.on(event, callback);
   }
 
+  once<Event extends keyof FlipperServerEvents>(
+    event: Event,
+    callback: (payload: FlipperServerEvents[Event]) => void,
+  ): void {
+    this.events.once(event, callback);
+  }
+
   off<Event extends keyof FlipperServerEvents>(
     event: Event,
     callback: (payload: FlipperServerEvents[Event]) => void,

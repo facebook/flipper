@@ -378,7 +378,23 @@ export class FlipperServerCompanion {
         );
       }
 
-      return pluginInstance.companionApi[api](...(params ?? []));
+      return new Promise(async (resolve, reject) => {
+        const closeHandle = () => {
+          reject(new Error('Client disconnected whilst executing request'));
+        };
+        client.once('close', closeHandle);
+
+        try {
+          const response = await pluginInstance.companionApi[api](
+            ...(params ?? []),
+          );
+          resolve(response);
+        } catch (error) {
+          reject(error);
+        } finally {
+          client.off('close', closeHandle);
+        }
+      });
     },
     'companion-plugin-subscribe': async (clientId, pluginId, api) => {
       const client = this.clients.get(clientId);
