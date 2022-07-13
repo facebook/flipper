@@ -1,3 +1,7 @@
+# 0.154.0 (13/7/2022)
+
+
+
 # 0.153.0 (6/7/2022)
 
  * [D37383163](https://github.com/facebook/flipper/search?q=D37383163&type=Commits) -  DataTable will now have option to have its search terms highlighted in the search results by toggling and customizing the highlight colors in the menu bar
