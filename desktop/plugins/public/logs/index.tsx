@@ -139,6 +139,7 @@ export function devicePlugin(client: DevicePluginClient) {
     {
       action: 'clear',
       handler: clearLogs,
+      accelerator: 'ctrl+l',
     },
     {
       action: 'createPaste',

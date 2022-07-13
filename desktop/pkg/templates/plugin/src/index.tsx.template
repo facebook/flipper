@@ -26,6 +26,7 @@ export function plugin(client: PluginClient<Events, {}>) {
     handler: async () => {
       data.set({});
     },
+    accelerator: 'ctrl+l',
   });
 
   return {data};

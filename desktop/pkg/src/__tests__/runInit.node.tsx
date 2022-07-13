@@ -190,6 +190,7 @@ test.skip('It generates the correct files for client plugin', async () => {
         handler: async () => {
           data.set({});
         },
+        accelerator: 'ctrl+l',
       });
 
       return {data};
@@ -388,6 +389,7 @@ test.skip('It generates the correct files for device plugin', async () => {
         handler: async () => {
           data.set([]);
         },
+        accelerator: 'ctrl+l',
       });
 
       return {data};
