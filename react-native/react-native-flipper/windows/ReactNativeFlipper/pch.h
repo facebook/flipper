@@ -10,10 +10,27 @@
 #define NOMINMAX
 
 #include <CppWinRTIncludes.h>
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#include <math.h>
+#include <windows.h>
+
+#include <condition_variable>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <string>
+
+#include <folly/dynamic.h>
+#include <folly/json.h>
+
 #include <hstring.h>
 #include <restrictederrorinfo.h>
 #include <unknwn.h>
-#include <windows.h>
+
 #if __has_include(<VersionMacros.h>)
 #include <VersionMacros.h>
 #endif
