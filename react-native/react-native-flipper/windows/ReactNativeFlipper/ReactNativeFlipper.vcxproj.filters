@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="ReactPackageProvider.h" />
-    <ClInclude Include="ReactNativeModule.h" />
+    <ClInclude Include="FlipperModule.h" />
     <ClInclude Include="..\..\..\..\xplat\Flipper\CertificateUtils.h" />
     <ClInclude Include="..\..\..\..\xplat\Flipper\ConnectionContextStore.h" />
     <ClInclude Include="..\..\..\..\xplat\Flipper\FireAndForgetBasedFlipperResponder.h" />

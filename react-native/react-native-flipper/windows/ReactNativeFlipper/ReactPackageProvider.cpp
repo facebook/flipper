@@ -11,7 +11,7 @@
 #include "ReactPackageProvider.g.cpp"
 #endif
 
-#include "ReactNativeModule.h"
+#include "FlipperModule.h"
 
 using namespace winrt::Microsoft::ReactNative;
 
