@@ -39,6 +39,7 @@ type PersistedState = {
   /** Active search value */
   search: string;
   useRegex: boolean;
+  filterSearchHistory: boolean;
   /** current selection, describes the index index in the datasources's current output (not window!) */
   selection: {current: number; items: number[]};
   /** The currently applicable sorting, if any */
@@ -108,7 +109,8 @@ type DataManagerActions<T> =
   | Action<'toggleSearchValue'>
   | Action<'clearSearchHistory'>
   | Action<'toggleHighlightSearch'>
-  | Action<'setSearchHighlightColor', {color: string}>;
+  | Action<'setSearchHighlightColor', {color: string}>
+  | Action<'toggleFilterSearchHistory'>;
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T, T[keyof T]>;
@@ -129,6 +131,7 @@ export type DataManagerState<T> = {
   sorting: Sorting<T> | undefined;
   selection: Selection;
   useRegex: boolean;
+  filterSearchHistory: boolean;
   autoScroll: boolean;
   searchValue: string;
   /** Used to remember the record entry to lookup when user presses ctrl */
@@ -216,6 +219,10 @@ export const dataTableManagerReducer = produce<
     }
     case 'toggleUseRegex': {
       draft.useRegex = !draft.useRegex;
+      break;
+    }
+    case 'toggleFilterSearchHistory': {
+      draft.filterSearchHistory = !draft.filterSearchHistory;
       break;
     }
     case 'selectItem': {
@@ -449,6 +456,7 @@ export function createInitialState<T>(
     previousSearchValue: '',
     searchHistory: prefs?.searchHistory ?? [],
     useRegex: prefs?.useRegex ?? false,
+    filterSearchHistory: prefs?.filterSearchHistory ?? true,
     autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
     highlightSearchSetting: prefs?.highlightSearchSetting ?? {
       highlightEnabled: false,
@@ -517,6 +525,7 @@ export function savePreferences(
   const prefs: PersistedState = {
     search: state.searchValue,
     useRegex: state.useRegex,
+    filterSearchHistory: state.filterSearchHistory,
     selection: {
       current: state.selection.current,
       items: Array.from(state.selection.items),
