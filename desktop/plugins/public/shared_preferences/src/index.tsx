@@ -180,7 +180,7 @@ export function Component() {
           onChange={instance.setSelectedPreferences}
         />
       </Heading>
-      <FlexRow grow scrollable>
+      <FlexRow grow scrollable style={{overflowX: 'hidden'}}>
         <InspectorColumn>
           <Heading>Inspector</Heading>
           <ManagedDataInspector
