@@ -202,7 +202,7 @@ function WelcomeScreenContent() {
           icon={<RocketOutlined />}
           title="Using Flipper"
           subtitle="Learn how Flipper can help you debug your App"
-          onClick={openExternal('https://fbflipper.com/docs/features/index')}
+          onClick={openExternal('https://fbflipper.com/docs/features')}
         />
         <Row
           icon={<AppstoreAddOutlined />}
@@ -215,7 +215,7 @@ function WelcomeScreenContent() {
           title="Add Flipper Support to Your App"
           subtitle="Get started with these pointers"
           onClick={openExternal(
-            'https://fbflipper.com/docs/getting-started/index',
+            'https://fbflipper.com/docs/getting-started',
           )}
         />
         <Row
