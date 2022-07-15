@@ -105,6 +105,19 @@ The code below enables the following integrations:
 * Shared Preferences
 * Crash Reporter
 
+### React Native 0.68+
+
+If using React Native 0.68 or later, your AppDelegate should include
+
+```objc
+...
+#import <React/RCTAppSetupUtils.h>
+```
+
+RCTAppSetupUtils takes care of initializing Flipper and the integrations mentioned above.
+
+### React Native 0.67
+
 <Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
 <TabItem value="ios">
 
