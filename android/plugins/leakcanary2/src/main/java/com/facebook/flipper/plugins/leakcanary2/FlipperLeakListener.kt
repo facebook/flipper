@@ -13,6 +13,7 @@ import leakcanary.OnHeapAnalyzedListener
 import shark.HeapAnalysis
 import shark.HeapAnalysisSuccess
 
+@Deprecated("Use FlipperLeakEventListener add to LeakCanary.config.eventListeners instead")
 class FlipperLeakListener : OnHeapAnalyzedListener {
   private val leaks: MutableList<Leak> = mutableListOf()
 
