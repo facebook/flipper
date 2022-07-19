@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.android;
 
+import android.net.TrafficStats;
 import android.util.Log;
 import com.facebook.flipper.BuildConfig;
 import com.facebook.flipper.core.FlipperObject;
@@ -17,6 +18,7 @@ import com.facebook.soloader.SoLoader;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidAlgorithmParameterException;
@@ -100,7 +102,13 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
         SSLSocketFactory factory = sslContext.getSocketFactory();
 
-        this.setSocketFactory(factory);
+        this.setSocketFactory(new DelegatingSocketFactory(factory) {
+          @Override
+          protected Socket configureSocket(Socket socket) {
+            TrafficStats.setThreadStatsTag(SOCKET_TAG);
+            return socket;
+          }
+        });
       }
 
       this.connect();
