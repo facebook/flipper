@@ -495,6 +495,7 @@ export function DataTable<T extends object>(
             dispatch,
             selection,
             tableState.highlightSearchSetting,
+            tableState.filterSearchHistory,
             tableState.columns,
             visibleColumns,
             onCopyRows,
@@ -506,6 +507,7 @@ export function DataTable<T extends object>(
           selection,
           tableState.columns,
           tableState.highlightSearchSetting,
+          tableState.filterSearchHistory,
           visibleColumns,
           onCopyRows,
           onContextMenu,
@@ -538,6 +540,7 @@ export function DataTable<T extends object>(
         <TableSearch
           searchValue={searchValue}
           useRegex={tableState.useRegex}
+          filterSearchHistory={tableState.filterSearchHistory}
           dispatch={dispatch as any}
           searchHistory={tableState.searchHistory}
           contextMenu={props.enableContextMenu ? contexMenu : undefined}

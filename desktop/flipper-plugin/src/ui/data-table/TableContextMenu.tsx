@@ -35,6 +35,7 @@ export function tableContextMenuFactory<T>(
   dispatch: DataTableDispatch<T>,
   selection: Selection,
   highlightSearchSetting: SearchHighlightSetting,
+  filterSearchHistory: boolean,
   columns: DataTableColumn<T>[],
   visibleColumns: DataTableColumn<T>[],
   onCopyRows: (
@@ -245,6 +246,26 @@ export function tableContextMenuFactory<T>(
                 ),
               )}
             </Select>
+          </Layout.Horizontal>
+        </Menu.Item>
+        <Menu.Item key="toggle search auto complete">
+          <Layout.Horizontal
+            gap
+            center
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}>
+            Filter Search History
+            <Switch
+              checked={filterSearchHistory}
+              size="small"
+              onChange={() => {
+                dispatch({
+                  type: 'toggleFilterSearchHistory',
+                });
+              }}
+            />
           </Layout.Horizontal>
         </Menu.Item>
       </SubMenu>
