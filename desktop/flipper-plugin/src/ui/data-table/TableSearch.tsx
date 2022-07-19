@@ -19,6 +19,7 @@ import type {DataTableDispatch} from './DataTableManager';
 export const TableSearch = memo(function TableSearch({
   searchValue,
   useRegex,
+  filterSearchHistory,
   dispatch,
   searchHistory,
   extraActions,
@@ -26,6 +27,7 @@ export const TableSearch = memo(function TableSearch({
 }: {
   searchValue: string;
   useRegex: boolean;
+  filterSearchHistory: boolean;
   dispatch: DataTableDispatch<any>;
   searchHistory: string[];
   extraActions?: React.ReactElement;
@@ -69,6 +71,7 @@ export const TableSearch = memo(function TableSearch({
         open={showHistory}
         options={options}
         filterOption={(inputValue, option) =>
+          !filterSearchHistory ||
           option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
         }
         onSelect={(value: string) => {
@@ -79,11 +82,11 @@ export const TableSearch = memo(function TableSearch({
           if (!open) {
             setShowHistory(false);
           }
-        }}>
+        }}
+        value={searchValue}>
         <Input.Search
           allowClear
           placeholder="Search..."
-          value={searchValue}
           suffix={
             <>
               {options.length ? (
