@@ -16,7 +16,7 @@ import {
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
 const CONNECTION_TIMEOUT = 30 * 1000;
-const EXEC_TIMOUT = 30 * 1000;
+const EXEC_TIMEOUT = 45 * 1000;
 
 export enum FlipperServerState {
   CONNECTING,
@@ -144,7 +144,7 @@ export function createFlipperServerWithSocket(
                 reject(
                   new Error(`flipper-server: timeout for command '${command}'`),
                 );
-              }, EXEC_TIMOUT),
+              }, EXEC_TIMEOUT),
             });
 
             const execMessage = {
