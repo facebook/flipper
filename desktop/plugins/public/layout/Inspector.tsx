@@ -128,7 +128,7 @@ export default class Inspector extends Component<Props, State> {
         this.updateElement(root.id, {...root, expanded: true});
         this.performInitialExpand(root);
       })
-      .catch((e) => console.error('[layout] GET_ROOT failed:', e));
+      .catch((e) => console.debug('[Layout] getRoot failed:', e));
 
     this.props.client.subscribe(
       this.call().INVALIDATE,
@@ -319,7 +319,7 @@ export default class Inspector extends Component<Props, State> {
           selected: false,
         })
         .catch((e) => {
-          console.error(`[Layout] Failed to fetch nodes from app:`, e);
+          console.debug(`[Layout] Failed to fetch nodes from app:`, e);
           return {elements: []};
         });
       if (!elements) {
@@ -414,10 +414,12 @@ export default class Inspector extends Component<Props, State> {
     if (!this.props.client.isConnected) {
       return;
     }
-    this.props.client.call(this.call().SET_HIGHLIGHTED, {
-      id: key,
-      isAlignmentMode: this.props.inAlignmentMode,
-    });
+    this.props.client
+      .call(this.call().SET_HIGHLIGHTED, {
+        id: key,
+        isAlignmentMode: this.props.inAlignmentMode,
+      })
+      .catch((e) => console.debug('[Layout] setHighlighted failed:', e));
   });
 
   onElementExpanded = (
@@ -437,7 +439,7 @@ export default class Inspector extends Component<Props, State> {
           );
         }
       })
-      .catch((e) => console.error('[layout] getChildren failed:', e));
+      .catch((e) => console.debug('[Layout] getChildren failed:', e));
     if (!shouldExpand) {
       this.updateElement(id, {expanded: shouldExpand});
     }
