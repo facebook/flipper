@@ -5,11 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <Foundation/Foundation.h>
+
 #ifdef FB_SONARKIT_ENABLED
 #if !TARGET_OS_OSX
 
-#import "FlipperDiagnosticsViewController.h"
 #import "FlipperClient.h"
+#import "FlipperDiagnosticsViewController.h"
 
 #define STATE_VIEW_HEIGHT 300
 
