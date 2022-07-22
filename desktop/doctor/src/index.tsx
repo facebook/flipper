@@ -17,6 +17,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type {FlipperDoctor} from 'flipper-common';
 import * as fs_extra from 'fs-extra';
+import {getIdbInstallationInstructions} from './fb-stubs/idbInstallationInstructions';
 
 export function getHealthchecks(): FlipperDoctor.Healthchecks {
   return {
@@ -246,7 +247,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   );
                   const hasProblem = result.hasProblem;
                   const message = hasProblem
-                    ? `IDB is required to use Flipper with iOS devices. It can be installed from https://github.com/facebook/idb and configured in Flipper settings. You can also disable physical iOS device support in settings. Current setting: ${settings.idbPath} isn't a valid IDB installation.`
+                    ? getIdbInstallationInstructions(settings.idbPath)
                     : 'Flipper is configured to use your IDB installation.';
                   return {
                     hasProblem,
