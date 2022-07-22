@@ -12,13 +12,13 @@ import {
   DeviceLogEntry,
   usePlugin,
   createDataSource,
-  DataTable,
   DataTableColumn,
   theme,
   DataTableManager,
   createState,
   useValue,
   DataFormatter,
+  DataTable,
 } from 'flipper-plugin';
 import {
   PlayCircleOutlined,
@@ -227,6 +227,7 @@ export function Component() {
       dataSource={plugin.rows}
       columns={plugin.columns}
       enableAutoScroll
+      enableMultiPanels
       onRowStyle={getRowStyle}
       enableHorizontalScroll={false}
       extraActions={

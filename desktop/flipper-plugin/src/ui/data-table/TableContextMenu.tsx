@@ -22,7 +22,7 @@ import React from 'react';
 import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 import {DataTableColumn} from './DataTable';
 import {toFirstUpper} from '../../utils/toFirstUpper';
-import {DataSource} from '../../data-source/index';
+import {DataSourceView} from '../../data-source/index';
 import {renderColumnValue} from './TableRow';
 import {textContent} from '../../utils/textContent';
 import {theme} from '../theme';
@@ -31,7 +31,7 @@ const {Item, SubMenu} = Menu;
 const {Option} = Select;
 
 export function tableContextMenuFactory<T>(
-  datasource: DataSource<T, T[keyof T]>,
+  dataView: DataSourceView<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   selection: Selection,
   highlightSearchSetting: SearchHighlightSetting,
@@ -43,6 +43,7 @@ export function tableContextMenuFactory<T>(
     visibleColumns: DataTableColumn<T>[],
   ) => string = defaultOnCopyRows,
   onContextMenu?: (selection: undefined | T) => React.ReactElement,
+  sideBySideOption?: React.ReactElement,
 ) {
   const lib = tryGetFlipperLibImplementation();
   if (!lib) {
@@ -56,7 +57,7 @@ export function tableContextMenuFactory<T>(
   return (
     <Menu>
       {onContextMenu
-        ? onContextMenu(getSelectedItem(datasource, selection))
+        ? onContextMenu(getSelectedItem(dataView, selection))
         : null}
       <SubMenu
         key="filter same"
@@ -85,7 +86,7 @@ export function tableContextMenuFactory<T>(
           key="copyToClipboard"
           disabled={!hasSelection}
           onClick={() => {
-            const items = getSelectedItems(datasource, selection);
+            const items = getSelectedItems(dataView, selection);
             if (items.length) {
               lib.writeTextToClipboard(onCopyRows(items, visibleColumns));
             }
@@ -97,7 +98,7 @@ export function tableContextMenuFactory<T>(
             key="createPaste"
             disabled={!hasSelection}
             onClick={() => {
-              const items = getSelectedItems(datasource, selection);
+              const items = getSelectedItems(dataView, selection);
               if (items.length) {
                 lib.createPaste(onCopyRows(items, visibleColumns));
               }
@@ -109,7 +110,7 @@ export function tableContextMenuFactory<T>(
           key="copyToClipboardJSON"
           disabled={!hasSelection}
           onClick={() => {
-            const items = getSelectedItems(datasource, selection);
+            const items = getSelectedItems(dataView, selection);
             if (items.length) {
               lib.writeTextToClipboard(rowsToJson(items));
             }
@@ -121,7 +122,7 @@ export function tableContextMenuFactory<T>(
             key="createPasteJSON"
             disabled={!hasSelection}
             onClick={() => {
-              const items = getSelectedItems(datasource, selection);
+              const items = getSelectedItems(dataView, selection);
               if (items.length) {
                 lib.createPaste(rowsToJson(items));
               }
@@ -140,7 +141,7 @@ export function tableContextMenuFactory<T>(
           <Item
             key={'copy cell' + (column.key ?? idx)}
             onClick={() => {
-              const items = getSelectedItems(datasource, selection);
+              const items = getSelectedItems(dataView, selection);
               if (items.length) {
                 lib.writeTextToClipboard(
                   items
@@ -269,6 +270,7 @@ export function tableContextMenuFactory<T>(
           </Layout.Horizontal>
         </Menu.Item>
       </SubMenu>
+      {sideBySideOption}
     </Menu>
   );
 }

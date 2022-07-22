@@ -18,7 +18,7 @@ import React, {
   useContext,
   createContext,
 } from 'react';
-import {DataSource} from './DataSource';
+import {DataSourceView} from './DataSource';
 import {useVirtual} from 'react-virtual';
 import observeRect from '@reach/observe-rect';
 
@@ -39,7 +39,7 @@ type DataSourceProps<T extends object, C> = {
   /**
    * The data source to render
    */
-  dataSource: DataSource<T, T[keyof T]>;
+  dataView: DataSourceView<T, T[keyof T]>;
   /**
    * Automatically scroll if the user is near the end?
    */
@@ -68,7 +68,7 @@ type DataSourceProps<T extends object, C> = {
   onUpdateAutoScroll?(autoScroll: boolean): void;
   emptyRenderer?:
     | null
-    | ((dataSource: DataSource<T, T[keyof T]>) => React.ReactElement);
+    | ((dataView: DataSourceView<T, T[keyof T]>) => React.ReactElement);
 };
 
 /**
@@ -78,7 +78,7 @@ type DataSourceProps<T extends object, C> = {
 export const DataSourceRendererVirtual: <T extends object, C>(
   props: DataSourceProps<T, C>,
 ) => React.ReactElement = memo(function DataSourceRendererVirtual({
-  dataSource,
+  dataView,
   defaultRowHeight,
   useFixedRowHeight,
   context,
@@ -102,7 +102,7 @@ export const DataSourceRendererVirtual: <T extends object, C>(
   const isUnitTest = useInUnitTest();
 
   const virtualizer = useVirtual({
-    size: dataSource.view.size,
+    size: dataView.size,
     parentRef,
     useObserver: isUnitTest ? () => ({height: 500, width: 1000}) : undefined,
     // eslint-disable-next-line
@@ -170,20 +170,20 @@ export const DataSourceRendererVirtual: <T extends object, C>(
         }
       }
 
-      const unsubscribe = dataSource.view.addListener((event) => {
+      const unsubscribe = dataView.addListener((event) => {
         switch (event.type) {
           case 'reset':
             rerender(UpdatePrio.HIGH, true);
             break;
           case 'shift':
-            if (dataSource.view.size < SMALL_DATASET) {
+            if (dataView.size < SMALL_DATASET) {
               rerender(UpdatePrio.HIGH, false);
             } else if (
               event.location === 'in' ||
               // to support smooth tailing we want to render on records directly at the end of the window immediately as well
               (event.location === 'after' &&
                 event.delta > 0 &&
-                event.index === dataSource.view.windowEnd)
+                event.index === dataView.windowEnd)
             ) {
               rerender(UpdatePrio.HIGH, false);
             } else {
@@ -204,7 +204,7 @@ export const DataSourceRendererVirtual: <T extends object, C>(
         unsubscribe();
       };
     },
-    [dataSource, setForceUpdate, useFixedRowHeight, isUnitTest],
+    [setForceUpdate, useFixedRowHeight, isUnitTest, dataView],
   );
 
   useEffect(() => {
@@ -215,15 +215,15 @@ export const DataSourceRendererVirtual: <T extends object, C>(
   useLayoutEffect(function updateWindow() {
     const start = virtualizer.virtualItems[0]?.index ?? 0;
     const end = start + virtualizer.virtualItems.length;
-    if (start !== dataSource.view.windowStart && !autoScroll) {
+    if (start !== dataView.windowStart && !autoScroll) {
       onRangeChange?.(
         start,
         end,
-        dataSource.view.size,
+        dataView.size,
         parentRef.current?.scrollTop ?? 0,
       );
     }
-    dataSource.view.setWindow(start, end);
+    dataView.setWindow(start, end);
   });
 
   /**
@@ -245,7 +245,7 @@ export const DataSourceRendererVirtual: <T extends object, C>(
   useLayoutEffect(function scrollToEnd() {
     if (autoScroll) {
       virtualizer.scrollToIndex(
-        dataSource.view.size - 1,
+        dataView.size - 1,
         /* smooth is not typed by react-virtual, but passed on to the DOM as it should*/
         {
           align: 'end',
@@ -290,7 +290,7 @@ export const DataSourceRendererVirtual: <T extends object, C>(
     <RedrawContext.Provider value={redraw}>
       <div ref={parentRef} onScroll={onScroll} style={tableContainerStyle}>
         {virtualizer.virtualItems.length === 0
-          ? emptyRenderer?.(dataSource)
+          ? emptyRenderer?.(dataView)
           : null}
         <div
           style={{
@@ -300,7 +300,7 @@ export const DataSourceRendererVirtual: <T extends object, C>(
           onKeyDown={onKeyDown}
           tabIndex={0}>
           {virtualizer.virtualItems.map((virtualRow) => {
-            const value = dataSource.view.get(virtualRow.index);
+            const value = dataView.get(virtualRow.index);
             // the position properties always change, so they are not part of the TableRow to avoid invalidating the memoized render always.
             // Also all row containers are renderd as part of same component to have 'less react' framework code in between*/}
             return (
