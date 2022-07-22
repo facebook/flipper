@@ -198,9 +198,16 @@ export class Sidebar extends Component<SidebarProps, SidebarState> {
         gutterWidth={gutter ? theme.space.large : undefined}>
         <SidebarContainer position={position} unstyled={gutter}>
           {gutter ? (
-            <GutterWrapper position={position}>{children}</GutterWrapper>
+            <GutterWrapper position={position}>
+              {/* Stop propagating mousedown events to prevent SidebarInteractiveContainer from resizing whenever a user starts selecting text in a child */}
+              <Layout.Container onMouseDown={(e) => e.stopPropagation()}>
+                {children}
+              </Layout.Container>
+            </GutterWrapper>
           ) : (
-            children
+            <Layout.Container onMouseDown={(e) => e.stopPropagation()}>
+              {children}
+            </Layout.Container>
           )}
         </SidebarContainer>
       </SidebarInteractiveContainer>

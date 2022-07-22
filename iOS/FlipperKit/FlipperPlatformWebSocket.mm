@@ -60,6 +60,9 @@ static constexpr int connectionKeepaliveSeconds = 10;
   NSString* certificatePathObjC =
       [NSString stringWithUTF8String:certificatePath.c_str()];
   NSData* certificateData = [NSData dataWithContentsOfFile:certificatePathObjC];
+  if (!certificateData) {
+    return;
+  }
 
   NSString* password = [NSString stringWithUTF8String:PASSWORD];
   NSDictionary* optionsDictionary = [NSDictionary
