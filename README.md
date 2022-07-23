@@ -78,7 +78,7 @@ This repository includes all parts of Flipper. This includes:
 # Getting started
 
 Please refer to our
-[Getting Started guide](https://fbflipper.com/docs/getting-started/index) to set
+[Getting Started guide](https://fbflipper.com/docs/getting-started/) to set
 up Flipper.
 Or, (still experimental) run `npx flipper-server` for a browser based version of Flipper. 
 
