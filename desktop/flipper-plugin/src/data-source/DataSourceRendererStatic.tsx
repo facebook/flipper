@@ -7,16 +7,16 @@
  * @format
  */
 
-import {DataSource} from './DataSource';
+import {DataSourceView} from './DataSource';
 import React, {memo, useCallback, useEffect, useState} from 'react';
 
 import {RedrawContext} from './DataSourceRendererVirtual';
 
 type DataSourceProps<T extends object, C> = {
   /**
-   * The data source to render
+   * The data view to render
    */
-  dataSource: DataSource<T, T[keyof T]>;
+  dataView: DataSourceView<T, T[keyof T]>;
   /**
    * additional context that will be passed verbatim to the itemRenderer, so that it can be easily memoized
    */
@@ -30,11 +30,12 @@ type DataSourceProps<T extends object, C> = {
   itemRenderer(item: T, index: number, context: C): React.ReactElement;
   useFixedRowHeight: boolean;
   defaultRowHeight: number;
+  maxRecords: number;
   onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
   onUpdateAutoScroll?(autoScroll: boolean): void;
   emptyRenderer?:
     | null
-    | ((dataSource: DataSource<T, T[keyof T]>) => React.ReactElement);
+    | ((dataView: DataSourceView<T, T[keyof T]>) => React.ReactElement);
 };
 
 /**
@@ -44,7 +45,8 @@ type DataSourceProps<T extends object, C> = {
 export const DataSourceRendererStatic: <T extends object, C>(
   props: DataSourceProps<T, C>,
 ) => React.ReactElement = memo(function DataSourceRendererStatic({
-  dataSource,
+  dataView,
+  maxRecords,
   useFixedRowHeight,
   context,
   itemRenderer,
@@ -65,8 +67,8 @@ export const DataSourceRendererStatic: <T extends object, C>(
     function subscribeToDataSource() {
       let unmounted = false;
 
-      dataSource.view.setWindow(0, dataSource.limit);
-      const unsubscribe = dataSource.view.addListener((_event) => {
+      dataView.setWindow(0, maxRecords);
+      const unsubscribe = dataView.addListener((_event) => {
         if (unmounted) {
           return;
         }
@@ -78,7 +80,7 @@ export const DataSourceRendererStatic: <T extends object, C>(
         unsubscribe();
       };
     },
-    [dataSource, setForceUpdate, useFixedRowHeight],
+    [dataView, maxRecords, setForceUpdate, useFixedRowHeight],
   );
 
   useEffect(() => {
@@ -89,7 +91,7 @@ export const DataSourceRendererStatic: <T extends object, C>(
   /**
    * Rendering
    */
-  const records = dataSource.view.output();
+  const records = dataView.output();
   if (records.length > 500) {
     console.warn(
       "StaticDataSourceRenderer should only be used on small datasets. For large datasets the 'scrollable' flag should enabled on DataTable",
@@ -100,7 +102,7 @@ export const DataSourceRendererStatic: <T extends object, C>(
     <RedrawContext.Provider value={redraw}>
       <div onKeyDown={onKeyDown} tabIndex={0}>
         {records.length === 0
-          ? emptyRenderer?.(dataSource)
+          ? emptyRenderer?.(dataView)
           : records.map((item, index) => (
               <div key={index}>{itemRenderer(item, index, context)}</div>
             ))}

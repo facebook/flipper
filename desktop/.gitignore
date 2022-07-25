@@ -2,6 +2,7 @@ lib/
 dist/
 node_modules/
 *.tsbuildinfo
+/static/idb-applications
 /static/themes/
 /static/defaultPlugins/
 /app/src/defaultPlugins/index.tsx

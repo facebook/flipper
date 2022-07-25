@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Midl Include="ReactPackageProvider.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="ReactPackageProvider.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\CertificateUtils.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\ConnectionContextStore.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperBase64.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperClient.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperConnectionManagerImpl.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperSocketProvider.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperState.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperStep.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperURLSerializer.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\Log.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="ReactPackageProvider.h" />
+    <ClInclude Include="FlipperModule.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\CertificateUtils.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\ConnectionContextStore.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FireAndForgetBasedFlipperResponder.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperBase64.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperCertificateExchangeMedium.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperCertificateProvider.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperClient.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperConnection.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperConnectionImpl.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperConnectionManager.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperConnectionManagerImpl.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperExceptions.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperInitConfig.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperPlugin.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperResponder.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperScheduler.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperSocket.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperSocketProvider.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperState.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperStateUpdateListener.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperStep.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperTransportTypes.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperURLSerializer.h" />
+    <ClInclude Include="..\..\..\..\xplat\Flipper\Log.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PropertySheet.props" />
+    <None Include="cpp.hint" />
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

@@ -19,6 +19,7 @@ import {
   ServerAddOnControls,
   EventsContract,
   MethodsContract,
+  DeviceDescription,
 } from 'flipper-common';
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
@@ -26,6 +27,7 @@ export type CrashLogListener = (crash: CrashLog) => void;
 
 export interface Device {
   readonly isArchived: boolean;
+  readonly description: DeviceDescription;
   readonly isConnected: boolean;
   readonly os: DeviceOS;
   readonly serial: string;
@@ -42,6 +44,7 @@ export interface Device {
   sendMetroCommand(command: string): Promise<void>;
   navigateToLocation(location: string): Promise<void>;
   screenshot(): Promise<Uint8Array | undefined>;
+  installApp(appBundlePath: string): Promise<void>;
 }
 
 export type DevicePluginPredicate = (device: Device) => boolean;

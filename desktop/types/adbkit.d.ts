@@ -75,6 +75,8 @@ declare module 'adbkit' {
       local: string,
       remote: string,
     ) => Promise<boolean>; // TODO: verify correctness of signature
+
+    install: (serial: string, apkPath: string) => Promise<boolean>;
   }
   export function createClient(config: {port: number; host: string}): Client;
 }

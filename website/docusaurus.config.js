@@ -7,9 +7,7 @@
  * @format
  */
 
-// start-import-example
-const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
-// end-import-example
+const {fbContent, fbInternalOnly} = require('docusaurus-plugin-internaldocs-fb/internal');
 
 const repoUrl = 'https://github.com/facebook/flipper';
 const siteUrl = fbContent({
@@ -47,7 +45,7 @@ const siteConfig = {
       },
       items: [
         {
-          to: 'docs/features/index',
+          to: 'docs/features',
           label: 'Features',
           position: 'right',
         },
@@ -62,7 +60,7 @@ const siteConfig = {
           position: 'right',
         },
         {
-          to: 'docs/internals/index',
+          to: 'docs/internals',
           label: 'Under the Hood',
           position: 'right',
         },
@@ -102,7 +100,7 @@ const siteConfig = {
           items: [
             {
               label: 'Core Plugins',
-              to: 'docs/features/index',
+              to: 'docs/features',
             },
             {
               label: 'Community Plugins',
@@ -270,7 +268,7 @@ const siteConfig = {
           },
           {
             to: '/docs/getting-started',
-            from: ['/docs/fb/index'],
+            from: ['/docs/fb'],
           },
           {
             from: ['/docs/features/network-plugin'],
@@ -371,7 +369,16 @@ const siteConfig = {
               to: '/docs/features/plugins/mobile-config',
             },
           ]),
-        ],
+        ].map(x => ({
+          ...x,
+          from: x.from.reduce(
+            (acc, href) => {
+              acc.push(href, `${href}/index`);
+              return acc;
+            },
+            [],
+          )}),
+        ),
       },
     ],
   ],

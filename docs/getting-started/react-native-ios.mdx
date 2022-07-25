@@ -51,7 +51,7 @@ Add all of the code below to your `ios/Podfile`:
 platform :ios, '9.0'
 
 def flipper_pods()
-  flipperkit_version = '0.152.0' # should match the version of your Flipper client app
+  flipperkit_version = '0.155.0' # should match the version of your Flipper client app
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
@@ -104,6 +104,19 @@ The code below enables the following integrations:
 * Network
 * Shared Preferences
 * Crash Reporter
+
+### React Native 0.68+
+
+If using React Native 0.68 or later, your AppDelegate should include
+
+```objc
+...
+#import <React/RCTAppSetupUtils.h>
+```
+
+RCTAppSetupUtils takes care of initializing Flipper and the integrations mentioned above.
+
+### React Native 0.67
 
 <Tabs defaultValue="ios" values={[{ label: 'iOS', value: 'ios'}, { label: 'Swift', value: 'swift'}]}>
 <TabItem value="ios">

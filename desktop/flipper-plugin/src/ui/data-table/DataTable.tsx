@@ -27,6 +27,7 @@ import {
   DataSourceRendererVirtual,
   DataSourceRendererStatic,
   DataSource,
+  DataSourceView,
   DataSourceVirtualizer,
 } from '../../data-source/index';
 import {
@@ -45,7 +46,7 @@ import {TableSearch} from './TableSearch';
 import styled from '@emotion/styled';
 import {theme} from '../theme';
 import {tableContextMenuFactory} from './TableContextMenu';
-import {Typography} from 'antd';
+import {Menu, Switch, Typography} from 'antd';
 import {CoffeeOutlined, SearchOutlined, PushpinFilled} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
 import {Formatter} from '../DataFormatter';
@@ -65,6 +66,7 @@ type DataTableBaseProps<T = any> = {
   enableMultiSelect?: boolean;
   enableContextMenu?: boolean;
   enablePersistSettings?: boolean;
+  enableMultiPanels?: boolean;
   // if set (the default) will grow and become scrollable. Otherwise will use natural size
   scrollable?: boolean;
   extraActions?: React.ReactElement;
@@ -75,7 +77,7 @@ type DataTableBaseProps<T = any> = {
   onContextMenu?: (selection: undefined | T) => React.ReactElement;
   onRenderEmpty?:
     | null
-    | ((dataSource?: DataSource<T, T[keyof T]>) => React.ReactElement);
+    | ((dataView?: DataSourceView<T, T[keyof T]>) => React.ReactElement);
 };
 
 export type ItemRenderer<T> = (
@@ -87,12 +89,14 @@ export type ItemRenderer<T> = (
 type DataTableInput<T = any> =
   | {
       dataSource: DataSource<T, T[keyof T]>;
+      viewId?: string;
       records?: undefined;
       recordsKey?: undefined;
     }
   | {
       records: readonly T[];
       recordsKey?: keyof T;
+      viewId?: string;
       dataSource?: undefined;
     };
 
@@ -139,6 +143,9 @@ export function DataTable<T extends object>(
 ): React.ReactElement {
   const {onRowStyle, onSelect, onCopyRows, onContextMenu} = props;
   const dataSource = normalizeDataSourceInput(props);
+  const dataView = props?.viewId
+    ? dataSource.getAdditionalView(props.viewId)
+    : dataSource.view;
   useAssertStableRef(dataSource, 'dataSource');
   useAssertStableRef(onRowStyle, 'onRowStyle');
   useAssertStableRef(props.onSelect, 'onRowSelect');
@@ -157,6 +164,7 @@ export function DataTable<T extends object>(
     () =>
       createInitialState({
         dataSource,
+        dataView,
         defaultColumns: props.columns,
         onSelect,
         scope,
@@ -172,9 +180,10 @@ export function DataTable<T extends object>(
   const dragging = useRef(false);
 
   const [tableManager] = useState(() =>
-    createDataTableManager(dataSource, dispatch, stateRef),
+    createDataTableManager(dataView, dispatch, stateRef),
   );
-  if (props.tableManagerRef) {
+  // Make sure this is the main table
+  if (props.tableManagerRef && !props.viewId) {
     (props.tableManagerRef as MutableRefObject<any>).current = tableManager;
   }
 
@@ -183,22 +192,22 @@ export function DataTable<T extends object>(
   const latestSelectionRef = useLatestRef(selection);
   const latestOnSelectRef = useLatestRef(onSelect);
   useEffect(() => {
-    if (dataSource) {
-      const unsubscribe = dataSource.view.addListener((change) => {
+    if (dataView) {
+      const unsubscribe = dataView.addListener((change) => {
         if (
           change.type === 'update' &&
           latestSelectionRef.current.items.has(change.index)
         ) {
           latestOnSelectRef.current?.(
-            getSelectedItem(dataSource, latestSelectionRef.current),
-            getSelectedItems(dataSource, latestSelectionRef.current),
+            getSelectedItem(dataView, latestSelectionRef.current),
+            getSelectedItems(dataView, latestSelectionRef.current),
           );
         }
       });
 
       return unsubscribe;
     }
-  }, [dataSource, latestSelectionRef, latestOnSelectRef]);
+  }, [dataView, latestSelectionRef, latestOnSelectRef]);
 
   const visibleColumns = useMemo(
     () => columns.filter((column) => column.visible),
@@ -290,10 +299,10 @@ export function DataTable<T extends object>(
     (e: React.KeyboardEvent<any>) => {
       let handled = true;
       const shiftPressed = e.shiftKey;
-      const outputSize = dataSource.view.size;
+      const outputSize = dataView.size;
       const windowSize = props.scrollable
         ? virtualizerRef.current?.virtualItems.length ?? 0
-        : dataSource.view.size;
+        : dataView.size;
       if (!windowSize) {
         return;
       }
@@ -346,15 +355,15 @@ export function DataTable<T extends object>(
         e.preventDefault();
       }
     },
-    [dataSource, tableManager, props.scrollable],
+    [dataView, props.scrollable, tableManager],
   );
 
   const [setFilter] = useState(() => (tableState: DataManagerState<T>) => {
     const selectedEntry =
       tableState.selection.current >= 0
-        ? dataSource.view.getEntry(tableState.selection.current)
+        ? dataView.getEntry(tableState.selection.current)
         : null;
-    dataSource.view.setFilter(
+    dataView.setFilter(
       computeDataTableFilter(
         tableState.searchValue,
         tableState.useRegex,
@@ -362,10 +371,10 @@ export function DataTable<T extends object>(
       ),
     );
     // TODO: in the future setFilter effects could be async, at the moment it isn't,
-    // so we can safely assume the internal state of the dataSource.view is updated with the
+    // so we can safely assume the internal state of the dataView is updated with the
     // filter changes and try to find the same entry back again
     if (selectedEntry) {
-      const selectionIndex = dataSource.view.getViewIndexOfEntry(selectedEntry);
+      const selectionIndex = dataView.getViewIndexOfEntry(selectedEntry);
       tableManager.selectItem(selectionIndex, false, false);
       // we disable autoScroll as is it can accidentally be annoying if it was never turned off and
       // filter causes items to not fill the available space
@@ -391,7 +400,7 @@ export function DataTable<T extends object>(
 
   useEffect(
     function updateFilter() {
-      if (!dataSource.view.isFiltered) {
+      if (!dataView.isFiltered) {
         setFilter(tableState);
       } else {
         debouncedSetFilter(tableState);
@@ -413,14 +422,14 @@ export function DataTable<T extends object>(
   useEffect(
     function updateSorting() {
       if (tableState.sorting === undefined) {
-        dataSource.view.setSortBy(undefined);
-        dataSource.view.setReversed(false);
+        dataView.setSortBy(undefined);
+        dataView.setReversed(false);
       } else {
-        dataSource.view.setSortBy(tableState.sorting.key);
-        dataSource.view.setReversed(tableState.sorting.direction === 'desc');
+        dataView.setSortBy(tableState.sorting.key);
+        dataView.setReversed(tableState.sorting.direction === 'desc');
       }
     },
-    [dataSource, tableState.sorting],
+    [dataView, tableState.sorting],
   );
 
   const isMounted = useRef(false);
@@ -428,13 +437,13 @@ export function DataTable<T extends object>(
     function triggerSelection() {
       if (isMounted.current) {
         onSelect?.(
-          getSelectedItem(dataSource, tableState.selection),
-          getSelectedItems(dataSource, tableState.selection),
+          getSelectedItem(dataView, tableState.selection),
+          getSelectedItems(dataView, tableState.selection),
         );
       }
       isMounted.current = true;
     },
-    [onSelect, dataSource, tableState.selection],
+    [onSelect, dataView, tableState.selection],
   );
 
   // The initialScrollPosition is used to both capture the initial px we want to scroll to,
@@ -484,6 +493,30 @@ export function DataTable<T extends object>(
     [props.enableAutoScroll],
   );
 
+  const sidePanelToggle = useMemo(
+    () => (
+      <Menu.Item key="toggle side by side">
+        <Layout.Horizontal
+          gap
+          center
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}>
+          Side By Side View
+          <Switch
+            checked={tableState.sideBySide}
+            size="small"
+            onChange={() => {
+              tableManager.toggleSideBySide();
+            }}
+          />
+        </Layout.Horizontal>
+      </Menu.Item>
+    ),
+    [tableManager, tableState.sideBySide],
+  );
+
   /** Context menu */
   const contexMenu = isUnitTest
     ? undefined
@@ -491,24 +524,28 @@ export function DataTable<T extends object>(
       useCallback(
         () =>
           tableContextMenuFactory(
-            dataSource,
+            dataView,
             dispatch,
             selection,
             tableState.highlightSearchSetting,
+            tableState.filterSearchHistory,
             tableState.columns,
             visibleColumns,
             onCopyRows,
             onContextMenu,
+            props.enableMultiPanels ? sidePanelToggle : undefined,
           ),
         [
-          dataSource,
-          dispatch,
+          dataView,
           selection,
-          tableState.columns,
           tableState.highlightSearchSetting,
+          tableState.filterSearchHistory,
+          tableState.columns,
           visibleColumns,
           onCopyRows,
           onContextMenu,
+          props.enableMultiPanels,
+          sidePanelToggle,
         ],
       );
 
@@ -521,9 +558,13 @@ export function DataTable<T extends object>(
       savePreferences(stateRef.current, lastOffset.current);
       // if the component unmounts, we reset the SFRW pipeline to
       // avoid wasting resources in the background
-      dataSource.view.reset();
-      // clean ref
-      if (props.tableManagerRef) {
+      dataView.reset();
+      if (props.viewId) {
+        // this is a side panel
+        dataSource.deleteView(props.viewId);
+      }
+      // clean ref && Make sure this is the main table
+      if (props.tableManagerRef && !props.viewId) {
         (props.tableManagerRef as MutableRefObject<any>).current = undefined;
       }
     };
@@ -538,10 +579,11 @@ export function DataTable<T extends object>(
         <TableSearch
           searchValue={searchValue}
           useRegex={tableState.useRegex}
+          filterSearchHistory={tableState.filterSearchHistory}
           dispatch={dispatch as any}
           searchHistory={tableState.searchHistory}
           contextMenu={props.enableContextMenu ? contexMenu : undefined}
-          extraActions={props.extraActions}
+          extraActions={!props.viewId ? props.extraActions : undefined}
         />
       )}
     </Layout.Container>
@@ -572,7 +614,7 @@ export function DataTable<T extends object>(
   if (props.scrollable) {
     const dataSourceRenderer = (
       <DataSourceRendererVirtual<T, TableRowRenderContext<T>>
-        dataSource={dataSource}
+        dataView={dataView}
         autoScroll={tableState.autoScroll && !dragging.current}
         useFixedRowHeight={!tableState.usesWrapping}
         defaultRowHeight={DEFAULT_ROW_HEIGHT}
@@ -611,10 +653,11 @@ export function DataTable<T extends object>(
         {header}
         {columnHeaders}
         <DataSourceRendererStatic<T, TableRowRenderContext<T>>
-          dataSource={dataSource}
+          dataView={dataView}
           useFixedRowHeight={!tableState.usesWrapping}
           defaultRowHeight={DEFAULT_ROW_HEIGHT}
           context={renderingConfig}
+          maxRecords={dataSource.limit}
           itemRenderer={itemRenderer}
           onKeyDown={onKeyDown}
           emptyRenderer={emptyRenderer}
@@ -622,9 +665,8 @@ export function DataTable<T extends object>(
       </Layout.Container>
     );
   }
-
-  return (
-    <Layout.Container grow={props.scrollable}>
+  const mainPanel = (
+    <Layout.Container grow={props.scrollable} style={{position: 'relative'}}>
       <HighlightProvider
         text={
           tableState.highlightSearchSetting.highlightEnabled
@@ -651,6 +693,15 @@ export function DataTable<T extends object>(
       )}
       {range && !isUnitTest && <RangeFinder>{range}</RangeFinder>}
     </Layout.Container>
+  );
+  return props.enableMultiPanels && tableState.sideBySide ? (
+    //TODO: Make the panels resizable by having a dynamic maxWidth for Layout.Right/Left possibly?
+    <Layout.Horizontal style={{height: '100%'}}>
+      {mainPanel}
+      {<DataTable<T> viewId={'1'} {...props} enableMultiPanels={false} />}
+    </Layout.Horizontal>
+  ) : (
+    mainPanel
   );
 }
 
@@ -706,16 +757,16 @@ function syncRecordsToDataSource<T>(
 }
 
 function createDefaultEmptyRenderer<T>(dataTableManager?: DataTableManager<T>) {
-  return (dataSource?: DataSource<T, T[keyof T]>) => (
-    <EmptyTable dataSource={dataSource} dataManager={dataTableManager} />
+  return (dataView?: DataSourceView<T, T[keyof T]>) => (
+    <EmptyTable dataView={dataView} dataManager={dataTableManager} />
   );
 }
 
 function EmptyTable<T>({
-  dataSource,
+  dataView,
   dataManager,
 }: {
-  dataSource?: DataSource<T, T[keyof T]>;
+  dataView?: DataSourceView<T, T[keyof T]>;
   dataManager?: DataTableManager<T>;
 }) {
   const resetFilters = useCallback(() => {
@@ -725,7 +776,7 @@ function EmptyTable<T>({
     <Layout.Container
       center
       style={{width: '100%', padding: 40, color: theme.textColorSecondary}}>
-      {dataSource?.size === 0 ? (
+      {dataView?.size === 0 ? (
         <>
           <CoffeeOutlined style={{fontSize: '2em', margin: 8}} />
           <Typography.Text type="secondary">No records yet</Typography.Text>

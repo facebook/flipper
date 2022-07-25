@@ -148,6 +148,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   client.addMenuEntry({
     action: 'clear',
     handler: clearLogs,
+    accelerator: 'ctrl+l',
   });
 
   client.onConnect(() => {

@@ -275,6 +275,11 @@ export default class AndroidDevice extends ServerDevice {
     }
     super.disconnect();
   }
+
+  async installApp(apkPath: string) {
+    console.log(`Installing app with adb ${apkPath}`);
+    await this.adb.install(this.serial, apkPath);
+  }
 }
 
 export async function launchEmulator(

@@ -235,6 +235,13 @@ export class FlipperServerImpl implements FlipperServer {
     this.events.on(event, callback);
   }
 
+  once<Event extends keyof FlipperServerEvents>(
+    event: Event,
+    callback: (payload: FlipperServerEvents[Event]) => void,
+  ): void {
+    this.events.once(event, callback);
+  }
+
   off<Event extends keyof FlipperServerEvents>(
     event: Event,
     callback: (payload: FlipperServerEvents[Event]) => void,
@@ -285,6 +292,9 @@ export class FlipperServerImpl implements FlipperServer {
   }
 
   private commandHandler: FlipperServerCommands = {
+    'device-install-app': async (serial, bundlePath) => {
+      return this.devices.get(serial)?.installApp(bundlePath);
+    },
     'get-server-state': async () => ({
       state: this.state,
       error: this.stateError,
@@ -423,6 +433,8 @@ export class FlipperServerImpl implements FlipperServer {
     'keychain-unset': (service) => this.keytarManager.unsetKeychain(service),
     'plugins-load-dynamic-plugins': () =>
       this.pluginManager.loadDynamicPlugins(),
+    'plugins-load-marketplace-plugins': () =>
+      this.pluginManager.loadMarketplacePlugins(),
     'plugins-get-bundled-plugins': () => this.pluginManager.getBundledPlugins(),
     'plugins-get-installed-plugins': () =>
       this.pluginManager.getInstalledPlugins(),
@@ -434,6 +446,8 @@ export class FlipperServerImpl implements FlipperServer {
       this.pluginManager.getUpdatablePlugins(query),
     'plugins-install-from-file': (path) =>
       this.pluginManager.installPluginFromFile(path),
+    'plugins-install-from-marketplace': (name: string) =>
+      this.pluginManager.installPluginForMarketplace(name),
     'plugins-install-from-npm': (name) =>
       this.pluginManager.installPluginFromNpm(name),
     'plugin-source': (path) => this.pluginManager.loadSource(path),

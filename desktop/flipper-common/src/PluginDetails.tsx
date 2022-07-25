@@ -109,6 +109,10 @@ export interface DownloadablePluginDetails extends ConcretePluginDetails {
   isEnabledByDefault: boolean;
 }
 
+export interface MarketplacePluginDetails extends DownloadablePluginDetails {
+  availableVersions?: DownloadablePluginDetails[];
+}
+
 export type UpdateResult =
   | {kind: 'not-installed'; version: string}
   | {kind: 'up-to-date'}

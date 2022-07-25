@@ -69,6 +69,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
     "@jest-runner/electron": "^3.0.1",
+    "@testing-library/react": "^12.1.4",
     "@types/jest": "^26.0.24",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
@@ -168,7 +169,7 @@
     "npm": "use yarn instead",
     "yarn": "^1.16"
   },
-  "version": "0.152.0",
+  "version": "0.155.0",
   "workspaces": {
     "packages": [
       "scripts",

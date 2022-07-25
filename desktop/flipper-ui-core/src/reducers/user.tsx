@@ -8,14 +8,7 @@
  */
 
 import {Actions} from './';
-
-export type User = {
-  id?: string;
-  name?: string;
-  profile_picture?: {
-    uri: string;
-  };
-};
+import {User} from 'flipper-common';
 
 export type State = User;
 

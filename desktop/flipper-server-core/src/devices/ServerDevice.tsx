@@ -80,4 +80,8 @@ export abstract class ServerDevice {
   async navigateToLocation(_location: string) {
     throw new Error('navigateLocation not implemented on BaseDevice');
   }
+
+  async installApp(_appBundlePath: string): Promise<void> {
+    throw new Error('Install not implemented');
+  }
 }

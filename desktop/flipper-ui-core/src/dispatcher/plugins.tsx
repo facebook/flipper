@@ -8,7 +8,7 @@
  */
 
 import type {Store} from '../reducers/index';
-import {Logger} from 'flipper-common';
+import {Logger, MarketplacePluginDetails} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -22,7 +22,6 @@ import {
   registerLoadedPlugins,
   registerBundledPlugins,
   registerMarketplacePlugins,
-  MarketplacePluginDetails,
   pluginsInitialized,
 } from '../reducers/plugins';
 import {FlipperBasePlugin} from '../plugin';
