@@ -10,7 +10,11 @@
 import type {DataTableColumn} from './DataTable';
 import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer} from 'react';
-import {DataSource, DataSourceVirtualizer} from '../../data-source/index';
+import {
+  DataSource,
+  DataSourceView,
+  DataSourceVirtualizer,
+} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
 import {theme} from '../theme';
 
@@ -110,10 +114,12 @@ type DataManagerActions<T> =
   | Action<'clearSearchHistory'>
   | Action<'toggleHighlightSearch'>
   | Action<'setSearchHighlightColor', {color: string}>
-  | Action<'toggleFilterSearchHistory'>;
+  | Action<'toggleFilterSearchHistory'>
+  | Action<'toggleSideBySide'>;
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T, T[keyof T]>;
+  dataView: DataSourceView<T, T[keyof T]>;
   defaultColumns: DataTableColumn<T>[];
   scope: string;
   onSelect: undefined | ((item: T | undefined, items: T[]) => void);
@@ -138,6 +144,7 @@ export type DataManagerState<T> = {
   previousSearchValue: string;
   searchHistory: string[];
   highlightSearchSetting: SearchHighlightSetting;
+  sideBySide: boolean;
 };
 
 export type DataTableReducer<T> = Reducer<
@@ -288,7 +295,7 @@ export const dataTableManagerReducer = produce<
     }
     case 'setColumnFilterFromSelection': {
       const items = getSelectedItems(
-        config.dataSource as DataSource<any>,
+        config.dataView as DataSourceView<any, any>,
         draft.selection,
       );
       items.forEach((item, index) => {
@@ -324,6 +331,10 @@ export const dataTableManagerReducer = produce<
       }
       break;
     }
+    case 'toggleSideBySide': {
+      draft.sideBySide = !draft.sideBySide;
+      break;
+    }
     default: {
       throw new Error('Unknown action ' + (action as any).type);
     }
@@ -353,14 +364,15 @@ export type DataTableManager<T> = {
   toggleColumnVisibility(column: keyof T): void;
   sortColumn(column: keyof T, direction?: SortDirection): void;
   setSearchValue(value: string, addToHistory?: boolean): void;
-  dataSource: DataSource<T, T[keyof T]>;
+  dataView: DataSourceView<T, T[keyof T]>;
   toggleSearchValue(): void;
   toggleHighlightSearch(): void;
   setSearchHighlightColor(color: string): void;
+  toggleSideBySide(): void;
 };
 
 export function createDataTableManager<T>(
-  dataSource: DataSource<T, T[keyof T]>,
+  dataView: DataSourceView<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   stateRef: MutableRefObject<DataManagerState<T>>,
 ): DataTableManager<T> {
@@ -389,10 +401,10 @@ export function createDataTableManager<T>(
       dispatch({type: 'clearSelection'});
     },
     getSelectedItem() {
-      return getSelectedItem(dataSource, stateRef.current.selection);
+      return getSelectedItem(dataView, stateRef.current.selection);
     },
     getSelectedItems() {
-      return getSelectedItems(dataSource, stateRef.current.selection);
+      return getSelectedItems(dataView, stateRef.current.selection);
     },
     toggleColumnVisibility(column) {
       dispatch({type: 'toggleColumnVisibility', column});
@@ -412,7 +424,10 @@ export function createDataTableManager<T>(
     setSearchHighlightColor(color) {
       dispatch({type: 'setSearchHighlightColor', color});
     },
-    dataSource,
+    toggleSideBySide() {
+      dispatch({type: 'toggleSideBySide'});
+    },
+    dataView,
   };
 }
 
@@ -462,6 +477,7 @@ export function createInitialState<T>(
       highlightEnabled: false,
       color: theme.searchHighlightBackground.yellow,
     },
+    sideBySide: false,
   };
   // @ts-ignore
   res.config[immerable] = false; // optimization: never proxy anything in config
@@ -497,21 +513,19 @@ function addColumnFilter<T>(
 }
 
 export function getSelectedItem<T>(
-  dataSource: DataSource<T, T[keyof T]>,
+  dataView: DataSourceView<T, T[keyof T]>,
   selection: Selection,
 ): T | undefined {
-  return selection.current < 0
-    ? undefined
-    : dataSource.view.get(selection.current);
+  return selection.current < 0 ? undefined : dataView.get(selection.current);
 }
 
 export function getSelectedItems<T>(
-  dataSource: DataSource<T, T[keyof T]>,
+  dataView: DataSourceView<T, T[keyof T]>,
   selection: Selection,
 ): T[] {
   return [...selection.items]
     .sort((a, b) => a - b) // https://stackoverflow.com/a/15765283/1983583
-    .map((i) => dataSource.view.get(i))
+    .map((i) => dataView.get(i))
     .filter(Boolean) as any[];
 }
 
@@ -645,12 +659,10 @@ export function computeDataTableFilter(
         return false;
       }
     }
-
     //free search all top level keys as well as any (nested) columns in the table
     const nestedColumns = columns
       .map((col) => col.key)
       .filter((path) => path.includes('.'));
-
     return [...Object.keys(item), ...nestedColumns]
       .map((key) => getValueAtPath(item, key))
       .filter((val) => typeof val !== 'object')

@@ -9,6 +9,7 @@
 
 export {
   DataSource,
+  DataSourceView,
   createDataSource,
   DataSourceOptions,
   DataSourceOptionKey,
