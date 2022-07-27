@@ -96,8 +96,8 @@ struct PackFile {
 }
 
 #[derive(Debug, serde::Serialize)]
-struct PackManifest {
-    files: BTreeMap<PackType, PackFile>,
+struct PackManifest<'a> {
+    files: BTreeMap<&'a PackType, PackFile>,
 }
 
 fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
@@ -110,12 +110,12 @@ fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
     pb
 }
 
-fn pack(
-    platform: &Platform,
-    dist_dir: &std::path::Path,
-    pack_list: &PackList,
-    output_directory: &std::path::Path,
-) -> Result<Vec<(PackType, path::PathBuf)>> {
+fn pack<'a>(
+    platform: &'a Platform,
+    dist_dir: &'a std::path::Path,
+    pack_list: &'a PackList,
+    output_directory: &'a std::path::Path,
+) -> Result<Vec<(&'a PackType, path::PathBuf)>> {
     let pb = default_progress_bar(pack_list.0.len() as u64 * 2 - 1);
     pb.set_prefix(format!(
         "{:width$}",
@@ -150,9 +150,7 @@ fn pack(
             tar.finish()?;
             pb.inc(1);
 
-            // TODO: Consider borrowing and changing all return types instead
-            // of the unnecessary clone.
-            Ok((pack_type.clone(), output_path))
+            Ok((pack_type, output_path))
         })
         .collect();
 
@@ -270,9 +268,9 @@ fn main() -> Result<(), anyhow::Error> {
 /// Takes a list of archive paths, compresses them with LZMA and returns
 /// the updated paths.
 /// TODO: Remove compressed artifacts.
-fn compress_paths(
-    archive_paths: &[(PackType, path::PathBuf)],
-) -> Result<Vec<(PackType, path::PathBuf)>> {
+fn compress_paths<'a>(
+    archive_paths: &'a [(&'a PackType, path::PathBuf)],
+) -> Result<Vec<(&PackType, path::PathBuf)>> {
     let pb = default_progress_bar(archive_paths.len() as u64 - 1);
     pb.set_prefix(format!(
         "{:width$}",
@@ -298,17 +296,17 @@ fn compress_paths(
             let mut encoder = xz2::write::XzEncoder::new(writer, 9);
             std::io::copy(&mut reader, &mut encoder)?;
             pb.inc(1);
-            Ok((pack_type.clone(), output_path))
+            Ok((*pack_type, output_path))
         })
-        .collect::<Result<Vec<(PackType, path::PathBuf)>>>()?;
+        .collect::<Result<Vec<(&PackType, path::PathBuf)>>>()?;
     pb.finish();
 
     Ok(res)
 }
 
 fn manifest(
-    archive_paths: &[(PackType, path::PathBuf)],
-    compressed_archive_paths: &Option<Vec<(PackType, path::PathBuf)>>,
+    archive_paths: &[(&PackType, path::PathBuf)],
+    compressed_archive_paths: &Option<Vec<(&PackType, path::PathBuf)>>,
     output_directory: &path::Path,
 ) -> Result<path::PathBuf> {
     let archive_manifest = gen_manifest(archive_paths, compressed_archive_paths)?;
@@ -326,19 +324,19 @@ fn write_manifest(
     Ok(path)
 }
 
-fn gen_manifest(
-    archive_paths: &[(PackType, path::PathBuf)],
-    compressed_archive_paths: &Option<Vec<(PackType, path::PathBuf)>>,
-) -> Result<PackManifest> {
+fn gen_manifest<'a>(
+    archive_paths: &'a [(&PackType, path::PathBuf)],
+    compressed_archive_paths: &'a Option<Vec<(&PackType, path::PathBuf)>>,
+) -> Result<PackManifest<'a>> {
     Ok(PackManifest {
         files: gen_manifest_files(archive_paths, compressed_archive_paths)?,
     })
 }
 
-fn gen_manifest_files(
-    archive_paths: &[(PackType, path::PathBuf)],
-    compressed_archive_paths: &Option<Vec<(PackType, path::PathBuf)>>,
-) -> Result<BTreeMap<PackType, PackFile>> {
+fn gen_manifest_files<'a>(
+    archive_paths: &'a [(&PackType, path::PathBuf)],
+    compressed_archive_paths: &'a Option<Vec<(&PackType, path::PathBuf)>>,
+) -> Result<BTreeMap<&'a PackType, PackFile>> {
     use std::iter;
     let pb = default_progress_bar((archive_paths.len() as u64 - 1) * 2);
     pb.set_prefix(format!(
@@ -351,7 +349,7 @@ fn gen_manifest_files(
     // of `None`. This allows us to zip it below and avoid having to rely on index
     // arithmetic. The `as _` is necessary to tell rustc to perform the casts from
     // something like a `std::iter::Map` to the `Iterator` trait.
-    let compressed_iter: Box<dyn Iterator<Item = Option<&(PackType, path::PathBuf)>>> =
+    let compressed_iter: Box<dyn Iterator<Item = Option<&(&PackType, path::PathBuf)>>> =
         compressed_archive_paths.as_ref().map_or_else(
             || Box::new(iter::repeat(None)) as _,
             |inner| Box::new(inner.iter().map(Some)) as _,
@@ -372,7 +370,7 @@ fn gen_manifest_files(
             let extrinsic_checksum = sha256_digest(&mut BufReader::new(File::open(path)?))?;
             pb.inc(1);
             Ok((
-                pack_type,
+                *pack_type,
                 PackFile {
                     file_name: path
                         .file_name()
@@ -389,7 +387,7 @@ fn gen_manifest_files(
         .fold(
             BTreeMap::new(),
             |mut acc: BTreeMap<_, _>, (pack_type, pack_file)| {
-                acc.insert(pack_type.clone(), pack_file);
+                acc.insert(pack_type, pack_file);
                 acc
             },
         );
@@ -416,7 +414,7 @@ mod test {
             .join("archive_a.tar");
         let tmp_dir = tempdir::TempDir::new("manifest_test")?;
 
-        let archive_paths = &[(PackType::new("core"), artifact_path)];
+        let archive_paths = &[(&PackType::new("core"), artifact_path)];
         let path = manifest(archive_paths, &None, tmp_dir.path())?;
 
         let manifest_content = std::fs::read_to_string(&path)?;
