@@ -8,32 +8,58 @@
  */
 
 import {HistoryOutlined, MenuOutlined} from '@ant-design/icons';
-import {Button, Dropdown, Input, AutoComplete} from 'antd';
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import {Button, Dropdown, Input, AutoComplete, InputRef} from 'antd';
+import React, {memo, useCallback, useMemo} from 'react';
 import styled from '@emotion/styled';
 
 import {Layout} from '../Layout';
 import {theme} from '../theme';
 import type {DataTableDispatch} from './DataTableManager';
 
+const MAX_RECENT = 5;
+
 export const TableSearch = memo(function TableSearch({
   searchValue,
   useRegex,
   filterSearchHistory,
+  showHistory,
+  showNumbered,
   dispatch,
   searchHistory,
   extraActions,
   contextMenu,
+  searchInputRef,
 }: {
   searchValue: string;
   useRegex: boolean;
   filterSearchHistory: boolean;
+  showHistory: boolean;
+  showNumbered: boolean;
   dispatch: DataTableDispatch<any>;
   searchHistory: string[];
   extraActions?: React.ReactElement;
   contextMenu: undefined | (() => JSX.Element);
+  searchInputRef?: React.MutableRefObject<InputRef>;
 }) {
-  const [showHistory, setShowHistory] = useState(false);
+  const filteredSearchHistory = useMemo(
+    () =>
+      filterSearchHistory
+        ? searchHistory.filter(
+            (value) =>
+              value.toUpperCase().indexOf(searchValue.toUpperCase()) !== -1,
+          )
+        : searchHistory,
+    [filterSearchHistory, searchHistory, searchValue],
+  );
+
+  const options = useMemo(() => {
+    return filteredSearchHistory.map((value, index) => ({
+      label:
+        showNumbered && index < MAX_RECENT ? `${index + 1}: ${value}` : value,
+      value,
+    }));
+  }, [filteredSearchHistory, showNumbered]);
+
   const onSearch = useCallback(
     (value: string, addToHistory: boolean) => {
       dispatch({type: 'setSearchValue', value, addToHistory});
@@ -48,6 +74,71 @@ export const TableSearch = memo(function TableSearch({
     },
     [dispatch],
   );
+  const toggleSearchDropdown = useCallback(
+    (show: boolean) => {
+      dispatch({type: 'showSearchDropdown', show: show});
+    },
+    [dispatch],
+  );
+  const toggleShowNumberedHistory = useCallback(
+    (showNumberedHistory: boolean) => {
+      dispatch({type: 'setShowNumberedHistory', showNumberedHistory});
+    },
+    [dispatch],
+  );
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent<any>) => {
+      switch (e.key) {
+        case 'f':
+          if (e.ctrlKey && searchHistory.length > 0) {
+            if (!showHistory) {
+              toggleShowNumberedHistory(true);
+            }
+            toggleSearchDropdown(!showHistory);
+          }
+          break;
+        case 'Control':
+          if (showHistory) {
+            toggleShowNumberedHistory(true);
+          }
+          break;
+        default:
+          const possNumber = Number(e.key);
+          if (
+            e.ctrlKey &&
+            possNumber &&
+            showNumbered &&
+            possNumber <= Math.min(MAX_RECENT, filteredSearchHistory.length)
+          ) {
+            toggleSearchDropdown(false);
+            onSearch(filteredSearchHistory[possNumber - 1], false);
+            e.preventDefault();
+          }
+      }
+      e.stopPropagation();
+    },
+    [
+      searchHistory.length,
+      showHistory,
+      showNumbered,
+      filteredSearchHistory,
+      toggleSearchDropdown,
+      toggleShowNumberedHistory,
+      onSearch,
+    ],
+  );
+  const onKeyUp = useCallback(
+    (e: React.KeyboardEvent<any>) => {
+      switch (e.key) {
+        case 'Control':
+          toggleShowNumberedHistory(false);
+          break;
+      }
+      e.stopPropagation();
+      e.preventDefault();
+    },
+    [toggleShowNumberedHistory],
+  );
   const regexError = useMemo(() => {
     if (!useRegex || !searchValue) {
       return;
@@ -59,40 +150,33 @@ export const TableSearch = memo(function TableSearch({
     }
   }, [useRegex, searchValue]);
 
-  const options = useMemo(
-    () => searchHistory.map((value) => ({label: value, value})),
-    [searchHistory],
-  );
-
   return (
-    <Searchbar gap>
+    <Searchbar gap onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
       <AutoComplete
         defaultOpen={false}
         open={showHistory}
         options={options}
-        filterOption={(inputValue, option) =>
-          !filterSearchHistory ||
-          option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-        }
         onSelect={(value: string) => {
-          setShowHistory(false);
+          toggleSearchDropdown(false);
           onSearch(value, false);
         }}
         onDropdownVisibleChange={(open) => {
           if (!open) {
-            setShowHistory(false);
+            toggleSearchDropdown(false);
           }
         }}
         value={searchValue}>
         <Input.Search
           allowClear
+          ref={searchInputRef}
+          value={searchValue}
           placeholder="Search..."
           suffix={
             <>
               {options.length ? (
                 <RegexButton
                   onClick={() => {
-                    setShowHistory((v) => !v);
+                    toggleSearchDropdown(!showHistory);
                   }}>
                   <HistoryOutlined />
                 </RegexButton>

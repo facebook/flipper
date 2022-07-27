@@ -115,7 +115,9 @@ type DataManagerActions<T> =
   | Action<'toggleHighlightSearch'>
   | Action<'setSearchHighlightColor', {color: string}>
   | Action<'toggleFilterSearchHistory'>
-  | Action<'toggleSideBySide'>;
+  | Action<'toggleSideBySide'>
+  | Action<'showSearchDropdown', {show: boolean}>
+  | Action<'setShowNumberedHistory', {showNumberedHistory: boolean}>;
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T, T[keyof T]>;
@@ -138,6 +140,8 @@ export type DataManagerState<T> = {
   selection: Selection;
   useRegex: boolean;
   filterSearchHistory: boolean;
+  showSearchHistory: boolean;
+  showNumberedHistory: boolean;
   autoScroll: boolean;
   searchValue: string;
   /** Used to remember the record entry to lookup when user presses ctrl */
@@ -335,6 +339,14 @@ export const dataTableManagerReducer = produce<
       draft.sideBySide = !draft.sideBySide;
       break;
     }
+    case 'showSearchDropdown': {
+      draft.showSearchHistory = action.show;
+      break;
+    }
+    case 'setShowNumberedHistory': {
+      draft.showNumberedHistory = action.showNumberedHistory;
+      break;
+    }
     default: {
       throw new Error('Unknown action ' + (action as any).type);
     }
@@ -369,6 +381,8 @@ export type DataTableManager<T> = {
   toggleHighlightSearch(): void;
   setSearchHighlightColor(color: string): void;
   toggleSideBySide(): void;
+  showSearchDropdown(show: boolean): void;
+  setShowNumberedHistory(showNumberedHistory: boolean): void;
 };
 
 export function createDataTableManager<T>(
@@ -427,6 +441,12 @@ export function createDataTableManager<T>(
     toggleSideBySide() {
       dispatch({type: 'toggleSideBySide'});
     },
+    showSearchDropdown(show) {
+      dispatch({type: 'showSearchDropdown', show});
+    },
+    setShowNumberedHistory(showNumberedHistory) {
+      dispatch({type: 'setShowNumberedHistory', showNumberedHistory});
+    },
     dataView,
   };
 }
@@ -478,6 +498,8 @@ export function createInitialState<T>(
       color: theme.searchHighlightBackground.yellow,
     },
     sideBySide: false,
+    showSearchHistory: false,
+    showNumberedHistory: false,
   };
   // @ts-ignore
   res.config[immerable] = false; // optimization: never proxy anything in config
