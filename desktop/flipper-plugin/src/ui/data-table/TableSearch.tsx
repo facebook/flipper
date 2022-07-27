@@ -7,8 +7,8 @@
  * @format
  */
 
-import {HistoryOutlined, MenuOutlined} from '@ant-design/icons';
-import {Button, Dropdown, Input, AutoComplete, InputRef} from 'antd';
+import {HistoryOutlined, MenuOutlined, SwapOutlined} from '@ant-design/icons';
+import {Button, Dropdown, Input, AutoComplete, InputRef, Tooltip} from 'antd';
 import React, {memo, useCallback, useMemo} from 'react';
 import styled from '@emotion/styled';
 
@@ -86,6 +86,9 @@ export const TableSearch = memo(function TableSearch({
     },
     [dispatch],
   );
+  const toggleHideResults = useCallback(() => {
+    dispatch({type: 'toggleSearchValue'});
+  }, [dispatch]);
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<any>) => {
       switch (e.key) {
@@ -174,12 +177,16 @@ export const TableSearch = memo(function TableSearch({
           suffix={
             <>
               {options.length ? (
-                <RegexButton
-                  onClick={() => {
-                    toggleSearchDropdown(!showHistory);
-                  }}>
-                  <HistoryOutlined />
-                </RegexButton>
+                <Tooltip
+                  placement="topLeft"
+                  title="Show search history (ctrl+f)">
+                  <RegexButton
+                    onClick={() => {
+                      toggleSearchDropdown(!showHistory);
+                    }}>
+                    <HistoryOutlined />
+                  </RegexButton>
+                </Tooltip>
               ) : null}
               <RegexButton
                 size="small"
@@ -200,6 +207,16 @@ export const TableSearch = memo(function TableSearch({
                 title={regexError || 'Search using Regex'}>
                 .*
               </RegexButton>
+              <Tooltip
+                placement="topRight"
+                title="Show/Hide search results (ctrl+t)">
+                <RegexButton
+                  onClick={() => {
+                    toggleHideResults();
+                  }}>
+                  <SwapOutlined />
+                </RegexButton>
+              </Tooltip>
             </>
           }
           onChange={(e) => {
