@@ -130,7 +130,7 @@ fn pack(
     let files = &packlist_spec.files;
     let res = files
         .into_par_iter()
-        .map(|(&pack_type, pack_files)| {
+        .map(|(pack_type, pack_files)| {
             let output_path = path::Path::new(output_directory).join(format!("{}.tar", pack_type));
             let mut tar = tar::Builder::new(File::create(&output_path).with_context(|| {
                 format!(
@@ -150,7 +150,9 @@ fn pack(
             tar.finish()?;
             pb.inc(1);
 
-            Ok((pack_type, output_path))
+            // TODO: Consider borrowing and changing all return types instead
+            // of the unnecessary clone.
+            Ok((pack_type.clone(), output_path))
         })
         .collect();
 
@@ -162,7 +164,7 @@ fn pack_platform_glob(
     platform: &Platform,
     base_dir: &path::Path,
     pack_files: &[String],
-    pack_type: PackType,
+    pack_type: &PackType,
     tar_builder: &mut tar::Builder<File>,
 ) -> Result<()> {
     let mut ov = ignore::overrides::OverrideBuilder::new(base_dir);
@@ -188,7 +190,7 @@ fn pack_platform_glob(
         if !full_path.exists() {
             bail!(error::Error::MissingPackFile(
                 platform.clone(),
-                pack_type,
+                pack_type.clone(),
                 full_path,
             ));
         }
@@ -206,7 +208,7 @@ fn pack_platform_exact(
     platform: &Platform,
     base_dir: &path::Path,
     pack_files: &[String],
-    pack_type: PackType,
+    pack_type: &PackType,
     tar_builder: &mut tar::Builder<File>,
 ) -> Result<()> {
     for f in pack_files {
@@ -214,7 +216,7 @@ fn pack_platform_exact(
         if !full_path.exists() {
             bail!(error::Error::MissingPackFile(
                 platform.clone(),
-                pack_type,
+                pack_type.clone(),
                 full_path,
             ));
         }
@@ -296,7 +298,7 @@ fn compress_paths(
             let mut encoder = xz2::write::XzEncoder::new(writer, 9);
             std::io::copy(&mut reader, &mut encoder)?;
             pb.inc(1);
-            Ok((*pack_type, output_path))
+            Ok((pack_type.clone(), output_path))
         })
         .collect::<Result<Vec<(PackType, path::PathBuf)>>>()?;
     pb.finish();
@@ -370,7 +372,7 @@ fn gen_manifest_files(
             let extrinsic_checksum = sha256_digest(&mut BufReader::new(File::open(path)?))?;
             pb.inc(1);
             Ok((
-                *pack_type,
+                pack_type,
                 PackFile {
                     file_name: path
                         .file_name()
@@ -387,7 +389,7 @@ fn gen_manifest_files(
         .fold(
             BTreeMap::new(),
             |mut acc: BTreeMap<_, _>, (pack_type, pack_file)| {
-                acc.insert(pack_type, pack_file);
+                acc.insert(pack_type.clone(), pack_file);
                 acc
             },
         );
@@ -414,7 +416,7 @@ mod test {
             .join("archive_a.tar");
         let tmp_dir = tempdir::TempDir::new("manifest_test")?;
 
-        let archive_paths = &[(PackType::Core, artifact_path)];
+        let archive_paths = &[(PackType::new("core"), artifact_path)];
         let path = manifest(archive_paths, &None, tmp_dir.path())?;
 
         let manifest_content = std::fs::read_to_string(&path)?;

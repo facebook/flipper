@@ -50,3 +50,7 @@ server-linux:
       - node
     core:
       - '!node'
+      - '!static'
+    static:
+      - '!*'
+      - static
