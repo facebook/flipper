@@ -15,7 +15,11 @@ import {
   DevicePluginClient,
   PluginClient,
 } from 'flipper-plugin';
-import {handleClientConnected} from '../dispatcher/flipperServer';
+import {
+  handleClientConnected,
+  handleDeviceConnected,
+  handleDeviceDisconnected,
+} from '../dispatcher/flipperServer';
 import {TestDevice} from 'flipper-frontend-core';
 
 test('Devices can disconnect', async () => {
@@ -129,6 +133,165 @@ test('New device with same serial removes & cleans the old one', async () => {
   ).toBeCalledTimes(0);
   expect(store.getState().connections.devices.length).toBe(1);
   expect(store.getState().connections.devices[0]).toBe(device2);
+});
+
+test('Persist data enabled reconnect same device does not wipe data', async () => {
+  const deviceplugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails({pluginType: 'device'}),
+    {
+      devicePlugin(client: DevicePluginClient) {
+        const destroy = jest.fn();
+        client.onDestroy(destroy);
+        return {
+          destroy,
+        };
+      },
+      supportsDevice() {
+        return true;
+      },
+      Component() {
+        return null;
+      },
+    },
+  );
+  const {device, store, logger} = await createMockFlipperWithPlugin(
+    deviceplugin,
+  );
+  const server = TestUtils.createFlipperServerMock({
+    'client-request-response': async () => ({
+      success: [],
+      length: 0,
+    }),
+  });
+  const instance = device.sandyPluginStates.get(deviceplugin.id)!;
+
+  expect(device.isArchived).toBe(false);
+  expect(device.connected.get()).toBe(true);
+  expect(instance.instanceApi.destroy).toBeCalledTimes(0);
+  expect(store.getState().connections.devices[0]).toEqual(device);
+  expect(store.getState().settingsState.persistDeviceData).toBe(false);
+  //Update the persist data setting
+  store.dispatch({
+    type: 'UPDATE_SETTINGS',
+    payload: {...store.getState().settingsState, persistDeviceData: true},
+  });
+  expect(store.getState().settingsState.persistDeviceData).toBe(true);
+
+  handleDeviceConnected(server, store, logger, device.description);
+  expect(instance.instanceApi.destroy).toBeCalledTimes(0);
+  expect(store.getState().connections.devices.length).toBe(1);
+  expect(store.getState().connections.devices[0].sandyPluginStates).toBe(
+    device.sandyPluginStates,
+  );
+});
+
+test('Persist data enabled multiple devices maintain same data', async () => {
+  const deviceplugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails({pluginType: 'device'}),
+    {
+      devicePlugin(client: DevicePluginClient) {
+        const destroy = jest.fn();
+        client.onDestroy(destroy);
+        return {
+          destroy,
+        };
+      },
+      supportsDevice() {
+        return true;
+      },
+      Component() {
+        return null;
+      },
+    },
+  );
+  const {device, store, logger, server} = await createMockFlipperWithPlugin(
+    deviceplugin,
+  );
+
+  const instance = device.sandyPluginStates.get(deviceplugin.id)!;
+
+  expect(device.isArchived).toBe(false);
+  expect(device.connected.get()).toBe(true);
+  expect(instance.instanceApi.destroy).toBeCalledTimes(0);
+  expect(store.getState().connections.devices[0]).toEqual(device);
+  expect(store.getState().settingsState.persistDeviceData).toBe(false);
+
+  store.dispatch({
+    type: 'UPDATE_SETTINGS',
+    payload: {...store.getState().settingsState, persistDeviceData: true},
+  });
+
+  expect(store.getState().settingsState.persistDeviceData).toBe(true);
+
+  // Same device, data should be persisted
+  handleDeviceConnected(server, store, logger, device.description);
+  expect(instance.instanceApi.destroy).toBeCalledTimes(0);
+  expect(store.getState().connections.devices.length).toBe(1);
+  expect(store.getState().connections.devices[0]).toBe(device);
+
+  const device2 = new TestDevice(
+    'test2',
+    'physical',
+    'MockAndroidDevice',
+    'Android',
+  );
+  handleDeviceConnected(server, store, logger, device2.description);
+  expect(instance.instanceApi.destroy).toBeCalledTimes(0);
+  expect(store.getState().connections.devices.length).toBe(2);
+  expect(store.getState().connections.selectedDevice).not.toBe(device);
+  expect(store.getState().connections.selectedDevice?.serial).toBe(
+    device2.serial,
+  );
+
+  //Connect back the device1
+  handleDeviceConnected(server, store, logger, device.description);
+  expect(instance.instanceApi.destroy).toBeCalledTimes(0);
+  expect(store.getState().connections.devices.length).toBe(2);
+  expect(store.getState().connections.selectedDevice).toBe(device);
+});
+
+test('Persist data enabled device is disconnected and reconnected properly', async () => {
+  const deviceplugin = new _SandyPluginDefinition(
+    TestUtils.createMockPluginDetails({pluginType: 'device'}),
+    {
+      devicePlugin(client: DevicePluginClient) {
+        const destroy = jest.fn();
+        client.onDestroy(destroy);
+        return {
+          destroy,
+        };
+      },
+      supportsDevice() {
+        return true;
+      },
+      Component() {
+        return null;
+      },
+    },
+  );
+  const {device, store, logger, server} = await createMockFlipperWithPlugin(
+    deviceplugin,
+  );
+
+  const instance = device.sandyPluginStates.get(deviceplugin.id)!;
+
+  expect(device.isArchived).toBe(false);
+  expect(device.connected.get()).toBe(true);
+  expect(instance.instanceApi.destroy).toBeCalledTimes(0);
+  expect(store.getState().connections.devices[0]).toEqual(device);
+
+  handleDeviceDisconnected(store, logger, device.description);
+  expect(device.connected.get()).toBe(false);
+
+  // We want to test with the same device
+  store.dispatch({
+    type: 'UPDATE_SETTINGS',
+    payload: {...store.getState().settingsState, persistDeviceData: true},
+  });
+
+  handleDeviceConnected(server, store, logger, device.description);
+  expect(device.connected.get()).toBe(true);
+  expect(store.getState().connections.selectedDevice).toBe(device);
 });
 
 test('clients can disconnect but preserve state', async () => {
