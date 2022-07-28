@@ -21,10 +21,10 @@ use rayon::prelude::ParallelIterator;
 use std::collections::BTreeMap;
 use std::ffi;
 use std::fs::File;
+use std::io;
 use std::io::BufReader;
 use std::io::BufWriter;
 use std::io::Write;
-use std::io::{self};
 use std::path;
 use types::HashSum;
 use types::PackMode;
@@ -96,8 +96,8 @@ struct PackFile {
 }
 
 #[derive(Debug, serde::Serialize)]
-struct PackManifest {
-    files: BTreeMap<PackType, PackFile>,
+struct PackManifest<'a> {
+    files: BTreeMap<&'a PackType, PackFile>,
 }
 
 fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
@@ -110,12 +110,12 @@ fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
     pb
 }
 
-fn pack(
-    platform: &Platform,
-    dist_dir: &std::path::Path,
-    pack_list: &PackList,
-    output_directory: &std::path::Path,
-) -> Result<Vec<(PackType, path::PathBuf)>> {
+fn pack<'a>(
+    platform: &'a Platform,
+    dist_dir: &'a std::path::Path,
+    pack_list: &'a PackList,
+    output_directory: &'a std::path::Path,
+) -> Result<Vec<(&'a PackType, path::PathBuf)>> {
     let pb = default_progress_bar(pack_list.0.len() as u64 * 2 - 1);
     pb.set_prefix(format!(
         "{:width$}",
@@ -130,7 +130,7 @@ fn pack(
     let files = &packlist_spec.files;
     let res = files
         .into_par_iter()
-        .map(|(&pack_type, pack_files)| {
+        .map(|(pack_type, pack_files)| {
             let output_path = path::Path::new(output_directory).join(format!("{}.tar", pack_type));
             let mut tar = tar::Builder::new(File::create(&output_path).with_context(|| {
                 format!(
@@ -162,7 +162,7 @@ fn pack_platform_glob(
     platform: &Platform,
     base_dir: &path::Path,
     pack_files: &[String],
-    pack_type: PackType,
+    pack_type: &PackType,
     tar_builder: &mut tar::Builder<File>,
 ) -> Result<()> {
     let mut ov = ignore::overrides::OverrideBuilder::new(base_dir);
@@ -188,7 +188,7 @@ fn pack_platform_glob(
         if !full_path.exists() {
             bail!(error::Error::MissingPackFile(
                 platform.clone(),
-                pack_type,
+                pack_type.clone(),
                 full_path,
             ));
         }
@@ -206,7 +206,7 @@ fn pack_platform_exact(
     platform: &Platform,
     base_dir: &path::Path,
     pack_files: &[String],
-    pack_type: PackType,
+    pack_type: &PackType,
     tar_builder: &mut tar::Builder<File>,
 ) -> Result<()> {
     for f in pack_files {
@@ -214,7 +214,7 @@ fn pack_platform_exact(
         if !full_path.exists() {
             bail!(error::Error::MissingPackFile(
                 platform.clone(),
-                pack_type,
+                pack_type.clone(),
                 full_path,
             ));
         }
@@ -268,9 +268,9 @@ fn main() -> Result<(), anyhow::Error> {
 /// Takes a list of archive paths, compresses them with LZMA and returns
 /// the updated paths.
 /// TODO: Remove compressed artifacts.
-fn compress_paths(
-    archive_paths: &[(PackType, path::PathBuf)],
-) -> Result<Vec<(PackType, path::PathBuf)>> {
+fn compress_paths<'a>(
+    archive_paths: &'a [(&'a PackType, path::PathBuf)],
+) -> Result<Vec<(&PackType, path::PathBuf)>> {
     let pb = default_progress_bar(archive_paths.len() as u64 - 1);
     pb.set_prefix(format!(
         "{:width$}",
@@ -298,15 +298,15 @@ fn compress_paths(
             pb.inc(1);
             Ok((*pack_type, output_path))
         })
-        .collect::<Result<Vec<(PackType, path::PathBuf)>>>()?;
+        .collect::<Result<Vec<(&PackType, path::PathBuf)>>>()?;
     pb.finish();
 
     Ok(res)
 }
 
 fn manifest(
-    archive_paths: &[(PackType, path::PathBuf)],
-    compressed_archive_paths: &Option<Vec<(PackType, path::PathBuf)>>,
+    archive_paths: &[(&PackType, path::PathBuf)],
+    compressed_archive_paths: &Option<Vec<(&PackType, path::PathBuf)>>,
     output_directory: &path::Path,
 ) -> Result<path::PathBuf> {
     let archive_manifest = gen_manifest(archive_paths, compressed_archive_paths)?;
@@ -324,19 +324,19 @@ fn write_manifest(
     Ok(path)
 }
 
-fn gen_manifest(
-    archive_paths: &[(PackType, path::PathBuf)],
-    compressed_archive_paths: &Option<Vec<(PackType, path::PathBuf)>>,
-) -> Result<PackManifest> {
+fn gen_manifest<'a>(
+    archive_paths: &'a [(&PackType, path::PathBuf)],
+    compressed_archive_paths: &'a Option<Vec<(&PackType, path::PathBuf)>>,
+) -> Result<PackManifest<'a>> {
     Ok(PackManifest {
         files: gen_manifest_files(archive_paths, compressed_archive_paths)?,
     })
 }
 
-fn gen_manifest_files(
-    archive_paths: &[(PackType, path::PathBuf)],
-    compressed_archive_paths: &Option<Vec<(PackType, path::PathBuf)>>,
-) -> Result<BTreeMap<PackType, PackFile>> {
+fn gen_manifest_files<'a>(
+    archive_paths: &'a [(&PackType, path::PathBuf)],
+    compressed_archive_paths: &'a Option<Vec<(&PackType, path::PathBuf)>>,
+) -> Result<BTreeMap<&'a PackType, PackFile>> {
     use std::iter;
     let pb = default_progress_bar((archive_paths.len() as u64 - 1) * 2);
     pb.set_prefix(format!(
@@ -349,7 +349,7 @@ fn gen_manifest_files(
     // of `None`. This allows us to zip it below and avoid having to rely on index
     // arithmetic. The `as _` is necessary to tell rustc to perform the casts from
     // something like a `std::iter::Map` to the `Iterator` trait.
-    let compressed_iter: Box<dyn Iterator<Item = Option<&(PackType, path::PathBuf)>>> =
+    let compressed_iter: Box<dyn Iterator<Item = Option<&(&PackType, path::PathBuf)>>> =
         compressed_archive_paths.as_ref().map_or_else(
             || Box::new(iter::repeat(None)) as _,
             |inner| Box::new(inner.iter().map(Some)) as _,
@@ -403,7 +403,7 @@ mod test {
     fn test_included_packlist_parses() {
         let res: PackList =
             serde_yaml::from_str(DEFAULT_PACKLIST).expect("Default packlist doesn't deserialize");
-        assert_eq!(res.0.len(), 4);
+        assert_eq!(res.0.len(), 5);
     }
 
     #[test]
@@ -414,7 +414,7 @@ mod test {
             .join("archive_a.tar");
         let tmp_dir = tempdir::TempDir::new("manifest_test")?;
 
-        let archive_paths = &[(PackType::Core, artifact_path)];
+        let archive_paths = &[(&PackType::new("core"), artifact_path)];
         let path = manifest(archive_paths, &None, tmp_dir.path())?;
 
         let manifest_content = std::fs::read_to_string(&path)?;

@@ -1,3 +1,9 @@
+# 0.156.0 (27/7/2022)
+
+ * [D37282740](https://github.com/facebook/flipper/search?q=D37282740&type=Commits) -  [Internal]
+ * [D37685390](https://github.com/facebook/flipper/search?q=D37685390&type=Commits) -  Introduced side by side view feature for `DataTable`. There is now a new boolean for `DataTable` props called `enableMultiPanels`. If this is passed in, then the table will have an option to open a different "side panel" using a completely different dataview which allows different filters, searches, etc.
+
+
 # 0.155.0 (19/7/2022)
 
  * [D37855742](https://github.com/facebook/flipper/search?q=D37855742&type=Commits)

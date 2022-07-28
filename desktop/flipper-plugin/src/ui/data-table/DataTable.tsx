@@ -46,7 +46,7 @@ import {TableSearch} from './TableSearch';
 import styled from '@emotion/styled';
 import {theme} from '../theme';
 import {tableContextMenuFactory} from './TableContextMenu';
-import {Menu, Switch, Typography} from 'antd';
+import {Menu, Switch, InputRef, Typography} from 'antd';
 import {CoffeeOutlined, SearchOutlined, PushpinFilled} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
 import {Formatter} from '../DataFormatter';
@@ -176,6 +176,7 @@ export function DataTable<T extends object>(
 
   const stateRef = useRef(tableState);
   stateRef.current = tableState;
+  const searchInputRef = useRef<InputRef>(null) as MutableRefObject<InputRef>;
   const lastOffset = useRef(0);
   const dragging = useRef(false);
 
@@ -300,6 +301,7 @@ export function DataTable<T extends object>(
       let handled = true;
       const shiftPressed = e.shiftKey;
       const outputSize = dataView.size;
+      const controlPressed = e.ctrlKey;
       const windowSize = props.scrollable
         ? virtualizerRef.current?.virtualItems.length ?? 0
         : dataView.size;
@@ -341,11 +343,20 @@ export function DataTable<T extends object>(
         case 'Escape':
           tableManager.clearSelection();
           break;
-        case 'Control':
-          tableManager.toggleSearchValue();
+        case 't':
+          if (controlPressed) {
+            tableManager.toggleSearchValue();
+          }
           break;
         case 'H':
           tableManager.toggleHighlightSearch();
+          break;
+        case 'f':
+          if (controlPressed && searchInputRef?.current) {
+            searchInputRef?.current.focus();
+            tableManager.showSearchDropdown(true);
+            tableManager.setShowNumberedHistory(true);
+          }
           break;
         default:
           handled = false;
@@ -580,10 +591,13 @@ export function DataTable<T extends object>(
           searchValue={searchValue}
           useRegex={tableState.useRegex}
           filterSearchHistory={tableState.filterSearchHistory}
+          showHistory={tableState.showSearchHistory}
+          showNumbered={tableState.showNumberedHistory}
           dispatch={dispatch as any}
           searchHistory={tableState.searchHistory}
           contextMenu={props.enableContextMenu ? contexMenu : undefined}
           extraActions={!props.viewId ? props.extraActions : undefined}
+          searchInputRef={searchInputRef}
         />
       )}
     </Layout.Container>
