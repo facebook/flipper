@@ -9,6 +9,9 @@ package com.facebook.flipper.core;
 
 public interface FlipperSocket {
 
+  /** The value used by Flipper to tag sockets, visible to {@link android.net.TrafficStats}. */
+  int SOCKET_TAG = 0x000090000;
+
   /** Connect to the endpoint. */
   void flipperConnect();
 
