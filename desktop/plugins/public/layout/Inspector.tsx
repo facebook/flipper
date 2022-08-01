@@ -414,6 +414,9 @@ export default class Inspector extends Component<Props, State> {
     if (!this.props.client.isConnected) {
       return;
     }
+    if (key === undefined || key == null) {
+      return;
+    }
     this.props.client
       .call(this.call().SET_HIGHLIGHTED, {
         id: key,
