@@ -20,7 +20,7 @@ sha2 = "0.10.2"
 data-encoding = "^2"
 serde_json = "^1"
 rayon = "^1.5"
-indicatif = "^0.16"
+indicatif = "^0.17"
 xz2 = "0.1.6"
 ignore = "0.4.18"
 
