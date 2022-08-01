@@ -32,7 +32,7 @@
   - [Android SDK + Sample app](#android-sdk--sample-app)
   - [React Native SDK + Sample app](#react-native-sdk--sample-app)
   - [JS SDK + Sample React app](#js-sdk--sample-react-app)
-      - [Troubleshooting](#troubleshooting)
+    - [Troubleshooting](#troubleshooting)
 - [Documentation](#documentation)
   - [Contributing](#contributing)
   - [License](#license)
@@ -78,9 +78,9 @@ This repository includes all parts of Flipper. This includes:
 # Getting started
 
 Please refer to our
-[Getting Started guide](https://fbflipper.com/docs/getting-started/index) to set
-up Flipper.
-Or, (still experimental) run `npx flipper-server` for a browser based version of Flipper. 
+[Getting Started guide](https://fbflipper.com/docs/getting-started) to set up
+Flipper. Or, (still experimental) run `npx flipper-server` for a browser based
+version of Flipper.
 
 ## Requirements
 
