@@ -200,12 +200,12 @@ export class Sidebar extends Component<SidebarProps, SidebarState> {
           {gutter ? (
             <GutterWrapper position={position}>
               {/* Stop propagating mousedown events to prevent SidebarInteractiveContainer from resizing whenever a user starts selecting text in a child */}
-              <Layout.Container onMouseDown={(e) => e.stopPropagation()}>
+              <Layout.Container grow onMouseDown={(e) => e.stopPropagation()}>
                 {children}
               </Layout.Container>
             </GutterWrapper>
           ) : (
-            <Layout.Container onMouseDown={(e) => e.stopPropagation()}>
+            <Layout.Container grow onMouseDown={(e) => e.stopPropagation()}>
               {children}
             </Layout.Container>
           )}

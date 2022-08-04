@@ -372,6 +372,10 @@ NSObject* flattenLayoutEditorMessage(NSObject* field) {
 
 - (void)onCallSetHighlighted:(NSString*)objectId
                withResponder:(id<FlipperResponder>)responder {
+  if (objectId == nil || [objectId isKindOfClass:[NSNull class]]) {
+    [responder error:@{@"error" : @"parameter ObjectID was null"}];
+    return;
+  }
   if (_lastHighlightedNode != nil) {
     id lastHighlightedObject =
         [_trackedObjects objectForKey:_lastHighlightedNode];
@@ -387,10 +391,6 @@ NSObject* flattenLayoutEditorMessage(NSObject* field) {
     _lastHighlightedNode = nil;
   }
 
-  if (objectId == nil || [objectId isKindOfClass:[NSNull class]]) {
-    return;
-  }
-
   id object = [_trackedObjects objectForKey:objectId];
   if (object == nil) {
     SKLog(@"tried to setHighlighted for untracked id, objectId: %@", objectId);
@@ -402,6 +402,8 @@ NSObject* flattenLayoutEditorMessage(NSObject* field) {
   [descriptor setHighlighted:YES forNode:object];
 
   _lastHighlightedNode = objectId;
+
+  [responder success:@{}];
 }
 
 - (void)onCallSetSearchActive:(BOOL)active
