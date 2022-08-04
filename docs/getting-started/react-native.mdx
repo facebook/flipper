@@ -37,6 +37,11 @@ Android:
 
 iOS:
 
+react-native version => 0.69.0
+1. Call `FlipperConfiguration.enabled` with a specific version in `ios/Podfile`, for example: `:flipper_configuration => FlipperConfiguration.enabled(["Debug"], { 'Flipper' => '0.157.0' }),`.
+2. Run `pod install --repo-update` in the `ios` directory.
+
+react-native version < 0.69.0
 1. Call `use_flipper` with a specific version in `ios/Podfile`, for example: `use_flipper!({ 'Flipper' => '0.157.0' })`.
 2. Run `pod install --repo-update` in the `ios` directory.
 
