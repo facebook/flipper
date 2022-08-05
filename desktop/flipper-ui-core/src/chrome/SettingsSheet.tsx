@@ -127,6 +127,7 @@ class SettingsSheet extends Component<Props, State> {
       reactNative,
       darkMode,
       suppressPluginErrors,
+      persistDeviceData,
       enablePluginMarketplace,
       enablePluginMarketplaceAutoUpdate,
       marketplaceURL,
@@ -266,6 +267,18 @@ class SettingsSheet extends Component<Props, State> {
               updatedSettings: {
                 ...prevState.updatedSettings,
                 suppressPluginErrors: enabled,
+              },
+            }));
+          }}
+        />
+        <ToggledSection
+          label="Persist data in plugins after device disconnects"
+          toggled={persistDeviceData}
+          onChange={(enabled) => {
+            this.setState((prevState) => ({
+              updatedSettings: {
+                ...prevState.updatedSettings,
+                persistDeviceData: enabled,
               },
             }));
           }}

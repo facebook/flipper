@@ -27,7 +27,6 @@ class TutorialApplication : Application() {
 
     // Normally, you would want to make these dependent on BuildConfig.DEBUG.
     ComponentsConfiguration.isDebugModeEnabled = true
-    ComponentsConfiguration.enableRenderInfoDebugging = true
 
     val flipperClient = AndroidFlipperClient.getInstance(this)
     val descriptorMapping = DescriptorMapping.withDefaults()

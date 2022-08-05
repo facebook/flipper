@@ -420,6 +420,8 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           }
           mHighlightedId = nodeId;
           mHighlightedAlignmentMode = isAlignmentMode;
+
+          responder.success();
         }
       };
 
