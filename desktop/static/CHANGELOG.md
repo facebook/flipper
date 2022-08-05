@@ -1,3 +1,9 @@
+# 0.157.0 (3/8/2022)
+
+ * [D38207087](https://github.com/facebook/flipper/search?q=D38207087&type=Commits) -  Added icon for showing search result context(only triggered by keyboard shortcut before). Added tool tips to search bar icons.
+ * [D38076567](https://github.com/facebook/flipper/search?q=D38076567&type=Commits) -  Added option in Flipper settings to persist device data upon reconnection instead of wiping everything.
+
+
 # 0.156.0 (27/7/2022)
 
  * [D37282740](https://github.com/facebook/flipper/search?q=D37282740&type=Commits) -  [Internal]

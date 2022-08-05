@@ -151,6 +151,7 @@ function createStubRenderHost(): RenderHost {
       },
       showWelcomeAtStartup: false,
       suppressPluginErrors: false,
+      persistDeviceData: false,
       enablePluginMarketplace: false,
       marketplaceURL: '',
       enablePluginMarketplaceAutoUpdate: true,

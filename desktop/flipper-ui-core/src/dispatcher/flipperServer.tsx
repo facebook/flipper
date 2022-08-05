@@ -72,12 +72,9 @@ export function connectFlipperServerToStore(
     handleDeviceConnected(server, store, logger, deviceInfo);
   });
 
-  server.on('device-disconnected', (device) => {
-    logger.track('usage', 'unregister-device', {
-      os: device.os,
-      serial: device.serial,
-    });
+  server.on('device-disconnected', (deviceInfo) => {
     // N.B.: note that we don't remove the device, we keep it in offline
+    handleDeviceDisconnected(store, logger, deviceInfo);
   });
 
   server.on('client-setup', (client) => {
@@ -202,7 +199,7 @@ function handleServerStateChange({
   }
 }
 
-function handleDeviceConnected(
+export function handleDeviceConnected(
   server: FlipperServer,
   store: Store,
   logger: Logger,
@@ -224,6 +221,15 @@ function handleDeviceConnected(
         `Tried to replace still connected device '${existing.serial}' with a new instance.`,
       );
     }
+    if (store.getState().settingsState.persistDeviceData) {
+      //Recycle device
+      existing?.connected.set(true);
+      store.dispatch({
+        type: 'SELECT_DEVICE',
+        payload: existing,
+      });
+      return;
+    }
     existing.destroy();
   }
 
@@ -232,11 +238,25 @@ function handleDeviceConnected(
     store.getState().plugins.devicePlugins,
     store.getState().connections.enabledDevicePlugins,
   );
-
   store.dispatch({
     type: 'REGISTER_DEVICE',
     payload: device,
   });
+}
+
+export function handleDeviceDisconnected(
+  store: Store,
+  logger: Logger,
+  deviceInfo: DeviceDescription,
+) {
+  logger.track('usage', 'unregister-device', {
+    os: deviceInfo.os,
+    serial: deviceInfo.serial,
+  });
+  const existing = store
+    .getState()
+    .connections.devices.find((device) => device.serial === deviceInfo.serial);
+  existing?.connected.set(false);
 }
 
 export async function handleClientConnected(
@@ -247,7 +267,6 @@ export async function handleClientConnected(
 ) {
   const {connections} = store.getState();
   const existingClient = connections.clients.get(id);
-
   if (existingClient) {
     existingClient.destroy();
     store.dispatch({
