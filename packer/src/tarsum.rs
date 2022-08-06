@@ -7,10 +7,12 @@
 
 //! Intrinsic hash for a tarball.
 
-use crate::types;
-use anyhow::Result;
 use std::collections;
 use std::io;
+
+use anyhow::Result;
+
+use crate::types;
 
 /// Computes the intrinsic SHA256 checksum of a tar archive.
 pub fn tarsum<R: io::Read>(reader: R) -> Result<types::HashSum> {
@@ -46,9 +48,10 @@ fn digest_file<R: io::Read>(reader: &mut R) -> io::Result<types::HashSum> {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use std::fs;
     use std::path;
+
+    use super::*;
 
     #[test]
     fn test_nested_archive_tarsum() {
