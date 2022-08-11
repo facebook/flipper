@@ -18,5 +18,9 @@ export function loadProcessConfig(env: NodeJS.ProcessEnv): ProcessConfig {
     screenCapturePath: json.screenCapturePath,
     launcherEnabled:
       typeof json.launcherEnabled === 'boolean' ? json.launcherEnabled : true,
+    notifyAvailableUpdate:
+      typeof json.notifyAvailableUpdate === 'boolean'
+        ? json.notifyAvailableUpdate
+        : true,
   };
 }
