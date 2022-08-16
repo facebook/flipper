@@ -575,10 +575,11 @@ To optimise for this situation, there is a dedicated `createDataSource` abstract
 `DataSource` is a data collection that is heavily optimized for `append` and `update`,
 which stores items based on insertion order, but also allows for efficient by-id lookups.
 
-Each `DataSource` exposes a `view` property, which contains a `DataSourceView`.
+Each `DataSource` exposes a default `view` property, which contains a `DataSourceView`.
 A `DataSourceView` is a materialized view that can be sorted, filtered and windowed, and is kept incrementally up to date with the underlying `DataSource`.
 
 When using the `DataTable` component, this `view` will be managed by the table automatically, giving plugin users the capability to freely sort, filter, search and tail your datasource.
+Alternatively, you could also pass in a different view(like from additionalViews) to the `DataTable` component which allows for different filters, searches, etc. than the default `view`.
 
 Valid `options` are:
 
@@ -617,7 +618,11 @@ The maximum number of records that can be stored in this DataSource to constrain
 
 ##### view
 
-Returns the currently active view on the data source. Note that be default it is windowed on the impractical `[0, 0)` range. For more details, see [DataSourceView](#datasourceview).
+Returns the currently active default view on the data source. Note that be default it is windowed on the impractical `[0, 0)` range. For more details, see [DataSourceView](#datasourceview).
+
+##### additionalViews
+
+Holds additional `DataSourceView` on this `DataSource`. It contains key of `viewId: string` and value of `DataSourceView<T, KeyType>`. The default view in `DataSource` has `DEFAULT_VIEW_ID = '0'`, so all additionalViews cannot use this as the `viewId`. This is a `readonly` array and additional views are appended to the array by calling `getAdditionalView(viewId: string)` with a new `viewId`
 
 ##### size
 
@@ -675,9 +680,9 @@ Usage: `shift(amount: number)`. Removes the first `amount` records from the data
 
 Usage: `clear()`. Removes all records from this data source.
 
-##### fork
+##### getAdditionalView
 
-Usage: `fork(): DataSourceView`. Creates an additional materialized view on this data source with its own sort / filter settings. This feature is not implemented yet so contact Flipper oncall if needed.
+Usage: `getAdditionalView(viewId: string)`. Gets an additional `DataSourceView` of the `DataSource` by passing in an identifier `viewId`. If there already exists a `DataSourceView` with the `viewId`, we simply return that view instead.
 
 #### DataSourceView
 
