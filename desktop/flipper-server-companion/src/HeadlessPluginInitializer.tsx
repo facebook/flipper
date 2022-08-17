@@ -49,4 +49,15 @@ export class HeadlessPluginInitializer extends AbstractPluginInitializer {
       .filter(isSandyPlugin)
       .filter((plugin) => plugin.headless);
   }
+
+  async installPlugin(
+    plugin: InstalledPluginDetails,
+  ): Promise<_SandyPluginDefinition | undefined> {
+    const loaded = await this.loadPlugins([plugin]);
+    this._initialPlugins.push(...loaded);
+
+    if (loaded.length > 0) {
+      return loaded.at(0);
+    }
+  }
 }

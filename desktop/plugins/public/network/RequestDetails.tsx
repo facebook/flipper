@@ -470,7 +470,11 @@ class XMLTextFormatter {
   }
 
   format(body: string, contentType: string) {
-    if (contentType.startsWith('text/html')) {
+    if (
+      contentType.startsWith('text/html') ||
+      contentType.startsWith('text/xml') ||
+      contentType.startsWith('application/xml')
+    ) {
       return <XMLText body={body} />;
     }
   }

@@ -16,7 +16,7 @@ import {
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
 const CONNECTION_TIMEOUT = 30 * 1000;
-const EXEC_TIMOUT = 30 * 1000;
+const EXEC_TIMEOUT = 45 * 1000;
 
 export enum FlipperServerState {
   CONNECTING,
@@ -27,6 +27,14 @@ export enum FlipperServerState {
 export function createFlipperServer(
   host: string,
   port: number,
+  onStateChange: (state: FlipperServerState) => void,
+): Promise<FlipperServer> {
+  const socket = new ReconnectingWebSocket(`ws://${host}:${port}`);
+  return createFlipperServerWithSocket(socket, onStateChange);
+}
+
+export function createFlipperServerWithSocket(
+  socket: ReconnectingWebSocket,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
   onStateChange(FlipperServerState.CONNECTING);
@@ -40,7 +48,6 @@ export function createFlipperServer(
 
     const eventEmitter = new EventEmitter();
 
-    const socket = new ReconnectingWebSocket(`ws://${host}:${port}`);
     const pendingRequests: Map<
       number,
       {
@@ -137,7 +144,7 @@ export function createFlipperServer(
                 reject(
                   new Error(`flipper-server: timeout for command '${command}'`),
                 );
-              }, EXEC_TIMOUT),
+              }, EXEC_TIMEOUT),
             });
 
             const execMessage = {

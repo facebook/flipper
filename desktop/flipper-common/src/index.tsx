@@ -64,3 +64,4 @@ export * from './PluginDetails';
 export * from './doctor';
 export * from './ServerAddOn';
 export * from './transport';
+export * from './User';

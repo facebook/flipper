@@ -17,6 +17,10 @@ namespace facebook {
 namespace flipper {
 
 struct FollyScopedThreadScheduler : public Scheduler {
+  FollyScopedThreadScheduler() : FollyScopedThreadScheduler("") {}
+  FollyScopedThreadScheduler(folly::StringPiece name)
+      : thread_(nullptr, name) {}
+
   virtual void schedule(Func&& t) override {
     thread_.getEventBase()->add(t);
   }

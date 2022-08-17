@@ -2,6 +2,7 @@ lib/
 dist/
 node_modules/
 *.tsbuildinfo
+/static/idb-applications
 /static/themes/
 /static/defaultPlugins/
 /app/src/defaultPlugins/index.tsx
@@ -12,3 +13,5 @@ node_modules/
 .env
 tsc-error.log
 /flipper-server/static/
+/static/flipper-server-log*
+/static/.audit.json

@@ -126,6 +126,7 @@ export default abstract class AbstractClient extends EventEmitter {
       'Fetch plugin timeout for ' + this.id,
     );
     this.plugins = new Set(plugins);
+    console.info('AbstractClient.loadPlugins', this.query, plugins);
     return plugins;
   }
 
@@ -378,9 +379,6 @@ export default abstract class AbstractClient extends EventEmitter {
             });
           }
         } catch (error) {
-          // This is only called if the connection is dead. Not in expected
-          // and recoverable cases like a missing receiver/method.
-          this.disconnect();
           reject(new Error('Unable to send, connection error: ' + error));
         }
       } else {

@@ -66,9 +66,13 @@ function getDefaultSettings(): Settings {
     darkMode: 'light',
     showWelcomeAtStartup: true,
     suppressPluginErrors: false,
+    persistDeviceData: false,
     enablePluginMarketplace: false,
     marketplaceURL: '',
     enablePluginMarketplaceAutoUpdate: true,
+    server: {
+      enabled: false,
+    },
   };
 }
 

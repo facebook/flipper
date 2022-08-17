@@ -30,7 +30,16 @@ export function Tabs({
       return;
     }
     const tabKey =
-      (typeof child.props.tab === 'string' && child.props.tab) || `tab_${idx}`;
+      (child.props.hasOwnProperty('tabKey') &&
+        typeof child.props.tabKey === 'string' &&
+        child.props.tabKey) ||
+      (child.props.hasOwnProperty('tab') &&
+        typeof child.props.tab === 'string' &&
+        child.props.tab) ||
+      (child.props.hasOwnProperty('key') &&
+        typeof child.props.key === 'string' &&
+        child.props.key) ||
+      `tab_${idx}`;
     keys.push(tabKey);
     return {
       ...child,

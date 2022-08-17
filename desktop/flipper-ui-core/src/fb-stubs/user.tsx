@@ -7,9 +7,8 @@
  * @format
  */
 
-import {GraphFileUpload} from 'flipper-common';
+import {GraphFileUpload, User} from 'flipper-common';
 import {Atom, createState} from 'flipper-plugin';
-import {User} from '../reducers/user';
 
 export async function getUser(): Promise<User | null> {
   throw new Error('Feature not implemented');

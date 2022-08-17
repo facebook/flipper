@@ -603,7 +603,11 @@ export function sleep(ms: number) {
 
 let proc: child.ChildProcess | undefined;
 
-export async function launchServer(startBundler: boolean, open: boolean) {
+export async function launchServer(
+  startBundler: boolean,
+  open: boolean,
+  tcp: boolean,
+) {
   if (proc) {
     console.log('⚙️  Killing old flipper-server...');
     proc.kill(9);
@@ -617,6 +621,7 @@ export async function launchServer(startBundler: boolean, open: boolean) {
       `../flipper-server/server.js`,
       startBundler ? `--bundler` : `--no-bundler`,
       open ? `--open` : `--no-open`,
+      tcp ? `--tcp` : `--no-tcp`,
     ],
     {
       cwd: serverDir,

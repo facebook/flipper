@@ -104,7 +104,8 @@ export function MasterDetail<T extends object>({
 
   // if a tableManagerRef is provided, we piggy back on that same ref
   // eslint-disable-next-line
-  const tableManagerRef = tableProps.tableManagerRef ?? createRef<undefined | DataTableManager<T>>();
+  const tableManagerRef =
+    tableProps.tableManagerRef ?? createRef<undefined | DataTableManager<T>>();
 
   const pausedState = useValue(isPaused, false);
 

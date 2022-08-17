@@ -115,9 +115,7 @@ test.local('can filter for data', async () => {
   expect(element.parentElement).toMatchInlineSnapshot(`
     <span>
       "j
-      <span
-        class="css-1cfwmd7-Highlighted eiud9hg0"
-      >
+      <span>
         son
       </span>
       "

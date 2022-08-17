@@ -1,3 +1,41 @@
+# 0.157.0 (3/8/2022)
+
+ * [D38207087](https://github.com/facebook/flipper/search?q=D38207087&type=Commits) -  Added icon for showing search result context(only triggered by keyboard shortcut before). Added tool tips to search bar icons.
+ * [D38076567](https://github.com/facebook/flipper/search?q=D38076567&type=Commits) -  Added option in Flipper settings to persist device data upon reconnection instead of wiping everything.
+
+
+# 0.156.0 (27/7/2022)
+
+ * [D37282740](https://github.com/facebook/flipper/search?q=D37282740&type=Commits) -  [Internal]
+ * [D37685390](https://github.com/facebook/flipper/search?q=D37685390&type=Commits) -  Introduced side by side view feature for `DataTable`. There is now a new boolean for `DataTable` props called `enableMultiPanels`. If this is passed in, then the table will have an option to open a different "side panel" using a completely different dataview which allows different filters, searches, etc.
+
+
+# 0.155.0 (19/7/2022)
+
+ * [D37855742](https://github.com/facebook/flipper/search?q=D37855742&type=Commits)
+
+
+# 0.154.0 (13/7/2022)
+
+
+
+# 0.153.0 (6/7/2022)
+
+ * [D37383163](https://github.com/facebook/flipper/search?q=D37383163&type=Commits) -  DataTable will now have option to have its search terms highlighted in the search results by toggling and customizing the highlight colors in the menu bar
+ * [D37516868](https://github.com/facebook/flipper/search?q=D37516868&type=Commits) -  Rotate flipper-server logs
+ * [D37552492](https://github.com/facebook/flipper/search?q=D37552492&type=Commits) -  Fixed 'free text search' for data table. E.g network plugin
+
+
+# 0.152.0 (29/6/2022)
+
+ * [D37485571](https://github.com/facebook/flipper/search?q=D37485571&type=Commits) -  Add Flipper logs export to file
+
+
+# 0.151.1 (27/6/2022)
+
+ * [D37417459](https://github.com/facebook/flipper/search?q=D37417459&type=Commits) -  Flipper Server Mac App no longer bounces in Dock
+
+
 # 0.149.0 (8/6/2022)
 
  * [D36736495](https://github.com/facebook/flipper/search?q=D36736495&type=Commits) -  DataTable: more pronounced background color for selections

@@ -101,23 +101,29 @@ export async function queryTargetsWithoutXcodeDependency(
   }
 }
 
+function parseIdbTarget(line: string): DeviceTarget | undefined {
+  const parsed: IdbTarget = JSON.parse(line);
+  if (parsed.state.toLocaleLowerCase() !== 'booted') {
+    return;
+  }
+  return {
+    udid: parsed.udid,
+    type:
+      (parsed.type || parsed.target_type) === 'simulator'
+        ? 'emulator'
+        : ('physical' as DeviceType),
+    name: parsed.name,
+  };
+}
+
 function parseIdbTargets(lines: string): Array<DeviceTarget> {
   const parsedIdbTargets = lines
     .trim()
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
-    .map((line) => JSON.parse(line))
-    .filter(({state}: IdbTarget) => state.toLocaleLowerCase() === 'booted')
-    .map<IdbTarget>(({type, target_type, ...rest}: IdbTarget) => ({
-      type: (type || target_type) === 'simulator' ? 'emulator' : 'physical',
-      ...rest,
-    }))
-    .map<DeviceTarget>((target: IdbTarget) => ({
-      udid: target.udid,
-      type: target.type as DeviceType,
-      name: target.name,
-    }));
+    .map((line) => parseIdbTarget(line))
+    .filter((target): target is DeviceTarget => !!target);
 
   // For some reason, idb can return duplicates
   // TODO: Raise the issue with idb
@@ -146,12 +152,37 @@ export async function idbListTargets(
     });
 }
 
+export async function idbDescribeTarget(
+  idbPath: string,
+  safeExecFunc: (
+    command: string,
+  ) => Promise<{stdout: string; stderr: string} | Output> = safeExec,
+): Promise<DeviceTarget | undefined> {
+  return safeExecFunc(`${idbPath} describe --json`)
+    .then(({stdout}) =>
+      // See above.
+      parseIdbTarget(stdout!.toString()),
+    )
+    .catch((e: Error) => {
+      console.warn('Failed to query idb to describe a target:', e);
+      return undefined;
+    });
+}
+
 async function targets(
   idbPath: string,
   isPhysicalDeviceEnabled: boolean,
 ): Promise<Array<DeviceTarget>> {
   if (process.platform !== 'darwin') {
     return [];
+  }
+
+  // If companion is started by some external process and its address provided to Flipper via IDB_COMPANION environment variable,
+  // use that companion and do not query other devices
+  // See stack of D36315576 for details
+  if (process.env.IDB_COMPANION) {
+    const target = await idbDescribeTarget(idbPath);
+    return target ? [target] : [];
   }
 
   const isXcodeInstalled = await isXcodeDetected();

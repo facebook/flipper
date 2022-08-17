@@ -14,9 +14,11 @@ import {
   _setGlobalInteractionReporter,
   _LoggerContext,
 } from 'flipper-plugin';
-import {createFlipperServer, FlipperServerState} from 'flipper-frontend-core';
 import {
-  attachSocketServer,
+  createFlipperServerWithSocket,
+  FlipperServerState,
+} from 'flipper-frontend-core';
+import {
   FlipperServerImpl,
   getEnvironmentInfo,
   getGatekeepers,
@@ -26,12 +28,10 @@ import {
   setupPrefetcher,
   startFlipperServer,
   startServer,
-  Tail,
 } from 'flipper-server-core';
 import {
   FlipperServer,
   getLogger,
-  LoggerInfo,
   isTest,
   Logger,
   parseEnvironmentVariables,
@@ -46,6 +46,8 @@ import {ElectronIpcClientRenderer} from './electronIpc';
 import {checkSocketInUse, makeSocketPath} from 'flipper-server-core';
 import {KeytarModule} from 'flipper-server-core/src/utils/keytar';
 import {initCompanionEnv} from 'flipper-server-companion';
+import ReconnectingWebSocket from 'reconnecting-websocket';
+import WS from 'ws';
 
 enableMapSet();
 
@@ -71,6 +73,18 @@ async function getKeytarModule(staticPath: string): Promise<KeytarModule> {
   return keytar;
 }
 
+async function getExternalServer(path: string) {
+  const options = {
+    WebSocket: WS,
+  };
+  const socket = new ReconnectingWebSocket(`ws+unix://${path}`, [], options);
+  const server = await createFlipperServerWithSocket(
+    socket,
+    (_state: FlipperServerState) => {},
+  );
+  return server;
+}
+
 async function getFlipperServer(
   logger: Logger,
   electronIpcClient: ElectronIpcClientRenderer,
@@ -88,47 +102,24 @@ async function getFlipperServer(
   );
   const keytar: KeytarModule = await getKeytarModule(staticPath);
   const gatekeepers = getGatekeepers(environmentInfo.os.unixname);
-  if (gatekeepers['flipper_desktop_use_server']) {
-    const socketPath = await makeSocketPath();
-    if (!(await checkSocketInUse(socketPath))) {
-      console.info('flipper-server: not running/listening, start');
 
-      const {socket} = await startServer({
-        port: 52342,
-        staticDir: staticPath,
-        entry: 'index.web.dev.html',
+  const serverUsageEnabled = gatekeepers['flipper_desktop_use_server'];
+  const settings = await loadSettings();
+
+  const socketPath = await makeSocketPath();
+  const serverRunning = await checkSocketInUse(socketPath);
+
+  const getEmbeddedServer = async () => {
+    if (serverRunning) {
+      const server = await getExternalServer(socketPath);
+      await server.exec('shutdown').catch(() => {
+        /** shutdown will ultimately make this request fail, ignore error. */
       });
-
-      const flipperServer = await startFlipperServer(
-        appPath,
-        staticPath,
-        '',
-        false,
-        keytar,
-      );
-
-      const companionEnv = await initCompanionEnv(flipperServer);
-      await flipperServer.connect();
-
-      attachSocketServer(flipperServer, socket, companionEnv);
-    } else {
-      console.info('flipper-server: already running');
-      const loggerOutputFile = 'flipper-server-log.out';
-      tailServerLogs(path.join(staticPath, loggerOutputFile));
     }
-
-    const flipperServer = await createFlipperServer(
-      'localhost',
-      52342,
-      (_state: FlipperServerState) => {},
-    );
-    return flipperServer;
-  } else {
-    const flipperServer = new FlipperServerImpl(
+    const server = new FlipperServerImpl(
       {
         environmentInfo,
         env: parseEnvironmentVariables(env),
-        // TODO: make username parameterizable
         gatekeepers: gatekeepers,
         paths: {
           appPath,
@@ -140,7 +131,7 @@ async function getFlipperServer(
         },
         launcherSettings: await loadLauncherSettings(),
         processConfig: loadProcessConfig(env),
-        settings: await loadSettings(),
+        settings,
         validWebSocketOrigins:
           constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
       },
@@ -148,8 +139,38 @@ async function getFlipperServer(
       keytar,
     );
 
-    return flipperServer;
+    return server;
+  };
+  // Failed to start Flipper desktop: Error: flipper-server disconnected
+  if (serverUsageEnabled && (!settings.server || settings.server.enabled)) {
+    if (!serverRunning) {
+      console.info('flipper-server: not running/listening, start');
+
+      const {readyForIncomingConnections} = await startServer({
+        staticDir: staticPath,
+        entry: 'index.web.dev.html',
+        tcp: false,
+        port: 52342,
+      });
+
+      const server = await startFlipperServer(
+        appPath,
+        staticPath,
+        '',
+        false,
+        keytar,
+        'embedded',
+      );
+
+      const companionEnv = await initCompanionEnv(server);
+      await server.connect();
+
+      await readyForIncomingConnections(server, companionEnv);
+    }
+
+    return getExternalServer(socketPath);
   }
+  return getEmbeddedServer();
 }
 
 async function start() {
@@ -207,18 +228,6 @@ function getStaticDir(appPath: string) {
   }
   /* eslint-enable node/no-sync*/
   return _staticPath;
-}
-
-function tailServerLogs(logsPath: string) {
-  console.info('flipper-server logs located at: ', logsPath);
-  const tail = new Tail(logsPath);
-  tail.on('line', (line: any) => {
-    try {
-      const loggerInfo: LoggerInfo = JSON.parse(line);
-      console[loggerInfo.type](loggerInfo.msg);
-    } catch (_) {}
-  });
-  tail.watch();
 }
 
 // getLogger() is not  yet created when the electron app starts.

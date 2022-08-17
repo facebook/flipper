@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-use std::fmt::{self, Display};
+use std::fmt;
+use std::fmt::Display;
 use std::str;
 
 #[derive(Eq, PartialEq, Debug, PartialOrd, Ord, Clone, serde::Deserialize)]
@@ -28,7 +29,6 @@ impl Display for Platform {
 #[derive(
     Debug,
     Clone,
-    Copy,
     PartialEq,
     Eq,
     PartialOrd,
@@ -37,9 +37,13 @@ impl Display for Platform {
     serde::Serialize
 )]
 #[serde(rename_all = "lowercase")]
-pub enum PackType {
-    Frameworks,
-    Core,
+pub struct PackType(String);
+
+#[cfg(test)]
+impl PackType {
+    pub fn new(s: &str) -> Self {
+        Self(s.to_string())
+    }
 }
 
 #[derive(
@@ -64,10 +68,7 @@ pub enum PackMode {
 
 impl Display for PackType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match *self {
-            Self::Frameworks => write!(f, "frameworks"),
-            Self::Core => write!(f, "core"),
-        }
+        write!(f, "{}", self.0)
     }
 }
 

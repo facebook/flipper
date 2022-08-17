@@ -14,13 +14,6 @@
 namespace facebook {
 namespace flipper {
 
-/* Responder for responding to legacy flipper applications.
-   Originally, flipper desktop used fireAndForget for all messages, so calling
-   the SDK would send a fire and forget message, to which the SDK would respond
-   with another one, with an id field that flipper uses to map it to the
-   original request. This Responder should be used when such requests are
-   received.
- */
 class FireAndForgetBasedFlipperResponder : public FlipperResponder {
  public:
   FireAndForgetBasedFlipperResponder(

@@ -40,3 +40,17 @@ server-mac-x64:
     core:
       - Flipper.app/Contents/Resources
       - Flipper.app/Contents/Info.plist
+
+server-linux:
+  mode: glob
+  basedir: flipper-server-linux
+  files:
+    frameworks:
+      - '!*'
+      - node
+    core:
+      - '!node'
+      - '!static'
+    static:
+      - '!*'
+      - static

@@ -62,6 +62,7 @@ interface StartPluginOptions {
    * Provide a set of GKs that are enabled in this test.
    */
   GKs?: string[];
+  testDevice?: Device;
 }
 
 type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
@@ -575,8 +576,19 @@ function createMockDevice(options?: StartPluginOptions): Device & {
   const crashListeners: (undefined | CrashLogListener)[] = [];
   return {
     os: 'Android',
+    description: {
+      os: 'Android',
+      deviceType: 'emulator',
+      features: {
+        screenCaptureAvailable: false,
+        screenshotAvailable: false,
+      },
+      serial: '123',
+      title: 'Test device',
+    },
     deviceType: 'emulator',
     serial: 'serial-000',
+    ...options?.testDevice,
     isArchived: !!options?.isArchived,
     connected: createState(true),
     addLogListener(cb) {
@@ -601,6 +613,9 @@ function createMockDevice(options?: StartPluginOptions): Device & {
     forwardPort: createStubFunction(),
     get isConnected() {
       return this.connected.get();
+    },
+    installApp(_: string) {
+      return Promise.resolve();
     },
     navigateToLocation: createStubFunction(),
     screenshot: createStubFunction(),

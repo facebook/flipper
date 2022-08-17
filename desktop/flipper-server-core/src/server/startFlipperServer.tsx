@@ -8,7 +8,11 @@
  */
 
 import os from 'os';
-import {parseEnvironmentVariables, getLogger} from 'flipper-common';
+import {
+  parseEnvironmentVariables,
+  getLogger,
+  FlipperServerType,
+} from 'flipper-common';
 import path from 'path';
 import fs from 'fs-extra';
 import {KeytarModule} from '../utils/keytar';
@@ -34,6 +38,7 @@ export async function startFlipperServer(
   settingsString: string,
   enableLauncherSettings: boolean,
   keytarModule: KeytarModule,
+  type: FlipperServerType,
 ): Promise<FlipperServerImpl> {
   const execPath = process.execPath;
   const appPath = rootDir;
@@ -68,6 +73,7 @@ export async function startFlipperServer(
       processConfig: loadProcessConfig(env),
       settings: await loadSettings(settingsString),
       validWebSocketOrigins: ['localhost:', 'http://localhost:'],
+      type,
     },
     getLogger(),
     keytarModule,

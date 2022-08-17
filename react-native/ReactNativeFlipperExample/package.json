@@ -12,14 +12,14 @@
   "dependencies": {
     "react": "^17.0.2",
     "react-native": "^0.67.4",
-    "react-native-flipper": "^0.146.1"
+    "react-native-flipper": "^0.156.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.2",
+    "@babel/core": "^7.18.10",
     "@babel/runtime": "^7.18.3",
     "babel-jest": "^28.1.1",
     "jest": "^28.1.1",
-    "metro-react-native-babel-preset": "^0.71.0",
+    "metro-react-native-babel-preset": "^0.72.0",
     "react-test-renderer": "18.1.0",
     "relative-deps": "^1.0.7"
   },

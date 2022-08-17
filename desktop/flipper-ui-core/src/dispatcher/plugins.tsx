@@ -8,7 +8,7 @@
  */
 
 import type {Store} from '../reducers/index';
-import {Logger} from 'flipper-common';
+import {Logger, MarketplacePluginDetails} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -22,7 +22,6 @@ import {
   registerLoadedPlugins,
   registerBundledPlugins,
   registerMarketplacePlugins,
-  MarketplacePluginDetails,
   pluginsInitialized,
 } from '../reducers/plugins';
 import {FlipperBasePlugin} from '../plugin';
@@ -119,7 +118,9 @@ export default async (store: Store, _logger: Logger) => {
 };
 
 export const requirePlugin = (pluginDetails: ActivatablePluginDetails) =>
-  wrapRequirePlugin(uiPluginInitializer!.requirePluginImpl)(pluginDetails);
+  wrapRequirePlugin(
+    uiPluginInitializer!.requirePluginImpl.bind(uiPluginInitializer),
+  )(pluginDetails);
 
 export const requirePluginInternal = async (
   defaultPluginsIndex: any,

@@ -49,24 +49,34 @@ test('update and append', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement).toMatchInlineSnapshot(`
-       <div
-         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-       >
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           test DataTable
-         </div>
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           true
-         </div>
-       </div>
-     `);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            test DataTable
+          </span>
+        </div>
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            true
+          </span>
+        </div>
+      </div>
+    `);
   }
 
   act(() => {
@@ -103,24 +113,34 @@ test('column visibility', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement).toMatchInlineSnapshot(`
-       <div
-         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-       >
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           test DataTable
-         </div>
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           true
-         </div>
-       </div>
-     `);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            test DataTable
+          </span>
+        </div>
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            true
+          </span>
+        </div>
+      </div>
+    `);
   }
 
   // hide done
@@ -130,18 +150,23 @@ test('column visibility', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement).toMatchInlineSnapshot(`
-       <div
-         class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
-       >
-         <div
-           class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
-           width="50%"
-         >
-           test DataTable
-         </div>
-       </div>
-     `);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            test DataTable
+          </span>
+        </div>
+      </div>
+    `);
   }
 
   // reset
@@ -151,7 +176,7 @@ test('column visibility', async () => {
   {
     const elem = await rendering.findAllByText('test DataTable');
     expect(elem.length).toBe(1);
-    expect(elem[0].parentElement?.children.length).toBe(2);
+    expect(elem[0].parentElement?.parentElement?.children.length).toBe(2);
   }
 });
 
@@ -334,7 +359,11 @@ test('compute filters', () => {
     const filter = computeDataTableFilter('tEsT', false, baseColumns)!;
     expect(data.filter(filter)).toEqual([]);
   }
-
+  {
+    //no columns but should still find rows
+    const filter = computeDataTableFilter('EE', false, [])!;
+    expect(data.filter(filter)).toEqual([coffee, meet]);
+  }
   {
     const filter = computeDataTableFilter('EE', false, baseColumns)!;
     expect(data.filter(filter)).toEqual([coffee, meet]);
@@ -712,6 +741,8 @@ test('selection always has the latest state', () => {
   act(() => {
     ds.update(2, item3updated);
   });
+  expect(events.splice(0)).toEqual([[item3updated, [item3updated]]]);
+
   act(() => {
     ref.current!.addRangeToSelection(0, 0);
   });
@@ -720,5 +751,286 @@ test('selection always has the latest state', () => {
     [item1, [item1, item3updated]], // update reflected in callback!
   ]);
 
+  const item1updated = {
+    title: 'item 1 updated',
+    done: false,
+  };
+  act(() => {
+    ds.update(0, item1updated);
+  });
+  expect(events.splice(0)).toEqual([
+    [item1updated, [item1updated, item3updated]], // update reflected in callback!
+  ]);
+
   rendering.unmount();
+});
+
+test('open second panel and append', async () => {
+  const ds = createTestDataSource();
+  const ref = createRef<DataTableManager<Todo>>();
+  const rendering = render(
+    <DataTable
+      enableMultiPanels
+      dataSource={ds}
+      columns={columns}
+      tableManagerRef={ref}
+    />,
+  );
+  {
+    const elem = await rendering.findAllByText('test DataTable');
+    expect(elem.length).toBe(1);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            test DataTable
+          </span>
+        </div>
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            true
+          </span>
+        </div>
+      </div>
+    `);
+  }
+  // hide done
+  act(() => {
+    ref.current?.toggleSideBySide();
+  });
+  expect(Object.keys(ds.additionalViews).length).toBeGreaterThan(0);
+  act(() => {
+    ds.append({
+      title: 'Drink coffee',
+      done: false,
+    });
+  });
+  {
+    const elem = await rendering.findAllByText('Drink coffee');
+    expect(elem.length).toBe(2);
+  }
+  act(() => {
+    ds.append({
+      title: 'Drink tea',
+      done: false,
+    });
+  });
+  {
+    const elem = await rendering.findAllByText('Drink tea');
+    expect(elem.length).toBe(2);
+  }
+});
+
+test('open second panel and update', async () => {
+  const ds = createTestDataSource();
+  const ref = createRef<DataTableManager<Todo>>();
+  const rendering = render(
+    <DataTable
+      enableMultiPanels
+      dataSource={ds}
+      columns={columns}
+      tableManagerRef={ref}
+    />,
+  );
+  {
+    const elem = await rendering.findAllByText('test DataTable');
+    expect(elem.length).toBe(1);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            test DataTable
+          </span>
+        </div>
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            true
+          </span>
+        </div>
+      </div>
+    `);
+  }
+  // hide done
+  act(() => {
+    ds.append({
+      title: 'Drink coffee',
+      done: false,
+    });
+  });
+  {
+    const elems = await rendering.findAllByText('Drink coffee');
+    expect(elems.length).toBe(1);
+  }
+  act(() => {
+    ref.current?.toggleSideBySide();
+  });
+  expect(Object.keys(ds.additionalViews).length).toBeGreaterThan(0);
+  {
+    const elems = await rendering.findAllByText('Drink coffee');
+    expect(elems.length).toBe(2);
+  }
+  act(() => {
+    ds.update(0, {
+      title: 'DataTable tested',
+      done: false,
+    });
+  });
+  {
+    const elems = await rendering.findAllByText('Drink coffee');
+    expect(elems.length).toBe(2);
+    expect(rendering.queryByText('test DataTable')).toBeNull();
+    const newElems = await rendering.findAllByText('DataTable tested');
+    expect(newElems.length).toBe(2);
+  }
+});
+
+test('open second panel and column visibility', async () => {
+  const ds = createTestDataSource();
+  const ref = createRef<DataTableManager<Todo>>();
+  const rendering = render(
+    <DataTable
+      enableMultiPanels
+      dataSource={ds}
+      columns={columns}
+      tableManagerRef={ref}
+    />,
+  );
+  {
+    const elem = await rendering.findAllByText('test DataTable');
+    expect(elem.length).toBe(1);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            test DataTable
+          </span>
+        </div>
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            true
+          </span>
+        </div>
+      </div>
+    `);
+  }
+
+  // toggle column visibility of first table(main panel)
+  act(() => {
+    ref.current?.toggleSideBySide();
+    ref.current?.toggleColumnVisibility('done');
+  });
+  {
+    const elem = await rendering.findAllByText('test DataTable');
+    expect(elem.length).toBe(2);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            test DataTable
+          </span>
+        </div>
+      </div>
+    `);
+  }
+
+  act(() => {
+    ds.update(0, {
+      title: 'DataTable tested',
+      done: false,
+    });
+  });
+  {
+    expect(rendering.queryByText('test DataTable')).toBeNull();
+    const elem = await rendering.findAllByText('DataTable tested');
+    expect(elem.length).toBe(2);
+    expect(elem[0].parentElement?.parentElement).toMatchInlineSnapshot(`
+      <div
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      >
+        <div
+          class="css-1baxqcf-TableBodyColumnContainer e1luu51r0"
+          width="50%"
+        >
+          <span>
+            <span
+              style="background-color: rgb(255, 245, 102);"
+            />
+            DataTable tested
+          </span>
+        </div>
+      </div>
+    `);
+  }
+});
+
+test('open second panel and closing deletes dataView', async () => {
+  const ds = createTestDataSource();
+  const ref = createRef<DataTableManager<Todo>>();
+  render(
+    <DataTable
+      enableMultiPanels
+      dataSource={ds}
+      columns={columns}
+      tableManagerRef={ref}
+    />,
+  );
+  expect(Object.keys(ds.additionalViews).length).toBe(0);
+  act(() => {
+    ref.current?.toggleSideBySide();
+  });
+  expect(Object.keys(ds.additionalViews).length).toBe(1);
+  act(() => {
+    ref.current?.toggleSideBySide();
+  });
+  expect(Object.keys(ds.additionalViews).length).toBe(0);
 });

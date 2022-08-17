@@ -305,10 +305,18 @@ void FlipperConnectionManagerImpl::stop() {
   }
   isStarted_ = false;
 
-  if (client_) {
-    client_->disconnect();
-  }
-  client_ = nullptr;
+  std::shared_ptr<std::promise<void>> joinPromise =
+      std::make_shared<std::promise<void>>();
+  std::future<void> join = joinPromise->get_future();
+  flipperScheduler_->schedule([this, joinPromise]() {
+    if (client_) {
+      client_->disconnect();
+    }
+    client_ = nullptr;
+    joinPromise->set_value();
+  });
+
+  join.wait();
 }
 
 bool FlipperConnectionManagerImpl::isOpen() const {
@@ -453,6 +461,9 @@ void FlipperConnectionManagerImpl::requestSignedCertificate() {
 
   certificateExchangeCompleted_ = false;
   flipperScheduler_->schedule([this, message, gettingCert]() {
+    if (!client_) {
+      return;
+    }
     client_->sendExpectResponse(
         folly::toJson(message),
         [this, gettingCert](const std::string& response, bool isError) {

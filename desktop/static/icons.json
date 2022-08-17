@@ -70,7 +70,8 @@
     24
   ],
   "caution": [
-    16
+    16,
+    24
   ],
   "checkmark": [
     16
@@ -111,6 +112,7 @@
     24
   ],
   "cross": [
+    12,
     16
   ],
   "dashboard-outline": [
@@ -478,7 +480,8 @@
     16
   ],
   "caution-circle": [
-    12
+    12,
+    24
   ],
   "megaphone": [
     12,
@@ -632,6 +635,12 @@
     16
   ],
   "stethoscope": [
+    16
+  ],
+  "friend-except": [
+    16
+  ],
+  "app-instagram": [
     16
   ]
 }

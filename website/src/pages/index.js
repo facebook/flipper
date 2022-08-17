@@ -51,7 +51,7 @@ export default function Index() {
                 </a>
                 <a
                   className="landing-btn"
-                  href={useBaseUrl('docs/features/index')}>
+                  href={useBaseUrl('docs/features')}>
                   Learn more
                 </a>
               </div>
@@ -78,7 +78,7 @@ export default function Index() {
                 </a>
                 <a
                   className="landing-btn"
-                  href={useBaseUrl('docs/features/index')}>
+                  href={useBaseUrl('docs/features')}>
                   Learn more
                 </a>
               </div>
@@ -119,7 +119,7 @@ export default function Index() {
               useful tools including a log viewer, interactive layout inspector,
               and network inspector.
             </p>
-            <a className="learnmore" href={useBaseUrl('docs/features/index')}>
+            <a className="learnmore" href={useBaseUrl('docs/features')}>
               Learn more
             </a>
           </div>
@@ -135,7 +135,7 @@ export default function Index() {
               data back and forth, calling functions, and listening for events
               on the mobile app.
             </p>
-            <a className="learnmore" href={useBaseUrl('docs/extending/index')}>
+            <a className="learnmore" href={useBaseUrl('docs/extending')}>
               Learn more
             </a>
           </div>
@@ -177,7 +177,7 @@ export default function Index() {
         </div>
         <div className="wrapper landing-cta">
           <a
-            href={useBaseUrl('docs/getting-started/index')}
+            href={useBaseUrl('docs/getting-started')}
             className="landing-btn primary">
             Integrate Flipper In Your App
           </a>
