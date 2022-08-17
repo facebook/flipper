@@ -91,9 +91,11 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 #endif
 
     sonarScheduler =
-        std::make_unique<facebook::flipper::FollyScopedThreadScheduler>();
+        std::make_unique<facebook::flipper::FollyScopedThreadScheduler>(
+            "Flipper.sonar");
     connectionScheduler =
-        std::make_unique<facebook::flipper::FollyScopedThreadScheduler>();
+        std::make_unique<facebook::flipper::FollyScopedThreadScheduler>(
+            "Flipper.connection");
     static const std::string UNKNOWN = std::string("unknown");
     try {
       facebook::flipper::FlipperClient::init(

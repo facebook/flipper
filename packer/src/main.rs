@@ -13,11 +13,6 @@ mod error;
 mod tarsum;
 mod types;
 
-use anyhow::bail;
-use anyhow::Context;
-use anyhow::Result;
-use rayon::prelude::IntoParallelIterator;
-use rayon::prelude::ParallelIterator;
 use std::collections::BTreeMap;
 use std::ffi;
 use std::fs::File;
@@ -26,6 +21,12 @@ use std::io::BufReader;
 use std::io::BufWriter;
 use std::io::Write;
 use std::path;
+
+use anyhow::bail;
+use anyhow::Context;
+use anyhow::Result;
+use rayon::prelude::IntoParallelIterator;
+use rayon::prelude::ParallelIterator;
 use types::HashSum;
 use types::PackMode;
 use types::PackType;
