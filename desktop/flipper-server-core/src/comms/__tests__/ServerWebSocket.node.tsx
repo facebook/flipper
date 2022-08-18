@@ -100,7 +100,7 @@ describe('ServerWebSocket', () => {
     expect(mockSEListener.onError).toBeCalledTimes(0); // no onError triggered, as start throws already
   });
 
-  test('calls listener onError if a message handling fails', async () => {
+  test('does NOT call listener onError if individual message handling fails', async () => {
     const mockSEListener = createMockSEListener();
 
     server = new ServerWebSocket(mockSEListener);
@@ -117,9 +117,8 @@ describe('ServerWebSocket', () => {
     // Sending invalid JSON to cause a parsing error
     wsClient.send(`{{{{`);
     // Server must close the connection on error
-    await new Promise((resolve) => {
-      wsClient!.onclose = resolve;
-    });
-    expect(mockSEListener.onError).toBeCalledTimes(1);
+
+    expect(mockSEListener.onError).toBeCalledTimes(0);
+    expect(mockSEListener.onListening).toBeCalledTimes(1);
   });
 });
