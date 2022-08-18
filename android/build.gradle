@@ -6,6 +6,7 @@
  */
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -62,6 +63,8 @@ android {
 
     dependencies {
         compileOnly deps.proguardAnnotations
+        implementation deps.kotlinStdLibrary
+
         implementation deps.openssl
         implementation deps.fbjni
         implementation deps.soloader

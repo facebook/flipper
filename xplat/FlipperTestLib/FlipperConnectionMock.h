@@ -8,6 +8,7 @@
 #pragma once
 
 #include <Flipper/FlipperConnection.h>
+#include <folly/json.h>
 #include <map>
 #include <queue>
 #include <string>
@@ -19,6 +20,11 @@ class FlipperConnectionMock : public FlipperConnection {
  public:
   void send(const std::string& method, const folly::dynamic& params) override {
     sent_[method] = params;
+    sent_message_history[method].push(params);
+  }
+
+  void send(const std::string& method, const std::string& params) override {
+    sent_[method] = folly::parseJson(params);
     sent_message_history[method].push(params);
   }
 

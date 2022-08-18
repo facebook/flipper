@@ -42,6 +42,8 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
 
   void sendMessage(const folly::dynamic& message) override;
 
+  void sendMessage(const std::string& message) override;
+
   void onMessageReceived(
       const folly::dynamic& message,
       std::unique_ptr<FlipperResponder> responder) override;
