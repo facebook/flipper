@@ -52,6 +52,8 @@ ext {
 }
 
 ext.deps = [
+        // Kotlin support
+        kotlinStdLibrary   : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION",
         // Android support
         supportAnnotations : "androidx.annotation:annotation:$ANDROIDX_VERSION",
         supportAppCompat   : "androidx.appcompat:appcompat:$ANDROIDX_VERSION",
