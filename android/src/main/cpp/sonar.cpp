@@ -524,7 +524,7 @@ class JFlipperConnectionImpl
   }
 
   void sendString(const std::string method, const std::string params) {
-    _connection->send(std::move(method), std::move(params));
+    _connection->sendRaw(std::move(method), std::move(params));
   }
 
   void sendObject(

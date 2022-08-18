@@ -341,7 +341,7 @@ void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
   });
 }
 
-void FlipperConnectionManagerImpl::sendMessage(const std::string& message) {
+void FlipperConnectionManagerImpl::sendMessageRaw(const std::string& message) {
   flipperScheduler_->schedule([this, message]() {
     try {
       if (client_) {

@@ -23,7 +23,7 @@ class FlipperConnectionMock : public FlipperConnection {
     sent_message_history[method].push(params);
   }
 
-  void send(const std::string& method, const std::string& params) override {
+  void sendRaw(const std::string& method, const std::string& params) override {
     sent_[method] = folly::parseJson(params);
     sent_message_history[method].push(params);
   }
