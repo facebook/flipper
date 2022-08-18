@@ -90,8 +90,8 @@ export type ProcessConfig = {
   launcherMsg: string | null;
   // Controls whether to delegate to the launcher if present.
   launcherEnabled: boolean;
-  // Control whether to enable "update available" notifications
-  notifyAvailableUpdate: boolean;
+  // Control whether to suppress "update available" notifications
+  suppressPluginUpdateNotifications?: boolean;
 };
 
 export type Platform =

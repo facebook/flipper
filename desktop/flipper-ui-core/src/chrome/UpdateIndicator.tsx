@@ -83,7 +83,11 @@ export default function UpdateIndicator() {
           duration: null,
         });
       }
-    } else if (version && config.notifyAvailableUpdate && isProduction()) {
+    } else if (
+      version &&
+      !config.suppressPluginUpdateNotifications &&
+      isProduction()
+    ) {
       reportPlatformFailures(
         checkForUpdate(version).then((res) => {
           if (res.kind === 'error') {
