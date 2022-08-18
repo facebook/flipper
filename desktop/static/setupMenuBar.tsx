@@ -8,7 +8,7 @@
  */
 
 // eslint-disable-next-line no-restricted-imports
-import electron, {MenuItemConstructorOptions, webFrame} from 'electron';
+import electron, {MenuItemConstructorOptions} from 'electron';
 import {ElectronIpcClientMain} from './electronIpcMain';
 
 export function setupMenuBar(electronIpcClient: ElectronIpcClientMain) {
@@ -68,8 +68,10 @@ function getTemplate(
       accelerator: (function () {
         return 'CmdOrCtrl+0';
       })(),
-      click: function (_, _focusedWindow: electron.BrowserWindow | undefined) {
-        webFrame.setZoomFactor(1);
+      click: function (_, focusedWindow: electron.BrowserWindow | undefined) {
+        if (focusedWindow) {
+          focusedWindow.webContents.setZoomLevel(0);
+        }
       },
     },
     {
@@ -77,8 +79,11 @@ function getTemplate(
       accelerator: (function () {
         return 'CmdOrCtrl+=';
       })(),
-      click: function (_, _focusedWindow: electron.BrowserWindow | undefined) {
-        webFrame.setZoomFactor(webFrame.getZoomFactor() + 0.25);
+      click: function (_, focusedWindow: electron.BrowserWindow | undefined) {
+        if (focusedWindow) {
+          const webContents = focusedWindow.webContents;
+          webContents.setZoomLevel(webContents.getZoomLevel() + 1);
+        }
       },
     },
     {
@@ -86,8 +91,11 @@ function getTemplate(
       accelerator: (function () {
         return 'CmdOrCtrl+-';
       })(),
-      click: function (_, _focusedWindow: electron.BrowserWindow | undefined) {
-        webFrame.setZoomFactor(webFrame.getZoomFactor() - 0.25);
+      click: function (_, focusedWindow: electron.BrowserWindow | undefined) {
+        if (focusedWindow) {
+          const webContents = focusedWindow.webContents;
+          webContents.setZoomLevel(webContents.getZoomLevel() - 1);
+        }
       },
     },
     {
