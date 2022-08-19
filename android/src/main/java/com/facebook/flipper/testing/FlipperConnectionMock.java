@@ -48,6 +48,19 @@ public class FlipperConnectionMock implements FlipperConnection {
   }
 
   @Override
+  public void send(String method, String params) {
+    final List<Object> paramList;
+    if (sent.containsKey(method)) {
+      paramList = sent.get(method);
+    } else {
+      paramList = new ArrayList<>();
+      sent.put(method, paramList);
+    }
+
+    paramList.add(params);
+  }
+
+  @Override
   public void reportErrorWithMetadata(String reason, String stackTrace) {
     errors.add(new Throwable(reason));
   }

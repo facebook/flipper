@@ -22,7 +22,12 @@ module.exports = {
     '^flipper-(pkg|pkg-lib|doctor|test-utils)$': '<rootDir>/$1/src',
   },
   clearMocks: true,
-  coverageReporters: ['json-summary', 'lcov', 'html'],
+  coverageReporters: [
+    'json-summary',
+    'lcov',
+    'html',
+    ...(process.env.COVERAGE_TEXT === 'detailed' ? ['text'] : []),
+  ],
   testMatch: ['**/**.(node|spec).(js|jsx|ts|tsx)'],
   testEnvironment: 'jest-environment-jsdom-sixteen',
   resolver: '<rootDir>/jest.resolver.js',

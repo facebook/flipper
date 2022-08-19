@@ -26,6 +26,12 @@ public interface FlipperConnection {
    */
   void send(String method, FlipperArray params);
 
+  /**
+   * Call a remote method on the Flipper desktop application, passing an optional JSON string as a
+   * parameter.
+   */
+  void send(String method, String message);
+
   /** Report client error with reason and stacktrace as an argument */
   void reportErrorWithMetadata(String reason, String stackTrace);
 

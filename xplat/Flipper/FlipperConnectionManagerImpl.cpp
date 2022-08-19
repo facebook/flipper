@@ -341,6 +341,20 @@ void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
   });
 }
 
+void FlipperConnectionManagerImpl::sendMessageRaw(const std::string& message) {
+  flipperScheduler_->schedule([this, message]() {
+    try {
+      if (client_) {
+        client_->send(message, []() {});
+      }
+    } catch (std::length_error& e) {
+      // Skip sending messages that are too large.
+      log(e.what());
+      return;
+    }
+  });
+}
+
 void FlipperConnectionManagerImpl::onMessageReceived(
     const folly::dynamic& message,
     std::unique_ptr<FlipperResponder> responder) {
