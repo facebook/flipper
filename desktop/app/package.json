@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Mobile development tool",
   "productName": "Flipper",
-  "author": "Facebook Inc",
+  "author": "Meta",
   "main": "src/index.tsx",
   "icon": "icon.png",
   "category": "facebook-intern",
