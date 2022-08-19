@@ -53,7 +53,7 @@ class FlipperConnectionImpl : public FlipperConnection {
     socket_->sendMessage(message);
   }
 
-  void send(const std::string& method, const std::string& params) override {
+  void sendRaw(const std::string& method, const std::string& params) override {
     std::stringstream ss;
     ss << "{"
           "\"method\": \"execute\","
@@ -66,8 +66,8 @@ class FlipperConnectionImpl : public FlipperConnection {
        << "\","
           "\"params\":"
        << params << "}}";
-
-    socket_->sendMessage(ss.str());
+    auto message = ss.str();
+    socket_->sendMessage(message);
   }
 
   void error(const std::string& message, const std::string& stacktrace)

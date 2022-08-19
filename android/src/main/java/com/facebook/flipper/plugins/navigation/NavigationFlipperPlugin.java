@@ -75,6 +75,3 @@ public class NavigationFlipperPlugin implements FlipperPlugin {
     return instance;
   }
 }
-
-/* @scarf-info: do not remove, more info: https://fburl.com/scarf */
-/* @scarf-generated: flipper-plugin android/Plugin.java 0bfa32e5-fb15-4705-81f8-86260a1f3f8e */

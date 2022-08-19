@@ -38,7 +38,9 @@ class FlipperConnection {
    identifier.
    Note: The `message` argument is expected to contain a valid JSON.
    */
-  virtual void send(const std::string& method, const std::string& params) = 0;
+  virtual void sendRaw(
+      const std::string& method,
+      const std::string& params) = 0;
 
   /**
   Report an error to the Flipper desktop app

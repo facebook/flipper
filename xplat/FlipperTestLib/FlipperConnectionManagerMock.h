@@ -40,7 +40,7 @@ class FlipperConnectionManagerMock : public FlipperConnectionManager {
     messages.push_back(message);
   }
 
-  void sendMessage(const std::string& message) override {
+  void sendMessageRaw(const std::string& message) override {
     messages.push_back(folly::parseJson(message));
   }
 
