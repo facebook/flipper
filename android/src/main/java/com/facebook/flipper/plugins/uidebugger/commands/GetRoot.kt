@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.commands
 
 import com.facebook.flipper.core.FlipperObject
 import com.facebook.flipper.core.FlipperResponder
+import com.facebook.flipper.plugins.uidebugger.core.Context
 
 class GetRoot(context: Context) : Command(context) {
   override fun identifier(): String {

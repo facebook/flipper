@@ -9,7 +9,6 @@ package com.facebook.flipper.plugins.uidebugger.core
 
 import android.view.View
 import android.view.ViewTreeObserver
-import com.facebook.flipper.plugins.uidebugger.commands.Context
 import java.util.List
 
 class ApplicationInspector(val context: Context) {

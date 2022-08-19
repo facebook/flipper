@@ -5,6 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.plugins.uidebugger.commands
+package com.facebook.flipper.plugins.uidebugger.core
 
-class Context() {}
+class Context(val application: ApplicationRef) {}
