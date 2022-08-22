@@ -11,6 +11,7 @@ import com.facebook.flipper.core.FlipperObject
 import com.facebook.flipper.core.FlipperReceiver
 import com.facebook.flipper.core.FlipperResponder
 import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver
+import com.facebook.flipper.plugins.uidebugger.core.Context
 
 /** An interface for extensions to the UIDebugger plugin */
 abstract class Command(val context: Context) {

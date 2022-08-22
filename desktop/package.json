@@ -1,7 +1,7 @@
 {
   "author": {
     "email": "n/a",
-    "name": "Facebook Inc",
+    "name": "Meta",
     "url": "https://github.com/facebook"
   },
   "build": {
@@ -169,7 +169,7 @@
     "npm": "use yarn instead",
     "yarn": "^1.16"
   },
-  "version": "0.160.0",
+  "version": "0.161.0",
   "workspaces": {
     "packages": [
       "scripts",

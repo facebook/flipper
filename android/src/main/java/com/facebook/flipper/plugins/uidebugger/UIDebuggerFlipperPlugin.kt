@@ -7,14 +7,16 @@
 
 package com.facebook.flipper.plugins.uidebugger
 
+import android.app.Application
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.core.FlipperPlugin
 import com.facebook.flipper.plugins.uidebugger.commands.CommandRegister
-import com.facebook.flipper.plugins.uidebugger.commands.Context
 import com.facebook.flipper.plugins.uidebugger.commands.GetRoot
+import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
+import com.facebook.flipper.plugins.uidebugger.core.Context
 
-class UIDebuggerFlipperPlugin : FlipperPlugin {
-  private var context: Context = Context()
+class UIDebuggerFlipperPlugin(application: Application) : FlipperPlugin {
+  private val context: Context = Context(ApplicationRef(application))
   private var connection: FlipperConnection? = null
 
   override fun getId(): String {
