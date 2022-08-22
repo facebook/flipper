@@ -1,0 +1,29 @@
+{
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-ui-debugger",
+  "id": "ui-debugger",
+  "pluginType": "client",
+  "version": "0.0.0",
+  "flipperBundlerEntry": "index.tsx",
+  "main": "dist/bundle.js",
+  "license": "MIT",
+  "title": "UI Debugger (alpha)",
+  "icon": "nav-magnifying-glass",
+  "keywords": [
+    "flipper-plugin"
+  ],
+  "bugs": {
+    "url": "https://github.com/facebook/flipper/issues"
+  },
+  "peerDependencies": {
+    "flipper-plugin": "*",
+    "antd": "*",
+    "react": "*",
+    "react-dom": "*",
+    "@emotion/styled": "*",
+    "@ant-design/icons": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@types/node": "*"
+  }
+}
