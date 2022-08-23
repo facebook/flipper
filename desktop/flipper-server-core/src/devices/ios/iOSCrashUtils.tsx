@@ -82,11 +82,16 @@ export function parsePathLegacy(content: string): string | null {
 }
 
 export function parsePathModern(content: string): string | null {
-  const lines = content.split('\n');
-  // Skip the first line of the .ips file as it is useless
-  const reportBodyString = lines.slice(1).join('\n');
-  const reportBody = JSON.parse(reportBodyString);
-  return reportBody.procPath;
+  try {
+    const lines = content.split('\n');
+    // Skip the first line of the .ips file as it is useless
+    const reportBodyString = lines.slice(1).join('\n');
+    const reportBody = JSON.parse(reportBodyString);
+    return reportBody.procPath;
+  } catch (e) {
+    console.warn('parsePathModern -> failed to parse crash file', e, content);
+    return null;
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -127,12 +132,20 @@ export class iOSCrashWatcher extends DeviceListener {
             !!checkFileExtensionLegacy,
           )
         ) {
-          this.device.flipperServer.emit('device-crash', {
-            crash: checkFileExtensionLegacy
-              ? parseIosCrashLegacy(data)
-              : parseIosCrashModern(data),
-            serial: this.device.serial,
-          });
+          try {
+            this.device.flipperServer.emit('device-crash', {
+              crash: checkFileExtensionLegacy
+                ? parseIosCrashLegacy(data)
+                : parseIosCrashModern(data),
+              serial: this.device.serial,
+            });
+          } catch (e) {
+            console.error(
+              'iOSCrashWatcher.startListener -> failed to parse crash file',
+              e,
+              data,
+            );
+          }
         }
       });
     });
