@@ -36,7 +36,7 @@ abstract class AbstractChainedDescriptor<T> : Descriptor<T>(), ChainedDescriptor
    * A globally unique ID used to identify a node in a hierarchy. If your node does not have a
    * globally unique ID it is fine to rely on [System.identityHashCode].
    */
-  override fun getId(node: T): String? {
+  override fun getId(node: T): String {
     return onGetId(node)
   }
 
@@ -46,7 +46,7 @@ abstract class AbstractChainedDescriptor<T> : Descriptor<T>(), ChainedDescriptor
    * The name used to identify this node in the inspector. Does not need to be unique. A good
    * default is to use the class name of the node.
    */
-  override fun getName(node: T): String? {
+  override fun getName(node: T): String {
     return onGetName(node)
   }
 

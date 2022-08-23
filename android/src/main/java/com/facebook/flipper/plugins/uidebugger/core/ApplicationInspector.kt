@@ -9,17 +9,15 @@ package com.facebook.flipper.plugins.uidebugger.core
 
 import android.view.View
 import android.view.ViewTreeObserver
-import java.util.List
+import com.facebook.flipper.plugins.uidebugger.common.Node
+import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 
 class ApplicationInspector(val context: Context) {
+  val descriptorRegister = DescriptorRegister.withDefaults()
+  val traversal = LayoutTraversal(descriptorRegister)
 
-  fun traverse(view: View) {
-    val inspector =
-        LayoutVisitor.create(
-            object : LayoutVisitor.Visitor {
-              override fun visit(view: View) {}
-            })
-    inspector.traverse(view)
+  fun inspect(): Node? {
+    return traversal.inspect(context.application)
   }
 
   fun attachListeners(view: View) {
@@ -52,14 +50,10 @@ class ApplicationInspector(val context: Context) {
 
           override fun onRootViewRemoved(view: View) {}
 
-          override fun onRootViewsChanged(views: List<View>) {}
+          override fun onRootViewsChanged(views: java.util.List<View>) {}
         })
 
     val activeRoots = rootResolver.listActiveRootViews()
-    activeRoots?.let { roots ->
-      for (root: RootViewResolver.RootView in roots) {
-        traverse(root.view)
-      }
-    }
+    activeRoots?.let { roots -> for (root: RootViewResolver.RootView in roots) {} }
   }
 }

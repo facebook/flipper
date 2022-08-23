@@ -11,6 +11,7 @@ import android.app.Application
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.core.FlipperObject
 import com.facebook.flipper.core.FlipperPlugin
+import com.facebook.flipper.plugins.uidebugger.core.ApplicationInspector
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.core.Context
 
@@ -32,6 +33,9 @@ class UIDebuggerFlipperPlugin(val application: Application) : FlipperPlugin {
         FlipperObject.Builder()
             .put("rootId", System.identityHashCode(application).toString())
             .build())
+
+    val inspector = ApplicationInspector(context)
+    val root = inspector.inspect()
   }
 
   @Throws(Exception::class)
