@@ -67,7 +67,7 @@ class FlipperConnectionImpl : public FlipperConnection {
           "\"params\":"
        << params << "}}";
     auto message = ss.str();
-    socket_->sendMessage(message);
+    socket_->sendMessageRaw(message);
   }
 
   void error(const std::string& message, const std::string& stacktrace)
