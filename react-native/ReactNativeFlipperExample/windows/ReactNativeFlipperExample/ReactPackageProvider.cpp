@@ -8,20 +8,16 @@
 // clang-format off
 #include "pch.h"
 #include "ReactPackageProvider.h"
-#include "FlipperModule.h"
-
-#if __has_include("ReactPackageProvider.g.cpp")
-#include "ReactPackageProvider.g.cpp"
-#endif
+#include "NativeModules.h"
 // clang-format on
 
 using namespace winrt::Microsoft::ReactNative;
 
-namespace winrt::ReactNativeFlipper::implementation {
+namespace winrt::ReactNativeFlipperExample::implementation {
 
 void ReactPackageProvider::CreatePackage(
     IReactPackageBuilder const& packageBuilder) noexcept {
   AddAttributedModules(packageBuilder);
 }
 
-} // namespace winrt::ReactNativeFlipper::implementation
+} // namespace winrt::ReactNativeFlipperExample::implementation
