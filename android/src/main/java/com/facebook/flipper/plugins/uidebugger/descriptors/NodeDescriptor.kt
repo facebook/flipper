@@ -15,13 +15,13 @@ interface NodeDescriptor<T> {
    * A globally unique ID used to identify a node in a hierarchy. If your node does not have a
    * globally unique ID it is fine to rely on [System.identityHashCode].
    */
-  fun getId(node: T): String?
+  fun getId(node: T): String
 
   /**
    * The name used to identify this node in the inspector. Does not need to be unique. A good
    * default is to use the class name of the node.
    */
-  fun getName(node: T): String?
+  fun getName(node: T): String
 
   /** The children this node exposes in the inspector. */
   fun getChildren(node: T, children: MutableList<Any>)

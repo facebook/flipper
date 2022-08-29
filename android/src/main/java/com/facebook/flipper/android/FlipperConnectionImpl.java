@@ -42,14 +42,14 @@ class FlipperConnectionImpl implements FlipperConnection {
 
   @Override
   public void send(String method, String params) {
-    sendString(method, params);
+    sendRaw(method, params);
   }
 
   public native void sendObject(String method, FlipperObject params);
 
   public native void sendArray(String method, FlipperArray params);
 
-  public native void sendString(String method, String params);
+  public native void sendRaw(String method, String params);
 
   @Override
   public native void reportErrorWithMetadata(String reason, String stackTrace);
