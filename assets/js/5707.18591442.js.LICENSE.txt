@@ -2,6 +2,12 @@
    * Wait for document loaded before starting the execution
    */
 
+/*! ../../accessibility */
+
+/*! ../../assignWithDepth */
+
+/*! ../../commonDb */
+
 /*! ../../config */
 
 /*! ../../dagre-wrapper/index.js */
@@ -22,19 +28,105 @@
 
 /*! ../createLabel */
 
+/*! ../diagrams/c4/c4Db */
+
+/*! ../diagrams/c4/c4Renderer */
+
+/*! ../diagrams/c4/parser/c4Diagram */
+
+/*! ../diagrams/class/classDb */
+
+/*! ../diagrams/class/classRenderer */
+
+/*! ../diagrams/class/classRenderer-v2 */
+
+/*! ../diagrams/class/parser/classDiagram */
+
 /*! ../diagrams/class/svgDraw */
 
 /*! ../diagrams/common/common */
+
+/*! ../diagrams/er/erDb */
+
+/*! ../diagrams/er/erRenderer */
+
+/*! ../diagrams/er/parser/erDiagram */
+
+/*! ../diagrams/flowchart/flowDb */
+
+/*! ../diagrams/flowchart/flowRenderer */
+
+/*! ../diagrams/flowchart/flowRenderer-v2 */
+
+/*! ../diagrams/flowchart/parser/flow */
+
+/*! ../diagrams/gantt/ganttDb */
+
+/*! ../diagrams/gantt/ganttRenderer */
+
+/*! ../diagrams/gantt/parser/gantt */
+
+/*! ../diagrams/git/gitGraphAst */
+
+/*! ../diagrams/git/gitGraphDetector */
+
+/*! ../diagrams/git/gitGraphRenderer */
+
+/*! ../diagrams/git/parser/gitGraph */
+
+/*! ../diagrams/info/infoDb */
+
+/*! ../diagrams/info/infoRenderer */
+
+/*! ../diagrams/info/parser/info */
+
+/*! ../diagrams/pie/parser/pie */
+
+/*! ../diagrams/pie/pieDb */
+
+/*! ../diagrams/pie/pieRenderer */
+
+/*! ../diagrams/requirement/parser/requirementDiagram */
+
+/*! ../diagrams/requirement/requirementDb */
+
+/*! ../diagrams/requirement/requirementRenderer */
+
+/*! ../diagrams/sequence/parser/sequenceDiagram */
+
+/*! ../diagrams/sequence/sequenceDb */
+
+/*! ../diagrams/sequence/sequenceRenderer */
+
+/*! ../diagrams/state/parser/stateDiagram */
+
+/*! ../diagrams/state/stateDb */
+
+/*! ../diagrams/state/stateRenderer */
+
+/*! ../diagrams/state/stateRenderer-v2 */
+
+/*! ../diagrams/user-journey/journeyDb */
+
+/*! ../diagrams/user-journey/journeyRenderer */
+
+/*! ../diagrams/user-journey/parser/journey */
 
 /*! ../intersect/index.js */
 
 /*! ../logger */
 
+/*! ../mermaidAPI */
+
 /*! ../package.json */
 
 /*! ../utils */
 
-/*! ./classDb */
+/*! ./Diagram */
+
+/*! ./assignWithDepth */
+
+/*! ./c4Db */
 
 /*! ./clusters */
 
@@ -44,23 +136,23 @@
 
 /*! ./defaultConfig */
 
+/*! ./detectType */
+
+/*! ./diagram-api/detectType */
+
+/*! ./diagram-api/diagram-orchestration */
+
+/*! ./diagram-api/diagramAPI */
+
+/*! ./diagramAPI.js */
+
+/*! ./diagrams/c4/styles */
+
 /*! ./diagrams/class/classDb */
-
-/*! ./diagrams/class/classRenderer */
-
-/*! ./diagrams/class/classRenderer-v2 */
-
-/*! ./diagrams/class/parser/classDiagram */
 
 /*! ./diagrams/class/styles */
 
 /*! ./diagrams/common/common */
-
-/*! ./diagrams/er/erDb */
-
-/*! ./diagrams/er/erRenderer */
-
-/*! ./diagrams/er/parser/erDiagram */
 
 /*! ./diagrams/er/styles */
 
@@ -70,61 +162,25 @@
 
 /*! ./diagrams/flowchart/flowRenderer-v2 */
 
-/*! ./diagrams/flowchart/parser/flow */
-
 /*! ./diagrams/flowchart/styles */
 
 /*! ./diagrams/gantt/ganttDb */
 
 /*! ./diagrams/gantt/ganttRenderer */
 
-/*! ./diagrams/gantt/parser/gantt */
-
 /*! ./diagrams/gantt/styles */
-
-/*! ./diagrams/git/gitGraphAst */
-
-/*! ./diagrams/git/gitGraphRenderer */
-
-/*! ./diagrams/git/parser/gitGraph */
 
 /*! ./diagrams/git/styles */
 
-/*! ./diagrams/info/infoDb */
-
-/*! ./diagrams/info/infoRenderer */
-
-/*! ./diagrams/info/parser/info */
-
 /*! ./diagrams/info/styles */
-
-/*! ./diagrams/pie/parser/pie */
-
-/*! ./diagrams/pie/pieDb */
-
-/*! ./diagrams/pie/pieRenderer */
 
 /*! ./diagrams/pie/styles */
 
-/*! ./diagrams/requirement/parser/requirementDiagram */
-
-/*! ./diagrams/requirement/requirementDb */
-
-/*! ./diagrams/requirement/requirementRenderer */
-
 /*! ./diagrams/requirement/styles */
-
-/*! ./diagrams/sequence/parser/sequenceDiagram */
-
-/*! ./diagrams/sequence/sequenceDb */
 
 /*! ./diagrams/sequence/sequenceRenderer */
 
 /*! ./diagrams/sequence/styles */
-
-/*! ./diagrams/state/parser/stateDiagram */
-
-/*! ./diagrams/state/stateDb */
 
 /*! ./diagrams/state/stateRenderer */
 
@@ -132,17 +188,11 @@
 
 /*! ./diagrams/state/styles */
 
-/*! ./diagrams/user-journey/journeyDb */
-
 /*! ./diagrams/user-journey/journeyRenderer */
-
-/*! ./diagrams/user-journey/parser/journey */
 
 /*! ./diagrams/user-journey/styles */
 
 /*! ./edges */
-
-/*! ./erDb */
 
 /*! ./erMarkers */
 
@@ -152,13 +202,7 @@
 
 /*! ./flowDb */
 
-/*! ./ganttDb */
-
-/*! ./gitGraphAst */
-
 /*! ./id-cache.js */
-
-/*! ./infoDb */
 
 /*! ./interactionDb */
 
@@ -180,11 +224,11 @@
 
 /*! ./intersect/intersect-rect */
 
-/*! ./journeyDb */
-
 /*! ./logger */
 
 /*! ./markers */
+
+/*! ./mermaid */
 
 /*! ./mermaid-graphlib */
 
@@ -192,35 +236,9 @@
 
 /*! ./nodes */
 
-/*! ./parser/classDiagram */
-
-/*! ./parser/erDiagram */
-
-/*! ./parser/flow */
-
-/*! ./parser/gantt */
-
-/*! ./parser/gitGraph */
-
-/*! ./parser/info */
-
-/*! ./parser/journey */
-
-/*! ./parser/pie */
-
-/*! ./parser/requirementDiagram */
-
-/*! ./parser/sequenceDiagram */
-
-/*! ./parser/stateDiagram */
-
-/*! ./pieDb */
-
-/*! ./requirementDb */
+/*! ./parser/c4Diagram */
 
 /*! ./requirementMarkers */
-
-/*! ./sequenceDb */
 
 /*! ./shapes */
 
@@ -254,7 +272,7 @@
 
 /*! @braintree/sanitize-url */
 
-/*! @license DOMPurify 2.3.5 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/2.3.5/LICENSE */
+/*! @license DOMPurify 2.3.10 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/2.3.10/LICENSE */
 
 /*! Check if previously processed */
 
@@ -311,12 +329,20 @@
   \***********************/
 
 /*!************************!*\
+  !*** ./src/Diagram.js ***!
+  \************************/
+
+/*!************************!*\
   !*** ./src/mermaid.js ***!
   \************************/
 
 /*!************************!*\
   !*** external "dagre" ***!
   \************************/
+
+/*!*************************!*\
+  !*** ./src/commonDb.js ***!
+  \*************************/
 
 /*!*************************!*\
   !*** external "khroma" ***!
@@ -347,6 +373,10 @@
   \*****************************/
 
 /*!******************************!*\
+  !*** ./src/accessibility.js ***!
+  \******************************/
+
+/*!******************************!*\
   !*** ./src/defaultConfig.js ***!
   \******************************/
 
@@ -362,6 +392,14 @@
   !*** external "moment-mini" ***!
   \******************************/
 
+/*!********************************!*\
+  !*** ./src/assignWithDepth.js ***!
+  \********************************/
+
+/*!*********************************!*\
+  !*** ./src/diagrams/c4/c4Db.js ***!
+  \*********************************/
+
 /*!*********************************!*\
   !*** ./src/diagrams/er/erDb.js ***!
   \*********************************/
@@ -373,6 +411,10 @@
 /*!**********************************!*\
   !*** ./src/themes/theme-dark.js ***!
   \**********************************/
+
+/*!***********************************!*\
+  !*** ./src/diagrams/c4/styles.js ***!
+  \***********************************/
 
 /*!***********************************!*\
   !*** ./src/diagrams/er/styles.js ***!
@@ -392,6 +434,10 @@
 
 /*!************************************!*\
   !*** ./src/dagre-wrapper/nodes.js ***!
+  \************************************/
+
+/*!************************************!*\
+  !*** ./src/diagrams/c4/svgDraw.js ***!
   \************************************/
 
 /*!************************************!*\
@@ -452,6 +498,18 @@
 
 /*!***************************************!*\
   !*** ./src/dagre-wrapper/clusters.js ***!
+  \***************************************/
+
+/*!***************************************!*\
+  !*** ./src/diagram-api/detectType.js ***!
+  \***************************************/
+
+/*!***************************************!*\
+  !*** ./src/diagram-api/diagramAPI.js ***!
+  \***************************************/
+
+/*!***************************************!*\
+  !*** ./src/diagrams/c4/c4Renderer.js ***!
   \***************************************/
 
 /*!***************************************!*\
@@ -563,6 +621,10 @@
   \**********************************************/
 
 /*!**********************************************!*\
+  !*** ./src/diagrams/git/gitGraphDetector.js ***!
+  \**********************************************/
+
+/*!**********************************************!*\
   !*** ./src/diagrams/git/gitGraphRenderer.js ***!
   \**********************************************/
 
@@ -581,6 +643,10 @@
 /*!***********************************************!*\
   !*** ./src/diagrams/gantt/parser/gantt.jison ***!
   \***********************************************/
+
+/*!************************************************!*\
+  !*** ./src/diagrams/c4/parser/c4Diagram.jison ***!
+  \************************************************/
 
 /*!************************************************!*\
   !*** ./src/diagrams/class/classRenderer-v2.js ***!
@@ -605,6 +671,10 @@
 /*!************************************************!*\
   !*** ./src/diagrams/user-journey/journeyDb.js ***!
   \************************************************/
+
+/*!**************************************************!*\
+  !*** ./src/diagram-api/diagram-orchestration.js ***!
+  \**************************************************/
 
 /*!**************************************************!*\
   !*** ./src/diagrams/flowchart/parser/flow.jison ***!
