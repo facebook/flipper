@@ -7,7 +7,7 @@
  * @format
  */
 
-const {fbInternalOnly, fbContent} = require('internaldocs-fb-helpers');
+const {fbInternalOnly, fbContent} = require('docusaurus-plugin-internaldocs-fb/internal');
 
 module.exports = {
   main: {
