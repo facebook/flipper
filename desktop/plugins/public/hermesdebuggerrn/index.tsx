@@ -96,8 +96,7 @@ export default class extends FlipperDevicePlugin<State, any, any> {
         // We only want to use the Chrome Reload targets.
         const targets = result.filter(
           (target: any) =>
-            target.title ===
-            'React Native Experimental (Improved Chrome Reloads)',
+            target.title.includes('(Improved Chrome Reloads)'),
         );
 
         // Find the currently selected target.
