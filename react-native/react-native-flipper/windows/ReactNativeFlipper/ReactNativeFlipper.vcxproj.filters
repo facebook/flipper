@@ -17,6 +17,9 @@
     <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperStep.cpp" />
     <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperURLSerializer.cpp" />
     <ClCompile Include="..\..\..\..\xplat\Flipper\Log.cpp" />
+    <ClCompile Include="FlipperReactSocket.cpp" />
+    <ClCompile Include="FlipperReactSocketClient.cpp" />
+    <ClCompile Include="FlipperReactDeviceInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -46,6 +49,11 @@
     <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperTransportTypes.h" />
     <ClInclude Include="..\..\..\..\xplat\Flipper\FlipperURLSerializer.h" />
     <ClInclude Include="..\..\..\..\xplat\Flipper\Log.h" />
+    <ClInclude Include="FlipperReactScheduler.h" />
+    <ClInclude Include="FlipperReactBaseSocket.h" />
+    <ClInclude Include="FlipperReactSocket.h" />
+    <ClInclude Include="FlipperReactSocketClient.h" />
+    <ClInclude Include="FlipperReactDeviceInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PropertySheet.props" />

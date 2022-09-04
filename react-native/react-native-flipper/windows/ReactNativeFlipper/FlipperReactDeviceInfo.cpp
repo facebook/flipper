@@ -9,12 +9,15 @@
 
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Security.ExchangeActiveSyncProvisioning.h>
+#include <winrt/Windows.Storage.h>
 
 using namespace winrt::Windows::Foundation;
 
 namespace facebook {
 namespace flipper {
-
+std::string FlipperReactDeviceInfo::getOS() {
+  return "Windows";
+}
 std::string FlipperReactDeviceInfo::getDevice() {
   try {
     return winrt::to_string(
@@ -45,6 +48,11 @@ std::string FlipperReactDeviceInfo::getAppName() {
 std::string FlipperReactDeviceInfo::getAppId() {
   return winrt::to_string(
       winrt::Windows::ApplicationModel::Package::Current().Id().Name());
+}
+std::string FlipperReactDeviceInfo::getAppStorageDirectory() {
+  winrt::Windows::Storage::StorageFolder storageFolder{
+      winrt::Windows::Storage::ApplicationData::Current().LocalFolder()};
+  return winrt::to_string(storageFolder.Path());
 }
 
 } // namespace flipper

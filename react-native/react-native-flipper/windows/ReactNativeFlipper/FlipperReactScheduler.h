@@ -17,7 +17,7 @@ using namespace winrt::Microsoft::ReactNative;
 namespace facebook {
 namespace flipper {
 
-class FlipperReactScheduler : public Scheduler {
+struct FlipperReactScheduler : public Scheduler {
   FlipperReactScheduler()
       : dispatcher_(ReactDispatcher::CreateSerialDispatcher()) {}
   virtual ~FlipperReactScheduler() {}

@@ -14,11 +14,13 @@ namespace flipper {
 
 class FlipperReactDeviceInfo {
  public:
+  std::string getOS();
   std::string getDevice();
   std::string getDeviceId();
   std::string getHost();
   std::string getAppName();
   std::string getAppId();
+  std::string getAppStorageDirectory();
 };
 
 } // namespace flipper
