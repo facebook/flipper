@@ -20,6 +20,8 @@
     <ClCompile Include="FlipperReactSocket.cpp" />
     <ClCompile Include="FlipperReactSocketClient.cpp" />
     <ClCompile Include="FlipperReactDeviceInfo.cpp" />
+    <ClCompile Include="FlipperReactPlugin.cpp" />
+    <ClCompile Include="FlipperReactPluginManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -54,6 +56,8 @@
     <ClInclude Include="FlipperReactSocket.h" />
     <ClInclude Include="FlipperReactSocketClient.h" />
     <ClInclude Include="FlipperReactDeviceInfo.h" />
+    <ClInclude Include="FlipperReactPlugin.h" />
+    <ClInclude Include="FlipperReactPluginManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PropertySheet.props" />
