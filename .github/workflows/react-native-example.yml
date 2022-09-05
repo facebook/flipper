@@ -38,10 +38,10 @@ jobs:
     - uses: actions/setup-node@v2.1.5
       with:
         node-version: 14.x
-    - name: set up JDK 1.8
+    - name: set up JDK
       uses: actions/setup-java@v1
       with:
-        java-version: 1.8
+        java-version: 11
     - name: Compute build cache
       run: ${GITHUB_WORKSPACE}/scripts/checksum-android.sh checksum-android.txt
     - uses: actions/cache@v2
