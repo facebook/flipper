@@ -5,6 +5,4 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.plugins.uidebugger.commands
-
-class Context() {}
+#include "pch.h"

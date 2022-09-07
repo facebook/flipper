@@ -5,13 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ReactPackageProvider.h"
+// clang-format off
 #include "pch.h"
+#include "ReactPackageProvider.h"
+#include "FlipperModule.h"
+
 #if __has_include("ReactPackageProvider.g.cpp")
 #include "ReactPackageProvider.g.cpp"
 #endif
-
-#include "FlipperModule.h"
+// clang-format on
 
 using namespace winrt::Microsoft::ReactNative;
 

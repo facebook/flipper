@@ -250,8 +250,7 @@ export default class AndroidDevice extends ServerDevice {
           }),
       )
       .then((_) => destination);
-
-    return this.recordingProcess.then((_) => {});
+    // Intentionally not return a promise, this just kicks off the recording!
   }
 
   async stopScreenCapture(): Promise<string> {

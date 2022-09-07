@@ -8,6 +8,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
+
+apply plugin: 'kotlinx-serialization'
+
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
@@ -72,6 +75,8 @@ android {
         implementation deps.supportAppCompat
         implementation deps.supportSqlite
         implementation deps.websocket
+        implementation deps.kotlinxSerializationJson
+
 
         testImplementation deps.mockito
         testImplementation deps.robolectric

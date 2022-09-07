@@ -153,6 +153,38 @@ If this is the first time running, you will also need to run
 `pod install --repo-update` from the
 `react-native/ReactNativeFlipperExample/ios` folder.
 
+### React Native Windows (Experimental)
+
+An experimental version of Flipper for React Native Windows is available. The
+following steps prepare the React Native Flipper project:
+
+```bash
+cd react-native/react-native-flipper
+vcpkg install openssl:x64-uwp openssl:arm-uwp
+vcpkg integrate install
+yarn install
+cd windows
+nuget install ReactNativeFlipper/packages.config
+```
+
+In a nutshell, [vcpkg](https://vcpkg.io/) is used to install
+[OpenSSL](https://www.openssl.org/). Nuget is used to install
+[Boost](https://www.boost.org/).
+
+Then, the sample application can be built and run as follows:
+
+```bash
+cd ../../ReactNativeFlipperExample
+yarn install
+yarn relative-deps
+npx react-native run-windows
+```
+
+At the moment there's no available package for React Native Flipper. This means
+that to integrate Flipper with any other existing applications, an explicit
+reference to the project needs to be added just as is done with the sample
+application.
+
 ## JS SDK + Sample React app
 
 ```bash

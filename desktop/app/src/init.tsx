@@ -75,7 +75,13 @@ async function getKeytarModule(staticPath: string): Promise<KeytarModule> {
 
 async function getExternalServer(path: string) {
   const options = {
-    WebSocket: WS,
+    WebSocket: class WSWithUnixDomainSocketSupport extends WS {
+      constructor(url: string, protocols: string | string[]) {
+        // Flipper exports could be large, and we snd them over the wire
+        // Setting this limit fairly high (1GB) to allow any reasonable Flipper export to be loaded
+        super(url, protocols, {maxPayload: 1024 * 1024 * 1024});
+      }
+    },
   };
   const socket = new ReconnectingWebSocket(`ws+unix://${path}`, [], options);
   const server = await createFlipperServerWithSocket(
@@ -107,15 +113,20 @@ async function getFlipperServer(
   const settings = await loadSettings();
 
   const socketPath = await makeSocketPath();
-  const serverRunning = await checkSocketInUse(socketPath);
+  let serverRunning = await checkSocketInUse(socketPath);
+
+  if (serverRunning) {
+    console.info(
+      'flipper-server: currently running/listening, attempt to shutdown',
+    );
+    const server = await getExternalServer(socketPath);
+    await server.exec('shutdown').catch(() => {
+      /** shutdown will ultimately make this request fail, ignore error. */
+    });
+    serverRunning = false;
+  }
 
   const getEmbeddedServer = async () => {
-    if (serverRunning) {
-      const server = await getExternalServer(socketPath);
-      await server.exec('shutdown').catch(() => {
-        /** shutdown will ultimately make this request fail, ignore error. */
-      });
-    }
     const server = new FlipperServerImpl(
       {
         environmentInfo,

@@ -9,19 +9,11 @@ package com.facebook.flipper.plugins.uidebugger.core
 
 import android.view.View
 import android.view.ViewTreeObserver
-import com.facebook.flipper.plugins.uidebugger.commands.Context
-import java.util.List
+import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 
 class ApplicationInspector(val context: Context) {
-
-  fun traverse(view: View) {
-    val inspector =
-        LayoutVisitor.create(
-            object : LayoutVisitor.Visitor {
-              override fun visit(view: View) {}
-            })
-    inspector.traverse(view)
-  }
+  val descriptorRegister = DescriptorRegister.withDefaults()
+  val traversal = LayoutTraversal(descriptorRegister, context.applicationRef)
 
   fun attachListeners(view: View) {
     // An OnGlobalLayoutListener watches the entire hierarchy for layout changes
@@ -52,15 +44,10 @@ class ApplicationInspector(val context: Context) {
           }
 
           override fun onRootViewRemoved(view: View) {}
-
-          override fun onRootViewsChanged(views: List<View>) {}
+          override fun onRootViewsChanged(views: java.util.List<View>) {}
         })
 
     val activeRoots = rootResolver.listActiveRootViews()
-    activeRoots?.let { roots ->
-      for (root: RootViewResolver.RootView in roots) {
-        traverse(root.view)
-      }
-    }
+    activeRoots?.let { roots -> for (root: RootViewResolver.RootView in roots) {} }
   }
 }

@@ -41,8 +41,8 @@ public final class AndroidFlipperClient {
       final Context app =
           context.getApplicationContext() == null ? context : context.getApplicationContext();
 
-      // exempt this disk read as this is a debug tool
-      StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
+      // exempt this disk read/write as this is a debug tool
+      StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
       String privateAppDirectory;
       try {
         privateAppDirectory = context.getFilesDir().getAbsolutePath();

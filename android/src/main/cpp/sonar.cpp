@@ -514,7 +514,7 @@ class JFlipperConnectionImpl
     registerHybrid({
         makeNativeMethod("sendObject", JFlipperConnectionImpl::sendObject),
         makeNativeMethod("sendArray", JFlipperConnectionImpl::sendArray),
-        makeNativeMethod("sendString", JFlipperConnectionImpl::sendString),
+        makeNativeMethod("sendRaw", JFlipperConnectionImpl::sendRaw),
         makeNativeMethod("reportError", JFlipperConnectionImpl::reportError),
         makeNativeMethod(
             "reportErrorWithMetadata",
@@ -523,7 +523,7 @@ class JFlipperConnectionImpl
     });
   }
 
-  void sendString(const std::string method, const std::string params) {
+  void sendRaw(const std::string method, const std::string params) {
     _connection->sendRaw(std::move(method), std::move(params));
   }
 

@@ -125,7 +125,11 @@ void ConnectionContextStore::storeConnectionConfig(folly::dynamic& config) {
 }
 
 std::string ConnectionContextStore::absoluteFilePath(const char* filename) {
+#ifndef WIN32
   return std::string(deviceData_.privateAppDirectory + "/sonar/" + filename);
+#else
+  return std::string(deviceData_.privateAppDirectory + "\\sonar\\" + filename);
+#endif
 }
 
 std::string ConnectionContextStore::getCertificateDirectoryPath() {

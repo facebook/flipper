@@ -8,9 +8,9 @@
 package com.facebook.flipper.plugins.uidebugger
 
 import android.view.View
+import com.facebook.flipper.plugins.uidebugger.common.EnumData
 import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
 import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
@@ -19,50 +19,29 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class EnumMappingTest {
-  @Throws(Exception::class)
+
+  val visibility: EnumMapping<Int> =
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "VISIBLE" to View.VISIBLE, "INVISIBLE" to View.INVISIBLE, "GONE" to View.GONE)) {}
+
   @Test
-  fun emptyMapping() {
-    val e: EnumMapping<Int> = object : EnumMapping<Int>("k") {}
-
-    assertThat(e.get("j"), CoreMatchers.`is`(nullValue()))
-
-    var inspectable = e.get(0)
-    assertThat(inspectable.mutable, equalTo(true))
-    assertThat(inspectable.type, equalTo(InspectableValue.Type.Enum))
-    assertThat(inspectable.value, equalTo("k"))
-
-    inspectable = e.get(0, true)
-    assertThat(inspectable.mutable, equalTo(true))
-    assertThat(inspectable.type, equalTo(InspectableValue.Type.Enum))
-    assertThat(inspectable.value, equalTo("k"))
-
-    inspectable = e.get(0, false)
-    assertThat(inspectable.mutable, equalTo(false))
-    assertThat(inspectable.type, equalTo(InspectableValue.Type.Enum))
-    assertThat(inspectable.value, equalTo("k"))
-
-    var picker = e.toPicker()
-    assertThat(picker.mutable, equalTo(true))
-    assertThat(picker.type, equalTo(InspectableValue.Type.Picker))
-    assertThat(picker.value, CoreMatchers.`is`(notNullValue()))
-
-    val value: InspectableValue.Picker = picker.value as InspectableValue.Picker
-    assertThat(value.selected, equalTo("k"))
-    assertThat(value.values.size, equalTo(0))
+  fun testTurnsEnumToString() {
+    assertThat(visibility.getEnumValue("VISIBLE"), equalTo(View.VISIBLE))
   }
 
-  @Throws(Exception::class)
   @Test
-  fun putGet() {
-    val visibility: EnumMapping<Int> =
-        object : EnumMapping<Int>("VISIBLE") {
-          init {
-            put("VISIBLE", View.VISIBLE)
-            put("INVISIBLE", View.INVISIBLE)
-            put("GONE", View.GONE)
-          }
-        }
+  fun testTurnsStringToEnum() {
+    assertThat(visibility.getStringRepresentation(View.VISIBLE), equalTo("VISIBLE"))
+  }
 
-    assertThat(visibility.get("VISIBLE"), equalTo(View.VISIBLE))
+  @Test
+  fun testTurnsIntoEnumInspectable() {
+    assertThat(
+        visibility.toInspectable(View.GONE, true),
+        equalTo(
+            InspectableValue.Enum(
+                EnumData(setOf("VISIBLE", "INVISIBLE", "GONE"), "GONE"), mutable = true)))
   }
 }

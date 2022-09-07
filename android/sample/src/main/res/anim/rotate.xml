@@ -1,0 +1,11 @@
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <rotate android:fromDegrees="0"
+        android:toDegrees="360"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="600"
+        android:repeatMode="restart"
+        android:repeatCount="infinite"
+        android:interpolator="@android:anim/cycle_interpolator"/>
+
+</set>

@@ -7,17 +7,30 @@
 
 package com.facebook.flipper.plugins.uidebugger
 
+import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class UIDebuggerFlipperPluginTest {
+
+  val app = Mockito.spy(RuntimeEnvironment.application)
+  private var appRef: ApplicationRef = Mockito.spy(ApplicationRef(app))
+
+  @Before
+  open fun setup() {
+    Mockito.`when`(app.applicationContext).thenReturn(app)
+    Mockito.`when`(app.packageName).thenReturn("com.facebook.flipper")
+  }
   @Throws(Exception::class)
   @Test
   fun emptyTest() {
-    var plugin = UIDebuggerFlipperPlugin()
+    var plugin = UIDebuggerFlipperPlugin(app)
     Assert.assertNotNull(plugin)
   }
 }
