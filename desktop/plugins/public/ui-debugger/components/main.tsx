@@ -14,43 +14,57 @@ import {Tree} from 'antd';
 import type {DataNode} from 'antd/es/tree';
 import {DownOutlined} from '@ant-design/icons';
 
-function treeToAntTree(uiNode: UINode): DataNode {
-  return {
-    key: uiNode.id,
-    title: uiNode.name,
-    children: uiNode.children ? uiNode.children.map(treeToAntTree) : [],
-  };
-}
+// function treeToAntTree(uiNode: UINode): DataNode {
+//   return {
+//     key: uiNode.id,
+//     title: uiNode.name,
+//     children: uiNode.children ? uiNode.children.map(treeToAntTree) : [],
+//   };
+// }
 
-function treeToMap(uiNode: UINode): Map<Id, UINode> {
-  const result = new Map<Id, UINode>();
+// function treeToMap(uiNode: UINode): Map<Id, UINode> {
+//   const result = new Map<Id, UINode>();
+//
+//   function treeToMapRec(node: UINode): void {
+//     result.set(node.id, node);
+//     for (const child of node.children) {
+//       treeToMapRec(child);
+//     }
+//   }
+//
+//   treeToMapRec(uiNode);
+//
+//   return result;
+// }
 
-  function treeToMapRec(node: UINode): void {
-    result.set(node.id, node);
-    for (const child of node.children) {
-      treeToMapRec(child);
-    }
+function nodesToAntTree(root: Id, nodes: Map<Id, UINode>): DataNode {
+  function uiNodeToAntNode(id: Id): DataNode {
+    const node = nodes.get(id);
+    return {
+      key: id,
+      title: node?.name,
+      children: node?.children.map((id) => uiNodeToAntNode(id)),
+    };
   }
 
-  treeToMapRec(uiNode);
-
-  return result;
+  return uiNodeToAntNode(root);
 }
 
 export function Component() {
   const instance = usePlugin(plugin);
   const rootId = useValue(instance.rootId);
-  const tree = useValue(instance.tree);
+  const nodes = useValue(instance.nodes);
 
-  if (tree) {
-    const nodeMap = treeToMap(tree);
-    const antTree = treeToAntTree(tree);
+  if (rootId) {
+    const antTree = nodesToAntTree(rootId, nodes);
+    console.log(antTree);
+    console.log(rootId);
     return (
       <Tree
         showIcon
         showLine
         onSelect={(selected) => {
-          console.log(nodeMap.get(selected[0] as string));
+          console.log(nodes.get(selected[0] as string));
         }}
         defaultExpandAll
         switcherIcon={<DownOutlined />}
@@ -59,5 +73,5 @@ export function Component() {
     );
   }
 
-  return <div>{rootId}</div>;
+  return <div>Nothing yet</div>;
 }

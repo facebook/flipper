@@ -7,4 +7,4 @@
 
 package com.facebook.flipper.plugins.uidebugger.core
 
-class Context(val application: ApplicationRef) {}
+class Context(val applicationRef: ApplicationRef) {}

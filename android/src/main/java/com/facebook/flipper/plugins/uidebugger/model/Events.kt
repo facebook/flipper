@@ -5,21 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.plugins.uidebugger
-
-import com.facebook.flipper.plugins.uidebugger.common.Node
+package com.facebook.flipper.plugins.uidebugger.model
 
 @kotlinx.serialization.Serializable
 data class InitEvent(val rootId: String) {
   companion object {
-    val name = "init"
+    const val name = "init"
   }
 }
 
-// TODO flatten the tree into normalised list
 @kotlinx.serialization.Serializable
-data class NativeScanEvent(val root: Node) {
+data class NativeScanEvent(val nodes: List<Node>) {
   companion object {
-    val name = "nativeScan"
+    const val name = "nativeScan"
   }
 }

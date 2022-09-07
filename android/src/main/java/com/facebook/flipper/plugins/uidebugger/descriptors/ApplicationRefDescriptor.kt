@@ -12,7 +12,7 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
 
-class ApplicationDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
+class ApplicationRefDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
   val rootResolver = RootViewResolver()
 
   override fun onInit() {}

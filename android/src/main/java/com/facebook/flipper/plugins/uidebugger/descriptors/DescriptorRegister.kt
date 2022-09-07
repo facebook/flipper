@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
+import com.facebook.flipper.plugins.uidebugger.common.UIDebuggerException
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 
 class DescriptorRegister {
@@ -23,7 +24,7 @@ class DescriptorRegister {
     fun withDefaults(): DescriptorRegister {
       val mapping = DescriptorRegister()
       mapping.register(Any::class.java, ObjectDescriptor())
-      mapping.register(ApplicationRef::class.java, ApplicationDescriptor())
+      mapping.register(ApplicationRef::class.java, ApplicationRefDescriptor())
       mapping.register(Activity::class.java, ActivityDescriptor())
       mapping.register(Window::class.java, WindowDescriptor())
       mapping.register(ViewGroup::class.java, ViewGroupDescriptor())
@@ -57,11 +58,16 @@ class DescriptorRegister {
     register[clazz] = descriptor
   }
 
-  fun descriptorForClass(clazz: Class<*>): Descriptor<*>? {
-    var clazz = clazz
+  fun <T> descriptorForClass(clazz: Class<T>): Descriptor<T>? {
+    var clazz: Class<*> = clazz
     while (!register.containsKey(clazz)) {
       clazz = clazz.superclass
     }
-    return register[clazz]
+    return register[clazz] as Descriptor<T>
+  }
+
+  fun <T> descriptorForClassUnsafe(clazz: Class<T>): Descriptor<T> {
+    return descriptorForClass(clazz)
+        ?: throw UIDebuggerException("No descriptor found for ${clazz.name}")
   }
 }

@@ -8,12 +8,14 @@
 package com.facebook.flipper.plugins.uidebugger
 
 import android.app.Application
+import android.util.Log
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.core.FlipperPlugin
-import com.facebook.flipper.plugins.uidebugger.common.Node
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationInspector
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.model.InitEvent
+import com.facebook.flipper.plugins.uidebugger.model.NativeScanEvent
 import kotlinx.serialization.json.Json
 
 val LogTag = "FlipperUIDebugger"
@@ -32,17 +34,22 @@ class UIDebuggerFlipperPlugin(val application: Application) : FlipperPlugin {
     this.connection = connection
     // temp solution, get from descriptor
     val inspector = ApplicationInspector(context)
-    val root: Node = inspector.inspect()!!
-    val initEvent = InitEvent(System.identityHashCode(application).toString())
 
+    val rootDescriptor =
+        inspector.descriptorRegister.descriptorForClassUnsafe(context.applicationRef.javaClass)
     connection.send(
         InitEvent.name,
         Json.encodeToString(
-            InitEvent.serializer(), InitEvent(System.identityHashCode(application).toString())))
+            InitEvent.serializer(), InitEvent(rootDescriptor.getId(context.applicationRef))))
 
-    connection.send(
-        NativeScanEvent.name,
-        Json.encodeToString(NativeScanEvent.serializer(), NativeScanEvent(root)))
+    try {
+      val nodes = inspector.traversal.traverse()
+      connection.send(
+          NativeScanEvent.name,
+          Json.encodeToString(NativeScanEvent.serializer(), NativeScanEvent(nodes)))
+    } catch (e: java.lang.Exception) {
+      Log.e(LogTag, e.message.toString(), e)
+    }
   }
 
   @Throws(Exception::class)

@@ -43,26 +43,26 @@ export type UINode = {
   id: Id;
   name: string;
   attributes: Record<string, Inspectable>;
-  children: UINode[];
+  children: Id[];
 };
 
 type Events = {
   init: {rootId: string};
-
-  nativeScan: {root: UINode};
+  nativeScan: {nodes: UINode[]};
 };
 
 export function plugin(client: PluginClient<Events>) {
-  const rootId = createState<string | undefined>(undefined);
+  const rootId = createState<Id | undefined>(undefined);
 
-  const tree = createState<UINode | undefined>(undefined);
+  const nodesAtom = createState<Map<Id, UINode>>(new Map());
   client.onMessage('init', (root) => rootId.set(root.rootId));
 
-  client.onMessage('nativeScan', ({root}) => {
-    tree.set(root as UINode);
+  client.onMessage('nativeScan', ({nodes}) => {
+    nodesAtom.set(new Map(nodes.map((node) => [node.id, node])));
+    console.log(nodesAtom.get());
   });
 
-  return {rootId, tree};
+  return {rootId, nodes: nodesAtom};
 }
 
 export {Component} from './components/main';
