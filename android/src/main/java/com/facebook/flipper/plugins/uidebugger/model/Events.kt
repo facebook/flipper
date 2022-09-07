@@ -15,8 +15,23 @@ data class InitEvent(val rootId: String) {
 }
 
 @kotlinx.serialization.Serializable
-data class NativeScanEvent(val nodes: List<Node>) {
+data class NativeScanEvent(val txId: Long, val nodes: List<Node>) {
   companion object {
     const val name = "nativeScan"
+  }
+}
+
+/** Separate optional performance statistics event */
+@kotlinx.serialization.Serializable
+data class PerfStatsEvent(
+    val txId: Long,
+    val start: Long,
+    val scanComplete: Long,
+    val serializationComplete: Long,
+    val socketComplete: Long,
+    val nodesCount: Int
+) {
+  companion object {
+    const val name = "perfStats"
   }
 }

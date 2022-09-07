@@ -7,62 +7,43 @@
  * @format
  */
 
-import {PluginClient, createState} from 'flipper-plugin';
+import {PluginClient, createState, createDataSource} from 'flipper-plugin';
+import {Id, UINode} from './types';
 
-export type Inspectable =
-  | InspectableObject
-  | InspectableText
-  | InspectableNumber
-  | InspectableColor;
-
-export type InspectableText = {
-  type: 'text';
-  value: string;
-  mutable: boolean;
-};
-
-export type InspectableNumber = {
-  type: 'number';
-  value: number;
-  mutable: boolean;
-};
-
-export type InspectableColor = {
-  type: 'number';
-  value: number;
-  mutable: boolean;
-};
-
-export type InspectableObject = {
-  type: 'object';
-  fields: Record<string, Inspectable>;
-};
-
-export type Id = string;
-export type UINode = {
-  id: Id;
-  name: string;
-  attributes: Record<string, Inspectable>;
-  children: Id[];
+export type PerfStatsEvent = {
+  txId: number;
+  start: number;
+  scanComplete: number;
+  serializationComplete: number;
+  socketComplete: number;
+  nodesCount: number;
 };
 
 type Events = {
   init: {rootId: string};
-  nativeScan: {nodes: UINode[]};
+  nativeScan: {txId: number; nodes: UINode[]};
+  perfStats: PerfStatsEvent;
 };
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
-
-  const nodesAtom = createState<Map<Id, UINode>>(new Map());
   client.onMessage('init', (root) => rootId.set(root.rootId));
 
+  const perfEvents = createDataSource<PerfStatsEvent, 'txId'>([], {
+    key: 'txId',
+    limit: 10 * 1024,
+  });
+  client.onMessage('perfStats', (event) => {
+    perfEvents.append(event);
+  });
+
+  const nodesAtom = createState<Map<Id, UINode>>(new Map());
   client.onMessage('nativeScan', ({nodes}) => {
     nodesAtom.set(new Map(nodes.map((node) => [node.id, node])));
     console.log(nodesAtom.get());
   });
 
-  return {rootId, nodes: nodesAtom};
+  return {rootId, nodes: nodesAtom, perfEvents};
 }
 
 export {Component} from './components/main';

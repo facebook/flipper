@@ -12,6 +12,9 @@
   "keywords": [
     "flipper-plugin"
   ],
+  "dependencies": {
+    "react-hotkeys-hook" : "^3.4.7"
+  },
   "bugs": {
     "url": "https://github.com/facebook/flipper/issues"
   },
