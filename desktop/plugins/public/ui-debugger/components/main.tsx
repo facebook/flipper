@@ -10,13 +10,15 @@
 import React, {useState} from 'react';
 import {PerfStatsEvent, plugin} from '../index';
 import {
+  DataInspector,
   DataTable,
   DataTableColumn,
+  DetailSidebar,
   Layout,
   usePlugin,
   useValue,
 } from 'flipper-plugin';
-import {Tree} from 'antd';
+import {Tree, Typography} from 'antd';
 import type {DataNode} from 'antd/es/tree';
 import {DownOutlined} from '@ant-design/icons';
 import {useHotkeys} from 'react-hotkeys-hook';
@@ -86,8 +88,27 @@ export function Component() {
   const nodes = useValue(instance.nodes);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<string | undefined>(
+    undefined,
+  );
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
+
+  function renderAttributesInspector(node: UINode | undefined) {
+    if (!node) {
+      return;
+    }
+    return (
+      <>
+        <DetailSidebar>
+          <Layout.Container gap pad>
+            <Typography.Title level={2}>Attributes Inspector</Typography.Title>
+            <DataInspector data={node.attributes} expandRoot />
+          </Layout.Container>
+        </DetailSidebar>
+      </>
+    );
+  }
 
   if (showPerfStats)
     return (
@@ -100,19 +121,22 @@ export function Component() {
   if (rootId) {
     const antTree = nodesToAntTree(rootId, nodes);
     return (
-      <Layout.ScrollContainer>
-        <Tree
-          showIcon
-          showLine
-          onSelect={(selected) => {
-            console.log(nodes.get(selected[0] as string));
-          }}
-          defaultExpandAll
-          expandedKeys={[...nodes.keys()]}
-          switcherIcon={<DownOutlined />}
-          treeData={[antTree]}
-        />
-      </Layout.ScrollContainer>
+      <>
+        <Layout.ScrollContainer>
+          <Tree
+            showIcon
+            showLine
+            onSelect={(selected) => {
+              setSelectedNode(selected[0] as string);
+            }}
+            defaultExpandAll
+            expandedKeys={[...nodes.keys()]}
+            switcherIcon={<DownOutlined />}
+            treeData={[antTree]}
+          />
+        </Layout.ScrollContainer>
+        {selectedNode && renderAttributesInspector(nodes.get(selectedNode))}
+      </>
     );
   }
 
