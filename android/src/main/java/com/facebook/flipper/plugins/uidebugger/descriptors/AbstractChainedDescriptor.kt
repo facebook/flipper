@@ -7,13 +7,15 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
+
 /**
  * This class derives from Descriptor and provides a canonical implementation of ChainedDescriptor}.
  */
 abstract class AbstractChainedDescriptor<T> : Descriptor<T>(), ChainedDescriptor<T> {
   private var mSuper: Descriptor<T>? = null
 
-  override fun setSuper(superDescriptor: Descriptor<T>) {
+  final override fun setSuper(superDescriptor: Descriptor<T>) {
     if (superDescriptor !== mSuper) {
       check(mSuper == null)
       mSuper = superDescriptor
@@ -25,7 +27,7 @@ abstract class AbstractChainedDescriptor<T> : Descriptor<T>(), ChainedDescriptor
   }
 
   /** Initialize a descriptor. */
-  override fun init() {
+  final override fun init() {
     mSuper?.init()
     onInit()
   }
@@ -36,7 +38,7 @@ abstract class AbstractChainedDescriptor<T> : Descriptor<T>(), ChainedDescriptor
    * A globally unique ID used to identify a node in a hierarchy. If your node does not have a
    * globally unique ID it is fine to rely on [System.identityHashCode].
    */
-  override fun getId(node: T): String {
+  final override fun getId(node: T): String {
     return onGetId(node)
   }
 
@@ -46,28 +48,28 @@ abstract class AbstractChainedDescriptor<T> : Descriptor<T>(), ChainedDescriptor
    * The name used to identify this node in the inspector. Does not need to be unique. A good
    * default is to use the class name of the node.
    */
-  override fun getName(node: T): String {
+  final override fun getName(node: T): String {
     return onGetName(node)
   }
 
   abstract fun onGetName(node: T): String
 
   /** The children this node exposes in the inspector. */
-  override fun getChildren(node: T, children: MutableList<Any>) {
+  final override fun getChildren(node: T, children: MutableList<Any>) {
     mSuper?.getChildren(node, children)
     onGetChildren(node, children)
   }
 
   open fun onGetChildren(node: T, children: MutableList<Any>) {}
 
-  /**
-   * Get the data to show for this node in the sidebar of the inspector. The object will be showen
-   * in order and with a header matching the given name.
-   */
-  override fun getData(node: T, builder: MutableMap<String, Any?>) {
+  final override fun getData(node: T, builder: MutableMap<String, InspectableObject>) {
     mSuper?.getData(node, builder)
     onGetData(node, builder)
   }
 
-  open fun onGetData(node: T, builder: MutableMap<String, Any?>) {}
+  /**
+   * Get the data to show for this node in the sidebar of the inspector. Each key will be a have its
+   * own section
+   */
+  open fun onGetData(node: T, attributeSections: MutableMap<String, InspectableObject>) {}
 }

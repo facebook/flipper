@@ -9,11 +9,14 @@ package com.facebook.flipper.plugins.uidebugger
 
 import android.app.Application
 import com.facebook.flipper.core.FlipperConnection
-import com.facebook.flipper.core.FlipperObject
 import com.facebook.flipper.core.FlipperPlugin
+import com.facebook.flipper.plugins.uidebugger.common.Node
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationInspector
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.core.Context
+import kotlinx.serialization.json.Json
+
+val LogTag = "FlipperUIDebugger"
 
 class UIDebuggerFlipperPlugin(val application: Application) : FlipperPlugin {
 
@@ -28,14 +31,18 @@ class UIDebuggerFlipperPlugin(val application: Application) : FlipperPlugin {
   override fun onConnect(connection: FlipperConnection) {
     this.connection = connection
     // temp solution, get from descriptor
-    connection.send(
-        "init",
-        FlipperObject.Builder()
-            .put("rootId", System.identityHashCode(application).toString())
-            .build())
-
     val inspector = ApplicationInspector(context)
-    val root = inspector.inspect()
+    val root: Node = inspector.inspect()!!
+    val initEvent = InitEvent(System.identityHashCode(application).toString())
+
+    connection.send(
+        InitEvent.name,
+        Json.encodeToString(
+            InitEvent.serializer(), InitEvent(System.identityHashCode(application).toString())))
+
+    connection.send(
+        NativeScanEvent.name,
+        Json.encodeToString(NativeScanEvent.serializer(), NativeScanEvent(root)))
   }
 
   @Throws(Exception::class)

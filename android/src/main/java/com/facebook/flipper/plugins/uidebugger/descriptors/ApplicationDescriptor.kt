@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.app.Activity
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
 
@@ -48,5 +49,8 @@ class ApplicationDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
     }
   }
 
-  override fun onGetData(applicationRef: ApplicationRef, builder: MutableMap<String, Any?>) {}
+  override fun onGetData(
+      applicationRef: ApplicationRef,
+      attributeSections: MutableMap<String, InspectableObject>
+  ) {}
 }

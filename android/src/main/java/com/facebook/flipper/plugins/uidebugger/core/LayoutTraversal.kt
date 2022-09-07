@@ -7,10 +7,10 @@
 
 package com.facebook.flipper.plugins.uidebugger.core
 
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.common.Node
 import com.facebook.flipper.plugins.uidebugger.descriptors.Descriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
-import java.lang.ref.WeakReference
 
 class LayoutTraversal(private val descriptorRegister: DescriptorRegister) {
   class IntermediateNode(val node: Node) {
@@ -20,7 +20,7 @@ class LayoutTraversal(private val descriptorRegister: DescriptorRegister) {
   internal inline fun Descriptor<*>.asAny(): Descriptor<Any> = this as Descriptor<Any>
 
   private fun describe(obj: Any): IntermediateNode {
-    var intermediate = IntermediateNode(Node(WeakReference(obj)))
+    var intermediate = IntermediateNode(Node())
 
     val descriptor = descriptorRegister.descriptorForClass(obj::class.java)
     descriptor?.let { descriptor ->
@@ -29,7 +29,7 @@ class LayoutTraversal(private val descriptorRegister: DescriptorRegister) {
       intermediate.node.id = anyDescriptor.getId(obj)
       intermediate.node.name = anyDescriptor.getName(obj)
 
-      val attributes = mutableMapOf<String, Any?>()
+      val attributes = mutableMapOf<String, InspectableObject>()
       anyDescriptor.getData(obj, attributes)
       intermediate.node.attributes = attributes
 

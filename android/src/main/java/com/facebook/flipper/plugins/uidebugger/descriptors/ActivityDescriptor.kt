@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.app.Activity
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.stetho.FragmentCompat
 
 class ActivityDescriptor : AbstractChainedDescriptor<Activity>() {
@@ -35,7 +36,10 @@ class ActivityDescriptor : AbstractChainedDescriptor<Activity>() {
     }
   }
 
-  override fun onGetData(activity: Activity, builder: MutableMap<String, Any?>) {}
+  override fun onGetData(
+      activity: Activity,
+      attributeSections: MutableMap<String, InspectableObject>
+  ) {}
 
   private fun getFragments(compat: FragmentCompat<*, *, *, *>?, activity: Activity): List<Any> {
     if (compat == null) {
