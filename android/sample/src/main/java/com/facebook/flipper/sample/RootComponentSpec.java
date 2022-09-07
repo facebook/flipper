@@ -109,8 +109,15 @@ public class RootComponentSpec {
                     .clickHandler(RootComponent.openAnimationsActivity(c)))
             .child(
                 Text.create(c)
-                    .text("Crash this app")
+                    .text("Navigate to increment activity")
                     .key("11")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openIncrementActivity(c)))
+            .child(
+                Text.create(c)
+                    .text("Crash this app")
+                    .key("12")
                     .marginDip(YogaEdge.ALL, 10)
                     .textSizeSp(20)
                     .clickHandler(RootComponent.triggerCrash(c)))
@@ -188,6 +195,12 @@ public class RootComponentSpec {
   @OnEvent(ClickEvent.class)
   static void openAnimationsActivity(final ComponentContext c) {
     final Intent intent = new Intent(c.getAndroidContext(), AnimationsActivity.class);
+    c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void openIncrementActivity(final ComponentContext c) {
+    final Intent intent = new Intent(c.getAndroidContext(), IncrementActivity.class);
     c.getAndroidContext().startActivity(intent);
   }
 }
