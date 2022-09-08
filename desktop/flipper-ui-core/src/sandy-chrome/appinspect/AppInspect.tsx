@@ -36,9 +36,7 @@ const appTooltip = (
     Inspect apps by selecting connected devices and emulators. Navigate and
     bookmark frequent destinations in the app. Refresh, screenshot and
     screenrecord is also available.{' '}
-    <Link href="https://fbflipper.com/docs/getting-started/index">
-      Learn More
-    </Link>
+    <Link href="https://fbflipper.com/docs/getting-started/">Learn More</Link>
   </>
 );
 
