@@ -8,9 +8,9 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.widget.Button
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 
 class ButtonDescriptor : AbstractChainedDescriptor<Button>() {
-  override fun init() {}
 
   override fun onGetId(button: Button): String {
     return Integer.toString(System.identityHashCode(button))
@@ -20,7 +20,10 @@ class ButtonDescriptor : AbstractChainedDescriptor<Button>() {
     return button.javaClass.simpleName
   }
 
-  override fun onGetData(button: Button, builder: MutableMap<String, Any?>) {}
+  override fun onGetData(
+      button: Button,
+      attributeSections: MutableMap<String, InspectableObject>
+  ) {}
 
   override fun onGetChildren(button: Button, children: MutableList<Any>) {}
 }

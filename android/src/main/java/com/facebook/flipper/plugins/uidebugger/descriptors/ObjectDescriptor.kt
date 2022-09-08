@@ -7,6 +7,8 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
+
 class ObjectDescriptor : Descriptor<Any>() {
   override fun init() {}
 
@@ -20,5 +22,5 @@ class ObjectDescriptor : Descriptor<Any>() {
 
   override fun getChildren(node: Any, children: MutableList<Any>) {}
 
-  override fun getData(obj: Any, builder: MutableMap<String, Any?>) {}
+  override fun getData(obj: Any, builder: MutableMap<String, InspectableObject>) {}
 }

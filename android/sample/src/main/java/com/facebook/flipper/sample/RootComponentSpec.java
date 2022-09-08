@@ -24,6 +24,7 @@ import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.VerticalScroll;
 import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
@@ -33,79 +34,102 @@ public class RootComponentSpec {
   static Component onCreateLayout(final ComponentContext c, @State boolean displayImage) {
     final DraweeController controller =
         Fresco.newDraweeControllerBuilder().setUri("https://fbflipper.com/img/icon.png").build();
-    return Column.create(c)
-        .child(
-            Text.create(c)
-                .text("Send GET request")
-                .key("1")
-                .marginDip(YogaEdge.ALL, 10)
-                .textSizeSp(20)
-                .clickHandler(RootComponent.hitGetRequest(c)))
-        .child(
-            Text.create(c)
-                .text("Send POST request")
-                .key("2")
-                .marginDip(YogaEdge.ALL, 10)
-                .textSizeSp(20)
-                .clickHandler(RootComponent.hitPostRequest(c)))
-        .child(
-            Text.create(c)
-                .text("Trigger Notification")
-                .key("3")
-                .marginDip(YogaEdge.ALL, 10)
-                .textSizeSp(20)
-                .clickHandler(RootComponent.triggerNotification(c)))
-        .child(
-            Text.create(c)
-                .text("Diagnose connection issues")
-                .key("4")
-                .marginDip(YogaEdge.ALL, 10)
-                .textSizeSp(20)
-                .clickHandler(RootComponent.openDiagnostics(c)))
-        .child(
-            Text.create(c)
-                .text("Load Fresco image")
-                .key("5")
-                .marginDip(YogaEdge.ALL, 10)
-                .textSizeSp(20)
-                .clickHandler(RootComponent.loadImage(c)))
-        .child(
-            Text.create(c)
-                .text("Navigate to another page")
-                .key("6")
-                .marginDip(YogaEdge.ALL, 10)
-                .textSizeSp(20)
-                .clickHandler(RootComponent.openAlternateActivityOne(c)))
-        .child(
-            Text.create(c)
-                .text("Navigate to layout test page")
-                .key("7")
-                .marginDip(YogaEdge.ALL, 10)
-                .textSizeSp(20)
-                .clickHandler(RootComponent.openAlternateLayoutTestActivity(c)))
-        .child(
-            Text.create(c)
-                .text("Navigate to fragment test page")
-                .key("8")
-                .marginDip(YogaEdge.ALL, 10)
-                .textSizeSp(20)
-                .clickHandler(RootComponent.openFragmentTestActivity(c)))
-        .child(
-            Text.create(c)
-                .text("Crash this app")
-                .key("9")
-                .marginDip(YogaEdge.ALL, 10)
-                .textSizeSp(20)
-                .clickHandler(RootComponent.triggerCrash(c)))
-        .child(
-            displayImage
-                ? FrescoImage.create(c)
+
+    Column col =
+        Column.create(c)
+            .child(
+                Text.create(c)
+                    .text("Send HTTP/GET request")
+                    .key("1")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.hitGetRequest(c)))
+            .child(
+                Text.create(c)
+                    .text("Send HTTP/POST request")
+                    .key("2")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.hitPostRequest(c)))
+            .child(
+                Text.create(c)
+                    .text("Trigger notification")
+                    .key("3")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.triggerNotification(c)))
+            .child(
+                Text.create(c)
+                    .text("Diagnose connection issues")
+                    .key("4")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openDiagnostics(c)))
+            .child(
+                Text.create(c)
+                    .text("Load Fresco image")
+                    .key("5")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.loadImage(c)))
+            .child(
+                Text.create(c)
+                    .text("Navigate to another page")
+                    .key("6")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openAlternateActivityOne(c)))
+            .child(
+                Text.create(c)
+                    .text("Navigate to layout test page")
+                    .key("7")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openAlternateLayoutTestActivity(c)))
+            .child(
+                Text.create(c)
+                    .text("Navigate to fragment test page")
+                    .key("8")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openFragmentTestActivity(c)))
+            .child(
+                Text.create(c)
+                    .text("Navigate to list activity")
+                    .key("9")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openListActivity(c)))
+            .child(
+                Text.create(c)
+                    .text("Navigate to animations activity")
+                    .key("10")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openAnimationsActivity(c)))
+            .child(
+                Text.create(c)
+                    .text("Navigate to increment activity")
+                    .key("11")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openIncrementActivity(c)))
+            .child(
+                Text.create(c)
+                    .text("Crash this app")
+                    .key("12")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.triggerCrash(c)))
+            .child(
+                FrescoImage.create(c)
                     .controller(controller)
                     .marginDip(YogaEdge.ALL, 10)
                     .widthDip(150)
-                    .heightDip(150)
-                : null)
-        .build();
+                    .heightDip(150))
+            .build();
+
+    return VerticalScroll.create(c).childComponent(col).build();
   }
 
   @OnEvent(ClickEvent.class)
@@ -160,5 +184,23 @@ public class RootComponentSpec {
   @OnEvent(ClickEvent.class)
   static void loadImage(final ComponentContext c) {
     RootComponent.updateDisplayImageAsync(c);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void openListActivity(final ComponentContext c) {
+    final Intent intent = new Intent(c.getAndroidContext(), ListActivity.class);
+    c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void openAnimationsActivity(final ComponentContext c) {
+    final Intent intent = new Intent(c.getAndroidContext(), AnimationsActivity.class);
+    c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void openIncrementActivity(final ComponentContext c) {
+    final Intent intent = new Intent(c.getAndroidContext(), IncrementActivity.class);
+    c.getAndroidContext().startActivity(intent);
   }
 }

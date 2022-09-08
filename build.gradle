@@ -15,6 +15,7 @@ buildscript {
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.20.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.7.10"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
     }
 }
 
@@ -75,6 +76,7 @@ ext.deps = [
         websocket          : 'org.java-websocket:Java-WebSocket:1.5.3',
         openssl            : 'com.android.ndk.thirdparty:openssl:1.1.1l-beta-1',
         // Annotations
+        kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0",
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
         proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.19.0',

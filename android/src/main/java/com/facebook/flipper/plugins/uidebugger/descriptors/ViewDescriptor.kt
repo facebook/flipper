@@ -13,16 +13,16 @@ import android.util.SparseArray
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
+import com.facebook.flipper.plugins.uidebugger.common.Inspectable
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.stetho.ResourcesUtil
 import java.lang.reflect.Field
 
 class ViewDescriptor : AbstractChainedDescriptor<View>() {
-  override fun init() {}
 
   override fun onGetId(view: View): String {
     return Integer.toBinaryString(System.identityHashCode(view))
@@ -34,119 +34,133 @@ class ViewDescriptor : AbstractChainedDescriptor<View>() {
 
   override fun onGetChildren(view: View, children: MutableList<Any>) {}
 
-  override fun onGetData(view: View, builder: MutableMap<String, Any?>) {
+  override fun onGetData(view: View, attributeSections: MutableMap<String, InspectableObject>) {
     val positionOnScreen = IntArray(2)
     view.getLocationOnScreen(positionOnScreen)
 
-    val props = mutableMapOf<String, Any?>()
-    props.put("height", InspectableValue.mutable(view.height))
-    props.put("width", InspectableValue.mutable(view.width))
-    props.put("alpha", InspectableValue.mutable(view.alpha))
-    props.put("visibility", VisibilityMapping.toPicker(view.visibility))
-    props.put("background", fromDrawable(view.background))
-    // props.put("tag", InspectableValue.mutable(view.tag))
-    // props.put("keyedTags", getTags(view))
+    val props = mutableMapOf<String, Inspectable>()
+    props.put("height", InspectableValue.Number(view.height, mutable = true))
+    props.put("width", InspectableValue.Number(view.width, mutable = true))
+    props.put("alpha", InspectableValue.Number(view.alpha, mutable = true))
+    props.put("visibility", VisibilityMapping.toInspectable(view.visibility, mutable = false))
+
+    fromDrawable(view.background)?.let { props.put("background", it) }
+
+    view.tag?.let { InspectableValue.fromAny(it, mutable = false) }?.let { props.put("tag", it) }
+    props.put("keyedTags", InspectableObject(getTags(view)))
     props.put("layoutParams", getLayoutParams(view))
     props.put(
         "state",
-        mapOf<String, Any?>(
-            "enabled" to InspectableValue.mutable(view.isEnabled),
-            "activated" to InspectableValue.mutable(view.isActivated),
-            "focused" to view.isFocused,
-            "selected" to InspectableValue.mutable(view.isSelected)))
+        InspectableObject(
+            mapOf(
+                "enabled" to InspectableValue.Boolean(view.isEnabled, mutable = false),
+                "activated" to InspectableValue.Boolean(view.isActivated, mutable = false),
+                "focused" to InspectableValue.Boolean(view.isFocused, mutable = false),
+                "selected" to InspectableValue.Boolean(view.isSelected, mutable = false))))
+
     props.put(
         "bounds",
-        mapOf<String, Any?>(
-            "left" to InspectableValue.mutable(view.left),
-            "right" to InspectableValue.mutable(view.right),
-            "top" to InspectableValue.mutable(view.top),
-            "bottom" to InspectableValue.mutable(view.bottom)))
+        InspectableObject(
+            mapOf<String, Inspectable>(
+                "left" to InspectableValue.Number(view.left, mutable = true),
+                "right" to InspectableValue.Number(view.right, mutable = true),
+                "top" to InspectableValue.Number(view.top, mutable = true),
+                "bottom" to InspectableValue.Number(view.bottom, mutable = true))))
     props.put(
         "padding",
-        mapOf<String, Any?>(
-            "left" to InspectableValue.mutable(view.paddingLeft),
-            "top" to InspectableValue.mutable(view.paddingTop),
-            "right" to InspectableValue.mutable(view.paddingRight),
-            "bottom" to InspectableValue.mutable(view.paddingBottom)))
+        InspectableObject(
+            mapOf<String, Inspectable>(
+                "left" to InspectableValue.Number(view.paddingLeft, mutable = true),
+                "right" to InspectableValue.Number(view.paddingRight, mutable = true),
+                "top" to InspectableValue.Number(view.paddingTop, mutable = true),
+                "bottom" to InspectableValue.Number(view.paddingBottom, mutable = true))))
+
     props.put(
         "rotation",
-        mapOf<String, Any?>(
-            "x" to InspectableValue.mutable(view.rotationX),
-            "y" to InspectableValue.mutable(view.rotationY),
-            "z" to InspectableValue.mutable(view.rotation)))
+        InspectableObject(
+            mapOf<String, Inspectable>(
+                "x" to InspectableValue.Number(view.rotationX, mutable = true),
+                "y" to InspectableValue.Number(view.rotationY, mutable = true),
+                "z" to InspectableValue.Number(view.rotation, mutable = true))))
+
     props.put(
         "scale",
-        mapOf<String, Any?>(
-            "x" to InspectableValue.mutable(view.scaleX),
-            "y" to InspectableValue.mutable(view.scaleY)))
+        InspectableObject(
+            mapOf(
+                "x" to InspectableValue.Number(view.scaleX, mutable = true),
+                "y" to InspectableValue.Number(view.scaleY, mutable = true))))
     props.put(
         "pivot",
-        mapOf<String, Any?>(
-            "x" to InspectableValue.mutable(view.pivotX),
-            "y" to InspectableValue.mutable(view.pivotY)))
-    props.put("positionOnScreenX", positionOnScreen[0])
-    props.put("positionOnScreenY", positionOnScreen[1])
+        InspectableObject(
+            mapOf(
+                "x" to InspectableValue.Number(view.pivotX, mutable = true),
+                "y" to InspectableValue.Number(view.pivotY, mutable = true))))
 
-    builder.put("View", props)
+    props.put(
+        "globalPosition",
+        InspectableObject(
+            mapOf(
+                "x" to InspectableValue.Number(positionOnScreen[0], mutable = false),
+                "y" to InspectableValue.Number(positionOnScreen[1], mutable = false))))
+
+    attributeSections.put("View", InspectableObject(props.toMap()))
   }
 
-  fun fromDrawable(d: Drawable?): InspectableValue<*> {
+  fun fromDrawable(d: Drawable?): Inspectable? {
     return if (d is ColorDrawable) {
-      InspectableValue.mutable(InspectableValue.Type.Color, d.color)
-    } else InspectableValue.mutable(InspectableValue.Type.Color, 0)
+      InspectableValue.Color(d.color, mutable = false)
+    } else null
   }
 
-  fun fromSize(size: Int): InspectableValue<*> {
-    return when (size) {
-      ViewGroup.LayoutParams.WRAP_CONTENT ->
-          InspectableValue.mutable(InspectableValue.Type.Enum, "WRAP_CONTENT")
-      ViewGroup.LayoutParams.MATCH_PARENT ->
-          InspectableValue.mutable(InspectableValue.Type.Enum, "MATCH_PARENT")
-      else -> InspectableValue.mutable(InspectableValue.Type.Enum, Integer.toString(size))
-    }
-  }
-
-  fun getLayoutParams(node: View): MutableMap<String, Any> {
+  fun getLayoutParams(node: View): InspectableObject {
     val layoutParams = node.layoutParams
 
-    val params = mutableMapOf<String, Any>()
-    params.put("width", fromSize(layoutParams.width))
-    params.put("height", fromSize(layoutParams.height))
-    if (layoutParams is MarginLayoutParams) {
+    val params = mutableMapOf<String, Inspectable>()
+    params.put("width", LayoutParamsMapping.toInspectable(layoutParams.width, mutable = true))
+    params.put("height", LayoutParamsMapping.toInspectable(layoutParams.height, mutable = true))
+
+    if (layoutParams is ViewGroup.MarginLayoutParams) {
       val marginLayoutParams = layoutParams
 
       val margin =
-          mapOf<String, Any>(
-              "left" to InspectableValue.mutable(marginLayoutParams.leftMargin),
-              "top" to InspectableValue.mutable(marginLayoutParams.topMargin),
-              "right" to InspectableValue.mutable(marginLayoutParams.rightMargin),
-              "bottom" to InspectableValue.mutable(marginLayoutParams.bottomMargin))
+          InspectableObject(
+              mapOf<String, Inspectable>(
+                  "left" to InspectableValue.Number(marginLayoutParams.leftMargin, mutable = true),
+                  "top" to InspectableValue.Number(marginLayoutParams.topMargin, mutable = true),
+                  "right" to
+                      InspectableValue.Number(marginLayoutParams.rightMargin, mutable = true),
+                  "bottom" to
+                      InspectableValue.Number(marginLayoutParams.bottomMargin, mutable = true)))
 
       params.put("margin", margin)
     }
     if (layoutParams is FrameLayout.LayoutParams) {
-      params.put("gravity", GravityMapping.toPicker(layoutParams.gravity))
+      params.put("gravity", GravityMapping.toInspectable(layoutParams.gravity, mutable = true))
     }
     if (layoutParams is LinearLayout.LayoutParams) {
       val linearLayoutParams = layoutParams
-      params.put("weight", InspectableValue.mutable(linearLayoutParams.weight))
-      params.put("gravity", GravityMapping.toPicker(linearLayoutParams.gravity))
+      params.put("weight", InspectableValue.Number(linearLayoutParams.weight, mutable = true))
+      params.put(
+          "gravity", GravityMapping.toInspectable(linearLayoutParams.gravity, mutable = true))
     }
-    return params
+    return InspectableObject(params)
   }
 
-  fun getTags(node: View): MutableMap<String, Any?> {
-    val tags = mutableMapOf<String, Any?>()
+  fun getTags(node: View): MutableMap<String, Inspectable> {
+    val tags = mutableMapOf<String, Inspectable>()
 
     KeyedTagsField?.let { field ->
-      val keyedTags = field[node] as SparseArray<*>
+      val keyedTags = field.get(node) as SparseArray<*>?
       if (keyedTags != null) {
         var i = 0
         val count = keyedTags.size()
         while (i < count) {
           val id =
               ResourcesUtil.getIdStringQuietly(node.context, node.resources, keyedTags.keyAt(i))
-          tags.put(id, keyedTags.valueAt(i))
+          keyedTags
+              .valueAt(i)
+              ?.let { InspectableValue.fromAny(it, false) }
+              ?.let { tags.put(id, it) }
           i++
         }
       }
@@ -155,67 +169,75 @@ class ViewDescriptor : AbstractChainedDescriptor<View>() {
     return tags
   }
 
+  private val LayoutParamsMapping: EnumMapping<Int> =
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "WRAP_CONTENT" to ViewGroup.LayoutParams.WRAP_CONTENT,
+                  "MATCH_PARENT" to ViewGroup.LayoutParams.MATCH_PARENT,
+                  "FILL_PARENT" to ViewGroup.LayoutParams.FILL_PARENT,
+              )) {}
   private val VisibilityMapping: EnumMapping<Int> =
-      object : EnumMapping<Int>("VISIBLE") {
-        init {
-          put("VISIBLE", View.VISIBLE)
-          put("INVISIBLE", View.INVISIBLE)
-          put("GONE", View.GONE)
-        }
-      }
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "VISIBLE" to View.VISIBLE,
+                  "INVISIBLE" to View.INVISIBLE,
+                  "GONE" to View.GONE,
+              )) {}
 
   private val LayoutDirectionMapping: EnumMapping<Int> =
-      object : EnumMapping<Int>("LAYOUT_DIRECTION_INHERIT") {
-        init {
-          put("LAYOUT_DIRECTION_INHERIT", View.LAYOUT_DIRECTION_INHERIT)
-          put("LAYOUT_DIRECTION_LOCALE", View.LAYOUT_DIRECTION_LOCALE)
-          put("LAYOUT_DIRECTION_LTR", View.LAYOUT_DIRECTION_LTR)
-          put("LAYOUT_DIRECTION_RTL", View.LAYOUT_DIRECTION_RTL)
-        }
-      }
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "LAYOUT_DIRECTION_INHERIT" to View.LAYOUT_DIRECTION_INHERIT,
+                  "LAYOUT_DIRECTION_LOCALE" to View.LAYOUT_DIRECTION_LOCALE,
+                  "LAYOUT_DIRECTION_LTR" to View.LAYOUT_DIRECTION_LTR,
+                  "LAYOUT_DIRECTION_RTL" to View.LAYOUT_DIRECTION_RTL,
+              )) {}
 
   private val TextDirectionMapping: EnumMapping<Int> =
-      object : EnumMapping<Int>("TEXT_DIRECTION_INHERIT") {
-        init {
-          put("TEXT_DIRECTION_INHERIT", View.TEXT_DIRECTION_INHERIT)
-          put("TEXT_DIRECTION_FIRST_STRONG", View.TEXT_DIRECTION_FIRST_STRONG)
-          put("TEXT_DIRECTION_ANY_RTL", View.TEXT_DIRECTION_ANY_RTL)
-          put("TEXT_DIRECTION_LTR", View.TEXT_DIRECTION_LTR)
-          put("TEXT_DIRECTION_RTL", View.TEXT_DIRECTION_RTL)
-          put("TEXT_DIRECTION_LOCALE", View.TEXT_DIRECTION_LOCALE)
-          put("TEXT_DIRECTION_FIRST_STRONG_LTR", View.TEXT_DIRECTION_FIRST_STRONG_LTR)
-          put("TEXT_DIRECTION_FIRST_STRONG_RTL", View.TEXT_DIRECTION_FIRST_STRONG_RTL)
-        }
-      }
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "TEXT_DIRECTION_INHERIT" to View.TEXT_DIRECTION_INHERIT,
+                  "TEXT_DIRECTION_FIRST_STRONG" to View.TEXT_DIRECTION_FIRST_STRONG,
+                  "TEXT_DIRECTION_ANY_RTL" to View.TEXT_DIRECTION_ANY_RTL,
+                  "TEXT_DIRECTION_LTR" to View.TEXT_DIRECTION_LTR,
+                  "TEXT_DIRECTION_RTL" to View.TEXT_DIRECTION_RTL,
+                  "TEXT_DIRECTION_LOCALE" to View.TEXT_DIRECTION_LOCALE,
+                  "TEXT_DIRECTION_FIRST_STRONG_LTR" to View.TEXT_DIRECTION_FIRST_STRONG_LTR,
+                  "TEXT_DIRECTION_FIRST_STRONG_RTL" to View.TEXT_DIRECTION_FIRST_STRONG_RTL,
+              )) {}
 
   private val TextAlignmentMapping: EnumMapping<Int> =
-      object : EnumMapping<Int>("TEXT_ALIGNMENT_INHERIT") {
-        init {
-          put("TEXT_ALIGNMENT_INHERIT", View.TEXT_ALIGNMENT_INHERIT)
-          put("TEXT_ALIGNMENT_GRAVITY", View.TEXT_ALIGNMENT_GRAVITY)
-          put("TEXT_ALIGNMENT_TEXT_START", View.TEXT_ALIGNMENT_TEXT_START)
-          put("TEXT_ALIGNMENT_TEXT_END", View.TEXT_ALIGNMENT_TEXT_END)
-          put("TEXT_ALIGNMENT_CENTER", View.TEXT_ALIGNMENT_CENTER)
-          put("TEXT_ALIGNMENT_VIEW_START", View.TEXT_ALIGNMENT_VIEW_START)
-          put("TEXT_ALIGNMENT_VIEW_END", View.TEXT_ALIGNMENT_VIEW_END)
-        }
-      }
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "TEXT_ALIGNMENT_INHERIT" to View.TEXT_ALIGNMENT_INHERIT,
+                  "TEXT_ALIGNMENT_GRAVITY" to View.TEXT_ALIGNMENT_GRAVITY,
+                  "TEXT_ALIGNMENT_TEXT_START" to View.TEXT_ALIGNMENT_TEXT_START,
+                  "TEXT_ALIGNMENT_TEXT_END" to View.TEXT_ALIGNMENT_TEXT_END,
+                  "TEXT_ALIGNMENT_CENTER" to View.TEXT_ALIGNMENT_CENTER,
+                  "TEXT_ALIGNMENT_VIEW_START" to View.TEXT_ALIGNMENT_VIEW_START,
+                  "TEXT_ALIGNMENT_VIEW_END" to View.TEXT_ALIGNMENT_VIEW_END,
+              )) {}
 
-  private val GravityMapping: EnumMapping<Int> =
-      object : EnumMapping<Int>("NO_GRAVITY") {
-        init {
-          put("NO_GRAVITY", Gravity.NO_GRAVITY)
-          put("LEFT", Gravity.LEFT)
-          put("TOP", Gravity.TOP)
-          put("RIGHT", Gravity.RIGHT)
-          put("BOTTOM", Gravity.BOTTOM)
-          put("CENTER", Gravity.CENTER)
-          put("CENTER_VERTICAL", Gravity.CENTER_VERTICAL)
-          put("FILL_VERTICAL", Gravity.FILL_VERTICAL)
-          put("CENTER_HORIZONTAL", Gravity.CENTER_HORIZONTAL)
-          put("FILL_HORIZONTAL", Gravity.FILL_HORIZONTAL)
-        }
-      }
+  private val GravityMapping =
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "NO_GRAVITY" to Gravity.NO_GRAVITY,
+                  "LEFT" to Gravity.LEFT,
+                  "TOP" to Gravity.TOP,
+                  "RIGHT" to Gravity.RIGHT,
+                  "BOTTOM" to Gravity.BOTTOM,
+                  "CENTER" to Gravity.CENTER,
+                  "CENTER_VERTICAL" to Gravity.CENTER_VERTICAL,
+                  "FILL_VERTICAL" to Gravity.FILL_VERTICAL,
+                  "CENTER_HORIZONTAL" to Gravity.CENTER_HORIZONTAL,
+                  "FILL_HORIZONTAL" to Gravity.FILL_HORIZONTAL,
+              )) {}
 
   companion object {
     private var KeyedTagsField: Field? = null

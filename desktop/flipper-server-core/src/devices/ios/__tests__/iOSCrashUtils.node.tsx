@@ -36,7 +36,7 @@ const modernCrashReportPartial = `{"app_name":"Sample","timestamp":"2022-08-02 1
   "procExitAbsTime" : 568276773623039,
   "cpuType" : "X86-64",
   "procName" : "Sample",
-  "procPath" : "\/Users\/USER\/Library\/Developer\/CoreSimulator\/Devices\/543083BF-313B-422B-A817-377078C830AF\/data\/Containers\/Bundle\/Application\/22053C61-10A5-49AE-9B09-00B0B9EAC36B\/Sample.app\/Sample"
+  "procPath" : "\/Users\/USER\/Library\/Developer\/CoreSimulator\/Devices\/543083BF-313B-422B-A817-377078C830AF\/data\/Containers\/Bundle\/Application\/22053C61-10A5-49AE-9B09-00B0B9EAC36B\/Sample.app\/Sample",
 }`;
 
 test('test the parsing of the date and crash info for the log which matches the predefined regex', () => {

@@ -7,4 +7,13 @@
 
 package com.facebook.flipper.plugins.uidebugger.core
 
-class Context(val application: ApplicationRef) {}
+import com.facebook.flipper.core.FlipperConnection
+import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+
+data class Context(
+    val applicationRef: ApplicationRef,
+    val connectionRef: ConnectionRef,
+    val descriptorRegister: DescriptorRegister = DescriptorRegister.withDefaults()
+)
+
+data class ConnectionRef(var connection: FlipperConnection?)

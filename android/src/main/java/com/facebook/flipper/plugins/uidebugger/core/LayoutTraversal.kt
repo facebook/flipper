@@ -7,63 +7,57 @@
 
 package com.facebook.flipper.plugins.uidebugger.core
 
-import com.facebook.flipper.plugins.uidebugger.common.Node
+import android.util.Log
+import com.facebook.flipper.plugins.uidebugger.LogTag
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.descriptors.Descriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
-import java.lang.ref.WeakReference
+import com.facebook.flipper.plugins.uidebugger.model.Node
 
-class LayoutTraversal(private val descriptorRegister: DescriptorRegister) {
-  class IntermediateNode(val node: Node) {
-    var children: List<Any>? = null
-  }
+class LayoutTraversal(
+    private val descriptorRegister: DescriptorRegister,
+    val root: ApplicationRef
+) {
 
   internal inline fun Descriptor<*>.asAny(): Descriptor<Any> = this as Descriptor<Any>
 
-  private fun describe(obj: Any): IntermediateNode {
-    var intermediate = IntermediateNode(Node(WeakReference(obj)))
+  /** Traverses the native android hierarchy */
+  fun traverse(): List<Node> {
 
-    val descriptor = descriptorRegister.descriptorForClass(obj::class.java)
-    descriptor?.let { descriptor ->
-      val anyDescriptor = descriptor.asAny()
+    val result = mutableListOf<Node>()
+    val stack = mutableListOf<Any>()
+    stack.add(this.root)
 
-      intermediate.node.id = anyDescriptor.getId(obj)
-      intermediate.node.name = anyDescriptor.getName(obj)
+    while (stack.isNotEmpty()) {
 
-      val attributes = mutableMapOf<String, Any?>()
-      anyDescriptor.getData(obj, attributes)
-      intermediate.node.attributes = attributes
+      val node = stack.removeLast()
 
-      val children = mutableListOf<Any>()
-      anyDescriptor.getChildren(obj, children)
-      intermediate.children = children
-    }
+      try {
 
-    return intermediate
-  }
+        val descriptor = descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
 
-  private fun traverse(entry: Any): Node? {
-    val root = describe(entry)
-    root?.let { intermediate ->
-      val queue = mutableListOf<IntermediateNode>()
-      queue.add(intermediate)
+        val children = mutableListOf<Any>()
+        descriptor.getChildren(node, children)
 
-      while (queue.isNotEmpty()) {
-        val intermediateNode = queue.removeFirst()
-
-        val children = mutableListOf<Node>()
-        intermediateNode.children?.forEach {
-          val intermediateChild = describe(it)
-          children.add(intermediateChild.node)
-          queue.add(intermediateChild)
+        val childrenIds = mutableListOf<String>()
+        for (child in children) {
+          // it might make sense one day to remove id from the descriptor since its always the
+          // hash code
+          val childDescriptor =
+              descriptorRegister.descriptorForClassUnsafe(child::class.java).asAny()
+          childrenIds.add(childDescriptor.getId(child))
+          stack.add(child)
         }
-        intermediateNode.node.children = children
+
+        val attributes = mutableMapOf<String, InspectableObject>()
+        descriptor.getData(node, attributes)
+
+        result.add(Node(descriptor.getId(node), descriptor.getName(node), attributes, childrenIds))
+      } catch (exception: Exception) {
+        Log.e(LogTag, "Error while processing node ${node.javaClass.name} ${node} ", exception)
       }
     }
 
-    return root?.node
-  }
-
-  fun inspect(applicationRef: ApplicationRef): Node? {
-    return traverse(applicationRef)
+    return result
   }
 }

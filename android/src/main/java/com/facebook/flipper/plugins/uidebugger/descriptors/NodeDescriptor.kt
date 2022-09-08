@@ -7,6 +7,8 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
+
 interface NodeDescriptor<T> {
   /** Initialize a descriptor. */
   fun init()
@@ -27,8 +29,8 @@ interface NodeDescriptor<T> {
   fun getChildren(node: T, children: MutableList<Any>)
 
   /**
-   * Get the data to show for this node in the sidebar of the inspector. The object will be showen
-   * in order and with a header matching the given name.
+   * Get the data to show for this node in the sidebar of the inspector. The object will be shown in
+   * order and with a header matching the given name.
    */
-  fun getData(node: T, builder: MutableMap<String, Any?>)
+  fun getData(node: T, builder: MutableMap<String, InspectableObject>)
 }

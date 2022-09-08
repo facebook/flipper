@@ -7,11 +7,4 @@
 
 package com.facebook.flipper.plugins.uidebugger.common
 
-import java.lang.ref.WeakReference
-
-class Node(val ref: WeakReference<Any>) {
-  var id: String? = null
-  var name: String? = null
-  var attributes: Map<String, Any?>? = null
-  var children: List<Node>? = null
-}
+class UIDebuggerException(message: String) : Exception(message)

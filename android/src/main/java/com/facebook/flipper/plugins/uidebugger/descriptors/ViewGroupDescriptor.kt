@@ -9,15 +9,16 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.app.Fragment
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewGroupCompat
+import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
+import com.facebook.flipper.plugins.uidebugger.common.Inspectable
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.stetho.FragmentCompat
 
 class ViewGroupDescriptor : AbstractChainedDescriptor<ViewGroup>() {
-  override fun init() {}
 
   override fun onGetId(viewGroup: ViewGroup): String {
     return Integer.toString(System.identityHashCode(viewGroup))
@@ -38,30 +39,35 @@ class ViewGroupDescriptor : AbstractChainedDescriptor<ViewGroup>() {
     }
   }
 
-  override fun onGetData(viewGroup: ViewGroup, builder: MutableMap<String, Any?>) {
-    Log.d("FLIPPER_LAYOUT", "[viewgroup] onGetData")
-    val groupBuilder = mutableMapOf<String, Any?>()
+  override fun onGetData(
+      viewGroup: ViewGroup,
+      attributeSections: MutableMap<String, InspectableObject>
+  ) {
+    val viewGroupAttrs = mutableMapOf<String, Inspectable>()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      groupBuilder.put(
-          "LayoutMode",
-          InspectableValue.mutable(
-              InspectableValue.Type.Enum,
-              if (viewGroup.getLayoutMode() == ViewGroupCompat.LAYOUT_MODE_CLIP_BOUNDS)
-                  "LAYOUT_MODE_CLIP_BOUNDS"
-              else "LAYOUT_MODE_OPTICAL_BOUNDS"))
-      groupBuilder.put(
+      viewGroupAttrs.put(
+          "LayoutMode", LayoutModeMapping.toInspectable(viewGroup.getLayoutMode(), true))
+      viewGroupAttrs.put(
           "ClipChildren",
-          InspectableValue.mutable(InspectableValue.Type.Boolean, viewGroup.getClipChildren()))
+          InspectableValue.Boolean(viewGroup.getClipChildren(), true),
+      )
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      groupBuilder.put(
-          "ClipToPadding",
-          InspectableValue.mutable(InspectableValue.Type.Boolean, viewGroup.getClipToPadding()))
+      viewGroupAttrs.put(
+          "ClipToPadding", InspectableValue.Boolean(viewGroup.getClipToPadding(), true))
     }
 
-    builder.put("ViewGroup", groupBuilder)
+    attributeSections.put("ViewGroup", InspectableObject(viewGroupAttrs))
   }
+
+  private val LayoutModeMapping: EnumMapping<Int> =
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "LAYOUT_MODE_CLIP_BOUNDS" to ViewGroupCompat.LAYOUT_MODE_CLIP_BOUNDS,
+                  "LAYOUT_MODE_OPTICAL_BOUNDS" to ViewGroupCompat.LAYOUT_MODE_OPTICAL_BOUNDS,
+              )) {}
 
   companion object {
     private fun getAttachedFragmentForView(v: View): Any? {
