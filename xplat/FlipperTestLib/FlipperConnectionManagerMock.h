@@ -40,6 +40,10 @@ class FlipperConnectionManagerMock : public FlipperConnectionManager {
     messages.push_back(message);
   }
 
+  void sendMessageRaw(const std::string& message) override {
+    messages.push_back(folly::parseJson(message));
+  }
+
   void setCertificateProvider(
       const std::shared_ptr<FlipperCertificateProvider> provider) override{};
 

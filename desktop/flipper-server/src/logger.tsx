@@ -7,7 +7,6 @@
  * @format
  */
 
-import * as fs from 'fs-extra';
 import path from 'path';
 import {
   LoggerExtractError,
@@ -17,6 +16,11 @@ import {
   Logger,
   setLoggerInstance,
 } from 'flipper-common';
+// @ts-expect-error
+import fsRotator from 'file-stream-rotator';
+import {ensureFile} from 'fs-extra';
+import {access} from 'fs/promises';
+import {constants} from 'fs';
 
 export const loggerOutputFile = 'flipper-server-log.out';
 
@@ -81,15 +85,39 @@ const consoleProxy = (proxy: FlipperLogProxy) => {
   }
 };
 
-export function initializeLogger(staticDir: string) {
-  // Supress debug messages by default.
+export async function initializeLogger(staticDir: string) {
+  // Suppress stdout debug messages, but keep writing them to the file.
   console.debug = function () {};
 
   const logger = createLogger();
   setLoggerInstance(logger);
 
-  const file = fs.createWriteStream(path.join(staticDir, loggerOutputFile));
+  let onConsoleEntry: ((entry: LoggerInfo) => void) | undefined;
+
+  const logFilename = path.join(staticDir, loggerOutputFile);
+
+  let logStream: NodeJS.WriteStream | undefined = undefined;
+  try {
+    await ensureFile(logFilename);
+    await access(logFilename, constants.W_OK);
+    logStream = fsRotator.getStream({
+      // Rotation number is going to be added after the file name
+      filename: logFilename,
+      // Rotate every 1MB
+      size: '1m',
+      // Keep last 5 rotations
+      max_logs: 20,
+    });
+  } catch (e) {
+    console.warn('initializeLogger -> cannot write logs to FS', e);
+  }
+
   consoleProxy((entry: LoggerInfo) => {
-    file.write(`${JSON.stringify(entry)}\n`);
+    logStream?.write(`${JSON.stringify(entry)}\n`);
+    onConsoleEntry?.(entry);
   });
+
+  return (newOnConsoleEntry: (entry: LoggerInfo) => void) => {
+    onConsoleEntry = newOnConsoleEntry;
+  };
 }

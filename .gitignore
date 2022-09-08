@@ -16,7 +16,6 @@ desktop-branch-*/
 *.xcworkspace
 **/Pods/
 **/xcuserdata/
-build/
 
 android/third-party/external/
 
@@ -32,6 +31,12 @@ local.properties
 android/*/bin/**/*.class
 libs/*/bin/**/*.class
 .cxx
+*.hprof
+
+android/build
+android/*/build
+android/plugins/*/build
+xplat/build
 
 # Mac OS X
 *.DS_Store

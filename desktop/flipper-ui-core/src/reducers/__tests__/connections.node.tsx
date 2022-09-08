@@ -14,14 +14,13 @@ import {
   _setFlipperLibImplementation,
   TestUtils,
 } from 'flipper-plugin';
-import {TestDevice} from '../../devices/TestDevice';
 import {
   createMockFlipperWithPlugin,
   MockFlipperResult,
 } from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {Store} from '..';
 import {getActiveClient, getActiveDevice} from '../../selectors/connections';
-import BaseDevice from '../../devices/BaseDevice';
+import {BaseDevice, TestDevice} from 'flipper-frontend-core';
 import Client from '../../Client';
 import {
   mockConsole,

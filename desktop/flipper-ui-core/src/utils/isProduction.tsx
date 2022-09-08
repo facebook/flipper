@@ -7,7 +7,7 @@
  * @format
  */
 
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 export default function isProduction() {
   return getRenderHostInstance().serverConfig.environmentInfo.isProduction;

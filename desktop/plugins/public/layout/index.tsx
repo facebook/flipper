@@ -287,10 +287,14 @@ export default class LayoutPlugin extends FlipperPlugin<
     );
     const resolvedPath = IDEFileResolver.getBestPath(paths, params.className);
     if (this.client.isConnected) {
-      this.client.send('setResolvedPath', {
-        className: params.className,
-        resolvedPath: resolvedPath,
-      });
+      this.client
+        .call('setResolvedPath', {
+          className: params.className,
+          resolvedPath: resolvedPath,
+        })
+        .catch((e) => {
+          console.warn('[Layout] setResolvePath failed with error', e);
+        });
     }
   };
 
@@ -315,7 +319,9 @@ export default class LayoutPlugin extends FlipperPlugin<
     if (this.client.isConnected) {
       const inTargetMode = !this.state.inTargetMode;
       this.setState({inTargetMode});
-      this.client.send('setSearchActive', {active: inTargetMode});
+      this.client.call('setSearchActive', {active: inTargetMode}).catch((e) => {
+        console.warn('[Layout] setSearchActive failed with error', e);
+      });
     }
   };
 
@@ -388,12 +394,16 @@ export default class LayoutPlugin extends FlipperPlugin<
       path: Array.from(path).splice(1).join(),
       ...this.realClient.query,
     });
-    this.client.call('setData', {
-      id,
-      path,
-      value,
-      ax: this.state.inAXMode,
-    });
+    this.client
+      .call('setData', {
+        id,
+        path,
+        value,
+        ax: this.state.inAXMode,
+      })
+      .catch((e) => {
+        console.warn('[Layout] setData failed with error', e);
+      });
   };
 
   loadScreenDimensions(): {width: number; height: number} | null {

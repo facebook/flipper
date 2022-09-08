@@ -51,6 +51,33 @@
         <data android:scheme="flipper" android:host="layout_test_activity" />
       </intent-filter>
     </activity>
+    <activity android:name=".ListActivity"
+        android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="flipper" android:host="list_activity" />
+      </intent-filter>
+    </activity>
+    <activity android:name=".IncrementActivity"
+              android:exported="true" android:hardwareAccelerated="true">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="flipper" android:host="increment_activity" />
+      </intent-filter>
+    </activity>
+    <activity android:name=".AnimationsActivity"
+        android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="flipper" android:host="animations_activity" />
+      </intent-filter>
+    </activity>
     <activity android:name=".FragmentTestActivity"
         android:exported="true">
       <intent-filter>

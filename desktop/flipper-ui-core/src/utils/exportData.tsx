@@ -10,15 +10,15 @@
 import * as React from 'react';
 import {getLogger} from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
-import {DeviceExport} from '../devices/BaseDevice';
+import {DeviceExport} from 'flipper-frontend-core';
 import {selectedPlugins, State as PluginsState} from '../reducers/plugins';
 import {PluginNotification} from '../reducers/notifications';
 import Client, {ClientExport} from '../Client';
 import {getAppVersion} from './info';
 import {pluginKey} from '../utils/pluginKey';
 import {DevicePluginMap, ClientPluginMap} from '../plugin';
-import {default as BaseDevice} from '../devices/BaseDevice';
-import {default as ArchivedDevice} from '../devices/ArchivedDevice';
+import {BaseDevice} from 'flipper-frontend-core';
+import {ArchivedDevice} from 'flipper-frontend-core';
 import {v4 as uuidv4} from 'uuid';
 import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {TestIdler} from './Idler';
@@ -30,8 +30,9 @@ import {ClientQuery} from 'flipper-common';
 import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import {uploadFlipperMedia} from '../fb-stubs/user';
+import {logsAtom} from '../chrome/ConsoleLogs';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -512,7 +513,11 @@ export const exportStoreToFile = (
   );
 };
 
-export function importDataToStore(source: string, data: string, store: Store) {
+export async function importDataToStore(
+  source: string,
+  data: string,
+  store: Store,
+) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
   const json: ExportType = JSON.parse(data);
   const {device, clients, deviceScreenshot} = json;
@@ -543,12 +548,11 @@ export function importDataToStore(source: string, data: string, store: Store) {
     payload: archivedDevice,
   });
 
-  clients.forEach((client: {id: string; query: ClientQuery}) => {
-    const sandyPluginStates = json.pluginStates2[client.id] || {};
-    const clientPlugins = new Set(Object.keys(sandyPluginStates));
-    store.dispatch({
-      type: 'NEW_CLIENT',
-      payload: new Client(
+  await Promise.all(
+    clients.map(async (client: {id: string; query: ClientQuery}) => {
+      const sandyPluginStates = json.pluginStates2[client.id] || {};
+      const clientPlugins = new Set(Object.keys(sandyPluginStates));
+      const clientInstance = await new Client(
         client.id,
         client.query,
         null,
@@ -557,9 +561,13 @@ export function importDataToStore(source: string, data: string, store: Store) {
         clientPlugins,
         archivedDevice,
         getRenderHostInstance().flipperServer,
-      ).initFromImport(sandyPluginStates),
-    });
-  });
+      ).initFromImport(sandyPluginStates);
+      store.dispatch({
+        type: 'NEW_CLIENT',
+        payload: clientInstance,
+      });
+    }),
+  );
 }
 
 export const importFileToStore = async (file: string, store: Store) => {
@@ -595,6 +603,14 @@ export function showOpenDialog(store: Store) {
 
 export function canFileExport() {
   return !!getRenderHostInstance().showSaveDialog;
+}
+
+export async function startLogsExport() {
+  const serializedLogs = logsAtom
+    .get()
+    .map((item) => JSON.stringify(item))
+    .join('\n');
+  await getRenderHostInstance().exportFile?.(serializedLogs);
 }
 
 export async function startFileExport(dispatch: Store['dispatch']) {

@@ -13,7 +13,7 @@ import {useStore} from '../utils/useStore';
 import {Button as AntButton} from 'antd';
 import {MenuOutlined, ReloadOutlined} from '@ant-design/icons';
 import {theme} from 'flipper-plugin';
-import BaseDevice from '../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 
 export default function MetroButton() {
   const device = useStore((state) =>

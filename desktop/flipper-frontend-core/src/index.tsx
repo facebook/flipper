@@ -8,10 +8,18 @@
  */
 
 export {RenderHost, getRenderHostInstance} from './RenderHost';
-export {default as AbstractClient, ClientConnection} from './AbstractClient';
+export {
+  default as AbstractClient,
+  ClientConnection,
+  Params,
+  RequestMetadata,
+} from './AbstractClient';
 export {default as ArchivedDevice} from './devices/ArchivedDevice';
-export {default as BaseDevice} from './devices/BaseDevice';
+export {default as BaseDevice, DeviceExport} from './devices/BaseDevice';
+export {TestDevice} from './devices/TestDevice';
 export * from './globalObject';
 export * from './plugins';
+export {getPluginKey} from './utils/pluginKey';
 export * from './flipperLibImplementation';
 export * from './client/FlipperServerClient';
+export {default as frontendCoreConstants} from './fb-stubs/constants';

@@ -14,7 +14,7 @@ import os from 'os';
 import path from 'path';
 import {ServerDevice} from '../ServerDevice';
 
-export function parseIosCrash(content: string) {
+export function parseIosCrashLegacy(content: string) {
   const regex = /Exception Type: *\w*/;
   const arr = regex.exec(content);
   const exceptionString = arr ? arr[0] : '';
@@ -42,11 +42,35 @@ export function parseIosCrash(content: string) {
   return crash;
 }
 
+export function parseIosCrashModern(content: string) {
+  const captureTimeRegex = /"captureTime".*:.*"(.*)",\n/;
+  const captureTimeArr = captureTimeRegex.exec(content);
+
+  const exceptionRegex = /"exception".*:.*{(.*)},\n/;
+  const exceptionArr = exceptionRegex.exec(content);
+  let exceptionJSON: {type: string; signal: string} | undefined;
+  try {
+    exceptionJSON = JSON.parse(`{${exceptionArr?.[1]}}`);
+  } catch {}
+  const exception = exceptionJSON
+    ? `${exceptionJSON.type} (${exceptionJSON.signal})`
+    : 'Unknown';
+
+  const crash: CrashLog = {
+    callstack: content,
+    name: exception,
+    reason: exception,
+    date: new Date(captureTimeArr?.[1] as string).getTime(),
+  };
+  return crash;
+}
+
 export function shouldShowiOSCrashNotification(
   serial: string,
   content: string,
+  legacy: boolean,
 ): boolean {
-  const appPath = parsePath(content);
+  const appPath = legacy ? parsePathLegacy(content) : parsePathModern(content);
   if (!appPath || !appPath.includes(serial)) {
     // Do not show notifications for the app which are not running on this device
     return false;
@@ -54,7 +78,7 @@ export function shouldShowiOSCrashNotification(
   return true;
 }
 
-export function parsePath(content: string): string | null {
+export function parsePathLegacy(content: string): string | null {
   const regex = /(?<=.*Path: *)[^\n]*/;
   const arr = regex.exec(content);
   if (!arr || arr.length <= 0) {
@@ -62,6 +86,21 @@ export function parsePath(content: string): string | null {
   }
   const path = arr[0];
   return path.trim();
+}
+
+export function parsePathModern(content: string): string | null {
+  try {
+    const regex = /"procPath".*:.*"(.*)",\n/;
+    const arr = regex.exec(content);
+    if (!arr || arr.length <= 1) {
+      return null;
+    }
+    const path = arr[1];
+    return path.trim();
+  } catch (e) {
+    console.warn('parsePathModern -> failed to parse crash file', e, content);
+    return null;
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -77,11 +116,12 @@ export class iOSCrashWatcher extends DeviceListener {
     }
 
     const watcher = fs.watch(dir, async (_eventType, filename) => {
-      // We just parse the crash logs with extension `.crash`
-      // TODO: Make it work on MacOS 12. ASAP!
-      // MacOS 12 does not create .crash reports, but uses new .ips files instead with different format.
-      const checkFileExtension = /.crash$/.exec(filename);
-      if (!filename || !checkFileExtension) {
+      const checkFileExtensionLegacy = /.crash$/.exec(filename);
+      const checkFileExtensionModern = /.ips$/.exec(filename);
+      if (
+        !filename ||
+        !(checkFileExtensionLegacy || checkFileExtensionModern)
+      ) {
         return;
       }
       const filepath = path.join(dir, filename);
@@ -94,11 +134,27 @@ export class iOSCrashWatcher extends DeviceListener {
           console.warn('Failed to read crash file', err);
           return;
         }
-        if (shouldShowiOSCrashNotification(this.device.serial, data)) {
-          this.device.flipperServer.emit('device-crash', {
-            crash: parseIosCrash(data),
-            serial: this.device.serial,
-          });
+        if (
+          shouldShowiOSCrashNotification(
+            this.device.serial,
+            data,
+            !!checkFileExtensionLegacy,
+          )
+        ) {
+          try {
+            this.device.flipperServer.emit('device-crash', {
+              crash: checkFileExtensionLegacy
+                ? parseIosCrashLegacy(data)
+                : parseIosCrashModern(data),
+              serial: this.device.serial,
+            });
+          } catch (e) {
+            console.error(
+              'iOSCrashWatcher.startListener -> failed to parse crash file',
+              e,
+              data,
+            );
+          }
         }
       });
     });

@@ -15,7 +15,7 @@ import {LaunchEmulatorDialog} from '../LaunchEmulator';
 
 import {createRootReducer} from '../../../reducers';
 import {sleep} from 'flipper-plugin';
-import {getRenderHostInstance} from '../../../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 test('Can render and launch android apps - no emulators', async () => {
   const store = createStore(createRootReducer());

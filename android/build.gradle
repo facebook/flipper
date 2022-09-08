@@ -6,6 +6,10 @@
  */
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+
+apply plugin: 'kotlinx-serialization'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -62,6 +66,8 @@ android {
 
     dependencies {
         compileOnly deps.proguardAnnotations
+        implementation deps.kotlinStdLibrary
+
         implementation deps.openssl
         implementation deps.fbjni
         implementation deps.soloader
@@ -69,6 +75,8 @@ android {
         implementation deps.supportAppCompat
         implementation deps.supportSqlite
         implementation deps.websocket
+        implementation deps.kotlinxSerializationJson
+
 
         testImplementation deps.mockito
         testImplementation deps.robolectric

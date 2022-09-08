@@ -94,6 +94,7 @@ test('it supports deeplink and select nodes + navigating to bottom', async () =>
   sendLogEntry(entry3);
 
   expect(instance.tableManagerRef).not.toBeUndefined();
+  expect(instance.tableManagerRef.current).not.toBeNull();
   expect(instance.tableManagerRef.current?.getSelectedItems()).toEqual([]);
 
   act(() => {

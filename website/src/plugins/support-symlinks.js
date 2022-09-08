@@ -16,9 +16,7 @@ module.exports = function(context, options) {
           resolve: {
             symlinks: false
           },
-          devServer: {
-            watchOptions: { followSymlinks: false }
-          }
+          watchOptions: { followSymlinks: false },
         };
       }
     };

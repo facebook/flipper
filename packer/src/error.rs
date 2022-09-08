@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-use crate::types::{PackType, Platform};
 use std::fmt;
 use std::path::PathBuf;
+
+use crate::types::PackType;
+use crate::types::Platform;
 
 #[derive(Debug)]
 pub enum Error {

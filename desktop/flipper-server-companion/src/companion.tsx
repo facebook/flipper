@@ -21,6 +21,7 @@ import {BaseDevice} from 'flipper-frontend-core';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import {isAtom} from 'flipper-plugin';
 import {HeadlessClient} from './HeadlessClient';
+import {FlipperServerCompanionEnv} from './init';
 
 const companionEvents: Array<keyof FlipperCompanionEvents> = [
   'companion-plugin-state-update',
@@ -48,11 +49,15 @@ export class FlipperServerCompanion {
   constructor(
     private readonly flipperServer: FlipperServer,
     private readonly logger: Logger,
-    loadablePluginsArr: ReadonlyArray<_SandyPluginDefinition>,
+    private readonly env: FlipperServerCompanionEnv,
   ) {
+    const loadablePluginsArr = env.pluginInitializer.initialPlugins;
     for (const loadablePlugin of loadablePluginsArr) {
       this.loadablePlugins.set(loadablePlugin.id, loadablePlugin);
     }
+    console.debug(`[FlipperServerCompanion] constructor -> loadable plugins`, [
+      ...this.loadablePlugins.keys(),
+    ]);
   }
 
   canHandleCommand(command: string): boolean {
@@ -138,6 +143,10 @@ export class FlipperServerCompanion {
     );
 
     await newClient.init();
+    console.debug(
+      `[FlipperServerCompanion] createHeadlessClientIfNeeded -> new client created with plugins`,
+      [...newClient.sandyPluginStates.keys()],
+    );
 
     this.clients.set(clientInfo.id, newClient);
     return newClient;
@@ -161,8 +170,36 @@ export class FlipperServerCompanion {
     }
 
     const newDevice = new BaseDevice(this.flipperServer, deviceInfo);
+    console.debug(
+      `[FlipperServerCompanion] createHeadlessClientIfNeeded -> new device created with plugins`,
+      [...this.loadablePlugins.keys()],
+    );
     this.devices.set(newDevice.serial, newDevice);
     return newDevice;
+  }
+
+  private async loadPluginIfNeeded(pluginId: string) {
+    if (!this.loadablePlugins.has(pluginId)) {
+      console.info(
+        'FlipperServerCompanion.loadPluginIfNeeded -> plugin not found, attempt to install from marketplace',
+      );
+
+      const plugin = await this.flipperServer.exec(
+        'plugins-install-from-marketplace',
+        pluginId,
+      );
+      if (plugin) {
+        const sandyPlugin = await this.env.pluginInitializer.installPlugin(
+          plugin,
+        );
+        if (sandyPlugin) {
+          console.info(
+            'FlipperServerCompanion.loadPluginIfNeeded -> plugin successfully installed',
+          );
+          this.loadablePlugins.set(pluginId, sandyPlugin);
+        }
+      }
+    }
   }
 
   private emit<T extends keyof FlipperCompanionEvents>(
@@ -192,6 +229,7 @@ export class FlipperServerCompanion {
     ...args: any[]
   ): Promise<any> {
     try {
+      console.debug(`[FlipperServerCompanion] command '${event}'`, ...args);
       const handler: (...args: any[]) => Promise<any> =
         this.commandHandler[event];
       if (!handler) {
@@ -201,12 +239,10 @@ export class FlipperServerCompanion {
         );
       }
       const result = await handler(...args);
-      console.debug(`[FlipperServerCompanion] command '${event}' - OK`);
+      console.debug(`[FlipperServerCompanion] command '${event}' - OK`, result);
       return result;
     } catch (e) {
-      console.debug(
-        `[FlipperServerCompanion] command '${event}' - ERROR: ${e} `,
-      );
+      console.debug(`[FlipperServerCompanion] command '${event}' - ERROR`, e);
       throw e;
     }
   }
@@ -231,6 +267,8 @@ export class FlipperServerCompanion {
       });
     },
     'companion-plugin-start': async (clientId, pluginId) => {
+      await this.loadPluginIfNeeded(pluginId);
+
       const client = await this.createHeadlessClientIfNeeded(clientId);
 
       const pluginInstance = client.sandyPluginStates.get(pluginId);
@@ -340,7 +378,23 @@ export class FlipperServerCompanion {
         );
       }
 
-      return pluginInstance.companionApi[api](...(params ?? []));
+      return new Promise(async (resolve, reject) => {
+        const closeHandle = () => {
+          reject(new Error('Client disconnected whilst executing request'));
+        };
+        client.once('close', closeHandle);
+
+        try {
+          const response = await pluginInstance.companionApi[api](
+            ...(params ?? []),
+          );
+          resolve(response);
+        } catch (error) {
+          reject(error);
+        } finally {
+          client.off('close', closeHandle);
+        }
+      });
     },
     'companion-plugin-subscribe': async (clientId, pluginId, api) => {
       const client = this.clients.get(clientId);

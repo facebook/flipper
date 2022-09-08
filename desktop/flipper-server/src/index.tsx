@@ -16,18 +16,15 @@ import fs from 'fs-extra';
 import yargs from 'yargs';
 import open from 'open';
 import {initCompanionEnv} from 'flipper-server-companion';
-import {
-  attachSocketServer,
-  startFlipperServer,
-  startServer,
-} from 'flipper-server-core';
+import {startFlipperServer, startServer} from 'flipper-server-core';
 import {isTest} from 'flipper-common';
+import exitHook from 'exit-hook';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
   .options({
     port: {
-      describe: 'Port to serve on',
+      describe: 'TCP port to serve on',
       type: 'number',
       default: 52342,
     },
@@ -59,6 +56,12 @@ const argv = yargs
       type: 'boolean',
       default: true,
     },
+    tcp: {
+      describe:
+        'Open a TCP port (--no-tcp can be specified as to use unix-domain-socket exclusively)',
+      type: 'boolean',
+      default: true,
+    },
   })
   .version('DEV')
   .help()
@@ -76,7 +79,7 @@ const rootDir = argv.bundler
 const staticDir = path.join(rootDir, 'static');
 
 async function start() {
-  initializeLogger(staticDir);
+  const enhanceLogger = await initializeLogger(staticDir);
 
   let keytar: any = undefined;
   try {
@@ -97,10 +100,11 @@ async function start() {
     console.error('Failed to load keytar:', e);
   }
 
-  const {app, server, socket} = await startServer({
-    port: argv.port,
+  const {app, server, socket, readyForIncomingConnections} = await startServer({
     staticDir,
-    entry: 'index.web.dev.html',
+    entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
+    port: argv.port,
+    tcp: argv.tcp,
   });
 
   const flipperServer = await startFlipperServer(
@@ -109,11 +113,24 @@ async function start() {
     argv.settingsString,
     argv.launcherSettings,
     keytar,
+    'external',
   );
+
+  exitHook(async () => {
+    await flipperServer.close();
+  });
+
+  enhanceLogger((logEntry) => {
+    flipperServer.emit('server-log', logEntry);
+  });
+
   const companionEnv = await initCompanionEnv(flipperServer);
   if (argv.failFast) {
     flipperServer.on('server-state', ({state}) => {
       if (state === 'error') {
+        console.error(
+          '[flipper-server-process-exit] state changed to error, process will exit.',
+        );
         process.exit(1);
       }
     });
@@ -123,17 +140,36 @@ async function start() {
   if (argv.bundler) {
     await attachDevServer(app, server, socket, rootDir);
   }
-  attachSocketServer(flipperServer, socket, companionEnv);
+  await readyForIncomingConnections(flipperServer, companionEnv);
 }
+
+process.on('uncaughtException', (error) => {
+  console.error(
+    '[flipper-server-process-exit] uncaught exception, process will exit.',
+    error,
+  );
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.warn(
+    '[flipper-server] unhandled rejection for:',
+    promise,
+    'reason:',
+    reason,
+  );
+});
 
 start()
   .then(() => {
+    if (!argv.tcp) {
+      console.log('Flipper server started and listening');
+      return;
+    }
     console.log(
       'Flipper server started and listening at port ' + chalk.green(argv.port),
     );
-    const url = `http://localhost:${argv.port}/index.web${
-      argv.bundler ? '.dev' : ''
-    }.html`;
+    const url = `http://localhost:${argv.port}`;
     console.log('Go to: ' + chalk.green(chalk.bold(url)));
     if (argv.open) {
       open(url);

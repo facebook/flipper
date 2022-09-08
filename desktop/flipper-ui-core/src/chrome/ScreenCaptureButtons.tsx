@@ -12,7 +12,7 @@ import React, {useState, useCallback} from 'react';
 import {capture, getCaptureLocation, getFileName} from '../utils/screenshot';
 import {CameraOutlined, VideoCameraOutlined} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import {path} from 'flipper-plugin';
 
 async function openFile(path: string) {

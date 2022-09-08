@@ -16,7 +16,6 @@ import {DeviceType, uuid} from 'flipper-common';
 import path from 'path';
 import {exec, execFile} from 'promisify-child-process';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
-
 export const ERR_NO_IDB_OR_XCODE_AVAILABLE =
   'Neither Xcode nor idb available. Cannot provide iOS device functionality.';
 
@@ -44,6 +43,11 @@ export interface IOSBridge {
     outputFile: string,
   ) => child_process.ChildProcess;
   getActiveDevices: (bootedOnly: boolean) => Promise<Array<IOSDeviceParams>>;
+  installApp: (
+    serial: string,
+    ipaPath: string,
+    tempPath: string,
+  ) => Promise<void>;
 }
 
 export class IDBBridge implements IOSBridge {
@@ -51,6 +55,12 @@ export class IDBBridge implements IOSBridge {
     private idbPath: string,
     private enablePhysicalDevices: boolean,
   ) {}
+
+  async installApp(serial: string, ipaPath: string): Promise<void> {
+    console.log(`Installing app via IDB ${ipaPath} ${serial}`);
+    await this._execIdb(`install ${ipaPath} --udid ${serial}`);
+  }
+
   async getActiveDevices(_bootedOnly: boolean): Promise<IOSDeviceParams[]> {
     return iosUtil
       .targets(this.idbPath, this.enablePhysicalDevices)
@@ -96,6 +106,31 @@ export class IDBBridge implements IOSBridge {
 }
 
 export class SimctlBridge implements IOSBridge {
+  async installApp(
+    serial: string,
+    ipaPath: string,
+    tempPath: string,
+  ): Promise<void> {
+    console.log(`Installing  app ${ipaPath} with xcrun`);
+    const buildName = path.parse(ipaPath).name;
+
+    const extractTmpDir = path.join(tempPath, `${buildName}-extract`, uuid());
+
+    try {
+      await fs.mkdirp(extractTmpDir);
+      await unzip(ipaPath, extractTmpDir);
+      await exec(
+        `xcrun simctl install ${serial} ${path.join(
+          extractTmpDir,
+          'Payload',
+          '*.app',
+        )}`,
+      );
+    } finally {
+      await fs.rmdir(extractTmpDir, {recursive: true});
+    }
+  }
+
   startLogListener(
     udid: string,
     deviceType: DeviceType,
@@ -212,6 +247,16 @@ function getLogExtraArgs(deviceType: DeviceType) {
 function makeTempScreenshotFilePath() {
   const imageName = uuid() + '.png';
   return path.join(getFlipperServerConfig().paths.tempPath, imageName);
+}
+
+async function unzip(filePath: string, destination: string): Promise<void> {
+  //todo this probably shouldn't involve shelling out...
+  await exec(`unzip -qq  -o ${filePath} -d ${destination}`);
+  if (!(await fs.pathExists(path.join(destination, 'Payload')))) {
+    throw new Error(
+      `${path.join(destination, 'Payload')} Directory does not exists`,
+    );
+  }
 }
 
 async function readScreenshotIntoBuffer(imagePath: string): Promise<Buffer> {

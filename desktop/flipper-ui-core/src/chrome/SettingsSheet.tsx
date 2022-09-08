@@ -40,7 +40,7 @@ import {
   _NuxManagerContext,
   NUX,
 } from 'flipper-plugin';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import {loadTheme} from '../utils/loadTheme';
 
 type OwnProps = {
@@ -127,10 +127,17 @@ class SettingsSheet extends Component<Props, State> {
       reactNative,
       darkMode,
       suppressPluginErrors,
+      persistDeviceData,
       enablePluginMarketplace,
       enablePluginMarketplaceAutoUpdate,
       marketplaceURL,
+      server,
     } = this.state.updatedSettings;
+
+    const serverUsageEnabled = getRenderHostInstance().GK(
+      'flipper_desktop_use_server',
+    );
+    const serverType = getRenderHostInstance().serverConfig.type;
 
     const settingsPristine =
       isEqual(this.props.settings, this.state.updatedSettings) &&
@@ -264,6 +271,18 @@ class SettingsSheet extends Component<Props, State> {
             }));
           }}
         />
+        <ToggledSection
+          label="Persist data in plugins after device disconnects"
+          toggled={persistDeviceData}
+          onChange={(enabled) => {
+            this.setState((prevState) => ({
+              updatedSettings: {
+                ...prevState.updatedSettings,
+                persistDeviceData: enabled,
+              },
+            }));
+          }}
+        />
         <Layout.Container style={{paddingLeft: 15, paddingBottom: 10}}>
           Theme Selection
           <Radio.Group
@@ -381,6 +400,58 @@ class SettingsSheet extends Component<Props, State> {
             />
           </ToggledSection>
         </NUX>
+        <ToggledSection
+          label="Server (Experimental)"
+          toggled={(serverUsageEnabled && (!server || server.enabled)) ?? false}
+          frozen={!serverUsageEnabled}
+          onChange={(v) => {
+            this.setState((prevState) => ({
+              updatedSettings: {
+                ...prevState.updatedSettings,
+                server: {enabled: v},
+              },
+            }));
+          }}>
+          {serverUsageEnabled ? (
+            <>
+              <ConfigText
+                content={
+                  "For changes to take effect, click on 'Apply and Restart'"
+                }
+              />
+              {serverType ? (
+                <>
+                  <ConfigText
+                    content={`Flipper is currently using an '${serverType}' server.`}
+                  />
+                  {serverType === 'external' ? (
+                    <>
+                      <br />
+                      <span>
+                        To stop the server, it may be necessary to kill the
+                        process listening at port <b>52342</b>. See below:
+                      </span>
+                      <br />
+                      <code>
+                        sudo lsof -i -P | grep LISTEN | grep <b>52342</b>
+                        <br />
+                        sudo kill &lt;PID&gt;
+                      </code>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </>
+              ) : (
+                <></>
+              )}
+            </>
+          ) : (
+            <ConfigText
+              content={'The usage of flipperd (server) is currently disabled.'}
+            />
+          )}
+        </ToggledSection>
         <Layout.Right center>
           <span>Reset all new user tooltips</span>
           <ResetTooltips />

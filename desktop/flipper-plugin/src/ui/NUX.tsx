@@ -162,19 +162,10 @@ const UnanimatedBadge = styled(Badge)(({count}) => ({
   },
 }));
 
-const pulse = keyframes({
-  '0%': {
-    opacity: 0.2,
-  },
-  '100%': {
-    opacity: 1,
-  },
-});
-
 const Pulse = styled.div({
   cursor: 'pointer',
   background: theme.warningColor,
-  animation: `${pulse} 2s infinite alternate`,
+  opacity: 0.6,
   borderRadius: 20,
   height: 12,
   width: 12,

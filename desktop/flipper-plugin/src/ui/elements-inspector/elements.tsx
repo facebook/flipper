@@ -118,7 +118,7 @@ class PartialHighlight extends PureComponent<{
   content: string;
 }> {
   static HighlightedText = styled.span<{selected: boolean}>((props) => ({
-    backgroundColor: theme.searchHighlightBackground,
+    backgroundColor: theme.searchHighlightBackground.yellow,
     color: props.selected ? `${theme.textColorPrimary} !important` : 'auto',
   }));
 

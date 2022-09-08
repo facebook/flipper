@@ -14,6 +14,7 @@ import {
   DeviceType,
   DownloadablePluginDetails,
   InstalledPluginDetails,
+  MarketplacePluginDetails,
   OS as PluginOS,
   UpdatablePluginDetails,
 } from './PluginDetails';
@@ -24,9 +25,12 @@ import {
   ProcessConfig,
   Settings,
 } from './settings';
+import {LoggerInfo} from './utils/Logger';
 
 // In the future, this file would deserve it's own package, as it doesn't really relate to plugins.
 // Since flipper-plugin however is currently shared among server, client and defines a lot of base types, leaving it here for now.
+
+export type FlipperServerType = 'embedded' | 'external';
 
 export type FlipperServerState =
   | 'pending'
@@ -133,6 +137,7 @@ export type FlipperServerEvents = {
   };
   'plugins-server-add-on-message': ExecuteMessage;
   'download-file-update': DownloadFileUpdate;
+  'server-log': LoggerInfo;
 };
 
 export type IOSDeviceParams = {
@@ -219,6 +224,10 @@ export type FlipperServerCommands = {
   ) => Promise<void>;
   'device-stop-screencapture': (serial: string) => Promise<string>; // file path
   'device-shell-exec': (serial: string, command: string) => Promise<string>;
+  'device-install-app': (
+    serial: string,
+    appBundlePath: string,
+  ) => Promise<void>;
   'device-forward-port': (
     serial: string,
     local: string,
@@ -244,6 +253,7 @@ export type FlipperServerCommands = {
   'keychain-read': (service: string) => Promise<string>;
   'keychain-unset': (service: string) => Promise<void>;
   'plugins-load-dynamic-plugins': () => Promise<InstalledPluginDetails[]>;
+  'plugins-load-marketplace-plugins': () => Promise<MarketplacePluginDetails[]>;
   'plugins-get-bundled-plugins': () => Promise<BundledPluginDetails[]>;
   'plugins-get-installed-plugins': () => Promise<InstalledPluginDetails[]>;
   'plugins-get-updatable-plugins': (
@@ -253,6 +263,9 @@ export type FlipperServerCommands = {
     plugin: DownloadablePluginDetails,
   ) => Promise<InstalledPluginDetails>;
   'plugin-source': (path: string) => Promise<string>;
+  'plugins-install-from-marketplace': (
+    name: string,
+  ) => Promise<InstalledPluginDetails>;
   'plugins-install-from-npm': (name: string) => Promise<InstalledPluginDetails>;
   'plugins-install-from-file': (
     path: string,
@@ -299,6 +312,9 @@ export type FlipperServerCommands = {
   'intern-upload-scribe-logs': (
     messages: {category: string; message: string}[],
   ) => Promise<void>;
+  shutdown: () => Promise<void>;
+  'is-logged-in': () => Promise<boolean>;
+  'environment-info': () => Promise<EnvironmentInfo>;
 };
 
 export type GraphResponse = {
@@ -453,6 +469,7 @@ export type FlipperServerConfig = {
   processConfig: ProcessConfig;
   validWebSocketOrigins: string[];
   environmentInfo: EnvironmentInfo;
+  type?: FlipperServerType;
 };
 
 export interface FlipperServer {

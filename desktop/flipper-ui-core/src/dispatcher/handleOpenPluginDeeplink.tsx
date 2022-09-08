@@ -27,7 +27,7 @@ import {loadPluginsFromMarketplace} from './pluginMarketplace';
 import {loadPlugin, switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
 import isProduction from '../utils/isProduction';
-import BaseDevice from '../devices/BaseDevice';
+import {BaseDevice} from 'flipper-frontend-core';
 import Client from '../Client';
 import {RocketOutlined} from '@ant-design/icons';
 import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';
@@ -38,7 +38,7 @@ import {
   DeeplinkInteractionState,
   OpenPluginParams,
 } from '../deeplinkTracking';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import {waitFor} from '../utils/waitFor';
 
 export function parseOpenPluginParams(query: string): OpenPluginParams {

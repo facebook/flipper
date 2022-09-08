@@ -39,6 +39,7 @@ export type Settings = {
   darkMode: 'dark' | 'light' | 'system';
   showWelcomeAtStartup: boolean;
   suppressPluginErrors: boolean;
+  persistDeviceData: boolean;
   /**
    * Plugin marketplace - allow internal plugin distribution
    */
@@ -57,6 +58,9 @@ export type Settings = {
   adbKitSettings?: {
     host?: string;
     port?: number;
+  };
+  server?: {
+    enabled: boolean;
   };
 };
 

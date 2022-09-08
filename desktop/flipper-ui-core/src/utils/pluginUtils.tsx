@@ -10,7 +10,10 @@
 import type {PluginDefinition} from '../plugin';
 import type {State, Store} from '../reducers';
 import type {State as PluginsState} from '../reducers/plugins';
-import type BaseDevice from '../devices/BaseDevice';
+import {
+  BaseDevice,
+  getLatestCompatibleVersionOfEachPlugin,
+} from 'flipper-frontend-core';
 import type Client from '../Client';
 import type {
   ActivatablePluginDetails,
@@ -18,8 +21,8 @@ import type {
   DownloadablePluginDetails,
   PluginDetails,
 } from 'flipper-common';
-import {getLatestCompatibleVersionOfEachPlugin} from '../dispatcher/plugins';
 import {getPluginKey} from './pluginKey';
+import {getAppVersion} from './info';
 
 export type PluginLists = {
   devicePlugins: PluginDefinition[];
@@ -181,10 +184,10 @@ export function computePluginLists(
 } {
   const enabledDevicePluginsState = connections.enabledDevicePlugins;
   const enabledPluginsState = connections.enabledPlugins;
-  const uninstalledMarketplacePlugins = getLatestCompatibleVersionOfEachPlugin([
-    ...plugins.bundledPlugins.values(),
-    ...plugins.marketplacePlugins,
-  ]).filter((p) => !plugins.loadedPlugins.has(p.id));
+  const uninstalledMarketplacePlugins = getLatestCompatibleVersionOfEachPlugin(
+    [...plugins.bundledPlugins.values(), ...plugins.marketplacePlugins],
+    getAppVersion(),
+  ).filter((p) => !plugins.loadedPlugins.has(p.id));
   const devicePlugins: PluginDefinition[] = [...plugins.devicePlugins.values()]
     .filter((p) => device?.supportsPlugin(p))
     .filter((p) => enabledDevicePluginsState.has(p.id));

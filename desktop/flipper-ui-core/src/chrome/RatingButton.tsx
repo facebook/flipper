@@ -32,7 +32,7 @@ import {useStore} from '../utils/useStore';
 import {isLoggedIn} from '../fb-stubs/user';
 import {useValue} from 'flipper-plugin';
 import {reportPlatformFailures} from 'flipper-common';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';
 

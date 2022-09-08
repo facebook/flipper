@@ -64,6 +64,11 @@ const argv = yargs
       type: 'boolean',
       default: true,
     },
+    tcp: {
+      describe: 'Enable TCP connections on flipper-server.',
+      type: 'boolean',
+      default: true,
+    },
     channel: {
       description: 'Release channel for the build',
       choices: ['stable', 'insiders'],
@@ -131,7 +136,7 @@ let startCount = 0;
 async function restartServer() {
   try {
     await compileServerMain(true);
-    await launchServer(true, argv.open && ++startCount === 1); // only open on the first time
+    await launchServer(true, argv.open && ++startCount === 1, argv.tcp); // only open on the first time
   } catch (e) {
     console.error(
       chalk.red(

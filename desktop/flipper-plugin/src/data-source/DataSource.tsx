@@ -20,6 +20,8 @@ const defaultLimit = 100 * 1000;
 // rather than search and remove the affected individual items
 const shiftRebuildTreshold = 0.05;
 
+const DEFAULT_VIEW_ID = '0';
+
 type AppendEvent<T> = {
   type: 'append';
   entry: Entry<T>;
@@ -28,7 +30,9 @@ type UpdateEvent<T> = {
   type: 'update';
   entry: Entry<T>;
   oldValue: T;
-  oldVisible: boolean;
+  oldVisible: {
+    [viewId: string]: boolean;
+  };
   index: number;
 };
 type RemoveEvent<T> = {
@@ -51,8 +55,12 @@ type DataEvent<T> =
 type Entry<T> = {
   value: T;
   id: number; // insertion based
-  visible: boolean; // matches current filter?
-  approxIndex: number; // we could possible live at this index in the output. No guarantees.
+  visible: {
+    [viewId: string]: boolean;
+  }; // matches current filter?
+  approxIndex: {
+    [viewId: string]: number;
+  }; // we could possible live at this index in the output. No guarantees.
 };
 
 type Primitive = number | string | boolean | null | undefined;
@@ -138,9 +146,14 @@ export class DataSource<T extends any, KeyType = never> {
    */
   public readonly view: DataSourceView<T, KeyType>;
 
+  public readonly additionalViews: {
+    [viewId: string]: DataSourceView<T, KeyType>;
+  };
+
   constructor(keyAttribute: keyof T | undefined) {
     this.keyAttribute = keyAttribute;
-    this.view = new DataSourceView<T, KeyType>(this);
+    this.view = new DataSourceView<T, KeyType>(this, DEFAULT_VIEW_ID);
+    this.additionalViews = {};
   }
 
   public get size() {
@@ -228,12 +241,17 @@ export class DataSource<T extends any, KeyType = never> {
       this._recordsById.set(key, value);
       this.storeIndexOfKey(key, this._records.length);
     }
+    const visibleMap: {[viewId: string]: boolean} = {[DEFAULT_VIEW_ID]: false};
+    const approxIndexMap: {[viewId: string]: number} = {[DEFAULT_VIEW_ID]: -1};
+    Object.keys(this.additionalViews).forEach((viewId) => {
+      visibleMap[viewId] = false;
+      approxIndexMap[viewId] = -1;
+    });
     const entry = {
       value,
       id: ++this.nextId,
-      // once we have multiple views, the following fields should be stored per view
-      visible: true,
-      approxIndex: -1,
+      visible: visibleMap,
+      approxIndex: approxIndexMap,
     };
     this._records.push(entry);
     this.emitDataEvent({
@@ -268,7 +286,7 @@ export class DataSource<T extends any, KeyType = never> {
     if (value === oldValue) {
       return;
     }
-    const oldVisible = entry.visible;
+    const oldVisible = {...entry.visible};
     entry.value = value;
     if (this.keyAttribute) {
       const key = this.getKey(value);
@@ -374,7 +392,7 @@ export class DataSource<T extends any, KeyType = never> {
       // let's fallback to the async processing of all data instead
       // MWE: there is a risk here that rebuilding is too blocking, as this might happen
       // in background when new data arrives, and not explicitly on a user interaction
-      this.view.rebuild();
+      this.rebuild();
     } else {
       this.emitDataEvent({
         type: 'shift',
@@ -392,17 +410,58 @@ export class DataSource<T extends any, KeyType = never> {
     this._recordsById = new Map();
     this.shiftOffset = 0;
     this.idToIndex = new Map();
+    this.rebuild();
+  }
+
+  /**
+   * The rebuild function that would support rebuilding multiple views all at once
+   */
+  public rebuild() {
     this.view.rebuild();
+    Object.entries(this.additionalViews).forEach(([, dataView]) => {
+      dataView.rebuild();
+    });
   }
 
   /**
    * Returns a fork of this dataSource, that shares the source data with this dataSource,
    * but has it's own FSRW pipeline, to allow multiple views on the same data
    */
-  public fork(): DataSourceView<T, KeyType> {
-    throw new Error(
-      'Not implemented. Please contact oncall if this feature is needed',
-    );
+  private fork(viewId: string): DataSourceView<T, KeyType> {
+    this._records.forEach((entry) => {
+      entry.visible[viewId] = entry.visible[DEFAULT_VIEW_ID];
+      entry.approxIndex[viewId] = entry.approxIndex[DEFAULT_VIEW_ID];
+    });
+    const newView = new DataSourceView<T, KeyType>(this, viewId);
+    // Refresh the new view so that it has all the existing records.
+    newView.rebuild();
+    return newView;
+  }
+
+  /**
+   * Returns a new view of the `DataSource` if there doesn't exist a `DataSourceView` with the `viewId` passed in.
+   * The view will allow different filters and sortings on the `DataSource` which can be helpful in cases
+   * where multiple tables/views are needed.
+   * @param viewId id for the `DataSourceView`
+   * @returns `DataSourceView` that corresponds to the `viewId`
+   */
+  public getAdditionalView(viewId: string): DataSourceView<T, KeyType> {
+    if (viewId in this.additionalViews) {
+      return this.additionalViews[viewId];
+    }
+    this.additionalViews[viewId] = this.fork(viewId);
+    return this.additionalViews[viewId];
+  }
+
+  public deleteView(viewId: string): void {
+    if (viewId in this.additionalViews) {
+      delete this.additionalViews[viewId];
+      // TODO: Ideally remove the viewId in the visible and approxIndex of DataView outputs
+      this._records.forEach((entry) => {
+        delete entry.visible[viewId];
+        delete entry.approxIndex[viewId];
+      });
+    }
   }
 
   private assertKeySet() {
@@ -433,6 +492,9 @@ export class DataSource<T extends any, KeyType = never> {
     // using a queue,
     // or only if there is an active view (although that could leak memory)
     this.view.processEvent(event);
+    Object.entries(this.additionalViews).forEach(([, dataView]) => {
+      dataView.processEvent(event);
+    });
   }
 
   /**
@@ -457,7 +519,7 @@ function unwrap<T>(entry: Entry<T>): T {
   return entry?.value;
 }
 
-class DataSourceView<T, KeyType> {
+export class DataSourceView<T, KeyType> {
   public readonly datasource: DataSource<T, KeyType>;
   private sortBy: undefined | ((a: T) => Primitive) = undefined;
   private reverse: boolean = false;
@@ -471,16 +533,18 @@ class DataSourceView<T, KeyType> {
    * @readonly
    */
   public windowEnd = 0;
+  private viewId;
 
-  private outputChangeListener?: (change: OutputChange) => void;
+  private outputChangeListeners = new Set<(change: OutputChange) => void>();
 
   /**
    * This is the base view data, that is filtered and sorted, but not reversed or windowed
    */
   private _output: Entry<T>[] = [];
 
-  constructor(datasource: DataSource<T, KeyType>) {
+  constructor(datasource: DataSource<T, KeyType>, viewId: string) {
     this.datasource = datasource;
+    this.viewId = viewId;
   }
 
   public get size() {
@@ -520,11 +584,11 @@ class DataSourceView<T, KeyType> {
     this.windowEnd = end;
   }
 
-  public setListener(listener?: (change: OutputChange) => void) {
-    if (this.outputChangeListener && listener) {
-      console.warn('outputChangeListener already set');
-    }
-    this.outputChangeListener = listener;
+  public addListener(listener: (change: OutputChange) => void) {
+    this.outputChangeListeners.add(listener);
+    return () => {
+      this.outputChangeListeners.delete(listener);
+    };
   }
 
   public setSortBy(sortBy: undefined | keyof T | ((a: T) => Primitive)) {
@@ -591,8 +655,11 @@ class DataSourceView<T, KeyType> {
     // so any changes in the entry being moved around etc will be reflected in the original `entry` object,
     // and we just want to verify that this entry is indeed still the same element, visible, and still present in
     // the output data set.
-    if (entry.visible && entry.id === this._output[entry.approxIndex]?.id) {
-      return this.normalizeIndex(entry.approxIndex);
+    if (
+      entry.visible[this.viewId] &&
+      entry.id === this._output[entry.approxIndex[this.viewId]]?.id
+    ) {
+      return this.normalizeIndex(entry.approxIndex[this.viewId]);
     }
     return -1;
   }
@@ -617,23 +684,27 @@ class DataSourceView<T, KeyType> {
     };
   }
 
+  private notifyAllListeners(change: OutputChange) {
+    this.outputChangeListeners.forEach((listener) => listener(change));
+  }
+
   private notifyItemUpdated(viewIndex: number) {
     viewIndex = this.normalizeIndex(viewIndex);
     if (
-      !this.outputChangeListener ||
+      !this.outputChangeListeners.size ||
       viewIndex < this.windowStart ||
       viewIndex >= this.windowEnd
     ) {
       return;
     }
-    this.outputChangeListener({
+    this.notifyAllListeners({
       type: 'update',
       index: viewIndex,
     });
   }
 
   private notifyItemShift(index: number, delta: number) {
-    if (!this.outputChangeListener) {
+    if (!this.outputChangeListeners.size) {
       return;
     }
     let viewIndex = this.normalizeIndex(index);
@@ -641,7 +712,7 @@ class DataSourceView<T, KeyType> {
       viewIndex -= delta; // we need to correct for normalize already using the new length after applying this change
     }
     // Idea: we could add an option to automatically shift the window for before events.
-    this.outputChangeListener({
+    this.notifyAllListeners({
       type: 'shift',
       delta,
       index: viewIndex,
@@ -656,7 +727,7 @@ class DataSourceView<T, KeyType> {
   }
 
   private notifyReset(count: number) {
-    this.outputChangeListener?.({
+    this.notifyAllListeners({
       type: 'reset',
       newCount: count,
     });
@@ -670,16 +741,16 @@ class DataSourceView<T, KeyType> {
     switch (event.type) {
       case 'append': {
         const {entry} = event;
-        entry.visible = filter ? filter(entry.value) : true;
-        if (!entry.visible) {
+        entry.visible[this.viewId] = filter ? filter(entry.value) : true;
+        if (!entry.visible[this.viewId]) {
           // not in filter? skip this entry
           return;
         }
         if (!sortBy) {
           // no sorting? insert at the end, or beginning
-          entry.approxIndex = output.length;
+          entry.approxIndex[this.viewId] = output.length;
           output.push(entry);
-          this.notifyItemShift(entry.approxIndex, 1);
+          this.notifyItemShift(entry.approxIndex[this.viewId], 1);
         } else {
           this.insertSorted(entry);
         }
@@ -687,13 +758,13 @@ class DataSourceView<T, KeyType> {
       }
       case 'update': {
         const {entry} = event;
-        entry.visible = filter ? filter(entry.value) : true;
+        entry.visible[this.viewId] = filter ? filter(entry.value) : true;
         // short circuit; no view active so update straight away
         if (!filter && !sortBy) {
-          output[event.index].approxIndex = event.index;
+          output[event.index].approxIndex[this.viewId] = event.index;
           this.notifyItemUpdated(event.index);
-        } else if (!event.oldVisible) {
-          if (!entry.visible) {
+        } else if (!event.oldVisible[this.viewId]) {
+          if (!entry.visible[this.viewId]) {
             // Done!
           } else {
             // insertion, not visible before
@@ -702,7 +773,7 @@ class DataSourceView<T, KeyType> {
         } else {
           // Entry was visible previously
           const existingIndex = this.getSortedIndex(entry, event.oldValue);
-          if (!entry.visible) {
+          if (!entry.visible[this.viewId]) {
             // Remove from output
             output.splice(existingIndex, 1);
             this.notifyItemShift(existingIndex, -1);
@@ -740,7 +811,7 @@ class DataSourceView<T, KeyType> {
           } else {
             // if there is a filter, count the visibles and shift those
             for (let i = 0; i < event.entries.length; i++)
-              if (event.entries[i].visible) amount++;
+              if (event.entries[i].visible[this.viewId]) amount++;
           }
           output.splice(0, amount);
           this.notifyItemShift(0, -amount);
@@ -762,7 +833,7 @@ class DataSourceView<T, KeyType> {
     const {_output: output, sortBy, filter} = this;
 
     // filter active, and not visible? short circuilt
-    if (!entry.visible) {
+    if (!entry.visible[this.viewId]) {
       return;
     }
     // no sorting, no filter?
@@ -794,8 +865,8 @@ class DataSourceView<T, KeyType> {
     const records: Entry<T>[] = this.datasource._records;
     let output = filter
       ? records.filter((entry) => {
-          entry.visible = filter(entry.value);
-          return entry.visible;
+          entry.visible[this.viewId] = filter(entry.value);
+          return entry.visible[this.viewId];
         })
       : records.slice();
     if (sortBy) {
@@ -814,7 +885,7 @@ class DataSourceView<T, KeyType> {
 
     // write approx indexes for faster lookup of entries in visible output
     for (let i = 0; i < output.length; i++) {
-      output[i].approxIndex = i;
+      output[i].approxIndex[this.viewId] = i;
     }
     this._output = output;
     this.notifyReset(output.length);
@@ -825,17 +896,17 @@ class DataSourceView<T, KeyType> {
 
   private getSortedIndex(entry: Entry<T>, oldValue: T) {
     const {_output: output} = this;
-    if (output[entry.approxIndex] === entry) {
+    if (output[entry.approxIndex[this.viewId]] === entry) {
       // yay!
-      return entry.approxIndex;
+      return entry.approxIndex[this.viewId];
     }
     let index = sortedIndexBy(
       output,
       {
         value: oldValue,
         id: -1,
-        visible: true,
-        approxIndex: -1,
+        visible: entry.visible,
+        approxIndex: entry.approxIndex,
       },
       this.sortHelper,
     );
@@ -858,7 +929,7 @@ class DataSourceView<T, KeyType> {
       entry,
       this.sortHelper,
     );
-    entry.approxIndex = insertionIndex;
+    entry.approxIndex[this.viewId] = insertionIndex;
     this._output.splice(insertionIndex, 0, entry);
     this.notifyItemShift(insertionIndex, 1);
   }

@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.sample;
 
+import android.app.Application;
 import android.content.Context;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
@@ -20,6 +21,7 @@ import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin.SharedPreferencesDescriptor;
+import com.facebook.flipper.plugins.uidebugger.UIDebuggerFlipperPlugin;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.editor.flipper.LithoFlipperDescriptors;
 import java.util.Arrays;
@@ -54,6 +56,7 @@ public final class FlipperInitializer {
     client.addPlugin(CrashReporterPlugin.getInstance());
     client.addPlugin(new DatabasesFlipperPlugin(context));
     client.addPlugin(NavigationFlipperPlugin.getInstance());
+    client.addPlugin(new UIDebuggerFlipperPlugin((Application) context));
     client.start();
 
     final OkHttpClient okHttpClient =

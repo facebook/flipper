@@ -6,4 +6,4 @@ SERVER_RESOURCES="$SCRIPT_PATH/../Resources/server"
 
 cd "$SERVER_RESOURCES" || exit 1
 echo "Starting flipper-server ..."
-"$NODE_PATH" .
+"$NODE_PATH" . "$@"

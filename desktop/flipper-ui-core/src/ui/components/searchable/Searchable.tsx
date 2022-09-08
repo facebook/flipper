@@ -20,7 +20,7 @@ import {debounce} from 'lodash';
 import ToggleButton from '../ToggleSwitch';
 import React from 'react';
 import {Layout, theme, Toolbar} from 'flipper-plugin';
-import {getRenderHostInstance} from '../../../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 const SearchBar = styled(Toolbar)({
   height: 42,

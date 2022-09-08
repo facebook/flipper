@@ -250,8 +250,7 @@ export default class AndroidDevice extends ServerDevice {
           }),
       )
       .then((_) => destination);
-
-    return this.recordingProcess.then((_) => {});
+    // Intentionally not return a promise, this just kicks off the recording!
   }
 
   async stopScreenCapture(): Promise<string> {
@@ -274,6 +273,11 @@ export default class AndroidDevice extends ServerDevice {
       this.stopScreenCapture();
     }
     super.disconnect();
+  }
+
+  async installApp(apkPath: string) {
+    console.log(`Installing app with adb ${apkPath}`);
+    await this.adb.install(this.serial, apkPath);
   }
 }
 

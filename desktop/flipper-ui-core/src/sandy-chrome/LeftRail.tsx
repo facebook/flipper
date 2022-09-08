@@ -62,10 +62,11 @@ import {
   showOpenDialog,
   startFileExport,
   startLinkExport,
+  startLogsExport,
 } from '../utils/exportData';
 import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
 import {StyleGuide} from './StyleGuide';
 
@@ -224,6 +225,11 @@ function ExtrasMenu() {
     () => startFileExport(store.dispatch),
     [store.dispatch],
   );
+  const startLogsExportTracked = useTrackedCallback(
+    'Logs export',
+    startLogsExport,
+    [],
+  );
   const startLinkExportTracked = useTrackedCallback(
     'Link export',
     () => startLinkExport(store.dispatch),
@@ -259,6 +265,11 @@ function ExtrasMenu() {
             key="extras"
             title={<LeftRailButton icon={<SettingOutlined />} small />}
             className={submenu}>
+            {canFileExport() ? (
+              <Menu.Item key="exportLogs" onClick={startLogsExportTracked}>
+                Export Flipper logs
+              </Menu.Item>
+            ) : null}
             {canOpenDialog() ? (
               <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
                 Import Flipper file

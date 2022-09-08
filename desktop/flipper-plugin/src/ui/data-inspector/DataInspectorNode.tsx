@@ -50,7 +50,7 @@ const BaseContainer = styled.div<{
   paddingLeft: 10,
   userSelect: 'text',
   width: '100%',
-  backgroundColor: props.hovered ? '#f9f9f9' : '',
+  backgroundColor: props.hovered ? theme.selectionBackgroundColor : '',
 }));
 BaseContainer.displayName = 'DataInspector:BaseContainer';
 

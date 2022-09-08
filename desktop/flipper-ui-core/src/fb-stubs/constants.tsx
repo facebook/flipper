@@ -8,12 +8,13 @@
  */
 
 import {DeviceOS} from 'flipper-plugin';
+import {frontendCoreConstants} from 'flipper-frontend-core';
 
 export default Object.freeze({
+  ...frontendCoreConstants,
+
   // Enables the flipper data to be exported through shareabale link
   ENABLE_SHAREABLE_LINK: false,
-
-  IS_PUBLIC_BUILD: true,
 
   FEEDBACK_GROUP_LINK: 'https://github.com/facebook/flipper/issues',
 

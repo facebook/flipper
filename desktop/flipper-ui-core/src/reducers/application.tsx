@@ -8,7 +8,7 @@
  */
 
 import {v1 as uuidv1} from 'uuid';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import {Actions} from './';
 
 export type LauncherMsg = {

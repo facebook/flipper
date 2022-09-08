@@ -235,6 +235,14 @@ export default class BaseDevice implements Device {
     return this.flipperServer.exec('device-navigate', this.serial, location);
   }
 
+  async installApp(appBundlePath: string): Promise<void> {
+    return this.flipperServer.exec(
+      'device-install-app',
+      this.serial,
+      appBundlePath,
+    );
+  }
+
   async screenshot(): Promise<Uint8Array | undefined> {
     if (!this.description.features.screenshotAvailable || this.isArchived) {
       return;

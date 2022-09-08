@@ -9,8 +9,7 @@ import React from 'react';
 import clsx from 'clsx';
 import LayoutProviders from '@theme/LayoutProviders';
 import Head from '@docusaurus/Head';
-import useKeyboardNavigation from '@theme/hooks/useKeyboardNavigation';
-import {ThemeClassNames} from '@docusaurus/theme-common';
+import {ThemeClassNames, useKeyboardNavigation} from '@docusaurus/theme-common';
 import './styles.css';
 
 function EmbeddedLayout(props) {

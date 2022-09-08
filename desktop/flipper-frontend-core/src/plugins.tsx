@@ -29,15 +29,22 @@ export abstract class AbstractPluginInitializer {
   protected gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
   protected disabledPlugins: Array<ActivatablePluginDetails> = [];
   protected failedPlugins: Array<[ActivatablePluginDetails, string]> = [];
-
-  protected _loadedPlugins: _SandyPluginDefinition[] = [];
+  protected bundledPlugins: Array<BundledPluginDetails> = [];
+  protected loadedPlugins: Array<
+    BundledPluginDetails | InstalledPluginDetails
+  > = [];
+  protected _initialPlugins: _SandyPluginDefinition[] = [];
 
   async init() {
-    this._loadedPlugins = await this._init();
+    this._initialPlugins = await this._init();
   }
 
-  get loadedPlugins(): ReadonlyArray<_SandyPluginDefinition> {
-    return this._loadedPlugins;
+  get initialPlugins(): ReadonlyArray<_SandyPluginDefinition> {
+    return this._initialPlugins;
+  }
+
+  get requirePlugin() {
+    return createRequirePluginFunction(this.requirePluginImpl.bind(this));
   }
 
   protected async _init(): Promise<_SandyPluginDefinition[]> {
@@ -69,6 +76,7 @@ export abstract class AbstractPluginInitializer {
     uninstalledPluginNames: Set<string>,
   ): Promise<(BundledPluginDetails | InstalledPluginDetails)[]> {
     const bundledPlugins = await getBundledPlugins();
+    this.bundledPlugins = bundledPlugins;
 
     const allLocalVersions = [
       ...bundledPlugins,
@@ -85,6 +93,7 @@ export abstract class AbstractPluginInitializer {
       allLocalVersions,
       flipperVersion,
     );
+    this.loadedPlugins = loadedPlugins;
 
     const pluginsToLoad = loadedPlugins
       .map(reportVersion)
@@ -95,9 +104,7 @@ export abstract class AbstractPluginInitializer {
   }
 
   protected async loadPlugins(pluginsToLoad: ActivatablePluginDetails[]) {
-    const loader = createRequirePluginFunction(
-      this.requirePluginImpl.bind(this),
-    )(this.failedPlugins);
+    const loader = this.requirePlugin(this.failedPlugins);
     const initialPlugins: _SandyPluginDefinition[] = (
       await pMap(pluginsToLoad, loader)
     ).filter(notNull);
@@ -262,7 +269,7 @@ export const createRequirePluginFunction =
     };
   };
 
-const wrapRequirePlugin =
+export const wrapRequirePlugin =
   (
     requirePluginImpl: (
       pluginDetails: ActivatablePluginDetails,

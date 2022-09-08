@@ -17,7 +17,7 @@
   Flipper (formerly Sonar) is a platform for debugging mobile apps on iOS and Android and, recently, even JS apps in your browser or in Node.js. Visualize, inspect, and control your apps from a simple desktop interface. Use Flipper as is or extend it using the plugin API.
 </p>
 
-![Flipper](/website/static/img/layout.png)
+![Flipper](website/static/img/inspector.png)
 
 ## Table of Contents
 
@@ -32,7 +32,7 @@
   - [Android SDK + Sample app](#android-sdk--sample-app)
   - [React Native SDK + Sample app](#react-native-sdk--sample-app)
   - [JS SDK + Sample React app](#js-sdk--sample-react-app)
-      - [Troubleshooting](#troubleshooting)
+    - [Troubleshooting](#troubleshooting)
 - [Documentation](#documentation)
   - [Contributing](#contributing)
   - [License](#license)
@@ -78,9 +78,9 @@ This repository includes all parts of Flipper. This includes:
 # Getting started
 
 Please refer to our
-[Getting Started guide](https://fbflipper.com/docs/getting-started/index) to set
-up Flipper.
-Or, (still experimental) run `npx flipper-server` for a browser based version of Flipper. 
+[Getting Started guide](https://fbflipper.com/docs/getting-started) to set up
+Flipper. Or, (still experimental) run `npx flipper-server` for a browser based
+version of Flipper.
 
 ## Requirements
 
@@ -152,6 +152,38 @@ Alternatively, the app can be started on `iOS` by running `yarn ios`.
 If this is the first time running, you will also need to run
 `pod install --repo-update` from the
 `react-native/ReactNativeFlipperExample/ios` folder.
+
+### React Native Windows (Experimental)
+
+An experimental version of Flipper for React Native Windows is available. The
+following steps prepare the React Native Flipper project:
+
+```bash
+cd react-native/react-native-flipper
+vcpkg install openssl:x64-uwp openssl:arm-uwp
+vcpkg integrate install
+yarn install
+cd windows
+nuget install ReactNativeFlipper/packages.config
+```
+
+In a nutshell, [vcpkg](https://vcpkg.io/) is used to install
+[OpenSSL](https://www.openssl.org/). Nuget is used to install
+[Boost](https://www.boost.org/).
+
+Then, the sample application can be built and run as follows:
+
+```bash
+cd ../../ReactNativeFlipperExample
+yarn install
+yarn relative-deps
+npx react-native run-windows
+```
+
+At the moment there's no available package for React Native Flipper. This means
+that to integrate Flipper with any other existing applications, an explicit
+reference to the project needs to be added just as is done with the sample
+application.
 
 ## JS SDK + Sample React app
 

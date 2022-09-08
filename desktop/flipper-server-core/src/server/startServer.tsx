@@ -13,19 +13,28 @@ import express, {Express} from 'express';
 import http, {ServerResponse} from 'http';
 import path from 'path';
 import fs from 'fs-extra';
-import {VerifyClientCallbackSync, WebSocketServer} from 'ws';
+import {ServerOptions, VerifyClientCallbackSync, WebSocketServer} from 'ws';
 import {WEBSOCKET_MAX_MESSAGE_SIZE} from '../comms/ServerWebSocket';
 import {parse} from 'url';
 import {makeSocketPath, checkSocketInUse} from './utilities';
 
 import proxy from 'http-proxy';
 import exitHook from 'exit-hook';
+import {attachSocketServer} from './attachSocketServer';
+import {FlipperServerImpl} from '../FlipperServerImpl';
+import {FlipperServerCompanionEnv} from 'flipper-server-companion';
 
 type Config = {
   port: number;
   staticDir: string;
   entry: string;
+  tcp: boolean;
 };
+
+type ReadyForConnections = (
+  server: FlipperServerImpl,
+  companionEnv: FlipperServerCompanionEnv,
+) => Promise<void>;
 
 /**
  * Orchestrates the creation of the HTTP server, proxy, and web socket.
@@ -36,14 +45,9 @@ export async function startServer(config: Config): Promise<{
   app: Express;
   server: http.Server;
   socket: WebSocketServer;
+  readyForIncomingConnections: ReadyForConnections;
 }> {
-  const {app, server} = await startHTTPServer(config);
-  const socket = addWebsocket(server, config);
-  return {
-    app,
-    server,
-    socket,
-  };
+  return await startHTTPServer(config);
 }
 
 /**
@@ -52,9 +56,12 @@ export async function startServer(config: Config): Promise<{
  * @param config Server configuration.
  * @returns A promise to both app and HTTP server.
  */
-async function startHTTPServer(
-  config: Config,
-): Promise<{app: Express; server: http.Server}> {
+async function startHTTPServer(config: Config): Promise<{
+  app: Express;
+  server: http.Server;
+  socket: WebSocketServer;
+  readyForIncomingConnections: ReadyForConnections;
+}> {
   const app = express();
 
   app.use((_req, res, next) => {
@@ -89,16 +96,33 @@ async function startHTTPServer(
 async function startProxyServer(
   config: Config,
   app: Express,
-): Promise<{app: Express; server: http.Server}> {
+): Promise<{
+  app: Express;
+  server: http.Server;
+  socket: WebSocketServer;
+  readyForIncomingConnections: ReadyForConnections;
+}> {
   const server = http.createServer(app);
+  const socket = addWebsocket(server, config);
 
   // For now, we only support domain socket access on POSIX-like systems.
   // On Windows, a proxy is not created and the server starts
   // listening at the specified port.
   if (os.platform() === 'win32') {
+    if (!config.tcp) {
+      console.error(
+        'No port was supplied and domain socket access is not available for non-POSIX systems, unable to start server',
+      );
+      process.exit(1);
+    }
     return new Promise((resolve) => {
       console.log(`Starting server on http://localhost:${config.port}`);
-      server.listen(config.port, undefined, () => resolve({app, server}));
+      const readyForIncomingConnections = (): Promise<void> => {
+        return new Promise((resolve) => {
+          server.listen(config.port, undefined, () => resolve());
+        });
+      };
+      resolve({app, server, socket, readyForIncomingConnections});
     });
   }
 
@@ -112,17 +136,22 @@ async function startProxyServer(
     await fs.rm(socketPath, {force: true});
   }
 
-  const proxyServer = proxy.createProxyServer({
-    target: {host: 'localhost', port: 0, socketPath},
-    autoRewrite: true,
-    ws: true,
-  });
+  const proxyServer: proxy | undefined = config.tcp
+    ? proxy.createProxyServer({
+        target: {host: 'localhost', port: 0, socketPath},
+        autoRewrite: true,
+        ws: true,
+      })
+    : undefined;
+
   console.log('Starting socket server on ', socketPath);
-  console.log(`Starting proxy server on http://localhost:${config.port}`);
+  if (proxyServer) {
+    console.log(`Starting proxy server on http://localhost:${config.port}`);
+  }
 
   exitHook(() => {
     console.log('Shutdown server');
-    proxyServer.close();
+    proxyServer?.close();
     server.close();
 
     console.log('Cleaning up socket on exit:', socketPath);
@@ -131,7 +160,7 @@ async function startProxyServer(
     fs.rmSync(socketPath, {force: true});
   });
 
-  proxyServer.on('error', (err, _req, res) => {
+  proxyServer?.on('error', (err, _req, res) => {
     console.warn('Error in proxy server:', err);
     if (res instanceof ServerResponse) {
       res.writeHead(502, 'Failed to proxy request');
@@ -140,8 +169,17 @@ async function startProxyServer(
   });
 
   return new Promise((resolve) => {
-    proxyServer.listen(config.port);
-    server.listen(socketPath, undefined, () => resolve({app, server}));
+    const readyForIncomingConnections = (
+      serverImpl: FlipperServerImpl,
+      companionEnv: FlipperServerCompanionEnv,
+    ): Promise<void> => {
+      attachSocketServer(socket, serverImpl, companionEnv);
+      return new Promise((resolve) => {
+        proxyServer?.listen(config.port);
+        server.listen(socketPath, undefined, () => resolve());
+      });
+    };
+    resolve({app, server, socket, readyForIncomingConnections});
   });
 }
 
@@ -196,12 +234,15 @@ function addWebsocket(server: http.Server, config: Config) {
     }
   };
 
-  const wss = new WebSocketServer({
+  const options: ServerOptions = {
     noServer: true,
     maxPayload: WEBSOCKET_MAX_MESSAGE_SIZE,
-    verifyClient,
-  });
+  };
+  if (config.tcp) {
+    options.verifyClient = verifyClient;
+  }
 
+  const wss = new WebSocketServer(options);
   server.on('upgrade', function upgrade(request, socket, head) {
     const {pathname} = parse(request.url!);
 

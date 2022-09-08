@@ -7,7 +7,7 @@
  * @format
  */
 
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import {IconSize} from '../ui/components/Glyph';
 
 const AVAILABLE_SIZES: IconSize[] = [8, 10, 12, 16, 18, 20, 24, 32];

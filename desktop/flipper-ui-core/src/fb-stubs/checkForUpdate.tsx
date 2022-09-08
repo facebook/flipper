@@ -8,7 +8,7 @@
  */
 
 import {VersionCheckResult} from '../chrome/UpdateIndicator';
-import {getRenderHostInstance} from '../RenderHost';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 const updateServer = 'https://www.facebook.com/fbflipper/public/latest.json';
 
