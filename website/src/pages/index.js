@@ -11,7 +11,7 @@ import React from 'react';
 import Layout from '@theme/Layout';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import {usePluginData} from '@docusaurus/useGlobalData';
-import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
+import {FbInternalOnly, OssOnly} from 'docusaurus-plugin-internaldocs-fb/internal';
 
 export default function Index() {
   return (

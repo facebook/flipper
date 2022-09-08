@@ -43,17 +43,24 @@ export function parseIosCrashLegacy(content: string) {
 }
 
 export function parseIosCrashModern(content: string) {
-  const lines = content.split('\n');
-  // Skip the first line of the .ips file as it is useless
-  const reportBodyString = lines.slice(1).join('\n');
-  const reportBody = JSON.parse(reportBodyString);
-  const exception = `${reportBody.exception.type} (${reportBody.exception.signal})`;
+  const captureTimeRegex = /"captureTime".*:.*"(.*)",\n/;
+  const captureTimeArr = captureTimeRegex.exec(content);
+
+  const exceptionRegex = /"exception".*:.*{(.*)},\n/;
+  const exceptionArr = exceptionRegex.exec(content);
+  let exceptionJSON: {type: string; signal: string} | undefined;
+  try {
+    exceptionJSON = JSON.parse(`{${exceptionArr?.[1]}}`);
+  } catch {}
+  const exception = exceptionJSON
+    ? `${exceptionJSON.type} (${exceptionJSON.signal})`
+    : 'Unknown';
 
   const crash: CrashLog = {
     callstack: content,
     name: exception,
     reason: exception,
-    date: new Date(reportBody.captureTime).getTime(),
+    date: new Date(captureTimeArr?.[1] as string).getTime(),
   };
   return crash;
 }
@@ -82,11 +89,18 @@ export function parsePathLegacy(content: string): string | null {
 }
 
 export function parsePathModern(content: string): string | null {
-  const lines = content.split('\n');
-  // Skip the first line of the .ips file as it is useless
-  const reportBodyString = lines.slice(1).join('\n');
-  const reportBody = JSON.parse(reportBodyString);
-  return reportBody.procPath;
+  try {
+    const regex = /"procPath".*:.*"(.*)",\n/;
+    const arr = regex.exec(content);
+    if (!arr || arr.length <= 1) {
+      return null;
+    }
+    const path = arr[1];
+    return path.trim();
+  } catch (e) {
+    console.warn('parsePathModern -> failed to parse crash file', e, content);
+    return null;
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -127,12 +141,20 @@ export class iOSCrashWatcher extends DeviceListener {
             !!checkFileExtensionLegacy,
           )
         ) {
-          this.device.flipperServer.emit('device-crash', {
-            crash: checkFileExtensionLegacy
-              ? parseIosCrashLegacy(data)
-              : parseIosCrashModern(data),
-            serial: this.device.serial,
-          });
+          try {
+            this.device.flipperServer.emit('device-crash', {
+              crash: checkFileExtensionLegacy
+                ? parseIosCrashLegacy(data)
+                : parseIosCrashModern(data),
+              serial: this.device.serial,
+            });
+          } catch (e) {
+            console.error(
+              'iOSCrashWatcher.startListener -> failed to parse crash file',
+              e,
+              data,
+            );
+          }
         }
       });
     });

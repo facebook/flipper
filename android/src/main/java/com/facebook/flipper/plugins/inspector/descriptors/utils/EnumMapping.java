@@ -52,16 +52,6 @@ public class EnumMapping<T> {
     return mMapping.get(mDefaultKey);
   }
 
-  public InspectorValue<?> toPicker() {
-    return toPicker(true);
-  }
-
-  public InspectorValue<?> toPicker(final boolean mutable) {
-    return mutable
-        ? InspectorValue.mutable(Picker, new InspectorValue.Picker(mMapping.keySet(), mDefaultKey))
-        : InspectorValue.immutable(Enum, mDefaultKey);
-  }
-
   public InspectorValue<?> toPicker(final T currentValue) {
     return toPicker(currentValue, true);
   }

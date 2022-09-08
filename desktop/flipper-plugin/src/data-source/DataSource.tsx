@@ -438,6 +438,13 @@ export class DataSource<T extends any, KeyType = never> {
     return newView;
   }
 
+  /**
+   * Returns a new view of the `DataSource` if there doesn't exist a `DataSourceView` with the `viewId` passed in.
+   * The view will allow different filters and sortings on the `DataSource` which can be helpful in cases
+   * where multiple tables/views are needed.
+   * @param viewId id for the `DataSourceView`
+   * @returns `DataSourceView` that corresponds to the `viewId`
+   */
   public getAdditionalView(viewId: string): DataSourceView<T, KeyType> {
     if (viewId in this.additionalViews) {
       return this.additionalViews[viewId];

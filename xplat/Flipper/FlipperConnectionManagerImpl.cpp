@@ -7,8 +7,6 @@
 
 #include "FlipperConnectionManagerImpl.h"
 #include <folly/String.h>
-#include <folly/futures/Future.h>
-#include <folly/io/async/SSLContext.h>
 #include <folly/json.h>
 #include <stdexcept>
 #include <thread>
@@ -328,6 +326,20 @@ void FlipperConnectionManagerImpl::setCallbacks(Callbacks* callbacks) {
 }
 
 void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
+  flipperScheduler_->schedule([this, message]() {
+    try {
+      if (client_) {
+        client_->send(message, []() {});
+      }
+    } catch (std::length_error& e) {
+      // Skip sending messages that are too large.
+      log(e.what());
+      return;
+    }
+  });
+}
+
+void FlipperConnectionManagerImpl::sendMessageRaw(const std::string& message) {
   flipperScheduler_->schedule([this, message]() {
     try {
       if (client_) {

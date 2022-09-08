@@ -8,6 +8,7 @@
 #pragma once
 
 #include <map>
+#include <sstream>
 #include <string>
 #include "FlipperConnection.h"
 #include "FlipperConnectionManager.h"
@@ -50,6 +51,23 @@ class FlipperConnectionImpl : public FlipperConnection {
         folly::dynamic::object("api", name_)("method", method)(
             "params", params));
     socket_->sendMessage(message);
+  }
+
+  void sendRaw(const std::string& method, const std::string& params) override {
+    std::stringstream ss;
+    ss << "{"
+          "\"method\": \"execute\","
+          "\"params\": {"
+          "\"api\": \""
+       << name_
+       << "\","
+          "\"method\": \""
+       << method
+       << "\","
+          "\"params\":"
+       << params << "}}";
+    auto message = ss.str();
+    socket_->sendMessageRaw(message);
   }
 
   void error(const std::string& message, const std::string& stacktrace)

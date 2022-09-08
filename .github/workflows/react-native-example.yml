@@ -38,10 +38,10 @@ jobs:
     - uses: actions/setup-node@v2.1.5
       with:
         node-version: 14.x
-    - name: set up JDK 1.8
+    - name: set up JDK
       uses: actions/setup-java@v1
       with:
-        java-version: 1.8
+        java-version: 11
     - name: Compute build cache
       run: ${GITHUB_WORKSPACE}/scripts/checksum-android.sh checksum-android.txt
     - uses: actions/cache@v2
@@ -60,3 +60,37 @@ jobs:
         mkdir -p android/app/src/main/assets
         yarn react-native bundle --platform android --dev true --entry-file index.native.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
         cd android && ./gradlew assembleDebug
+
+  build-react-native-example-windows:
+    runs-on: windows-2019
+    defaults:
+      run:
+        working-directory: react-native/ReactNativeFlipperExample
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 14.x
+      - uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '5.x'
+      - uses: microsoft/setup-msbuild@v1.1
+      - name: Gather environment info
+        run: npx envinfo
+      - name: Install vcpkg packages
+        run: vcpkg install openssl:x64-uwp openssl:arm-uwp
+      - name: Integrate vcpkg
+        run: vcpkg integrate install
+      - name: Install yarn dependencies (react-native-flipper)
+        run: yarn install
+        working-directory: react-native/react-native-flipper
+      - name: Nuget restore (react-native-flipper)
+        run: nuget install ReactNativeFlipper/packages.config
+        working-directory: react-native/react-native-flipper/windows
+      - name: Install yarn dependencies
+        run: yarn install
+      - name: Install react-native-flipper
+        run: yarn relative-deps
+      - name: Build React Native Windows Example debug app
+        shell: powershell
+        run: npx react-native run-windows --logging --no-autolink --no-packager --no-deploy --no-launch --arch x64

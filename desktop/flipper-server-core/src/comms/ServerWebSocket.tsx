@@ -170,15 +170,17 @@ class ServerWebSocket extends ServerAdapter {
     this.handleConnectionAttempt(ctx);
 
     ws.on('message', async (message: WebSocket.RawData) => {
+      const messageString = message.toString();
       try {
-        const messageString = message.toString();
         const parsedMessage = this.handleMessageDeserialization(messageString);
         // Successful deserialization is a proof that the message is a string
         this.handleMessage(ctx, parsedMessage, messageString);
       } catch (error) {
-        // See the reasoning in the error handler for a `connection` event
-        ws.emit('error', error);
-        ws.close(WSCloseCode.InternalError);
+        // If handling an individual message failes, we don't necessarily kill the connection,
+        // all other plugins might still be working correctly. So let's just report it.
+        // This avoids ping-ponging connections if an individual plugin sends garbage (e.g. T129428800)
+        // or throws an error when handling messages
+        console.error('Failed to handle message', messageString, error);
       }
     });
   }

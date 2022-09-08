@@ -27,11 +27,20 @@ class FlipperConnection {
   virtual ~FlipperConnection() {}
 
   /**
-  Invoke a method on the Flipper desktop plugin with with a matching identifier.
+  Invoke a method on the Flipper desktop plugin with a matching identifier.
   */
   virtual void send(
       const std::string& method,
       const folly::dynamic& params) = 0;
+
+  /**
+   Invoke a method on the Flipper desktop plugin with a matching
+   identifier.
+   Note: The `message` argument is expected to contain a valid JSON.
+   */
+  virtual void sendRaw(
+      const std::string& method,
+      const std::string& params) = 0;
 
   /**
   Report an error to the Flipper desktop app

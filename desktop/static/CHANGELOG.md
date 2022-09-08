@@ -1,3 +1,10 @@
+# 0.160.0 (18/8/2022)
+
+ * [D38746572](https://github.com/facebook/flipper/search?q=D38746572&type=Commits) -  Add kotlin support for the android library
+ * [D38784319](https://github.com/facebook/flipper/search?q=D38784319&type=Commits) -  Fixed reload & zoom in Flipper Desktop application.
+ * [D38825940](https://github.com/facebook/flipper/search?q=D38825940&type=Commits) -  Stop applications from disconnecting if a single plugin message cannot be processed.
+
+
 # 0.157.0 (3/8/2022)
 
  * [D38207087](https://github.com/facebook/flipper/search?q=D38207087&type=Commits) -  Added icon for showing search result context(only triggered by keyboard shortcut before). Added tool tips to search bar icons.
