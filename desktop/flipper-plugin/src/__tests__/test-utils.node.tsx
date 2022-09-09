@@ -166,7 +166,9 @@ test('a plugin cannot send messages after being disconnected', async () => {
     await instance.getCurrentState();
   } catch (e) {
     threw = true; // for some weird reason expect(async () => instance.getCurrentState()).toThrow(...) doesn't work today...
-    expect(e).toMatchInlineSnapshot(`[Error: Plugin is not connected]`);
+    expect(e).toMatchInlineSnapshot(
+      `[Error: SandyPluginInstance.assertConnected -> plugin is not connected]`,
+    );
   }
   expect(threw).toBeTruthy();
 });
