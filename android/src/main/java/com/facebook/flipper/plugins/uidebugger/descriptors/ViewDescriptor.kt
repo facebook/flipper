@@ -22,7 +22,7 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.stetho.ResourcesUtil
 import java.lang.reflect.Field
 
-class ViewDescriptor : AbstractChainedDescriptor<View>() {
+object ViewDescriptor : AbstractChainedDescriptor<View>() {
 
   override fun onGetId(view: View): String {
     return Integer.toBinaryString(System.identityHashCode(view))
@@ -31,8 +31,6 @@ class ViewDescriptor : AbstractChainedDescriptor<View>() {
   override fun onGetName(view: View): String {
     return view.javaClass.simpleName
   }
-
-  override fun onGetChildren(view: View, children: MutableList<Any>) {}
 
   override fun onGetData(view: View, attributeSections: MutableMap<String, InspectableObject>) {
     val positionOnScreen = IntArray(2)
@@ -239,25 +237,19 @@ class ViewDescriptor : AbstractChainedDescriptor<View>() {
                   "FILL_HORIZONTAL" to Gravity.FILL_HORIZONTAL,
               )) {}
 
-  companion object {
-    private var KeyedTagsField: Field? = null
-    private var ListenerInfoField: Field? = null
-    private var OnClickListenerField: Field? = null
+  private var KeyedTagsField: Field? = null
+  private var ListenerInfoField: Field? = null
+  private var OnClickListenerField: Field? = null
 
-    init {
-      try {
-        KeyedTagsField = View::class.java.getDeclaredField("mKeyedTags")
-        KeyedTagsField?.let { field -> field.isAccessible = true }
-        ListenerInfoField = View::class.java.getDeclaredField("mListenerInfo")
-        ListenerInfoField?.let { field -> field.isAccessible = true }
-        val viewInfoClassName = View::class.java.name + "\$ListenerInfo"
-        OnClickListenerField = Class.forName(viewInfoClassName).getDeclaredField("mOnClickListener")
-        OnClickListenerField?.let { field -> field.isAccessible = true }
-      } catch (ignored: Exception) {}
-    }
-  }
-
-  override fun onGetActiveChild(node: View): Any? {
-    return null
+  init {
+    try {
+      KeyedTagsField = View::class.java.getDeclaredField("mKeyedTags")
+      KeyedTagsField?.let { field -> field.isAccessible = true }
+      ListenerInfoField = View::class.java.getDeclaredField("mListenerInfo")
+      ListenerInfoField?.let { field -> field.isAccessible = true }
+      val viewInfoClassName = View::class.java.name + "\$ListenerInfo"
+      OnClickListenerField = Class.forName(viewInfoClassName).getDeclaredField("mOnClickListener")
+      OnClickListenerField?.let { field -> field.isAccessible = true }
+    } catch (ignored: Exception) {}
   }
 }

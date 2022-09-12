@@ -9,7 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import androidx.viewpager.widget.ViewPager
 
-class ViewPagerDescriptor : AbstractChainedDescriptor<ViewPager>() {
+object ViewPagerDescriptor : AbstractChainedDescriptor<ViewPager>() {
 
   override fun onGetId(node: ViewPager): String = System.identityHashCode(node).toString()
 

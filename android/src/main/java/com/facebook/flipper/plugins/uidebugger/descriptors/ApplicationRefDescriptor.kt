@@ -8,12 +8,10 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.app.Activity
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 
-class ApplicationRefDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
+object ApplicationRefDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
 
-  override fun onInit() {}
   override fun onGetActiveChild(node: ApplicationRef): Any? {
     return if (node.activitiesStack.size > 0) node.activitiesStack.last() else null
   }
@@ -34,9 +32,4 @@ class ApplicationRefDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
       children.add(activity)
     }
   }
-
-  override fun onGetData(
-      applicationRef: ApplicationRef,
-      attributeSections: MutableMap<String, InspectableObject>
-  ) {}
 }

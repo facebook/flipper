@@ -9,11 +9,9 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 
-class ObjectDescriptor : Descriptor<Any>() {
-  override fun init() {}
-  override fun getActiveChild(node: Any): Any? {
-    return null
-  }
+object ObjectDescriptor : Descriptor<Any>() {
+
+  override fun getActiveChild(node: Any): Any? = null
 
   override fun getId(obj: Any): String {
     return Integer.toString(System.identityHashCode(obj))
