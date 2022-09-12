@@ -24,12 +24,12 @@ object ActivityDescriptor : AbstractChainedDescriptor<Activity>() {
   override fun onGetChildren(activity: Activity, children: MutableList<Any>) {
     activity.window?.let { window -> children.add(activity.window) }
 
-    var fragments = getFragments(FragmentCompat.supportInstance, activity)
+    var fragments = getDialogFragments(FragmentCompat.supportInstance, activity)
     for (fragment in fragments) {
       children.add(fragment)
     }
 
-    fragments = getFragments(FragmentCompat.frameworkInstance, activity)
+    fragments = getDialogFragments(FragmentCompat.frameworkInstance, activity)
     for (fragment in fragments) {
       children.add(fragment)
     }
@@ -40,11 +40,14 @@ object ActivityDescriptor : AbstractChainedDescriptor<Activity>() {
       attributeSections: MutableMap<String, InspectableObject>
   ) {}
 
-  private fun getFragments(compat: FragmentCompat<*, *, *, *>?, activity: Activity): List<Any> {
+  private fun getDialogFragments(
+      compat: FragmentCompat<*, *, *, *>?,
+      activity: Activity
+  ): List<Any> {
     if (compat == null) {
       return emptyList()
     }
 
-    return compat?.getFragments(activity)
+    return compat.getDialogFragments(activity)
   }
 }

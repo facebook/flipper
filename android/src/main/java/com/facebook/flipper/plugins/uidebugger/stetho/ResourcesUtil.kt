@@ -14,11 +14,10 @@ import javax.annotation.Nonnull
 object ResourcesUtil {
   @Nonnull
   fun getIdStringQuietly(idContext: Any, r: Resources?, resourceId: Int): String {
-    try {
-      return getIdString(r, resourceId)
+    return try {
+      getIdString(r, resourceId)
     } catch (e: NotFoundException) {
-      val idString = getFallbackIdString(resourceId)
-      return idString
+      getFallbackIdString(resourceId)
     }
   }
 

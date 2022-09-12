@@ -103,7 +103,7 @@ abstract class FragmentCompat<
   abstract fun forFragmentManager(): FragmentManagerAccessor<FRAGMENT_MANAGER, FRAGMENT>?
   abstract fun forFragmentActivity(): FragmentActivityAccessor<FRAGMENT_ACTIVITY, FRAGMENT_MANAGER>?
 
-  abstract fun getFragments(activity: Activity): List<Any>
+  abstract fun getDialogFragments(activity: Activity): List<Any>
   abstract fun findFragmentForViewInActivity(activity: Activity, view: View): Any?
   abstract fun findFragmentForViewInFragment(fragment: Any, view: View): Any?
 
@@ -117,10 +117,8 @@ abstract class FragmentCompat<
       if (fieldMAdded == null) {
         fragmentManager?.let { manager ->
           val field = manager::class.java.getDeclaredField("mAdded")
-          if (field != null) {
-            field.isAccessible = true
-            fieldMAdded = field
-          }
+          field.isAccessible = true
+          fieldMAdded = field
         }
       }
 
