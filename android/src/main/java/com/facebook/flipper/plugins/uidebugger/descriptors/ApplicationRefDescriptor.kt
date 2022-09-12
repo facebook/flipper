@@ -13,22 +13,22 @@ import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 object ApplicationRefDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
 
   override fun onGetActiveChild(node: ApplicationRef): Any? {
-    return if (node.activitiesStack.size > 0) node.activitiesStack.last() else null
+    return if (node.activitiesStack.isNotEmpty()) node.activitiesStack.last() else null
   }
 
-  override fun onGetId(applicationRef: ApplicationRef): String {
-    return applicationRef.application.packageName
+  override fun onGetId(node: ApplicationRef): String {
+    return node.application.packageName
   }
 
-  override fun onGetName(applicationRef: ApplicationRef): String {
-    val applicationInfo = applicationRef.application.getApplicationInfo()
+  override fun onGetName(node: ApplicationRef): String {
+    val applicationInfo = node.application.applicationInfo
     val stringId = applicationInfo.labelRes
     return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString()
-    else applicationRef.application.getString(stringId)
+    else node.application.getString(stringId)
   }
 
-  override fun onGetChildren(applicationRef: ApplicationRef, children: MutableList<Any>) {
-    for (activity: Activity in applicationRef.activitiesStack) {
+  override fun onGetChildren(node: ApplicationRef, children: MutableList<Any>) {
+    for (activity: Activity in node.activitiesStack) {
       children.add(activity)
     }
   }

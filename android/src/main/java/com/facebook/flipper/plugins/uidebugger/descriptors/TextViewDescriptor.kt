@@ -12,16 +12,16 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 
 object TextViewDescriptor : AbstractChainedDescriptor<TextView>() {
 
-  override fun onGetId(textView: TextView): String {
-    return Integer.toString(System.identityHashCode(textView))
+  override fun onGetId(node: TextView): String {
+    return System.identityHashCode(node).toString()
   }
 
-  override fun onGetName(textView: TextView): String {
-    return textView.javaClass.simpleName
+  override fun onGetName(node: TextView): String {
+    return node.javaClass.simpleName
   }
 
   override fun onGetData(
-      textView: TextView,
+      node: TextView,
       attributeSections: MutableMap<String, InspectableObject>
   ) {}
 }

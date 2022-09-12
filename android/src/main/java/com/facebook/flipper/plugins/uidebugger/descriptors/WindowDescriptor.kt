@@ -11,15 +11,15 @@ import android.view.Window
 
 object WindowDescriptor : AbstractChainedDescriptor<Window>() {
 
-  override fun onGetId(window: Window): String {
-    return Integer.toString(System.identityHashCode(window))
+  override fun onGetId(node: Window): String {
+    return System.identityHashCode(node).toString()
   }
 
-  override fun onGetName(window: Window): String {
-    return window.javaClass.simpleName
+  override fun onGetName(node: Window): String {
+    return node.javaClass.simpleName
   }
 
-  override fun onGetChildren(window: Window, children: MutableList<Any>) {
-    children.add(window.decorView)
+  override fun onGetChildren(node: Window, children: MutableList<Any>) {
+    children.add(node.decorView)
   }
 }
