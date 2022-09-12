@@ -13,6 +13,9 @@ import com.facebook.flipper.plugins.uidebugger.stetho.FragmentCompat
 
 class ActivityDescriptor : AbstractChainedDescriptor<Activity>() {
   override fun onInit() {}
+  override fun onGetActiveChild(node: Activity): Any? {
+    return null
+  }
 
   override fun onGetId(activity: Activity): String {
     return Integer.toString(System.identityHashCode(activity))

@@ -16,6 +16,9 @@ class ApplicationRefDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
   val rootResolver = RootViewResolver()
 
   override fun onInit() {}
+  override fun onGetActiveChild(node: ApplicationRef): Any? {
+    return if (node.activitiesStack.size > 0) node.activitiesStack.last() else null
+  }
 
   override fun onGetId(applicationRef: ApplicationRef): String {
     return applicationRef.application.packageName
@@ -38,7 +41,6 @@ class ApplicationRefDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
           if (activity.window.decorView == root.view) {
             children.add(activity)
             added = true
-
             break
           }
         }

@@ -85,4 +85,8 @@ class ViewGroupDescriptor : AbstractChainedDescriptor<ViewGroup>() {
       }
     }
   }
+
+  override fun onGetActiveChild(node: ViewGroup): Any? {
+    return null
+  }
 }

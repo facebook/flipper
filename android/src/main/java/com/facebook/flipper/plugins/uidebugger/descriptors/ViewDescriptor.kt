@@ -256,4 +256,8 @@ class ViewDescriptor : AbstractChainedDescriptor<View>() {
       } catch (ignored: Exception) {}
     }
   }
+
+  override fun onGetActiveChild(node: View): Any? {
+    return null
+  }
 }

@@ -42,4 +42,5 @@ export type UINode = {
   name: string;
   attributes: Record<string, Inspectable>;
   children: Id[];
+  activeChild?: Id;
 };

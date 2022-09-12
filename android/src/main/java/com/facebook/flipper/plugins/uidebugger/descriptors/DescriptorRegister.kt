@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
+import androidx.viewpager.widget.ViewPager
 import com.facebook.flipper.plugins.uidebugger.common.UIDebuggerException
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 
@@ -31,6 +32,7 @@ class DescriptorRegister {
       mapping.register(View::class.java, ViewDescriptor())
       mapping.register(TextView::class.java, TextViewDescriptor())
       mapping.register(Button::class.java, ButtonDescriptor())
+      mapping.register(ViewPager::class.java, ViewPagerDescriptor())
 
       for (clazz in mapping.register.keys) {
         val descriptor: Descriptor<*>? = mapping.register[clazz]

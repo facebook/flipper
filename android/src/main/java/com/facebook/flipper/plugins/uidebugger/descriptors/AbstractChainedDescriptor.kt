@@ -34,6 +34,12 @@ abstract class AbstractChainedDescriptor<T> : Descriptor<T>(), ChainedDescriptor
 
   open fun onInit() {}
 
+  final override fun getActiveChild(node: T): Any? {
+    // ask each descriptor in the chain for an active child, if none available look up the chain
+    // until no more super descriptors
+    return onGetActiveChild(node) ?: mSuper?.getActiveChild(node)
+  }
+
   /**
    * A globally unique ID used to identify a node in a hierarchy. If your node does not have a
    * globally unique ID it is fine to rely on [System.identityHashCode].
@@ -51,6 +57,8 @@ abstract class AbstractChainedDescriptor<T> : Descriptor<T>(), ChainedDescriptor
   final override fun getName(node: T): String {
     return onGetName(node)
   }
+
+  abstract fun onGetActiveChild(node: T): Any?
 
   abstract fun onGetName(node: T): String
 

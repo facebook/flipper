@@ -33,13 +33,7 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
 
     Log.d(
         "LAYOUT_SCHEDULER",
-        Thread.currentThread().name +
-            Looper.myLooper() +
-            ", produced: " +
-            {
-              nodes.count()
-            } +
-            " nodes")
+        "${Thread.currentThread().name}${Looper.myLooper()} produced: ${nodes.count()} nodes")
 
     return ScanResult(txId++, start, scanEnd, nodes)
   }

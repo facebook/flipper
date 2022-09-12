@@ -26,4 +26,8 @@ class TextViewDescriptor : AbstractChainedDescriptor<TextView>() {
       textView: TextView,
       attributeSections: MutableMap<String, InspectableObject>
   ) {}
+
+  override fun onGetActiveChild(node: TextView): Any? {
+    return null
+  }
 }

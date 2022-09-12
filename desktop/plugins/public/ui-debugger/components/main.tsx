@@ -24,9 +24,20 @@ import {DownOutlined} from '@ant-design/icons';
 import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, UINode} from '../types';
 
-function nodesToAntTree(root: Id, nodes: Map<Id, UINode>): DataNode {
+function nodesToAntTree(root: Id, nodes: Map<Id, UINode>): [DataNode, Id[]] {
+  const inactive: Id[] = [];
+
   function uiNodeToAntNode(id: Id): DataNode {
     const node = nodes.get(id);
+
+    if (node?.activeChild) {
+      for (const child of node.children) {
+        if (child !== node?.activeChild) {
+          inactive.push(child);
+        }
+      }
+    }
+
     return {
       key: id,
       title: node?.name,
@@ -34,7 +45,7 @@ function nodesToAntTree(root: Id, nodes: Map<Id, UINode>): DataNode {
     };
   }
 
-  return uiNodeToAntNode(root);
+  return [uiNodeToAntNode(root), inactive];
 }
 
 function formatDiff(start: number, end: number): string {
@@ -119,7 +130,7 @@ export function Component() {
     );
 
   if (rootId) {
-    const antTree = nodesToAntTree(rootId, nodes);
+    const [antTree, inactive] = nodesToAntTree(rootId, nodes);
     return (
       <>
         <Layout.ScrollContainer>
@@ -130,7 +141,9 @@ export function Component() {
               setSelectedNode(selected[0] as string);
             }}
             defaultExpandAll
-            expandedKeys={[...nodes.keys()]}
+            expandedKeys={[...nodes.keys()].filter(
+              (key) => !inactive.includes(key),
+            )}
             switcherIcon={<DownOutlined />}
             treeData={[antTree]}
           />

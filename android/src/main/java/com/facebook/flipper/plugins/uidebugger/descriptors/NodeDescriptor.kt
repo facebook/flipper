@@ -29,6 +29,12 @@ interface NodeDescriptor<T> {
   fun getChildren(node: T, children: MutableList<Any>)
 
   /**
+   * If you have overlapping children this indicates which child is active / on top, we will only
+   * listen to / traverse this child. If return null we assume all children are 'active'
+   */
+  fun getActiveChild(node: T): Any?
+
+  /**
    * Get the data to show for this node in the sidebar of the inspector. The object will be shown in
    * order and with a header matching the given name.
    */

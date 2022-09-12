@@ -40,19 +40,37 @@ class LayoutTraversal(
         descriptor.getChildren(node, children)
 
         val childrenIds = mutableListOf<String>()
+
+        val activeChild = descriptor.getActiveChild(node)
         for (child in children) {
           // it might make sense one day to remove id from the descriptor since its always the
           // hash code
           val childDescriptor =
               descriptorRegister.descriptorForClassUnsafe(child::class.java).asAny()
           childrenIds.add(childDescriptor.getId(child))
-          stack.add(child)
+          // if there is an active child then dont traverse it
+          if (activeChild == null) {
+            stack.add(child)
+          }
+        }
+
+        var activeChildId: String? = null
+        if (activeChild != null) {
+          stack.add(activeChild)
+          activeChildId =
+              descriptorRegister.descriptorForClassUnsafe(activeChild.javaClass).getId(activeChild)
         }
 
         val attributes = mutableMapOf<String, InspectableObject>()
         descriptor.getData(node, attributes)
 
-        result.add(Node(descriptor.getId(node), descriptor.getName(node), attributes, childrenIds))
+        result.add(
+            Node(
+                descriptor.getId(node),
+                descriptor.getName(node),
+                attributes,
+                childrenIds,
+                activeChildId))
       } catch (exception: Exception) {
         Log.e(LogTag, "Error while processing node ${node.javaClass.name} ${node} ", exception)
       }

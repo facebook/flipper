@@ -28,4 +28,8 @@ class WindowDescriptor : AbstractChainedDescriptor<Window>() {
       window: Window,
       attributeSections: MutableMap<String, InspectableObject>
   ) {}
+
+  override fun onGetActiveChild(node: Window): Any? {
+    return null
+  }
 }

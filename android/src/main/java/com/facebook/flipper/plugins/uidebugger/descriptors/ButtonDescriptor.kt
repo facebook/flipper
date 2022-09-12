@@ -26,4 +26,7 @@ class ButtonDescriptor : AbstractChainedDescriptor<Button>() {
   ) {}
 
   override fun onGetChildren(button: Button, children: MutableList<Any>) {}
+  override fun onGetActiveChild(node: Button): Any? {
+    return null
+  }
 }
