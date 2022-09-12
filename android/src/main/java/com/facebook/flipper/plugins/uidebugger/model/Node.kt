@@ -14,5 +14,6 @@ data class Node(
     val id: String,
     val name: String,
     val attributes: Map<String, InspectableObject>,
-    val children: List<String>
+    val children: List<String>,
+    val activeChild: String?,
 )

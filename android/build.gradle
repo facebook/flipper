@@ -68,6 +68,7 @@ android {
         compileOnly deps.proguardAnnotations
         implementation deps.kotlinStdLibrary
 
+        implementation deps.kotlinCoroutinesAndroid
         implementation deps.openssl
         implementation deps.fbjni
         implementation deps.soloader

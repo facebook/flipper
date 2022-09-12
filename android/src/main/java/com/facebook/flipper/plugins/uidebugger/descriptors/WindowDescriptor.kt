@@ -8,9 +8,8 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.view.Window
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 
-class WindowDescriptor : AbstractChainedDescriptor<Window>() {
+object WindowDescriptor : AbstractChainedDescriptor<Window>() {
 
   override fun onGetId(window: Window): String {
     return Integer.toString(System.identityHashCode(window))
@@ -23,9 +22,4 @@ class WindowDescriptor : AbstractChainedDescriptor<Window>() {
   override fun onGetChildren(window: Window, children: MutableList<Any>) {
     children.add(window.decorView)
   }
-
-  override fun onGetData(
-      window: Window,
-      attributeSections: MutableMap<String, InspectableObject>
-  ) {}
 }

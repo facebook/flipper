@@ -292,14 +292,26 @@ export class SandyPluginInstance extends BasePluginInstance {
 
   private assertConnected() {
     this.assertNotDestroyed();
-    if (
-      // This is a better-safe-than-sorry; just the first condition should suffice
-      !this.connected.get() ||
-      !this.realClient.connected.get() ||
-      !this.device.isConnected ||
-      this.device.isArchived
-    ) {
-      throw new Error('Plugin is not connected');
+    // This is a better-safe-than-sorry; just the first condition should suffice
+    if (!this.connected.get()) {
+      throw new Error(
+        'SandyPluginInstance.assertConnected -> plugin is not connected',
+      );
+    }
+    if (!this.realClient.connected.get()) {
+      throw new Error(
+        'SandyPluginInstance.assertConnected -> realClient is not connected',
+      );
+    }
+    if (!this.device.isConnected) {
+      throw new Error(
+        'SandyPluginInstance.assertConnected -> device is not connected',
+      );
+    }
+    if (this.device.isArchived) {
+      throw new Error(
+        'SandyPluginInstance.assertConnected -> device is archived',
+      );
     }
   }
 }

@@ -15,23 +15,19 @@ import java.lang.ref.WeakReference
 
 class ApplicationRef(val application: Application) : Application.ActivityLifecycleCallbacks {
   interface ActivityStackChangedListener {
+    fun onActivityAdded(activity: Activity, stack: List<Activity>)
     fun onActivityStackChanged(stack: List<Activity>)
-  }
-
-  interface ActivityDestroyedListener {
-    fun onActivityDestroyed(activity: Activity)
+    fun onActivityDestroyed(activity: Activity, stack: List<Activity>)
   }
 
   private val rootsResolver: RootViewResolver
   private val activities: MutableList<WeakReference<Activity>>
   private var activityStackChangedlistener: ActivityStackChangedListener? = null
-  private var activityDestroyedListener: ActivityDestroyedListener? = null
 
   override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
     activities.add(WeakReference<Activity>(activity))
-    activityStackChangedlistener?.let { listener ->
-      listener.onActivityStackChanged(this.activitiesStack)
-    }
+    activityStackChangedlistener?.onActivityAdded(activity, this.activitiesStack)
+    activityStackChangedlistener?.onActivityStackChanged(this.activitiesStack)
   }
   override fun onActivityStarted(activity: Activity) {}
   override fun onActivityResumed(activity: Activity) {}
@@ -47,19 +43,12 @@ class ApplicationRef(val application: Application) : Application.ActivityLifecyc
       }
     }
 
-    activityDestroyedListener?.let { listener -> listener.onActivityDestroyed(activity) }
-
-    activityStackChangedlistener?.let { listener ->
-      listener.onActivityStackChanged(this.activitiesStack)
-    }
+    activityStackChangedlistener?.onActivityDestroyed(activity, this.activitiesStack)
+    activityStackChangedlistener?.onActivityStackChanged(this.activitiesStack)
   }
 
   fun setActivityStackChangedListener(listener: ActivityStackChangedListener?) {
     activityStackChangedlistener = listener
-  }
-
-  fun setActivityDestroyedListener(listener: ActivityDestroyedListener?) {
-    activityDestroyedListener = listener
   }
 
   val activitiesStack: List<Activity>

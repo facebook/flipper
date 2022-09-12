@@ -26,13 +26,11 @@ abstract class AbstractChainedDescriptor<T> : Descriptor<T>(), ChainedDescriptor
     return mSuper
   }
 
-  /** Initialize a descriptor. */
-  final override fun init() {
-    mSuper?.init()
-    onInit()
+  final override fun getActiveChild(node: T): Any? {
+    // ask each descriptor in the chain for an active child, if none available look up the chain
+    // until no more super descriptors
+    return onGetActiveChild(node) ?: mSuper?.getActiveChild(node)
   }
-
-  open fun onInit() {}
 
   /**
    * A globally unique ID used to identify a node in a hierarchy. If your node does not have a
@@ -51,6 +49,8 @@ abstract class AbstractChainedDescriptor<T> : Descriptor<T>(), ChainedDescriptor
   final override fun getName(node: T): String {
     return onGetName(node)
   }
+
+  open fun onGetActiveChild(node: T): Any? = null
 
   abstract fun onGetName(node: T): String
 

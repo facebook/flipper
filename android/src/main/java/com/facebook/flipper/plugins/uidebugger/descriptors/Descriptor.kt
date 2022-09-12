@@ -26,31 +26,4 @@ abstract class Descriptor<T> : NodeDescriptor<T> {
     }
     return null
   }
-
-  //  override fun inspect(obj: Any): FlipperObject {
-  //    val descriptor = descriptorForObject(obj)
-  //    descriptor?.let { descriptor ->
-  //      return (descriptor as Descriptor<Any>).get(obj)
-  //    }
-  //
-  //    return FlipperObject.Builder().build()
-  //  }
-  //
-  //  override fun get(node: T): FlipperObject {
-  //    val builder = FlipperObject.Builder()
-  //
-  //    val propsBuilder = FlipperObject.Builder()
-  //    getData(node, propsBuilder)
-  //
-  //    val childrenBuilder = FlipperArray.Builder()
-  //    getChildren(node, childrenBuilder)
-  //
-  //    builder
-  //        .put("key", getId(node))
-  //        .put("title", getName(node))
-  //        .put("data", propsBuilder)
-  //        .put("children", childrenBuilder)
-  //
-  //    return builder.build()
-  //  }
 }

@@ -64,7 +64,7 @@ class FragmentCompatFramework :
     return fragmentActivityAccessor
   }
 
-  override fun getFragments(activity: Activity): List<Any> {
+  override fun getDialogFragments(activity: Activity): List<Any> {
     if (!fragmentActivityClass.isInstance(activity)) {
       return emptyList()
     }
@@ -79,11 +79,13 @@ class FragmentCompatFramework :
     } catch (e: Exception) {}
 
     if (addedFragments != null) {
-      val N = addedFragments.size - 1
+      val n = addedFragments.size - 1
       val dialogFragments = mutableListOf<Any>()
-      for (i in 0..N) {
+      for (i in 0..n) {
         val fragment = addedFragments[i]
-        dialogFragmentClass?.isInstance(fragment)?.let { fragment -> dialogFragments.add(fragment) }
+        if (fragment != null && dialogFragmentClass.isInstance(fragment)) {
+          dialogFragments.add(fragment)
+        }
       }
       return dialogFragments
     }
@@ -113,8 +115,8 @@ class FragmentCompatFramework :
     } catch (e: Exception) {}
 
     if (fragments != null) {
-      val N = fragments.size - 1
-      for (i in 0..N) {
+      val n = fragments.size - 1
+      for (i in 0..n) {
         val fragment = fragments[i]
         val result = findFragmentForViewInFragment(fragment, view)
         if (result != null) {

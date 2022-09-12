@@ -15,6 +15,13 @@ data class InitEvent(val rootId: String) {
 }
 
 @kotlinx.serialization.Serializable
+data class SubtreeUpdateEvent(val txId: Long, val observerType: String, val nodes: List<Node>) {
+  companion object {
+    const val name = "subtreeUpdate"
+  }
+}
+
+@kotlinx.serialization.Serializable
 data class NativeScanEvent(val txId: Long, val nodes: List<Node>) {
   companion object {
     const val name = "nativeScan"
@@ -26,7 +33,8 @@ data class NativeScanEvent(val txId: Long, val nodes: List<Node>) {
 data class PerfStatsEvent(
     val txId: Long,
     val start: Long,
-    val scanComplete: Long,
+    val traversalComplete: Long,
+    val queuingComplete: Long,
     val serializationComplete: Long,
     val socketComplete: Long,
     val nodesCount: Int

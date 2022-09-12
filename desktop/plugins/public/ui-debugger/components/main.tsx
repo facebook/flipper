@@ -24,9 +24,20 @@ import {DownOutlined} from '@ant-design/icons';
 import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, UINode} from '../types';
 
-function nodesToAntTree(root: Id, nodes: Map<Id, UINode>): DataNode {
+function nodesToAntTree(root: Id, nodes: Map<Id, UINode>): [DataNode, Id[]] {
+  const inactive: Id[] = [];
+
   function uiNodeToAntNode(id: Id): DataNode {
     const node = nodes.get(id);
+
+    if (node?.activeChild) {
+      for (const child of node.children) {
+        if (child !== node?.activeChild) {
+          inactive.push(child);
+        }
+      }
+    }
+
     return {
       key: id,
       title: node?.name,
@@ -34,7 +45,7 @@ function nodesToAntTree(root: Id, nodes: Map<Id, UINode>): DataNode {
     };
   }
 
-  return uiNodeToAntNode(root);
+  return [uiNodeToAntNode(root), inactive];
 }
 
 function formatDiff(start: number, end: number): string {
@@ -60,17 +71,24 @@ export const columns: DataTableColumn<PerfStatsEvent>[] = [
     },
   },
   {
-    key: 'scanComplete',
-    title: 'Scan time',
+    key: 'traversalComplete',
+    title: 'Traversal time (Main thread)',
     onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.start, row.scanComplete);
+      return formatDiff(row.start, row.traversalComplete);
+    },
+  },
+  {
+    key: 'queuingComplete',
+    title: 'Queuing time',
+    onRender: (row: PerfStatsEvent) => {
+      return formatDiff(row.traversalComplete, row.queuingComplete);
     },
   },
   {
     key: 'serializationComplete',
     title: 'Serialization time',
     onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.scanComplete, row.serializationComplete);
+      return formatDiff(row.queuingComplete, row.serializationComplete);
     },
   },
   {
@@ -119,7 +137,7 @@ export function Component() {
     );
 
   if (rootId) {
-    const antTree = nodesToAntTree(rootId, nodes);
+    const [antTree, inactive] = nodesToAntTree(rootId, nodes);
     return (
       <>
         <Layout.ScrollContainer>
@@ -130,7 +148,9 @@ export function Component() {
               setSelectedNode(selected[0] as string);
             }}
             defaultExpandAll
-            expandedKeys={[...nodes.keys()]}
+            expandedKeys={[...nodes.keys()].filter(
+              (key) => !inactive.includes(key),
+            )}
             switcherIcon={<DownOutlined />}
             treeData={[antTree]}
           />

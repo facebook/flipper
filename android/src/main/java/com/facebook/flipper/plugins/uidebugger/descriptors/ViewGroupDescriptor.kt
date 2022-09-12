@@ -18,7 +18,7 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.stetho.FragmentCompat
 
-class ViewGroupDescriptor : AbstractChainedDescriptor<ViewGroup>() {
+object ViewGroupDescriptor : AbstractChainedDescriptor<ViewGroup>() {
 
   override fun onGetId(viewGroup: ViewGroup): String {
     return Integer.toString(System.identityHashCode(viewGroup))
@@ -69,20 +69,18 @@ class ViewGroupDescriptor : AbstractChainedDescriptor<ViewGroup>() {
                   "LAYOUT_MODE_OPTICAL_BOUNDS" to ViewGroupCompat.LAYOUT_MODE_OPTICAL_BOUNDS,
               )) {}
 
-  companion object {
-    private fun getAttachedFragmentForView(v: View): Any? {
-      return try {
-        val fragment = FragmentCompat.findFragmentForView(v)
-        var added = false
-        if (fragment is Fragment) {
-          added = fragment.isAdded
-        } else if (fragment is androidx.fragment.app.Fragment) {
-          added = fragment.isAdded
-        }
-        if (added) fragment else null
-      } catch (e: RuntimeException) {
-        null
+  private fun getAttachedFragmentForView(v: View): Any? {
+    return try {
+      val fragment = FragmentCompat.findFragmentForView(v)
+      var added = false
+      if (fragment is Fragment) {
+        added = fragment.isAdded
+      } else if (fragment is androidx.fragment.app.Fragment) {
+        added = fragment.isAdded
       }
+      if (added) fragment else null
+    } catch (e: RuntimeException) {
+      null
     }
   }
 }

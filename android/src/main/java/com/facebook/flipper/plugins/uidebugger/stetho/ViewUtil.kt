@@ -31,15 +31,19 @@ object ViewUtil {
   }
 
   private fun tryGetActivity(context: Context): Activity? {
-    var context: Context? = context
-    while (context != null) {
-      context =
-          if (context is Activity) {
-            return context
-          } else if (context is ContextWrapper) {
-            context.baseContext
-          } else {
-            return null
+    var ctx: Context? = context
+    while (ctx != null) {
+      ctx =
+          when (ctx) {
+            is Activity -> {
+              return ctx
+            }
+            is ContextWrapper -> {
+              ctx.baseContext
+            }
+            else -> {
+              return null
+            }
           }
     }
     return null

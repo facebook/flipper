@@ -49,3 +49,5 @@ website/src/embedded-pages/docs/plugins/
 
 # Logs
 **/*/flipper-server-log.out
+
+*.salive

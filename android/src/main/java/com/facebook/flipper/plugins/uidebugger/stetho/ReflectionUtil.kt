@@ -10,7 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.stetho
 import java.lang.reflect.Field
 
 object ReflectionUtil {
-  inline fun tryGetClassForName(className: String): Class<*>? {
+  fun tryGetClassForName(className: String): Class<*>? {
     return try {
       Class.forName(className)
     } catch (e: ClassNotFoundException) {
@@ -18,7 +18,7 @@ object ReflectionUtil {
     }
   }
 
-  inline fun tryGetDeclaredField(theClass: Class<*>, fieldName: String): Field? {
+  fun tryGetDeclaredField(theClass: Class<*>, fieldName: String): Field? {
     return try {
       theClass.getDeclaredField(fieldName)
     } catch (e: NoSuchFieldException) {
@@ -26,7 +26,7 @@ object ReflectionUtil {
     }
   }
 
-  inline fun getFieldValue(field: Field, target: Any?): Any? {
+  fun getFieldValue(field: Field, target: Any?): Any? {
     return try {
       field[target]
     } catch (e: IllegalAccessException) {
