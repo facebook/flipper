@@ -10,10 +10,8 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import android.app.Activity
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
-import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
 
 class ApplicationRefDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
-  val rootResolver = RootViewResolver()
 
   override fun onInit() {}
   override fun onGetActiveChild(node: ApplicationRef): Any? {
@@ -32,22 +30,8 @@ class ApplicationRefDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
   }
 
   override fun onGetChildren(applicationRef: ApplicationRef, children: MutableList<Any>) {
-    val activeRoots = rootResolver.listActiveRootViews()
-
-    activeRoots?.let { roots ->
-      for (root: RootViewResolver.RootView in roots) {
-        var added = false
-        for (activity: Activity in applicationRef.activitiesStack) {
-          if (activity.window.decorView == root.view) {
-            children.add(activity)
-            added = true
-            break
-          }
-        }
-        if (!added) {
-          children.add(root.view)
-        }
-      }
+    for (activity: Activity in applicationRef.activitiesStack) {
+      children.add(activity)
     }
   }
 

@@ -13,8 +13,9 @@ import {Id, UINode} from './types';
 export type PerfStatsEvent = {
   txId: number;
   start: number;
-  scanComplete: number;
+  traversalComplete: number;
   serializationComplete: number;
+  queuingComplete: number;
   socketComplete: number;
   nodesCount: number;
 };
@@ -22,6 +23,7 @@ export type PerfStatsEvent = {
 type Events = {
   init: {rootId: string};
   nativeScan: {txId: number; nodes: UINode[]};
+  subtreeUpdate: {txId: number; nodes: UINode[]};
   perfStats: PerfStatsEvent;
 };
 
@@ -38,9 +40,17 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const nodesAtom = createState<Map<Id, UINode>>(new Map());
+  client.onMessage('subtreeUpdate', ({nodes}) => {
+    nodesAtom.update((draft) => {
+      for (const node of nodes) {
+        draft.set(node.id, node);
+      }
+    });
+  });
+
   client.onMessage('nativeScan', ({nodes}) => {
+    //Native scan is a full update so overwrite everything
     nodesAtom.set(new Map(nodes.map((node) => [node.id, node])));
-    console.log(nodesAtom.get());
   });
 
   return {rootId, nodes: nodesAtom, perfEvents};

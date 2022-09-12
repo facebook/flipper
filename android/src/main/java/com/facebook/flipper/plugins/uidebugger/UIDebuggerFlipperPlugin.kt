@@ -8,23 +8,33 @@
 package com.facebook.flipper.plugins.uidebugger
 
 import android.app.Application
+import android.util.Log
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.core.FlipperPlugin
-import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
-import com.facebook.flipper.plugins.uidebugger.core.ConnectionRef
-import com.facebook.flipper.plugins.uidebugger.core.Context
-import com.facebook.flipper.plugins.uidebugger.core.NativeScanScheduler
+import com.facebook.flipper.plugins.uidebugger.core.*
+import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.flipper.plugins.uidebugger.model.InitEvent
+import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import com.facebook.flipper.plugins.uidebugger.scheduler.Scheduler
+import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 
-val LogTag = "FlipperUIDebugger"
+const val LogTag = "FlipperUIDebugger"
 
 class UIDebuggerFlipperPlugin(val application: Application) : FlipperPlugin {
 
-  private val context: Context = Context(ApplicationRef(application), ConnectionRef(null))
+  private val context: Context =
+      Context(
+          ApplicationRef(application),
+          ConnectionRef(null),
+          DescriptorRegister.withDefaults(),
+          TreeObserverFactory.withDefaults())
 
   private val nativeScanScheduler = Scheduler(NativeScanScheduler(context))
+
+  init {
+    Log.i(LogTag, "Initializing UI Debugger")
+  }
 
   override fun getId(): String {
     return "ui-debugger"
@@ -42,16 +52,19 @@ class UIDebuggerFlipperPlugin(val application: Application) : FlipperPlugin {
         Json.encodeToString(
             InitEvent.serializer(), InitEvent(rootDescriptor.getId(context.applicationRef))))
 
-    nativeScanScheduler.start()
+    context.treeObserverManager.start()
+    //    nativeScanScheduler.start()
   }
 
   @Throws(Exception::class)
   override fun onDisconnect() {
     this.context.connectionRef.connection = null
+    Log.e(LogTag, "disconnected")
+
     this.nativeScanScheduler.stop()
   }
 
   override fun runInBackground(): Boolean {
-    return false
+    return true
   }
 }

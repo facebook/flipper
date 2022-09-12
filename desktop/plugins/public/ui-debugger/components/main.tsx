@@ -71,17 +71,24 @@ export const columns: DataTableColumn<PerfStatsEvent>[] = [
     },
   },
   {
-    key: 'scanComplete',
-    title: 'Scan time',
+    key: 'traversalComplete',
+    title: 'Traversal time (Main thread)',
     onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.start, row.scanComplete);
+      return formatDiff(row.start, row.traversalComplete);
+    },
+  },
+  {
+    key: 'queuingComplete',
+    title: 'Queuing time',
+    onRender: (row: PerfStatsEvent) => {
+      return formatDiff(row.traversalComplete, row.queuingComplete);
     },
   },
   {
     key: 'serializationComplete',
     title: 'Serialization time',
     onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.scanComplete, row.serializationComplete);
+      return formatDiff(row.queuingComplete, row.serializationComplete);
     },
   },
   {

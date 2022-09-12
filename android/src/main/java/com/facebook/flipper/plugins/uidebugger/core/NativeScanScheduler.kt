@@ -59,6 +59,7 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
                 result.txId,
                 result.scanStart,
                 result.scanEnd,
+                result.scanEnd,
                 serializationEnd,
                 socketEnd,
                 result.nodes.size)))
