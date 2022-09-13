@@ -14,6 +14,7 @@ import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.SubtreeUpdate
 import com.facebook.flipper.plugins.uidebugger.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.identityHashCode
 
 typealias DecorView = View
 
@@ -40,6 +41,16 @@ class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
             val start = System.currentTimeMillis()
             if (start - lastSend > throttleTimeMs) {
               val (nodes, skipped) = context.layoutTraversal.traverse(node)
+
+              for (observerRoot in skipped) {
+
+                if (!children.containsKey(observerRoot.identityHashCode())) {
+                  val observer = context.observerFactory.createObserver(observerRoot, context)!!
+                  observer.subscribe(observerRoot)
+                  children[observerRoot.identityHashCode()] = observer
+                }
+              }
+
               val traversalComplete = System.currentTimeMillis()
               context.treeObserverManager.emit(
                   SubtreeUpdate("DecorView", nodes, start, traversalComplete))

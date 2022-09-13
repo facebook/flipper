@@ -8,6 +8,8 @@
 package com.facebook.flipper.plugins.uidebugger
 
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
+import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -30,7 +32,11 @@ class UIDebuggerFlipperPluginTest {
   @Throws(Exception::class)
   @Test
   fun emptyTest() {
-    var plugin = UIDebuggerFlipperPlugin(app)
+    var plugin =
+        UIDebuggerFlipperPlugin(
+            app,
+            DescriptorRegister.Companion.withDefaults(),
+            TreeObserverFactory.Companion.withDefaults())
     Assert.assertNotNull(plugin)
   }
 }
