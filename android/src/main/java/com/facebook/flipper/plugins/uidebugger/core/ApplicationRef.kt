@@ -20,7 +20,7 @@ class ApplicationRef(val application: Application) : Application.ActivityLifecyc
     fun onActivityDestroyed(activity: Activity, stack: List<Activity>)
   }
 
-  private val rootsResolver: RootViewResolver
+  val rootsResolver: RootViewResolver
   private val activities: MutableList<WeakReference<Activity>>
   private var activityStackChangedlistener: ActivityStackChangedListener? = null
 
