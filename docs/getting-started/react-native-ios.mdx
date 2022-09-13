@@ -27,16 +27,14 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 target 'your-app-name' do
   config = use_native_modules!
-  use_react_native!(path: config['reactNativePath'])
-
-  # Enables Flipper.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable these next few lines.
-  use_flipper!({'Flipper' => '0.58.0'}) # should match the version of your Flipper client app
-  post_install do |installer|
-    flipper_post_install(installer)
-  end
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # Enables Flipper.
+    #
+    # Note that if you have use_frameworks! enabled, Flipper will not work and
+    # you should disable these next few lines.
+    :flipper_configuration => FlipperConfiguration.enabled(["Debug"], { 'Flipper' => '0.164.0' }),
+  )
 end
 ```
 
