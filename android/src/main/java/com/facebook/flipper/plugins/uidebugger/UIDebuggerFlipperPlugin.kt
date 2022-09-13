@@ -19,7 +19,7 @@ import com.facebook.flipper.plugins.uidebugger.scheduler.Scheduler
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 
-const val LogTag = "FlipperUIDebugger"
+const val LogTag = "uidebugger"
 
 class UIDebuggerFlipperPlugin(
     val application: Application,

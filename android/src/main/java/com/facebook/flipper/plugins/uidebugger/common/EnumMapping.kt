@@ -18,7 +18,7 @@ open class EnumMapping<T>(val mapping: Map<String, T>) {
     if (entry != null) {
       return entry.key
     } else {
-      Log.d(
+      Log.v(
           LogTag,
           "Could not convert enum value ${enumValue.toString()} to string, known values ${mapping.entries}")
       return NoMapping
