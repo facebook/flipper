@@ -12,6 +12,7 @@ import {Id, UINode} from './types';
 
 export type PerfStatsEvent = {
   txId: number;
+  observerType: string;
   start: number;
   traversalComplete: number;
   serializationComplete: number;

@@ -59,6 +59,10 @@ export const columns: DataTableColumn<PerfStatsEvent>[] = [
     title: 'TXID',
   },
   {
+    key: 'observerType',
+    title: 'Type',
+  },
+  {
     key: 'nodesCount',
     title: 'Total nodes',
   },

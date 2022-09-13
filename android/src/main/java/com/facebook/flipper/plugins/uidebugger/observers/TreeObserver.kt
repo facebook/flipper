@@ -53,7 +53,7 @@ class TreeObserverManager(val context: Context) {
       while (isActive) {
         try {
 
-          val observation = treeUpdates.receive()
+          val treeUpdate = treeUpdates.receive()
 
           val onWorkerThread = System.currentTimeMillis()
 
@@ -61,24 +61,24 @@ class TreeObserverManager(val context: Context) {
           val serialized =
               Json.encodeToString(
                   SubtreeUpdateEvent.serializer(),
-                  SubtreeUpdateEvent(txId, observation.observerType, observation.nodes))
+                  SubtreeUpdateEvent(txId, treeUpdate.observerType, treeUpdate.nodes))
 
           val serializationEnd = System.currentTimeMillis()
 
           context.connectionRef.connection?.send(SubtreeUpdateEvent.name, serialized)
           val socketEnd = System.currentTimeMillis()
-          Log.i(
-              LogTag, "Sent event for ${observation.observerType} nodes ${observation.nodes.size}")
+          Log.i(LogTag, "Sent event for ${treeUpdate.observerType} nodes ${treeUpdate.nodes.size}")
 
           val perfStats =
               PerfStatsEvent(
                   txId = txId,
-                  start = observation.startTime,
-                  traversalComplete = observation.traversalCompleteTime,
+                  observerType = treeUpdate.observerType,
+                  start = treeUpdate.startTime,
+                  traversalComplete = treeUpdate.traversalCompleteTime,
                   queuingComplete = onWorkerThread,
                   serializationComplete = serializationEnd,
                   socketComplete = socketEnd,
-                  nodesCount = observation.nodes.size)
+                  nodesCount = treeUpdate.nodes.size)
           context.connectionRef.connection?.send(
               PerfStatsEvent.name, Json.encodeToString(PerfStatsEvent.serializer(), perfStats))
         } catch (e: java.lang.Exception) {

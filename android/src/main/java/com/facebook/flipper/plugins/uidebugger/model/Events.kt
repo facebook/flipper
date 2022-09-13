@@ -32,6 +32,7 @@ data class NativeScanEvent(val txId: Long, val nodes: List<Node>) {
 @kotlinx.serialization.Serializable
 data class PerfStatsEvent(
     val txId: Long,
+    val observerType: String,
     val start: Long,
     val traversalComplete: Long,
     val queuingComplete: Long,
