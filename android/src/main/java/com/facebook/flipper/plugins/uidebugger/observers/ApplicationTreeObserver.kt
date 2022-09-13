@@ -24,6 +24,8 @@ import com.facebook.flipper.plugins.uidebugger.identityHashCode
  */
 class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRef>() {
 
+  override val type = "Application"
+
   override fun subscribe(node: Any) {
     Log.i(LogTag, "subscribing to application / activity changes")
 

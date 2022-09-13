@@ -103,7 +103,7 @@ It is responsible for:
  1. listening to the relevant framework events
  2. Traversing the hierarchy of the managed nodes
  3. Diffing to previous state (optional)
- 4. Pushing out updates for its entire set of nodes
+ 4. Pushing out updates for its entire set of managed nodes
 
  If while traversing it encounters a node type which has its own TreeObserver, it
  does not traverse that, instead it sets up a Tree observer responsible for that subtree
@@ -114,12 +114,51 @@ abstract class TreeObserver<T> {
 
   protected val children: MutableMap<Int, TreeObserver<*>> = mutableMapOf()
 
-  // todo try to pass T again?
+  abstract val type: String
+
   abstract fun subscribe(node: Any)
 
   abstract fun unsubscribe()
 
+  /**
+   * Optional helper method that traverses the layout hierarchy while managing any encountered child
+   * observers correctly
+   */
+  fun traverseAndSend(context: Context, root: Any) {
+    val start = System.currentTimeMillis()
+    val (visitedNodes, observerRootsNodes) = context.layoutTraversal.traverse(root)
+
+    // Add any new Observers
+    for (observerRoot in observerRootsNodes) {
+
+      if (!children.containsKey(observerRoot.identityHashCode())) {
+        val childObserver = context.observerFactory.createObserver(observerRoot, context)!!
+        Log.d(
+            LogTag,
+            "For Observer ${this.type} discovered new child of type ${childObserver.type} Node ID ${observerRoot.identityHashCode()}")
+        childObserver.subscribe(observerRoot)
+        children[observerRoot.identityHashCode()] = childObserver
+      }
+    }
+
+    // remove any old observers
+    val observerRootIds = observerRootsNodes.map { it.identityHashCode() }
+    for (childKey in children.keys) {
+      if (!observerRootIds.contains(childKey)) {
+
+        Log.d(
+            LogTag,
+            "For Observer ${this.type} cleaning up child of type ${children[childKey]!!.type} Node ID ${childKey}")
+
+        children[childKey]!!.cleanUpRecursive()
+      }
+    }
+    context.treeObserverManager.emit(
+        SubtreeUpdate(type, visitedNodes, start, System.currentTimeMillis()))
+  }
+
   fun cleanUpRecursive() {
+    Log.i(LogTag, "Cleaning up observer ${this}")
     children.values.forEach { it.cleanUpRecursive() }
     unsubscribe()
     children.clear()
@@ -192,7 +231,6 @@ class PartialLayoutTraversal(
         val attributes = mutableMapOf<String, InspectableObject>()
         descriptor.getData(node, attributes)
 
-        // NOTE active child null here
         visited.add(
             Node(
                 descriptor.getId(node),

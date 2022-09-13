@@ -11,10 +11,8 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.SubtreeUpdate
 import com.facebook.flipper.plugins.uidebugger.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.core.Context
-import com.facebook.flipper.plugins.uidebugger.identityHashCode
 
 typealias DecorView = View
 
@@ -23,9 +21,11 @@ class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
 
   val throttleTimeMs = 500
 
-  // maybe should be weak reference in ctor?
+  // should this be a weak reference?
   private var nodeRef: View? = null
   private var listener: ViewTreeObserver.OnPreDrawListener? = null
+
+  override val type = "DecorView"
 
   override fun subscribe(node: Any) {
 
@@ -38,22 +38,9 @@ class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
         object : ViewTreeObserver.OnPreDrawListener {
           var lastSend = 0L
           override fun onPreDraw(): Boolean {
-            val start = System.currentTimeMillis()
-            if (start - lastSend > throttleTimeMs) {
-              val (nodes, skipped) = context.layoutTraversal.traverse(node)
+            if (System.currentTimeMillis() - lastSend > throttleTimeMs) {
+              traverseAndSend(context, node)
 
-              for (observerRoot in skipped) {
-
-                if (!children.containsKey(observerRoot.identityHashCode())) {
-                  val observer = context.observerFactory.createObserver(observerRoot, context)!!
-                  observer.subscribe(observerRoot)
-                  children[observerRoot.identityHashCode()] = observer
-                }
-              }
-
-              val traversalComplete = System.currentTimeMillis()
-              context.treeObserverManager.emit(
-                  SubtreeUpdate("DecorView", nodes, start, traversalComplete))
               lastSend = System.currentTimeMillis()
             }
             return true
@@ -64,11 +51,9 @@ class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
   }
 
   override fun unsubscribe() {
-    Log.i(LogTag, "Try Unsubscribing to decor view changes")
+    Log.i(LogTag, "Unsubscribing from decor view changes")
 
     listener.let {
-      Log.i(LogTag, "Actually Unsubscribing to decor view changes")
-
       nodeRef?.viewTreeObserver?.removeOnPreDrawListener(it)
       listener = null
       nodeRef = null
