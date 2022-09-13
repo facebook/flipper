@@ -16,7 +16,7 @@ interface TreeObserverBuilder<T> {
   fun build(context: Context): TreeObserver<T>
 }
 
-class TreeObserverFactory() {
+class TreeObserverFactory {
 
   private val builders = mutableListOf<TreeObserverBuilder<*>>()
 
