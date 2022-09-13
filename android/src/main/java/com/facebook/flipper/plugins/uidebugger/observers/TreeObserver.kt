@@ -132,6 +132,11 @@ fun Any.identityHashCode(): HashCode {
   return System.identityHashCode(this)
 }
 
+/**
+ * This will traverse the layout hierarchy untill it sees a node that has an observer registered for
+ * it. The first item in the pair is the visited nodes The second item are any observable roots
+ * discovered
+ */
 class PartialLayoutTraversal(
     private val descriptorRegister: DescriptorRegister,
     private val treeObserverfactory: TreeObserverFactory,
@@ -142,7 +147,7 @@ class PartialLayoutTraversal(
   fun traverse(root: Any): Pair<MutableList<Node>, List<Any>> {
 
     val visited = mutableListOf<Node>()
-    val skipped = mutableListOf<Any>()
+    val observableRoots = mutableListOf<Any>()
     val stack = mutableListOf<Any>()
     stack.add(root)
 
@@ -154,7 +159,7 @@ class PartialLayoutTraversal(
 
         // if we encounter a node that has it own observer, dont traverse
         if (node != root && treeObserverfactory.hasObserverFor(node)) {
-          skipped.add(node)
+          observableRoots.add(node)
           continue
         }
 
@@ -164,13 +169,24 @@ class PartialLayoutTraversal(
         descriptor.getChildren(node, children)
 
         val childrenIds = mutableListOf<String>()
+        val activeChild = descriptor.getActiveChild(node)
+
         for (child in children) {
           // it might make sense one day to remove id from the descriptor since its always the
           // hash code
           val childDescriptor =
               descriptorRegister.descriptorForClassUnsafe(child::class.java).asAny()
           childrenIds.add(childDescriptor.getId(child))
-          stack.add(child)
+          // if there is an active child then dont traverse it
+          if (activeChild == null) {
+            stack.add(child)
+          }
+        }
+        var activeChildId: String? = null
+        if (activeChild != null) {
+          stack.add(activeChild)
+          activeChildId =
+              descriptorRegister.descriptorForClassUnsafe(activeChild.javaClass).getId(activeChild)
         }
 
         val attributes = mutableMapOf<String, InspectableObject>()
@@ -178,12 +194,17 @@ class PartialLayoutTraversal(
 
         // NOTE active child null here
         visited.add(
-            Node(descriptor.getId(node), descriptor.getName(node), attributes, childrenIds, null))
+            Node(
+                descriptor.getId(node),
+                descriptor.getName(node),
+                attributes,
+                childrenIds,
+                activeChildId))
       } catch (exception: Exception) {
         Log.e(LogTag, "Error while processing node ${node.javaClass.name} ${node} ", exception)
       }
     }
 
-    return Pair(visited, skipped)
+    return Pair(visited, observableRoots)
   }
 }
