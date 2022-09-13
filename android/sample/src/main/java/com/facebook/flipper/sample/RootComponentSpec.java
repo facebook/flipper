@@ -109,7 +109,7 @@ public class RootComponentSpec {
                     .clickHandler(RootComponent.openAnimationsActivity(c)))
             .child(
                 Text.create(c)
-                    .text("Navigate to increment activity")
+                    .text("Navigate to buttons activity")
                     .key("11")
                     .marginDip(YogaEdge.ALL, 10)
                     .textSizeSp(20)
@@ -200,7 +200,7 @@ public class RootComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void openIncrementActivity(final ComponentContext c) {
-    final Intent intent = new Intent(c.getAndroidContext(), IncrementActivity.class);
+    final Intent intent = new Intent(c.getAndroidContext(), ButtonsActivity.class);
     c.getAndroidContext().startActivity(intent);
   }
 }

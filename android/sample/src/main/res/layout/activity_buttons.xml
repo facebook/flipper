@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ButtonsActivity"
+        android:orientation="vertical"
+>
+
+
+    <TextView
+            android:id="@+id/count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0"/>
+
+    <Button
+            android:id="@+id/btn_inc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:text="Inc"
+            android:textColor="@android:color/holo_blue_dark"
+    />
+    <Button
+            android:id="@+id/dialog_old_api"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:text="Dialog Old Api"
+            android:textColor="@android:color/holo_blue_dark"
+    />
+    <Button
+            android:id="@+id/dialog_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:text="Dialog Fragment"
+            android:textColor="@android:color/holo_blue_dark"
+    />
+</LinearLayout>
