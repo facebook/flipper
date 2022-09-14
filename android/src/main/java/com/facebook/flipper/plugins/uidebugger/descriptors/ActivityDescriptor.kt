@@ -11,7 +11,7 @@ import android.app.Activity
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.stetho.FragmentCompat
 
-object ActivityDescriptor : AbstractChainedDescriptor<Activity>() {
+object ActivityDescriptor : ChainedDescriptor<Activity>() {
 
   override fun onGetId(node: Activity): String {
     return System.identityHashCode(node).toString()

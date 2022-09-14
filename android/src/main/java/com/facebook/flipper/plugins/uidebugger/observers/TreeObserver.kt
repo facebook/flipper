@@ -67,6 +67,9 @@ abstract class TreeObserver<T> {
         children[childKey]!!.cleanUpRecursive()
       }
     }
+
+    // send
+    Log.d(LogTag, "For Observer ${this.type} Sending ${visitedNodes.size} ")
     context.treeObserverManager.send(
         SubtreeUpdate(type, visitedNodes, start, System.currentTimeMillis()))
   }

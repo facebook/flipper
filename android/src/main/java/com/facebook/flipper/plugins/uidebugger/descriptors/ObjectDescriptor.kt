@@ -9,7 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 
-object ObjectDescriptor : Descriptor<Any>() {
+object ObjectDescriptor : NodeDescriptor<Any> {
 
   override fun getActiveChild(node: Any): Any? = null
 
@@ -21,7 +21,7 @@ object ObjectDescriptor : Descriptor<Any>() {
     return node.javaClass.simpleName
   }
 
-  override fun getChildren(node: Any, children: MutableList<Any>) {}
+  override fun getChildren(node: Any) = listOf<Any>()
 
-  override fun getData(node: Any, builder: MutableMap<String, InspectableObject>) {}
+  override fun getData(node: Any) = mutableMapOf<SectionName, InspectableObject>()
 }

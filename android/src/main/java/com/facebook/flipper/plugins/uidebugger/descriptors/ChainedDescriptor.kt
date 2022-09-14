@@ -7,36 +7,94 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
+
 /**
- * This interface marks a Descriptor in a way that is specially understood by the register. When
- * registered for a particular class 'T', a Descriptor that implements this interface will be
- * chained (via ChainedDescriptor.setSuper) to the Descriptor that is registered for the super class
- * of 'T'. If the super class of 'T' doesn't have a registration, then the super-super class will be
- * used (and so on). This allows you to implement Descriptor for any class in an inheritance
- * hierarchy without having to couple it (via direct inheritance) to the super-class' Descriptor.
+ * A chained descriptor is a special type of descriptor that models the inheritance hierarchy in
+ * native UI frameworks. With this setup you can define a descriptor for each class in the
+ * inheritance chain and given that we record the super class's descriptor we can automatically
+ * aggregate the results for each descriptor in the inheritance hierarchy in a chain.
  *
- * To understand why this is useful, let's say you wanted to write a Descriptor for ListView. You
- * have three options:
- *
- * The first option is to derive directly from Descriptor and write code to describe everything
- * about instances of ListView, including details that are exposed by super classes such as
- * ViewGroup, View, and even Object. This isn't generally a very good choice because it would
- * require a lot of duplicated code amongst many descriptor implementations.
- *
- * The second option is to derive your ListViewDescriptor from ViewGroupDescriptor and only
- * implement code to describe how ListView differs from ViewGroup. This will result in a class
- * hierarchy that is parallel to the one that you are describing, but is also not a good choice for
- * two reasons (let's assume for the moment that ViewGroupDescriptor is deriving from
- * ViewDescriptor). The first problem is that you will need to write code for aggregating results
- * from the super-class in methods such as Descriptor.getChildren and Descriptor.getAttributes. The
- * second problem is that you'd end up with a log of fragility if you ever want to implement a
- * descriptor for classes that are in-between ViewGroup and ListView, e.g. AbsListView. Any
- * descriptor that derived from ViewGroupDescriptor and described a class deriving from AbsListView
- * would have to be modified to now derive from AbsListViewDescriptor.
- *
- * The third option is to implement ChainedDescriptor (e.g. by deriving from
- * AbstractChainedDescriptor) which solves all of these issues for you.
+ * The result is that each descriptor in the inheritance chain only exports the attributes that it
+ * knows about but we still get all the attributes from the parent classes
  */
-interface ChainedDescriptor<T> {
-  fun setSuper(superDescriptor: Descriptor<T>)
+abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
+  private var mSuper: ChainedDescriptor<T>? = null
+
+  fun setSuper(superDescriptor: ChainedDescriptor<T>) {
+    if (superDescriptor !== mSuper) {
+      check(mSuper == null)
+      mSuper = superDescriptor
+    }
+  }
+
+  fun getSuper(): ChainedDescriptor<T>? {
+    return mSuper
+  }
+
+  final override fun getActiveChild(node: T): Any? {
+    // ask each descriptor in the chain for an active child, if none available look up the chain
+    // until no more super descriptors
+    return onGetActiveChild(node) ?: mSuper?.getActiveChild(node)
+  }
+
+  /**
+   * A globally unique ID used to identify a node in a hierarchy. If your node does not have a
+   * globally unique ID it is fine to rely on [System.identityHashCode].
+   */
+  final override fun getId(node: T): String {
+    return onGetId(node)
+  }
+
+  abstract fun onGetId(node: T): String
+
+  /**
+   * The name used to identify this node in the inspector. Does not need to be unique. A good
+   * default is to use the class name of the node.
+   */
+  final override fun getName(node: T): String {
+    return onGetName(node)
+  }
+
+  open fun onGetActiveChild(node: T): Any? = null
+
+  abstract fun onGetName(node: T): String
+
+  /** The children this node exposes in the inspector. */
+  final override fun getChildren(node: T): List<Any> {
+    val builder = mutableListOf<Any>()
+    onGetChildren(node, builder)
+
+    var curDescriptor: ChainedDescriptor<T>? = mSuper
+    while (curDescriptor != null) {
+      curDescriptor.onGetChildren(node, builder)
+      curDescriptor = curDescriptor.mSuper
+    }
+
+    return builder
+  }
+
+  // this probably should not be chained as its unlikely you would want children to come from >1
+  // descriptor
+  open fun onGetChildren(node: T, children: MutableList<Any>) {}
+
+  final override fun getData(node: T): Map<SectionName, InspectableObject> {
+    val builder = mutableMapOf<String, InspectableObject>()
+    onGetData(node, builder)
+
+    var curDescriptor: ChainedDescriptor<T>? = mSuper
+
+    while (curDescriptor != null) {
+      curDescriptor.onGetData(node, builder)
+      curDescriptor = curDescriptor.mSuper
+    }
+
+    return builder
+  }
+
+  /**
+   * Get the data to show for this node in the sidebar of the inspector. Each key will be a have its
+   * own section
+   */
+  open fun onGetData(node: T, attributeSections: MutableMap<SectionName, InspectableObject>) {}
 }

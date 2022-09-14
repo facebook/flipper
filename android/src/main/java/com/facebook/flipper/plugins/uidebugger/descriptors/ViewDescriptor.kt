@@ -24,7 +24,7 @@ import com.facebook.flipper.plugins.uidebugger.stetho.ResourcesUtil
 import java.lang.reflect.Field
 
 @SuppressLint("DiscouragedPrivateApi")
-object ViewDescriptor : AbstractChainedDescriptor<View>() {
+object ViewDescriptor : ChainedDescriptor<View>() {
 
   override fun onGetId(node: View): String {
     return Integer.toBinaryString(System.identityHashCode(node))
@@ -34,7 +34,10 @@ object ViewDescriptor : AbstractChainedDescriptor<View>() {
     return node.javaClass.simpleName
   }
 
-  override fun onGetData(node: View, attributeSections: MutableMap<String, InspectableObject>) {
+  override fun onGetData(
+      node: View,
+      attributeSections: MutableMap<SectionName, InspectableObject>
+  ) {
     val positionOnScreen = IntArray(2)
     node.getLocationOnScreen(positionOnScreen)
 

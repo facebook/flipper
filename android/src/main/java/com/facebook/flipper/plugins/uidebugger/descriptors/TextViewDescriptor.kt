@@ -10,7 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import android.widget.TextView
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 
-object TextViewDescriptor : AbstractChainedDescriptor<TextView>() {
+object TextViewDescriptor : ChainedDescriptor<TextView>() {
 
   override fun onGetId(node: TextView): String {
     return System.identityHashCode(node).toString()
@@ -22,6 +22,6 @@ object TextViewDescriptor : AbstractChainedDescriptor<TextView>() {
 
   override fun onGetData(
       node: TextView,
-      attributeSections: MutableMap<String, InspectableObject>
+      attributeSections: MutableMap<SectionName, InspectableObject>
   ) {}
 }

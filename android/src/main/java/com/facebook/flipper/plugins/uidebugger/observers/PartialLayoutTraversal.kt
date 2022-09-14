@@ -9,9 +9,8 @@ package com.facebook.flipper.plugins.uidebugger.observers
 
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
-import com.facebook.flipper.plugins.uidebugger.descriptors.Descriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.model.Node
 
 /**
@@ -24,7 +23,7 @@ class PartialLayoutTraversal(
     private val treeObserverfactory: TreeObserverFactory,
 ) {
 
-  internal fun Descriptor<*>.asAny(): Descriptor<Any> = this as Descriptor<Any>
+  internal fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
 
   fun traverse(root: Any): Pair<MutableList<Node>, List<Any>> {
 
@@ -47,8 +46,7 @@ class PartialLayoutTraversal(
 
         val descriptor = descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
 
-        val children = mutableListOf<Any>()
-        descriptor.getChildren(node, children)
+        val children = descriptor.getChildren(node)
 
         val childrenIds = mutableListOf<String>()
         val activeChild = descriptor.getActiveChild(node)
@@ -71,8 +69,7 @@ class PartialLayoutTraversal(
               descriptorRegister.descriptorForClassUnsafe(activeChild.javaClass).getId(activeChild)
         }
 
-        val attributes = mutableMapOf<String, InspectableObject>()
-        descriptor.getData(node, attributes)
+        val attributes = descriptor.getData(node)
 
         visited.add(
             Node(

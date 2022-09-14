@@ -18,7 +18,7 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.stetho.FragmentCompat
 
-object ViewGroupDescriptor : AbstractChainedDescriptor<ViewGroup>() {
+object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
 
   override fun onGetId(node: ViewGroup): String {
     return System.identityHashCode(node).toString()
@@ -41,7 +41,7 @@ object ViewGroupDescriptor : AbstractChainedDescriptor<ViewGroup>() {
 
   override fun onGetData(
       node: ViewGroup,
-      attributeSections: MutableMap<String, InspectableObject>
+      attributeSections: MutableMap<SectionName, InspectableObject>
   ) {
     val viewGroupAttrs = mutableMapOf<String, Inspectable>()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {

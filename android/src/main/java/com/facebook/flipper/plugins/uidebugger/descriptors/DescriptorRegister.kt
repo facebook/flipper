@@ -18,7 +18,7 @@ import com.facebook.flipper.plugins.uidebugger.common.UIDebuggerException
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 
 class DescriptorRegister {
-  private val register: MutableMap<Class<*>, Descriptor<*>> = HashMap()
+  private val register: MutableMap<Class<*>, NodeDescriptor<*>> = HashMap()
 
   companion object {
 
@@ -35,40 +35,37 @@ class DescriptorRegister {
       mapping.register(ViewPager::class.java, ViewPagerDescriptor)
 
       for (clazz in mapping.register.keys) {
-        val descriptor: Descriptor<*>? = mapping.register[clazz]
+        val descriptor: NodeDescriptor<*>? = mapping.register[clazz]
         descriptor?.let { descriptor ->
           if (descriptor is ChainedDescriptor<*>) {
             val chainedDescriptor = descriptor as ChainedDescriptor<Any>
             val superClass: Class<*> = clazz.getSuperclass()
-            val superDescriptor: Descriptor<*>? = mapping.descriptorForClass(superClass)
-            superDescriptor?.let { superDescriptor ->
-              chainedDescriptor.setSuper(superDescriptor as Descriptor<Any>)
+            val superDescriptor: NodeDescriptor<*>? = mapping.descriptorForClass(superClass)
+            // todo we should walk all the way up the superclass hierarchy?
+            if (superDescriptor is ChainedDescriptor<*>) {
+              chainedDescriptor.setSuper(superDescriptor as ChainedDescriptor<Any>)
             }
           }
         }
-      }
-
-      for (descriptor in mapping.register.values) {
-        descriptor.setDescriptorRegister(mapping)
       }
 
       return mapping
     }
   }
 
-  fun <T> register(clazz: Class<T>, descriptor: Descriptor<T>) {
+  fun <T> register(clazz: Class<T>, descriptor: NodeDescriptor<T>) {
     register[clazz] = descriptor
   }
 
-  fun <T> descriptorForClass(clazz: Class<T>): Descriptor<T>? {
+  fun <T> descriptorForClass(clazz: Class<T>): NodeDescriptor<T>? {
     var clazz: Class<*> = clazz
     while (!register.containsKey(clazz)) {
       clazz = clazz.superclass
     }
-    return register[clazz] as Descriptor<T>
+    return register[clazz] as NodeDescriptor<T>
   }
 
-  fun <T> descriptorForClassUnsafe(clazz: Class<T>): Descriptor<T> {
+  fun <T> descriptorForClassUnsafe(clazz: Class<T>): NodeDescriptor<T> {
     return descriptorForClass(clazz)
         ?: throw UIDebuggerException("No descriptor found for ${clazz.name}")
   }

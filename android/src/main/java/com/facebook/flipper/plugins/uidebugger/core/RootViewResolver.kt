@@ -34,7 +34,7 @@ class RootViewResolver {
   private var viewsField: Field? = null
   private var paramsField: Field? = null
 
-  class RootView(val view: View, val param: WindowManager.LayoutParams)
+  class RootView(val view: View, val param: WindowManager.LayoutParams?)
   interface Listener {
     fun onRootViewAdded(rootView: View)
     fun onRootViewRemoved(rootView: View)
@@ -153,9 +153,9 @@ class RootViewResolver {
         for (i in views.indices) {
           val view = views[i]
           // TODO  FIX, len(param) is not always the same as len(views) For now just use first
-          val param = params[0]
+
           // params
-          roots.add(RootView(view, param))
+          roots.add(RootView(view, null))
         }
       }
     }

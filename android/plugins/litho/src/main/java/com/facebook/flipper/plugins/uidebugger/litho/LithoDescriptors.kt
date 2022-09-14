@@ -8,52 +8,56 @@
 package com.facebook.flipper.plugins.uidebugger.litho
 
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
-import com.facebook.flipper.plugins.uidebugger.descriptors.Descriptor
+import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.litho.DebugComponent
 import com.facebook.litho.LithoView
 
-object LithoViewDescriptor : Descriptor<LithoView>() {
+object LithoViewDescriptor : NodeDescriptor<LithoView> {
   override fun getId(node: LithoView): String = System.identityHashCode(node).toString()
 
   override fun getName(node: LithoView): String = "LithoView"
 
-  override fun getChildren(node: LithoView, children: MutableList<Any>) {
+  override fun getChildren(node: LithoView): List<Any> {
+    val result = mutableListOf<Any>()
     val debugComponent = DebugComponent.getRootInstance(node)
     if (debugComponent != null) {
-      children.add(debugComponent)
+      result.add(debugComponent)
     }
+    return result
   }
 
   override fun getActiveChild(node: LithoView): Any? = null
 
-  override fun getData(node: LithoView, builder: MutableMap<String, InspectableObject>) {}
+  override fun getData(node: LithoView) = mapOf<String, InspectableObject>()
 }
 
-object DebugComponentDescriptor : Descriptor<DebugComponent>() {
+object DebugComponentDescriptor : NodeDescriptor<DebugComponent> {
   override fun getId(node: DebugComponent): String = System.identityHashCode(node).toString()
 
   override fun getName(node: DebugComponent): String {
     return node.component.simpleName
   }
 
-  // TODO the mutable list thing doesnt make sense for non chained descriptors, should just return
-  override fun getChildren(node: DebugComponent, children: MutableList<Any>) {
+  override fun getChildren(node: DebugComponent): List<Any> {
+    val result = mutableListOf<Any>()
+
     val mountedView = node.mountedView
     val mountedDrawable = node.mountedDrawable
 
     if (mountedView != null) {
-      children.add(mountedView)
+      result.add(mountedView)
     } else if (mountedDrawable != null) {
-      children.add(mountedDrawable)
+      result.add(mountedDrawable)
     } else {
       for (child in node.childComponents) {
-        children.add(child)
+        result.add(child)
       }
     }
+
+    return result
   }
 
   override fun getActiveChild(node: DebugComponent): Any? = null
 
-  // todo same here
-  override fun getData(node: DebugComponent, builder: MutableMap<String, InspectableObject>) {}
+  override fun getData(node: DebugComponent) = mapOf<String, InspectableObject>()
 }

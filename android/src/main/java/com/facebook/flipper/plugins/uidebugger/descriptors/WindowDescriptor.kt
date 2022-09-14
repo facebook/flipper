@@ -9,7 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.view.Window
 
-object WindowDescriptor : AbstractChainedDescriptor<Window>() {
+object WindowDescriptor : ChainedDescriptor<Window>() {
 
   override fun onGetId(node: Window): String {
     return System.identityHashCode(node).toString()

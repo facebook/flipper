@@ -13,7 +13,7 @@ import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
 
-object ApplicationRefDescriptor : AbstractChainedDescriptor<ApplicationRef>() {
+object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
 
   val rootsLocal = RootViewResolver()
   override fun onGetActiveChild(node: ApplicationRef): Any? {
