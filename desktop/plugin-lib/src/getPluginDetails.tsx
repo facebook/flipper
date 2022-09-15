@@ -68,7 +68,6 @@ export async function getInstalledPluginDetails(
     : undefined;
   return {
     ...pluginDetails,
-    isBundled: false,
     isActivatable: true,
     dir,
     entry,

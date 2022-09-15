@@ -67,7 +67,6 @@ const installedPlugins: InstalledPluginDetails[] = [
     id: 'Hello',
     title: 'Hello',
     description: 'World?',
-    isBundled: false,
     isActivatable: true,
   },
   {
@@ -82,7 +81,6 @@ const installedPlugins: InstalledPluginDetails[] = [
     id: 'World',
     title: 'World',
     description: 'Hello?',
-    isBundled: false,
     isActivatable: true,
   },
 ];

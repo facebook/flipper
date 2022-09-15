@@ -38,7 +38,6 @@ const sampleInstalledPluginDetails: InstalledPluginDetails = {
   title: 'Sample',
   dir: '/Users/mock/.flipper/thirdparty/flipper-plugin-sample',
   entry: 'this/path/does not/exist',
-  isBundled: false,
   isActivatable: true,
 };
 
@@ -112,7 +111,6 @@ test('requirePluginInternal loads valid Sandy plugin', async () => {
   expect(plugin.details).toMatchObject({
     flipperSDKVersion: '0.0.0',
     id: 'Sample',
-    isBundled: false,
     main: 'dist/bundle.js',
     name: 'pluginID',
     source: 'src/index.js',
@@ -170,7 +168,6 @@ test('requirePluginInternal loads valid Sandy Device plugin', async () => {
   expect(plugin.details).toMatchObject({
     flipperSDKVersion: '0.0.0',
     id: 'Sample',
-    isBundled: false,
     main: 'dist/bundle.js',
     name: 'pluginID',
     source: 'src/index.js',

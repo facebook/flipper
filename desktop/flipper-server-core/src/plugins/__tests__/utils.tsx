@@ -11,9 +11,6 @@ import {ServerAddOnStartDetails} from 'flipper-common';
 
 export const pluginName = 'lightSaber';
 export const initialOwner = 'yoda';
-export const detailsBundled: ServerAddOnStartDetails = {
-  isBundled: true,
-};
 export const detailsInstalled: ServerAddOnStartDetails = {
   path: '/dagobar/',
 };

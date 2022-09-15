@@ -56,7 +56,6 @@ export function createMockDownloadablePluginDetails(
     version: version,
     downloadUrl: `http://localhost/${lowercasedID}/${version}`,
     lastUpdated: lastUpdated,
-    isBundled: false,
     isActivatable: false,
     isEnabledByDefault: false,
   };
@@ -69,7 +68,6 @@ export function createMockActivatablePluginDetails(
   return {
     id: 'Hello',
     specVersion: 2,
-    isBundled: false,
     isActivatable: true,
     dir: '/Users/mock/.flipper/thirdparty/flipper-plugin-sample1',
     entry: './test/index.js',

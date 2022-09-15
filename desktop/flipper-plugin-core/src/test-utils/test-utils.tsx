@@ -7,11 +7,7 @@
  * @format
  */
 
-import {
-  BundledPluginDetails,
-  fsConstants,
-  InstalledPluginDetails,
-} from 'flipper-common';
+import {fsConstants, InstalledPluginDetails} from 'flipper-common';
 
 import {FlipperServer, FlipperServerCommands} from 'flipper-common';
 import {Device} from '../plugin/DevicePlugin';
@@ -115,7 +111,6 @@ export function createMockPluginDetails(
     name: 'TestPlugin',
     specVersion: 0,
     entry: '',
-    isBundled: false,
     isActivatable: true,
     main: '',
     source: '',
@@ -164,24 +159,6 @@ export function createTestDevicePlugin(
       ...implementation,
     },
   );
-}
-
-export function createMockBundledPluginDetails(
-  details?: Partial<BundledPluginDetails>,
-): BundledPluginDetails {
-  return {
-    id: 'TestBundledPlugin',
-    name: 'TestBundledPlugin',
-    specVersion: 0,
-    pluginType: 'client',
-    isBundled: true,
-    isActivatable: true,
-    main: '',
-    source: '',
-    title: 'Testing Bundled Plugin',
-    version: '',
-    ...details,
-  };
 }
 
 export function createFlipperServerMock(

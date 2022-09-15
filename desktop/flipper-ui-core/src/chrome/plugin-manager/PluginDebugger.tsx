@@ -140,7 +140,7 @@ class PluginDebugger extends Component<Props> {
   getRows(): Array<TableBodyRow> {
     const rows: Array<TableBodyRow> = [];
 
-    const externalPluginPath = (p: any) => (p.isBundled ? 'bundled' : p.entry);
+    const externalPluginPath = (p: any) => p.entry;
 
     this.props.gatekeepedPlugins.forEach((plugin) =>
       rows.push(

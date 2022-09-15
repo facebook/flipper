@@ -168,34 +168,6 @@ test('uninstall plugin', async () => {
   expect(mockClient.sandyPluginStates.has('plugin1')).toBeFalsy();
 });
 
-test('uninstall bundled plugin', async () => {
-  const pluginDetails = TestUtils.createMockBundledPluginDetails({
-    id: 'bundled-plugin',
-    name: 'flipper-bundled-plugin',
-    version: '0.43.0',
-  });
-  const pluginDefinition = new SandyPluginDefinition(pluginDetails, TestPlugin);
-  mockedRequirePlugin.mockReturnValue(Promise.resolve(pluginDefinition));
-  mockFlipper.dispatch(
-    loadPlugin({plugin: pluginDetails, enable: true, notifyIfFailed: false}),
-  );
-  mockFlipper.dispatch(uninstallPlugin({plugin: pluginDefinition}));
-
-  await awaitPluginCommandQueueEmpty(mockFlipper.store);
-  expect(
-    mockFlipper.getState().plugins.clientPlugins.has('bundled-plugin'),
-  ).toBeFalsy();
-  expect(
-    mockFlipper.getState().plugins.loadedPlugins.has('bundled-plugin'),
-  ).toBeFalsy();
-  expect(
-    mockFlipper
-      .getState()
-      .plugins.uninstalledPluginNames.has('flipper-bundled-plugin'),
-  ).toBeTruthy();
-  expect(mockClient.sandyPluginStates.has('bundled-plugin')).toBeFalsy();
-});
-
 test('star plugin', async () => {
   mockFlipper.dispatch(
     loadPlugin({plugin: pluginDetails1, enable: false, notifyIfFailed: false}),

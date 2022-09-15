@@ -484,6 +484,4 @@ export const createMockFlipperLib = TestUtils.createMockFlipperLib;
 export const createMockPluginDetails = TestUtils.createMockPluginDetails;
 export const createTestPlugin = TestUtils.createTestPlugin;
 export const createTestDevicePlugin = TestUtils.createTestDevicePlugin;
-export const createMockBundledPluginDetails =
-  TestUtils.createMockBundledPluginDetails;
 export const createFlipperServerMock = TestUtils.createFlipperServerMock;

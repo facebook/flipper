@@ -547,9 +547,7 @@ export abstract class BasePluginInstance {
       this.serverAddOnControls
         .start(
           pluginDetails.name,
-          pluginDetails.isBundled
-            ? {isBundled: true}
-            : {path: pluginDetails.serverAddOnEntry!},
+          {path: pluginDetails.serverAddOnEntry!},
           this.serverAddOnOwner,
         )
         .then(() => {

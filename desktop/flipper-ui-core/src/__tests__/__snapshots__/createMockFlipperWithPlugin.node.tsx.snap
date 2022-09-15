@@ -55,7 +55,6 @@ Object {
 
 exports[`can create a Fake flipper with legacy wrapper 2`] = `
 Object {
-  "bundledPlugins": Map {},
   "clientPlugins": Map {
     "TestPlugin" => SandyPluginDefinition {
       "details": Object {
@@ -63,7 +62,6 @@ Object {
         "entry": "./test/index.js",
         "id": "TestPlugin",
         "isActivatable": true,
-        "isBundled": false,
         "main": "dist/bundle.js",
         "name": "flipper-plugin-hello",
         "pluginType": "client",

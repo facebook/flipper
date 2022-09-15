@@ -7,11 +7,7 @@
  * @format
  */
 
-import {
-  ActivatablePluginDetails,
-  BundledPluginDetails,
-  InstalledPluginDetails,
-} from 'flipper-common';
+import {ActivatablePluginDetails, InstalledPluginDetails} from 'flipper-common';
 import {
   AbstractPluginInitializer,
   getRenderHostInstance,
@@ -31,7 +27,7 @@ export class HeadlessPluginInitializer extends AbstractPluginInitializer {
     pluginDetails: ActivatablePluginDetails,
   ): Promise<_SandyPluginDefinition> {
     const plugin = await getRenderHostInstance().requirePlugin(
-      (pluginDetails as InstalledPluginDetails).entry,
+      pluginDetails.entry,
     );
     if (!plugin) {
       throw new Error(
@@ -42,7 +38,7 @@ export class HeadlessPluginInitializer extends AbstractPluginInitializer {
   }
 
   protected async filterAllLocalVersions(
-    allLocalVersions: (BundledPluginDetails | InstalledPluginDetails)[],
+    allLocalVersions: InstalledPluginDetails[],
   ): Promise<ActivatablePluginDetails[]> {
     const pluginsToLoad = await super.filterAllLocalVersions(allLocalVersions);
     return pluginsToLoad

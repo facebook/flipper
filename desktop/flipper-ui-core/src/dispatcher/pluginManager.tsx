@@ -183,9 +183,7 @@ function uninstallPlugin(store: Store, {plugin}: UninstallPluginActionPayload) {
     clients.forEach((client) => {
       stopPlugin(client, plugin.id);
     });
-    if (!plugin.details.isBundled) {
-      unloadPluginModule(plugin.details);
-    }
+    unloadPluginModule(plugin.details);
     store.dispatch(pluginUninstalled(plugin.details));
   } catch (err) {
     console.error(
@@ -368,9 +366,5 @@ function stopPlugin(
 }
 
 function unloadPluginModule(plugin: ActivatablePluginDetails) {
-  if (plugin.isBundled) {
-    // We cannot unload bundled plugin.
-    return;
-  }
   getRenderHostInstance().unloadModule?.(plugin.entry);
 }

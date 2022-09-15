@@ -110,7 +110,6 @@ export abstract class FlipperBasePlugin<
   static version: string = '';
   static icon: string | null = null;
   static gatekeeper: string | null = null;
-  static isBundled: boolean;
   static details: ActivatablePluginDetails;
   static keyboardActions: KeyboardActions | null;
   static screenshot: string | null;

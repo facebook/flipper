@@ -12,11 +12,7 @@ import {
   tryCatchReportPluginFailuresAsync,
   notNull,
 } from 'flipper-common';
-import {
-  ActivatablePluginDetails,
-  BundledPluginDetails,
-  ConcretePluginDetails,
-} from 'flipper-common';
+import {ActivatablePluginDetails, ConcretePluginDetails} from 'flipper-common';
 import {reportUsage} from 'flipper-common';
 import {_SandyPluginDefinition} from 'flipper-plugin-core';
 import isPluginCompatible from './utils/isPluginCompatible';
@@ -28,10 +24,7 @@ export abstract class AbstractPluginInitializer {
   protected gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
   protected disabledPlugins: Array<ActivatablePluginDetails> = [];
   protected failedPlugins: Array<[ActivatablePluginDetails, string]> = [];
-  protected bundledPlugins: Array<BundledPluginDetails> = [];
-  protected loadedPlugins: Array<
-    BundledPluginDetails | InstalledPluginDetails
-  > = [];
+  protected loadedPlugins: Array<InstalledPluginDetails> = [];
   protected _initialPlugins: _SandyPluginDefinition[] = [];
 
   async init() {
@@ -69,7 +62,7 @@ export abstract class AbstractPluginInitializer {
   }
   protected async loadAllLocalVersions(
     uninstalledPluginNames: Set<string>,
-  ): Promise<(BundledPluginDetails | InstalledPluginDetails)[]> {
+  ): Promise<InstalledPluginDetails[]> {
     const allLocalVersions = [...(await getDynamicPlugins())].filter(
       (p) => !uninstalledPluginNames.has(p.name),
     );
@@ -77,7 +70,7 @@ export abstract class AbstractPluginInitializer {
     return allLocalVersions;
   }
   protected async filterAllLocalVersions(
-    allLocalVersions: (BundledPluginDetails | InstalledPluginDetails)[],
+    allLocalVersions: InstalledPluginDetails[],
   ): Promise<ActivatablePluginDetails[]> {
     const flipperVersion = await this.getFlipperVersion();
     const loadedPlugins = getLatestCompatibleVersionOfEachPlugin(

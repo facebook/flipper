@@ -15,7 +15,6 @@ import type {
 import type {
   DownloadablePluginDetails,
   ActivatablePluginDetails,
-  BundledPluginDetails,
   InstalledPluginDetails,
   MarketplacePluginDetails,
 } from 'flipper-common';
@@ -30,7 +29,6 @@ type StateV1 = {
   devicePlugins: DevicePluginMap;
   clientPlugins: ClientPluginMap;
   loadedPlugins: Map<string, ActivatablePluginDetails>;
-  bundledPlugins: Map<string, BundledPluginDetails>;
   gatekeepedPlugins: Array<ActivatablePluginDetails>;
   disabledPlugins: Array<ActivatablePluginDetails>;
   failedPlugins: Array<[ActivatablePluginDetails, string]>;
@@ -89,10 +87,6 @@ export type Action =
       payload: Array<ActivatablePluginDetails>;
     }
   | {
-      type: 'REGISTER_BUNDLED_PLUGINS';
-      payload: Array<BundledPluginDetails>;
-    }
-  | {
       type: 'REGISTER_INSTALLED_PLUGINS';
       payload: InstalledPluginDetails[];
     }
@@ -116,7 +110,6 @@ const INITIAL_STATE: State = {
   devicePlugins: new Map(),
   clientPlugins: new Map(),
   loadedPlugins: new Map(),
-  bundledPlugins: new Map(),
   gatekeepedPlugins: [],
   disabledPlugins: [],
   failedPlugins: [],
@@ -174,11 +167,6 @@ export default function reducer(
     return {
       ...state,
       loadedPlugins: new Map(action.payload.map((p) => [p.id, p])),
-    };
-  } else if (action.type === 'REGISTER_BUNDLED_PLUGINS') {
-    return {
-      ...state,
-      bundledPlugins: new Map(action.payload.map((p) => [p.id, p])),
     };
   } else if (action.type === 'REGISTER_INSTALLED_PLUGINS') {
     return produce(state, (draft) => {
@@ -267,13 +255,6 @@ export const registerLoadedPlugins = (
   payload: Array<ActivatablePluginDetails>,
 ): Action => ({
   type: 'REGISTER_LOADED_PLUGINS',
-  payload,
-});
-
-export const registerBundledPlugins = (
-  payload: Array<BundledPluginDetails>,
-): Action => ({
-  type: 'REGISTER_BUNDLED_PLUGINS',
   payload,
 });
 

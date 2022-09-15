@@ -86,7 +86,6 @@ export const getPluginLists = createSelector(
     plugins: {
       clientPlugins,
       devicePlugins,
-      bundledPlugins,
       marketplacePlugins,
       loadedPlugins,
       disabledPlugins,
@@ -96,7 +95,6 @@ export const getPluginLists = createSelector(
   }: State) => ({
     clientPlugins,
     devicePlugins,
-    bundledPlugins,
     marketplacePlugins,
     loadedPlugins,
     disabledPlugins,

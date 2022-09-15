@@ -24,7 +24,6 @@ import {
   addDisabledPlugins,
   addFailedPlugins,
   registerLoadedPlugins,
-  registerBundledPlugins,
   registerMarketplacePlugins,
   pluginsInitialized,
 } from '../reducers/plugins';
@@ -73,7 +72,6 @@ class UIPluginInitializer extends AbstractPluginInitializer {
       );
     }
 
-    this.store.dispatch(registerBundledPlugins(this.bundledPlugins));
     this.store.dispatch(registerLoadedPlugins(this.loadedPlugins));
     this.store.dispatch(addGatekeepedPlugins(this.gatekeepedPlugins));
     this.store.dispatch(addDisabledPlugins(this.disabledPlugins));
