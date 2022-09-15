@@ -345,8 +345,9 @@ export function genMercurialRevision(): Promise<string | null> {
 }
 
 export async function compileServerMain(dev: boolean) {
+  console.log('⚙️  Compiling server sources...');
   await exec(`cd ${serverDir} && yarn build`);
-  console.log('✅  Compiled server bundle.');
+  console.log('✅  Compiled server sources.');
 }
 
 // TODO: needed?
