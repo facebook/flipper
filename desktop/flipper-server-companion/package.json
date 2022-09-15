@@ -1,6 +1,5 @@
 {
   "name": "flipper-server-companion",
-  "private": true,
   "version": "0.0.0",
   "description": "Runs Flipper plugins on Flipper Server",
   "repository": "facebook/flipper",

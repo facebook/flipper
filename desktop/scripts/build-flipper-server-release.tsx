@@ -273,6 +273,8 @@ async function modifyPackageManifest(
   // not needed in public builds
   delete manifest.scripts;
   delete manifest.devDependencies;
+  // TODO: Remove me later
+  delete manifest.dependencies;
   await fs.writeFile(
     path.join(buildFolder, 'package.json'),
     JSON.stringify(manifest, null, '  '),

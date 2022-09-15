@@ -10,7 +10,6 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "esbuild": "^0.15.7",
-    "flipper-babel-transformer": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
     "fs-extra": "^10.1.0",
     "metro": "^0.70.2",

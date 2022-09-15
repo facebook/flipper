@@ -1,6 +1,5 @@
 {
   "name": "flipper-frontend-core",
-  "private": true,
   "version": "0.0.0",
   "description": "Exposes core functionality for Flipper frontends: Flipper Electron, Flipper Browser UI, Flipper Server Companion.",
   "repository": "facebook/flipper",
