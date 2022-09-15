@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -8,5 +7,5 @@
  * @format
  */
 
-// eslint-disable-next-line import/no-unresolved
-require('./lib/index.js');
+// @ts-expect-error
+global.electronRequire = require;

@@ -8,6 +8,7 @@
  */
 
 import {FlipperServer, MarketplacePluginDetails} from 'flipper-common';
+import fetch from 'node-fetch';
 
 export async function loadAvailablePlugins(
   server: FlipperServer,

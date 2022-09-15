@@ -15,4 +15,8 @@ declare const electronRequire: {
   cache: {[module: string]: any};
 };
 
+declare module globalThis {
+  // eslint-disable-next-line no-var
+  var FlipperRenderHostInstance: any /* RenderHost */;
+}
 declare let FlipperRenderHostInstance: any /* RenderHost */;

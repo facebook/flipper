@@ -16,8 +16,9 @@ import {
   genMercurialRevision,
   getVersionNumber,
   prepareDefaultPlugins,
-  prepareHeadlessPlugins,
+  buildHeadlessPlugins,
   moveServerSourceMaps,
+  buildServerAddOns,
 } from './build-utils';
 import {defaultPluginsDir, distDir, serverDir, staticDir} from './paths';
 import isFB from './isFB';
@@ -217,7 +218,7 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
   console.log(`⚙️  Copying package resources...`);
 
   // static folder, without the things that are only for Electron
-  const packageFilesToCopy = ['README.md', 'package.json', 'server.js', 'dist'];
+  const packageFilesToCopy = ['README.md', 'package.json', 'server.js', 'lib'];
 
   await Promise.all(
     packageFilesToCopy.map((e) =>
@@ -352,8 +353,9 @@ async function buildServerRelease() {
   // create plugin output dir
   await fs.mkdirp(path.join(dir, 'static', 'defaultPlugins'));
 
-  await prepareDefaultPlugins(argv.channel === 'insiders');
-  await prepareHeadlessPlugins();
+  await prepareDefaultPlugins(argv.channel === 'insiders', true);
+  await buildServerAddOns(false);
+  await buildHeadlessPlugins(false);
   await compileServerMain(false);
   await copyStaticResources(dir, versionNumber);
   await downloadIcons(path.join(dir, 'static'));

@@ -16,7 +16,7 @@ import MetroResolver from 'metro-resolver';
 import tmp from 'tmp';
 import path from 'path';
 import fs from 'fs-extra';
-import {spawn} from 'promisify-child-process';
+import {spawn, exec} from 'promisify-child-process';
 import {
   getWatchFolders,
   runBuild,
@@ -37,7 +37,6 @@ import {
   rootDir,
   browserUiDir,
   serverCoreDir,
-  serverCompanionDir,
 } from './paths';
 import pFilter from 'p-filter';
 import child from 'child_process';
@@ -76,7 +75,10 @@ export function die(err: Error) {
   process.exit(1);
 }
 
-export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
+export async function prepareDefaultPlugins(
+  isInsidersBuild: boolean = false,
+  flipperServerBuild = false,
+) {
   console.log(
     `⚙️  Preparing default plugins (isInsidersBuild=${isInsidersBuild})...`,
   );
@@ -105,18 +107,29 @@ export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
       await buildDefaultPlugins(defaultPlugins);
       await generateDefaultPluginEntryPoints([]); // calling it here just to generate empty indexes
     } else {
-      await generateDefaultPluginEntryPoints(defaultPlugins);
+      await generateDefaultPluginEntryPoints(
+        defaultPlugins,
+        flipperServerBuild,
+      );
     }
   }
   console.log('✅  Prepared default plugins.');
 }
 
-export async function prepareHeadlessPlugins() {
-  console.log(`⚙️  Preparing headless plugins...`);
+export async function buildHeadlessPlugins(dev: boolean) {
+  console.log(`⚙️  Building headless plugins...`);
   const sourcePlugins = await getSourcePlugins();
   const headlessPlugins = sourcePlugins.filter((p) => p.headless);
-  await generateHeadlessPluginEntryPoints(headlessPlugins);
-  console.log('✅  Prepared headless plugins.');
+  await Promise.all(headlessPlugins.map((p) => runBuild(p.dir, dev)));
+  console.log('✅  Built headless plugins.');
+}
+
+export async function buildServerAddOns(dev: boolean) {
+  console.log(`⚙️  Building plugins with server add-ons plugins...`);
+  const sourcePlugins = await getSourcePlugins();
+  const serverAddOns = sourcePlugins.filter((p) => p.serverAddOnSource);
+  await Promise.all(serverAddOns.map((p) => runBuild(p.dir, dev)));
+  console.log('✅  Built plugins with server add-ons plugins.');
 }
 
 function getGeneratedIndex(pluginRequires: string) {
@@ -142,6 +155,7 @@ function getGeneratedIndex(pluginRequires: string) {
 
 async function generateDefaultPluginEntryPoints(
   defaultPlugins: InstalledPluginDetails[],
+  flipperServerBuild?: boolean,
 ) {
   console.log(
     `⚙️  Generating entry points for ${defaultPlugins.length} bundled plugins...`,
@@ -181,9 +195,9 @@ async function generateDefaultPluginEntryPoints(
     generatedIndex,
   );
 
-  const serverAddOns = defaultPlugins.filter(
-    ({serverAddOnSource}) => !!serverAddOnSource,
-  );
+  const serverAddOns = flipperServerBuild
+    ? []
+    : defaultPlugins.filter(({serverAddOnSource}) => !!serverAddOnSource);
   const serverAddOnRequires = serverAddOns
     .map(
       (x) =>
@@ -198,28 +212,6 @@ async function generateDefaultPluginEntryPoints(
   );
 
   console.log('✅  Generated bundled plugin entry points.');
-}
-
-async function generateHeadlessPluginEntryPoints(
-  headlessPlugins: InstalledPluginDetails[],
-) {
-  console.log(
-    `⚙️  Generating entry points for ${headlessPlugins.length} headless plugins...`,
-  );
-  const headlessRequires = headlessPlugins
-    .map(
-      (x) =>
-        `  '${x.name}': tryRequire('${x.name}', () => require('${x.name}'))`,
-    )
-    .join(',\n');
-  const generatedIndexHeadless = getGeneratedIndex(headlessRequires);
-  await fs.ensureDir(path.join(serverCompanionDir, 'src', 'defaultPlugins'));
-  await fs.writeFile(
-    path.join(serverCompanionDir, 'src', 'defaultPlugins', 'index.tsx'),
-    generatedIndexHeadless,
-  );
-
-  console.log('✅  Generated headless plugin entry points.');
 }
 
 async function buildDefaultPlugins(defaultPlugins: InstalledPluginDetails[]) {
@@ -468,40 +460,7 @@ export function genMercurialRevision(): Promise<string | null> {
 }
 
 export async function compileServerMain(dev: boolean) {
-  await fs.promises.mkdir(path.join(serverDir, 'dist'), {recursive: true});
-  const out = path.join(serverDir, 'dist', 'index.js');
-  console.log('⚙️  Compiling server bundle...');
-  const config = Object.assign({}, await Metro.loadConfig(), {
-    reporter: {update: () => {}},
-    projectRoot: rootDir,
-    transformer: {
-      babelTransformerPath: path.join(
-        babelTransformationsDir,
-        'transform-server-' + (dev ? 'dev' : 'prod'),
-      ),
-      ...minifierConfig,
-    },
-    resolver: {
-      // no 'mjs' / 'module'; it caused issues
-      sourceExts: ['tsx', 'ts', 'js', 'json', 'cjs'],
-      resolverMainFields: ['flipperBundlerEntry', 'main'],
-      resolveRequest(context: any, moduleName: string, ...rest: any[]) {
-        assertSaneImport(context, moduleName);
-        return defaultResolve(context, moduleName, ...rest);
-      },
-    },
-  });
-  await Metro.runBuild(config, {
-    platform: 'node',
-    entry: path.join(serverDir, 'src', 'index.tsx'),
-    out,
-    dev,
-    minify: false, // !dev,
-    sourceMap: true,
-    sourceMapUrl: dev ? 'index.map' : undefined,
-    inlineSourceMap: false,
-    resetCache: !dev,
-  });
+  await exec(`cd ${serverDir} && yarn build`);
   console.log('✅  Compiled server bundle.');
 }
 
@@ -611,7 +570,6 @@ export async function launchServer(
   if (proc) {
     console.log('⚙️  Killing old flipper-server...');
     proc.kill(9);
-    await sleep(1000);
   }
   console.log('⚙️  Launching flipper-server...');
   proc = child.spawn(

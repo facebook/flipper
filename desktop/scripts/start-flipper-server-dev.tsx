@@ -14,7 +14,8 @@ import {
   compileServerMain,
   launchServer,
   prepareDefaultPlugins,
-  prepareHeadlessPlugins,
+  buildHeadlessPlugins,
+  buildServerAddOns,
 } from './build-utils';
 import Watchman from './watchman';
 import isFB from './isFB';
@@ -58,11 +59,6 @@ const argv = yargs
       describe:
         '[FB-internal only] Will force using public sources only, to be able to iterate quickly on the public version. If sources are checked out from GitHub this is already the default. Setting env var "FLIPPER_FORCE_PUBLIC_BUILD" is equivalent.',
       type: 'boolean',
-    },
-    open: {
-      describe: 'Open Flipper in the default browser after starting',
-      type: 'boolean',
-      default: true,
     },
     tcp: {
       describe: 'Enable TCP connections on flipper-server.',
@@ -136,7 +132,7 @@ let startCount = 0;
 async function restartServer() {
   try {
     await compileServerMain(true);
-    await launchServer(true, argv.open && ++startCount === 1, argv.tcp); // only open on the first time
+    await launchServer(true, ++startCount === 1, argv.tcp); // only open on the first time
   } catch (e) {
     console.error(
       chalk.red(
@@ -190,12 +186,14 @@ async function startWatchChanges() {
   }
   await prepareDefaultPlugins(
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
+    true,
   );
-  await prepareHeadlessPlugins();
+  await buildHeadlessPlugins(true);
+  await buildServerAddOns(true);
 
-  // watch
-  await startWatchChanges();
   await ensurePluginFoldersWatchable();
   // builds and starts
   await restartServer();
+  // watch
+  await startWatchChanges();
 })();

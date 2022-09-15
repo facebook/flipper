@@ -9,11 +9,9 @@
 
 /* eslint-disable flipper/no-console-error-without-context */
 
-import {prepareDefaultPlugins, prepareHeadlessPlugins} from './build-utils';
+import {prepareDefaultPlugins} from './build-utils';
 
-Promise.all([prepareDefaultPlugins(), prepareHeadlessPlugins()]).catch(
-  (err) => {
-    console.error(err);
-    process.exit(1);
-  },
-);
+prepareDefaultPlugins().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
