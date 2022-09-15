@@ -343,11 +343,14 @@ async function startWatchChanges(io: socketIo.Server) {
     await Promise.all(
       [
         'app',
-        'pkg',
         'doctor',
+        'pkg-lib',
         'plugin-lib',
-        'flipper-plugin',
         'flipper-common',
+        'flipper-frontend-core',
+        'flipper-plugin',
+        'flipper-plugin-core',
+        'flipper-server-core',
         'flipper-ui-core',
       ].map((dir) =>
         watchman.startWatchFiles(
