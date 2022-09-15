@@ -352,9 +352,9 @@ async function buildServerRelease() {
   // create plugin output dir
   await fs.mkdirp(path.join(dir, 'static', 'defaultPlugins'));
 
-  await compileServerMain(false);
   await prepareDefaultPlugins(argv.channel === 'insiders');
   await prepareHeadlessPlugins();
+  await compileServerMain(false);
   await copyStaticResources(dir, versionNumber);
   await downloadIcons(path.join(dir, 'static'));
   await buildBrowserBundle(path.join(dir, 'static'), false);
