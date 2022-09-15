@@ -87,9 +87,7 @@ export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
     });
     console.log('✅  Copied the provided default plugins dir.');
   } else {
-    const sourcePlugins = process.env.FLIPPER_NO_DEFAULT_PLUGINS
-      ? []
-      : await getSourcePlugins();
+    const sourcePlugins = await getSourcePlugins();
     const defaultPlugins = sourcePlugins
       // we only include headless plugins and a predefined set of regular plugins into insiders release
       .filter(

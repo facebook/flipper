@@ -23,21 +23,6 @@ import {Watchman} from 'flipper-pkg-lib';
 const argv = yargs
   .usage('yarn flipper-server [args]')
   .options({
-    'default-plugins': {
-      describe:
-        'Enables embedding of default plugins into Flipper package so they are always available. The flag is enabled by default. Env var FLIPPER_NO_DEFAULT_PLUGINS is equivalent to the command-line option "--no-default-plugins".',
-      type: 'boolean',
-    },
-    'bundled-plugins': {
-      describe:
-        'Enables bundling of plugins into Flipper bundle. This is useful for debugging, because it makes Flipper dev mode loading faster and unblocks fast refresh. The flag is enabled by default. Env var FLIPPER_NO_BUNDLED_PLUGINS is equivalent to the command-line option "--no-bundled-plugins".',
-      type: 'boolean',
-    },
-    'rebuild-plugins': {
-      describe:
-        'Enables rebuilding of default plugins on Flipper build. Only make sense in conjunction with "--no-bundled-plugins". Enabled by default, but if disabled using "--no-plugin-rebuild", then plugins are just released as is without rebuilding. This can save some time if you know plugin bundles are already up-to-date.',
-      type: 'boolean',
-    },
     'plugin-marketplace': {
       describe:
         'Enable plugin marketplace - ability to install plugins from NPM or other sources. Without the flag Flipper will only show default plugins. The flag is disabled by default in dev mode. Env var FLIPPER_NO_PLUGIN_MARKETPLACE is equivalent to the command-line option "--no-plugin-marketplace"',
@@ -78,24 +63,6 @@ if (isFB) {
 }
 
 process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
-
-if (argv['default-plugins'] === true) {
-  delete process.env.FLIPPER_NO_DEFAULT_PLUGINS;
-} else if (argv['default-plugins'] === false) {
-  process.env.FLIPPER_NO_DEFAULT_PLUGINS = 'true';
-}
-
-if (argv['bundled-plugins'] === true) {
-  delete process.env.FLIPPER_NO_BUNDLED_PLUGINS;
-} else if (argv['bundled-plugins'] === false) {
-  process.env.FLIPPER_NO_BUNDLED_PLUGINS = 'true';
-}
-
-if (argv['rebuild-plugins'] === false) {
-  process.env.FLIPPER_NO_REBUILD_PLUGINS = 'true';
-} else if (argv['rebuild-plugins'] === true) {
-  delete process.env.FLIPPER_NO_REBUILD_PLUGINS;
-}
 
 if (argv['public-build'] === true) {
   // we use a separate env var for forced_public builds, since

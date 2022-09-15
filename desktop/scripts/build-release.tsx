@@ -78,16 +78,6 @@ const argv = yargs
       choices: ['stable', 'insiders'],
       default: 'stable',
     },
-    'bundled-plugins': {
-      describe:
-        'Enables bundling of plugins into Flipper bundle. Env var FLIPPER_NO_BUNDLED_PLUGINS is equivalent to the command-line option "--no-bundled-plugins".',
-      type: 'boolean',
-    },
-    'rebuild-plugins': {
-      describe:
-        'Enables rebuilding of default plugins on Flipper build. Only make sense in conjunction with "--no-bundled-plugins". Enabled by default, but if disabled using "--no-plugin-rebuild", then plugins are just released as is without rebuilding. This can save some time if you know plugin bundles are already up-to-date.',
-      type: 'boolean',
-    },
     'default-plugins-dir': {
       describe:
         'Directory with prepared list of default plugins which will be included into the Flipper distribution as "defaultPlugins" dir',
@@ -120,18 +110,6 @@ if (isFB) {
 }
 
 process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
-
-if (argv['bundled-plugins'] === false) {
-  process.env.FLIPPER_NO_BUNDLED_PLUGINS = 'true';
-} else if (argv['bundled-plugins'] === true) {
-  delete process.env.FLIPPER_NO_BUNDLED_PLUGINS;
-}
-
-if (argv['rebuild-plugins'] === false) {
-  process.env.FLIPPER_NO_REBUILD_PLUGINS = 'true';
-} else if (argv['rebuild-plugins'] === true) {
-  delete process.env.FLIPPER_NO_REBUILD_PLUGINS;
-}
 
 if (argv['default-plugins-dir']) {
   process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];

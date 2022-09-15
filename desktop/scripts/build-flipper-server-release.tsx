@@ -46,12 +46,6 @@ const argv = yargs
   .usage('yarn build-flipper-server [args]')
   .version(false)
   .options({
-    'default-plugins': {
-      describe:
-        'Enables embedding of default plugins into Flipper package so they are always available. The flag is enabled by default. Env var FLIPPER_NO_DEFAULT_PLUGINS is equivalent to the command-line option "--no-default-plugins".',
-      type: 'boolean',
-      default: true,
-    },
     'public-build': {
       describe:
         '[FB-internal only] Will force using public sources only, to be able to iterate quickly on the public version. If sources are checked out from GitHub this is already the default. Setting env var "FLIPPER_FORCE_PUBLIC_BUILD" is equivalent.',
@@ -98,12 +92,6 @@ const argv = yargs
       choices: ['stable', 'insiders'],
       default: 'stable',
     },
-    'bundled-plugins': {
-      describe:
-        'Enables bundling of plugins into Flipper bundle. Env var FLIPPER_NO_BUNDLED_PLUGINS is equivalent to the command-line option "--no-bundled-plugins".',
-      type: 'boolean',
-      default: false,
-    },
     'default-plugins-dir': {
       describe:
         'Directory with prepared list of default plugins which will be included into the Flipper distribution as "defaultPlugins" dir',
@@ -149,24 +137,6 @@ if (isFB) {
 
 process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
 
-if (argv['bundled-plugins'] === false) {
-  process.env.FLIPPER_NO_BUNDLED_PLUGINS = 'true';
-} else if (argv['bundled-plugins'] === true) {
-  delete process.env.FLIPPER_NO_BUNDLED_PLUGINS;
-}
-
-if (argv['default-plugins'] === true) {
-  delete process.env.FLIPPER_NO_DEFAULT_PLUGINS;
-} else if (argv['default-plugins'] === false) {
-  process.env.FLIPPER_NO_DEFAULT_PLUGINS = 'true';
-}
-// Don't rebuild default plugins, mostly to speed up testing
-if (argv['rebuild-plugins'] === false) {
-  process.env.FLIPPER_NO_REBUILD_PLUGINS = 'true';
-} else if (argv['rebuild-plugins'] === true) {
-  delete process.env.FLIPPER_NO_REBUILD_PLUGINS;
-}
-
 if (argv['default-plugins-dir']) {
   process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];
 }
@@ -182,10 +152,6 @@ if (argv['public-build'] === true) {
 
 if (argv['enabled-plugins'] !== undefined) {
   process.env.FLIPPER_ENABLED_PLUGINS = argv['enabled-plugins'].join(',');
-}
-
-if (argv['default-plugins-dir']) {
-  process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];
 }
 
 async function copyStaticResources(outDir: string, versionNumber: string) {

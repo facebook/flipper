@@ -33,12 +33,6 @@ const uiSourceDirs = [
 // copied from plugin-lib/src/pluginPaths
 export async function getPluginSourceFolders(): Promise<string[]> {
   const pluginFolders: string[] = [];
-  if (process.env.FLIPPER_NO_DEFAULT_PLUGINS) {
-    console.log(
-      '🥫  Skipping default plugins because "--no-default-plugins" flag provided',
-    );
-    return pluginFolders;
-  }
   const flipperConfigPath = path.join(homedir(), '.flipper', 'config.json');
   if (await fs.pathExists(flipperConfigPath)) {
     const config = await fs.readJson(flipperConfigPath);
