@@ -37,6 +37,7 @@ import {
 import pFilter from 'p-filter';
 import child from 'child_process';
 import pMap from 'p-map';
+import chalk from 'chalk';
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -509,4 +510,18 @@ function defaultResolve(...rest: any[]) {
     moduleName,
     ...rest,
   );
+}
+
+export async function rebuildPlugin(pluginPath: string) {
+  try {
+    await runBuild(pluginPath, true);
+    console.info(chalk.green('Rebuilt plugin'), pluginPath);
+  } catch (e) {
+    console.error(
+      chalk.red(
+        'Failed to compile a plugin, waiting for additional changes...',
+      ),
+      e,
+    );
+  }
 }

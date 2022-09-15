@@ -362,9 +362,6 @@ async function startWatchChanges(io: socketIo.Server) {
         ),
       ),
     );
-    await startWatchPlugins(() => {
-      io.emit('refresh');
-    });
   } catch (err) {
     console.error(
       'Failed to start watching for changes using Watchman, continue without hot reloading',
@@ -448,6 +445,9 @@ function checkDevServer() {
   await startMetroServer(app, server);
   outputScreen(socket);
   await compileMain();
+  await startWatchPlugins(() => {
+    socket.emit('refresh');
+  });
   if (dotenv && dotenv.parsed) {
     console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
   }

@@ -19,6 +19,7 @@ import Watchman from './watchman';
 import isFB from './isFB';
 import yargs from 'yargs';
 import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
+import startWatchPlugins from './startWatchPlugins';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -149,12 +150,15 @@ async function startWatchChanges() {
     // For UI changes, Metro / hot module reloading / fast refresh take care of the changes
     await Promise.all(
       [
-        'pkg',
         'doctor',
+        'pkg-lib',
         'plugin-lib',
-        'flipper-server',
         'flipper-common',
+        'flipper-frontend-core',
+        'flipper-plugin-core',
+        'flipper-server-companion',
         'flipper-server-core',
+        'flipper-server',
       ].map((dir) =>
         watchman.startWatchFiles(
           dir,
@@ -191,4 +195,5 @@ async function startWatchChanges() {
   await restartServer();
   // watch
   await startWatchChanges();
+  await startWatchPlugins();
 })();
