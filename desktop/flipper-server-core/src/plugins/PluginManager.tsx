@@ -13,7 +13,6 @@ import tmp from 'tmp';
 import {promisify} from 'util';
 import {default as axios} from 'axios';
 import {
-  BundledPluginDetails,
   DownloadablePluginDetails,
   ExecuteMessage,
   FlipperServerForServerAddOn,
@@ -75,28 +74,6 @@ export class PluginManager {
 
   async loadSource(path: string) {
     return await fs.readFile(path, 'utf8');
-  }
-
-  async getBundledPlugins(): Promise<Array<BundledPluginDetails>> {
-    if (
-      process.env.NODE_ENV === 'test' ||
-      process.env.FLIPPER_NO_BUNDLED_PLUGINS === 'true'
-    ) {
-      return [];
-    }
-    // defaultPlugins that are included in the Flipper distributive.
-    // List of default bundled plugins is written at build time to defaultPlugins/bundled.json.
-    const pluginPath = getStaticPath(
-      path.join('defaultPlugins', 'bundled.json'),
-      {asarUnpacked: true},
-    );
-    let bundledPlugins: Array<BundledPluginDetails> = [];
-    try {
-      bundledPlugins = await fs.readJson(pluginPath);
-    } catch (e) {
-      console.error('Failed to load list of bundled plugins', e);
-    }
-    return bundledPlugins;
   }
 
   async loadMarketplacePlugins() {

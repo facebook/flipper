@@ -127,7 +127,7 @@ export const requirePluginInternal = async (
   pluginDetails: ActivatablePluginDetails,
 ): Promise<PluginDefinition> => {
   let plugin = pluginDetails.isBundled
-    ? defaultPluginsIndex[pluginDetails.name]
+    ? defaultPluginsIndex[pluginDetails.name].source
     : await getRenderHostInstance().requirePlugin(pluginDetails.entry);
   if (!plugin) {
     throw new Error(

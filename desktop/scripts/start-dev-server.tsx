@@ -24,6 +24,7 @@ import {
   compileMain,
   prepareDefaultPlugins,
   buildHeadlessPlugins,
+  buildServerAddOns,
 } from './build-utils';
 import Watchman from './watchman';
 // @ts-ignore no typings for metro
@@ -445,6 +446,7 @@ function checkDevServer() {
   await prepareDefaultPlugins(
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
   );
+  await buildServerAddOns(true);
   await buildHeadlessPlugins(true);
   await ensurePluginFoldersWatchable();
   const port = await detect(DEFAULT_PORT);

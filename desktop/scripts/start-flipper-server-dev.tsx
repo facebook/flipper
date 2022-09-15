@@ -186,10 +186,9 @@ async function startWatchChanges() {
   }
   await prepareDefaultPlugins(
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
-    true,
   );
-  await buildHeadlessPlugins(true);
   await buildServerAddOns(true);
+  await buildHeadlessPlugins(true);
 
   await ensurePluginFoldersWatchable();
   // builds and starts

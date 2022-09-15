@@ -435,7 +435,6 @@ export class FlipperServerImpl implements FlipperServer {
       this.pluginManager.loadDynamicPlugins(),
     'plugins-load-marketplace-plugins': () =>
       this.pluginManager.loadMarketplacePlugins(),
-    'plugins-get-bundled-plugins': () => this.pluginManager.getBundledPlugins(),
     'plugins-get-installed-plugins': () =>
       this.pluginManager.getInstalledPlugins(),
     'plugins-remove-plugins': (plugins) =>

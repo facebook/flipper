@@ -353,7 +353,7 @@ async function buildServerRelease() {
   // create plugin output dir
   await fs.mkdirp(path.join(dir, 'static', 'defaultPlugins'));
 
-  await prepareDefaultPlugins(argv.channel === 'insiders', true);
+  await prepareDefaultPlugins(argv.channel === 'insiders');
   await buildServerAddOns(false);
   await buildHeadlessPlugins(false);
   await compileServerMain(false);

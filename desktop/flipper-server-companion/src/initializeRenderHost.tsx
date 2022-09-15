@@ -46,7 +46,7 @@ export function initializeRenderHost(
     restartFlipper() {
       // TODO:
     },
-    loadDefaultPlugins: getDefaultPluginsIndex,
+    loadDefaultPlugins: () => ({}),
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
@@ -80,9 +80,4 @@ export function initializeRenderHost(
       return url;
     },
   } as RenderHost;
-}
-
-function getDefaultPluginsIndex() {
-  // TODO: Fix me
-  return {};
 }

@@ -9,7 +9,6 @@
 
 import {FlipperDoctor} from './doctor';
 import {
-  BundledPluginDetails,
   DeviceSpec,
   DeviceType,
   DownloadablePluginDetails,
@@ -254,7 +253,6 @@ export type FlipperServerCommands = {
   'keychain-unset': (service: string) => Promise<void>;
   'plugins-load-dynamic-plugins': () => Promise<InstalledPluginDetails[]>;
   'plugins-load-marketplace-plugins': () => Promise<MarketplacePluginDetails[]>;
-  'plugins-get-bundled-plugins': () => Promise<BundledPluginDetails[]>;
   'plugins-get-installed-plugins': () => Promise<InstalledPluginDetails[]>;
   'plugins-get-updatable-plugins': (
     query: string | undefined,

@@ -75,12 +75,13 @@ export abstract class AbstractPluginInitializer {
   protected async loadAllLocalVersions(
     uninstalledPluginNames: Set<string>,
   ): Promise<(BundledPluginDetails | InstalledPluginDetails)[]> {
-    const bundledPlugins = await getBundledPlugins();
-    this.bundledPlugins = bundledPlugins;
+    this.bundledPlugins = Object.values(this.defaultPluginsIndex).map(
+      (defaultPluginEntry: any) => defaultPluginEntry.description,
+    );
 
     const allLocalVersions = [
-      ...bundledPlugins,
       ...(await getDynamicPlugins()),
+      ...this.bundledPlugins,
     ].filter((p) => !uninstalledPluginNames.has(p.name));
 
     return allLocalVersions;
@@ -145,24 +146,6 @@ export function getLatestCompatibleVersionOfEachPlugin<
     }
   }
   return Array.from(latestCompatibleVersions.values());
-}
-
-export async function getBundledPlugins(): Promise<
-  Array<BundledPluginDetails>
-> {
-  if (getRenderHostInstance().serverConfig.env.NODE_ENV === 'test') {
-    return [];
-  }
-  try {
-    // defaultPlugins that are included in the Flipper distributive.
-    // List of default bundled plugins is written at build time to defaultPlugins/bundled.json.
-    return await getRenderHostInstance().flipperServer!.exec(
-      'plugins-get-bundled-plugins',
-    );
-  } catch (e) {
-    console.error('Failed to load list of bundled plugins', e);
-    return [];
-  }
 }
 
 export async function getDynamicPlugins(): Promise<InstalledPluginDetails[]> {

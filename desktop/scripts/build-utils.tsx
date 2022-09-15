@@ -36,7 +36,6 @@ import {
   serverDir,
   rootDir,
   browserUiDir,
-  serverCoreDir,
 } from './paths';
 import pFilter from 'p-filter';
 import child from 'child_process';
@@ -44,7 +43,6 @@ import pMap from 'p-map';
 
 // eslint-disable-next-line flipper/no-relative-imports-across-packages
 const {version} = require('../package.json');
-
 const dev = process.env.NODE_ENV !== 'production';
 
 // For insiders builds we bundle top 5 popular device plugins,
@@ -75,10 +73,7 @@ export function die(err: Error) {
   process.exit(1);
 }
 
-export async function prepareDefaultPlugins(
-  isInsidersBuild: boolean = false,
-  flipperServerBuild = false,
-) {
+export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
   console.log(
     `⚙️  Preparing default plugins (isInsidersBuild=${isInsidersBuild})...`,
   );
@@ -107,10 +102,7 @@ export async function prepareDefaultPlugins(
       await buildDefaultPlugins(defaultPlugins);
       await generateDefaultPluginEntryPoints([]); // calling it here just to generate empty indexes
     } else {
-      await generateDefaultPluginEntryPoints(
-        defaultPlugins,
-        flipperServerBuild,
-      );
+      await generateDefaultPluginEntryPoints(defaultPlugins);
     }
   }
   console.log('✅  Prepared default plugins.');
@@ -155,7 +147,6 @@ function getGeneratedIndex(pluginRequires: string) {
 
 async function generateDefaultPluginEntryPoints(
   defaultPlugins: InstalledPluginDetails[],
-  flipperServerBuild?: boolean,
 ) {
   console.log(
     `⚙️  Generating entry points for ${defaultPlugins.length} bundled plugins...`,
@@ -173,10 +164,7 @@ async function generateDefaultPluginEntryPoints(
         serverAddOnEntry: undefined,
       } as BundledPluginDetails),
   );
-  await fs.writeJSON(
-    path.join(defaultPluginsDir, 'bundled.json'),
-    bundledPlugins,
-  );
+
   const pluginRequires = bundledPlugins
     .map(
       (x) =>
@@ -193,22 +181,6 @@ async function generateDefaultPluginEntryPoints(
   await fs.writeFile(
     path.join(browserUiDir, 'src', 'defaultPlugins', 'index.tsx'),
     generatedIndex,
-  );
-
-  const serverAddOns = flipperServerBuild
-    ? []
-    : defaultPlugins.filter(({serverAddOnSource}) => !!serverAddOnSource);
-  const serverAddOnRequires = serverAddOns
-    .map(
-      (x) =>
-        `  '${x.name}': tryRequire('${x.name}', () => require('${x.name}/${x.serverAddOnSource}'))`,
-    )
-    .join(',\n');
-  const generatedIndexServerAddOns = getGeneratedIndex(serverAddOnRequires);
-  await fs.ensureDir(path.join(serverCoreDir, 'src', 'defaultPlugins'));
-  await fs.writeFile(
-    path.join(serverCoreDir, 'src', 'defaultPlugins', 'index.tsx'),
-    generatedIndexServerAddOns,
   );
 
   console.log('✅  Generated bundled plugin entry points.');
