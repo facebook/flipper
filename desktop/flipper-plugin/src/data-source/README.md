@@ -52,12 +52,12 @@ The significant difference to many other solutions is that DataSource doesn't pr
 Instead, it keeps internally a mutable dataset (the records stored themselves are still immutable but can be replaced) to which new entries are added.
 However, instead of propagating the dataset to the rendering layer, events are emitted instead.
 
-### DataSourceView
+### _DataSourceView
 
-Conceptually, `DataSourceView` is a materialized view of a `DataSource`.
+Conceptually, `_DataSourceView` is a materialized view of a `DataSource`.
 For visualizations, typically the following transformations need to be applied: filter/search, sorting and windowing.
 
-Where many libraries applies these transformations as part of the _rendering_, DataSourceView applies these operations directly when updates to the dataset are received.
+Where many libraries applies these transformations as part of the _rendering_, _DataSourceView applies these operations directly when updates to the dataset are received.
 As a result the transformations need to be applied only to the newly arriving data.
 For example, if a new record arrives for a sorted dataset, we will apply a binary inseration sort for the new entry, avoiding the need for a full re-sort of the dataset during Rendering.
 
@@ -66,11 +66,11 @@ The events will describe how the current view should be updated to reflect the d
 
 ### DataSourceRendererVirtual
 
-`DataSourceRendererVirtual` is one of the possible visualizations of a DataSourceView.
-It takes care of subscribing to the events emitted by the `DataSourceView`, and applies them when they are relevant (e.g. within the visible window).
-Beyond that, it manages virtualizations (using the `react-virtual` library), so that for example scroll interactions are used to move the window of the`DataSourceView`.
+`DataSourceRendererVirtual` is one of the possible visualizations of a _DataSourceView.
+It takes care of subscribing to the events emitted by the `_DataSourceView`, and applies them when they are relevant (e.g. within the visible window).
+Beyond that, it manages virtualizations (using the `react-virtual` library), so that for example scroll interactions are used to move the window of the`_DataSourceView`.
 
-Typically this component is used as underlying abstraction for a Table representation. 
+Typically this component is used as underlying abstraction for a Table representation.
 
 ### DataSourceRendererStatic
 
@@ -163,7 +163,7 @@ Project setup:
 
 Features:
 
-* [ ] **Support multiple DataSourceView's per DataSource**: Currently there is a one view per source limitation because we didn't need more yet.
+* [ ] **Support multiple _DataSourceView's per DataSource**: Currently there is a one view per source limitation because we didn't need more yet.
 * [ ] **Break up operations that process the full data set in smaller tasks**: There are several operations that process the full data set, for example changing the sort / filter criteria. Currently this is done synchronously (and we debounce changing the filter), in the future we will split up the filtering in smaller taks to make it efficient. But we don't have a way to efficiently break down sorting into smaller tasks as using insertion sorting is 20x slower than the native sorting mechanism if the full data set needs to be processed.
 * [ ] **Add built-in support for downsampling data**
 * [ ] **Leverage React concurrent mode**: Currently there is custom scheduler logic to handle high- and low- (outside window) priority updates. In principle this could probably be achieved through React concurrent mode as well, but ANT.design (which is used in Flipper) doesn't support it yet.

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlipperLib, Notification} from 'flipper-plugin';
+import {FlipperLib, Notification} from 'flipper-plugin-core';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';

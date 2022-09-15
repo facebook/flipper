@@ -13,7 +13,7 @@ import {
   ClientConnection,
   BaseDevice,
 } from 'flipper-frontend-core';
-import {_SandyPluginDefinition} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin-core';
 
 export class HeadlessClient extends AbstractClient {
   constructor(

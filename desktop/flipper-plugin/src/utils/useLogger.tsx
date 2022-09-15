@@ -9,9 +9,9 @@
 
 import {Logger} from 'flipper-common';
 import {createContext, useContext} from 'react';
-import {stubLogger} from './Logger';
+import {_stubLogger} from 'flipper-plugin-core';
 
-export const _LoggerContext = createContext<Logger>(stubLogger);
+export const _LoggerContext = createContext<Logger>(_stubLogger);
 
 /**
  * Provides the default logger that can be used for console logging,

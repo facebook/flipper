@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Logger, _setFlipperLibImplementation} from 'flipper-plugin';
+import {Logger, _setFlipperLibImplementation} from 'flipper-plugin-core';
 import {baseFlipperLibImplementation, RenderHost} from 'flipper-frontend-core';
 
 export function initializeFlipperLibImplementation(

@@ -18,7 +18,7 @@ import {
   ConcretePluginDetails,
 } from 'flipper-common';
 import {reportUsage} from 'flipper-common';
-import {_SandyPluginDefinition} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin-core';
 import isPluginCompatible from './utils/isPluginCompatible';
 import isPluginVersionMoreRecent from './utils/isPluginVersionMoreRecent';
 import {getRenderHostInstance} from './RenderHost';

@@ -15,7 +15,7 @@ import {
   getLatestCompatibleVersionOfEachPlugin,
 } from '../plugins';
 import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-common';
-import {_SandyPluginDefinition} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin-core';
 import {getRenderHostInstance} from '../RenderHost';
 
 let loadDynamicPluginsMock: jest.Mock;

@@ -22,7 +22,7 @@ import {theme} from './theme';
 import styled from '@emotion/styled';
 import {DataTableManager} from './data-table/DataTableManager';
 import {useAssertStableRef} from '../utils/useAssertStableRef';
-import {DataSource} from '../data-source';
+import {DataSource} from 'flipper-plugin-core';
 import {useMakeStableCallback} from '../utils/useMakeStableCallback';
 
 const {Text} = Typography;
@@ -95,7 +95,9 @@ export const DataList: (<T extends object>(
   }: DataListProps<T>) {
     // if a tableManagerRef is provided, we piggy back on that same ref
     // eslint-disable-next-line
-    const tableManagerRef = tableProps.tableManagerRef ?? createRef<undefined | DataTableManager<T>>();
+    const tableManagerRef =
+      tableProps.tableManagerRef ??
+      createRef<undefined | DataTableManager<T>>();
 
     useAssertStableRef(onRenderItem, 'onRenderItem');
     useAssertStableRef(enableArrow, 'enableArrow');

@@ -12,9 +12,7 @@ import {
   ServerAddOnStartDetails,
 } from 'flipper-common';
 import {assertNotNull} from '../comms/Utilities';
-//  Special subset of flipper-plugin exports designed for server-side usage
-// eslint-disable-next-line no-restricted-imports
-import * as FlipperPluginSDK from 'flipper-plugin/src/server';
+import * as FlipperPluginSDK from 'flipper-plugin-core';
 
 declare global {
   // eslint-disable-next-line no-var

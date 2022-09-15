@@ -7,10 +7,11 @@
  * @format
  */
 
+import type {ReactNode} from 'react';
 export type Notification = {
   id: string;
   title: string;
-  message: string | React.ReactNode;
+  message: string | ReactNode;
   severity: 'warning' | 'error';
   timestamp?: number;
   category?: string;

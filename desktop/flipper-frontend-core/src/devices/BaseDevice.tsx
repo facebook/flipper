@@ -16,7 +16,7 @@ import {
   createState,
   getFlipperLib,
   CrashLogListener,
-} from 'flipper-plugin';
+} from 'flipper-plugin-core';
 import {
   DeviceLogEntry,
   DeviceOS,
@@ -49,7 +49,11 @@ export default class BaseDevice implements Device {
   hasDevicePlugins = false; // true if there are device plugins for this device (not necessarily enabled)
   private readonly serverAddOnControls: ServerAddOnControls;
 
-  constructor(flipperServer: FlipperServer, description: DeviceDescription) {
+  constructor(
+    flipperServer: FlipperServer,
+    description: DeviceDescription,
+    private pluginErrorHandler?: (msg: string) => void,
+  ) {
     this.flipperServer = flipperServer;
     this.description = description;
     this.serverAddOnControls = createServerAddOnControls(this.flipperServer);
@@ -341,18 +345,19 @@ export default class BaseDevice implements Device {
     this.hasDevicePlugins = true;
     if (plugin instanceof _SandyPluginDefinition) {
       try {
-        this.sandyPluginStates.set(
-          plugin.id,
-          new _SandyDevicePluginInstance(
-            this.serverAddOnControls,
-            getFlipperLib(),
-            plugin,
-            this,
-            // break circular dep, one of those days again...
-            getPluginKey(undefined, {serial: this.serial}, plugin.id),
-            initialState,
-          ),
+        const pluginInstance = new _SandyDevicePluginInstance(
+          this.serverAddOnControls,
+          getFlipperLib(),
+          plugin,
+          this,
+          // break circular dep, one of those days again...
+          getPluginKey(undefined, {serial: this.serial}, plugin.id),
+          initialState,
         );
+        if (this.pluginErrorHandler) {
+          pluginInstance.events.on('error', this.pluginErrorHandler);
+        }
+        this.sandyPluginStates.set(plugin.id, pluginInstance);
       } catch (e) {
         console.error(`Failed to start device plugin '${plugin.id}': `, e);
       }

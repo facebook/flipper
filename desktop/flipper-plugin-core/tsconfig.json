@@ -3,17 +3,12 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "types": ["node", "../types/flipperGlobals"]
+    "lib": ["dom", "ES2019"],
+    "types": ["jest", "../types/jest-extensions", "react/next", "react-dom/next"]
   },
   "references": [
     {
       "path": "../flipper-common"
-    },
-    {
-      "path": "../flipper-frontend-core"
-    },
-    {
-      "path": "../flipper-plugin-core"
     }
   ]
 }

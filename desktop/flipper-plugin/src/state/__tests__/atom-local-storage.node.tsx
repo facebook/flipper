@@ -7,7 +7,7 @@
  * @format
  */
 
-import {createState} from '../atom';
+import {createState} from 'flipper-plugin-core';
 import * as TestUtils from '../../test-utils/test-utils';
 
 beforeEach(() => {

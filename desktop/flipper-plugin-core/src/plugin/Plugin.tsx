@@ -18,6 +18,7 @@ import {
   EventsContract,
   MethodsContract,
 } from 'flipper-common';
+import type {FC} from 'react';
 
 type PreventIntersectionWith<Contract extends Record<string, any>> = {
   [Key in keyof Contract]?: never;
@@ -140,7 +141,7 @@ export type PluginFactory<
   client: PluginClient<Events, Methods, ServerAddOnEvents, ServerAddOnMethods>,
 ) => object;
 
-export type FlipperPluginComponent = React.FC<{}>;
+export type FlipperPluginComponent = FC<{}>;
 
 export class SandyPluginInstance extends BasePluginInstance {
   static is(thing: any): thing is SandyPluginInstance {

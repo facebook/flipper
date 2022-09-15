@@ -7,12 +7,12 @@
  * @format
  */
 
+import type {ReactElement} from 'react';
 import {Logger} from '../utils/Logger';
 import {Device} from './DevicePlugin';
 import {NormalizedMenuEntry} from './MenuEntry';
 import {RealFlipperClient} from './Plugin';
 import {Notification} from './Notification';
-import {DetailSidebarProps} from '../ui/DetailSidebar';
 import {
   ExecOptions,
   ExecOut,
@@ -109,9 +109,11 @@ export interface FlipperLib {
   writeTextToClipboard(text: string): void;
   openLink(url: string): void;
   showNotification(pluginKey: string, notification: Notification): void;
-  DetailsSidebarImplementation?(
-    props: DetailSidebarProps,
-  ): React.ReactElement | null;
+  DetailsSidebarImplementation?(props: {
+    children: any;
+    width?: number;
+    minWidth?: number;
+  }): ReactElement | null;
   /**
    * @returns
    * Imported file data.

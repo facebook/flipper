@@ -1,5 +1,5 @@
 {
-  "name": "flipper-plugin",
+  "name": "flipper-plugin-core",
   "version": "0.0.0",
   "description": "Flipper Desktop plugin SDK and components",
   "repository": "facebook/flipper",
@@ -9,32 +9,20 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "@ant-design/colors": "^6.0.0",
-    "@emotion/css": "^11.7.1",
-    "@emotion/react": "^11.8.2",
-    "@reach/observe-rect": "^1.2.0",
-    "@types/react": "17.0.39",
-    "@types/react-color": "^3.0.6",
-    "@types/react-dom": "^17.0.13",
     "eventemitter3": "^4.0.7",
     "flipper-common": "0.0.0",
-    "flipper-plugin-core": "0.0.0",
     "immer": "^9.0.12",
     "js-base64": "^3.7.2",
     "lodash": "^4.17.21",
-    "react-color": "^2.19.3",
-    "react-element-to-jsx-string": "^14.3.4",
-    "react-virtual": "^2.10.4",
     "string-natural-compare": "^3.0.0"
   },
   "devDependencies": {
+    "@types/react": "17.0.39",
     "@types/string-natural-compare": "^3.0.2",
     "jest-mock-console": "^1.2.3"
   },
   "peerDependencies": {
-    "@ant-design/icons": "^4.2.2",
-    "@testing-library/dom": "^7.26.3",
-    "antd": "^4.11.2"
+    "@testing-library/dom": "^7.26.3"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",

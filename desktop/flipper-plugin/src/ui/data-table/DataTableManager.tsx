@@ -10,13 +10,10 @@
 import type {DataTableColumn} from './DataTable';
 import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer} from 'react';
-import {
-  DataSource,
-  DataSourceView,
-  DataSourceVirtualizer,
-} from '../../data-source/index';
+import {DataSourceVirtualizer} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
 import {theme} from '../theme';
+import {DataSource, _DataSourceView} from 'flipper-plugin-core';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting<T = any> = {
@@ -121,7 +118,7 @@ type DataManagerActions<T> =
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T, T[keyof T]>;
-  dataView: DataSourceView<T, T[keyof T]>;
+  dataView: _DataSourceView<T, T[keyof T]>;
   defaultColumns: DataTableColumn<T>[];
   scope: string;
   onSelect: undefined | ((item: T | undefined, items: T[]) => void);
@@ -299,7 +296,7 @@ export const dataTableManagerReducer = produce<
     }
     case 'setColumnFilterFromSelection': {
       const items = getSelectedItems(
-        config.dataView as DataSourceView<any, any>,
+        config.dataView as _DataSourceView<any, any>,
         draft.selection,
       );
       items.forEach((item, index) => {
@@ -376,7 +373,7 @@ export type DataTableManager<T> = {
   toggleColumnVisibility(column: keyof T): void;
   sortColumn(column: keyof T, direction?: SortDirection): void;
   setSearchValue(value: string, addToHistory?: boolean): void;
-  dataView: DataSourceView<T, T[keyof T]>;
+  dataView: _DataSourceView<T, T[keyof T]>;
   toggleSearchValue(): void;
   toggleHighlightSearch(): void;
   setSearchHighlightColor(color: string): void;
@@ -386,7 +383,7 @@ export type DataTableManager<T> = {
 };
 
 export function createDataTableManager<T>(
-  dataView: DataSourceView<T, T[keyof T]>,
+  dataView: _DataSourceView<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   stateRef: MutableRefObject<DataManagerState<T>>,
 ): DataTableManager<T> {
@@ -535,14 +532,14 @@ function addColumnFilter<T>(
 }
 
 export function getSelectedItem<T>(
-  dataView: DataSourceView<T, T[keyof T]>,
+  dataView: _DataSourceView<T, T[keyof T]>,
   selection: Selection,
 ): T | undefined {
   return selection.current < 0 ? undefined : dataView.get(selection.current);
 }
 
 export function getSelectedItems<T>(
-  dataView: DataSourceView<T, T[keyof T]>,
+  dataView: _DataSourceView<T, T[keyof T]>,
   selection: Selection,
 ): T[] {
   return [...selection.items]

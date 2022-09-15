@@ -23,7 +23,7 @@ import {homedir} from 'os';
 const uiSourceDirs = [
   'flipper-ui-browser',
   'flipper-ui-core',
-  'flipper-plugin',
+  'flipper-plugin-core',
   'flipper-common',
 ];
 

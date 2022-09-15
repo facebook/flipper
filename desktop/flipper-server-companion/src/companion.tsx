@@ -18,8 +18,8 @@ import {
   FlipperCompanionAvailablePlugin,
 } from 'flipper-common';
 import {BaseDevice} from 'flipper-frontend-core';
-import {_SandyPluginDefinition} from 'flipper-plugin';
-import {isAtom} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin-core';
+import {isAtom} from 'flipper-plugin-core';
 import {HeadlessClient} from './HeadlessClient';
 import {FlipperServerCompanionEnv} from './init';
 

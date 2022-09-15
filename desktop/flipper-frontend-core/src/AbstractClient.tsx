@@ -30,7 +30,7 @@ import {
   _SandyPluginInstance,
   getFlipperLib,
   _SandyPluginDefinition,
-} from 'flipper-plugin';
+} from 'flipper-plugin-core';
 import {createServerAddOnControls} from './utils/createServerAddOnControls';
 import isProduction from './utils/isProduction';
 
@@ -135,17 +135,23 @@ export default abstract class AbstractClient extends EventEmitter {
     initialState?: Record<string, any>,
   ) {
     try {
-      this.sandyPluginStates.set(
-        plugin.id,
-        new _SandyPluginInstance(
-          this.serverAddOnControls,
-          getFlipperLib(),
-          plugin,
-          this,
-          getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),
-          initialState,
-        ),
+      const pluginInstance = new _SandyPluginInstance(
+        this.serverAddOnControls,
+        getFlipperLib(),
+        plugin,
+        this,
+        getPluginKey(this.id, {serial: this.query.device_id}, plugin.id),
+        initialState,
       );
+      pluginInstance.events.on('error', (message) => {
+        const error: ClientErrorType = {
+          message,
+          name: 'Plugin Error',
+          stacktrace: '',
+        };
+        this.emit('error', error);
+      });
+      this.sandyPluginStates.set(plugin.id, pluginInstance);
     } catch (e) {
       console.error(`Failed to start plugin '${plugin.id}': `, e);
     }

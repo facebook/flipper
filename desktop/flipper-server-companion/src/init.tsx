@@ -9,7 +9,7 @@
 
 import {FlipperServer, getLogger} from 'flipper-common';
 import {getRenderHostInstance, setGlobalObject} from 'flipper-frontend-core';
-import * as FlipperPluginSDK from 'flipper-plugin';
+import * as FlipperPluginSDK from 'flipper-plugin-core';
 import * as Immer from 'immer';
 import {HeadlessPluginInitializer} from './HeadlessPluginInitializer';
 import {initializeFlipperLibImplementation} from './initializeFlipperLibImplementation';

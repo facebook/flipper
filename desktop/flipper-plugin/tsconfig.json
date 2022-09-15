@@ -9,6 +9,9 @@
   "references": [
     {
       "path": "../flipper-common"
+    },
+    {
+      "path": "../flipper-plugin-core"
     }
   ]
 }
