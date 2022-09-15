@@ -16,9 +16,7 @@ import {
   genMercurialRevision,
   getVersionNumber,
   prepareDefaultPlugins,
-  buildHeadlessPlugins,
   moveServerSourceMaps,
-  buildServerAddOns,
 } from './build-utils';
 import {defaultPluginsDir, distDir, serverDir, staticDir} from './paths';
 import isFB from './isFB';
@@ -354,8 +352,6 @@ async function buildServerRelease() {
   await fs.mkdirp(path.join(dir, 'static', 'defaultPlugins'));
 
   await prepareDefaultPlugins(argv.channel === 'insiders');
-  await buildServerAddOns(false);
-  await buildHeadlessPlugins(false);
   await compileServerMain(false);
   await copyStaticResources(dir, versionNumber);
   await downloadIcons(path.join(dir, 'static'));

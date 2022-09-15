@@ -20,12 +20,7 @@ import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import {hostname} from 'os';
-import {
-  compileMain,
-  prepareDefaultPlugins,
-  buildHeadlessPlugins,
-  buildServerAddOns,
-} from './build-utils';
+import {compileMain, prepareDefaultPlugins} from './build-utils';
 import Watchman from './watchman';
 // @ts-ignore no typings for metro
 import Metro from 'metro';
@@ -446,8 +441,6 @@ function checkDevServer() {
   await prepareDefaultPlugins(
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
   );
-  await buildServerAddOns(true);
-  await buildHeadlessPlugins(true);
   await ensurePluginFoldersWatchable();
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);

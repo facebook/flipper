@@ -27,8 +27,6 @@ import {
   genMercurialRevision,
   prepareDefaultPlugins,
   moveSourceMaps,
-  buildServerAddOns,
-  buildHeadlessPlugins,
 } from './build-utils';
 import isFB from './isFB';
 import copyPackageWithDependencies from './copy-package-with-dependencies';
@@ -313,8 +311,6 @@ async function copyStaticFolder(buildFolder: string) {
 
   await compileMain();
   await prepareDefaultPlugins(argv.channel === 'insiders');
-  await buildServerAddOns(false);
-  await buildHeadlessPlugins(false);
   await copyStaticFolder(dir);
   await downloadIcons(dir);
   await compileRenderer(dir);

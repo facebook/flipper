@@ -90,30 +90,15 @@ export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
       ? []
       : await getSourcePlugins();
     const defaultPlugins = sourcePlugins
-      // we only include predefined set of plugins into insiders release
-      .filter((p) => !isInsidersBuild || hardcodedPlugins.has(p.id));
-    if (process.env.FLIPPER_NO_BUNDLED_PLUGINS) {
-      await buildDefaultPlugins(defaultPlugins);
-    }
+      // we only include headless plugins and a predefined set of regular plugins into insiders release
+      .filter(
+        (p) => !isInsidersBuild || hardcodedPlugins.has(p.id) || p.headless,
+      );
+    await buildDefaultPlugins(defaultPlugins);
   }
   console.log('✅  Prepared default plugins.');
 }
 
-export async function buildHeadlessPlugins(dev: boolean) {
-  console.log(`⚙️  Building headless plugins...`);
-  const sourcePlugins = await getSourcePlugins();
-  const headlessPlugins = sourcePlugins.filter((p) => p.headless);
-  await Promise.all(headlessPlugins.map((p) => runBuild(p.dir, dev)));
-  console.log('✅  Built headless plugins.');
-}
-
-export async function buildServerAddOns(dev: boolean) {
-  console.log(`⚙️  Building plugins with server add-ons plugins...`);
-  const sourcePlugins = await getSourcePlugins();
-  const serverAddOns = sourcePlugins.filter((p) => p.serverAddOnSource);
-  await Promise.all(serverAddOns.map((p) => runBuild(p.dir, dev)));
-  console.log('✅  Built plugins with server add-ons plugins.');
-}
 async function buildDefaultPlugins(defaultPlugins: InstalledPluginDetails[]) {
   if (process.env.FLIPPER_NO_REBUILD_PLUGINS) {
     console.log(
