@@ -29,8 +29,8 @@ async function runBuild({pluginDir, entry, out, dev, node}: RunBuildConfig) {
     format: 'cjs',
     // This list should match `dispatcher/plugins.tsx` and `builtInModules` in `desktop/.eslintrc.js`
     external: [
-      'flipper-plugin',
       'flipper',
+      'flipper-plugin',
       'react',
       'react-dom',
       'react-dom/client',

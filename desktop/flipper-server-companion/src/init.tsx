@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlipperServer, getLogger} from 'flipper-common';
+import {FlipperServer, getLogger, wrapRequire} from 'flipper-common';
 import {getRenderHostInstance, setGlobalObject} from 'flipper-frontend-core';
 import * as FlipperPluginSDK from 'flipper-plugin-core';
 import * as Immer from 'immer';
@@ -18,6 +18,7 @@ import * as React from './globalsReplacements/fakeReact';
 import * as ReactDOM from './globalsReplacements/fakeReactDOM';
 import {styled} from './globalsReplacements/fakeEmotionStyled';
 import * as legacyExports from './globalsReplacements/fakeLegacyExports';
+import Module from 'module';
 
 export interface FlipperServerCompanionEnv {
   pluginInitializer: HeadlessPluginInitializer;
@@ -39,6 +40,7 @@ export const initCompanionEnv = async (
     emotion_styled: {default: styled},
     antdesign_icons: {},
   });
+  Module.prototype.require = wrapRequire(Module.prototype.require);
 
   const flipperServerConfig = await flipperServer.exec('get-config');
   initializeRenderHost(flipperServer, flipperServerConfig);

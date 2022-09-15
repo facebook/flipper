@@ -12,6 +12,7 @@ import {
   InstalledPluginDetails,
   Logger,
   MarketplacePluginDetails,
+  wrapRequire,
 } from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import React from 'react';
@@ -100,6 +101,10 @@ class UIPluginInitializer extends AbstractPluginInitializer {
   }
 }
 
+declare module globalThis {
+  let require: any;
+}
+
 let uiPluginInitializer: UIPluginInitializer;
 export default async (store: Store, _logger: Logger) => {
   setGlobalObject({
@@ -114,6 +119,20 @@ export default async (store: Store, _logger: Logger) => {
     emotion_styled,
     antdesign_icons,
   });
+  // Whenever we bundle plugins, we assume that they are going to share some modules - React, React-DOM, ant design and etc.
+  // It allows us to decrease the bundle size and not to create separate React roots for every plugin
+  // To tell a plugin that a module is going to be provided externally, we add the module to the list of externals (see https://esbuild.github.io/api/#external).
+  // As a result, esbuild does not bundle hte contents of the module. Instead, it wraps the module name with `require(...)`.
+  // `require` does not exist ion the browser environment, so we substitute it here to feed the plugin our global module.
+  globalThis.require = wrapRequire(
+    // globalThis.require might exist in the electron build
+    globalThis.require ??
+      ((module: string) => {
+        throw new Error(
+          `Dynamic require is not supported in browser envs. Tried to require: ${module}`,
+        );
+      }),
+  );
 
   uiPluginInitializer = new UIPluginInitializer(store);
   await uiPluginInitializer.init();
