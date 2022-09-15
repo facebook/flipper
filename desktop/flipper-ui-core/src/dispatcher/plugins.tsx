@@ -8,7 +8,11 @@
  */
 
 import type {Store} from '../reducers/index';
-import {Logger, MarketplacePluginDetails} from 'flipper-common';
+import {
+  InstalledPluginDetails,
+  Logger,
+  MarketplacePluginDetails,
+} from 'flipper-common';
 import {PluginDefinition} from '../plugin';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -83,7 +87,7 @@ class UIPluginInitializer extends AbstractPluginInitializer {
   }
 
   public requirePluginImpl(pluginDetails: ActivatablePluginDetails) {
-    return requirePluginInternal(this.defaultPluginsIndex, pluginDetails);
+    return requirePluginInternal(pluginDetails);
   }
 
   protected loadMarketplacePlugins() {
@@ -123,12 +127,11 @@ export const requirePlugin = (pluginDetails: ActivatablePluginDetails) =>
   )(pluginDetails);
 
 export const requirePluginInternal = async (
-  defaultPluginsIndex: any,
   pluginDetails: ActivatablePluginDetails,
 ): Promise<PluginDefinition> => {
-  let plugin = pluginDetails.isBundled
-    ? defaultPluginsIndex[pluginDetails.name].source
-    : await getRenderHostInstance().requirePlugin(pluginDetails.entry);
+  let plugin = await getRenderHostInstance().requirePlugin(
+    (pluginDetails as InstalledPluginDetails).entry,
+  );
   if (!plugin) {
     throw new Error(
       `Failed to obtain plugin source for: ${pluginDetails.name}`,

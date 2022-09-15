@@ -25,7 +25,6 @@ import {getRenderHostInstance} from './RenderHost';
 import pMap from 'p-map';
 
 export abstract class AbstractPluginInitializer {
-  protected defaultPluginsIndex: any = null;
   protected gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
   protected disabledPlugins: Array<ActivatablePluginDetails> = [];
   protected failedPlugins: Array<[ActivatablePluginDetails, string]> = [];
@@ -48,7 +47,6 @@ export abstract class AbstractPluginInitializer {
   }
 
   protected async _init(): Promise<_SandyPluginDefinition[]> {
-    this.loadDefaultPluginIndex();
     this.loadMarketplacePlugins();
     const uninstalledPluginNames = this.loadUninstalledPluginNames();
     const allLocalVersions = await this.loadAllLocalVersions(
@@ -65,9 +63,6 @@ export abstract class AbstractPluginInitializer {
     pluginDetails: ActivatablePluginDetails,
   ): Promise<_SandyPluginDefinition>;
 
-  protected loadDefaultPluginIndex() {
-    this.defaultPluginsIndex = getRenderHostInstance().loadDefaultPlugins();
-  }
   protected loadMarketplacePlugins() {}
   protected loadUninstalledPluginNames(): Set<string> {
     return new Set();
@@ -75,14 +70,9 @@ export abstract class AbstractPluginInitializer {
   protected async loadAllLocalVersions(
     uninstalledPluginNames: Set<string>,
   ): Promise<(BundledPluginDetails | InstalledPluginDetails)[]> {
-    this.bundledPlugins = Object.values(this.defaultPluginsIndex).map(
-      (defaultPluginEntry: any) => defaultPluginEntry.description,
+    const allLocalVersions = [...(await getDynamicPlugins())].filter(
+      (p) => !uninstalledPluginNames.has(p.name),
     );
-
-    const allLocalVersions = [
-      ...(await getDynamicPlugins()),
-      ...this.bundledPlugins,
-    ].filter((p) => !uninstalledPluginNames.has(p.name));
 
     return allLocalVersions;
   }

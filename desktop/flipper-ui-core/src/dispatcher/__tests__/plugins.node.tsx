@@ -42,9 +42,6 @@ const sampleInstalledPluginDetails: InstalledPluginDetails = {
   isActivatable: true,
 };
 
-// bind to empty default plugin index so we try fetching from flipper-server every time
-const requirePlugin = requirePluginInternal.bind({}, {});
-
 beforeEach(() => {
   loadDynamicPluginsMock = getRenderHostInstance().flipperServer.exec =
     jest.fn();
@@ -58,7 +55,7 @@ test('dispatcher dispatches REGISTER_PLUGINS', async () => {
 });
 
 test('requirePluginInternal returns null for invalid requires', async () => {
-  const requireFn = createRequirePluginFunction(requirePlugin)([]);
+  const requireFn = createRequirePluginFunction(requirePluginInternal)([]);
   const plugin = await requireFn({
     ...sampleInstalledPluginDetails,
     name: 'pluginID',
@@ -72,7 +69,7 @@ test('requirePluginInternal returns null for invalid requires', async () => {
 
 test('requirePluginInternal loads plugin', async () => {
   const name = 'pluginID';
-  const requireFn = createRequirePluginFunction(requirePlugin)([]);
+  const requireFn = createRequirePluginFunction(requirePluginInternal)([]);
   const plugin = await requireFn({
     ...sampleInstalledPluginDetails,
     name,
@@ -94,7 +91,7 @@ test('requirePluginInternal loads plugin', async () => {
 
 test('requirePluginInternal loads valid Sandy plugin', async () => {
   const name = 'pluginID';
-  const requireFn = createRequirePluginFunction(requirePlugin)([]);
+  const requireFn = createRequirePluginFunction(requirePluginInternal)([]);
   const plugin = (await requireFn({
     ...sampleInstalledPluginDetails,
     name,
@@ -132,7 +129,9 @@ test('requirePluginInternal loads valid Sandy plugin', async () => {
 test('requirePluginInternal errors on invalid Sandy plugin', async () => {
   const name = 'pluginID';
   const failedPlugins: any[] = [];
-  const requireFn = createRequirePluginFunction(requirePlugin)(failedPlugins);
+  const requireFn = createRequirePluginFunction(requirePluginInternal)(
+    failedPlugins,
+  );
   await requireFn({
     ...sampleInstalledPluginDetails,
     name,
@@ -149,7 +148,7 @@ test('requirePluginInternal errors on invalid Sandy plugin', async () => {
 
 test('requirePluginInternal loads valid Sandy Device plugin', async () => {
   const name = 'pluginID';
-  const requireFn = createRequirePluginFunction(requirePlugin)([]);
+  const requireFn = createRequirePluginFunction(requirePluginInternal)([]);
   const plugin = (await requireFn({
     ...sampleInstalledPluginDetails,
     pluginType: 'device',

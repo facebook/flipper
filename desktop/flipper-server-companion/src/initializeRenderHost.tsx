@@ -46,7 +46,6 @@ export function initializeRenderHost(
     restartFlipper() {
       // TODO:
     },
-    loadDefaultPlugins: () => ({}),
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
