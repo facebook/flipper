@@ -62,11 +62,12 @@ You now have a Row type that describes the data you'll be storing and a descript
 ```typescript
 import {DataTableColumn, createTablePlugin} from 'flipper-plugin';
 
-module.exports = createTablePlugin<Row>({
+const {plugin, Component} = createTablePlugin<Row>({
   columns,
   method: 'newRow',
   key: 'id',
 });
+export {plugin, Component};
 ```
 
 The above code snippet has the following properties:
