@@ -15,11 +15,10 @@ import {
   launchServer,
   prepareDefaultPlugins,
 } from './build-utils';
-import Watchman from './watchman';
 import isFB from './isFB';
 import yargs from 'yargs';
 import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
-import startWatchPlugins from './startWatchPlugins';
+import {Watchman} from 'flipper-pkg-lib';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -195,5 +194,4 @@ async function startWatchChanges() {
   await restartServer();
   // watch
   await startWatchChanges();
-  await startWatchPlugins();
 })();

@@ -511,17 +511,3 @@ function defaultResolve(...rest: any[]) {
     ...rest,
   );
 }
-
-export async function rebuildPlugin(pluginPath: string) {
-  try {
-    await runBuild(pluginPath, true);
-    console.info(chalk.green('Rebuilt plugin'), pluginPath);
-  } catch (e) {
-    console.error(
-      chalk.red(
-        'Failed to compile a plugin, waiting for additional changes...',
-      ),
-      e,
-    );
-  }
-}

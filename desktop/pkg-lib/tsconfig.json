@@ -10,6 +10,9 @@
       "path": "../babel-transformer"
     },
     {
+      "path": "../flipper-common"
+    },
+    {
       "path": "../plugin-lib"
     }
   ]

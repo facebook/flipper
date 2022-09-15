@@ -8,13 +8,34 @@
  */
 
 import Watchman from './watchman';
-import {getPluginSourceFolders, isPluginDir} from 'flipper-plugin-lib';
+import {
+  getInstalledPluginDetails,
+  getPluginSourceFolders,
+  isPluginDir,
+} from 'flipper-plugin-lib';
 import path from 'path';
 import chalk from 'chalk';
-import {rebuildPlugin} from './build-utils';
+import runBuild from './runBuild';
+import {InstalledPluginDetails} from 'flipper-common';
+
+async function rebuildPlugin(pluginPath: string) {
+  try {
+    await runBuild(pluginPath, true);
+    console.info(chalk.green('Rebuilt plugin'), pluginPath);
+  } catch (e) {
+    console.error(
+      chalk.red(
+        'Failed to compile a plugin, waiting for additional changes...',
+      ),
+      e,
+    );
+  }
+}
 
 export default async function startWatchPlugins(
-  onChanged?: () => void | Promise<void>,
+  onChanged?: (
+    changedPlugins: InstalledPluginDetails[],
+  ) => void | Promise<void>,
 ) {
   // eslint-disable-next-line no-console
   console.log('🕵️‍  Watching for plugin changes');
@@ -27,7 +48,7 @@ export default async function startWatchPlugins(
         delayedCompilation = undefined;
         // eslint-disable-next-line no-console
         console.log(`🕵️‍  Detected plugin change`);
-        await Promise.all(
+        const changedDirs = await Promise.all(
           // https://facebook.github.io/watchman/docs/nodejs.html#subscribing-to-changes
           files.map(async (file: string) => {
             const filePathAbs = path.resolve(root, file);
@@ -48,9 +69,15 @@ export default async function startWatchPlugins(
               dirPath = path.resolve(dirPath, '..');
             }
             await rebuildPlugin(dirPath);
+            return dirPath;
           }),
         );
-        onChanged?.();
+        const changedPlugins = await Promise.all(
+          changedDirs
+            .filter((dirPath): dirPath is string => !!dirPath)
+            .map((dirPath) => getInstalledPluginDetails(dirPath)),
+        );
+        onChanged?.(changedPlugins);
       }, kCompilationDelayMillis);
     }
   };

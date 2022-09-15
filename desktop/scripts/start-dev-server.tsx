@@ -21,7 +21,6 @@ import path from 'path';
 import fs from 'fs-extra';
 import {hostname} from 'os';
 import {compileMain, prepareDefaultPlugins} from './build-utils';
-import Watchman from './watchman';
 // @ts-ignore no typings for metro
 import Metro from 'metro';
 import {staticDir, babelTransformationsDir, rootDir} from './paths';
@@ -29,8 +28,8 @@ import isFB from './isFB';
 import getAppWatchFolders from './get-app-watch-folders';
 import {getPluginSourceFolders} from 'flipper-plugin-lib';
 import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
-import startWatchPlugins from './startWatchPlugins';
 import yargs from 'yargs';
+import {startWatchPlugins, Watchman} from 'flipper-pkg-lib';
 
 const argv = yargs
   .usage('yarn start [args]')
@@ -445,8 +444,8 @@ function checkDevServer() {
   await startMetroServer(app, server);
   outputScreen(socket);
   await compileMain();
-  await startWatchPlugins(() => {
-    socket.emit('refresh');
+  await startWatchPlugins((changedPlugins) => {
+    socket.emit('plugins-source-updated', changedPlugins);
   });
   if (dotenv && dotenv.parsed) {
     console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);

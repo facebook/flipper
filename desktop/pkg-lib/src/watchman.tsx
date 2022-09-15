@@ -8,7 +8,7 @@
  */
 
 import {Client} from 'fb-watchman';
-import {v4 as uuid} from 'uuid';
+import {uuid} from 'flipper-common';
 import path from 'path';
 
 const watchmanTimeout = 60 * 1000;

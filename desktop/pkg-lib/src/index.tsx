@@ -11,3 +11,5 @@ export {default as runBuild} from './runBuild';
 export {default as getWatchFolders} from './getWatchFolders';
 export {default as computePackageChecksum} from './computePackageChecksum';
 export {default as stripSourceMapComment} from './stripSourceMap';
+export {default as startWatchPlugins} from './startWatchPlugins';
+export {default as Watchman} from './watchman';
