@@ -8,4 +8,6 @@
  */
 
 // Ideally we don't want to expose those, but this is for legacy compatibility
-export * from 'flipper-ui-core';
+// It is OK to reference /src/... here as this file i never bundled and only used for typings
+// eslint-disable-next-line no-restricted-imports
+export * from 'flipper-ui-core/src/deprecated-exports';
