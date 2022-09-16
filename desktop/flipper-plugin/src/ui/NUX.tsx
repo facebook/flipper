@@ -19,12 +19,13 @@ import styled from '@emotion/styled';
 import {keyframes} from '@emotion/css';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {SandyPluginContext} from '../plugin/PluginContext';
-import {createState, useValue} from '../state/atom';
-import {SandyDevicePluginInstance} from '../plugin/DevicePlugin';
+import {createState} from 'flipper-plugin-core';
+import {useValue} from '../state/atom';
+import {_SandyDevicePluginInstance} from 'flipper-plugin-core';
 import {Layout} from './Layout';
 import {BulbTwoTone} from '@ant-design/icons';
 import type {TooltipPlacement} from 'antd/lib/tooltip';
-import {SandyPluginInstance} from '../plugin/Plugin';
+import {_SandyPluginInstance} from 'flipper-plugin-core';
 import {theme} from './theme';
 import {Tracked} from './Tracked';
 import {sha256} from '../utils/sha256';
@@ -37,7 +38,7 @@ const storageKey = `FLIPPER_NUX_STATE`;
 
 export async function getNuxKey(
   elem: React.ReactNode,
-  currentPlugin?: SandyPluginInstance | SandyDevicePluginInstance,
+  currentPlugin?: _SandyPluginInstance | _SandyDevicePluginInstance,
 ): Promise<string> {
   const hash = await sha256(reactElementToJSXString(elem));
   return `${currentPlugin?.definition.id ?? 'flipper'}:${hash}`;
@@ -59,14 +60,14 @@ export function createNuxManager() {
   return {
     async markRead(
       elem: React.ReactNode,
-      currentPlugin?: SandyPluginInstance | SandyDevicePluginInstance,
+      currentPlugin?: _SandyPluginInstance | _SandyDevicePluginInstance,
     ): Promise<void> {
       readMap[await getNuxKey(elem, currentPlugin)] = true;
       save();
     },
     async isRead(
       elem: React.ReactNode,
-      currentPlugin?: SandyPluginInstance | SandyDevicePluginInstance,
+      currentPlugin?: _SandyPluginInstance | _SandyDevicePluginInstance,
     ): Promise<boolean> {
       return !!readMap[await getNuxKey(elem, currentPlugin)];
     },

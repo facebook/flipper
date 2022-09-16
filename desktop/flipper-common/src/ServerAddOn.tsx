@@ -13,9 +13,7 @@ import {
   FlipperServerEvents,
 } from './server-types';
 
-export type ServerAddOnStartDetails =
-  | {isBundled: true; path?: never}
-  | {isBundled?: false; path: string};
+export type ServerAddOnStartDetails = {path: string};
 
 export interface ServerAddOnControls {
   start: FlipperServerCommands['plugins-server-add-on-start'];

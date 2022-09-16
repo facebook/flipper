@@ -21,11 +21,21 @@ export interface GlobalObject {
   antdesign_icons: any;
 }
 
+declare module globalThis {
+  let React: any;
+  let ReactDOM: any;
+  let ReactDOMClient: any;
+  let ReactIs: any;
+  let Flipper: any;
+  let FlipperPlugin: any;
+  let Immer: any;
+  let antd: any;
+  let emotion_styled: any;
+  let antdesign_icons: any;
+}
+
 export const setGlobalObject = (replacements: GlobalObject) => {
-  const globalObject = (function (this: any) {
-    return this;
-  })();
   for (const [name, module] of Object.entries(replacements)) {
-    globalObject[name] = module;
+    globalThis[name as keyof GlobalObject] = module;
   }
 };

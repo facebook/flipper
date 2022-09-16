@@ -181,9 +181,6 @@ function createStubRenderHost(): RenderHost {
     restartFlipper() {},
     openLink() {},
     serverConfig: stubConfig,
-    loadDefaultPlugins() {
-      return {};
-    },
     GK(gk: string) {
       return stubConfig.gatekeepers[gk] ?? false;
     },

@@ -139,7 +139,7 @@
     "lint:tsc": "tsc && tsc -p tsc-root/tsconfig.json --noemit",
     "list-plugins": "./ts-node scripts/list-plugins.tsx",
     "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
-    "postinstall": "patch-package && yarn --cwd plugins install --mutex network:30331 && yarn tsc -b pkg-lib/tsconfig.json && ./ts-node scripts/generate-plugin-entry-points.tsx && yarn build:tsc && yarn build:themes",
+    "postinstall": "patch-package && yarn --cwd plugins install --mutex network:30331 && yarn tsc -b pkg-lib/tsconfig.json  && ./ts-node scripts/remove-plugin-entry-points.tsx && yarn build:tsc && yarn build:themes",
     "prebuild": "yarn build:tsc && yarn rm-dist && yarn build:themes",
     "predev-server": "yarn build:tsc",
     "preflipper-server": "yarn build:tsc",
@@ -169,7 +169,7 @@
     "npm": "use yarn instead",
     "yarn": "^1.16"
   },
-  "version": "0.163.0",
+  "version": "0.164.0",
   "workspaces": {
     "packages": [
       "scripts",
@@ -182,6 +182,7 @@
       "flipper-common",
       "flipper-frontend-core",
       "flipper-plugin",
+      "flipper-plugin-core",
       "flipper-server-companion",
       "flipper-server-core",
       "flipper-ui-core",

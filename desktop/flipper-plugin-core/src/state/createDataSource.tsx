@@ -12,7 +12,7 @@ import {
   createDataSource as baseCreateDataSource,
   DataSourceOptions as BaseDataSourceOptions,
   DataSourceOptionKey as BaseDataSourceOptionKey,
-} from '../data-source/index';
+} from '../data-source/DataSource';
 import {registerStorageAtom} from '../plugin/PluginBase';
 
 type DataSourceOptions = BaseDataSourceOptions & {

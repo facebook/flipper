@@ -8,11 +8,7 @@
   "bin": "server.js",
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
-  "dependencies": {},
-  "devDependencies": {
-    "@types/express": "^4.17.13",
-    "@types/http-proxy": "^1.17.8",
-    "@types/node": "^17.0.31",
+  "dependencies": {
     "chalk": "^4",
     "exit-hook": "^2.1.1",
     "express": "^4.17.3",
@@ -30,13 +26,18 @@
     "xdg-basedir": "^4",
     "yargs": "^17.4.1"
   },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/http-proxy": "^1.17.8",
+    "@types/node": "^17.0.31"
+  },
   "peerDependencies": {},
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b"
   },
   "files": [
-    "dist/**/*",
+    "lib/**/*",
     "static/**/*",
     "README.md",
     "server.js"

@@ -1,6 +1,5 @@
 {
   "name": "flipper-server-companion",
-  "private": true,
   "version": "0.0.0",
   "description": "Runs Flipper plugins on Flipper Server",
   "repository": "facebook/flipper",
@@ -12,7 +11,7 @@
   "dependencies": {
     "flipper-common": "0.0.0",
     "flipper-frontend-core": "0.0.0",
-    "flipper-plugin": "0.0.0",
+    "flipper-plugin-core": "0.0.0",
     "immer": "^9.0.12"
   },
   "devDependencies": {

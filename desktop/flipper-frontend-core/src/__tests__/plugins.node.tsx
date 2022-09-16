@@ -14,8 +14,8 @@ import {
   createRequirePluginFunction,
   getLatestCompatibleVersionOfEachPlugin,
 } from '../plugins';
-import {BundledPluginDetails, InstalledPluginDetails} from 'flipper-common';
-import {_SandyPluginDefinition} from 'flipper-plugin';
+import {InstalledPluginDetails} from 'flipper-common';
+import {_SandyPluginDefinition} from 'flipper-plugin-core';
 import {getRenderHostInstance} from '../RenderHost';
 
 let loadDynamicPluginsMock: jest.Mock;
@@ -31,14 +31,7 @@ const sampleInstalledPluginDetails: InstalledPluginDetails = {
   title: 'Sample',
   dir: '/Users/mock/.flipper/thirdparty/flipper-plugin-sample',
   entry: 'this/path/does not/exist',
-  isBundled: false,
   isActivatable: true,
-};
-
-const sampleBundledPluginDetails: BundledPluginDetails = {
-  ...sampleInstalledPluginDetails,
-  id: 'SampleBundled',
-  isBundled: true,
 };
 
 beforeEach(() => {
@@ -66,14 +59,14 @@ test('checkDisabled', () => {
 
     expect(
       disabled({
-        ...sampleBundledPluginDetails,
+        ...sampleInstalledPluginDetails,
         name: 'other Name',
         version: '1.0.0',
       }),
     ).toBeTruthy();
     expect(
       disabled({
-        ...sampleBundledPluginDetails,
+        ...sampleInstalledPluginDetails,
         name: disabledPlugin,
         version: '1.0.0',
       }),
@@ -86,7 +79,7 @@ test('checkDisabled', () => {
 test('checkGK for plugin without GK', () => {
   expect(
     checkGK([])({
-      ...sampleBundledPluginDetails,
+      ...sampleInstalledPluginDetails,
       name: 'pluginID',
       version: '1.0.0',
     }),
@@ -96,7 +89,7 @@ test('checkGK for plugin without GK', () => {
 test('checkGK for passing plugin', () => {
   expect(
     checkGK([])({
-      ...sampleBundledPluginDetails,
+      ...sampleInstalledPluginDetails,
       name: 'pluginID',
       gatekeeper: 'TEST_PASSING_GK',
       version: '1.0.0',
@@ -108,7 +101,7 @@ test('checkGK for failing plugin', () => {
   const gatekeepedPlugins: InstalledPluginDetails[] = [];
   const name = 'pluginID';
   const plugins = checkGK(gatekeepedPlugins)({
-    ...sampleBundledPluginDetails,
+    ...sampleInstalledPluginDetails,
     name,
     gatekeeper: 'TEST_FAILING_GK',
     version: '1.0.0',
@@ -134,15 +127,15 @@ test('requirePlugin returns null for invalid requires', async () => {
 });
 
 test('newest version of each plugin is used', () => {
-  const bundledPlugins: BundledPluginDetails[] = [
+  const sourcePlugins: InstalledPluginDetails[] = [
     {
-      ...sampleBundledPluginDetails,
+      ...sampleInstalledPluginDetails,
       id: 'TestPlugin1',
       name: 'flipper-plugin-test1',
       version: '0.1.0',
     },
     {
-      ...sampleBundledPluginDetails,
+      ...sampleInstalledPluginDetails,
       id: 'TestPlugin2',
       name: 'flipper-plugin-test2',
       version: '0.1.0-alpha.201',
@@ -167,7 +160,7 @@ test('newest version of each plugin is used', () => {
     },
   ];
   const filteredPlugins = getLatestCompatibleVersionOfEachPlugin(
-    [...bundledPlugins, ...installedPlugins],
+    [...sourcePlugins, ...installedPlugins],
     '0.1.0',
   );
   expect(filteredPlugins).toHaveLength(2);
@@ -180,7 +173,7 @@ test('newest version of each plugin is used', () => {
     entry: './test/index.js',
   });
   expect(filteredPlugins).toContainEqual({
-    ...sampleBundledPluginDetails,
+    ...sampleInstalledPluginDetails,
     id: 'TestPlugin2',
     name: 'flipper-plugin-test2',
     version: '0.1.0-alpha.201',

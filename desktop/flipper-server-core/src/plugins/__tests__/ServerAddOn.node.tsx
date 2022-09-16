@@ -11,12 +11,7 @@ import {ServerAddOnStartDetails, createControlledPromise} from 'flipper-common';
 import {loadServerAddOn} from '../loadServerAddOn';
 import {ServerAddOn} from '../ServerAddOn';
 import {ServerAddOnModuleToDesktopConnection} from '../ServerAddOnModuleToDesktopConnection';
-import {
-  detailsBundled,
-  detailsInstalled,
-  initialOwner,
-  pluginName,
-} from './utils';
+import {detailsInstalled, initialOwner, pluginName} from './utils';
 
 jest.mock('../loadServerAddOn');
 const loadServerAddOnMock = loadServerAddOn as jest.Mock;
@@ -67,10 +62,7 @@ describe('ServerAddOn', () => {
     };
   };
 
-  describe.each([
-    ['bundled', detailsBundled],
-    ['installed', detailsInstalled],
-  ])('%s', (_name, details) => {
+  describe.each([['installed', detailsInstalled]])('%s', (_name, details) => {
     test('stops the add-on when the initial owner is removed', async () => {
       const {serverAddOn, addOnCleanupMock} = await startServerAddOn(details);
 

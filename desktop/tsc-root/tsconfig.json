@@ -19,6 +19,9 @@
       "path": "../flipper-plugin"
     },
     {
+      "path": "../flipper-plugin-core"
+    },
+    {
       "path": "../flipper-server"
     },
     {

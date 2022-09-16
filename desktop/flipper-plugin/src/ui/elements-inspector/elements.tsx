@@ -16,8 +16,8 @@ import {theme} from '../theme';
 import {Layout} from '../Layout';
 import {
   getFlipperLib,
-  tryGetFlipperLibImplementation,
-} from '../../plugin/FlipperLib';
+  _tryGetFlipperLibImplementation,
+} from 'flipper-plugin-core';
 import {DownOutlined, RightOutlined} from '@ant-design/icons';
 
 const {Text} = Typography;
@@ -533,7 +533,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
   };
 
   isDarwin =
-    tryGetFlipperLibImplementation()?.environmentInfo.os.platform === 'darwin';
+    _tryGetFlipperLibImplementation()?.environmentInfo.os.platform === 'darwin';
 
   onKeyDown = (e: KeyboardEvent<any>) => {
     const {selected} = this.props;

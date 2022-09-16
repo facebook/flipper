@@ -9,9 +9,8 @@ package com.facebook.flipper.plugins.uidebugger.core
 
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
-import com.facebook.flipper.plugins.uidebugger.descriptors.Descriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.model.Node
 
 class LayoutTraversal(
@@ -19,7 +18,7 @@ class LayoutTraversal(
     val root: ApplicationRef
 ) {
 
-  internal inline fun Descriptor<*>.asAny(): Descriptor<Any> = this as Descriptor<Any>
+  internal inline fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
 
   /** Traverses the native android hierarchy */
   fun traverse(): List<Node> {
@@ -36,8 +35,7 @@ class LayoutTraversal(
 
         val descriptor = descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
 
-        val children = mutableListOf<Any>()
-        descriptor.getChildren(node, children)
+        val children = descriptor.getChildren(node)
 
         val childrenIds = mutableListOf<String>()
 
@@ -61,8 +59,7 @@ class LayoutTraversal(
               descriptorRegister.descriptorForClassUnsafe(activeChild.javaClass).getId(activeChild)
         }
 
-        val attributes = mutableMapOf<String, InspectableObject>()
-        descriptor.getData(node, attributes)
+        val attributes = descriptor.getData(node)
 
         result.add(
             Node(

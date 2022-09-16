@@ -18,6 +18,7 @@
     "@types/react-dom": "^17.0.13",
     "eventemitter3": "^4.0.7",
     "flipper-common": "0.0.0",
+    "flipper-plugin-core": "0.0.0",
     "immer": "^9.0.12",
     "js-base64": "^3.7.2",
     "lodash": "^4.17.21",

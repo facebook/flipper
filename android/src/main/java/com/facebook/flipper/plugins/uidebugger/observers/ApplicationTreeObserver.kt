@@ -7,16 +7,13 @@
 
 package com.facebook.flipper.plugins.uidebugger.observers
 
-import android.app.Activity
-import android.content.ContextWrapper
 import android.util.Log
 import android.view.View
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.SubtreeUpdate
 import com.facebook.flipper.plugins.uidebugger.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.core.Context
-import com.facebook.flipper.plugins.uidebugger.identityHashCode
+import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
 
 /**
  * responsible for observing the activity stack and managing the subscription to the top most
@@ -24,67 +21,30 @@ import com.facebook.flipper.plugins.uidebugger.identityHashCode
  */
 class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRef>() {
 
+  override val type = "Application"
+
   override fun subscribe(node: Any) {
-    Log.i(LogTag, "subscribing to application / activity changes")
+    Log.i(LogTag, "Subscribing activity / root view changes")
 
     val applicationRef = node as ApplicationRef
 
-    val addRemoveListener =
-        object : ApplicationRef.ActivityStackChangedListener {
+    val rootViewListener =
+        object : RootViewResolver.Listener {
+          override fun onRootViewAdded(rootView: View) {}
 
-          override fun onActivityAdded(activity: Activity, stack: List<Activity>) {
-            val start = System.currentTimeMillis()
-            val (nodes, skipped) = context.layoutTraversal.traverse(applicationRef)
-            val observer =
-                context.observerFactory.createObserver(activity.window.decorView, context)!!
-            observer.subscribe(activity.window.decorView)
-            children[activity.window.decorView.identityHashCode()] = observer
-            context.treeObserverManager.emit(
-                SubtreeUpdate("Application", nodes, start, System.currentTimeMillis()))
-            Log.i(
-                LogTag,
-                "Activity added,stack size ${stack.size} found ${nodes.size} skipped $skipped Listeners $children")
-          }
+          override fun onRootViewRemoved(rootView: View) {}
 
-          override fun onActivityStackChanged(stack: List<Activity>) {}
-
-          override fun onActivityDestroyed(activity: Activity, stack: List<Activity>) {
-            val start = System.currentTimeMillis()
-
-            val (nodes, skipped) = context.layoutTraversal.traverse(applicationRef)
-
-            val observer = children[activity.window.decorView.identityHashCode()]
-            children.remove(activity.window.decorView.identityHashCode())
-            observer?.cleanUpRecursive()
-
-            context.treeObserverManager.emit(
-                SubtreeUpdate("Application", nodes, start, System.currentTimeMillis()))
-
-            Log.i(
-                LogTag,
-                "Activity removed,stack size ${stack.size} found ${nodes.size} skipped $skipped Listeners $children")
+          override fun onRootViewsChanged(rootViews: List<View>) {
+            Log.i(LogTag, "Root views updated, num ${rootViews.size}")
+            traverseAndSend(context, applicationRef)
           }
         }
-
-    context.applicationRef.setActivityStackChangedListener(addRemoveListener)
+    context.applicationRef.rootsResolver.attachListener(rootViewListener)
+    // trigger a traversal on whatever roots we have now
+    rootViewListener.onRootViewsChanged(applicationRef.rootViews)
 
     Log.i(LogTag, "${context.applicationRef.rootViews.size} root views")
     Log.i(LogTag, "${context.applicationRef.activitiesStack.size} activities")
-
-    val stack = context.applicationRef.activitiesStack
-    for (activity in stack) {
-      addRemoveListener.onActivityAdded(activity, stack)
-    }
-  }
-  private fun getActivity(view: View): Activity? {
-    var context: android.content.Context? = view.context
-    while (context is ContextWrapper) {
-      if (context is Activity) {
-        return context
-      }
-      context = context.baseContext
-    }
-    return null
   }
 
   override fun unsubscribe() {

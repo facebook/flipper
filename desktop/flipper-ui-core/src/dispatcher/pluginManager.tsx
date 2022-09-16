@@ -160,6 +160,7 @@ async function processPluginCommandsQueue(
 
 async function loadPlugin(store: Store, payload: LoadPluginActionPayload) {
   try {
+    unloadPluginModule(payload.plugin);
     const plugin = await requirePlugin(payload.plugin);
     const enablePlugin = payload.enable;
     updatePlugin(store, {plugin, enablePlugin});
@@ -183,9 +184,7 @@ function uninstallPlugin(store: Store, {plugin}: UninstallPluginActionPayload) {
     clients.forEach((client) => {
       stopPlugin(client, plugin.id);
     });
-    if (!plugin.details.isBundled) {
-      unloadPluginModule(plugin.details);
-    }
+    unloadPluginModule(plugin.details);
     store.dispatch(pluginUninstalled(plugin.details));
   } catch (err) {
     console.error(
@@ -294,7 +293,6 @@ function updateClientPlugin(
         .connections.enabledPlugins[c.query.app]?.includes(plugin.id)
     );
   });
-  const previousVersion = store.getState().plugins.clientPlugins.get(plugin.id);
   clientsWithEnabledPlugin.forEach((client) => {
     stopPlugin(client, plugin.id);
   });
@@ -302,10 +300,6 @@ function updateClientPlugin(
     startPlugin(client, plugin, true);
   });
   store.dispatch(pluginLoaded(plugin));
-  if (previousVersion) {
-    // unload previous version from Electron cache
-    unloadPluginModule(previousVersion.details);
-  }
 }
 
 function updateDevicePlugin(
@@ -323,11 +317,6 @@ function updateDevicePlugin(
   devicesWithEnabledPlugin.forEach((d) => {
     d.unloadDevicePlugin(plugin.id);
   });
-  const previousVersion = store.getState().plugins.devicePlugins.get(plugin.id);
-  if (previousVersion) {
-    // unload previous version from Electron cache
-    unloadPluginModule(previousVersion.details);
-  }
   store.dispatch(pluginLoaded(plugin));
   devicesWithEnabledPlugin.forEach((d) => {
     d.loadDevicePlugin(plugin);
@@ -368,9 +357,5 @@ function stopPlugin(
 }
 
 function unloadPluginModule(plugin: ActivatablePluginDetails) {
-  if (plugin.isBundled) {
-    // We cannot unload bundled plugin.
-    return;
-  }
   getRenderHostInstance().unloadModule?.(plugin.entry);
 }

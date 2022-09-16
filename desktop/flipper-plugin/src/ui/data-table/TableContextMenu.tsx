@@ -19,10 +19,12 @@ import {
   Selection,
 } from './DataTableManager';
 import React from 'react';
-import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
+import {
+  _tryGetFlipperLibImplementation,
+  _DataSourceView,
+} from 'flipper-plugin-core';
 import {DataTableColumn} from './DataTable';
 import {toFirstUpper} from '../../utils/toFirstUpper';
-import {DataSourceView} from '../../data-source/index';
 import {renderColumnValue} from './TableRow';
 import {textContent} from '../../utils/textContent';
 import {theme} from '../theme';
@@ -31,7 +33,7 @@ const {Item, SubMenu} = Menu;
 const {Option} = Select;
 
 export function tableContextMenuFactory<T>(
-  dataView: DataSourceView<T, T[keyof T]>,
+  dataView: _DataSourceView<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   selection: Selection,
   highlightSearchSetting: SearchHighlightSetting,
@@ -45,7 +47,7 @@ export function tableContextMenuFactory<T>(
   onContextMenu?: (selection: undefined | T) => React.ReactElement,
   sideBySideOption?: React.ReactElement,
 ) {
-  const lib = tryGetFlipperLibImplementation();
+  const lib = _tryGetFlipperLibImplementation();
   if (!lib) {
     return (
       <Menu>

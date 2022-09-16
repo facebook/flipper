@@ -7,7 +7,6 @@
  * @format
  */
 
-import {message} from 'antd';
 import EventEmitter from 'eventemitter3';
 import {SandyPluginDefinition} from './SandyPluginDefinition';
 import {MenuEntry, NormalizedMenuEntry, normalizeMenuEntry} from './MenuEntry';
@@ -312,7 +311,7 @@ export abstract class BasePluginInstance {
           // msg is already specific
           // eslint-disable-next-line
           console.error(msg, e);
-          message.error(msg);
+          this.events.emit('error', msg);
         }
       }
       this.initialStates = undefined;
@@ -325,7 +324,7 @@ export abstract class BasePluginInstance {
       // msg is already specific
       // eslint-disable-next-line
       console.error(msg, e);
-      message.error(msg);
+      this.events.emit('error', msg);
     }
   }
 
@@ -548,9 +547,7 @@ export abstract class BasePluginInstance {
       this.serverAddOnControls
         .start(
           pluginDetails.name,
-          pluginDetails.isBundled
-            ? {isBundled: true}
-            : {path: pluginDetails.serverAddOnEntry!},
+          {path: pluginDetails.serverAddOnEntry!},
           this.serverAddOnOwner,
         )
         .then(() => {

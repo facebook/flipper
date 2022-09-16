@@ -8,9 +8,10 @@
  */
 
 import * as React from 'react';
-import {PluginClient} from '../plugin/Plugin';
+import {PluginClient} from 'flipper-plugin-core';
 import {usePlugin} from '../plugin/PluginContext';
-import {createState, useValue} from '../state/atom';
+import {useValue} from '../state/atom';
+import {createState} from 'flipper-plugin-core';
 
 type Events = {
   inc: {

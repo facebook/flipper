@@ -172,7 +172,6 @@ export async function initializeElectron(
     restartFlipper(update: boolean = false) {
       restart(update);
     },
-    loadDefaultPlugins: getDefaultPluginsIndex,
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
@@ -206,10 +205,4 @@ export async function initializeElectron(
       return getCPUUsage().percentCPUUsage;
     },
   } as RenderHost;
-}
-
-function getDefaultPluginsIndex() {
-  // eslint-disable-next-line import/no-unresolved
-  const index = require('../defaultPlugins');
-  return index.default || index;
 }

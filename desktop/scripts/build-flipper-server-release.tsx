@@ -16,10 +16,15 @@ import {
   genMercurialRevision,
   getVersionNumber,
   prepareDefaultPlugins,
-  prepareHeadlessPlugins,
   moveServerSourceMaps,
 } from './build-utils';
-import {defaultPluginsDir, distDir, serverDir, staticDir} from './paths';
+import {
+  defaultPluginsDir,
+  distDir,
+  serverDir,
+  staticDir,
+  rootDir,
+} from './paths';
 import isFB from './isFB';
 import yargs from 'yargs';
 import fs from 'fs-extra';
@@ -41,12 +46,6 @@ const argv = yargs
   .usage('yarn build-flipper-server [args]')
   .version(false)
   .options({
-    'default-plugins': {
-      describe:
-        'Enables embedding of default plugins into Flipper package so they are always available. The flag is enabled by default. Env var FLIPPER_NO_DEFAULT_PLUGINS is equivalent to the command-line option "--no-default-plugins".',
-      type: 'boolean',
-      default: true,
-    },
     'public-build': {
       describe:
         '[FB-internal only] Will force using public sources only, to be able to iterate quickly on the public version. If sources are checked out from GitHub this is already the default. Setting env var "FLIPPER_FORCE_PUBLIC_BUILD" is equivalent.',
@@ -93,12 +92,6 @@ const argv = yargs
       choices: ['stable', 'insiders'],
       default: 'stable',
     },
-    'bundled-plugins': {
-      describe:
-        'Enables bundling of plugins into Flipper bundle. Env var FLIPPER_NO_BUNDLED_PLUGINS is equivalent to the command-line option "--no-bundled-plugins".',
-      type: 'boolean',
-      default: false,
-    },
     'default-plugins-dir': {
       describe:
         'Directory with prepared list of default plugins which will be included into the Flipper distribution as "defaultPlugins" dir',
@@ -113,6 +106,13 @@ const argv = yargs
       description:
         'Unique build identifier to be used as the version patch part for the build',
       type: 'number',
+    },
+    // On intern we ship flipper-server with node_modules (no big internet behind the firewall). yarn.lock makes sure that a CI that builds flipper-server installs the same dependencies all the time.
+    'generate-lock': {
+      describe:
+        'Generate a new yarn.lock file for flipper-server prod build. It is used for reproducible builds of the final artifact for the intern.',
+      type: 'boolean',
+      default: false,
     },
     mac: {
       describe: 'Build a platform-specific bundle for MacOS.',
@@ -137,24 +137,6 @@ if (isFB) {
 
 process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
 
-if (argv['bundled-plugins'] === false) {
-  process.env.FLIPPER_NO_BUNDLED_PLUGINS = 'true';
-} else if (argv['bundled-plugins'] === true) {
-  delete process.env.FLIPPER_NO_BUNDLED_PLUGINS;
-}
-
-if (argv['default-plugins'] === true) {
-  delete process.env.FLIPPER_NO_DEFAULT_PLUGINS;
-} else if (argv['default-plugins'] === false) {
-  process.env.FLIPPER_NO_DEFAULT_PLUGINS = 'true';
-}
-// Don't rebuild default plugins, mostly to speed up testing
-if (argv['rebuild-plugins'] === false) {
-  process.env.FLIPPER_NO_REBUILD_PLUGINS = 'true';
-} else if (argv['rebuild-plugins'] === true) {
-  delete process.env.FLIPPER_NO_REBUILD_PLUGINS;
-}
-
 if (argv['default-plugins-dir']) {
   process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];
 }
@@ -170,10 +152,6 @@ if (argv['public-build'] === true) {
 
 if (argv['enabled-plugins'] !== undefined) {
   process.env.FLIPPER_ENABLED_PLUGINS = argv['enabled-plugins'].join(',');
-}
-
-if (argv['default-plugins-dir']) {
-  process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];
 }
 
 async function copyStaticResources(outDir: string, versionNumber: string) {
@@ -217,7 +195,7 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
   console.log(`⚙️  Copying package resources...`);
 
   // static folder, without the things that are only for Electron
-  const packageFilesToCopy = ['README.md', 'package.json', 'server.js', 'dist'];
+  const packageFilesToCopy = ['README.md', 'server.js', 'lib'];
 
   await Promise.all(
     packageFilesToCopy.map((e) =>
@@ -254,7 +232,44 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
   console.log('✅  Copied static resources.');
 }
 
-async function modifyPackageManifest(
+async function linkLocalDeps(buildFolder: string) {
+  // eslint-disable-next-line no-console
+  console.log('Creating package.json manifest to link local deps');
+  const manifest = await fs.readJSON(path.resolve(serverDir, 'package.json'));
+
+  const resolutions = {
+    'flipper-doctor': `file:${rootDir}/doctor`,
+    'flipper-common': `file:${rootDir}/flipper-common`,
+    'flipper-frontend-core': `file:${rootDir}/flipper-frontend-core`,
+    'flipper-plugin-core': `file:${rootDir}/flipper-plugin-core`,
+    'flipper-server-companion': `file:${rootDir}/flipper-server-companion`,
+    'flipper-server-core': `file:${rootDir}/flipper-server-core`,
+    'flipper-pkg-lib': `file:${rootDir}/pkg-lib`,
+    'flipper-plugin-lib': `file:${rootDir}/plugin-lib`,
+  };
+  manifest.resolutions = resolutions;
+
+  for (const depName of Object.keys(manifest.dependencies)) {
+    if (depName in resolutions) {
+      manifest.dependencies[depName] =
+        resolutions[depName as keyof typeof resolutions];
+    }
+  }
+
+  delete manifest.scripts;
+  delete manifest.devDependencies;
+
+  await fs.writeFile(
+    path.join(buildFolder, 'package.json'),
+    JSON.stringify(manifest, null, '  '),
+  );
+
+  await yarnInstall(buildFolder);
+
+  console.log('✅ Linked local deps');
+}
+
+async function modifyPackageManifestForPublishing(
   buildFolder: string,
   versionNumber: string,
   hgRevision: string | null,
@@ -262,8 +277,7 @@ async function modifyPackageManifest(
 ) {
   // eslint-disable-next-line no-console
   console.log('Creating package.json manifest');
-  // eslint-disable-next-line flipper/no-relative-imports-across-packages
-  const manifest = require('../flipper-server/package.json');
+  const manifest = await fs.readJSON(path.resolve(serverDir, 'package.json'));
 
   manifest.version = versionNumber;
   manifest.private = false; // make this package npm-publishable
@@ -274,6 +288,15 @@ async function modifyPackageManifest(
   // not needed in public builds
   delete manifest.scripts;
   delete manifest.devDependencies;
+
+  // update local monorepo dependencies' versions
+  // we will need them for npx to work
+  for (const depName of Object.keys(manifest.dependencies)) {
+    if (depName.startsWith('flipper')) {
+      manifest.dependencies[depName] = versionNumber;
+    }
+  }
+
   await fs.writeFile(
     path.join(buildFolder, 'package.json'),
     JSON.stringify(manifest, null, '  '),
@@ -314,7 +337,6 @@ async function runPostBuildAction(archive: string, dir: string) {
     );
   } else if (argv.start) {
     console.log(`⚙️  Starting flipper-server from build dir`);
-    await yarnInstall(dir);
     await spawn(
       './server.js',
       [argv.open ? '--open' : '--no-open', argv.tcp ? '--tcp' : '--no-tcp'],
@@ -327,10 +349,40 @@ async function runPostBuildAction(archive: string, dir: string) {
 }
 
 async function yarnInstall(dir: string) {
-  console.log(`⚙️  Running yarn install in ${dir}`);
-  await spawn('yarn', ['install', '--production', '--no-lockfile'], {
-    cwd: dir,
-  });
+  console.log(
+    `⚙️  Running yarn install in ${dir}. package.json: ${await fs.readFile(
+      path.resolve(dir, 'package.json'),
+    )}`,
+  );
+
+  if (!argv['generate-lock']) {
+    await fs.copyFile(
+      path.resolve(rootDir, 'yarn.flipper-server.lock'),
+      path.resolve(dir, 'yarn.lock'),
+    );
+  }
+
+  await spawn(
+    'yarn',
+    [
+      'install',
+      '--production',
+      ...(process.env.SANDCASTLE ? ['--offline'] : []),
+    ],
+    {
+      cwd: dir,
+      stdio: 'inherit',
+    },
+  );
+
+  if (argv['generate-lock']) {
+    await fs.copyFile(
+      path.resolve(dir, 'yarn.lock'),
+      path.resolve(rootDir, 'yarn.flipper-server.lock'),
+    );
+  }
+
+  await fs.rm(path.resolve(dir, 'yarn.lock'));
 }
 
 async function buildServerRelease() {
@@ -352,14 +404,19 @@ async function buildServerRelease() {
   // create plugin output dir
   await fs.mkdirp(path.join(dir, 'static', 'defaultPlugins'));
 
-  await compileServerMain(false);
   await prepareDefaultPlugins(argv.channel === 'insiders');
-  await prepareHeadlessPlugins();
+  await compileServerMain(false);
   await copyStaticResources(dir, versionNumber);
+  await linkLocalDeps(dir);
   await downloadIcons(path.join(dir, 'static'));
   await buildBrowserBundle(path.join(dir, 'static'), false);
   await moveServerSourceMaps(dir, argv['source-map-dir']);
-  await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
+  await modifyPackageManifestForPublishing(
+    dir,
+    versionNumber,
+    hgRevision,
+    argv.channel,
+  );
   const archive = await packNpmArchive(dir, versionNumber);
   await runPostBuildAction(archive, dir);
 
@@ -375,9 +432,6 @@ async function buildServerRelease() {
     platforms.push(BuildPlatform.WINDOWS);
   }
 
-  if (platforms.length > 0) {
-    await yarnInstall(dir);
-  }
   platforms.forEach(
     bundleServerReleaseForPlatform.bind(null, dir, versionNumber),
   );

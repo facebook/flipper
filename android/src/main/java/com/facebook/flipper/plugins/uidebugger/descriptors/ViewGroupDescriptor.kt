@@ -18,20 +18,20 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.stetho.FragmentCompat
 
-object ViewGroupDescriptor : AbstractChainedDescriptor<ViewGroup>() {
+object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
 
-  override fun onGetId(viewGroup: ViewGroup): String {
-    return Integer.toString(System.identityHashCode(viewGroup))
+  override fun onGetId(node: ViewGroup): String {
+    return System.identityHashCode(node).toString()
   }
 
-  override fun onGetName(viewGroup: ViewGroup): String {
-    return viewGroup.javaClass.simpleName
+  override fun onGetName(node: ViewGroup): String {
+    return node.javaClass.simpleName
   }
 
-  override fun onGetChildren(viewGroup: ViewGroup, children: MutableList<Any>) {
-    val count = viewGroup.childCount - 1
+  override fun onGetChildren(node: ViewGroup, children: MutableList<Any>) {
+    val count = node.childCount - 1
     for (i in 0..count) {
-      val child: View = viewGroup.getChildAt(i)
+      val child: View = node.getChildAt(i)
       val fragment = getAttachedFragmentForView(child)
       if (fragment != null && !FragmentCompat.isDialogFragment(fragment)) {
         children.add(fragment)
@@ -40,25 +40,20 @@ object ViewGroupDescriptor : AbstractChainedDescriptor<ViewGroup>() {
   }
 
   override fun onGetData(
-      viewGroup: ViewGroup,
-      attributeSections: MutableMap<String, InspectableObject>
+      node: ViewGroup,
+      attributeSections: MutableMap<SectionName, InspectableObject>
   ) {
     val viewGroupAttrs = mutableMapOf<String, Inspectable>()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      viewGroupAttrs.put(
-          "LayoutMode", LayoutModeMapping.toInspectable(viewGroup.getLayoutMode(), true))
-      viewGroupAttrs.put(
-          "ClipChildren",
-          InspectableValue.Boolean(viewGroup.getClipChildren(), true),
-      )
+      viewGroupAttrs["LayoutMode"] = LayoutModeMapping.toInspectable(node.layoutMode, true)
+      viewGroupAttrs["ClipChildren"] = InspectableValue.Boolean(node.clipChildren, true)
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      viewGroupAttrs.put(
-          "ClipToPadding", InspectableValue.Boolean(viewGroup.getClipToPadding(), true))
+      viewGroupAttrs["ClipToPadding"] = InspectableValue.Boolean(node.clipToPadding, true)
     }
 
-    attributeSections.put("ViewGroup", InspectableObject(viewGroupAttrs))
+    attributeSections["ViewGroup"] = InspectableObject(viewGroupAttrs)
   }
 
   private val LayoutModeMapping: EnumMapping<Int> =

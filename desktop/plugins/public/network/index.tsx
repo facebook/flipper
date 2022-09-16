@@ -57,7 +57,6 @@ import {
   decodeBody,
 } from './utils';
 import RequestDetails from './RequestDetails';
-import {URL} from 'url';
 import {assembleChunksIfResponseIsComplete} from './chunks';
 import {DeleteOutlined} from '@ant-design/icons';
 import {ManageMockResponsePanel} from './request-mocking/ManageMockResponsePanel';

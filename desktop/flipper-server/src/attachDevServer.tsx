@@ -15,6 +15,7 @@ import fs from 'fs-extra';
 import {WebSocketServer} from 'ws';
 import pFilter from 'p-filter';
 import {homedir} from 'os';
+import {InstalledPluginDetails} from 'flipper-common';
 
 // This file is heavily inspired by scripts/start-dev-server.ts!
 // part of that is done by start-flipper-server-dev (compiling "main"),
@@ -23,19 +24,15 @@ import {homedir} from 'os';
 const uiSourceDirs = [
   'flipper-ui-browser',
   'flipper-ui-core',
+  'flipper-plugin-core',
   'flipper-plugin',
+  'flipper-frontend-core',
   'flipper-common',
 ];
 
 // copied from plugin-lib/src/pluginPaths
 export async function getPluginSourceFolders(): Promise<string[]> {
   const pluginFolders: string[] = [];
-  if (process.env.FLIPPER_NO_DEFAULT_PLUGINS) {
-    console.log(
-      '🥫  Skipping default plugins because "--no-default-plugins" flag provided',
-    );
-    return pluginFolders;
-  }
   const flipperConfigPath = path.join(homedir(), '.flipper', 'config.json');
   if (await fs.pathExists(flipperConfigPath)) {
     const config = await fs.readJson(flipperConfigPath);
@@ -65,7 +62,8 @@ export async function attachDevServer(
   // prevent bundling!
   const Metro = electronRequire('metro');
   const MetroResolver = electronRequire('metro-resolver');
-  const {getWatchFolders} = electronRequire('flipper-pkg-lib');
+  const {getWatchFolders, startWatchPlugins} =
+    electronRequire('flipper-pkg-lib');
 
   const babelTransformationsDir = path.resolve(
     rootDir,
@@ -90,7 +88,6 @@ export async function attachDevServer(
         uiSourceDirs.map((dir) => getWatchFolders(path.resolve(rootDir, dir))),
       )
     ).flat(),
-    ...(await getPluginSourceFolders()),
   ]);
 
   const baseConfig = await Metro.loadConfig();
@@ -152,6 +149,17 @@ export async function attachDevServer(
       );
     });
     next();
+  });
+
+  await startWatchPlugins((changedPlugins: InstalledPluginDetails[]) => {
+    socket.clients.forEach((client) => {
+      client.send(
+        JSON.stringify({
+          event: 'plugins-source-updated',
+          payload: changedPlugins,
+        }),
+      );
+    });
   });
 
   console.log('DEV webserver started.');

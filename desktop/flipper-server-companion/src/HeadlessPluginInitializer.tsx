@@ -7,17 +7,13 @@
  * @format
  */
 
-import {
-  ActivatablePluginDetails,
-  BundledPluginDetails,
-  InstalledPluginDetails,
-} from 'flipper-common';
+import {ActivatablePluginDetails, InstalledPluginDetails} from 'flipper-common';
 import {
   AbstractPluginInitializer,
   getRenderHostInstance,
   isSandyPlugin,
 } from 'flipper-frontend-core';
-import {_SandyPluginDefinition} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin-core';
 
 export class HeadlessPluginInitializer extends AbstractPluginInitializer {
   protected async getFlipperVersion() {
@@ -30,9 +26,9 @@ export class HeadlessPluginInitializer extends AbstractPluginInitializer {
   protected async requirePluginImpl(
     pluginDetails: ActivatablePluginDetails,
   ): Promise<_SandyPluginDefinition> {
-    const plugin = pluginDetails.isBundled
-      ? this.defaultPluginsIndex[pluginDetails.name]
-      : await getRenderHostInstance().requirePlugin(pluginDetails.entry);
+    const plugin = await getRenderHostInstance().requirePlugin(
+      pluginDetails.entry,
+    );
     if (!plugin) {
       throw new Error(
         `Failed to obtain plugin source for: ${pluginDetails.name}`,
@@ -42,7 +38,7 @@ export class HeadlessPluginInitializer extends AbstractPluginInitializer {
   }
 
   protected async filterAllLocalVersions(
-    allLocalVersions: (BundledPluginDetails | InstalledPluginDetails)[],
+    allLocalVersions: InstalledPluginDetails[],
   ): Promise<ActivatablePluginDetails[]> {
     const pluginsToLoad = await super.filterAllLocalVersions(allLocalVersions);
     return pluginsToLoad

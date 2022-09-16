@@ -23,6 +23,7 @@ export {
 export * from './server-types';
 export * from './companion-types';
 export * from './ServerAddOn';
+export * from './plugin-external-modules';
 export {sleep} from './utils/sleep';
 export {timeout} from './utils/timeout';
 export {isTest} from './utils/isTest';

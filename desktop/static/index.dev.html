@@ -68,6 +68,13 @@
         suppressErrors = true;
       });
 
+      socket.on('plugins-source-updated', (pluginsChanged) => {
+        window.postMessage({
+          type: 'plugins-source-updated',
+          data: pluginsChanged
+        })
+      })
+
       function openError(text) {
         if (suppressErrors) {
           return;

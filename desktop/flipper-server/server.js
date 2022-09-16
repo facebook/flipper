@@ -8,9 +8,5 @@
  * @format
  */
 
-/* eslint-disable */
-
-// flipper-server uses the same infra & babel transforms as Electron
-// to make sure our own sources are bundled up, but node modules arent
-global.electronRequire = require;
-require('./dist/index.js');
+// eslint-disable-next-line import/no-unresolved
+require('./lib/index.js');

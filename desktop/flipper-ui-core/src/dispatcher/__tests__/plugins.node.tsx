@@ -38,12 +38,8 @@ const sampleInstalledPluginDetails: InstalledPluginDetails = {
   title: 'Sample',
   dir: '/Users/mock/.flipper/thirdparty/flipper-plugin-sample',
   entry: 'this/path/does not/exist',
-  isBundled: false,
   isActivatable: true,
 };
-
-// bind to empty default plugin index so we try fetching from flipper-server every time
-const requirePlugin = requirePluginInternal.bind({}, {});
 
 beforeEach(() => {
   loadDynamicPluginsMock = getRenderHostInstance().flipperServer.exec =
@@ -58,7 +54,7 @@ test('dispatcher dispatches REGISTER_PLUGINS', async () => {
 });
 
 test('requirePluginInternal returns null for invalid requires', async () => {
-  const requireFn = createRequirePluginFunction(requirePlugin)([]);
+  const requireFn = createRequirePluginFunction(requirePluginInternal)([]);
   const plugin = await requireFn({
     ...sampleInstalledPluginDetails,
     name: 'pluginID',
@@ -72,7 +68,7 @@ test('requirePluginInternal returns null for invalid requires', async () => {
 
 test('requirePluginInternal loads plugin', async () => {
   const name = 'pluginID';
-  const requireFn = createRequirePluginFunction(requirePlugin)([]);
+  const requireFn = createRequirePluginFunction(requirePluginInternal)([]);
   const plugin = await requireFn({
     ...sampleInstalledPluginDetails,
     name,
@@ -94,7 +90,7 @@ test('requirePluginInternal loads plugin', async () => {
 
 test('requirePluginInternal loads valid Sandy plugin', async () => {
   const name = 'pluginID';
-  const requireFn = createRequirePluginFunction(requirePlugin)([]);
+  const requireFn = createRequirePluginFunction(requirePluginInternal)([]);
   const plugin = (await requireFn({
     ...sampleInstalledPluginDetails,
     name,
@@ -115,7 +111,6 @@ test('requirePluginInternal loads valid Sandy plugin', async () => {
   expect(plugin.details).toMatchObject({
     flipperSDKVersion: '0.0.0',
     id: 'Sample',
-    isBundled: false,
     main: 'dist/bundle.js',
     name: 'pluginID',
     source: 'src/index.js',
@@ -132,7 +127,9 @@ test('requirePluginInternal loads valid Sandy plugin', async () => {
 test('requirePluginInternal errors on invalid Sandy plugin', async () => {
   const name = 'pluginID';
   const failedPlugins: any[] = [];
-  const requireFn = createRequirePluginFunction(requirePlugin)(failedPlugins);
+  const requireFn = createRequirePluginFunction(requirePluginInternal)(
+    failedPlugins,
+  );
   await requireFn({
     ...sampleInstalledPluginDetails,
     name,
@@ -149,7 +146,7 @@ test('requirePluginInternal errors on invalid Sandy plugin', async () => {
 
 test('requirePluginInternal loads valid Sandy Device plugin', async () => {
   const name = 'pluginID';
-  const requireFn = createRequirePluginFunction(requirePlugin)([]);
+  const requireFn = createRequirePluginFunction(requirePluginInternal)([]);
   const plugin = (await requireFn({
     ...sampleInstalledPluginDetails,
     pluginType: 'device',
@@ -171,7 +168,6 @@ test('requirePluginInternal loads valid Sandy Device plugin', async () => {
   expect(plugin.details).toMatchObject({
     flipperSDKVersion: '0.0.0',
     id: 'Sample',
-    isBundled: false,
     main: 'dist/bundle.js',
     name: 'pluginID',
     source: 'src/index.js',

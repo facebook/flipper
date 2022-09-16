@@ -12,12 +12,7 @@ import {loadServerAddOn} from '../loadServerAddOn';
 import {PluginManager} from '../PluginManager';
 import {ServerAddOnManager} from '../ServerAddManager';
 import {ServerAddOnModuleToDesktopConnection} from '../ServerAddOnModuleToDesktopConnection';
-import {
-  detailsBundled,
-  detailsInstalled,
-  initialOwner,
-  pluginName,
-} from './utils';
+import {detailsInstalled, initialOwner, pluginName} from './utils';
 
 jest.mock('../loadServerAddOn');
 const loadServerAddOnMock = loadServerAddOn as jest.Mock;
@@ -70,10 +65,7 @@ describe('PluginManager', () => {
       };
     };
 
-    describe.each([
-      ['bundled', detailsBundled],
-      ['installed', detailsInstalled],
-    ])('%s', (_name, details) => {
+    describe.each([['installed', detailsInstalled]])('%s', (_name, details) => {
       test('stops the add-on when the initial owner is removed', async () => {
         const {pluginManager, addOnCleanupMock} = await startServerAddOn(
           details,

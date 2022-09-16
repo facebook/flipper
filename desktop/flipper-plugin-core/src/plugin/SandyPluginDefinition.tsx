@@ -128,10 +128,6 @@ export class SandyPluginDefinition {
     return this.details.version;
   }
 
-  get isBundled() {
-    return this.details.isBundled;
-  }
-
   get keyboardActions() {
     // TODO: T68882551 support keyboard actions
     return [];

@@ -13,7 +13,7 @@
       "path": "../flipper-frontend-core"
     },
     {
-      "path": "../flipper-plugin"
+      "path": "../flipper-plugin-core"
     }
   ]
 }

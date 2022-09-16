@@ -170,6 +170,15 @@ export function bodyAsBinary(
   return undefined;
 }
 
+export const queryToObj = (query: string) => {
+  const params = new URLSearchParams(query);
+  const obj: Record<string, any> = {};
+  params.forEach((value, key) => {
+    obj[key] = value;
+  });
+  return obj;
+};
+
 function escapeCharacter(x: string) {
   const code = x.charCodeAt(0);
   return code < 16 ? '\\u0' + code.toString(16) : '\\u' + code.toString(16);

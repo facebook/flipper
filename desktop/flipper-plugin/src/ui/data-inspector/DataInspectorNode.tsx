@@ -26,8 +26,8 @@ import {getSortedKeys} from './utils';
 import React from 'react';
 import {useHighlighter, HighlightManager} from '../Highlight';
 import {Dropdown, Menu, Tooltip} from 'antd';
-import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
-import {safeStringify} from '../../utils/safeStringify';
+import {_tryGetFlipperLibImplementation} from 'flipper-plugin-core';
+import {safeStringify} from 'flipper-plugin-core';
 import {useInUnitTest} from '../../utils/useInUnitTest';
 import {theme} from '../theme';
 
@@ -615,7 +615,7 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
     }
 
     function getContextMenu() {
-      const lib = tryGetFlipperLibImplementation();
+      const lib = _tryGetFlipperLibImplementation();
       const extraItems = additionalContextMenuItems
         ? [
             additionalContextMenuItems(parentPath, value, name),

@@ -20,12 +20,7 @@ import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import {hostname} from 'os';
-import {
-  compileMain,
-  prepareDefaultPlugins,
-  prepareHeadlessPlugins,
-} from './build-utils';
-import Watchman from './watchman';
+import {compileMain, prepareDefaultPlugins} from './build-utils';
 // @ts-ignore no typings for metro
 import Metro from 'metro';
 import {staticDir, babelTransformationsDir, rootDir} from './paths';
@@ -33,27 +28,12 @@ import isFB from './isFB';
 import getAppWatchFolders from './get-app-watch-folders';
 import {getPluginSourceFolders} from 'flipper-plugin-lib';
 import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
-import startWatchPlugins from './startWatchPlugins';
 import yargs from 'yargs';
+import {startWatchPlugins, Watchman} from 'flipper-pkg-lib';
 
 const argv = yargs
   .usage('yarn start [args]')
   .options({
-    'default-plugins': {
-      describe:
-        'Enables embedding of default plugins into Flipper package so they are always available. The flag is enabled by default. Env var FLIPPER_NO_DEFAULT_PLUGINS is equivalent to the command-line option "--no-default-plugins".',
-      type: 'boolean',
-    },
-    'bundled-plugins': {
-      describe:
-        'Enables bundling of plugins into Flipper bundle. This is useful for debugging, because it makes Flipper dev mode loading faster and unblocks fast refresh. The flag is enabled by default. Env var FLIPPER_NO_BUNDLED_PLUGINS is equivalent to the command-line option "--no-bundled-plugins".',
-      type: 'boolean',
-    },
-    'rebuild-plugins': {
-      describe:
-        'Enables rebuilding of default plugins on Flipper build. Only make sense in conjunction with "--no-bundled-plugins". Enabled by default, but if disabled using "--no-plugin-rebuild", then plugins are just released as is without rebuilding. This can save some time if you know plugin bundles are already up-to-date.',
-      type: 'boolean',
-    },
     'fast-refresh': {
       describe:
         'Enable Fast Refresh - quick reload of UI component changes without restarting Flipper. The flag is disabled by default. Env var FLIPPER_FAST_REFRESH is equivalent to the command-line option "--fast-refresh".',
@@ -123,24 +103,6 @@ let shutdownElectron: (() => void) | undefined = undefined;
 
 if (isFB) {
   process.env.FLIPPER_FB = 'true';
-}
-
-if (argv['default-plugins'] === true) {
-  delete process.env.FLIPPER_NO_DEFAULT_PLUGINS;
-} else if (argv['default-plugins'] === false) {
-  process.env.FLIPPER_NO_DEFAULT_PLUGINS = 'true';
-}
-
-if (argv['bundled-plugins'] === true) {
-  delete process.env.FLIPPER_NO_BUNDLED_PLUGINS;
-} else if (argv['bundled-plugins'] === false) {
-  process.env.FLIPPER_NO_BUNDLED_PLUGINS = 'true';
-}
-
-if (argv['rebuild-plugins'] === false) {
-  process.env.FLIPPER_NO_REBUILD_PLUGINS = 'true';
-} else if (argv['rebuild-plugins'] === true) {
-  delete process.env.FLIPPER_NO_REBUILD_PLUGINS;
 }
 
 if (argv['fast-refresh'] === true) {
@@ -348,11 +310,14 @@ async function startWatchChanges(io: socketIo.Server) {
     await Promise.all(
       [
         'app',
-        'pkg',
         'doctor',
+        'pkg-lib',
         'plugin-lib',
-        'flipper-plugin',
         'flipper-common',
+        'flipper-frontend-core',
+        'flipper-plugin',
+        'flipper-plugin-core',
+        'flipper-server-core',
         'flipper-ui-core',
       ].map((dir) =>
         watchman.startWatchFiles(
@@ -366,9 +331,6 @@ async function startWatchChanges(io: socketIo.Server) {
         ),
       ),
     );
-    await startWatchPlugins(() => {
-      io.emit('refresh');
-    });
   } catch (err) {
     console.error(
       'Failed to start watching for changes using Watchman, continue without hot reloading',
@@ -445,7 +407,6 @@ function checkDevServer() {
   await prepareDefaultPlugins(
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
   );
-  await prepareHeadlessPlugins();
   await ensurePluginFoldersWatchable();
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);
@@ -453,6 +414,9 @@ function checkDevServer() {
   await startMetroServer(app, server);
   outputScreen(socket);
   await compileMain();
+  await startWatchPlugins((changedPlugins) => {
+    socket.emit('plugins-source-updated', changedPlugins);
+  });
   if (dotenv && dotenv.parsed) {
     console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
   }

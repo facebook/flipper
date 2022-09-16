@@ -52,7 +52,6 @@ export function initializeRenderHost(
         'Flipper settings have changed, please restart flipper server for the changes to take effect',
       );
     },
-    loadDefaultPlugins: getDefaultPluginsIndex,
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
@@ -86,11 +85,4 @@ export function initializeRenderHost(
       return url;
     },
   } as RenderHost;
-}
-
-function getDefaultPluginsIndex() {
-  // @ts-ignore
-  // eslint-disable-next-line import/no-unresolved
-  const index = require('./defaultPlugins');
-  return index.default || index;
 }

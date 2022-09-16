@@ -7,6 +7,8 @@
  * @format
  */
 
+import './fb-stubs';
+import './electronRequire';
 import process from 'process';
 import chalk from 'chalk';
 import path from 'path';

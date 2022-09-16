@@ -7,7 +7,7 @@
  * @format
  */
 
-import {DeviceLogEntry} from 'flipper-plugin';
+import {DeviceLogEntry} from 'flipper-plugin-core';
 import {parseAndroidCrash, shouldParseAndroidLog} from '../AndroidCrashUtils';
 
 function getAndroidLog(

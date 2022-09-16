@@ -57,6 +57,7 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
             PerfStatsEvent.serializer(),
             PerfStatsEvent(
                 result.txId,
+                "FullScan",
                 result.scanStart,
                 result.scanEnd,
                 result.scanEnd,

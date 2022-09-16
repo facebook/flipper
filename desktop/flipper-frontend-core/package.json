@@ -1,6 +1,5 @@
 {
   "name": "flipper-frontend-core",
-  "private": true,
   "version": "0.0.0",
   "description": "Exposes core functionality for Flipper frontends: Flipper Electron, Flipper Browser UI, Flipper Server Companion.",
   "repository": "facebook/flipper",
@@ -12,7 +11,7 @@
   "dependencies": {
     "eventemitter3": "^4.0.7",
     "flipper-common": "0.0.0",
-    "flipper-plugin": "0.0.0",
+    "flipper-plugin-core": "0.0.0",
     "immer": "^9.0.12",
     "js-base64": "^3.7.2",
     "p-map": "^4.0.0",

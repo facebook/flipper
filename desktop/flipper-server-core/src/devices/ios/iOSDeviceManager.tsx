@@ -103,6 +103,7 @@ export class IOSDeviceManager {
       this.flipperServer
         .getDevices()
         .filter((device) => device.info.os === 'iOS')
+        .filter((device) => device.info.deviceType !== 'dummy')
         .map((device) => device.serial),
     );
     console.debug(

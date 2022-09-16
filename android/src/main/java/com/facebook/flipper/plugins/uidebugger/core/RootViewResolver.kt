@@ -14,7 +14,6 @@ import java.lang.reflect.Field
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Modifier
 import java.util.ArrayList
-import java.util.List
 
 /**
  * Provides access to all root views in an application.
@@ -35,32 +34,32 @@ class RootViewResolver {
   private var viewsField: Field? = null
   private var paramsField: Field? = null
 
-  class RootView(val view: View, val param: WindowManager.LayoutParams)
+  class RootView(val view: View, val param: WindowManager.LayoutParams?)
   interface Listener {
     fun onRootViewAdded(rootView: View)
     fun onRootViewRemoved(rootView: View)
-    fun onRootViewsChanged(rootView: List<View>)
+    fun onRootViewsChanged(rootViews: List<View>)
   }
 
-  class ObservableArrayList() : ArrayList<View>() {
+  class ObservableArrayList : ArrayList<View>() {
     private var listener: Listener? = null
     fun setListener(listener: Listener?) {
       this.listener = listener
     }
 
-    override fun add(value: View): Boolean {
-      val ret = super.add(value)
+    override fun add(element: View): Boolean {
+      val ret = super.add(element)
       listener?.let { l ->
-        l.onRootViewAdded(value)
+        l.onRootViewAdded(element)
         l.onRootViewsChanged(this as List<View>)
       }
       return ret
     }
 
-    override fun remove(value: View): Boolean {
-      val ret = super.remove(value)
+    override fun remove(element: View): Boolean {
+      val ret = super.remove(element)
       listener?.let { l ->
-        l.onRootViewRemoved(value)
+        l.onRootViewRemoved(element)
         l.onRootViewsChanged(this as List<View>)
       }
 
@@ -128,7 +127,7 @@ class RootViewResolver {
       viewsField?.let { field ->
         if (Build.VERSION.SDK_INT < 19) {
           val arr = field[windowManagerObj] as Array<View>
-          views = arr.toList() as List<View>
+          views = arr.toList()
         } else {
           views = field[windowManagerObj] as List<View>
         }
@@ -148,16 +147,20 @@ class RootViewResolver {
       return null
     }
 
-    val roots: ArrayList<RootView> = ArrayList()
+    val roots = mutableListOf<RootView>()
     views?.let { views ->
       params?.let { params ->
         for (i in views.indices) {
-          roots.add(RootView(views[i], params[i]))
+          val view = views[i]
+          // TODO  FIX, len(param) is not always the same as len(views) For now just use first
+
+          // params
+          roots.add(RootView(view, null))
         }
       }
     }
 
-    return roots as List<RootView>
+    return roots
   }
 
   private fun initialize() {

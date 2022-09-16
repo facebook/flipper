@@ -43,7 +43,6 @@ const samplePluginDetails1: UpdatablePluginDetails = {
   id: 'Hello',
   title: 'Hello',
   description: 'World?',
-  isBundled: false,
   isActivatable: true,
   updateStatus: {
     kind: 'not-installed',
@@ -63,7 +62,6 @@ const samplePluginDetails2: UpdatablePluginDetails = {
   id: 'World',
   title: 'World',
   description: 'Hello?',
-  isBundled: false,
   isActivatable: true,
   updateStatus: {
     kind: 'not-installed',

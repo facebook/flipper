@@ -35,13 +35,6 @@ export function isPluginVersionMoreRecent(
   }
   if (
     semver.eq(versionDetails.version, otherVersionDetails.version) &&
-    versionDetails.isBundled
-  ) {
-    // prefer bundled versions
-    return true;
-  }
-  if (
-    semver.eq(versionDetails.version, otherVersionDetails.version) &&
     versionDetails.isActivatable &&
     !otherVersionDetails.isActivatable
   ) {

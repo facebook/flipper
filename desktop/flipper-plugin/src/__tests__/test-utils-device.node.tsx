@@ -9,7 +9,7 @@
 
 import * as TestUtils from '../test-utils/test-utils';
 import * as testPlugin from './DeviceTestPlugin';
-import {createState} from '../state/atom';
+import {createState} from 'flipper-plugin-core';
 
 const testLogMessage = {
   date: new Date(),

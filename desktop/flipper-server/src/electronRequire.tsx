@@ -7,4 +7,5 @@
  * @format
  */
 
-export default {} as any;
+// @ts-expect-error
+global.electronRequire = require;

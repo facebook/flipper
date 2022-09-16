@@ -78,8 +78,9 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
       if (newGlobalDevToolsSource) {
         globalDevToolsInstance = {
           type: 'global',
+          // https://esbuild.github.io/content-types/#direct-eval
           // eslint-disable-next-line no-eval
-          module: eval(newGlobalDevToolsSource),
+          module: (0, eval)(newGlobalDevToolsSource),
         };
 
         globalDevToolsAvailable.set(true);

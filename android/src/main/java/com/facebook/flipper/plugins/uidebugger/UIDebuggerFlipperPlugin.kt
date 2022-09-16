@@ -19,16 +19,20 @@ import com.facebook.flipper.plugins.uidebugger.scheduler.Scheduler
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 
-const val LogTag = "FlipperUIDebugger"
+const val LogTag = "uidebugger"
 
-class UIDebuggerFlipperPlugin(val application: Application) : FlipperPlugin {
+class UIDebuggerFlipperPlugin(
+    val application: Application,
+    descriptorRegister: DescriptorRegister?,
+    observerFactory: TreeObserverFactory?
+) : FlipperPlugin {
 
   private val context: Context =
       Context(
           ApplicationRef(application),
           ConnectionRef(null),
-          DescriptorRegister.withDefaults(),
-          TreeObserverFactory.withDefaults())
+          descriptorRegister = descriptorRegister ?: DescriptorRegister.withDefaults(),
+          observerFactory = observerFactory ?: TreeObserverFactory.withDefaults())
 
   private val nativeScanScheduler = Scheduler(NativeScanScheduler(context))
 

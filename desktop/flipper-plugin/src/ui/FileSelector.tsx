@@ -24,7 +24,7 @@ import {
   FileEncoding,
   FlipperLib,
   getFlipperLib,
-} from '../plugin/FlipperLib';
+} from 'flipper-plugin-core';
 import {fromUint8Array} from 'js-base64';
 import {assertNever} from 'flipper-common';
 

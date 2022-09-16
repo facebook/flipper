@@ -15,8 +15,8 @@ import {
 import {Button, Typography} from 'antd';
 import {isPlainObject, pad} from 'lodash';
 import React, {createElement, Fragment, isValidElement, useState} from 'react';
-import {tryGetFlipperLibImplementation} from '../plugin/FlipperLib';
-import {safeStringify} from '../utils/safeStringify';
+import {_tryGetFlipperLibImplementation} from 'flipper-plugin-core';
+import {safeStringify} from 'flipper-plugin-core';
 import {urlRegex} from '../utils/urlRegex';
 import {useTableRedraw} from '../data-source/index';
 import {theme} from './theme';
@@ -196,7 +196,7 @@ export function TruncateHelper({
       <Button
         icon={<CopyOutlined />}
         onClick={() => {
-          tryGetFlipperLibImplementation()?.writeTextToClipboard(value);
+          _tryGetFlipperLibImplementation()?.writeTextToClipboard(value);
         }}
         size="small"
         type="text"

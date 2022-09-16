@@ -11,32 +11,32 @@ import android.app.Activity
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.stetho.FragmentCompat
 
-object ActivityDescriptor : AbstractChainedDescriptor<Activity>() {
+object ActivityDescriptor : ChainedDescriptor<Activity>() {
 
-  override fun onGetId(activity: Activity): String {
-    return Integer.toString(System.identityHashCode(activity))
+  override fun onGetId(node: Activity): String {
+    return System.identityHashCode(node).toString()
   }
 
-  override fun onGetName(activity: Activity): String {
-    return activity.javaClass.simpleName
+  override fun onGetName(node: Activity): String {
+    return node.javaClass.simpleName
   }
 
-  override fun onGetChildren(activity: Activity, children: MutableList<Any>) {
-    activity.window?.let { window -> children.add(activity.window) }
+  override fun onGetChildren(node: Activity, children: MutableList<Any>) {
+    node.window?.let { window -> children.add(window) }
 
-    var fragments = getDialogFragments(FragmentCompat.supportInstance, activity)
+    var fragments = getDialogFragments(FragmentCompat.supportInstance, node)
     for (fragment in fragments) {
       children.add(fragment)
     }
 
-    fragments = getDialogFragments(FragmentCompat.frameworkInstance, activity)
+    fragments = getDialogFragments(FragmentCompat.frameworkInstance, node)
     for (fragment in fragments) {
       children.add(fragment)
     }
   }
 
   override fun onGetData(
-      activity: Activity,
+      node: Activity,
       attributeSections: MutableMap<String, InspectableObject>
   ) {}
 

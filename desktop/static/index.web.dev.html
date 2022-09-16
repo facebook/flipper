@@ -65,13 +65,26 @@
       let suppressErrors = false;
 
       const socket = new WebSocket(`ws://${location.host}`);
+      window.devSocket = socket;
 
       socket.addEventListener('message', ({ data: dataRaw }) => {
         const message = JSON.parse(dataRaw.toString())
 
-        if (message.event === 'hasErrors') {
-          openError(message.payload);
-          suppressErrors = true;
+        if (typeof message.event === 'string') {
+          switch (message.event) {
+            case 'hasErrors': {
+              openError(message.payload);
+              suppressErrors = true;
+              break;
+            }
+            case 'plugins-source-updated': {
+              window.postMessage({
+                type: 'plugins-source-updated',
+                data: message.payload
+              })
+              break;
+            }
+          }
         }
       })
 

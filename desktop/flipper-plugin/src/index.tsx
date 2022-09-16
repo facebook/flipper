@@ -7,52 +7,22 @@
  * @format
  */
 
-export {produce, Draft} from 'immer';
+export * from 'flipper-plugin-core';
+
 import styledImport from '@emotion/styled';
 export const styled = styledImport;
 
-import './plugin/PluginBase';
+import './state/batch';
+
+export {useValue} from './state/atom';
+
 import * as TestUtilites from './test-utils/test-utils';
 
-export {
-  SandyPluginInstance as _SandyPluginInstance,
-  PluginClient,
-} from './plugin/Plugin';
-export {
-  Device,
-  DeviceLogListener,
-  DevicePluginClient,
-  CrashLogListener,
-  SandyDevicePluginInstance as _SandyDevicePluginInstance,
-} from './plugin/DevicePlugin';
-export {
-  SandyPluginDefinition as _SandyPluginDefinition,
-  FlipperPluginInstance,
-} from './plugin/SandyPluginDefinition';
 export {SandyPluginRenderer as _SandyPluginRenderer} from './plugin/PluginRenderer';
 export {
   SandyPluginContext as _SandyPluginContext,
   usePlugin,
 } from './plugin/PluginContext';
-export {createState, useValue, Atom, isAtom} from './state/atom';
-export {batch} from './state/batch';
-export {
-  FlipperLib,
-  getFlipperLib,
-  setFlipperLibImplementation as _setFlipperLibImplementation,
-  FileDescriptor,
-  FileEncoding,
-  RemoteServerContext,
-  DownloadFileResponse,
-} from './plugin/FlipperLib';
-export {
-  MenuEntry,
-  NormalizedMenuEntry,
-  buildInMenuEntries as _buildInMenuEntries,
-  DefaultKeyboardAction,
-} from './plugin/MenuEntry';
-export {Notification} from './plugin/Notification';
-export {CreatePasteArgs, CreatePasteResult} from './plugin/Paste';
 
 export {theme} from './ui/theme';
 export {Layout} from './ui/Layout';
@@ -82,12 +52,6 @@ export {
 export {DataFormatter} from './ui/DataFormatter';
 
 export {useLogger, _LoggerContext} from './utils/useLogger';
-
-export {Idler} from './utils/Idler';
-
-// Import from the index file directly, to make sure package.json's main field is skipped.
-export {DataSource} from './data-source/index';
-export {createDataSource} from './state/createDataSource';
 
 export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
 export {DataTableManager} from './ui/data-table/DataTableManager';
@@ -127,36 +91,13 @@ export {
   ElementID,
 } from './ui/elements-inspector/ElementsInspector';
 export {useMemoize} from './utils/useMemoize';
-export {
-  makeShallowSerializable as _makeShallowSerializable,
-  deserializeShallowObject as _deserializeShallowObject,
-} from './utils/shallowSerialization';
 
 export {createTablePlugin} from './utils/createTablePlugin';
 
 export {textContent} from './utils/textContent';
-import * as path from './utils/path';
-export {path};
-export {safeStringify} from './utils/safeStringify';
 
 // It's not ideal that this exists in flipper-plugin sources directly,
 // but is the least pain for plugin authors.
 // Probably we should make sure that testing-library doesn't end up in our final Flipper bundle (which packages flipper-plugin)
 // T69106962
 export const TestUtils = TestUtilites;
-
-export {
-  sleep,
-  timeout,
-  createControlledPromise,
-  uuid,
-  DeviceOS,
-  DeviceType,
-  DeviceLogEntry,
-  DeviceLogLevel,
-  Logger,
-  CrashLog,
-  ServerAddOn,
-  ServerAddOnPluginConnection,
-  FlipperServerForServerAddOn,
-} from 'flipper-common';

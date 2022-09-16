@@ -8,8 +8,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/fb-watchman": "2.0.1",
-    "@types/node": "^17.0.31",
-    "flipper-common": "0.0.0"
+    "@types/node": "^17.0.31"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
@@ -28,6 +27,7 @@
   "dependencies": {
     "envinfo": "^7.8.1",
     "fb-watchman": "^2.0.1",
+    "flipper-common": "0.0.0",
     "fs-extra": "^10.1.0"
   }
 }

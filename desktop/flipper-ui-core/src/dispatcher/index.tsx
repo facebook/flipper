@@ -19,6 +19,7 @@ import pluginMarketplace from './pluginMarketplace';
 import pluginDownloads from './pluginDownloads';
 import info from '../utils/info';
 import pluginChangeListener from './pluginsChangeListener';
+import pluginsSourceUpdateListener from './pluginsSourceUpdateListener';
 
 import {Logger} from 'flipper-common';
 import {Store} from '../reducers/index';
@@ -40,6 +41,7 @@ export default function (store: Store, logger: Logger): () => Promise<void> {
     pluginDownloads,
     info,
     pluginChangeListener,
+    pluginsSourceUpdateListener,
   ].filter(notNull);
   const globalCleanup = dispatchers
     .map((dispatcher) => dispatcher(store, logger))

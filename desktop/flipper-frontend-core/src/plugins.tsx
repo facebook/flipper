@@ -12,27 +12,19 @@ import {
   tryCatchReportPluginFailuresAsync,
   notNull,
 } from 'flipper-common';
-import {
-  ActivatablePluginDetails,
-  BundledPluginDetails,
-  ConcretePluginDetails,
-} from 'flipper-common';
+import {ActivatablePluginDetails, ConcretePluginDetails} from 'flipper-common';
 import {reportUsage} from 'flipper-common';
-import {_SandyPluginDefinition} from 'flipper-plugin';
+import {_SandyPluginDefinition} from 'flipper-plugin-core';
 import isPluginCompatible from './utils/isPluginCompatible';
 import isPluginVersionMoreRecent from './utils/isPluginVersionMoreRecent';
 import {getRenderHostInstance} from './RenderHost';
 import pMap from 'p-map';
 
 export abstract class AbstractPluginInitializer {
-  protected defaultPluginsIndex: any = null;
   protected gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
   protected disabledPlugins: Array<ActivatablePluginDetails> = [];
   protected failedPlugins: Array<[ActivatablePluginDetails, string]> = [];
-  protected bundledPlugins: Array<BundledPluginDetails> = [];
-  protected loadedPlugins: Array<
-    BundledPluginDetails | InstalledPluginDetails
-  > = [];
+  protected loadedPlugins: Array<InstalledPluginDetails> = [];
   protected _initialPlugins: _SandyPluginDefinition[] = [];
 
   async init() {
@@ -48,7 +40,6 @@ export abstract class AbstractPluginInitializer {
   }
 
   protected async _init(): Promise<_SandyPluginDefinition[]> {
-    this.loadDefaultPluginIndex();
     this.loadMarketplacePlugins();
     const uninstalledPluginNames = this.loadUninstalledPluginNames();
     const allLocalVersions = await this.loadAllLocalVersions(
@@ -65,28 +56,21 @@ export abstract class AbstractPluginInitializer {
     pluginDetails: ActivatablePluginDetails,
   ): Promise<_SandyPluginDefinition>;
 
-  protected loadDefaultPluginIndex() {
-    this.defaultPluginsIndex = getRenderHostInstance().loadDefaultPlugins();
-  }
   protected loadMarketplacePlugins() {}
   protected loadUninstalledPluginNames(): Set<string> {
     return new Set();
   }
   protected async loadAllLocalVersions(
     uninstalledPluginNames: Set<string>,
-  ): Promise<(BundledPluginDetails | InstalledPluginDetails)[]> {
-    const bundledPlugins = await getBundledPlugins();
-    this.bundledPlugins = bundledPlugins;
-
-    const allLocalVersions = [
-      ...bundledPlugins,
-      ...(await getDynamicPlugins()),
-    ].filter((p) => !uninstalledPluginNames.has(p.name));
+  ): Promise<InstalledPluginDetails[]> {
+    const allLocalVersions = [...(await getDynamicPlugins())].filter(
+      (p) => !uninstalledPluginNames.has(p.name),
+    );
 
     return allLocalVersions;
   }
   protected async filterAllLocalVersions(
-    allLocalVersions: (BundledPluginDetails | InstalledPluginDetails)[],
+    allLocalVersions: InstalledPluginDetails[],
   ): Promise<ActivatablePluginDetails[]> {
     const flipperVersion = await this.getFlipperVersion();
     const loadedPlugins = getLatestCompatibleVersionOfEachPlugin(
@@ -145,24 +129,6 @@ export function getLatestCompatibleVersionOfEachPlugin<
     }
   }
   return Array.from(latestCompatibleVersions.values());
-}
-
-export async function getBundledPlugins(): Promise<
-  Array<BundledPluginDetails>
-> {
-  if (getRenderHostInstance().serverConfig.env.NODE_ENV === 'test') {
-    return [];
-  }
-  try {
-    // defaultPlugins that are included in the Flipper distributive.
-    // List of default bundled plugins is written at build time to defaultPlugins/bundled.json.
-    return await getRenderHostInstance().flipperServer!.exec(
-      'plugins-get-bundled-plugins',
-    );
-  } catch (e) {
-    console.error('Failed to load list of bundled plugins', e);
-    return [];
-  }
 }
 
 export async function getDynamicPlugins(): Promise<InstalledPluginDetails[]> {

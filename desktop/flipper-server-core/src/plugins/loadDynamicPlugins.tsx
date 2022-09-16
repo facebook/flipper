@@ -19,7 +19,6 @@ import {InstalledPluginDetails} from 'flipper-common';
 import {getStaticPath} from '../utils/pathUtils';
 
 // Load "dynamic" plugins, e.g. those which are either pre-installed (default), installed or loaded from sources (for development).
-// This opposed to "bundled" plugins which are included into Flipper bundle.
 export async function loadDynamicPlugins(): Promise<InstalledPluginDetails[]> {
   if (process.env.NODE_ENV === 'test') {
     return [];
@@ -36,29 +35,14 @@ export async function loadDynamicPlugins(): Promise<InstalledPluginDetails[]> {
       ex,
     ),
   );
-  const bundledPlugins = new Set<string>(
-    (
-      await fs.readJson(
-        getStaticPath(path.join('defaultPlugins', 'bundled.json'), {
-          asarUnpacked: true,
-        }),
-      )
-    ).map((p: any) => p.name) as string[],
-  );
-  console.log(
-    `✅  Detected ${bundledPlugins.size} bundled plugins: ${Array.from(
-      bundledPlugins,
-    ).join(', ')}.`,
-  );
-  const [installedPlugins, unfilteredSourcePlugins] = await Promise.all([
+
+  const [installedPlugins, sourcePlugins] = await Promise.all([
     process.env.FLIPPER_NO_PLUGIN_MARKETPLACE
       ? Promise.resolve([])
       : getAllInstalledPluginVersions(),
     getSourcePlugins(),
   ]);
-  const sourcePlugins = unfilteredSourcePlugins.filter(
-    (p) => !bundledPlugins.has(p.name),
-  );
+
   const defaultPluginsDir = getStaticPath('defaultPlugins', {
     asarUnpacked: true,
   });

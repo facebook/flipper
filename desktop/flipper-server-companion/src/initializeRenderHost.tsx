@@ -14,7 +14,7 @@ export function initializeRenderHost(
   flipperServer: FlipperServer,
   flipperServerConfig: FlipperServerConfig,
 ) {
-  FlipperRenderHostInstance = {
+  globalThis.FlipperRenderHostInstance = {
     readTextFromClipboard() {
       // TODO:
       return undefined;
@@ -46,7 +46,6 @@ export function initializeRenderHost(
     restartFlipper() {
       // TODO:
     },
-    loadDefaultPlugins: getDefaultPluginsIndex,
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
@@ -80,11 +79,4 @@ export function initializeRenderHost(
       return url;
     },
   } as RenderHost;
-}
-
-function getDefaultPluginsIndex() {
-  // @ts-ignore
-  // eslint-disable-next-line import/no-unresolved
-  const index = require('./defaultPlugins');
-  return index.default || index;
 }
