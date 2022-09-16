@@ -243,7 +243,7 @@ export async function moveServerSourceMaps(
     await fs.ensureDir(sourceMapFolder);
     // TODO: Remove me
     // Create an empty file not satisfy Sandcastle. Remove it once Sandcastle no longer requires the file
-    await fs.writeFile(path.join(sourceMapFolder, 'bundle.map'), '');
+    await fs.writeFile(path.join(sourceMapFolder, 'bundle.map'), '{}');
     await fs.move(
       rendererBundleMap,
       path.join(sourceMapFolder, 'main.bundle.map'),
