@@ -18,6 +18,7 @@ import {
 } from 'flipper-common';
 import EventEmitter from 'eventemitter3';
 import {getPluginKey} from './utils/pluginKey';
+import {freeze} from 'immer';
 import {
   timeout,
   ClientQuery,
@@ -239,7 +240,7 @@ export default abstract class AbstractClient extends EventEmitter {
 
     let rawData;
     try {
-      rawData = JSON.parse(msg);
+      rawData = freeze(JSON.parse(msg), true);
     } catch (err) {
       console.error(`Invalid JSON: ${msg}`, 'clientMessage');
       return;
