@@ -7,9 +7,6 @@
  * @format
  */
 
-// TODO: should not be exported anymore, but still needed for 'import from 'flipper'' stuff
-export * from './deprecated-exports';
-
 export {RenderHost, getRenderHostInstance} from 'flipper-frontend-core';
 
 export {startFlipperDesktop} from './startFlipperDesktop';

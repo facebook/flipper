@@ -18,9 +18,17 @@ interface RunBuildConfig {
   out: string;
   dev: boolean;
   node?: boolean;
+  sourceMapPath?: string;
 }
 
-async function runBuild({pluginDir, entry, out, dev, node}: RunBuildConfig) {
+async function runBuild({
+  pluginDir,
+  entry,
+  out,
+  dev,
+  node,
+  sourceMapPath,
+}: RunBuildConfig) {
   await build({
     entryPoints: [path.join(pluginDir, entry)],
     bundle: true,
@@ -45,9 +53,28 @@ async function runBuild({pluginDir, entry, out, dev, node}: RunBuildConfig) {
     sourcemap: 'external',
     minify: !dev,
   });
+
+  const sourceMapUrl = `${out}.map`;
+  if (
+    sourceMapPath &&
+    path.resolve(sourceMapPath) !== path.resolve(sourceMapUrl)
+  ) {
+    console.info(`Moving plugin sourcemap to ${sourceMapPath}`);
+    await fs.ensureDir(path.dirname(sourceMapPath));
+    await fs.move(sourceMapUrl, sourceMapPath, {overwrite: true});
+  }
 }
 
-export default async function bundlePlugin(pluginDir: string, dev: boolean) {
+type Options = {
+  sourceMapPath?: string;
+  sourceMapPathServerAddOn?: string;
+};
+
+export default async function bundlePlugin(
+  pluginDir: string,
+  dev: boolean,
+  options?: Options,
+) {
   const stat = await fs.lstat(pluginDir);
   if (!stat.isDirectory()) {
     throw new Error(`Plugin source ${pluginDir} is not a directory.`);
@@ -75,6 +102,7 @@ export default async function bundlePlugin(pluginDir: string, dev: boolean) {
     entry: plugin.source,
     out: plugin.entry,
     dev,
+    sourceMapPath: options?.sourceMapPath,
   });
 
   if (
@@ -89,6 +117,7 @@ export default async function bundlePlugin(pluginDir: string, dev: boolean) {
       out: plugin.serverAddOnEntry,
       dev,
       node: true,
+      sourceMapPath: options?.sourceMapPathServerAddOn,
     });
   }
 

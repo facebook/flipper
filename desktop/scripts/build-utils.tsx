@@ -238,13 +238,12 @@ export async function moveServerSourceMaps(
   sourceMapFolder: string | undefined,
 ) {
   console.log(`⚙️  Moving server source maps...`);
-  const mainBundleMap = path.join(buildFolder, 'dist', 'index.map');
   const rendererBundleMap = path.join(buildFolder, 'static', 'bundle.map');
   if (sourceMapFolder) {
     await fs.ensureDir(sourceMapFolder);
-    await fs.move(mainBundleMap, path.join(sourceMapFolder, 'bundle.map'), {
-      overwrite: true,
-    });
+    // TODO: Remove me
+    // Create an empty file not satisfy Sandcastle. Remove it once Sandcastle no longer requires the file
+    await fs.writeFile(path.join(sourceMapFolder, 'bundle.map'), '{}');
     await fs.move(
       rendererBundleMap,
       path.join(sourceMapFolder, 'main.bundle.map'),
@@ -254,7 +253,6 @@ export async function moveServerSourceMaps(
   } else {
     // Removing so we don't bundle them up as part of the release.
     console.log(`⏭  Removing source maps.`);
-    await fs.remove(mainBundleMap);
     await fs.remove(rendererBundleMap);
   }
 }
