@@ -29,25 +29,21 @@ class LayoutTraversal(
     stack.add(this.root)
 
     while (stack.isNotEmpty()) {
-
       val node = stack.removeLast()
 
       try {
-
         val descriptor = descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
-
         val children = descriptor.getChildren(node)
+        val activeChild = descriptor.getActiveChild(node)
 
         val childrenIds = mutableListOf<String>()
-
-        val activeChild = descriptor.getActiveChild(node)
-        for (child in children) {
-          // it might make sense one day to remove id from the descriptor since its always the
-          // hash code
+        children.forEach { child ->
           val childDescriptor =
               descriptorRegister.descriptorForClassUnsafe(child::class.java).asAny()
+          // It might make sense one day to remove id from the descriptor since its always the
+          // hash code
           childrenIds.add(childDescriptor.getId(child))
-          // if there is an active child then don't traverse it
+          // If there is an active child then don't traverse it
           if (activeChild == null) {
             stack.add(child)
           }
@@ -61,7 +57,6 @@ class LayoutTraversal(
         }
 
         val attributes = descriptor.getData(node)
-
         result.add(
             Node(
                 descriptor.getId(node),
