@@ -22,10 +22,12 @@ class TreeObserverFactory {
     builders.add(builder)
   }
 
+  // TODO: Not very efficient, need to cache this. Builders cannot be removed
   fun hasObserverFor(node: Any): Boolean {
     return builders.any { it.canBuildFor(node) }
   }
 
+  // TODO: Not very efficient, need to cache this. Builders cannot be removed.
   fun createObserver(node: Any, context: Context): TreeObserver<*>? {
     return builders.find { it.canBuildFor(node) }?.build(context)
   }
@@ -33,6 +35,7 @@ class TreeObserverFactory {
   companion object {
     fun withDefaults(): TreeObserverFactory {
       val factory = TreeObserverFactory()
+      // TODO: Only builder for DecorView, maybe more are needed.
       factory.register(DecorViewTreeObserverBuilder)
 
       return factory
