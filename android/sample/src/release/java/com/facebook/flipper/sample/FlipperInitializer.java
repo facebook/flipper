@@ -13,11 +13,11 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 
 public final class FlipperInitializer {
-  public interface IntializationResult {
+  public interface InitializationResult {
     OkHttpClient getOkHttpClient();
   }
 
-  public static IntializationResult initFlipperPlugins(Context context, FlipperClient client) {
+  public static InitializationResult initFlipperPlugins(Context context, FlipperClient client) {
     final OkHttpClient okHttpClient =
         new OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
@@ -25,7 +25,7 @@ public final class FlipperInitializer {
             .writeTimeout(10, TimeUnit.MINUTES)
             .build();
 
-    return new IntializationResult() {
+    return new InitializationResult() {
       @Override
       public OkHttpClient getOkHttpClient() {
         return okHttpClient;

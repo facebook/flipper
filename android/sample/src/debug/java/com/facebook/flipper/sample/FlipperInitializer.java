@@ -32,11 +32,11 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 
 public final class FlipperInitializer {
-  public interface IntializationResult {
+  public interface InitializationResult {
     OkHttpClient getOkHttpClient();
   }
 
-  public static IntializationResult initFlipperPlugins(Context context, FlipperClient client) {
+  public static InitializationResult initFlipperPlugins(Context context, FlipperClient client) {
     final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 
     final NetworkFlipperPlugin networkPlugin = new NetworkFlipperPlugin();
@@ -78,7 +78,7 @@ public final class FlipperInitializer {
             .writeTimeout(10, TimeUnit.MINUTES)
             .build();
 
-    return new IntializationResult() {
+    return new InitializationResult() {
       @Override
       public OkHttpClient getOkHttpClient() {
         return okHttpClient;

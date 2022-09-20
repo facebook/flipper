@@ -26,7 +26,7 @@ public class FlipperSampleApplication extends Application {
     final FlipperClient client = AndroidFlipperClient.getInstance(this);
     assert client != null;
 
-    final FlipperInitializer.IntializationResult initializationResult =
+    final FlipperInitializer.InitializationResult initializationResult =
         FlipperInitializer.initFlipperPlugins(this, client);
 
     NetworkClient.getInstance().setOkHttpClient(initializationResult.getOkHttpClient());
