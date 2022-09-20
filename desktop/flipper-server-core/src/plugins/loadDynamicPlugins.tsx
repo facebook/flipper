@@ -7,8 +7,6 @@
  * @format
  */
 
-import path from 'path';
-import fs from 'fs-extra';
 import {
   getSourcePlugins,
   moveInstalledPluginsFromLegacyDir,
@@ -21,12 +19,6 @@ import {getStaticPath} from '../utils/pathUtils';
 // Load "dynamic" plugins, e.g. those which are either pre-installed (default), installed or loaded from sources (for development).
 export async function loadDynamicPlugins(): Promise<InstalledPluginDetails[]> {
   if (process.env.NODE_ENV === 'test') {
-    return [];
-  }
-  if (process.env.FLIPPER_FAST_REFRESH) {
-    console.log(
-      '❌  Skipping loading of dynamic plugins because Fast Refresh is enabled. Fast Refresh only works with bundled plugins.',
-    );
     return [];
   }
   await moveInstalledPluginsFromLegacyDir().catch((ex) =>
