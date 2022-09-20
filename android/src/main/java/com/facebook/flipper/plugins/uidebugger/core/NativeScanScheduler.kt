@@ -43,11 +43,11 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
     val serialized =
         Json.encodeToString(NativeScanEvent.serializer(), NativeScanEvent(input.txId, input.nodes))
     val serializationEnd = System.currentTimeMillis()
+
     context.connectionRef.connection?.send(
         NativeScanEvent.name,
         serialized,
     )
-
     val socketEnd = System.currentTimeMillis()
 
     context.connectionRef.connection?.send(
