@@ -7,7 +7,7 @@
  * @format
  */
 
-// This list should match `dispatcher/plugins.tsx` and `builtInModules` in `desktop/.eslintrc.js`
+// This list should match `flipper-frontend-core/src/globalObject.tsx` and `builtInModules` in `desktop/.eslintrc.js`
 export const pluginExternalModules = {
   flipper: 'Flipper',
   'flipper-plugin': 'FlipperPlugin',
@@ -19,6 +19,8 @@ export const pluginExternalModules = {
   immer: 'Immer',
   '@emotion/styled': 'emotion_styled',
   '@ant-design/icons': 'antdesign_icons',
+  // Used by "bloks-logger" (see its bundle's content)
+  'react/jsx-runtime': 'ReactJsxRuntime',
 };
 
 export const wrapRequire = <T extends (path: string) => any>(require: T): T =>

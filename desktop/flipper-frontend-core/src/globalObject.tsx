@@ -19,6 +19,7 @@ export interface GlobalObject {
   antd: any;
   emotion_styled: any;
   antdesign_icons: any;
+  ReactJsxRuntime: any;
 }
 
 declare module globalThis {
@@ -32,6 +33,7 @@ declare module globalThis {
   let antd: any;
   let emotion_styled: any;
   let antdesign_icons: any;
+  let ReactJsxRuntime: any;
 }
 
 export const setGlobalObject = (replacements: GlobalObject) => {

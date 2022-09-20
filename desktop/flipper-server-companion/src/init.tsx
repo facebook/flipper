@@ -39,6 +39,7 @@ export const initCompanionEnv = async (
     antd: {},
     emotion_styled: {default: styled},
     antdesign_icons: {},
+    ReactJsxRuntime: {},
   });
   Module.prototype.require = wrapRequire(Module.prototype.require);
 

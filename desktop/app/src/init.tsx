@@ -37,6 +37,7 @@ import {
   parseEnvironmentVariables,
   setLoggerInstance,
   Settings,
+  wrapRequire,
 } from 'flipper-common';
 import constants from './fb-stubs/constants';
 import {initializeElectron} from './electron/initializeElectron';
@@ -48,7 +49,9 @@ import {KeytarModule} from 'flipper-server-core/src/utils/keytar';
 import {initCompanionEnv} from 'flipper-server-companion';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import WS from 'ws';
+import {Module} from 'module';
 
+Module.prototype.require = wrapRequire(Module.prototype.require);
 enableMapSet();
 
 async function getKeytarModule(staticPath: string): Promise<KeytarModule> {
