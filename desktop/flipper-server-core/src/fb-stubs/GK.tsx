@@ -13,7 +13,9 @@ export const TEST_PASSING_GK = 'TEST_PASSING_GK';
 export const TEST_FAILING_GK = 'TEST_FAILING_GK';
 export type GKMap = {[key: string]: boolean};
 
-const whitelistedGKs: Array<GKID> = [];
+// Allow OSS users start flipper-server
+
+const whitelistedGKs: Array<GKID> = ['flipper_desktop_use_server'];
 
 export function loadGKs(_username: string, _gks: Array<GKID>): Promise<GKMap> {
   return Promise.reject(
@@ -61,6 +63,6 @@ export default class GK {
   }
 
   static allGKs(): GKMap {
-    return {};
+    return Object.fromEntries(whitelistedGKs.map((gk) => [gk, true]));
   }
 }
