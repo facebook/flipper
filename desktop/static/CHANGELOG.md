@@ -1,3 +1,8 @@
+# 0.166.0 (20/9/2022)
+
+ * [D39633821](https://github.com/facebook/flipper/search?q=D39633821&type=Commits) -  Fix plugin loading with experimental flipper-server disabled
+
+
 # 0.160.0 (18/8/2022)
 
  * [D38746572](https://github.com/facebook/flipper/search?q=D38746572&type=Commits) -  Add kotlin support for the android library
