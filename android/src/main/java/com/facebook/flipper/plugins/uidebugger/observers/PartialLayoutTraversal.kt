@@ -14,15 +14,16 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.model.Node
 
 /**
- * This will traverse the layout hierarchy untill it sees a node that has an observer registered for
+ * This will traverse the layout hierarchy until it sees a node that has an observer registered for
  * it. The first item in the pair is the visited nodes The second item are any observable roots
  * discovered
  */
 class PartialLayoutTraversal(
     private val descriptorRegister: DescriptorRegister,
-    private val treeObserverfactory: TreeObserverFactory,
+    private val treeObserverFactory: TreeObserverFactory,
 ) {
 
+  @Suppress("unchecked_cast")
   internal fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
 
   fun traverse(root: Any): Pair<MutableList<Node>, List<Any>> {
@@ -37,9 +38,8 @@ class PartialLayoutTraversal(
       val node = stack.removeLast()
 
       try {
-
-        // if we encounter a node that has it own observer, dont traverse
-        if (node != root && treeObserverfactory.hasObserverFor(node)) {
+        // If we encounter a node that has it own observer, don't traverse
+        if (node != root && treeObserverFactory.hasObserverFor(node)) {
           observableRoots.add(node)
           continue
         }
@@ -52,12 +52,12 @@ class PartialLayoutTraversal(
         val activeChild = descriptor.getActiveChild(node)
 
         for (child in children) {
-          // it might make sense one day to remove id from the descriptor since its always the
+          // It might make sense one day to remove id from the descriptor since its always the
           // hash code
           val childDescriptor =
               descriptorRegister.descriptorForClassUnsafe(child::class.java).asAny()
           childrenIds.add(childDescriptor.getId(child))
-          // if there is an active child then dont traverse it
+          // If there is an active child then don't traverse it
           if (activeChild == null) {
             stack.add(child)
           }
@@ -79,7 +79,7 @@ class PartialLayoutTraversal(
                 childrenIds,
                 activeChildId))
       } catch (exception: Exception) {
-        Log.e(LogTag, "Error while processing node ${node.javaClass.name} ${node} ", exception)
+        Log.e(LogTag, "Error while processing node ${node.javaClass.name} $node", exception)
       }
     }
 

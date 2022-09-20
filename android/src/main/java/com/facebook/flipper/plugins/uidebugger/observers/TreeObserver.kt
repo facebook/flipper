@@ -42,7 +42,7 @@ abstract class TreeObserver<T> {
     val start = System.currentTimeMillis()
     val (visitedNodes, observerRootsNodes) = context.layoutTraversal.traverse(root)
 
-    // Add any new Observers
+    // Add any new observers
     for (observerRoot in observerRootsNodes) {
 
       if (!children.containsKey(observerRoot.identityHashCode())) {
@@ -55,7 +55,7 @@ abstract class TreeObserver<T> {
       }
     }
 
-    // remove any old observers
+    // Remove any old observers
     val observerRootIds = observerRootsNodes.map { it.identityHashCode() }
     for (childKey in children.keys) {
       if (!observerRootIds.contains(childKey)) {
@@ -68,7 +68,6 @@ abstract class TreeObserver<T> {
       }
     }
 
-    // send
     Log.d(LogTag, "For Observer ${this.type} Sending ${visitedNodes.size} ")
     context.treeObserverManager.send(
         SubtreeUpdate(type, visitedNodes, start, System.currentTimeMillis()))

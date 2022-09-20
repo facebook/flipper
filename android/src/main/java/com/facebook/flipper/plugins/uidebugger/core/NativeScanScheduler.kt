@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.core
 
 import android.os.Looper
 import android.util.Log
+import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.model.NativeScanEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
@@ -23,26 +24,24 @@ data class ScanResult(
 )
 
 class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
-  val traversal = LayoutTraversal(context.descriptorRegister, context.applicationRef)
-  var txId = 0L
-  override fun execute(): ScanResult {
+  private val traversal = LayoutTraversal(context.descriptorRegister, context.applicationRef)
+  private var txId = 0L
 
+  override fun execute(): ScanResult {
     val start = System.currentTimeMillis()
     val nodes = traversal.traverse()
     val scanEnd = System.currentTimeMillis()
 
     Log.d(
-        "LAYOUT_SCHEDULER",
+        LogTag,
         "${Thread.currentThread().name}${Looper.myLooper()} produced: ${nodes.count()} nodes")
 
     return ScanResult(txId++, start, scanEnd, nodes)
   }
 
-  override fun process(result: ScanResult) {
-
+  override fun process(input: ScanResult) {
     val serialized =
-        Json.encodeToString(
-            NativeScanEvent.serializer(), NativeScanEvent(result.txId, result.nodes))
+        Json.encodeToString(NativeScanEvent.serializer(), NativeScanEvent(input.txId, input.nodes))
     val serializationEnd = System.currentTimeMillis()
     context.connectionRef.connection?.send(
         NativeScanEvent.name,
@@ -56,13 +55,13 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
         Json.encodeToString(
             PerfStatsEvent.serializer(),
             PerfStatsEvent(
-                result.txId,
+                input.txId,
                 "FullScan",
-                result.scanStart,
-                result.scanEnd,
-                result.scanEnd,
+                input.scanStart,
+                input.scanEnd,
+                input.scanEnd,
                 serializationEnd,
                 socketEnd,
-                result.nodes.size)))
+                input.nodes.size)))
   }
 }

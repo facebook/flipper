@@ -9,10 +9,8 @@ package com.facebook.flipper.plugins.uidebugger.commands
 
 import com.facebook.flipper.core.FlipperConnection
 
-sealed class CommandRegister {
-  companion object {
-    fun <T> register(connection: FlipperConnection, cmd: T) where T : Command {
-      connection.receive(cmd.identifier(), cmd.receiver())
-    }
+object CommandRegister {
+  fun <T> register(connection: FlipperConnection, cmd: T) where T : Command {
+    connection.receive(cmd.identifier(), cmd.receiver())
   }
 }

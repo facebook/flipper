@@ -36,7 +36,7 @@ class DescriptorRegister {
       mapping.register(android.app.Fragment::class.java, FragmentFrameworkDescriptor)
       mapping.register(androidx.fragment.app.Fragment::class.java, FragmentSupportDescriptor)
 
-      @Suppress("UNCHECKED_CAST")
+      @Suppress("unchecked_cast")
       for (clazz in mapping.register.keys) {
         val maybeDescriptor: NodeDescriptor<*>? = mapping.register[clazz]
         maybeDescriptor?.let { descriptor ->
@@ -69,7 +69,7 @@ class DescriptorRegister {
     }
 
     return if (register[clazz] != null) {
-      @Suppress("UNCHECKED_CAST")
+      @Suppress("unchecked_cast")
       register[clazz] as NodeDescriptor<T>
     } else {
       null

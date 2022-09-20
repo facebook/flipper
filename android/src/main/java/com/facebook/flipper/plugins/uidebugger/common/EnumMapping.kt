@@ -11,32 +11,30 @@ import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
 
 // Maintains 2 way mapping between some enum value and a readable string representation
-open class EnumMapping<T>(val mapping: Map<String, T>) {
+open class EnumMapping<T>(private val mapping: Map<String, T>) {
 
   fun getStringRepresentation(enumValue: T): String {
     val entry = mapping.entries.find { (_, value) -> value == enumValue }
-    if (entry != null) {
-      return entry.key
+    return if (entry != null) {
+      entry.key
     } else {
       Log.v(
           LogTag,
           "Could not convert enum value ${enumValue.toString()} to string, known values ${mapping.entries}")
-      return NoMapping
+      NoMapping
     }
   }
 
   fun getEnumValue(key: String): T {
-    val value =
-        mapping[key]
-            ?: throw UIDebuggerException(
-                "Could not convert string ${key} to enum value, possible values ${mapping.entries} ")
-    return value
+    return mapping[key]
+        ?: throw UIDebuggerException(
+            "Could not convert string $key to enum value, possible values ${mapping.entries} ")
   }
 
   fun toInspectable(value: T, mutable: Boolean): InspectableValue.Enum {
     return InspectableValue.Enum(EnumData(mapping.keys, getStringRepresentation(value)), mutable)
   }
   companion object {
-    val NoMapping = "__UNKNOWN_ENUM_VALUE__"
+    const val NoMapping = "__UNKNOWN_ENUM_VALUE__"
   }
 }

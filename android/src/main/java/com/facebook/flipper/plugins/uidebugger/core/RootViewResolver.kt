@@ -120,25 +120,28 @@ class RootViewResolver {
     if (null == paramsField) {
       return null
     }
-    var views: List<View>? = null
-    var params: List<WindowManager.LayoutParams>? = null
+    var maybeViews: List<View>? = null
+    var maybeParams: List<WindowManager.LayoutParams>? = null
     try {
       viewsField?.let { field ->
-        views =
+        maybeViews =
             if (Build.VERSION.SDK_INT < 19) {
-              val arr = field[windowManagerObj] as Array<View>
+              @Suppress("unchecked_cast") val arr = field[windowManagerObj] as Array<View>
               arr.toList()
             } else {
+              @Suppress("unchecked_cast")
               field[windowManagerObj] as List<View>
             }
       }
 
       paramsField?.let { field ->
-        params =
+        maybeParams =
             if (Build.VERSION.SDK_INT < 19) {
+              @Suppress("unchecked_cast")
               val arr = field[windowManagerObj] as Array<WindowManager.LayoutParams>
-              arr.toList() as List<WindowManager.LayoutParams>
+              arr.toList()
             } else {
+              @Suppress("unchecked_cast")
               field[windowManagerObj] as List<WindowManager.LayoutParams>
             }
       }
@@ -149,8 +152,8 @@ class RootViewResolver {
     }
 
     val roots = mutableListOf<RootView>()
-    views?.let { views ->
-      params?.let { params ->
+    maybeViews?.let { views ->
+      maybeParams?.let { params ->
         if (views.size == params.size) {
           for (i in views.indices) {
             val view = views[i]
@@ -174,16 +177,15 @@ class RootViewResolver {
       val getMethod = clazz.getMethod(instanceMethod)
       windowManagerObj = getMethod.invoke(null)
       viewsField = clazz.getDeclaredField(VIEWS_FIELD)
-      viewsField?.let { vf -> vf.setAccessible(true) }
+      viewsField?.let { vf -> vf.isAccessible = true }
       paramsField = clazz.getDeclaredField(WINDOW_PARAMS_FIELD)
-      paramsField?.let { pf -> pf.setAccessible(true) }
+      paramsField?.let { pf -> pf.isAccessible = true }
     } catch (ite: InvocationTargetException) {} catch (cnfe: ClassNotFoundException) {} catch (
         nsfe: NoSuchFieldException) {} catch (nsme: NoSuchMethodException) {} catch (
         re: RuntimeException) {} catch (iae: IllegalAccessException) {}
   }
 
   companion object {
-    private val TAG = RootViewResolver::class.java.simpleName
     private const val WINDOW_MANAGER_IMPL_CLAZZ = "android.view.WindowManagerImpl"
     private const val WINDOW_MANAGER_GLOBAL_CLAZZ = "android.view.WindowManagerGlobal"
     private const val VIEWS_FIELD = "mViews"

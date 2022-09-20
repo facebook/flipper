@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import android.annotation.SuppressLint
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.SparseArray
 import android.view.Gravity
 import android.view.View
@@ -23,7 +24,6 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.stetho.ResourcesUtil
 import java.lang.reflect.Field
 
-@SuppressLint("DiscouragedPrivateApi")
 object ViewDescriptor : ChainedDescriptor<View>() {
 
   override fun onGetId(node: View): String {
@@ -167,6 +167,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
                   "MATCH_PARENT" to ViewGroup.LayoutParams.MATCH_PARENT,
                   "FILL_PARENT" to ViewGroup.LayoutParams.FILL_PARENT,
               )) {}
+
   private val VisibilityMapping: EnumMapping<Int> =
       object :
           EnumMapping<Int>(
@@ -177,41 +178,74 @@ object ViewDescriptor : ChainedDescriptor<View>() {
               )) {}
 
   private val LayoutDirectionMapping: EnumMapping<Int> =
-      object :
-          EnumMapping<Int>(
-              mapOf(
-                  "LAYOUT_DIRECTION_INHERIT" to View.LAYOUT_DIRECTION_INHERIT,
-                  "LAYOUT_DIRECTION_LOCALE" to View.LAYOUT_DIRECTION_LOCALE,
-                  "LAYOUT_DIRECTION_LTR" to View.LAYOUT_DIRECTION_LTR,
-                  "LAYOUT_DIRECTION_RTL" to View.LAYOUT_DIRECTION_RTL,
-              )) {}
+      when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 -> {
+          object :
+              EnumMapping<Int>(
+                  mapOf(
+                      "LAYOUT_DIRECTION_INHERIT" to View.LAYOUT_DIRECTION_INHERIT,
+                      "LAYOUT_DIRECTION_LOCALE" to View.LAYOUT_DIRECTION_LOCALE,
+                      "LAYOUT_DIRECTION_LTR" to View.LAYOUT_DIRECTION_LTR,
+                      "LAYOUT_DIRECTION_RTL" to View.LAYOUT_DIRECTION_RTL,
+                  )) {}
+        }
+        else -> {
+          object : EnumMapping<Int>(emptyMap()) {}
+        }
+      }
 
   private val TextDirectionMapping: EnumMapping<Int> =
-      object :
-          EnumMapping<Int>(
-              mapOf(
-                  "TEXT_DIRECTION_INHERIT" to View.TEXT_DIRECTION_INHERIT,
-                  "TEXT_DIRECTION_FIRST_STRONG" to View.TEXT_DIRECTION_FIRST_STRONG,
-                  "TEXT_DIRECTION_ANY_RTL" to View.TEXT_DIRECTION_ANY_RTL,
-                  "TEXT_DIRECTION_LTR" to View.TEXT_DIRECTION_LTR,
-                  "TEXT_DIRECTION_RTL" to View.TEXT_DIRECTION_RTL,
-                  "TEXT_DIRECTION_LOCALE" to View.TEXT_DIRECTION_LOCALE,
-                  "TEXT_DIRECTION_FIRST_STRONG_LTR" to View.TEXT_DIRECTION_FIRST_STRONG_LTR,
-                  "TEXT_DIRECTION_FIRST_STRONG_RTL" to View.TEXT_DIRECTION_FIRST_STRONG_RTL,
-              )) {}
+      when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 -> {
+          object :
+              EnumMapping<Int>(
+                  mapOf(
+                      "TEXT_DIRECTION_INHERIT" to View.TEXT_DIRECTION_INHERIT,
+                      "TEXT_DIRECTION_FIRST_STRONG" to View.TEXT_DIRECTION_FIRST_STRONG,
+                      "TEXT_DIRECTION_ANY_RTL" to View.TEXT_DIRECTION_ANY_RTL,
+                      "TEXT_DIRECTION_LTR" to View.TEXT_DIRECTION_LTR,
+                      "TEXT_DIRECTION_RTL" to View.TEXT_DIRECTION_RTL,
+                      "TEXT_DIRECTION_LOCALE" to View.TEXT_DIRECTION_LOCALE,
+                  )) {}
+        }
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
+          object :
+              EnumMapping<Int>(
+                  mapOf(
+                      "TEXT_DIRECTION_INHERIT" to View.TEXT_DIRECTION_INHERIT,
+                      "TEXT_DIRECTION_FIRST_STRONG" to View.TEXT_DIRECTION_FIRST_STRONG,
+                      "TEXT_DIRECTION_ANY_RTL" to View.TEXT_DIRECTION_ANY_RTL,
+                      "TEXT_DIRECTION_LTR" to View.TEXT_DIRECTION_LTR,
+                      "TEXT_DIRECTION_RTL" to View.TEXT_DIRECTION_RTL,
+                      "TEXT_DIRECTION_LOCALE" to View.TEXT_DIRECTION_LOCALE,
+                      "TEXT_DIRECTION_FIRST_STRONG_LTR" to View.TEXT_DIRECTION_FIRST_STRONG_LTR,
+                      "TEXT_DIRECTION_FIRST_STRONG_RTL" to View.TEXT_DIRECTION_FIRST_STRONG_RTL,
+                  )) {}
+        }
+        else -> {
+          object : EnumMapping<Int>(emptyMap()) {}
+        }
+      }
 
   private val TextAlignmentMapping: EnumMapping<Int> =
-      object :
-          EnumMapping<Int>(
-              mapOf(
-                  "TEXT_ALIGNMENT_INHERIT" to View.TEXT_ALIGNMENT_INHERIT,
-                  "TEXT_ALIGNMENT_GRAVITY" to View.TEXT_ALIGNMENT_GRAVITY,
-                  "TEXT_ALIGNMENT_TEXT_START" to View.TEXT_ALIGNMENT_TEXT_START,
-                  "TEXT_ALIGNMENT_TEXT_END" to View.TEXT_ALIGNMENT_TEXT_END,
-                  "TEXT_ALIGNMENT_CENTER" to View.TEXT_ALIGNMENT_CENTER,
-                  "TEXT_ALIGNMENT_VIEW_START" to View.TEXT_ALIGNMENT_VIEW_START,
-                  "TEXT_ALIGNMENT_VIEW_END" to View.TEXT_ALIGNMENT_VIEW_END,
-              )) {}
+      when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 -> {
+          object :
+              EnumMapping<Int>(
+                  mapOf(
+                      "TEXT_ALIGNMENT_INHERIT" to View.TEXT_ALIGNMENT_INHERIT,
+                      "TEXT_ALIGNMENT_GRAVITY" to View.TEXT_ALIGNMENT_GRAVITY,
+                      "TEXT_ALIGNMENT_TEXT_START" to View.TEXT_ALIGNMENT_TEXT_START,
+                      "TEXT_ALIGNMENT_TEXT_END" to View.TEXT_ALIGNMENT_TEXT_END,
+                      "TEXT_ALIGNMENT_CENTER" to View.TEXT_ALIGNMENT_CENTER,
+                      "TEXT_ALIGNMENT_VIEW_START" to View.TEXT_ALIGNMENT_VIEW_START,
+                      "TEXT_ALIGNMENT_VIEW_END" to View.TEXT_ALIGNMENT_VIEW_END,
+                  )) {}
+        }
+        else -> {
+          object : EnumMapping<Int>(emptyMap()) {}
+        }
+      }
 
   private val GravityMapping =
       object :
@@ -235,8 +269,10 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
   init {
     try {
+      @SuppressLint("DiscouragedPrivateApi")
       KeyedTagsField = View::class.java.getDeclaredField("mKeyedTags")
       KeyedTagsField?.let { field -> field.isAccessible = true }
+      @SuppressLint("DiscouragedPrivateApi")
       ListenerInfoField = View::class.java.getDeclaredField("mListenerInfo")
       ListenerInfoField?.let { field -> field.isAccessible = true }
       val viewInfoClassName = View::class.java.name + "\$ListenerInfo"

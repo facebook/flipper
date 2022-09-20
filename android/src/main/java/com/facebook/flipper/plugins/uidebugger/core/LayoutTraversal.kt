@@ -18,7 +18,8 @@ class LayoutTraversal(
     val root: ApplicationRef
 ) {
 
-  internal inline fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
+  @Suppress("unchecked_cast")
+  internal fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
 
   /** Traverses the native android hierarchy */
   fun traverse(): List<Node> {
@@ -69,7 +70,7 @@ class LayoutTraversal(
                 childrenIds,
                 activeChildId))
       } catch (exception: Exception) {
-        Log.e(LogTag, "Error while processing node ${node.javaClass.name} ${node} ", exception)
+        Log.e(LogTag, "Error while processing node ${node.javaClass.name} $node", exception)
       }
     }
 
