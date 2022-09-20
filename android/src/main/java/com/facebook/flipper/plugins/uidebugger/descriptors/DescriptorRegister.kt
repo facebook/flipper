@@ -68,9 +68,9 @@ class DescriptorRegister {
       mutableClass = mutableClass.superclass
     }
 
-    return if (register[clazz] != null) {
+    return if (register[mutableClass] != null) {
       @Suppress("unchecked_cast")
-      register[clazz] as NodeDescriptor<T>
+      register[mutableClass] as NodeDescriptor<T>
     } else {
       null
     }
