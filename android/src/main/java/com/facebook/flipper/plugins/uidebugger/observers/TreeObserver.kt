@@ -12,18 +12,18 @@ import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.Context
 
 /*
-Stateful class that manages some subtree in the UI Hierarchy.
-It is responsible for:
- 1. listening to the relevant framework events
- 2. Traversing the hierarchy of the managed nodes
- 3. Diffing to previous state (optional)
- 4. Pushing out updates for its entire set of managed nodes
-
- If while traversing it encounters a node type which has its own TreeObserver, it
- does not traverse that, instead it sets up a Tree observer responsible for that subtree
-
- The parent is responsible for detecting when a child observer needs to be cleaned up
-*/
+ * Represents a stateful observer that manages some subtree in the UI Hierarchy.
+ * It is responsible for:
+ *  1. Listening to the relevant framework events
+ *  2. Traversing the hierarchy of the managed nodes
+ *  3. Diffing to previous state (optional)
+ *  4. Pushing out updates for its entire set of managed nodes
+ *
+ * If while traversing it encounters a node type which has its own TreeObserver, it
+ * does not traverse that, instead it sets up a Tree observer responsible for that subtree
+ *
+ * The parent is responsible for detecting when a child observer needs to be cleaned up
+ */
 abstract class TreeObserver<T> {
 
   protected val children: MutableMap<Int, TreeObserver<*>> = mutableMapOf()
@@ -44,14 +44,14 @@ abstract class TreeObserver<T> {
 
     // Add any new observers
     for (observerRoot in observerRootsNodes) {
-
       if (!children.containsKey(observerRoot.identityHashCode())) {
-        val childObserver = context.observerFactory.createObserver(observerRoot, context)!!
-        Log.d(
-            LogTag,
-            "For Observer ${this.type} discovered new child of type ${childObserver.type} Node ID ${observerRoot.identityHashCode()}")
-        childObserver.subscribe(observerRoot)
-        children[observerRoot.identityHashCode()] = childObserver
+        context.observerFactory.createObserver(observerRoot, context)?.let { childObserver ->
+          Log.d(
+              LogTag,
+              "Observer ${this.type} discovered new child of type ${childObserver.type} Node ID ${observerRoot.identityHashCode()}")
+          childObserver.subscribe(observerRoot)
+          children[observerRoot.identityHashCode()] = childObserver
+        }
       }
     }
 
@@ -59,16 +59,17 @@ abstract class TreeObserver<T> {
     val observerRootIds = observerRootsNodes.map { it.identityHashCode() }
     for (childKey in children.keys) {
       if (!observerRootIds.contains(childKey)) {
+        children[childKey]?.let { childObserver ->
+          Log.d(
+              LogTag,
+              "Observer ${this.type} cleaning up child of type ${childObserver.type} Node ID $childKey")
 
-        Log.d(
-            LogTag,
-            "For Observer ${this.type} cleaning up child of type ${children[childKey]!!.type} Node ID ${childKey}")
-
-        children[childKey]!!.cleanUpRecursive()
+          childObserver.cleanUpRecursive()
+        }
       }
     }
 
-    Log.d(LogTag, "For Observer ${this.type} Sending ${visitedNodes.size} ")
+    Log.d(LogTag, "For Observer ${this.type} Sending ${visitedNodes.size}")
     context.treeObserverManager.send(
         SubtreeUpdate(type, visitedNodes, start, System.currentTimeMillis()))
   }
