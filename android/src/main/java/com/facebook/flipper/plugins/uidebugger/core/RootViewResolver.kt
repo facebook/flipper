@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.uidebugger.core
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.view.View
 import android.view.WindowManager
@@ -86,11 +87,12 @@ class RootViewResolver {
     try {
       viewsField?.let { vf ->
         // Forgive me father for I have sinned...
+        @SuppressLint("DiscouragedPrivateApi")
         val modifiers = Field::class.java.getDeclaredField("accessFlags")
         modifiers.isAccessible = true
         modifiers.setInt(vf, vf.modifiers and Modifier.FINAL.inv())
 
-        val views = vf[windowManagerObj] as List<View>
+        @Suppress("unchecked_cast") val views = vf[windowManagerObj] as List<View>
 
         val observableViews = ObservableArrayList()
         observableViews.setListener(listener)
