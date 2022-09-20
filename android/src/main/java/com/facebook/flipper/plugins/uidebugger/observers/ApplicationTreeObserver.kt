@@ -10,13 +10,12 @@ package com.facebook.flipper.plugins.uidebugger.observers
 import android.util.Log
 import android.view.View
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.core.Context
 import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
 
 /**
- * responsible for observing the activity stack and managing the subscription to the top most
+ * Responsible for observing the activity stack and managing the subscription to the top most
  * content view (decor view)
  */
 class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRef>() {
@@ -48,6 +47,7 @@ class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRe
   }
 
   override fun unsubscribe() {
-    context.applicationRef.setActivityStackChangedListener(null)
+    // Not entirely sure this will ever happen or be needed.
+    // context.applicationRef.setActivityStackChangedListener(null)
   }
 }

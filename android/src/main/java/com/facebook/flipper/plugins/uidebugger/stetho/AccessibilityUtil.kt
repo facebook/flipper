@@ -44,7 +44,7 @@ object AccessibilityUtil {
    * @param node The [AccessibilityNodeInfoCompat] to evaluate
    * @return `true` if it meets the criterion for producing spoken feedback
    */
-  fun isSpeakingNode(node: AccessibilityNodeInfoCompat?, view: View?): Boolean {
+  private fun isSpeakingNode(node: AccessibilityNodeInfoCompat?, view: View?): Boolean {
     if (node == null || view == null) {
       return false
     }
@@ -69,7 +69,7 @@ object AccessibilityUtil {
    * @param node The [AccessibilityNodeInfoCompat] to evaluate
    * @return `true` if it has any non-actionable speaking descendants within its subtree
    */
-  fun hasNonActionableSpeakingDescendants(
+  private fun hasNonActionableSpeakingDescendants(
       node: AccessibilityNodeInfoCompat?,
       view: View?
   ): Boolean {
@@ -79,10 +79,7 @@ object AccessibilityUtil {
     val viewGroup = view as ViewGroup
     val count = viewGroup.childCount - 1
     for (i in 0..count) {
-      val childView = viewGroup.getChildAt(i)
-      if (childView == null) {
-        continue
-      }
+      val childView = viewGroup.getChildAt(i) ?: continue
       val childNode = AccessibilityNodeInfoCompat.obtain()
       try {
         ViewCompat.onInitializeAccessibilityNodeInfo(childView, childNode)
@@ -107,7 +104,7 @@ object AccessibilityUtil {
    * @param node The [AccessibilityNodeInfoCompat] to evaluate
    * @return `true` if it is possible to gain accessibility focus
    */
-  fun isAccessibilityFocusable(node: AccessibilityNodeInfoCompat?, view: View?): Boolean {
+  private fun isAccessibilityFocusable(node: AccessibilityNodeInfoCompat?, view: View?): Boolean {
     if (node == null || view == null) {
       return false
     }

@@ -25,19 +25,19 @@ class FragmentCompatSupportLib :
   override val fragmentActivityClass: Class<FragmentActivity>
     get() = FragmentActivity::class.java
 
-  override fun forFragment(): FragmentAccessorSupportLib? {
+  override fun forFragment(): FragmentAccessorSupportLib {
     return fragmentAccessor
   }
 
-  override fun forDialogFragment(): DialogFragmentAccessorSupportLib? {
+  override fun forDialogFragment(): DialogFragmentAccessorSupportLib {
     return dialogFragmentAccessor
   }
 
-  override fun forFragmentManager(): FragmentManagerAccessor<FragmentManager, Fragment>? {
+  override fun forFragmentManager(): FragmentManagerAccessor<FragmentManager, Fragment> {
     return fragmentManagerAccessor
   }
 
-  override fun forFragmentActivity(): FragmentActivityAccessorSupportLib? {
+  override fun forFragmentActivity(): FragmentActivityAccessorSupportLib {
     return fragmentActivityAccessor
   }
 
@@ -48,12 +48,12 @@ class FragmentCompatSupportLib :
 
     val activityAccessor = forFragmentActivity()
     val fragmentManager =
-        activityAccessor?.getFragmentManager(activity as FragmentActivity) ?: return emptyList()
+        activityAccessor.getFragmentManager(activity as FragmentActivity) ?: return emptyList()
 
     val fragmentManagerAccessor = forFragmentManager()
     var addedFragments: List<Any?>? = null
     try {
-      addedFragments = fragmentManagerAccessor?.getAddedFragments(fragmentManager)
+      addedFragments = fragmentManagerAccessor.getAddedFragments(fragmentManager)
     } catch (e: Exception) {}
 
     if (addedFragments != null) {
@@ -78,7 +78,7 @@ class FragmentCompatSupportLib :
 
     val activityAccessor = forFragmentActivity()
     val fragmentManager =
-        activityAccessor?.getFragmentManager(activity as FragmentActivity) ?: return null
+        activityAccessor.getFragmentManager(activity as FragmentActivity) ?: return null
 
     return findFragmentForViewInFragmentManager(fragmentManager, view)
   }
@@ -90,7 +90,7 @@ class FragmentCompatSupportLib :
     val fragmentManagerAccessor = forFragmentManager()
     var fragments: List<Any>? = null
     try {
-      fragments = fragmentManagerAccessor?.getAddedFragments(fragmentManager)
+      fragments = fragmentManagerAccessor.getAddedFragments(fragmentManager)
     } catch (e: Exception) {}
 
     if (fragments != null) {
@@ -112,17 +112,13 @@ class FragmentCompatSupportLib :
     }
 
     val fragmentAccessor = forFragment()
-    fragmentAccessor?.let { accessor ->
-      if (accessor.getView(fragment as Fragment) === view) {
-        return fragment
-      }
-      val childFragmentManager = accessor.getChildFragmentManager(fragment as Fragment)
-      return if (childFragmentManager != null) {
-        findFragmentForViewInFragmentManager(childFragmentManager, view)
-      } else null
+    if (fragmentAccessor.getView(fragment as Fragment) === view) {
+      return fragment
     }
-
-    return null
+    val childFragmentManager = fragmentAccessor.getChildFragmentManager(fragment as Fragment)
+    return if (childFragmentManager != null) {
+      findFragmentForViewInFragmentManager(childFragmentManager, view)
+    } else null
   }
 
   open class FragmentAccessorSupportLib : FragmentAccessor<Fragment, FragmentManager> {
@@ -161,7 +157,7 @@ class FragmentCompatSupportLib :
 
   class FragmentActivityAccessorSupportLib :
       FragmentActivityAccessor<FragmentActivity, FragmentManager> {
-    override fun getFragmentManager(activity: FragmentActivity): FragmentManager? {
+    override fun getFragmentManager(activity: FragmentActivity): FragmentManager {
       return activity.supportFragmentManager
     }
   }

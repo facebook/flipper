@@ -9,8 +9,8 @@ package com.facebook.flipper.plugins.uidebugger.litho
 
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.observers.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverBuilder
 import com.facebook.litho.LithoView
 

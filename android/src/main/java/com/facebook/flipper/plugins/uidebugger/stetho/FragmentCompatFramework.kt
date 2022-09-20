@@ -56,7 +56,7 @@ class FragmentCompatFramework :
   }
 
   override fun forFragmentManager():
-      FragmentManagerAccessorViaReflection<FragmentManager, Fragment>? {
+      FragmentManagerAccessorViaReflection<FragmentManager, Fragment> {
     return fragmentManagerAccessor
   }
 
@@ -75,7 +75,7 @@ class FragmentCompatFramework :
     val fragmentManagerAccessor = forFragmentManager()
     var addedFragments: List<Any?>? = null
     try {
-      addedFragments = fragmentManagerAccessor?.getAddedFragments(fragmentManager)
+      addedFragments = fragmentManagerAccessor.getAddedFragments(fragmentManager)
     } catch (e: Exception) {}
 
     if (addedFragments != null) {
@@ -99,7 +99,7 @@ class FragmentCompatFramework :
     }
 
     val activityAccessor = forFragmentActivity()
-    val fragmentManager = activityAccessor?.getFragmentManager(activity) ?: return null
+    val fragmentManager = activityAccessor.getFragmentManager(activity) ?: return null
 
     return findFragmentForViewInFragmentManager(fragmentManager, view)
   }
@@ -111,7 +111,7 @@ class FragmentCompatFramework :
     val fragmentManagerAccessor = forFragmentManager()
     var fragments: List<Any>? = null
     try {
-      fragments = fragmentManagerAccessor?.getAddedFragments(fragmentManager)
+      fragments = fragmentManagerAccessor.getAddedFragments(fragmentManager)
     } catch (e: Exception) {}
 
     if (fragments != null) {

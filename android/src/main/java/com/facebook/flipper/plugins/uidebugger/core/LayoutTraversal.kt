@@ -46,7 +46,7 @@ class LayoutTraversal(
           val childDescriptor =
               descriptorRegister.descriptorForClassUnsafe(child::class.java).asAny()
           childrenIds.add(childDescriptor.getId(child))
-          // if there is an active child then dont traverse it
+          // if there is an active child then don't traverse it
           if (activeChild == null) {
             stack.add(child)
           }

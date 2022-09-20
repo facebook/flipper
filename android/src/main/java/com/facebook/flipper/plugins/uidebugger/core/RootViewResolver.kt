@@ -13,7 +13,6 @@ import android.view.WindowManager
 import java.lang.reflect.Field
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Modifier
-import java.util.ArrayList
 
 /**
  * Provides access to all root views in an application.
@@ -125,21 +124,23 @@ class RootViewResolver {
     var params: List<WindowManager.LayoutParams>? = null
     try {
       viewsField?.let { field ->
-        if (Build.VERSION.SDK_INT < 19) {
-          val arr = field[windowManagerObj] as Array<View>
-          views = arr.toList()
-        } else {
-          views = field[windowManagerObj] as List<View>
-        }
+        views =
+            if (Build.VERSION.SDK_INT < 19) {
+              val arr = field[windowManagerObj] as Array<View>
+              arr.toList()
+            } else {
+              field[windowManagerObj] as List<View>
+            }
       }
 
       paramsField?.let { field ->
-        if (Build.VERSION.SDK_INT < 19) {
-          val arr = field[windowManagerObj] as Array<WindowManager.LayoutParams>
-          params = arr.toList() as List<WindowManager.LayoutParams>
-        } else {
-          params = field[windowManagerObj] as List<WindowManager.LayoutParams>
-        }
+        params =
+            if (Build.VERSION.SDK_INT < 19) {
+              val arr = field[windowManagerObj] as Array<WindowManager.LayoutParams>
+              arr.toList() as List<WindowManager.LayoutParams>
+            } else {
+              field[windowManagerObj] as List<WindowManager.LayoutParams>
+            }
       }
     } catch (re: RuntimeException) {
       return null
@@ -150,12 +151,12 @@ class RootViewResolver {
     val roots = mutableListOf<RootView>()
     views?.let { views ->
       params?.let { params ->
-        for (i in views.indices) {
-          val view = views[i]
-          // TODO  FIX, len(param) is not always the same as len(views) For now just use first
-
-          // params
-          roots.add(RootView(view, null))
+        if (views.size == params.size) {
+          for (i in views.indices) {
+            val view = views[i]
+            val param = params[i]
+            roots.add(RootView(view, param))
+          }
         }
       }
     }

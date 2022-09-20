@@ -8,14 +8,11 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.app.Activity
-import android.util.Log
-import com.facebook.flipper.plugins.uidebugger.LogTag
+import android.view.View
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
-import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
 
 object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
 
-  val rootsLocal = RootViewResolver()
   override fun onGetActiveChild(node: ApplicationRef): Any? {
     return if (node.activitiesStack.isNotEmpty()) node.activitiesStack.last() else null
   }
@@ -34,27 +31,17 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
   override fun onGetChildren(node: ApplicationRef, children: MutableList<Any>) {
     val activeRoots = node.rootViews
 
-    Log.i(LogTag, rootsLocal.toString())
-    activeRoots.let { roots ->
-      for (root in roots) {
-        var added = false
-        /**
-         * This code serves 2 purposes: 1.it picks up root views not tied to an activity (dialogs)
-         * 2. We can get initialized late and miss the first activity, it does seem that the root
-         * view resolver is able to (usually ) get the root view regardless, with this we insert the
-         * root decor view without the activity. Ideally we wouldn't rely on this behaviour and find
-         * a better way to track activities
-         */
-        for (activity: Activity in node.activitiesStack) {
-          if (activity.window.decorView == root) {
-            children.add(activity)
-            added = true
-            break
-          }
-        }
-        if (!added) {
-          children.add(root)
-        }
+    val added = mutableSetOf<View>()
+    for (activity: Activity in node.activitiesStack) {
+      children.add(activity)
+      added.add(activity.window.decorView)
+    }
+
+    // Picks up root views not tied to an activity (dialogs)
+    for (root in activeRoots) {
+      if (!added.contains(root)) {
+        children.add(root)
+        added.add(root)
       }
     }
   }

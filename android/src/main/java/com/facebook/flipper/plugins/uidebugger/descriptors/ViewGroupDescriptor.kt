@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
-import android.app.Fragment
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,7 @@ import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
 import com.facebook.flipper.plugins.uidebugger.common.Inspectable
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
-import com.facebook.flipper.plugins.uidebugger.stetho.FragmentCompat
+import com.facebook.flipper.plugins.uidebugger.core.FragmentTracker
 
 object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
 
@@ -32,8 +31,8 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
     val count = node.childCount - 1
     for (i in 0..count) {
       val child: View = node.getChildAt(i)
-      val fragment = getAttachedFragmentForView(child)
-      if (fragment != null && !FragmentCompat.isDialogFragment(fragment)) {
+      val fragment = FragmentTracker.getFragment(child)
+      if (fragment != null) {
         children.add(fragment)
       } else children.add(child)
     }
@@ -63,19 +62,4 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
                   "LAYOUT_MODE_CLIP_BOUNDS" to ViewGroupCompat.LAYOUT_MODE_CLIP_BOUNDS,
                   "LAYOUT_MODE_OPTICAL_BOUNDS" to ViewGroupCompat.LAYOUT_MODE_OPTICAL_BOUNDS,
               )) {}
-
-  private fun getAttachedFragmentForView(v: View): Any? {
-    return try {
-      val fragment = FragmentCompat.findFragmentForView(v)
-      var added = false
-      if (fragment is Fragment) {
-        added = fragment.isAdded
-      } else if (fragment is androidx.fragment.app.Fragment) {
-        added = fragment.isAdded
-      }
-      if (added) fragment else null
-    } catch (e: RuntimeException) {
-      null
-    }
-  }
 }

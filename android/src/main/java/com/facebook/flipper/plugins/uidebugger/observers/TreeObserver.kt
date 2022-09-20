@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.plugins.uidebugger
+package com.facebook.flipper.plugins.uidebugger.observers
 
 import android.util.Log
+import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.Context
-import com.facebook.flipper.plugins.uidebugger.observers.SubtreeUpdate
 
 /*
 Stateful class that manages some subtree in the UI Hierarchy.
@@ -75,7 +75,7 @@ abstract class TreeObserver<T> {
   }
 
   fun cleanUpRecursive() {
-    Log.i(LogTag, "Cleaning up observer ${this}")
+    Log.i(LogTag, "Cleaning up observer $this")
     children.values.forEach { it.cleanUpRecursive() }
     unsubscribe()
     children.clear()

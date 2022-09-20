@@ -47,6 +47,7 @@ abstract class FragmentCompat<
         }
         return field
       }
+
     private var hasSupportFragment = false
     init {
       hasSupportFragment = tryGetClassForName("androidx.fragment.app.Fragment") != null

@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 
 /** Layout Visitor traverses the entire view hierarchy from a given root. */
-class LayoutVisitor(val visitor: Visitor) {
+class LayoutVisitor(private val visitor: Visitor) {
   interface Visitor {
     fun visit(view: View)
   }

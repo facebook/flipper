@@ -7,11 +7,9 @@
 
 package com.facebook.flipper.plugins.uidebugger.observers
 
-import com.facebook.flipper.plugins.uidebugger.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.core.Context
 
 interface TreeObserverBuilder<T> {
-
   fun canBuildFor(node: Any): Boolean
   fun build(context: Context): TreeObserver<T>
 }

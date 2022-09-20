@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.core.Context
 
 typealias DecorView = View

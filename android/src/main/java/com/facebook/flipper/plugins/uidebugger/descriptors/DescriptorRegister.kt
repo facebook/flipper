@@ -33,17 +33,22 @@ class DescriptorRegister {
       mapping.register(TextView::class.java, TextViewDescriptor)
       mapping.register(Button::class.java, ButtonDescriptor)
       mapping.register(ViewPager::class.java, ViewPagerDescriptor)
+      mapping.register(android.app.Fragment::class.java, FragmentFrameworkDescriptor)
+      mapping.register(androidx.fragment.app.Fragment::class.java, FragmentSupportDescriptor)
 
+      @Suppress("UNCHECKED_CAST")
       for (clazz in mapping.register.keys) {
-        val descriptor: NodeDescriptor<*>? = mapping.register[clazz]
-        descriptor?.let { descriptor ->
+        val maybeDescriptor: NodeDescriptor<*>? = mapping.register[clazz]
+        maybeDescriptor?.let { descriptor ->
           if (descriptor is ChainedDescriptor<*>) {
             val chainedDescriptor = descriptor as ChainedDescriptor<Any>
-            val superClass: Class<*> = clazz.getSuperclass()
-            val superDescriptor: NodeDescriptor<*>? = mapping.descriptorForClass(superClass)
-            // todo we should walk all the way up the superclass hierarchy?
-            if (superDescriptor is ChainedDescriptor<*>) {
-              chainedDescriptor.setSuper(superDescriptor as ChainedDescriptor<Any>)
+            val superClass: Class<*> = clazz.superclass
+            val maybeSuperDescriptor: NodeDescriptor<*>? = mapping.descriptorForClass(superClass)
+
+            maybeSuperDescriptor?.let { superDescriptor ->
+              if (superDescriptor is ChainedDescriptor<*>) {
+                chainedDescriptor.setSuper(superDescriptor as ChainedDescriptor<Any>)
+              }
             }
           }
         }
@@ -58,11 +63,17 @@ class DescriptorRegister {
   }
 
   fun <T> descriptorForClass(clazz: Class<T>): NodeDescriptor<T>? {
-    var clazz: Class<*> = clazz
-    while (!register.containsKey(clazz)) {
-      clazz = clazz.superclass
+    var mutableClass: Class<*> = clazz
+    while (!register.containsKey(mutableClass)) {
+      mutableClass = mutableClass.superclass
     }
-    return register[clazz] as NodeDescriptor<T>
+
+    return if (register[clazz] != null) {
+      @Suppress("UNCHECKED_CAST")
+      register[clazz] as NodeDescriptor<T>
+    } else {
+      null
+    }
   }
 
   fun <T> descriptorForClassUnsafe(clazz: Class<T>): NodeDescriptor<T> {
