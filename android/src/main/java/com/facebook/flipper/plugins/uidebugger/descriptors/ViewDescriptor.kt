@@ -21,7 +21,7 @@ import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
 import com.facebook.flipper.plugins.uidebugger.common.Inspectable
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
-import com.facebook.flipper.plugins.uidebugger.stetho.ResourcesUtil
+import com.facebook.flipper.plugins.uidebugger.util.ResourcesUtil
 import java.lang.reflect.Field
 
 object ViewDescriptor : ChainedDescriptor<View>() {

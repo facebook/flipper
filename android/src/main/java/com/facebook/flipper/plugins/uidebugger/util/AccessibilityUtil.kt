@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.plugins.uidebugger.stetho
+package com.facebook.flipper.plugins.uidebugger.util
 
 import android.text.TextUtils
 import android.view.View
