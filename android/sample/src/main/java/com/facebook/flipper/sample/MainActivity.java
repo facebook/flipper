@@ -29,7 +29,9 @@ public class MainActivity extends AppCompatActivity {
     final FlipperClient client = AndroidFlipperClient.getInstanceIfInitialized();
     if (client != null) {
       final ExampleFlipperPlugin samplePlugin = client.getPluginByClass(ExampleFlipperPlugin.class);
-      samplePlugin.setActivity(this);
+      if (samplePlugin != null) {
+        samplePlugin.setActivity(this);
+      }
     }
   }
 }

@@ -24,7 +24,7 @@ public class ListActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_list);
 
-    listView = (ListView) findViewById(R.id.list);
+    listView = findViewById(R.id.list);
 
     list = new ArrayList<>();
     list.add("Apple");
@@ -33,7 +33,7 @@ public class ListActivity extends Activity {
     list.add("Orange");
     list.add("Lychee");
     list.add("Guava");
-    list.add("Peech");
+    list.add("Peach");
     list.add("Melon");
     list.add("Watermelon");
     list.add("Papaya");

@@ -26,66 +26,36 @@ public class AnimationsActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_animations);
 
-    btnBlink = (Button) findViewById(R.id.btnBlink);
-    btnRotate = (Button) findViewById(R.id.btnRotate);
-    btnMove = (Button) findViewById(R.id.btnMove);
-    btnBounce = (Button) findViewById(R.id.btnBounce);
-    btnSequential = (Button) findViewById(R.id.btnSequential);
-    txtBlink = (TextView) findViewById(R.id.txt_blink);
-    txtRotate = (TextView) findViewById(R.id.txt_rotate);
-    txtMove = (TextView) findViewById(R.id.txt_move);
-    txtBounce = (TextView) findViewById(R.id.txt_bounce);
-    txtSeq = (TextView) findViewById(R.id.txt_seq);
+    btnBlink = findViewById(R.id.btnBlink);
+    btnRotate = findViewById(R.id.btnRotate);
+    btnMove = findViewById(R.id.btnMove);
+    btnBounce = findViewById(R.id.btnBounce);
+    btnSequential = findViewById(R.id.btnSequential);
+    txtBlink = findViewById(R.id.txt_blink);
+    txtRotate = findViewById(R.id.txt_rotate);
+    txtMove = findViewById(R.id.txt_move);
+    txtBounce = findViewById(R.id.txt_bounce);
+    txtSeq = findViewById(R.id.txt_seq);
 
     animBlink = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink);
-    // blink
     btnBlink.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            txtBlink.setVisibility(View.VISIBLE);
-            txtBlink.startAnimation(animBlink);
-          }
+        v -> {
+          txtBlink.setVisibility(View.VISIBLE);
+          txtBlink.startAnimation(animBlink);
         });
 
     animRotate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
 
-    // Rotate
-    btnRotate.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            txtRotate.startAnimation(animRotate);
-          }
-        });
+    btnRotate.setOnClickListener(v -> txtRotate.startAnimation(animRotate));
     animMove = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move);
-    // Move
-    btnMove.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            txtMove.startAnimation(animMove);
-          }
-        });
+
+    btnMove.setOnClickListener(v -> txtMove.startAnimation(animMove));
 
     animBounce = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.bounce);
-    // Slide Down
-    btnBounce.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            txtBounce.startAnimation(animBounce);
-          }
-        });
-    animSequential = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sequential);
-    // Sequential
-    btnSequential.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
 
-            txtSeq.startAnimation(animSequential);
-          }
-        });
+    btnBounce.setOnClickListener(v -> txtBounce.startAnimation(animBounce));
+    animSequential = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sequential);
+
+    btnSequential.setOnClickListener(v -> txtSeq.startAnimation(animSequential));
   }
 }

@@ -24,6 +24,8 @@ public class FlipperSampleApplication extends Application {
     Fresco.initialize(this);
 
     final FlipperClient client = AndroidFlipperClient.getInstance(this);
+    assert client != null;
+
     final FlipperInitializer.IntializationResult initializationResult =
         FlipperInitializer.initFlipperPlugins(this, client);
 

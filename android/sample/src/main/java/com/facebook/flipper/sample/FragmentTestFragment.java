@@ -15,39 +15,39 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 public class FragmentTestFragment extends Fragment {
-  View mView;
-  int mTicker;
+  View view;
+  int ticker;
 
   public FragmentTestFragment() {
-    mTicker = 0;
+    ticker = 0;
   }
 
   private void updateTicker() {
     try {
-      ViewGroup viewGroup = (ViewGroup) mView;
+      ViewGroup viewGroup = (ViewGroup) view;
       TextView textView = (TextView) viewGroup.getChildAt(1);
-      String text = String.valueOf(mTicker++);
+      String text = String.valueOf(ticker++);
 
       textView.setText(text);
     } finally {
       // 100% guarantee that this always happens, even if
       // your update method throws an exception
-      mView.postDelayed(
+      view.postDelayed(
           new Runnable() {
             @Override
             public void run() {
               updateTicker();
             }
           },
-          10000);
+          1000);
     }
   }
 
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mView = inflater.inflate(R.layout.fragment_test, container, false);
-    mView.postDelayed(
+    view = inflater.inflate(R.layout.fragment_test, container, false);
+    view.postDelayed(
         new Runnable() {
           @Override
           public void run() {
@@ -56,6 +56,6 @@ public class FragmentTestFragment extends Fragment {
         },
         1000);
 
-    return mView;
+    return view;
   }
 }

@@ -26,11 +26,11 @@ public class ButtonsActivity extends FragmentActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_buttons);
 
-    text = (TextView) findViewById(R.id.count);
+    text = findViewById(R.id.count);
 
-    button = (Button) findViewById(com.facebook.flipper.sample.R.id.btn_inc);
-    dialogOld = (Button) findViewById(R.id.dialog_old_api);
-    dialogFragment = (Button) findViewById(R.id.dialog_fragment);
+    button = findViewById(com.facebook.flipper.sample.R.id.btn_inc);
+    dialogOld = findViewById(R.id.dialog_old_api);
+    dialogFragment = findViewById(R.id.dialog_fragment);
     button.setOnClickListener(view -> ButtonsActivity.this.text.setText(String.valueOf(++count)));
 
     dialogFragment.setOnClickListener(
