@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.Bounds
 
 /**
  * A chained descriptor is a special type of descriptor that models the inheritance hierarchy in
@@ -56,9 +57,22 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
     return onGetName(node)
   }
 
+  final override fun getTags(node: T): Set<String> {
+    val tags = onGetTags(node) ?: mSuper?.getTags(node)
+    return tags ?: setOf()
+  }
+
+  open fun onGetTags(node: T): Set<String>? = null
+
   open fun onGetActiveChild(node: T): Any? = null
 
   abstract fun onGetName(node: T): String
+
+  final override fun getBounds(node: T): Bounds? {
+    return onGetBounds(node) ?: mSuper?.getBounds(node)
+  }
+
+  open fun onGetBounds(node: T): Bounds? = null
 
   /** The children this node exposes in the inspector. */
   final override fun getChildren(node: T): List<Any> {

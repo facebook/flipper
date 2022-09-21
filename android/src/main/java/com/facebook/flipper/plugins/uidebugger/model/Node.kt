@@ -14,6 +14,11 @@ data class Node(
     val id: String,
     val name: String,
     val attributes: Map<String, InspectableObject>,
+    val bounds: Bounds?,
+    val tags: Set<String>,
     val children: List<String>,
     val activeChild: String?,
 )
+
+@kotlinx.serialization.Serializable
+data class Bounds(val x: Int, val y: Int, val width: Int, val height: Int)

@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.Bounds
 
 /*
  Descriptors are an extension point used during traversal to extract data out of arbitrary
@@ -19,12 +20,23 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 
 typealias SectionName = String
 
+object BaseTags {
+  const val Declarative = "Declarative"
+  const val Native = "Native"
+  const val Accessibility = "Accessibility"
+  const val Android = "Android"
+  const val Unknown = "Unknown"
+}
+
 interface NodeDescriptor<T> {
   /**
    * A globally unique ID used to identify a node in a hierarchy. If your node does not have a
    * globally unique ID it is fine to rely on [System.identityHashCode].
    */
   fun getId(node: T): String
+
+  /** Should be w.r.t the direct parent */
+  fun getBounds(node: T): Bounds?
 
   /**
    * The name used to identify this node in the inspector. Does not need to be unique. A good
@@ -46,4 +58,10 @@ interface NodeDescriptor<T> {
    * order and with a header matching the given name.
    */
   fun getData(node: T): Map<SectionName, InspectableObject>
+
+  /**
+   * Set of tags to describe this node in an abstract way for the UI Unfortunately this can't be an
+   * enum as we have to plugin 3rd party frameworks dynamically
+   */
+  fun getTags(node: T): Set<String>
 }

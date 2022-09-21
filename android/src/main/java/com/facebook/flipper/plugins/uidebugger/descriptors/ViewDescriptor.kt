@@ -21,6 +21,7 @@ import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
 import com.facebook.flipper.plugins.uidebugger.common.Inspectable
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.util.ResourcesUtil
 import java.lang.reflect.Field
 
@@ -33,6 +34,12 @@ object ViewDescriptor : ChainedDescriptor<View>() {
   override fun onGetName(node: View): String {
     return node.javaClass.simpleName
   }
+
+  override fun onGetBounds(node: View): Bounds {
+    return Bounds(node.left, node.top, node.width, node.height)
+  }
+
+  override fun onGetTags(node: View): Set<String> = setOf(BaseTags.Native, BaseTags.Android)
 
   override fun onGetData(
       node: View,
@@ -50,7 +57,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     fromDrawable(node.background)?.let { props["background"] = it }
 
     node.tag?.let { InspectableValue.fromAny(it, mutable = false) }?.let { props.put("tag", it) }
-    props["keyedTags"] = InspectableObject(getTags(node))
+    props["keyedTags"] = InspectableObject(getViewTags(node))
     props["layoutParams"] = getLayoutParams(node)
     props["state"] =
         InspectableObject(
@@ -136,7 +143,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     return InspectableObject(params)
   }
 
-  private fun getTags(node: View): MutableMap<String, Inspectable> {
+  private fun getViewTags(node: View): MutableMap<String, Inspectable> {
     val tags = mutableMapOf<String, Inspectable>()
 
     KeyedTagsField?.let { field ->

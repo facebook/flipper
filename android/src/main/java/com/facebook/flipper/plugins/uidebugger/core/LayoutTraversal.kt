@@ -57,11 +57,17 @@ class LayoutTraversal(
         }
 
         val attributes = descriptor.getData(node)
+
+        val bounds = descriptor.getBounds(node)
+        val tags = descriptor.getTags(node)
+
         result.add(
             Node(
                 descriptor.getId(node),
                 descriptor.getName(node),
                 attributes,
+                bounds,
+                tags,
                 childrenIds,
                 activeChildId))
       } catch (exception: Exception) {

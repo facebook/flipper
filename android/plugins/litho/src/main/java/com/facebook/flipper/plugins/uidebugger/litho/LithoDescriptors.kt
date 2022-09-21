@@ -8,7 +8,9 @@
 package com.facebook.flipper.plugins.uidebugger.litho
 
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
+import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.litho.DebugComponent
 import com.facebook.litho.LithoView
 
@@ -29,7 +31,13 @@ object LithoViewDescriptor : NodeDescriptor<LithoView> {
   override fun getActiveChild(node: LithoView): Any? = null
 
   override fun getData(node: LithoView) = mapOf<String, InspectableObject>()
+
+  override fun getBounds(node: LithoView): Bounds? = null
+
+  override fun getTags(node: LithoView): Set<String> = setOf()
 }
+
+const val LithoTag = "Litho"
 
 object DebugComponentDescriptor : NodeDescriptor<DebugComponent> {
   override fun getId(node: DebugComponent): String = System.identityHashCode(node).toString()
@@ -60,4 +68,10 @@ object DebugComponentDescriptor : NodeDescriptor<DebugComponent> {
   override fun getActiveChild(node: DebugComponent): Any? = null
 
   override fun getData(node: DebugComponent) = mapOf<String, InspectableObject>()
+  override fun getBounds(node: DebugComponent): Bounds {
+    val bounds = node.bounds
+    return Bounds(bounds.left, bounds.top, bounds.width(), bounds.height())
+  }
+
+  override fun getTags(node: DebugComponent): Set<String> = setOf(BaseTags.Declarative, LithoTag)
 }
