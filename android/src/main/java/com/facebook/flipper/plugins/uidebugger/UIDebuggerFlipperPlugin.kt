@@ -46,6 +46,7 @@ class UIDebuggerFlipperPlugin(
 
   @Throws(Exception::class)
   override fun onConnect(connection: FlipperConnection) {
+    Log.i(LogTag, "Connected")
     this.context.connectionRef.connection = connection
 
     val rootDescriptor =
@@ -57,15 +58,14 @@ class UIDebuggerFlipperPlugin(
             InitEvent.serializer(), InitEvent(rootDescriptor.getId(context.applicationRef))))
 
     context.treeObserverManager.start()
-    //    nativeScanScheduler.start()
   }
 
   @Throws(Exception::class)
   override fun onDisconnect() {
     this.context.connectionRef.connection = null
-    Log.e(LogTag, "disconnected")
+    Log.i(LogTag, "Disconnected")
 
-    this.nativeScanScheduler.stop()
+    context.treeObserverManager.stop()
   }
 
   override fun runInBackground(): Boolean {

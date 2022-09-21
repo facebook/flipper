@@ -29,7 +29,8 @@ data class SubtreeUpdate(
 class TreeObserverManager(val context: Context) {
 
   private val rootObserver = ApplicationTreeObserver(context)
-  private val treeUpdates = Channel<SubtreeUpdate>(Channel.UNLIMITED)
+  private lateinit var treeUpdates: Channel<SubtreeUpdate>
+  private var job: Job? = null
   private val workerScope = CoroutineScope(Dispatchers.IO)
   private val txId = AtomicInteger()
 
@@ -43,52 +44,56 @@ class TreeObserverManager(val context: Context) {
    */
   fun start() {
 
+    treeUpdates = Channel(Channel.UNLIMITED)
     rootObserver.subscribe(context.applicationRef)
 
-    workerScope.launch {
-      while (isActive) {
-        try {
+    job =
+        workerScope.launch {
+          while (isActive) {
+            try {
 
-          val treeUpdate = treeUpdates.receive()
+              val treeUpdate = treeUpdates.receive()
 
-          val onWorkerThread = System.currentTimeMillis()
+              val onWorkerThread = System.currentTimeMillis()
 
-          val txId = txId.getAndIncrement().toLong()
-          val serialized =
-              Json.encodeToString(
-                  SubtreeUpdateEvent.serializer(),
-                  SubtreeUpdateEvent(txId, treeUpdate.observerType, treeUpdate.nodes))
+              val txId = txId.getAndIncrement().toLong()
+              val serialized =
+                  Json.encodeToString(
+                      SubtreeUpdateEvent.serializer(),
+                      SubtreeUpdateEvent(txId, treeUpdate.observerType, treeUpdate.nodes))
 
-          val serializationEnd = System.currentTimeMillis()
+              val serializationEnd = System.currentTimeMillis()
 
-          context.connectionRef.connection?.send(SubtreeUpdateEvent.name, serialized)
-          val socketEnd = System.currentTimeMillis()
-          Log.i(LogTag, "Sent event for ${treeUpdate.observerType} nodes ${treeUpdate.nodes.size}")
+              context.connectionRef.connection?.send(SubtreeUpdateEvent.name, serialized)
+              val socketEnd = System.currentTimeMillis()
+              Log.i(
+                  LogTag,
+                  "Sent event for ${treeUpdate.observerType} nodes ${treeUpdate.nodes.size}")
 
-          val perfStats =
-              PerfStatsEvent(
-                  txId = txId,
-                  observerType = treeUpdate.observerType,
-                  start = treeUpdate.startTime,
-                  traversalComplete = treeUpdate.traversalCompleteTime,
-                  queuingComplete = onWorkerThread,
-                  serializationComplete = serializationEnd,
-                  socketComplete = socketEnd,
-                  nodesCount = treeUpdate.nodes.size)
-          context.connectionRef.connection?.send(
-              PerfStatsEvent.name, Json.encodeToString(PerfStatsEvent.serializer(), perfStats))
-        } catch (e: java.lang.Exception) {
-          Log.e(LogTag, "Error in channel ", e)
+              val perfStats =
+                  PerfStatsEvent(
+                      txId = txId,
+                      observerType = treeUpdate.observerType,
+                      start = treeUpdate.startTime,
+                      traversalComplete = treeUpdate.traversalCompleteTime,
+                      queuingComplete = onWorkerThread,
+                      serializationComplete = serializationEnd,
+                      socketComplete = socketEnd,
+                      nodesCount = treeUpdate.nodes.size)
+              context.connectionRef.connection?.send(
+                  PerfStatsEvent.name, Json.encodeToString(PerfStatsEvent.serializer(), perfStats))
+            } catch (e: CancellationException) {} catch (e: java.lang.Exception) {
+              Log.e(LogTag, "Unexpected Error in channel ", e)
+            }
+          }
+
+          Log.i(LogTag, "Shutting down worker")
         }
-      }
-
-      Log.i(LogTag, "shutting down worker")
-    }
   }
 
   fun stop() {
     rootObserver.cleanUpRecursive()
-    treeUpdates.close()
-    workerScope.cancel()
+    job?.cancel()
+    treeUpdates.cancel()
   }
 }
