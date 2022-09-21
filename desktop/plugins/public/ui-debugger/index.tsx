@@ -8,25 +8,7 @@
  */
 
 import {PluginClient, createState, createDataSource} from 'flipper-plugin';
-import {Id, UINode} from './types';
-
-export type PerfStatsEvent = {
-  txId: number;
-  observerType: string;
-  start: number;
-  traversalComplete: number;
-  serializationComplete: number;
-  queuingComplete: number;
-  socketComplete: number;
-  nodesCount: number;
-};
-
-type Events = {
-  init: {rootId: string};
-  nativeScan: {txId: number; nodes: UINode[]};
-  subtreeUpdate: {txId: number; nodes: UINode[]};
-  perfStats: PerfStatsEvent;
-};
+import {Events, Id, PerfStatsEvent, UINode} from './types';
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);

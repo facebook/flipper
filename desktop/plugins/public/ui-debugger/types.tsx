@@ -7,6 +7,45 @@
  * @format
  */
 
+export type Events = {
+  init: {rootId: string};
+  nativeScan: {txId: number; nodes: UINode[]};
+  subtreeUpdate: {txId: number; nodes: UINode[]};
+  perfStats: PerfStatsEvent;
+};
+
+export type PerfStatsEvent = {
+  txId: number;
+  observerType: string;
+  start: number;
+  traversalComplete: number;
+  serializationComplete: number;
+  queuingComplete: number;
+  socketComplete: number;
+  nodesCount: number;
+};
+
+export type UINode = {
+  id: Id;
+  name: string;
+  attributes: Record<string, Inspectable>;
+  children: Id[];
+  bounds?: Bounds;
+  tags: Tag[];
+  activeChild?: Id;
+};
+
+export type Bounds = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export type Id = string;
+
+export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho ';
+
 export type Inspectable =
   | InspectableObject
   | InspectableText
@@ -34,13 +73,4 @@ export type InspectableColor = {
 export type InspectableObject = {
   type: 'object';
   fields: Record<string, Inspectable>;
-};
-
-export type Id = string;
-export type UINode = {
-  id: Id;
-  name: string;
-  attributes: Record<string, Inspectable>;
-  children: Id[];
-  activeChild?: Id;
 };
