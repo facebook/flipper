@@ -49,6 +49,8 @@ class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
         }
 
     node.viewTreeObserver.addOnPreDrawListener(listener)
+    // sometimes we are too late to the party and we miss the first draw
+    listener?.onPreDraw()
   }
 
   override fun unsubscribe() {
