@@ -22,6 +22,7 @@ import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, UINode} from '../types';
 import {PerfStats} from './PerfStats';
 import {Tree} from './Tree';
+import {Visualization2D} from './Visualization2D';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -55,11 +56,14 @@ export function Component() {
     return (
       <>
         <Layout.ScrollContainer>
-          <Tree
-            setSelectedNode={setSelectedNode}
-            nodes={nodes}
-            rootId={rootId}
-          />
+          <Layout.Horizontal>
+            <Tree
+              setSelectedNode={setSelectedNode}
+              nodes={nodes}
+              rootId={rootId}
+            />
+            <Visualization2D root={rootId} nodes={nodes} />
+          </Layout.Horizontal>
         </Layout.ScrollContainer>
         {selectedNode && renderAttributesInspector(nodes.get(selectedNode))}
       </>
