@@ -101,6 +101,14 @@ object ActivityTracker : Application.ActivityLifecycleCallbacks {
       return stack
     }
 
+  /**
+   * Activity tracker is used to track activities. However, it cannot track via life-cycle events
+   * all those activities that were created prior to initialisation via the `start(application:
+   * Application)` method.
+   *
+   * As such, the method below makes a 'best effort' to find these untracked activities and add them
+   * to the tracked list.
+   */
   @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
   fun initialiseActivities() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
