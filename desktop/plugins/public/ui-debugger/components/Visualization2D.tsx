@@ -9,48 +9,52 @@
 
 import React from 'react';
 import {Bounds, Id, Tag, UINode} from '../types';
-import {styled, Layout} from 'flipper-plugin';
+import {styled, Layout, theme} from 'flipper-plugin';
 import {Typography} from 'antd';
 
 export const Visualization2D: React.FC<
-  {root: Id; nodes: Map<Id, UINode>} & React.HTMLAttributes<HTMLDivElement>
-> = ({root, nodes}) => {
-  //
-  const bounds = nodes.get(root)?.bounds;
-  const rootBorderStyle = bounds
-    ? {
-        borderWidth: '3px',
-        margin: '-3px',
-        borderStyle: 'solid',
-        borderColor: 'black',
-        width: bounds.width / 2,
-        height: bounds.height / 2,
-      }
-    : {};
+  {
+    root: Id;
+    nodes: Map<Id, UINode>;
+    hoveredNode?: Id;
+    onSelectNode: (id: Id) => void;
+  } & React.HTMLAttributes<HTMLDivElement>
+> = ({root, nodes, hoveredNode, onSelectNode}) => {
   return (
     <Layout.Container gap="large">
       <Typography.Title>Visualizer</Typography.Title>
+
       <div
         style={{
           //this sets the reference frame for the absolute positioning
-          //of the nodes
+          //of the individual absolutely positioned nodes
           position: 'relative',
-          // ...rootBorderStyle,
         }}>
-        <VisualizationNode isRoot nodeId={root} nodes={nodes} />;
+        <Visualization2DNode
+          isRoot
+          nodeId={root}
+          nodes={nodes}
+          hoveredNode={hoveredNode}
+          onSelectNode={onSelectNode}
+        />
+        ;
       </div>
     </Layout.Container>
   );
 };
 
-function VisualizationNode({
+function Visualization2DNode({
   nodeId,
   nodes,
   isRoot,
+  hoveredNode,
+  onSelectNode,
 }: {
   isRoot: boolean;
   nodeId: Id;
   nodes: Map<Id, UINode>;
+  hoveredNode?: Id;
+  onSelectNode: (id: Id) => void;
 }) {
   const node = nodes.get(nodeId);
 
@@ -58,19 +62,28 @@ function VisualizationNode({
     return null;
   }
 
-  let childrenIds = node.children;
+  const isHovered = hoveredNode === nodeId;
 
-  //if there is an active child dont draw the other children
-  //this means we don't draw overlapping activities / tabs
-  if (node.activeChild) {
-    childrenIds = [node.activeChild];
+  let childrenIds: Id[] = [];
+
+  if (!isHovered) {
+    //if there is an active child don't draw the other children
+    //this means we don't draw overlapping activities / tabs etc
+    if (node.activeChild) {
+      childrenIds = [node.activeChild];
+    } else {
+      childrenIds = node.children;
+    }
   }
+
   const children = childrenIds.map((childId) => (
-    <VisualizationNode
+    <Visualization2DNode
       isRoot={false}
       key={childId}
       nodeId={childId}
       nodes={nodes}
+      hoveredNode={hoveredNode}
+      onSelectNode={onSelectNode}
     />
   ));
 
@@ -81,7 +94,15 @@ function VisualizationNode({
   const isZeroWidthOrHeight =
     node.bounds?.height === 0 || node.bounds?.width === 0;
   return (
-    <BoundsBox bounds={node.bounds} isRoot={isRoot} tags={node.tags}>
+    <BoundsBox
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelectNode(nodeId);
+      }}
+      bounds={node.bounds}
+      isRoot={isRoot}
+      tags={node.tags}
+      isHovered={isHovered}>
       {/* Dirty hack to avoid showing highly overlapping text */}
       {!hasOverlappingChild && !isZeroWidthOrHeight && node.bounds
         ? node.name
@@ -94,11 +115,13 @@ function VisualizationNode({
 const BoundsBox = styled.div<{
   bounds?: Bounds;
   isRoot: boolean;
+  isHovered: boolean;
   tags: Tag[];
 }>((props) => {
   const bounds = props.bounds ?? {x: 0, y: 0, width: 0, height: 0};
   return {
     // borderWidth: props.isRoot ? '5px' : '1px',
+    cursor: 'pointer',
     borderWidth: '1px',
     //to offset the border
     margin: '-1px',
@@ -109,6 +132,7 @@ const BoundsBox = styled.div<{
       : 'black',
     borderStyle: 'solid',
     position: 'absolute',
+    backgroundColor: props.isHovered ? theme.selectionBackgroundColor : 'white',
     //todo need to understand why its so big and needs halving
     left: bounds.x / 2,
     top: bounds.y / 2,

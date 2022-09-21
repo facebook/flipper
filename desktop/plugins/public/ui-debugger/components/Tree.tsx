@@ -9,23 +9,40 @@
 
 import {Id, UINode} from '../types';
 import {DataNode} from 'antd/es/tree';
-import {Tree as AntTree, Typography} from 'antd';
+import {Tree as AntTree} from 'antd';
 import {DownOutlined} from '@ant-design/icons';
 import React from 'react';
 
 export function Tree(props: {
   rootId: Id;
   nodes: Map<Id, UINode>;
-  setSelectedNode: (id: Id) => void;
+  selectedNode?: Id;
+  onSelectNode: (id: Id) => void;
+  onHoveredNode: (id?: Id) => void;
 }) {
   const [antTree, inactive] = nodesToAntTree(props.rootId, props.nodes);
 
   return (
     <AntTree
+      onMouseLeave={() => {
+        //when mouse exits the entire tree then unhover
+        props.onHoveredNode(undefined);
+      }}
       showIcon
       showLine
+      titleRender={(node) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              props.onHoveredNode(node.key as Id);
+            }}>
+            {node.title}
+          </div>
+        );
+      }}
+      selectedKeys={[props.selectedNode ?? '']}
       onSelect={(selected) => {
-        props.setSelectedNode(selected[0] as Id);
+        props.onSelectNode(selected[0] as Id);
       }}
       defaultExpandAll
       expandedKeys={[...props.nodes.keys()].filter(

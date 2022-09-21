@@ -31,6 +31,7 @@ export function Component() {
 
   const [showPerfStats, setShowPerfStats] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Id | undefined>(undefined);
+  const [hoveredNode, setHoveredNode] = useState<Id | undefined>(undefined);
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
@@ -58,11 +59,18 @@ export function Component() {
         <Layout.ScrollContainer>
           <Layout.Horizontal>
             <Tree
-              setSelectedNode={setSelectedNode}
+              selectedNode={selectedNode}
+              onSelectNode={setSelectedNode}
+              onHoveredNode={setHoveredNode}
               nodes={nodes}
               rootId={rootId}
             />
-            <Visualization2D root={rootId} nodes={nodes} />
+            <Visualization2D
+              root={rootId}
+              nodes={nodes}
+              hoveredNode={hoveredNode}
+              onSelectNode={setSelectedNode}
+            />
           </Layout.Horizontal>
         </Layout.ScrollContainer>
         {selectedNode && renderAttributesInspector(nodes.get(selectedNode))}
