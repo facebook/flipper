@@ -12,19 +12,24 @@ import android.view.View
 import android.view.ViewTreeObserver
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.scheduler.throttleLatest
 import java.lang.ref.WeakReference
+import kotlinx.coroutines.*
 
 typealias DecorView = View
 
 /** Responsible for subscribing to updates to the content view of an activity */
 class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
 
-  val throttleTimeMs = 500
+  private val throttleTimeMs = 500L
 
   private var nodeRef: WeakReference<View>? = null
   private var listener: ViewTreeObserver.OnPreDrawListener? = null
 
   override val type = "DecorView"
+
+  private val waitScope = CoroutineScope(Dispatchers.IO)
+  private val mainScope = CoroutineScope(Dispatchers.Main)
 
   override fun subscribe(node: Any) {
     node as View
@@ -32,25 +37,22 @@ class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
 
     Log.i(LogTag, "Subscribing to decor view changes")
 
-    // TODO: there's a problem with this. Some future changes may have been
-    // ignored and not sent. Need to keep track of the last one, always and react
-    // accordingly.
-    listener =
-        object : ViewTreeObserver.OnPreDrawListener {
-          var lastSend = 0L
-          override fun onPreDraw(): Boolean {
-            if (System.currentTimeMillis() - lastSend > throttleTimeMs) {
-              traverseAndSend(context, node)
+    val throttleSend =
+        throttleLatest<WeakReference<View>?>(throttleTimeMs, waitScope, mainScope) { weakView ->
+          weakView?.get()?.let { view -> traverseAndSend(context, view) }
+        }
 
-              lastSend = System.currentTimeMillis()
-            }
-            return true
-          }
+    listener =
+        ViewTreeObserver.OnPreDrawListener {
+          throttleSend(nodeRef)
+          true
         }
 
     node.viewTreeObserver.addOnPreDrawListener(listener)
-    // sometimes we are too late to the party and we miss the first draw
-    listener?.onPreDraw()
+
+    // It can be the case that the DecorView the current observer owns has already
+    // drawn. In this case, manually trigger an update.
+    throttleSend(nodeRef)
   }
 
   override fun unsubscribe() {
