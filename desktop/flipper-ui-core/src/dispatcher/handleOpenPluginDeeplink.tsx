@@ -274,7 +274,8 @@ async function waitForLogin(store: Store) {
 }
 
 async function verifyFlipperIsUpToDate(title: string) {
-  if (!isProduction() || isTest()) {
+  const config = getRenderHostInstance().serverConfig.processConfig;
+  if (!isProduction() || isTest() || config.suppressPluginUpdateNotifications) {
     return;
   }
   const currentVersion = getAppVersion();

@@ -216,7 +216,7 @@ app.on('ready', async () => {
               {allowFileAccess: true},
             );
           } catch (e) {
-            console.error('Failed to loa React devtools from disk: ', e);
+            console.error('Failed to load React devtools from disk: ', e);
           }
         } else {
           try {

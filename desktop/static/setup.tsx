@@ -17,6 +17,7 @@ export const defaultConfig: Config = {
   pluginPaths: [],
   disabledPlugins: [],
   darkMode: 'light',
+  suppressPluginUpdateNotifications: false,
 };
 
 export type Config = {
@@ -33,6 +34,7 @@ export type Config = {
   updaterEnabled?: boolean;
   launcherEnabled?: boolean;
   darkMode: 'system' | 'light' | 'dark';
+  suppressPluginUpdateNotifications?: boolean;
 };
 
 const ensureConfigDirExists = async (path: fs.PathLike) => {
@@ -83,6 +85,10 @@ export default async function setup(argv: any) {
     updaterEnabled: argv.updater,
     launcherEnabled: argv.launcher,
     launcherMsg: argv.launcherMsg,
+    suppressPluginUpdateNotifications:
+      typeof config.suppressPluginUpdateNotifications === 'boolean'
+        ? config.suppressPluginUpdateNotifications
+        : false,
   };
 
   return config;

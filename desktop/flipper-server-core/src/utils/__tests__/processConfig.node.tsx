@@ -17,6 +17,7 @@ test('config is decoded from env', () => {
       launcherMsg: 'wubba lubba dub dub',
       screenCapturePath: '/my/screenshot/path',
       launcherEnabled: false,
+      suppressPluginUpdateNotifications: true,
     }),
   });
 
@@ -26,6 +27,7 @@ test('config is decoded from env', () => {
     launcherMsg: 'wubba lubba dub dub',
     screenCapturePath: '/my/screenshot/path',
     launcherEnabled: false,
+    suppressPluginUpdateNotifications: true,
   });
 });
 
@@ -36,5 +38,6 @@ test('config is decoded from env with defaults', () => {
     launcherMsg: undefined,
     screenCapturePath: undefined,
     launcherEnabled: true,
+    suppressPluginUpdateNotifications: false,
   });
 });

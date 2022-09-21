@@ -15,6 +15,7 @@ import fbConfig from '../fb-stubs/config';
 import {useStore} from '../utils/useStore';
 import {getAppVersion} from '../utils/info';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 export type VersionCheckResult =
   | {
@@ -63,6 +64,7 @@ export default function UpdateIndicator() {
   // trigger the update check, unless there is a launcher message already
   useEffect(() => {
     const version = getAppVersion();
+    const config = getRenderHostInstance().serverConfig.processConfig;
     if (launcherMsg && launcherMsg.message) {
       if (launcherMsg.severity === 'error') {
         notification.error({
@@ -81,7 +83,11 @@ export default function UpdateIndicator() {
           duration: null,
         });
       }
-    } else if (version && isProduction()) {
+    } else if (
+      version &&
+      !config.suppressPluginUpdateNotifications &&
+      isProduction()
+    ) {
       reportPlatformFailures(
         checkForUpdate(version).then((res) => {
           if (res.kind === 'error') {
