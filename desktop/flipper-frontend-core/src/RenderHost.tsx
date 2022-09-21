@@ -126,6 +126,7 @@ export interface RenderHost {
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
   importFile: FlipperLib['importFile'];
   exportFile: FlipperLib['exportFile'];
+  exportFileBinary: FlipperLib['exportFileBinary'];
   hasFocus(): boolean;
   onIpcEvent<Event extends keyof MainProcessEvents>(
     event: Event,

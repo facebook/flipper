@@ -172,6 +172,25 @@ export interface FlipperLib {
       encoding?: FileEncoding;
     },
   ): Promise<string | undefined>;
+  /**
+   * @returns
+   * An exported file path (if available) or a file name.
+   * If user cancelled a file selection - undefined.
+   */
+  exportFileBinary(
+    /**
+     * New file data
+     */
+    data: Uint8Array,
+    options?: {
+      /**
+       * A file path suggestion for a new file.
+       * A dialog to save file will use it as a starting point.
+       * Either a complete path to the newly created file, a path to a directory containing the file, or the file name.
+       */
+      defaultPath?: string;
+    },
+  ): Promise<string | undefined>;
   paths: {
     appPath: string;
     homePath: string;

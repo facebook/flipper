@@ -60,6 +60,7 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
     openLink: createStubFunction(),
     showNotification: createStubFunction(),
     exportFile: createStubFunction(),
+    exportFileBinary: createStubFunction(),
     importFile: createStubFunction(),
     paths: {
       appPath: process.cwd(),

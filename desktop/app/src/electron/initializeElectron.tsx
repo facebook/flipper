@@ -151,6 +151,18 @@ export async function initializeElectron(
       await fs.promises.writeFile(filePath, data, {encoding});
       return filePath;
     },
+    async exportFileBinary(data, {defaultPath} = {}) {
+      const {filePath} = await electronIpcClient.send('showSaveDialog', {
+        defaultPath,
+      });
+
+      if (!filePath) {
+        return;
+      }
+
+      await fs.promises.writeFile(filePath, data, {encoding: 'binary'});
+      return filePath;
+    },
     openLink(url: string) {
       shell.openExternal(url);
     },

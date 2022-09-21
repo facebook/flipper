@@ -48,6 +48,9 @@ export function initializeRenderHost(
     async exportFile() {
       throw new Error('Not implemented');
     },
+    async exportFileBinary() {
+      throw new Error('Not implemented');
+    },
     openLink(url: string) {
       window.open(url, '_blank');
     },
