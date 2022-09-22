@@ -16,7 +16,8 @@ object UIDebuggerLithoSupport {
 
   fun addDescriptors(register: DescriptorRegister) {
     register.register(LithoView::class.java, LithoViewDescriptor)
-    register.register(DebugComponent::class.java, DebugComponentDescriptor)
+    register.register(MountedObject::class.java, MountedObjectDescriptor)
+    register.register(DebugComponent::class.java, DebugComponentDescriptor(register))
   }
 
   fun addObserver(observerFactory: TreeObserverFactory) {
