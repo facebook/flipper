@@ -299,7 +299,18 @@ function updateClientPlugin(
   clientsWithEnabledPlugin.forEach((client) => {
     startPlugin(client, plugin, true);
   });
-  store.dispatch(pluginLoaded(plugin));
+  if (
+    !store
+      .getState()
+      .plugins.disabledPlugins.find(
+        (disabledPlugin) => disabledPlugin.id === plugin.id,
+      ) &&
+    !store
+      .getState()
+      .plugins.gatekeepedPlugins.find((gkPlugin) => gkPlugin.id === plugin.id)
+  ) {
+    store.dispatch(pluginLoaded(plugin));
+  }
 }
 
 function updateDevicePlugin(
@@ -317,10 +328,21 @@ function updateDevicePlugin(
   devicesWithEnabledPlugin.forEach((d) => {
     d.unloadDevicePlugin(plugin.id);
   });
-  store.dispatch(pluginLoaded(plugin));
   devicesWithEnabledPlugin.forEach((d) => {
     d.loadDevicePlugin(plugin);
   });
+  if (
+    !store
+      .getState()
+      .plugins.disabledPlugins.find(
+        (disabledPlugin) => disabledPlugin.id === plugin.id,
+      ) &&
+    !store
+      .getState()
+      .plugins.gatekeepedPlugins.find((gkPlugin) => gkPlugin.id === plugin.id)
+  ) {
+    store.dispatch(pluginLoaded(plugin));
+  }
 }
 
 function startPlugin(
