@@ -8,26 +8,23 @@
 package com.facebook.flipper.plugins.leakcanary2
 
 import com.facebook.flipper.android.AndroidFlipperClient
-import leakcanary.DefaultOnHeapAnalyzedListener
-import leakcanary.OnHeapAnalyzedListener
+import leakcanary.EventListener
 import shark.HeapAnalysis
 import shark.HeapAnalysisSuccess
 
-@Deprecated("Use FlipperLeakEventListener add to LeakCanary.config.eventListeners instead")
-class FlipperLeakListener : OnHeapAnalyzedListener {
+class FlipperLeakEventListener : EventListener {
   private val leaks: MutableList<Leak> = mutableListOf()
 
-  private val defaultListener = DefaultOnHeapAnalyzedListener.create()
+  override fun onEvent(event: EventListener.Event) {
+    if (event is EventListener.Event.HeapAnalysisDone.HeapAnalysisSucceeded) {
+      val heapAnalysis = event.heapAnalysis
+      leaks.addAll(heapAnalysis.toLeakList())
 
-  override fun onHeapAnalyzed(heapAnalysis: HeapAnalysis) {
-    leaks.addAll(heapAnalysis.toLeakList())
-
-    AndroidFlipperClient.getInstanceIfInitialized()?.let { client ->
-      (client.getPlugin(LeakCanary2FlipperPlugin.ID) as? LeakCanary2FlipperPlugin)?.reportLeaks(
-          leaks)
+      AndroidFlipperClient.getInstanceIfInitialized()?.let { client ->
+        (client.getPlugin(LeakCanary2FlipperPlugin.ID) as? LeakCanary2FlipperPlugin)?.reportLeaks(
+            leaks)
+      }
     }
-
-    defaultListener.onHeapAnalyzed(heapAnalysis)
   }
 
   private fun HeapAnalysis.toLeakList(): List<Leak> {
