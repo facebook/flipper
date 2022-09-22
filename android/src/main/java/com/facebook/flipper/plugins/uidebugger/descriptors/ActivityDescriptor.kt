@@ -13,10 +13,6 @@ import com.facebook.flipper.plugins.uidebugger.core.FragmentTracker
 
 object ActivityDescriptor : ChainedDescriptor<Activity>() {
 
-  override fun onGetId(node: Activity): String {
-    return System.identityHashCode(node).toString()
-  }
-
   override fun onGetName(node: Activity): String {
     return node.javaClass.simpleName
   }

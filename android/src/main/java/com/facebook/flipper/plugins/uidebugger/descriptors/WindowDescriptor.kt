@@ -11,10 +11,6 @@ import android.view.Window
 
 object WindowDescriptor : ChainedDescriptor<Window>() {
 
-  override fun onGetId(node: Window): String {
-    return System.identityHashCode(node).toString()
-  }
-
   override fun onGetName(node: Window): String {
     return node.javaClass.simpleName
   }

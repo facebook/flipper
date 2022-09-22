@@ -27,10 +27,6 @@ import java.lang.reflect.Field
 
 object ViewDescriptor : ChainedDescriptor<View>() {
 
-  override fun onGetId(node: View): String {
-    return Integer.toBinaryString(System.identityHashCode(node))
-  }
-
   override fun onGetName(node: View): String {
     return node.javaClass.simpleName
   }

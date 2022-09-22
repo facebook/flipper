@@ -40,16 +40,6 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
   }
 
   /**
-   * A globally unique ID used to identify a node in a hierarchy. If your node does not have a
-   * globally unique ID it is fine to rely on [System.identityHashCode].
-   */
-  final override fun getId(node: T): String {
-    return onGetId(node)
-  }
-
-  abstract fun onGetId(node: T): String
-
-  /**
    * The name used to identify this node in the inspector. Does not need to be unique. A good
    * default is to use the class name of the node.
    */

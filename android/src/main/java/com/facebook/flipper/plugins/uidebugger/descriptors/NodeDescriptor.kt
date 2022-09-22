@@ -29,11 +29,6 @@ object BaseTags {
 }
 
 interface NodeDescriptor<T> {
-  /**
-   * A globally unique ID used to identify a node in a hierarchy. If your node does not have a
-   * globally unique ID it is fine to rely on [System.identityHashCode].
-   */
-  fun getId(node: T): String
 
   /** Should be w.r.t the direct parent */
   fun getBounds(node: T): Bounds?
@@ -64,4 +59,10 @@ interface NodeDescriptor<T> {
    * enum as we have to plugin 3rd party frameworks dynamically
    */
   fun getTags(node: T): Set<String>
+}
+
+typealias Id = Int
+
+fun Any.nodeId(): Id {
+  return System.identityHashCode(this)
 }

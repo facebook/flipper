@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.observers
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
 
 /*
  * Represents a stateful observer that manages some subtree in the UI Hierarchy.
@@ -44,19 +45,19 @@ abstract class TreeObserver<T> {
 
     // Add any new observers
     for (observerRoot in observerRootsNodes) {
-      if (!children.containsKey(observerRoot.identityHashCode())) {
+      if (!children.containsKey(observerRoot.nodeId())) {
         context.observerFactory.createObserver(observerRoot, context)?.let { childObserver ->
           Log.d(
               LogTag,
-              "Observer ${this.type} discovered new child of type ${childObserver.type} Node ID ${observerRoot.identityHashCode()}")
+              "Observer ${this.type} discovered new child of type ${childObserver.type} Node ID ${observerRoot.nodeId()}")
           childObserver.subscribe(observerRoot)
-          children[observerRoot.identityHashCode()] = childObserver
+          children[observerRoot.nodeId()] = childObserver
         }
       }
     }
 
     // Remove any old observers
-    val observerRootIds = observerRootsNodes.map { it.identityHashCode() }
+    val observerRootIds = observerRootsNodes.map { it.nodeId() }
     for (childKey in children.keys) {
       if (!observerRootIds.contains(childKey)) {
         children[childKey]?.let { childObserver ->
@@ -80,10 +81,4 @@ abstract class TreeObserver<T> {
     unsubscribe()
     children.clear()
   }
-}
-
-typealias HashCode = Int
-
-fun Any.identityHashCode(): HashCode {
-  return System.identityHashCode(this)
 }

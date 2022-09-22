@@ -17,7 +17,6 @@ import com.facebook.litho.DebugComponent
 import com.facebook.litho.LithoView
 
 object LithoViewDescriptor : NodeDescriptor<LithoView> {
-  override fun getId(node: LithoView): String = System.identityHashCode(node).toString()
 
   override fun getName(node: LithoView): String = "LithoView"
 
@@ -45,7 +44,6 @@ const val LithoTag = "Litho"
 class MountedObject(val obj: Any, val descriptor: NodeDescriptor<Any>)
 
 object MountedObjectDescriptor : NodeDescriptor<MountedObject> {
-  override fun getId(node: MountedObject): String = node.descriptor.getId(node.obj)
 
   override fun getBounds(node: MountedObject): Bounds? {
     val bounds = node.descriptor.getBounds(node.obj)
@@ -72,7 +70,6 @@ object MountedObjectDescriptor : NodeDescriptor<MountedObject> {
 }
 
 class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {
-  override fun getId(node: DebugComponent): String = System.identityHashCode(node).toString()
 
   override fun getName(node: DebugComponent): String {
     return node.component.simpleName

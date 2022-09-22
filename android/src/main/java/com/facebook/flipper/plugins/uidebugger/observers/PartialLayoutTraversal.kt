@@ -10,7 +10,9 @@ package com.facebook.flipper.plugins.uidebugger.observers
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
+import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
 import com.facebook.flipper.plugins.uidebugger.model.Node
 
 /**
@@ -48,7 +50,7 @@ class PartialLayoutTraversal(
 
         val children = descriptor.getChildren(node)
 
-        val childrenIds = mutableListOf<String>()
+        val childrenIds = mutableListOf<Id>()
         val activeChild = descriptor.getActiveChild(node)
 
         for (child in children) {
@@ -56,17 +58,16 @@ class PartialLayoutTraversal(
           // hash code
           val childDescriptor =
               descriptorRegister.descriptorForClassUnsafe(child::class.java).asAny()
-          childrenIds.add(childDescriptor.getId(child))
+          childrenIds.add(child.nodeId())
           // If there is an active child then don't traverse it
           if (activeChild == null) {
             stack.add(child)
           }
         }
-        var activeChildId: String? = null
+        var activeChildId: Id? = null
         if (activeChild != null) {
           stack.add(activeChild)
-          activeChildId =
-              descriptorRegister.descriptorForClassUnsafe(activeChild.javaClass).getId(activeChild)
+          activeChildId = activeChild.nodeId()
         }
 
         val attributes = descriptor.getData(node)
@@ -75,7 +76,7 @@ class PartialLayoutTraversal(
 
         visited.add(
             Node(
-                descriptor.getId(node),
+                node.nodeId(),
                 descriptor.getName(node),
                 attributes,
                 bounds,

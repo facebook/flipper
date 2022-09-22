@@ -12,10 +12,6 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 
 object ButtonDescriptor : ChainedDescriptor<Button>() {
 
-  override fun onGetId(node: Button): String {
-    return System.identityHashCode(node).toString()
-  }
-
   override fun onGetName(node: Button): String {
     return node.javaClass.simpleName
   }

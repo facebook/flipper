@@ -14,10 +14,6 @@ object ObjectDescriptor : NodeDescriptor<Any> {
 
   override fun getActiveChild(node: Any): Any? = null
 
-  override fun getId(node: Any): String {
-    return System.identityHashCode(node).toString()
-  }
-
   override fun getName(node: Any): String {
     return node.javaClass.simpleName
   }

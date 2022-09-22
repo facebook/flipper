@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.litho
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverBuilder
 import com.facebook.litho.LithoView
@@ -21,6 +22,8 @@ class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
   var nodeRef: LithoView? = null
 
   override fun subscribe(node: Any) {
+
+    Log.i(LogTag, "Subscribing to litho view ${node.nodeId()}")
 
     nodeRef = node as LithoView
 

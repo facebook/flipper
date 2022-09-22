@@ -12,10 +12,6 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 
 object TextViewDescriptor : ChainedDescriptor<TextView>() {
 
-  override fun onGetId(node: TextView): String {
-    return System.identityHashCode(node).toString()
-  }
-
   override fun onGetName(node: TextView): String {
     return node.javaClass.simpleName
   }

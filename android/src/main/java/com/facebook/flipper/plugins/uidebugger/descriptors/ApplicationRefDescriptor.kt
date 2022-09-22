@@ -19,10 +19,6 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
     return if (node.activitiesStack.isNotEmpty()) node.activitiesStack.last() else null
   }
 
-  override fun onGetId(node: ApplicationRef): String {
-    return node.application.packageName
-  }
-
   override fun onGetBounds(node: ApplicationRef): Bounds {
     val displayMetrics = Resources.getSystem().getDisplayMetrics()
     return Bounds(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)

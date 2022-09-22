@@ -19,10 +19,6 @@ import com.facebook.flipper.plugins.uidebugger.core.FragmentTracker
 
 object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
 
-  override fun onGetId(node: ViewGroup): String {
-    return System.identityHashCode(node).toString()
-  }
-
   override fun onGetName(node: ViewGroup): String {
     return node.javaClass.simpleName
   }

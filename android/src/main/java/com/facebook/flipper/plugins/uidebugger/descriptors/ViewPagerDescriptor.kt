@@ -11,8 +11,6 @@ import androidx.viewpager.widget.ViewPager
 
 object ViewPagerDescriptor : ChainedDescriptor<ViewPager>() {
 
-  override fun onGetId(node: ViewPager): String = System.identityHashCode(node).toString()
-
   override fun onGetName(node: ViewPager): String = node.javaClass.simpleName
 
   override fun onGetActiveChild(node: ViewPager): Any? = node.getChildAt(node.currentItem)

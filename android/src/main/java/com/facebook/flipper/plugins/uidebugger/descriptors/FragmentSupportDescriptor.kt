@@ -11,10 +11,6 @@ import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 
 object FragmentSupportDescriptor : ChainedDescriptor<androidx.fragment.app.Fragment>() {
 
-  override fun onGetId(node: androidx.fragment.app.Fragment): String {
-    return System.identityHashCode(node).toString()
-  }
-
   override fun onGetName(node: androidx.fragment.app.Fragment): String {
     return node.javaClass.simpleName
   }
