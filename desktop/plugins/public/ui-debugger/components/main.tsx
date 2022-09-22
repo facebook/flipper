@@ -23,6 +23,7 @@ import {Id, UINode} from '../types';
 import {PerfStats} from './PerfStats';
 import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
+import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -34,6 +35,8 @@ export function Component() {
   const [hoveredNode, setHoveredNode] = useState<Id | undefined>(undefined);
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
+
+  const {ctrlPressed} = useKeyboardModifiers();
 
   function renderAttributesInspector(node: UINode | undefined) {
     if (!node) {
@@ -69,7 +72,10 @@ export function Component() {
               root={rootId}
               nodes={nodes}
               hoveredNode={hoveredNode}
+              onHoverNode={setHoveredNode}
+              selectedNode={selectedNode}
               onSelectNode={setSelectedNode}
+              modifierPressed={ctrlPressed}
             />
           </Layout.Horizontal>
         </Layout.ScrollContainer>

@@ -23,34 +23,36 @@ export function Tree(props: {
   const [antTree, inactive] = nodesToAntTree(props.rootId, props.nodes);
 
   return (
-    <AntTree
+    <div
       onMouseLeave={() => {
-        //when mouse exits the entire tree then unhover
+        //This div exists so when mouse exits the entire tree then unhover
         props.onHoveredNode(undefined);
-      }}
-      showIcon
-      showLine
-      titleRender={(node) => {
-        return (
-          <div
-            onMouseEnter={() => {
-              props.onHoveredNode(node.key as Id);
-            }}>
-            {node.title}
-          </div>
-        );
-      }}
-      selectedKeys={[props.selectedNode ?? '']}
-      onSelect={(selected) => {
-        props.onSelectNode(selected[0] as Id);
-      }}
-      defaultExpandAll
-      expandedKeys={[...props.nodes.keys()].filter(
-        (key) => !inactive.includes(key),
-      )}
-      switcherIcon={<DownOutlined />}
-      treeData={[antTree]}
-    />
+      }}>
+      <AntTree
+        showIcon
+        showLine
+        titleRender={(node) => {
+          return (
+            <div
+              onMouseEnter={() => {
+                props.onHoveredNode(node.key as Id);
+              }}>
+              {node.title}
+            </div>
+          );
+        }}
+        selectedKeys={[props.selectedNode ?? '']}
+        onSelect={(selected) => {
+          props.onSelectNode(selected[0] as Id);
+        }}
+        defaultExpandAll
+        expandedKeys={[...props.nodes.keys()].filter(
+          (key) => !inactive.includes(key),
+        )}
+        switcherIcon={<DownOutlined />}
+        treeData={[antTree]}
+      />
+    </div>
   );
 }
 
