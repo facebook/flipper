@@ -151,16 +151,19 @@ export async function attachDevServer(
     next();
   });
 
-  await startWatchPlugins((changedPlugins: InstalledPluginDetails[]) => {
-    socket.clients.forEach((client) => {
-      client.send(
-        JSON.stringify({
-          event: 'plugins-source-updated',
-          payload: changedPlugins,
-        }),
-      );
-    });
-  });
+  await startWatchPlugins(
+    process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
+    (changedPlugins: InstalledPluginDetails[]) => {
+      socket.clients.forEach((client) => {
+        client.send(
+          JSON.stringify({
+            event: 'plugins-source-updated',
+            payload: changedPlugins,
+          }),
+        );
+      });
+    },
+  );
 
   console.log('DEV webserver started.');
 }

@@ -18,13 +18,13 @@ import path from 'path';
 import fs from 'fs-extra';
 import {spawn, exec} from 'promisify-child-process';
 import {
+  buildDefaultPlugins,
+  getDefaultPlugins,
   getWatchFolders,
-  runBuild,
   stripSourceMapComment,
 } from 'flipper-pkg-lib';
 import getAppWatchFolders from './get-app-watch-folders';
-import {getSourcePlugins, getPluginSourceFolders} from 'flipper-plugin-lib';
-import type {InstalledPluginDetails} from 'flipper-common';
+import {getPluginSourceFolders} from 'flipper-plugin-lib';
 import {
   appDir,
   staticDir,
@@ -36,33 +36,8 @@ import {
 } from './paths';
 import pFilter from 'p-filter';
 import child from 'child_process';
-import pMap from 'p-map';
-import chalk from 'chalk';
 
 const dev = process.env.NODE_ENV !== 'production';
-
-// For insiders builds we bundle top 5 popular device plugins,
-// plus top 10 popular "universal" plugins enabled by more than 100 users.
-const hardcodedPlugins = new Set<string>([
-  // Popular device plugins
-  'DeviceLogs',
-  'CrashReporter',
-  'MobileBuilds',
-  'Hermesdebuggerrn',
-  'React',
-  // Popular client plugins
-  'Inspector',
-  'Network',
-  'AnalyticsLogging',
-  'GraphQL',
-  'UIPerf',
-  'MobileConfig',
-  'Databases',
-  'FunnelLogger',
-  'Navigation',
-  'Fresco',
-  'Preferences',
-]);
 
 export function die(err: Error) {
   console.error('Script termnated.', err);
@@ -87,50 +62,10 @@ export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
     });
     console.log('✅  Copied the provided default plugins dir.');
   } else {
-    const sourcePlugins = await getSourcePlugins();
-    const defaultPlugins = sourcePlugins
-      // we only include headless plugins and a predefined set of regular plugins into insiders release
-      .filter(
-        (p) => !isInsidersBuild || hardcodedPlugins.has(p.id) || p.headless,
-      );
-    await buildDefaultPlugins(defaultPlugins);
+    const defaultPlugins = await getDefaultPlugins(isInsidersBuild);
+    await buildDefaultPlugins(defaultPlugins, dev);
   }
   console.log('✅  Prepared default plugins.');
-}
-
-async function buildDefaultPlugins(defaultPlugins: InstalledPluginDetails[]) {
-  if (process.env.FLIPPER_NO_REBUILD_PLUGINS) {
-    console.log(
-      `⚙️  Including ${
-        defaultPlugins.length
-      } plugins into the default plugins list. Skipping rebuilding because "no-rebuild-plugins" option provided. List of default plugins: ${defaultPlugins
-        .map((p) => p.id)
-        .join(', ')}`,
-    );
-  }
-  await pMap(
-    defaultPlugins,
-    async function (plugin) {
-      try {
-        if (!process.env.FLIPPER_NO_REBUILD_PLUGINS) {
-          console.log(
-            `⚙️  Building plugin ${plugin.id} to include it into the default plugins list...`,
-          );
-          await runBuild(plugin.dir, dev);
-        }
-        await fs.ensureSymlink(
-          plugin.dir,
-          path.join(defaultPluginsDir, plugin.name),
-          'junction',
-        );
-      } catch (err) {
-        console.error(`✖ Failed to build plugin ${plugin.id}`, err);
-      }
-    },
-    {
-      concurrency: 16,
-    },
-  );
 }
 
 const minifierConfig = {

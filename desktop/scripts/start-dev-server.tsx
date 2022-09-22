@@ -403,10 +403,9 @@ function checkDevServer() {
 }
 
 (async () => {
+  const isInsidersBuild = process.env.FLIPPER_RELEASE_CHANNEL === 'insiders';
   checkDevServer();
-  await prepareDefaultPlugins(
-    process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
-  );
+  await prepareDefaultPlugins(isInsidersBuild);
   await ensurePluginFoldersWatchable();
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);
@@ -414,7 +413,7 @@ function checkDevServer() {
   await startMetroServer(app, server);
   outputScreen(socket);
   await compileMain();
-  await startWatchPlugins((changedPlugins) => {
+  await startWatchPlugins(isInsidersBuild, (changedPlugins) => {
     socket.emit('plugins-source-updated', changedPlugins);
   });
   if (dotenv && dotenv.parsed) {

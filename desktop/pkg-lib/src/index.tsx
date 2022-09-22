@@ -13,3 +13,5 @@ export {default as computePackageChecksum} from './computePackageChecksum';
 export {default as stripSourceMapComment} from './stripSourceMap';
 export {default as startWatchPlugins} from './startWatchPlugins';
 export {default as Watchman} from './watchman';
+export {buildDefaultPlugins} from './buildDefaultPlugins';
+export {getDefaultPlugins} from './getDefaultPlugins';

@@ -17,6 +17,8 @@ import path from 'path';
 import chalk from 'chalk';
 import runBuild from './runBuild';
 import {InstalledPluginDetails} from 'flipper-common';
+import {getDefaultPlugins} from './getDefaultPlugins';
+import {buildDefaultPlugins} from './buildDefaultPlugins';
 
 async function rebuildPlugin(pluginPath: string) {
   try {
@@ -33,6 +35,7 @@ async function rebuildPlugin(pluginPath: string) {
 }
 
 export default async function startWatchPlugins(
+  isInsidersBuild: boolean,
   onChanged?: (
     changedPlugins: InstalledPluginDetails[],
   ) => void | Promise<void>,
@@ -48,36 +51,46 @@ export default async function startWatchPlugins(
         delayedCompilation = undefined;
         // eslint-disable-next-line no-console
         console.log(`🕵️‍  Detected plugin change`);
-        const changedDirs = await Promise.all(
-          // https://facebook.github.io/watchman/docs/nodejs.html#subscribing-to-changes
-          files.map(async (file: string) => {
-            const filePathAbs = path.resolve(root, file);
-            let dirPath = path.dirname(filePathAbs);
-            while (
-              // Stop when we reach plugin root
-              !(await isPluginDir(dirPath))
-            ) {
-              const relative = path.relative(root, dirPath);
-              // Stop when we reach desktop/plugins folder
-              if (!relative || relative.startsWith('..')) {
-                console.warn(
-                  chalk.yellow('Failed to find a plugin root for path'),
-                  filePathAbs,
-                );
-                return;
+        try {
+          const changedDirs = await Promise.all(
+            // https://facebook.github.io/watchman/docs/nodejs.html#subscribing-to-changes
+            files.map(async (file: string) => {
+              const filePathAbs = path.resolve(root, file);
+              let dirPath = path.dirname(filePathAbs);
+              while (
+                // Stop when we reach plugin root
+                !(await isPluginDir(dirPath))
+              ) {
+                const relative = path.relative(root, dirPath);
+                // Stop when we reach desktop/plugins folder
+                if (!relative || relative.startsWith('..')) {
+                  console.info(
+                    chalk.yellow(
+                      'Failed to find a plugin root for path. Rebuilding all plugins',
+                    ),
+                    filePathAbs,
+                  );
+                  throw new Error('REBUILD_ALL');
+                }
+                dirPath = path.resolve(dirPath, '..');
               }
-              dirPath = path.resolve(dirPath, '..');
-            }
-            await rebuildPlugin(dirPath);
-            return dirPath;
-          }),
-        );
-        const changedPlugins = await Promise.all(
-          changedDirs
-            .filter((dirPath): dirPath is string => !!dirPath)
-            .map((dirPath) => getInstalledPluginDetails(dirPath)),
-        );
-        onChanged?.(changedPlugins);
+              await rebuildPlugin(dirPath);
+              return dirPath;
+            }),
+          );
+          const changedPlugins = await Promise.all(
+            changedDirs.map((dirPath) => getInstalledPluginDetails(dirPath)),
+          );
+          onChanged?.(changedPlugins);
+        } catch (e) {
+          if (e instanceof Error && e.message === 'REBUILD_ALL') {
+            const defaultPlugins = await getDefaultPlugins(isInsidersBuild);
+            await buildDefaultPlugins(defaultPlugins, true);
+            onChanged?.(defaultPlugins);
+            return;
+          }
+          throw e;
+        }
       }, kCompilationDelayMillis);
     }
   };
