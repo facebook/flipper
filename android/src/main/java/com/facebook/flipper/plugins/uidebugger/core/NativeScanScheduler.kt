@@ -13,6 +13,8 @@ import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.model.NativeScanEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
+import com.facebook.flipper.plugins.uidebugger.observers.PartialLayoutTraversal
+import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import com.facebook.flipper.plugins.uidebugger.scheduler.Scheduler
 import kotlinx.serialization.json.Json
 
@@ -23,13 +25,19 @@ data class ScanResult(
     val nodes: List<Node>
 )
 
+/** This is used to stress test the ui debugger, should not be used in production */
 class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
-  private val traversal = LayoutTraversal(context.descriptorRegister, context.applicationRef)
+  /**
+   * when you supply no observers the traversal will never halt and will effectively scan the entire
+   * hierarchy
+   */
+  private val emptyObserverFactory = TreeObserverFactory()
+  private val traversal = PartialLayoutTraversal(context.descriptorRegister, emptyObserverFactory)
   private var txId = 0L
 
   override fun execute(): ScanResult {
     val start = System.currentTimeMillis()
-    val nodes = traversal.traverse()
+    val (nodes) = traversal.traverse(context.applicationRef)
     val scanEnd = System.currentTimeMillis()
 
     Log.d(
