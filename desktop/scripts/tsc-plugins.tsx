@@ -109,9 +109,6 @@ async function findAffectedPlugins(errors: string[]) {
     depsByName.set(name, getDependencies(name));
   }
   for (const pkg of allPackages) {
-    if (!isPluginJson(pkg.json)) {
-      continue;
-    }
     const logFile = path.join(pkg.dir, 'tsc-error.log');
     await fs.remove(logFile);
     let logStream: fs.WriteStream | undefined;
