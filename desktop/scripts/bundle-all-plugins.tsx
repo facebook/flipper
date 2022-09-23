@@ -13,6 +13,7 @@ import {pluginsDir} from './paths';
 import path from 'path';
 import {runBuild} from 'flipper-pkg-lib';
 import {getWorkspaces} from './workspaces';
+import isFB from './isFB';
 
 async function bundleAllPlugins() {
   const plugins = await getWorkspaces().then((workspaces) =>
@@ -24,7 +25,7 @@ async function bundleAllPlugins() {
     console.log(`Bundling "${relativeDir}"`);
     console.time(`Finished bundling "${relativeDir}"`);
     try {
-      await runBuild(plugin.dir, false);
+      await runBuild(plugin.dir, false, isFB);
     } catch (err) {
       console.log(`Failed to bundle "${relativeDir}": ${err.message}`);
       errors.set(relativeDir, err);

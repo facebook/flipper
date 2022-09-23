@@ -18,6 +18,7 @@ const defaultPluginsDir = path.join(__dirname, '../../static/defaultPlugins');
 export async function buildDefaultPlugins(
   defaultPlugins: InstalledPluginDetails[],
   dev: boolean,
+  intern: boolean,
 ) {
   if (process.env.FLIPPER_NO_REBUILD_PLUGINS) {
     console.log(
@@ -36,7 +37,7 @@ export async function buildDefaultPlugins(
           console.log(
             `⚙️  Building plugin ${plugin.id} to include it into the default plugins list...`,
           );
-          await runBuild(plugin.dir, dev);
+          await runBuild(plugin.dir, dev, intern);
         }
         await fs.ensureSymlink(
           plugin.dir,

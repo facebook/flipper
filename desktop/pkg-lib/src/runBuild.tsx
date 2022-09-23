@@ -10,7 +10,21 @@
 import path from 'path';
 import fs from 'fs-extra';
 import {getInstalledPluginDetails} from 'flipper-plugin-lib';
-import {build} from 'esbuild';
+import {build, Plugin} from 'esbuild';
+
+// https://github.com/evanw/esbuild/issues/1979#issuecomment-1026988439
+const resolveFbStubsToFbPlugin: Plugin = {
+  name: 'resolve-fb-stubs-to-fb',
+  setup({onResolve}) {
+    onResolve({filter: /fb-stubs/}, (args) => {
+      return {
+        path: require.resolve(args.path.replace('fb-stubs', 'fb'), {
+          paths: [args.resolveDir],
+        }),
+      };
+    });
+  },
+};
 
 interface RunBuildConfig {
   pluginDir: string;
@@ -19,6 +33,7 @@ interface RunBuildConfig {
   dev: boolean;
   node?: boolean;
   sourceMapPath?: string;
+  intern: boolean;
 }
 
 async function runBuild({
@@ -28,6 +43,7 @@ async function runBuild({
   dev,
   node,
   sourceMapPath,
+  intern,
 }: RunBuildConfig) {
   await build({
     entryPoints: [path.join(pluginDir, entry)],
@@ -52,6 +68,7 @@ async function runBuild({
     ],
     sourcemap: 'external',
     minify: !dev,
+    plugins: intern ? [resolveFbStubsToFbPlugin] : undefined,
   });
 
   const sourceMapUrl = `${out}.map`;
@@ -73,6 +90,7 @@ type Options = {
 export default async function bundlePlugin(
   pluginDir: string,
   dev: boolean,
+  intern: boolean,
   options?: Options,
 ) {
   const stat = await fs.lstat(pluginDir);
@@ -103,6 +121,7 @@ export default async function bundlePlugin(
     out: plugin.entry,
     dev,
     sourceMapPath: options?.sourceMapPath,
+    intern,
   });
 
   if (
@@ -118,6 +137,7 @@ export default async function bundlePlugin(
       dev,
       node: true,
       sourceMapPath: options?.sourceMapPathServerAddOn,
+      intern,
     });
   }
 

@@ -39,23 +39,35 @@ export default class Bundle extends Command {
         'Force env.NODE_ENV=production, enable minification and disable producing source maps.',
       default: false,
     }),
+    intern: flags.boolean({
+      description: 'Force inten build which replaces fb-stubs with fb.',
+      default: false,
+    }),
   };
 
   public async run() {
     const {args, flags} = this.parse(Bundle);
     const inputDirectory: string = path.resolve(process.cwd(), args.directory);
-    const success = await runBuildOnce(inputDirectory, !flags.production);
+    const success = await runBuildOnce(
+      inputDirectory,
+      !flags.production,
+      flags.intern,
+    );
     if (!flags.watch) {
       process.exit(success ? 0 : 1);
     } else {
-      enterWatchMode(inputDirectory, !flags.production);
+      enterWatchMode(inputDirectory, !flags.production, flags.intern);
     }
   }
 }
 
-async function runBuildOnce(inputDirectory: string, dev: boolean) {
+async function runBuildOnce(
+  inputDirectory: string,
+  dev: boolean,
+  intern: boolean,
+) {
   try {
-    await runBuild(inputDirectory, dev);
+    await runBuild(inputDirectory, dev, intern);
     console.log('✅  Build succeeded');
     return true;
   } catch (e) {
@@ -65,7 +77,7 @@ async function runBuildOnce(inputDirectory: string, dev: boolean) {
   }
 }
 
-function enterWatchMode(inputDirectory: string, dev: boolean) {
+function enterWatchMode(inputDirectory: string, dev: boolean, intern: boolean) {
   console.log(`⏳  Waiting for changes...`);
   let isBuilding = false;
   let pendingChanges = false;
@@ -82,7 +94,7 @@ function enterWatchMode(inputDirectory: string, dev: boolean) {
       isBuilding = true;
       while (pendingChanges) {
         pendingChanges = false;
-        await runBuildOnce(inputDirectory, dev);
+        await runBuildOnce(inputDirectory, dev, intern);
       }
       isBuilding = false;
       console.log(`⏳  Waiting for changes...`);

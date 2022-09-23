@@ -16,6 +16,7 @@ import yargs from 'yargs';
 import tmp from 'tmp';
 import {execSync} from 'child_process';
 import {promisify} from 'util';
+import isFB from './isFB';
 
 const argv = yargs
   .usage('yarn build-plugin [args]')
@@ -80,7 +81,7 @@ async function buildPlugin() {
   const outputSourcemapServerAddOnArg = argv['output-sourcemap-server-addon'];
   const packageJsonPath = path.join(pluginDir, 'package.json');
   const packageJsonOverridePath = path.join(pluginDir, 'fb', 'package.json');
-  await runBuild(pluginDir, false, {
+  await runBuild(pluginDir, false, isFB, {
     sourceMapPath: outputSourcemapArg,
     sourceMapPathServerAddOn: outputSourcemapServerAddOnArg,
   });

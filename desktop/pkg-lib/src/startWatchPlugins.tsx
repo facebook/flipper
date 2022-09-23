@@ -20,9 +20,9 @@ import {InstalledPluginDetails} from 'flipper-common';
 import {getDefaultPlugins} from './getDefaultPlugins';
 import {buildDefaultPlugins} from './buildDefaultPlugins';
 
-async function rebuildPlugin(pluginPath: string) {
+async function rebuildPlugin(pluginPath: string, intern: boolean) {
   try {
-    await runBuild(pluginPath, true);
+    await runBuild(pluginPath, true, intern);
     console.info(chalk.green('Rebuilt plugin'), pluginPath);
   } catch (e) {
     console.error(
@@ -36,6 +36,7 @@ async function rebuildPlugin(pluginPath: string) {
 
 export default async function startWatchPlugins(
   isInsidersBuild: boolean,
+  intern: boolean,
   onChanged?: (
     changedPlugins: InstalledPluginDetails[],
   ) => void | Promise<void>,
@@ -74,7 +75,7 @@ export default async function startWatchPlugins(
                 }
                 dirPath = path.resolve(dirPath, '..');
               }
-              await rebuildPlugin(dirPath);
+              await rebuildPlugin(dirPath, intern);
               return dirPath;
             }),
           );
@@ -85,7 +86,7 @@ export default async function startWatchPlugins(
         } catch (e) {
           if (e instanceof Error && e.message === 'REBUILD_ALL') {
             const defaultPlugins = await getDefaultPlugins(isInsidersBuild);
-            await buildDefaultPlugins(defaultPlugins, true);
+            await buildDefaultPlugins(defaultPlugins, true, intern);
             onChanged?.(defaultPlugins);
             return;
           }

@@ -413,9 +413,13 @@ function checkDevServer() {
   await startMetroServer(app, server);
   outputScreen(socket);
   await compileMain();
-  await startWatchPlugins(isInsidersBuild, (changedPlugins) => {
-    socket.emit('plugins-source-updated', changedPlugins);
-  });
+  await startWatchPlugins(
+    isInsidersBuild,
+    isFB && !process.env.FLIPPER_FORCE_PUBLIC_BUILD,
+    (changedPlugins) => {
+      socket.emit('plugins-source-updated', changedPlugins);
+    },
+  );
   if (dotenv && dotenv.parsed) {
     console.log('✅  Loaded env vars from .env file: ', dotenv.parsed);
   }

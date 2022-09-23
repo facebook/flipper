@@ -40,6 +40,10 @@ export default class Pack extends Command {
         'Force env.NODE_ENV=production, enable minification and disable producing source maps.',
       default: false,
     }),
+    intern: flags.boolean({
+      description: 'Force inten build which replaces fb-stubs with fb.',
+      default: false,
+    }),
   };
 
   public static args: args.IArg[] = [
@@ -115,7 +119,7 @@ export default class Pack extends Command {
     cli.action.stop();
 
     cli.action.start(`Compiling`);
-    await runBuild(inputDirectory, parsedFlags.production);
+    await runBuild(inputDirectory, parsedFlags.production, parsedFlags.intern);
     cli.action.stop();
 
     cli.action.start(`Packing to ${outputFile}`);

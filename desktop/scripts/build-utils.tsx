@@ -36,6 +36,7 @@ import {
 } from './paths';
 import pFilter from 'p-filter';
 import child from 'child_process';
+import isFB from './isFB';
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -63,7 +64,11 @@ export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
     console.log('✅  Copied the provided default plugins dir.');
   } else {
     const defaultPlugins = await getDefaultPlugins(isInsidersBuild);
-    await buildDefaultPlugins(defaultPlugins, dev);
+    await buildDefaultPlugins(
+      defaultPlugins,
+      dev,
+      isFB && !process.env.FLIPPER_FORCE_PUBLIC_BUILD,
+    );
   }
   console.log('✅  Prepared default plugins.');
 }

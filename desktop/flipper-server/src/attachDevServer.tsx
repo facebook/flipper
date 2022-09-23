@@ -16,6 +16,7 @@ import {WebSocketServer} from 'ws';
 import pFilter from 'p-filter';
 import {homedir} from 'os';
 import {InstalledPluginDetails} from 'flipper-common';
+import {isFBBuild} from 'flipper-server-core';
 
 // This file is heavily inspired by scripts/start-dev-server.ts!
 // part of that is done by start-flipper-server-dev (compiling "main"),
@@ -153,6 +154,7 @@ export async function attachDevServer(
 
   await startWatchPlugins(
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
+    isFBBuild && !process.env.FLIPPER_FORCE_PUBLIC_BUILD,
     (changedPlugins: InstalledPluginDetails[]) => {
       socket.clients.forEach((client) => {
         client.send(
