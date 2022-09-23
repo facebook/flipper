@@ -715,7 +715,8 @@ export class ManagedTable extends React.Component<
             horizontallyScrollable={horizontallyScrollable}
           />
         )}
-        <Container>
+        <Container
+          style={{overflow: this.props.autoHeight ? 'visible' : 'hidden'}}>
           {this.props.autoHeight ? (
             <ContextMenu
               buildItems={

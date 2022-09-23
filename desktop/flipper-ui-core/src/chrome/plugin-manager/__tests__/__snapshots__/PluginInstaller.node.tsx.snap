@@ -130,6 +130,7 @@ exports[`load PluginInstaller list 1`] = `
       </div>
       <div
         class="css-p5h61d-View-FlexBox-FlexColumn-Container emab7y20"
+        style="overflow: visible;"
       >
         <div
           class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn e1e47qlf0"
@@ -516,6 +517,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       </div>
       <div
         class="css-p5h61d-View-FlexBox-FlexColumn-Container emab7y20"
+        style="overflow: visible;"
       >
         <div
           class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn e1e47qlf0"
