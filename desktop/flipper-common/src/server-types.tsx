@@ -470,6 +470,9 @@ export type FlipperServerConfig = {
   type?: FlipperServerType;
 };
 
+export interface FlipperServerExecOptions {
+  timeout: number;
+}
 export interface FlipperServer {
   connect(): Promise<void>;
   on<Event extends keyof FlipperServerEvents>(
@@ -480,6 +483,11 @@ export interface FlipperServer {
     event: Event,
     callback: (payload: FlipperServerEvents[Event]) => void,
   ): void;
+  exec<Event extends keyof FlipperServerCommands>(
+    options: FlipperServerExecOptions,
+    event: Event,
+    ...args: Parameters<FlipperServerCommands[Event]>
+  ): ReturnType<FlipperServerCommands[Event]>;
   exec<Event extends keyof FlipperServerCommands>(
     event: Event,
     ...args: Parameters<FlipperServerCommands[Event]>

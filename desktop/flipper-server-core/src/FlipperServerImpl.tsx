@@ -24,6 +24,7 @@ import {
   UninitializedClient,
   FlipperServerConfig,
   Logger,
+  FlipperServerExecOptions,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
@@ -268,14 +269,54 @@ export class FlipperServerImpl implements FlipperServer {
     this.events.emit('*', event, payload);
   }
 
+  private isExecWithOptions<Event extends keyof FlipperServerCommands>(
+    argsAmbiguous:
+      | [
+          FlipperServerExecOptions,
+          Event,
+          ...Parameters<FlipperServerCommands[Event]>,
+        ]
+      | [Event, ...Parameters<FlipperServerCommands[Event]>],
+  ): argsAmbiguous is [
+    FlipperServerExecOptions,
+    Event,
+    ...Parameters<FlipperServerCommands[Event]>,
+  ] {
+    return typeof argsAmbiguous[0] === 'object';
+  }
+
+  exec<Event extends keyof FlipperServerCommands>(
+    options: FlipperServerExecOptions,
+    event: Event,
+    ...args: Parameters<FlipperServerCommands[Event]>
+  ): ReturnType<FlipperServerCommands[Event]>;
   exec<Event extends keyof FlipperServerCommands>(
     event: Event,
     ...args: Parameters<FlipperServerCommands[Event]>
   ): ReturnType<FlipperServerCommands[Event]>;
   async exec<Event extends keyof FlipperServerCommands>(
-    event: Event,
-    ...args: any[]
+    ...argsAmbiguous:
+      | [
+          FlipperServerExecOptions,
+          Event,
+          ...Parameters<FlipperServerCommands[Event]>,
+        ]
+      | [Event, ...Parameters<FlipperServerCommands[Event]>]
   ): Promise<any> {
+    let _timeout: number;
+    let event: Event;
+    let args: Parameters<FlipperServerCommands[Event]>;
+    if (this.isExecWithOptions(argsAmbiguous)) {
+      _timeout = argsAmbiguous[0].timeout;
+      event = argsAmbiguous[1];
+      args = argsAmbiguous.slice(2) as typeof args;
+    } else {
+      // _timeout is currently not used, so we are setting it to a random value. Update it to a meaningful timeout before using it!
+      _timeout = 42;
+      event = argsAmbiguous[0];
+      args = argsAmbiguous.slice(1) as typeof args;
+    }
+
     try {
       const handler: (...args: any[]) => Promise<any> =
         this.commandHandler[event];

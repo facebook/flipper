@@ -11,6 +11,8 @@ import EventEmitter from 'eventemitter3';
 import {
   ExecWebSocketMessage,
   FlipperServer,
+  FlipperServerCommands,
+  FlipperServerExecOptions,
   ServerWebSocketMessage,
 } from 'flipper-common';
 import ReconnectingWebSocket from 'reconnecting-websocket';
@@ -127,10 +129,30 @@ export function createFlipperServerWithSocket(
       }
     });
 
+    const commandOrOptionsIsOptions = (
+      commandOrOptions: FlipperServerExecOptions | string,
+    ): commandOrOptions is FlipperServerExecOptions =>
+      typeof commandOrOptions === 'object';
+
     const flipperServer: FlipperServer = {
       async connect() {},
       close() {},
-      exec(command, ...args): any {
+      exec(commandOrOptions, ...argsAmbiguous): any {
+        let timeout: number;
+        let command: string;
+        let args: Parameters<
+          FlipperServerCommands[keyof FlipperServerCommands]
+        >;
+        if (commandOrOptionsIsOptions(commandOrOptions)) {
+          timeout = commandOrOptions.timeout;
+          command = argsAmbiguous[0] as string;
+          args = argsAmbiguous.slice(1) as typeof args;
+        } else {
+          timeout = EXEC_TIMEOUT;
+          command = commandOrOptions;
+          args = argsAmbiguous as typeof args;
+        }
+
         if (connected) {
           const id = ++requestId;
           return new Promise<any>((resolve, reject) => {
@@ -144,7 +166,7 @@ export function createFlipperServerWithSocket(
                 reject(
                   new Error(`flipper-server: timeout for command '${command}'`),
                 );
-              }, EXEC_TIMEOUT),
+              }, timeout),
             });
 
             const execMessage = {
