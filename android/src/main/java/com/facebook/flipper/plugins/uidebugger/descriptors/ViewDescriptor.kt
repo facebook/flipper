@@ -8,6 +8,8 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -103,6 +105,26 @@ object ViewDescriptor : ChainedDescriptor<View>() {
                 "y" to InspectableValue.Number(positionOnScreen[1], mutable = false)))
 
     attributeSections["View"] = InspectableObject(props.toMap())
+  }
+
+  override fun onGetSnapshot(node: View, bitmap: Bitmap?): Bitmap? {
+    var workingBitmap = bitmap
+
+    try {
+      if (workingBitmap == null) {
+        val viewWidth: Int = node.width
+        val viewHeight: Int = node.height
+
+        workingBitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.RGB_565)
+      }
+
+      workingBitmap?.let { b ->
+        val canvas = Canvas(b)
+        node.draw(canvas)
+      }
+    } catch (e: OutOfMemoryError) {}
+
+    return workingBitmap
   }
 
   private fun fromDrawable(d: Drawable?): Inspectable? {

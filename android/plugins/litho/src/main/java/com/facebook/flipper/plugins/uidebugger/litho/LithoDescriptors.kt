@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.uidebugger.litho
 
+import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
@@ -36,6 +37,8 @@ object LithoViewDescriptor : NodeDescriptor<LithoView> {
   override fun getBounds(node: LithoView): Bounds? = null
 
   override fun getTags(node: LithoView): Set<String> = setOf()
+
+  override fun getSnapshot(node: LithoView, bitmap: Bitmap?): Bitmap? = null
 }
 
 const val LithoTag = "Litho"
@@ -67,9 +70,13 @@ object MountedObjectDescriptor : NodeDescriptor<MountedObject> {
       node.descriptor.getData(node.obj)
 
   override fun getTags(node: MountedObject): Set<String> = node.descriptor.getTags(node.obj)
+
+  override fun getSnapshot(node: MountedObject, bitmap: Bitmap?): Bitmap? =
+      node.descriptor.getSnapshot(node.obj, bitmap)
 }
 
-class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {
+class DebugComponentDescriptor(private val register: DescriptorRegister) :
+    NodeDescriptor<DebugComponent> {
 
   override fun getName(node: DebugComponent): String {
     return node.component.simpleName
@@ -100,10 +107,13 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
   override fun getActiveChild(node: DebugComponent): Any? = null
 
   override fun getData(node: DebugComponent) = mapOf<String, InspectableObject>()
+
   override fun getBounds(node: DebugComponent): Bounds {
     val bounds = node.bounds
     return Bounds(bounds.left, bounds.top, bounds.width(), bounds.height())
   }
 
   override fun getTags(node: DebugComponent): Set<String> = setOf(BaseTags.Declarative, LithoTag)
+
+  override fun getSnapshot(node: DebugComponent, bitmap: Bitmap?): Bitmap? = null
 }

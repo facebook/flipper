@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 
@@ -101,4 +102,13 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
    * own section
    */
   open fun onGetData(node: T, attributeSections: MutableMap<SectionName, InspectableObject>) {}
+
+  /** Get a snapshot of the node. */
+  final override fun getSnapshot(node: T, bitmap: Bitmap?): Bitmap? {
+    return onGetSnapshot(node, bitmap)
+  }
+
+  open fun onGetSnapshot(node: T, bitmap: Bitmap?): Bitmap? {
+    return null
+  }
 }
