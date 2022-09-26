@@ -66,6 +66,26 @@ const restrictedImportsUniversalErrorConfig = {
       message:
         "Imports from nested flipper-ui-core directories are not allowed. Import from 'flipper-ui-core' module directly. If it is missing an export, add it there.",
     },
+    {
+      group: ['antd/*'],
+      message:
+        "Imports from nested antd directories are not allowed. Import from 'antd' module directly. If you want to import only a type, use `import type` syntax and silence this warning.",
+    },
+    {
+      group: ['immer/*'],
+      message:
+        "Imports from nested antd directories are not allowed. Import from 'antd' module directly. If you want to import only a type, use `import type` syntax and silence this warning.",
+    },
+    {
+      group: ['@emotion/styled/*'],
+      message:
+        "Imports from nested @emotion/styled directories are not allowed. Import from '@emotion/styled' module directly. If you want to import only a type, use `import type` syntax and silence this warning.",
+    },
+    {
+      group: ['@ant-design/icons/*'],
+      message:
+        "Imports from nested @ant-design/icons directories are not allowed. Import from '@ant-design/icons' module directly. If you want to import only a type, use `import type` syntax and silence this warning.",
+    },
   ],
 };
 

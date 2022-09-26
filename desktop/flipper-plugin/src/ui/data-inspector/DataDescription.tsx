@@ -18,6 +18,8 @@ import {parseColor} from '../../utils/parseColor';
 import {TimelineDataDescription} from './TimelineDataDescription';
 import {theme} from '../theme';
 import {EditOutlined} from '@ant-design/icons';
+// This import is OK since it is a type-only import
+// eslint-disable-next-line no-restricted-imports
 import type {CheckboxChangeEvent} from 'antd/lib/checkbox';
 
 const {Link} = Typography;

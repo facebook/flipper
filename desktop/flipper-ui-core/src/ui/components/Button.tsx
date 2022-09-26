@@ -9,10 +9,9 @@
 
 import React, {useCallback} from 'react';
 import styled from '@emotion/styled';
-import {Button as AntdButton} from 'antd';
+import {Button as AntdButton, ButtonProps} from 'antd';
 
 import Glyph, {IconSize} from './Glyph';
-import type {ButtonProps} from 'antd/lib/button';
 import {theme, getFlipperLib} from 'flipper-plugin';
 
 type ButtonType = 'primary' | 'success' | 'warning' | 'danger';

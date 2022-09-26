@@ -24,6 +24,8 @@ import {useValue} from '../state/atom';
 import {_SandyDevicePluginInstance} from 'flipper-plugin-core';
 import {Layout} from './Layout';
 import {BulbTwoTone} from '@ant-design/icons';
+// This import is OK since it is a type-only import
+// eslint-disable-next-line no-restricted-imports
 import type {TooltipPlacement} from 'antd/lib/tooltip';
 import {_SandyPluginInstance} from 'flipper-plugin-core';
 import {theme} from './theme';

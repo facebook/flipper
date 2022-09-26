@@ -54,7 +54,6 @@ import FpsGraph from '../chrome/FpsGraph';
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
-import SubMenu from 'antd/lib/menu/SubMenu';
 import constants from '../fb-stubs/constants';
 import {
   canFileExport,
@@ -260,7 +259,7 @@ function ExtrasMenu() {
           className={menu}
           selectable={false}
           style={{backgroundColor: theme.backgroundDefault}}>
-          <SubMenu
+          <Menu.SubMenu
             popupOffset={[10, 0]}
             key="extras"
             title={<LeftRailButton icon={<SettingOutlined />} small />}
@@ -288,7 +287,7 @@ function ExtrasMenu() {
               </Menu.Item>
             ) : null}
             <Menu.Divider />
-            <SubMenu title="Plugin developers">
+            <Menu.SubMenu title="Plugin developers">
               <Menu.Item
                 key="styleguide"
                 onClick={() => {
@@ -301,7 +300,7 @@ function ExtrasMenu() {
                 onClick={() => openDeeplinkDialog(store)}>
                 Trigger deeplink
               </Menu.Item>
-            </SubMenu>
+            </Menu.SubMenu>
             <Menu.Divider />
             {config.isFBBuild ? (
               <>
@@ -324,7 +323,7 @@ function ExtrasMenu() {
             <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
               Help
             </Menu.Item>
-          </SubMenu>
+          </Menu.SubMenu>
         </Menu>
       </NUX>
       {showSettings && (

@@ -8,8 +8,7 @@
  */
 
 import {Id, UINode} from '../types';
-import {DataNode} from 'antd/es/tree';
-import {Tree as AntTree} from 'antd';
+import {Tree as AntTree, TreeDataNode} from 'antd';
 import {DownOutlined} from '@ant-design/icons';
 import React from 'react';
 
@@ -56,10 +55,13 @@ export function Tree(props: {
   );
 }
 
-function nodesToAntTree(root: Id, nodes: Map<Id, UINode>): [DataNode, Id[]] {
+function nodesToAntTree(
+  root: Id,
+  nodes: Map<Id, UINode>,
+): [TreeDataNode, Id[]] {
   const inactive: Id[] = [];
 
-  function uiNodeToAntNode(id: Id): DataNode {
+  function uiNodeToAntNode(id: Id): TreeDataNode {
     const node = nodes.get(id);
 
     if (node?.activeChild) {

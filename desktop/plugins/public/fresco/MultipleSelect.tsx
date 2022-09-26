@@ -11,6 +11,8 @@ import React, {Component} from 'react';
 import {Layout} from 'flipper-plugin';
 import {Button, Menu, Checkbox, Dropdown} from 'antd';
 import {DownOutlined} from '@ant-design/icons';
+// This import is OK since it is a type-only import
+// eslint-disable-next-line no-restricted-imports
 import type {CheckboxChangeEvent} from 'antd/lib/checkbox';
 
 export default class MultipleSelect extends Component<{

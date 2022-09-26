@@ -10,7 +10,9 @@
 import React from 'react';
 import {Typography} from 'antd';
 import styled from '@emotion/styled';
-import {ParagraphProps} from 'antd/lib/typography/Paragraph';
+// This import is OK since it is a type-only import
+// eslint-disable-next-line no-restricted-imports
+import type {ParagraphProps} from 'antd/lib/typography/Paragraph';
 
 export function CodeBlock({children, ...props}: ParagraphProps) {
   return (
