@@ -9,11 +9,11 @@
 
 export const startGlobalErrorHandling = () => {
   if (typeof window !== 'undefined') {
-    window.addEventListener('error', (event) => {
-      console.error('"error" event intercepted:', event.error);
-    });
-    window.addEventListener('unhandledrejection', (event) => {
+    window.onerror = (event) => {
+      console.error('"onerror" event intercepted:', event);
+    };
+    window.onunhandledrejection = (event) => {
       console.error('"unhandledrejection" event intercepted:', event.reason);
-    });
+    };
   }
 };
