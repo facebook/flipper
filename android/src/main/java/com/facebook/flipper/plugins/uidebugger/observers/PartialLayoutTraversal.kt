@@ -17,8 +17,9 @@ import com.facebook.flipper.plugins.uidebugger.model.Node
 
 /**
  * This will traverse the layout hierarchy until it sees a node that has an observer registered for
- * it. The first item in the pair is the visited nodes The second item are any observable roots
- * discovered
+ * it.
+ * - The first item in the pair is the visited nodes.
+ * - The second item are any observable roots discovered.
  */
 class PartialLayoutTraversal(
     private val descriptorRegister: DescriptorRegister,
@@ -32,11 +33,11 @@ class PartialLayoutTraversal(
 
     val visited = mutableListOf<Node>()
     val observableRoots = mutableListOf<Any>()
+
     val stack = mutableListOf<Any>()
     stack.add(root)
 
     while (stack.isNotEmpty()) {
-
       val node = stack.removeLast()
 
       try {
@@ -49,11 +50,10 @@ class PartialLayoutTraversal(
         val descriptor = descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
 
         val children = descriptor.getChildren(node)
-
-        val childrenIds = mutableListOf<Id>()
         val activeChild = descriptor.getActiveChild(node)
 
-        for (child in children) {
+        val childrenIds = mutableListOf<Id>()
+        children.forEach { child ->
           // It might make sense one day to remove id from the descriptor since its always the
           // hash code
           val childDescriptor =
