@@ -66,7 +66,7 @@ async function runBuild({
       // It is an optional dependency for rollup that we use in react-devtools
       'fsevents',
     ],
-    sourcemap: 'external',
+    sourcemap: dev ? 'inline' : 'external',
     minify: !dev,
     plugins: intern ? [resolveFbStubsToFbPlugin] : undefined,
   });

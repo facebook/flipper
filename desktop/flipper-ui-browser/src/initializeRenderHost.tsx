@@ -82,10 +82,13 @@ export function initializeRenderHost(
     flipperServer,
     async requirePlugin(path) {
       let source = await flipperServer.exec('plugin-source', path);
+
       // append source url (to make sure a file entry shows up in the debugger)
       source += `\n//# sourceURL=file://${path}`;
-      // and source map url (to get source code if available)
-      source += `\n//# sourceMappingURL=file://${path.replace(/.js$/, '.map')}`;
+      if (isProduction()) {
+        // and source map url (to get source code if available)
+        source += `\n//# sourceMappingURL=file://${path}.map`;
+      }
 
       // Plugins are compiled as typical CJS modules, referring to the global
       // 'module', which we'll make available by loading the source into a closure that captures 'module'.
