@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.plugins.uidebugger.observers
+package com.facebook.flipper.plugins.uidebugger.traversal
 
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
@@ -14,6 +14,7 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
 import com.facebook.flipper.plugins.uidebugger.model.Node
+import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 
 /**
  * This will traverse the layout hierarchy until it sees a node that has an observer registered for
@@ -29,7 +30,7 @@ class PartialLayoutTraversal(
   @Suppress("unchecked_cast")
   internal fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
 
-  fun traverse(root: Any): Pair<MutableList<Node>, List<Any>> {
+  fun traverse(root: Any): Pair<List<Node>, List<Any>> {
 
     val visited = mutableListOf<Node>()
     val observableRoots = mutableListOf<Any>()
@@ -48,7 +49,6 @@ class PartialLayoutTraversal(
         }
 
         val descriptor = descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
-
         val children = descriptor.getChildren(node)
         val activeChild = descriptor.getActiveChild(node)
 
@@ -64,6 +64,7 @@ class PartialLayoutTraversal(
             stack.add(child)
           }
         }
+
         var activeChildId: Id? = null
         if (activeChild != null) {
           stack.add(activeChild)
@@ -73,7 +74,6 @@ class PartialLayoutTraversal(
         val attributes = descriptor.getData(node)
         val bounds = descriptor.getBounds(node)
         val tags = descriptor.getTags(node)
-
         visited.add(
             Node(
                 node.nodeId(),
