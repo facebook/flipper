@@ -23,7 +23,9 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const nodesAtom = createState<Map<Id, UINode>>(new Map());
-  client.onMessage('subtreeUpdate', ({nodes}) => {
+  const snapshotAtom = createState<String | undefined>(undefined);
+  client.onMessage('subtreeUpdate', ({nodes, snapshot}) => {
+    snapshotAtom.set(snapshot);
     nodesAtom.update((draft) => {
       for (const node of nodes) {
         draft.set(node.id, node);
@@ -36,7 +38,7 @@ export function plugin(client: PluginClient<Events>) {
     nodesAtom.set(new Map(nodes.map((node) => [node.id, node])));
   });
 
-  return {rootId, nodes: nodesAtom, perfEvents};
+  return {rootId, snapshot: snapshotAtom, nodes: nodesAtom, perfEvents};
 }
 
 export {Component} from './components/main';

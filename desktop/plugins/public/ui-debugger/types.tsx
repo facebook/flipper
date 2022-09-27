@@ -10,7 +10,12 @@
 export type Events = {
   init: {rootId: string};
   nativeScan: {txId: number; nodes: UINode[]};
-  subtreeUpdate: {txId: number; nodes: UINode[]};
+  subtreeUpdate: {
+    txId: number;
+    rootId: String;
+    nodes: UINode[];
+    snapshot: String;
+  };
   perfStats: PerfStatsEvent;
 };
 

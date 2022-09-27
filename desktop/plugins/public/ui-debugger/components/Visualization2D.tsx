@@ -16,6 +16,7 @@ export const Visualization2D: React.FC<
   {
     root: Id;
     nodes: Map<Id, UINode>;
+    snapshot?: String;
     hoveredNode?: Id;
     selectedNode?: Id;
     onSelectNode: (id: Id) => void;
@@ -25,6 +26,7 @@ export const Visualization2D: React.FC<
 > = ({
   root,
   nodes,
+  snapshot,
   hoveredNode,
   selectedNode,
   onSelectNode,
@@ -59,6 +61,12 @@ export const Visualization2D: React.FC<
           height: toPx(rootBounds.height),
         }}>
         <OuterBorder />
+        {snapshot ? (
+          <img
+            src={'data:image/jpeg;base64,' + snapshot}
+            style={{maxWidth: '100%'}}
+          />
+        ) : null}
         <Visualization2DNode
           nodeId={root}
           nodes={nodes}

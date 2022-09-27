@@ -29,6 +29,7 @@ export function Component() {
   const instance = usePlugin(plugin);
   const rootId = useValue(instance.rootId);
   const nodes: Map<Id, UINode> = useValue(instance.nodes);
+  const snapshot: String | undefined = useValue(instance.snapshot);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Id | undefined>(undefined);
@@ -71,6 +72,7 @@ export function Component() {
             <Visualization2D
               root={rootId}
               nodes={nodes}
+              snapshot={snapshot}
               hoveredNode={hoveredNode}
               onHoverNode={setHoveredNode}
               selectedNode={selectedNode}
