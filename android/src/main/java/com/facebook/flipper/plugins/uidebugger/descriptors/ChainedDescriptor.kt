@@ -105,7 +105,7 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
 
   /** Get a snapshot of the node. */
   final override fun getSnapshot(node: T, bitmap: Bitmap?): Bitmap? {
-    return onGetSnapshot(node, bitmap)
+    return onGetSnapshot(node, bitmap) ?: mSuper?.onGetSnapshot(node, bitmap)
   }
 
   open fun onGetSnapshot(node: T, bitmap: Bitmap?): Bitmap? {
