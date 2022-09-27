@@ -31,7 +31,6 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
 abstract class TreeObserver<T> {
 
   protected val children: MutableMap<Int, TreeObserver<*>> = mutableMapOf()
-  protected var bitmapPool: BitmapPool? = null
 
   abstract val type: String
 
@@ -39,12 +38,12 @@ abstract class TreeObserver<T> {
 
   abstract fun unsubscribe()
 
-  fun processUpdate(context: Context, root: Any) = this.processUpdate(context, root, false)
-  fun processUpdateWithSnapshot(context: Context, root: Any) =
-      this.processUpdate(context, root, true)
-
   /** Traverses the layout hierarchy while managing any encountered child observers. */
-  fun processUpdate(context: Context, root: Any, takeSnapshot: Boolean) {
+  fun processUpdate(
+      context: Context,
+      root: Any,
+      snapshotBitmap: BitmapPool.ReusableBitmap? = null
+  ) {
     val startTimestamp = System.currentTimeMillis()
     val (visitedNodes, observableRoots) = context.layoutTraversal.traverse(root)
 
@@ -82,20 +81,18 @@ abstract class TreeObserver<T> {
 
     Log.d(LogTag, "For Observer ${this.type} Sending ${visitedNodes.size}")
 
-    var recyclableBitmap: BitmapPool.RecyclableBitmap? = null
-    if (takeSnapshot && bitmapPool != null) {
+    if (snapshotBitmap != null) {
       @Suppress("unchecked_cast")
       val descriptor =
           context.descriptorRegister.descriptorForClassUnsafe(root::class.java)
               as NodeDescriptor<Any>
-      recyclableBitmap = bitmapPool?.getBitmap()
-      descriptor.getSnapshot(root, recyclableBitmap?.bitmap)
+      descriptor.getSnapshot(root, snapshotBitmap.bitmap)
     }
 
     val endTimestamp = System.currentTimeMillis()
     context.treeObserverManager.enqueueUpdate(
         SubtreeUpdate(
-            type, root.nodeId(), visitedNodes, startTimestamp, endTimestamp, recyclableBitmap))
+            type, root.nodeId(), visitedNodes, startTimestamp, endTimestamp, snapshotBitmap))
   }
 
   fun cleanUpRecursive() {

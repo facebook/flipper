@@ -11,42 +11,58 @@ import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
 
-class BitmapPool(
-    private val width: Int,
-    private val height: Int,
-    private val config: Bitmap.Config = Bitmap.Config.RGB_565
-) {
+/** BitmapPool is intended to be used on the main thread. In other words, it is not thread-safe. */
+class BitmapPool(private val config: Bitmap.Config = Bitmap.Config.RGB_565) {
 
-  interface RecyclableBitmap {
+  interface ReusableBitmap {
     val bitmap: Bitmap?
-    fun recycle()
+    fun readyForReuse()
   }
 
   private var handler: Handler = Handler(Looper.getMainLooper())
 
-  private val bitmaps: MutableList<Bitmap> = mutableListOf()
+  private val container: MutableMap<String, MutableList<Bitmap>> = mutableMapOf()
   private var isRecycled = false
 
-  fun recycle() {
+  private fun generateKey(width: Int, height: Int): String = "$width,$height"
+
+  fun recycleAll() {
     isRecycled = true
-    bitmaps.forEach { bitmap -> bitmap.recycle() }
-    bitmaps.clear()
+    container.forEach { (_, bitmaps) ->
+      bitmaps.forEach { bitmap -> bitmap.recycle() }
+      bitmaps.clear()
+    }
+
+    container.clear()
   }
 
-  fun getBitmap(): RecyclableBitmap {
-    return if (bitmaps.isEmpty()) {
+  fun makeReady() {
+    isRecycled = false
+  }
+
+  fun getBitmap(width: Int, height: Int): ReusableBitmap {
+    val key = generateKey(width, height)
+    val bitmaps = container[key]
+
+    return if (bitmaps == null || bitmaps.isEmpty()) {
       LeasedBitmap(Bitmap.createBitmap(width, height, config))
     } else {
       LeasedBitmap(bitmaps.removeLast())
     }
   }
 
-  inner class LeasedBitmap(override val bitmap: Bitmap) : RecyclableBitmap {
-    override fun recycle() {
+  inner class LeasedBitmap(override val bitmap: Bitmap) : ReusableBitmap {
+    override fun readyForReuse() {
+      val key = generateKey(bitmap.width, bitmap.height)
       handler.post {
         if (isRecycled) {
           bitmap.recycle()
         } else {
+          var bitmaps = container[key]
+          if (bitmaps == null) {
+            bitmaps = mutableListOf()
+            container[key] = bitmaps
+          }
           bitmaps.add(bitmap)
         }
       }
@@ -54,10 +70,6 @@ class BitmapPool(
   }
 
   companion object {
-    fun createBitmap(width: Int, height: Int, config: Bitmap.Config): Bitmap {
-      return Bitmap.createBitmap(width, height, config)
-    }
-
     fun createBitmapWithDefaultConfig(width: Int, height: Int): Bitmap {
       return Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
     }

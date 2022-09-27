@@ -40,10 +40,13 @@ class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
 
     val throttledUpdate =
         throttleLatest<WeakReference<View>?>(throttleTimeMs, waitScope, mainScope) { weakView ->
-          if (node.width > 0 && node.height > 0) {
-            bitmapPool = BitmapPool(node.width, node.height)
+          weakView?.get()?.let { view ->
+            var snapshotBitmap: BitmapPool.ReusableBitmap? = null
+            if (view.width > 0 && view.height > 0) {
+              snapshotBitmap = context.bitmapPool.getBitmap(node.width, node.height)
+            }
+            processUpdate(context, view, snapshotBitmap)
           }
-          weakView?.get()?.let { view -> processUpdateWithSnapshot(context, view) }
         }
 
     listener =
@@ -68,9 +71,6 @@ class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
     }
 
     nodeRef = null
-
-    bitmapPool?.recycle()
-    bitmapPool = null
   }
 }
 

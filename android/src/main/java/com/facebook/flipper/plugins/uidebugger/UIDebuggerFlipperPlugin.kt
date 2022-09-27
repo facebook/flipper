@@ -45,6 +45,7 @@ class UIDebuggerFlipperPlugin(
   override fun onConnect(connection: FlipperConnection) {
     Log.i(LogTag, "Connected")
     this.context.connectionRef.connection = connection
+    this.context.bitmapPool.makeReady()
 
     connection.send(
         InitEvent.name,
@@ -59,6 +60,7 @@ class UIDebuggerFlipperPlugin(
     Log.i(LogTag, "Disconnected")
 
     context.treeObserverManager.stop()
+    context.bitmapPool.recycleAll()
   }
 
   override fun runInBackground(): Boolean {

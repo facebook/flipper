@@ -31,7 +31,7 @@ data class SubtreeUpdate(
     val nodes: List<Node>,
     val startTime: Long,
     val traversalCompleteTime: Long,
-    val snapshot: BitmapPool.RecyclableBitmap?
+    val snapshot: BitmapPool.ReusableBitmap?
 )
 
 /** Holds the root observer and manages sending updates to desktop */
@@ -87,7 +87,7 @@ class TreeObserverManager(val context: Context) {
                             treeUpdate.nodes,
                             snapshot))
 
-                treeUpdate.snapshot.recycle()
+                treeUpdate.snapshot.readyForReuse()
               }
 
               val serializationEnd = System.currentTimeMillis()
