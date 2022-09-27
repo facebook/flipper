@@ -8,8 +8,9 @@
 package com.facebook.flipper.plugins.uidebugger.common
 
 import android.graphics.Bitmap
-import android.os.Handler
-import android.os.Looper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /** BitmapPool is intended to be used on the main thread. In other words, it is not thread-safe. */
 class BitmapPool(private val config: Bitmap.Config = Bitmap.Config.RGB_565) {
@@ -19,7 +20,7 @@ class BitmapPool(private val config: Bitmap.Config = Bitmap.Config.RGB_565) {
     fun readyForReuse()
   }
 
-  private var handler: Handler = Handler(Looper.getMainLooper())
+  val mainScope = CoroutineScope(Dispatchers.Main)
 
   private val container: MutableMap<String, MutableList<Bitmap>> = mutableMapOf()
   private var isRecycled = false
@@ -54,7 +55,8 @@ class BitmapPool(private val config: Bitmap.Config = Bitmap.Config.RGB_565) {
   inner class LeasedBitmap(override val bitmap: Bitmap) : ReusableBitmap {
     override fun readyForReuse() {
       val key = generateKey(bitmap.width, bitmap.height)
-      handler.post {
+
+      mainScope.launch {
         if (isRecycled) {
           bitmap.recycle()
         } else {
