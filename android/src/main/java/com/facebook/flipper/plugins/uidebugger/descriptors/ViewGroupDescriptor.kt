@@ -7,14 +7,13 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewGroupCompat
-import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
-import com.facebook.flipper.plugins.uidebugger.common.Inspectable
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
-import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.common.*
 import com.facebook.flipper.plugins.uidebugger.core.FragmentTracker
 
 object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
@@ -49,6 +48,30 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
     }
 
     attributeSections["ViewGroup"] = InspectableObject(viewGroupAttrs)
+  }
+
+  override fun onGetSnapshot(node: ViewGroup, bitmap: Bitmap?): Bitmap? {
+    if (node.width <= 0 || node.height <= 0) {
+      return null
+    }
+    var workingBitmap = bitmap
+
+    try {
+      val differentSize =
+          if (bitmap != null) (node.width != bitmap.width || node.height != bitmap.height)
+          else false
+      if (workingBitmap == null || differentSize) {
+        val viewWidth: Int = node.width
+        val viewHeight: Int = node.height
+
+        workingBitmap = BitmapPool.createBitmapWithDefaultConfig(viewWidth, viewHeight)
+      }
+
+      val canvas = Canvas(workingBitmap)
+      node.draw(canvas)
+    } catch (e: OutOfMemoryError) {}
+
+    return workingBitmap
   }
 
   private val LayoutModeMapping: EnumMapping<Int> =
