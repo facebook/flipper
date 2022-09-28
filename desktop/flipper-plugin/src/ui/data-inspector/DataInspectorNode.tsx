@@ -718,6 +718,18 @@ function dataInspectorPropsAreEqual(
     }
   }
 
+  const nodePath = (
+    props.name === undefined
+      ? props.parentPath
+      : props.parentPath.concat([props.name])
+  ).join('.');
+
+  //if the node is a prefix then we of the hovered path(s) then we *should* render this branch of the tree
+  //Otherwise we don't need to rerender since this node is not changing hover state
+  const nodePathIsPrefixOfCurrentOrNextHoverPath =
+    nextProps.hoveredNodePath?.startsWith(nodePath) ||
+    props.hoveredNodePath?.startsWith(nodePath);
+
   // basic equality checks for the rest
   return (
     nextProps.data === props.data &&
@@ -730,7 +742,7 @@ function dataInspectorPropsAreEqual(
     nextProps.setValue === props.setValue &&
     nextProps.collapsed === props.collapsed &&
     nextProps.expandRoot === props.expandRoot &&
-    nextProps.hoveredNodePath === props.hoveredNodePath
+    !nodePathIsPrefixOfCurrentOrNextHoverPath
   );
 }
 
