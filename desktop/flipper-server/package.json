@@ -24,7 +24,7 @@
     "p-filter": "^2.1.0",
     "ws": "^8.5.0",
     "xdg-basedir": "^4",
-    "yargs": "^17.4.1"
+    "yargs": "^17.5.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
