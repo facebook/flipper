@@ -8,7 +8,7 @@
  */
 
 import {PluginClient, createState, createDataSource} from 'flipper-plugin';
-import {Events, Id, PerfStatsEvent, UINode} from './types';
+import {Events, Id, PerfStatsEvent, Snapshot, UINode} from './types';
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
@@ -23,9 +23,13 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const nodesAtom = createState<Map<Id, UINode>>(new Map());
-  client.onMessage('subtreeUpdate', ({nodes}) => {
+  const snapshotsAtom = createState<Map<Id, Snapshot>>(new Map());
+  client.onMessage('subtreeUpdate', (event) => {
+    snapshotsAtom.update((draft) => {
+      draft.set(event.rootId, event.snapshot);
+    });
     nodesAtom.update((draft) => {
-      for (const node of nodes) {
+      for (const node of event.nodes) {
         draft.set(node.id, node);
       }
     });
@@ -36,7 +40,7 @@ export function plugin(client: PluginClient<Events>) {
     nodesAtom.set(new Map(nodes.map((node) => [node.id, node])));
   });
 
-  return {rootId, nodes: nodesAtom, perfEvents};
+  return {rootId, snapshots: snapshotsAtom, nodes: nodesAtom, perfEvents};
 }
 
 export {Component} from './components/main';

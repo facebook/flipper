@@ -19,7 +19,7 @@ class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
 
   override val type = "Litho"
 
-  var nodeRef: LithoView? = null
+  private var nodeRef: LithoView? = null
 
   override fun subscribe(node: Any) {
 
@@ -27,7 +27,7 @@ class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
 
     nodeRef = node as LithoView
 
-    val listener: (view: LithoView) -> Unit = { traverseAndSend(context, node) }
+    val listener: (view: LithoView) -> Unit = { processUpdate(context, node) }
     node.setOnDirtyMountListener(listener)
 
     listener(node)

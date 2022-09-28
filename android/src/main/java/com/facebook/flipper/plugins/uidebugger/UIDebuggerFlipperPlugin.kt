@@ -16,11 +16,9 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
 import com.facebook.flipper.plugins.uidebugger.model.InitEvent
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
-import com.facebook.flipper.plugins.uidebugger.scheduler.Scheduler
-import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 
-const val LogTag = "uidebugger"
+const val LogTag = "ui-debugger"
 
 class UIDebuggerFlipperPlugin(
     val application: Application,
@@ -35,10 +33,8 @@ class UIDebuggerFlipperPlugin(
           descriptorRegister = descriptorRegister ?: DescriptorRegister.withDefaults(),
           observerFactory = observerFactory ?: TreeObserverFactory.withDefaults())
 
-  private val nativeScanScheduler = Scheduler(NativeScanScheduler(context))
-
   init {
-    Log.i(LogTag, "Initializing UI Debugger")
+    Log.i(LogTag, "Initializing ui-debugger")
   }
 
   override fun getId(): String {
@@ -49,9 +45,7 @@ class UIDebuggerFlipperPlugin(
   override fun onConnect(connection: FlipperConnection) {
     Log.i(LogTag, "Connected")
     this.context.connectionRef.connection = connection
-
-    val rootDescriptor =
-        context.descriptorRegister.descriptorForClassUnsafe(context.applicationRef.javaClass)
+    this.context.bitmapPool.makeReady()
 
     connection.send(
         InitEvent.name,
@@ -66,6 +60,7 @@ class UIDebuggerFlipperPlugin(
     Log.i(LogTag, "Disconnected")
 
     context.treeObserverManager.stop()
+    context.bitmapPool.recycleAll()
   }
 
   override fun runInBackground(): Boolean {

@@ -8,10 +8,11 @@
 package com.facebook.flipper.plugins.uidebugger.core
 
 import com.facebook.flipper.core.FlipperConnection
+import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
-import com.facebook.flipper.plugins.uidebugger.observers.PartialLayoutTraversal
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverManager
+import com.facebook.flipper.plugins.uidebugger.traversal.PartialLayoutTraversal
 
 data class Context(
     val applicationRef: ApplicationRef,
@@ -23,6 +24,8 @@ data class Context(
       PartialLayoutTraversal(descriptorRegister, observerFactory)
 
   val treeObserverManager = TreeObserverManager(this)
+
+  val bitmapPool = BitmapPool()
 }
 
 data class ConnectionRef(var connection: FlipperConnection?)

@@ -19,10 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
-import com.facebook.flipper.plugins.uidebugger.common.Inspectable
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
-import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.common.*
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.util.ResourcesUtil
 import java.lang.reflect.Field
@@ -108,20 +105,24 @@ object ViewDescriptor : ChainedDescriptor<View>() {
   }
 
   override fun onGetSnapshot(node: View, bitmap: Bitmap?): Bitmap? {
+    if (node.width <= 0 || node.height <= 0) {
+      return null
+    }
     var workingBitmap = bitmap
 
     try {
-      if (workingBitmap == null) {
+      val differentSize =
+          if (bitmap != null) (node.width != bitmap.width || node.height != bitmap.height)
+          else false
+      if (workingBitmap == null || differentSize) {
         val viewWidth: Int = node.width
         val viewHeight: Int = node.height
 
-        workingBitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.RGB_565)
+        workingBitmap = BitmapPool.createBitmapWithDefaultConfig(viewWidth, viewHeight)
       }
 
-      workingBitmap?.let { b ->
-        val canvas = Canvas(b)
-        node.draw(canvas)
-      }
+      val canvas = Canvas(workingBitmap)
+      node.draw(canvas)
     } catch (e: OutOfMemoryError) {}
 
     return workingBitmap

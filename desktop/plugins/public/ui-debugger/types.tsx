@@ -10,8 +10,15 @@
 export type Events = {
   init: {rootId: string};
   nativeScan: {txId: number; nodes: UINode[]};
-  subtreeUpdate: {txId: number; nodes: UINode[]};
+  subtreeUpdate: SubtreeUpdateEvent;
   perfStats: PerfStatsEvent;
+};
+
+export type SubtreeUpdateEvent = {
+  txId: number;
+  rootId: Id;
+  nodes: UINode[];
+  snapshot: Snapshot;
 };
 
 export type PerfStatsEvent = {
@@ -43,6 +50,7 @@ export type Bounds = {
 };
 
 export type Id = string;
+export type Snapshot = string;
 
 export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho ';
 

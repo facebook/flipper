@@ -35,17 +35,12 @@ class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRe
 
           override fun onRootViewsChanged(rootViews: List<View>) {
             Log.i(LogTag, "Root views updated, num ${rootViews.size}")
-            traverseAndSend(context, applicationRef)
+            processUpdate(context, applicationRef)
           }
         }
     context.applicationRef.rootsResolver.attachListener(rootViewListener)
     // On subscribe, trigger a traversal on whatever roots we have
     rootViewListener.onRootViewsChanged(applicationRef.rootViews)
-
-    // TODO: Subscribing to root view changes but not to activity changes.
-    // Obviously changes in activities have an effect on root views, but
-    // then it may make sense to unsubscribe the root views listener instead
-    // of activities.
 
     Log.i(LogTag, "${context.applicationRef.rootViews.size} root views")
     Log.i(LogTag, "${context.applicationRef.activitiesStack.size} activities")

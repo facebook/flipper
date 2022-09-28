@@ -19,7 +19,7 @@ import {
 import {Typography} from 'antd';
 
 import {useHotkeys} from 'react-hotkeys-hook';
-import {Id, UINode} from '../types';
+import {Id, Snapshot, UINode} from '../types';
 import {PerfStats} from './PerfStats';
 import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
@@ -29,6 +29,7 @@ export function Component() {
   const instance = usePlugin(plugin);
   const rootId = useValue(instance.rootId);
   const nodes: Map<Id, UINode> = useValue(instance.nodes);
+  const snapshots: Map<Id, Snapshot> = useValue(instance.snapshots);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Id | undefined>(undefined);
@@ -71,6 +72,7 @@ export function Component() {
             <Visualization2D
               root={rootId}
               nodes={nodes}
+              snapshots={snapshots}
               hoveredNode={hoveredNode}
               onHoverNode={setHoveredNode}
               selectedNode={selectedNode}

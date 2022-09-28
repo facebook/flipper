@@ -17,7 +17,13 @@ data class InitEvent(val rootId: Id) {
 }
 
 @kotlinx.serialization.Serializable
-data class SubtreeUpdateEvent(val txId: Long, val observerType: String, val nodes: List<Node>) {
+data class SubtreeUpdateEvent(
+    val txId: Long,
+    val observerType: String,
+    val rootId: Id,
+    val nodes: List<Node>,
+    val snapshot: String? = null
+) {
   companion object {
     const val name = "subtreeUpdate"
   }

@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {Id, Tag, UINode} from '../types';
+import {Id, Snapshot, Tag, UINode} from '../types';
 import {styled, Layout, theme} from 'flipper-plugin';
 import {Typography} from 'antd';
 
@@ -16,6 +16,7 @@ export const Visualization2D: React.FC<
   {
     root: Id;
     nodes: Map<Id, UINode>;
+    snapshots: Map<Id, Snapshot>;
     hoveredNode?: Id;
     selectedNode?: Id;
     onSelectNode: (id: Id) => void;
@@ -25,6 +26,7 @@ export const Visualization2D: React.FC<
 > = ({
   root,
   nodes,
+  snapshots,
   hoveredNode,
   selectedNode,
   onSelectNode,
@@ -33,6 +35,7 @@ export const Visualization2D: React.FC<
 }) => {
   //todo, do a bfs search for the first bounds found
   const rootBounds = nodes.get(root)?.bounds;
+  const rootSnapshot = snapshots.get(root);
 
   if (!rootBounds) {
     return null;
@@ -59,9 +62,16 @@ export const Visualization2D: React.FC<
           height: toPx(rootBounds.height),
         }}>
         <OuterBorder />
+        {rootSnapshot ? (
+          <img
+            src={'data:image/jpeg;base64,' + rootSnapshot}
+            style={{maxWidth: '100%'}}
+          />
+        ) : null}
         <Visualization2DNode
           nodeId={root}
           nodes={nodes}
+          snapshots={snapshots}
           hoveredNode={hoveredNode}
           selectedNode={selectedNode}
           onSelectNode={onSelectNode}
@@ -77,6 +87,7 @@ function Visualization2DNode({
   parentId,
   nodeId,
   nodes,
+  snapshots,
   hoveredNode,
   selectedNode,
   onSelectNode,
@@ -86,6 +97,7 @@ function Visualization2DNode({
   nodeId: Id;
   parentId?: Id;
   nodes: Map<Id, UINode>;
+  snapshots: Map<Id, Snapshot>;
   modifierPressed: boolean;
   hoveredNode?: Id;
   selectedNode?: Id;
@@ -93,6 +105,7 @@ function Visualization2DNode({
   onHoverNode: (id?: Id) => void;
 }) {
   const node = nodes.get(nodeId);
+  const snapshot = snapshots.get(nodeId);
 
   if (!node) {
     return null;
@@ -122,6 +135,7 @@ function Visualization2DNode({
       key={childId}
       nodeId={childId}
       nodes={nodes}
+      snapshots={snapshots}
       hoveredNode={hoveredNode}
       onSelectNode={onSelectNode}
       onHoverNode={onHoverNode}
@@ -169,11 +183,19 @@ function Visualization2DNode({
         onSelectNode(nodeId);
       }}>
       <NodeBorder tags={node.tags}></NodeBorder>
-
-      {/* Dirty hack to avoid showing highly overlapping text */}
-      {!hasOverlappingChild && !isZeroWidthOrHeight && node.bounds
-        ? node.name
-        : null}
+      {snapshot ? (
+        <img
+          src={'data:image/jpeg;base64,' + snapshot}
+          style={{maxWidth: '100%'}}
+        />
+      ) : (
+        <>
+          {/* Dirty hack to avoid showing highly overlapping text */}
+          {!hasOverlappingChild && !isZeroWidthOrHeight && node.bounds
+            ? node.name
+            : null}
+        </>
+      )}
       {children}
     </div>
   );

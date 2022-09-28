@@ -13,9 +13,9 @@ import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.model.NativeScanEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
-import com.facebook.flipper.plugins.uidebugger.observers.PartialLayoutTraversal
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import com.facebook.flipper.plugins.uidebugger.scheduler.Scheduler
+import com.facebook.flipper.plugins.uidebugger.traversal.PartialLayoutTraversal
 import kotlinx.serialization.json.Json
 
 data class ScanResult(
