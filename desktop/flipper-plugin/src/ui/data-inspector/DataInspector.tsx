@@ -82,6 +82,7 @@ type DataInspectorState = {
   filterExpanded: DataInspectorExpanded;
   userExpanded: DataInspectorExpanded;
   filter: string;
+  hoveredNodePath: string | undefined;
 };
 
 const MAX_RESULTS = 50;
@@ -102,6 +103,7 @@ export class DataInspector extends PureComponent<
     userExpanded: {},
     filterExpanded: {},
     filter: '',
+    hoveredNodePath: undefined,
   };
 
   static getDerivedStateFromProps(
@@ -181,6 +183,16 @@ export class DataInspector extends PureComponent<
     });
   };
 
+  setHoveredNodePath = (path?: string) => {
+    this.setState({
+      hoveredNodePath: path,
+    });
+  };
+
+  removeHover = () => {
+    this.setHoveredNodePath(undefined);
+  };
+
   // make sure this fn is a stable ref to not invalidate the whole tree on new data
   getRootData = () => {
     return this.props.data;
@@ -188,10 +200,12 @@ export class DataInspector extends PureComponent<
 
   render() {
     return (
-      <Layout.Container>
+      <Layout.Container onMouseLeave={this.removeHover}>
         <RootDataContext.Provider value={this.getRootData}>
           <HighlightProvider text={this.props.filter}>
             <DataInspectorNode
+              hoveredNodePath={this.state.hoveredNodePath}
+              setHoveredNodePath={this.setHoveredNodePath}
               data={this.props.data}
               diff={this.props.diff}
               extractValue={this.props.extractValue}
