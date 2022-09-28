@@ -65,9 +65,8 @@ async function runBuild({
       '@ant-design/icons',
       // It is an optional dependency for rollup that we use in react-devtools
       'fsevents',
-      // Allow desktop plugins to build
-      'fs',
-      'path',
+      // Allow desktop plugins that require electron to build (deprecated)
+      'electron',
     ],
     sourcemap: dev ? 'inline' : 'external',
     minify: !dev,
