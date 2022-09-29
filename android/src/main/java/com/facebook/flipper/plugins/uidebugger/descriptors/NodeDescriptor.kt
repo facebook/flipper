@@ -22,11 +22,14 @@ import com.facebook.flipper.plugins.uidebugger.model.Bounds
 typealias SectionName = String
 
 object BaseTags {
+
   const val Declarative = "Declarative"
   const val Native = "Native"
   const val Accessibility = "Accessibility"
   const val Android = "Android"
   const val Unknown = "Unknown"
+  val NativeAndroid = setOf(Android, Native)
+  val AccessibleNativeAndroid = setOf(Android, Native, Accessibility)
 }
 
 interface NodeDescriptor<T> {

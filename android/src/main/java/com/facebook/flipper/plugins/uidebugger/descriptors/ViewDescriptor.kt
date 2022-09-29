@@ -26,15 +26,12 @@ import java.lang.reflect.Field
 
 object ViewDescriptor : ChainedDescriptor<View>() {
 
-  override fun onGetName(node: View): String {
-    return node.javaClass.simpleName
-  }
+  override fun onGetName(node: View): String = node.javaClass.simpleName
 
-  override fun onGetBounds(node: View): Bounds {
-    return Bounds(node.left, node.top, node.width, node.height)
-  }
+  override fun onGetBounds(node: View): Bounds =
+      Bounds(node.left, node.top, node.width, node.height)
 
-  override fun onGetTags(node: View): Set<String> = setOf(BaseTags.Native, BaseTags.Android)
+  override fun onGetTags(node: View): Set<String> = BaseTags.NativeAndroid
 
   override fun onGetData(
       node: View,

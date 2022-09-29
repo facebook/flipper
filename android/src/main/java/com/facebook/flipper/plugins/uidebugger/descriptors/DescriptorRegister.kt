@@ -8,6 +8,8 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.app.Activity
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -33,6 +35,8 @@ class DescriptorRegister {
       mapping.register(TextView::class.java, TextViewDescriptor)
       mapping.register(Button::class.java, ButtonDescriptor)
       mapping.register(ViewPager::class.java, ViewPagerDescriptor)
+      mapping.register(Drawable::class.java, DrawableDescriptor)
+      mapping.register(ColorDrawable::class.java, ColorDrawableDescriptor)
       mapping.register(android.app.Fragment::class.java, FragmentFrameworkDescriptor)
       mapping.register(androidx.fragment.app.Fragment::class.java, FragmentSupportDescriptor)
 
