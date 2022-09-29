@@ -35,11 +35,6 @@ export function plugin(client: PluginClient<Events>) {
     });
   });
 
-  client.onMessage('nativeScan', ({nodes}) => {
-    //Native scan is a full update so overwrite everything
-    nodesAtom.set(new Map(nodes.map((node) => [node.id, node])));
-  });
-
   return {rootId, snapshots: snapshotsAtom, nodes: nodesAtom, perfEvents};
 }
 

@@ -29,13 +29,6 @@ data class SubtreeUpdateEvent(
   }
 }
 
-@kotlinx.serialization.Serializable
-data class NativeScanEvent(val txId: Long, val nodes: List<Node>) {
-  companion object {
-    const val name = "nativeScan"
-  }
-}
-
 /** Separate optional performance statistics event */
 @kotlinx.serialization.Serializable
 data class PerfStatsEvent(

@@ -8,8 +8,7 @@
  */
 
 export type Events = {
-  init: {rootId: string};
-  nativeScan: {txId: number; nodes: UINode[]};
+  init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
   perfStats: PerfStatsEvent;
 };
@@ -20,6 +19,8 @@ export type SubtreeUpdateEvent = {
   nodes: UINode[];
   snapshot: Snapshot;
 };
+
+export type InitEvent = {rootId: Id};
 
 export type PerfStatsEvent = {
   txId: number;
@@ -50,8 +51,8 @@ export type Bounds = {
   height: number;
 };
 
-export type Id = string;
 export type Snapshot = string;
+export type Id = number;
 
 export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho ';
 

@@ -10,9 +10,10 @@ package com.facebook.flipper.plugins.uidebugger.core
 import android.os.Looper
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.model.NativeScanEvent
+import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
+import com.facebook.flipper.plugins.uidebugger.model.SubtreeUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import com.facebook.flipper.plugins.uidebugger.scheduler.Scheduler
 import com.facebook.flipper.plugins.uidebugger.traversal.PartialLayoutTraversal
@@ -25,6 +26,8 @@ data class ScanResult(
     val nodes: List<Node>
 )
 
+const val observerType = "FullScan"
+
 /** This is used to stress test the ui debugger, should not be used in production */
 class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
   /**
@@ -33,7 +36,7 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
    */
   private val emptyObserverFactory = TreeObserverFactory()
   private val traversal = PartialLayoutTraversal(context.descriptorRegister, emptyObserverFactory)
-  private var txId = 0L
+  private var txId = 100000L
 
   override fun execute(): ScanResult {
     val start = System.currentTimeMillis()
@@ -49,11 +52,14 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
 
   override fun process(input: ScanResult) {
     val serialized =
-        Json.encodeToString(NativeScanEvent.serializer(), NativeScanEvent(input.txId, input.nodes))
+        Json.encodeToString(
+            SubtreeUpdateEvent.serializer(),
+            SubtreeUpdateEvent(
+                input.txId, observerType, context.applicationRef.nodeId(), input.nodes))
     val serializationEnd = System.currentTimeMillis()
 
     context.connectionRef.connection?.send(
-        NativeScanEvent.name,
+        SubtreeUpdateEvent.name,
         serialized,
     )
     val socketEnd = System.currentTimeMillis()
@@ -64,7 +70,7 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
             PerfStatsEvent.serializer(),
             PerfStatsEvent(
                 input.txId,
-                "FullScan",
+                observerType,
                 input.scanStart,
                 input.scanStart,
                 input.scanEnd,
