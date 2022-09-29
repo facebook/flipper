@@ -31,6 +31,7 @@ data class SubtreeUpdate(
     val nodes: List<Node>,
     val startTime: Long,
     val traversalCompleteTime: Long,
+    val snapshotComplete: Long,
     val snapshot: BitmapPool.ReusableBitmap?
 )
 
@@ -104,6 +105,7 @@ class TreeObserverManager(val context: Context) {
                       observerType = treeUpdate.observerType,
                       start = treeUpdate.startTime,
                       traversalComplete = treeUpdate.traversalCompleteTime,
+                      snapshotComplete = treeUpdate.snapshotComplete,
                       queuingComplete = onWorkerThread,
                       serializationComplete = serializationEnd,
                       socketComplete = socketEnd,

@@ -26,6 +26,7 @@ export type PerfStatsEvent = {
   observerType: string;
   start: number;
   traversalComplete: number;
+  snapshotComplete: number;
   serializationComplete: number;
   queuingComplete: number;
   socketComplete: number;

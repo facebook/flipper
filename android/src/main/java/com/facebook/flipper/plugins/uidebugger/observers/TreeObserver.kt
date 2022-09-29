@@ -81,6 +81,8 @@ abstract class TreeObserver<T> {
 
     Log.d(LogTag, "For Observer ${this.type} Sending ${visitedNodes.size}")
 
+    val traversalCompleteTime = System.currentTimeMillis()
+
     if (snapshotBitmap != null) {
       @Suppress("unchecked_cast")
       val descriptor =
@@ -89,10 +91,17 @@ abstract class TreeObserver<T> {
       descriptor.getSnapshot(root, snapshotBitmap.bitmap)
     }
 
-    val endTimestamp = System.currentTimeMillis()
+    val snapshotCompleteTime = System.currentTimeMillis()
+
     context.treeObserverManager.enqueueUpdate(
         SubtreeUpdate(
-            type, root.nodeId(), visitedNodes, startTimestamp, endTimestamp, snapshotBitmap))
+            type,
+            root.nodeId(),
+            visitedNodes,
+            startTimestamp,
+            traversalCompleteTime,
+            snapshotCompleteTime,
+            snapshotBitmap))
   }
 
   fun cleanUpRecursive() {

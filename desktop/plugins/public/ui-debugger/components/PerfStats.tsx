@@ -50,10 +50,17 @@ const columns: DataTableColumn<PerfStatsEvent>[] = [
     },
   },
   {
+    key: 'snapshotComplete',
+    title: 'Snapshot time (Main thread)',
+    onRender: (row: PerfStatsEvent) => {
+      return formatDiff(row.traversalComplete, row.snapshotComplete);
+    },
+  },
+  {
     key: 'queuingComplete',
     title: 'Queuing time',
     onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.traversalComplete, row.queuingComplete);
+      return formatDiff(row.snapshotComplete, row.queuingComplete);
     },
   },
   {

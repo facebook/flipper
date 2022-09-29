@@ -43,6 +43,7 @@ data class PerfStatsEvent(
     val observerType: String,
     val start: Long,
     val traversalComplete: Long,
+    val snapshotComplete: Long,
     val queuingComplete: Long,
     val serializationComplete: Long,
     val socketComplete: Long,

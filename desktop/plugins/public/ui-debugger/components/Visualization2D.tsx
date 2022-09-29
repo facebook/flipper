@@ -164,6 +164,7 @@ function Visualization2DNode({
         top: toPx(bounds.y),
         width: toPx(bounds.width),
         height: toPx(bounds.height),
+        opacity: isSelected || isHovered ? 0.5 : 1,
         backgroundColor: isSelected
           ? theme.primaryColor
           : isHovered
