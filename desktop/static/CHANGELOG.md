@@ -1,3 +1,10 @@
+# 0.167.0 (29/9/2022)
+
+ * [D39587418](https://github.com/facebook/flipper/search?q=D39587418&type=Commits)
+ * [D39809292](https://github.com/facebook/flipper/search?q=D39809292&type=Commits) -  Use global window event handlers instead of listeners
+ * [D39883905](https://github.com/facebook/flipper/search?q=D39883905&type=Commits) -  Fixed a bug in the nested highlighting of the data inspector, previously it could remain highlighted while moving the mouse away quickly and multiple highlights could be visible at the same time
+
+
 # 0.166.0 (20/9/2022)
 
  * [D39633821](https://github.com/facebook/flipper/search?q=D39633821&type=Commits) -  Fix plugin loading with experimental flipper-server disabled
