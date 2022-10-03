@@ -7,8 +7,6 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-
-
 apply plugin: 'kotlinx-serialization'
 
 android {
@@ -32,7 +30,7 @@ android {
         externalNativeBuild {
             cmake {
                 arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared'
-                targets 'flipper', 'event_shared', 'event_extra_shared', 'event_core_shared'
+                targets 'flipper'
             }
         }
     }
