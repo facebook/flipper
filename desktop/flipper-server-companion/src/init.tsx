@@ -17,6 +17,7 @@ import {initializeRenderHost} from './initializeRenderHost';
 import * as React from './globalsReplacements/fakeReact';
 import * as ReactDOM from './globalsReplacements/fakeReactDOM';
 import {styled} from './globalsReplacements/fakeEmotionStyled';
+import * as emotionCss from './globalsReplacements/fakeEmotionCss';
 import * as legacyExports from './globalsReplacements/fakeLegacyExports';
 import Module from 'module';
 
@@ -38,6 +39,7 @@ export const initCompanionEnv = async (
     Immer,
     antd: {},
     emotion_styled: {default: styled},
+    emotion_css: emotionCss,
     antdesign_icons: {},
     ReactJsxRuntime: {},
   });

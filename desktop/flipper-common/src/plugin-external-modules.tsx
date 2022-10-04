@@ -18,6 +18,7 @@ export const pluginExternalModules = {
   antd: 'antd',
   immer: 'Immer',
   '@emotion/styled': 'emotion_styled',
+  '@emotion/css': 'emotion_css',
   '@ant-design/icons': 'antdesign_icons',
   // Used by "bloks-logger" (see its bundle's content)
   'react/jsx-runtime': 'ReactJsxRuntime',

@@ -18,6 +18,7 @@ export interface GlobalObject {
   Immer: any;
   antd: any;
   emotion_styled: any;
+  emotion_css: any;
   antdesign_icons: any;
   ReactJsxRuntime: any;
 }
@@ -32,6 +33,7 @@ declare module globalThis {
   let Immer: any;
   let antd: any;
   let emotion_styled: any;
+  let emotion_css: any;
   let antdesign_icons: any;
   let ReactJsxRuntime: any;
 }

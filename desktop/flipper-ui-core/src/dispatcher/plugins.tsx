@@ -35,6 +35,7 @@ import {_SandyPluginDefinition} from 'flipper-plugin';
 import * as Immer from 'immer';
 import * as antd from 'antd';
 import * as emotion_styled from '@emotion/styled';
+import * as emotion_css from '@emotion/css';
 import * as antdesign_icons from '@ant-design/icons';
 import isPluginCompatible from '../utils/isPluginCompatible';
 import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
@@ -113,6 +114,7 @@ export default async (store: Store, _logger: Logger) => {
     Immer,
     antd,
     emotion_styled,
+    emotion_css,
     antdesign_icons,
     ReactJsxRuntime,
   });
