@@ -1,3 +1,9 @@
+# 0.168.0 (4/10/2022)
+
+ * [D40019423](https://github.com/facebook/flipper/search?q=D40019423&type=Commits) -  Upgrade to gradle plugin 7.3.0
+ * [D40057817](https://github.com/facebook/flipper/search?q=D40057817&type=Commits) -  Provide `@emotion/css` to plugins
+
+
 # 0.167.0 (29/9/2022)
 
  * [D39587418](https://github.com/facebook/flipper/search?q=D39587418&type=Commits)
