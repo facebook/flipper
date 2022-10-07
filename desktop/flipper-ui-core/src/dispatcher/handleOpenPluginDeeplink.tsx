@@ -317,6 +317,7 @@ async function verifyPluginStatus(
   pluginId: string,
   title: string,
 ): Promise<[boolean, PluginStatus]> {
+  await waitFor(store, (state) => state.plugins.initialized);
   // make sure we have marketplace plugin data present
   if (!isTest() && !store.getState().plugins.marketplacePlugins.length) {
     // plugins not yet fetched
