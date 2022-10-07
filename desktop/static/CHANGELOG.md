@@ -1,3 +1,9 @@
+# 0.169.0 (7/10/2022)
+
+ * [D40099777](https://github.com/facebook/flipper/search?q=D40099777&type=Commits) -  Update com.vanniktech:gradle-maven-publish-plugin
+ * [D39835294](https://github.com/facebook/flipper/search?q=D39835294&type=Commits)
+
+
 # 0.168.0 (4/10/2022)
 
  * [D40019423](https://github.com/facebook/flipper/search?q=D40019423&type=Commits) -  Upgrade to gradle plugin 7.3.0
