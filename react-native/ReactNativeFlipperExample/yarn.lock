@@ -6082,10 +6082,10 @@ react-native-windows@0.68.4:
     whatwg-fetch "^3.0.0"
     ws "^6.1.4"
 
-react-native@^0.68.0:
-  version "0.68.2"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.68.2.tgz#07547cd31bb9335a7fa4135cfbdc24e067142585"
-  integrity sha512-qNMz+mdIirCEmlrhapAtAG+SWVx6MAiSfCbFNhfHqiqu1xw1OKXdzIrjaBEPihRC2pcORCoCHduHGQe/Pz9Yuw==
+react-native@^0.68.3:
+  version "0.68.3"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.68.3.tgz#07ac7374acde9bc5e80f9e473e03d6b730528f1c"
+  integrity sha512-LPgLQ4e96NWCrJPKlXzKfvlg1ddhfUplsEg00/cfBIMFZPJn2inzo9Rym8I/JYjmRORe4GjGY8kOem72hPm0Lw==
   dependencies:
     "@jest/create-cache-key-function" "^27.0.1"
     "@react-native-community/cli" "^7.0.3"
@@ -7383,12 +7383,7 @@ ws@^6.1.4:
   dependencies:
     async-limiter "~1.0.0"
 
-ws@^7:
-  version "7.5.5"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.5.tgz#8b4bc4af518cfabd0473ae4f99144287b33eb881"
-  integrity sha512-BAkMFcAzl8as1G/hArkxOxq3G7pjUqQ3gzYbLL0/5zNkph70e+lCoxBGnm6AW1+/aiNeV4fnKqZ8m4GZewmH2w==
-
-ws@^7.5.1:
+ws@^7, ws@^7.5.1:
   version "7.5.8"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.8.tgz#ac2729881ab9e7cbaf8787fe3469a48c5c7f636a"
   integrity sha512-ri1Id1WinAX5Jqn9HejiGb8crfRio0Qgu8+MtL36rlTA6RLsMdWt1Az/19A2Qij6uSHUMphEFaTKa4WG+UNHNw==
