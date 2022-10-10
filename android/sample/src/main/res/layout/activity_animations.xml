@@ -12,6 +12,7 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
             <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -103,6 +104,30 @@
                         android:id="@+id/txt_rotate"
                 />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                >
+
+                <Button
+                    android:id="@+id/btnValueAnimator"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Value animator"
+                    />
+
+                <TextView
+                    android:id="@+id/txtValueAnimator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Value Animator"
+                    />
+            </LinearLayout>
+
         </LinearLayout>
 
 
