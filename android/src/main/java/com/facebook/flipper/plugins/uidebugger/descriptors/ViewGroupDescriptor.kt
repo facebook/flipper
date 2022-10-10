@@ -20,7 +20,9 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
     return node.javaClass.simpleName
   }
 
-  override fun onGetChildren(node: ViewGroup, children: MutableList<Any>) {
+  override fun onGetChildren(node: ViewGroup): List<Any> {
+    val children = mutableListOf<Any>()
+
     val count = node.childCount - 1
     for (i in 0..count) {
       val child: View = node.getChildAt(i)
@@ -29,6 +31,8 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
         children.add(fragment)
       } else children.add(child)
     }
+
+    return children
   }
 
   override fun onGetData(

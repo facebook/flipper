@@ -65,23 +65,12 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
 
   open fun onGetBounds(node: T): Bounds? = null
 
-  /** The children this node exposes in the inspector. */
   final override fun getChildren(node: T): List<Any> {
-    val builder = mutableListOf<Any>()
-    onGetChildren(node, builder)
-
-    var curDescriptor: ChainedDescriptor<T>? = mSuper
-    while (curDescriptor != null) {
-      curDescriptor.onGetChildren(node, builder)
-      curDescriptor = curDescriptor.mSuper
-    }
-
-    return builder
+    val children = onGetChildren(node) ?: mSuper?.getChildren(node)
+    return children ?: listOf()
   }
 
-  // this probably should not be chained as its unlikely you would want children to come from >1
-  // descriptor
-  open fun onGetChildren(node: T, children: MutableList<Any>) {}
+  open fun onGetChildren(node: T): List<Any>? = null
 
   final override fun getData(node: T): Map<SectionName, InspectableObject> {
     val builder = mutableMapOf<String, InspectableObject>()

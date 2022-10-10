@@ -15,9 +15,8 @@ object FragmentSupportDescriptor : ChainedDescriptor<androidx.fragment.app.Fragm
     return node.javaClass.simpleName
   }
 
-  override fun onGetChildren(node: androidx.fragment.app.Fragment, children: MutableList<Any>) {
-    node.view?.let { view -> children.add(view) }
-  }
+  override fun onGetChildren(node: androidx.fragment.app.Fragment): List<Any> =
+      node.view?.let { view -> listOf(view) } ?: listOf()
 
   override fun onGetData(
       node: androidx.fragment.app.Fragment,

@@ -15,7 +15,5 @@ object WindowDescriptor : ChainedDescriptor<Window>() {
     return node.javaClass.simpleName
   }
 
-  override fun onGetChildren(node: Window, children: MutableList<Any>) {
-    children.add(node.decorView)
-  }
+  override fun onGetChildren(node: Window): List<Any> = listOf(node.decorView)
 }

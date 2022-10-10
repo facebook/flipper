@@ -31,7 +31,9 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
     else node.application.getString(stringId)
   }
 
-  override fun onGetChildren(node: ApplicationRef, children: MutableList<Any>) {
+  override fun onGetChildren(node: ApplicationRef): List<Any> {
+    val children = mutableListOf<Any>()
+
     val activeRoots = node.rootViews
 
     val added = mutableSetOf<View>()
@@ -47,5 +49,7 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
         added.add(root)
       }
     }
+
+    return children
   }
 }
