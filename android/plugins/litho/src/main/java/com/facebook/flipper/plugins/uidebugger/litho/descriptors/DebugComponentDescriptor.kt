@@ -1,0 +1,64 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.flipper.plugins.uidebugger.litho.descriptors
+
+import android.graphics.Bitmap
+import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
+import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
+import com.facebook.flipper.plugins.uidebugger.descriptors.OffsetChild
+import com.facebook.flipper.plugins.uidebugger.litho.LithoTag
+import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.litho.DebugComponent
+
+class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {
+
+  override fun getName(node: DebugComponent): String {
+    return node.component.simpleName
+  }
+
+  override fun getChildren(node: DebugComponent): List<Any> {
+    val result = mutableListOf<Any>()
+
+    val mountedView = node.mountedView
+    val mountedDrawable = node.mountedDrawable
+
+    if (mountedView != null) {
+      val descriptor: NodeDescriptor<Any> = register.descriptorForClassUnsafe(mountedView.javaClass)
+      /**
+       * When we ask android for the bounds the x,y offset is w.r.t to the nearest android parent
+       * view group. From UI debuggers perspective using the raw android offset will double the
+       * total offset of this native view as the offset is included by the litho components between
+       * the mounted view and its native parent
+       */
+      result.add(OffsetChild.zero(mountedView, descriptor))
+    } else if (mountedDrawable != null) {
+      val descriptor: NodeDescriptor<Any> =
+          register.descriptorForClassUnsafe(mountedDrawable.javaClass)
+      // same here
+      result.add(OffsetChild.zero(mountedDrawable, descriptor))
+    } else {
+      for (child in node.childComponents) {
+        result.add(child)
+      }
+    }
+
+    return result
+  }
+
+  override fun getActiveChild(node: DebugComponent): Any? = null
+
+  override fun getData(node: DebugComponent) = mapOf<String, InspectableObject>()
+
+  override fun getBounds(node: DebugComponent): Bounds = Bounds.fromRect(node.bounds)
+
+  override fun getTags(node: DebugComponent): Set<String> = setOf(BaseTags.Declarative, LithoTag)
+
+  override fun getSnapshot(node: DebugComponent, bitmap: Bitmap?): Bitmap? = null
+}

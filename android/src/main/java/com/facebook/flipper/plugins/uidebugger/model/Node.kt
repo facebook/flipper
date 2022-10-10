@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.uidebugger.model
 
+import android.graphics.Rect
 import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 
@@ -22,4 +23,10 @@ data class Node(
 )
 
 @kotlinx.serialization.Serializable
-data class Bounds(val x: Int, val y: Int, val width: Int, val height: Int)
+data class Bounds(val x: Int, val y: Int, val width: Int, val height: Int) {
+  companion object {
+    fun fromRect(rect: Rect): Bounds {
+      return Bounds(rect.left, rect.top, rect.width(), rect.height())
+    }
+  }
+}
