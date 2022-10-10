@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -28,8 +29,15 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
   override fun onGetName(node: View): String = node.javaClass.simpleName
 
-  override fun onGetBounds(node: View): Bounds =
-      Bounds(node.left, node.top, node.width, node.height)
+  override fun onGetBounds(node: View): Bounds {
+    val localVisible = Rect()
+    node.getLocalVisibleRect(localVisible)
+    return Bounds(
+        node.left - localVisible.left + node.translationX.toInt(),
+        node.top - localVisible.top + node.translationY.toInt(),
+        node.width,
+        node.height)
+  }
 
   override fun onGetTags(node: View): Set<String> = BaseTags.NativeAndroid
 
@@ -37,8 +45,6 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       node: View,
       attributeSections: MutableMap<SectionName, InspectableObject>
   ) {
-    val positionOnScreen = IntArray(2)
-    node.getLocationOnScreen(positionOnScreen)
 
     val props = mutableMapOf<String, Inspectable>()
     props["height"] = InspectableValue.Number(node.height, mutable = true)
@@ -92,11 +98,26 @@ object ViewDescriptor : ChainedDescriptor<View>() {
                 "x" to InspectableValue.Number(node.pivotX, mutable = true),
                 "y" to InspectableValue.Number(node.pivotY, mutable = true)))
 
+    val positionOnScreen = IntArray(2)
+    node.getLocationOnScreen(positionOnScreen)
+
     props["globalPosition"] =
         InspectableObject(
             mapOf(
                 "x" to InspectableValue.Number(positionOnScreen[0], mutable = false),
                 "y" to InspectableValue.Number(positionOnScreen[1], mutable = false)))
+
+    val localVisible = Rect()
+    node.getLocalVisibleRect(localVisible)
+
+    props["localVisible"] =
+        InspectableObject(
+            mapOf(
+                "x" to InspectableValue.Number(localVisible.left, mutable = true),
+                "y" to InspectableValue.Number(node.top, mutable = true),
+                "width" to InspectableValue.Number(node.width, mutable = true),
+                "height" to InspectableValue.Number(node.height, mutable = true)),
+        )
 
     attributeSections["View"] = InspectableObject(props.toMap())
   }
