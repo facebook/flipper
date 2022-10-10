@@ -38,30 +38,35 @@ class DescriptorRegister {
       mapping.register(android.app.Fragment::class.java, FragmentFrameworkDescriptor)
       mapping.register(androidx.fragment.app.Fragment::class.java, FragmentSupportDescriptor)
 
-      @Suppress("unchecked_cast")
-      for (clazz in mapping.register.keys) {
-        val maybeDescriptor: NodeDescriptor<*>? = mapping.register[clazz]
-        maybeDescriptor?.let { descriptor ->
-          if (descriptor is ChainedDescriptor<*>) {
-            val chainedDescriptor = descriptor as ChainedDescriptor<Any>
-            val superClass: Class<*> = clazz.superclass
-            val maybeSuperDescriptor: NodeDescriptor<*>? = mapping.descriptorForClass(superClass)
-
-            maybeSuperDescriptor?.let { superDescriptor ->
-              if (superDescriptor is ChainedDescriptor<*>) {
-                chainedDescriptor.setSuper(superDescriptor as ChainedDescriptor<Any>)
-              }
-            }
-          }
-        }
-      }
-
       return mapping
     }
   }
 
   fun <T> register(clazz: Class<T>, descriptor: NodeDescriptor<T>) {
     register[clazz] = descriptor
+    setSuper()
+  }
+
+  private fun setSuper() {
+    @Suppress("unchecked_cast")
+    for (clazz in this.register.keys) {
+      val maybeDescriptor: NodeDescriptor<*>? = this.register[clazz]
+      maybeDescriptor?.let { descriptor ->
+        if (descriptor is ChainedDescriptor<*>) {
+
+          val chainedDescriptor = descriptor as ChainedDescriptor<Any>
+          val superClass: Class<*> = clazz.superclass
+
+          val maybeSuperDescriptor: NodeDescriptor<*>? = this.descriptorForClass(superClass)
+
+          maybeSuperDescriptor?.let { superDescriptor ->
+            if (superDescriptor is ChainedDescriptor<*>) {
+              chainedDescriptor.setSuper(superDescriptor as ChainedDescriptor<Any>)
+            }
+          }
+        }
+      }
+    }
   }
 
   fun <T> descriptorForClass(clazz: Class<T>): NodeDescriptor<T>? {
