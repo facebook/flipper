@@ -144,13 +144,6 @@ function Visualization2DNode({
     />
   ));
 
-  const hasOverlappingChild = childrenIds
-    .map((id) => nodes.get(id))
-    .find((child) => child?.bounds?.x === 0 || child?.bounds?.y === 0);
-
-  const isZeroWidthOrHeight =
-    node.bounds?.height === 0 || node.bounds?.width === 0;
-
   const bounds = node.bounds ?? {x: 0, y: 0, width: 0, height: 0};
 
   return (
@@ -184,19 +177,13 @@ function Visualization2DNode({
         onSelectNode(nodeId);
       }}>
       <NodeBorder tags={node.tags}></NodeBorder>
-      {snapshot ? (
+      {snapshot && (
         <img
           src={'data:image/jpeg;base64,' + snapshot}
           style={{maxWidth: '100%'}}
         />
-      ) : (
-        <>
-          {/* Dirty hack to avoid showing highly overlapping text */}
-          {!hasOverlappingChild && !isZeroWidthOrHeight && node.bounds
-            ? node.name
-            : null}
-        </>
       )}
+      {isHovered && <p style={{float: 'right'}}>{node.name}</p>}
       {children}
     </div>
   );
