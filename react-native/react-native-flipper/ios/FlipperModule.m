@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(FB_SONARKIT_ENABLED)
 #import "FlipperModule.h"
 
 #import "FlipperReactNativeJavaScriptPluginManager.h"

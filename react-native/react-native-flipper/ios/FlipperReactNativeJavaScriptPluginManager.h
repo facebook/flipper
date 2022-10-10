@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(FB_SONARKIT_ENABLED)
 
 #import <React/RCTBridgeModule.h>
 
@@ -47,4 +47,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-#endif
+#endif // DEBUG || FB_SONARKIT_ENABLED

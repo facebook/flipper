@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(FB_SONARKIT_ENABLED)
 
 #import "FlipperReactNativeJavaScriptPluginManager.h"
 #import <FlipperKit/FlipperClient.h>
@@ -150,4 +150,4 @@ static uint32_t FlipperResponderKeyGenerator = 0;
 
 @end
 
-#endif
+#endif // DEBUG || FB_SONARKIT_ENABLED

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#if DEBUG
+#if defined(DEBUG) || defined(FB_SONARKIT_ENABLED)
 
 #import "FlipperReactNativeJavaScriptPlugin.h"
 
@@ -64,4 +64,4 @@
 
 @end
 
-#endif
+#endif // DEBUG || FB_SONARKIT_ENABLED
