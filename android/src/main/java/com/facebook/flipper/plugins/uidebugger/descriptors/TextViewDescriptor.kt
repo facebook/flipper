@@ -21,7 +21,6 @@ object TextViewDescriptor : ChainedDescriptor<TextView>() {
       node: TextView,
       attributeSections: MutableMap<SectionName, InspectableObject>
   ) {
-    val typeface = node.typeface
 
     val props =
         mutableMapOf<String, Inspectable>(
@@ -29,17 +28,20 @@ object TextViewDescriptor : ChainedDescriptor<TextView>() {
             "textSize" to InspectableValue.Number(node.textSize, false),
             "textColor" to InspectableValue.Color(node.getTextColors().getDefaultColor(), false))
 
-    val typeFace =
-        mutableMapOf<String, InspectableValue>(
-            "isBold" to InspectableValue.Boolean(typeface.isBold, false),
-            "isItalic" to InspectableValue.Boolean(typeface.isItalic, false),
-        )
+    val typeface = node.typeface
+    if (typeface != null) {
+      val typeFaceProp =
+          mutableMapOf<String, InspectableValue>(
+              "isBold" to InspectableValue.Boolean(typeface.isBold, false),
+              "isItalic" to InspectableValue.Boolean(typeface.isItalic, false),
+          )
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      typeFace["weight"] = InspectableValue.Number(typeface.weight, false)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        typeFaceProp["weight"] = InspectableValue.Number(typeface.weight, false)
+      }
+
+      props["typeface"] = InspectableObject(typeFaceProp)
     }
-
-    props["typeface"] = InspectableObject(typeFace)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       props["minLines"] = InspectableValue.Number(node.minLines, false)
