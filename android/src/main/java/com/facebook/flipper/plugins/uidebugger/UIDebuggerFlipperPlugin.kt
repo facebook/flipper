@@ -64,6 +64,6 @@ class UIDebuggerFlipperPlugin(
   }
 
   override fun runInBackground(): Boolean {
-    return true
+    return false
   }
 }
