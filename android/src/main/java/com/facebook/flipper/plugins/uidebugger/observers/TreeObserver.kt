@@ -57,8 +57,6 @@ abstract class TreeObserver<T> {
           observer.subscribe(observable)
           children[observable.nodeId()] = observer
         }
-      } else {
-        children[observable.nodeId()]?.subscribe(observable)
       }
     }
 
@@ -78,8 +76,6 @@ abstract class TreeObserver<T> {
       }
     }
     removables.forEach { key -> children.remove(key) }
-
-    Log.d(LogTag, "For Observer ${this.type} Sending ${visitedNodes.size}")
 
     val traversalCompleteTime = System.currentTimeMillis()
 

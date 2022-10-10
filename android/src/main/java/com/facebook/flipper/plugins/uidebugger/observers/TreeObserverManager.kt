@@ -97,7 +97,7 @@ class TreeObserverManager(val context: Context) {
               val socketEnd = System.currentTimeMillis()
               Log.i(
                   LogTag,
-                  "Sent event for ${treeUpdate.observerType} nodes ${treeUpdate.nodes.size}")
+                  "Sent event for ${treeUpdate.observerType} root ID ${treeUpdate.rootId} nodes ${treeUpdate.nodes.size}")
 
               val perfStats =
                   PerfStatsEvent(
