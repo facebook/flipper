@@ -1,0 +1,22 @@
+{
+  "name": "flipper-marketplace-server-example",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/node": "^18.8.4",
+    "express": "^4.18.2",
+    "node-fetch": "^3.2.10",
+    "route-cache": "^0.4.7",
+    "typescript": "^4.6.2"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "devDependencies": {}
+}
