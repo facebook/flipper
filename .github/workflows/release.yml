@@ -181,6 +181,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ needs.release.outputs.tag }}
     - name: Download Mac
       if: ${{ needs.release.outputs.tag != '' }}
       uses: actions/download-artifact@v1
