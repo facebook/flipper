@@ -191,7 +191,24 @@ export class AndroidDeviceManager {
     });
   }
 
-  async watchAndroidDevices() {
+  async watchAndroidDevices(initialRun = false) {
+    if (initialRun) {
+      try {
+        const devices = await this.adbClient.listDevices();
+        for (const device of devices) {
+          if (device.type !== 'offline') {
+            this.registerDevice(this.adbClient, device);
+          } else {
+            this.handleOfflineDevice(device);
+          }
+        }
+      } catch (e) {
+        console.warn(
+          `Failed to populate the initial list of android devices: ${e.message}`,
+        );
+      }
+    }
+
     try {
       this.adbClient
         .trackDevices()
@@ -214,12 +231,17 @@ export class AndroidDeviceManager {
           });
 
           tracker.on('add', async (device) => {
+            // Check if we have already registered this device during the `initialRun`
+            if (this.flipperServer.hasDevice(device.id)) {
+              console.debug(
+                `[conn] Trying to add an existing Android device ${device.id}. Skipping.`,
+              );
+              return;
+            }
             if (device.type !== 'offline') {
               this.registerDevice(this.adbClient, device);
             } else {
-              console.warn(
-                `[conn] Found device ${device.id}, but it has status offline. If this concerns an emulator and the problem persists, try these potential solutions: https://stackoverflow.com/a/21330228/1983583, https://stackoverflow.com/a/56053223/1983583`,
-              );
+              this.handleOfflineDevice(device);
             }
           });
 
@@ -245,6 +267,12 @@ export class AndroidDeviceManager {
     } catch (e) {
       console.warn(`Failed to watch for android devices: ${e.message}`);
     }
+  }
+
+  private handleOfflineDevice(device: Device): void {
+    console.warn(
+      `[conn] Found device ${device.id}, but it has status offline. If this concerns an emulator and the problem persists, try these potential solutions: https://stackoverflow.com/a/21330228/1983583, https://stackoverflow.com/a/56053223/1983583`,
+    );
   }
 
   private async registerDevice(adbClient: ADBClient, deviceData: Device) {

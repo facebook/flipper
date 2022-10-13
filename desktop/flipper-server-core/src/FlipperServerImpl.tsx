@@ -198,7 +198,7 @@ export class FlipperServerImpl implements FlipperServer {
               return;
             }
             this.android = new AndroidDeviceManager(this, adbClient);
-            return this.android.watchAndroidDevices();
+            return this.android.watchAndroidDevices(true);
           })
           .catch((e) => {
             console.error(
@@ -586,6 +586,10 @@ export class FlipperServerImpl implements FlipperServer {
       throw new Error('No device with matching serial.');
     }
     return device;
+  }
+
+  hasDevice(serial: string): boolean {
+    return !!this.devices.get(serial);
   }
 
   getDeviceSerials(): string[] {

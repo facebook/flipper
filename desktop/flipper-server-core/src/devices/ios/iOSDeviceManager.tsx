@@ -149,7 +149,7 @@ export class IOSDeviceManager {
           isDetected,
           this.idbConfig.enablePhysicalIOS,
         );
-        this.queryDevicesForever(bridge);
+        await this.queryDevicesForever(bridge);
       } catch (err) {
         // This case is expected if both Xcode and idb are missing.
         if (err.message === ERR_NO_IDB_OR_XCODE_AVAILABLE) {
