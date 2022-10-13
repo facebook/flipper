@@ -29,7 +29,11 @@ function processMessagesImmediately(
   const reducerStartTime = Date.now();
   try {
     plugin.receiveMessages(messages);
-    addBackgroundStat(plugin.definition.id, Date.now() - reducerStartTime);
+    addBackgroundStat(
+      plugin.definition.id,
+      messages,
+      Date.now() - reducerStartTime,
+    );
   } catch (e) {
     console.error(
       `Failed to process event for plugin ${plugin.definition.id}`,

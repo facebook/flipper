@@ -8,6 +8,7 @@
  */
 
 import {onBytesReceived} from '../dispatcher/tracking';
+import {Message} from '../reducers/pluginMessageQueue';
 
 type StatEntry = {
   cpuTimeTotal: number; // Total time spend in persisted Reducer
@@ -105,7 +106,11 @@ function createEmptyStat(): StatEntry {
   };
 }
 
-export function addBackgroundStat(plugin: string, cpuTime: number) {
+export function addBackgroundStat(
+  plugin: string,
+  messages: Message[],
+  cpuTime: number,
+) {
   if (!pluginBackgroundStats.has(plugin)) {
     pluginBackgroundStats.set(plugin, createEmptyStat());
   }
@@ -118,6 +123,7 @@ export function addBackgroundStat(plugin: string, cpuTime: number) {
   if (cpuTime > MAX_BACKGROUND_TASK_TIME) {
     console.warn(
       `Plugin ${plugin} took too much time while doing background: ${cpuTime}ms. Handling background messages should take less than ${MAX_BACKGROUND_TASK_TIME}ms.`,
+      messages,
     );
   }
 }
