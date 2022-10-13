@@ -45,27 +45,15 @@ export function connectFlipperServerToStore(
   server.on('server-state', handleServerStateChange);
 
   server.on('server-error', (err) => {
-    notification.error({
-      message: 'Connection error',
-      description:
-        err.code === 'EADDRINUSE' ? (
-          <>
-            Couldn't start connection server. Looks like you have multiple
-            copies of Flipper running or another process is using the same
-            port(s). As a result devices will not be able to connect to Flipper.
-            <br />
-            <br />
-            Please try to kill the offending process by running{' '}
-            <code>kill $(lsof -ti:PORTNUMBER)</code> and restart flipper.
-            <br />
-            <br />
-            {'' + err}
-          </>
-        ) : (
-          <>{err.message ?? err}</>
-        ),
-      duration: null,
-    });
+    if (err.code === 'EADDRINUSE') {
+      handeEADDRINUSE('' + err);
+    } else {
+      notification.error({
+        message: 'Connection error',
+        description: <>{err.message ?? err}</>,
+        duration: null,
+      });
+    }
   });
 
   server.on('device-connected', (deviceInfo) => {
@@ -189,14 +177,39 @@ function handleServerStateChange({
 }) {
   if (state === 'error') {
     console.warn(`[conn] Flipper server state -> ${state}`, error);
-    notification.error({
-      message: 'Failed to start flipper-server',
-      description: '' + error,
-      duration: null,
-    });
+    if (error?.includes('EADDRINUSE')) {
+      handeEADDRINUSE(error);
+    } else {
+      notification.error({
+        message: 'Failed to start flipper-server',
+        description: '' + error,
+        duration: null,
+      });
+    }
   } else {
     console.info(`[conn] Flipper server state -> ${state}`);
   }
+}
+
+function handeEADDRINUSE(errorMessage: string) {
+  notification.error({
+    message: 'Connection error',
+    description: (
+      <>
+        Couldn't start connection server. Looks like you have multiple copies of
+        Flipper running or another process is using the same port(s). As a
+        result devices will not be able to connect to Flipper.
+        <br />
+        <br />
+        Please try to kill the offending process by running{' '}
+        <code>kill $(lsof -ti:PORTNUMBER)</code> and restart flipper.
+        <br />
+        <br />
+        {errorMessage}
+      </>
+    ),
+    duration: null,
+  });
 }
 
 export function handleDeviceConnected(
