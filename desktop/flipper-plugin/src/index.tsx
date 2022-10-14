@@ -7,6 +7,9 @@
  * @format
  */
 
+import {_setAtomPersistentStorage} from 'flipper-plugin-core';
+_setAtomPersistentStorage(window.localStorage);
+
 export * from 'flipper-plugin-core';
 
 import styledImport from '@emotion/styled';

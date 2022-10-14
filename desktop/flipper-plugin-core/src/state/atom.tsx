@@ -106,7 +106,7 @@ export function createState(
   options: StateOptions = {},
 ): Atom<any> {
   const atom = new AtomValue(initialValue);
-  if (options?.persistToLocalStorage) {
+  if (options?.persistToLocalStorage && atomStorage) {
     syncAtomWithLocalStorage(options, atom);
   } else {
     registerStorageAtom(options.persist, atom);
@@ -114,10 +114,24 @@ export function createState(
   return atom;
 }
 
+export interface AtomPersistentStorage {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+}
+let atomStorage: AtomPersistentStorage | undefined;
+export function _setAtomPersistentStorage(newStorage: AtomPersistentStorage) {
+  atomStorage = newStorage;
+}
+
 function syncAtomWithLocalStorage(options: StateOptions, atom: AtomValue<any>) {
   if (!options?.persist) {
     throw new Error(
       "The 'persist' option should be set when 'persistToLocalStorage' is set",
+    );
+  }
+  if (!atomStorage) {
+    throw new Error(
+      "'atomStorage' is not implemented. Use 'setAtomPersistentStorage' to set AtomPersistentStorage implementation",
     );
   }
   const pluginInstance = getCurrentPluginInstance();
@@ -127,12 +141,12 @@ function syncAtomWithLocalStorage(options: StateOptions, atom: AtomValue<any>) {
     );
   }
   const storageKey = `flipper:${pluginInstance.definition.id}:atom:${options.persist}`;
-  const storedValue = window.localStorage.getItem(storageKey);
+  const storedValue = atomStorage.getItem(storageKey);
   if (storedValue != null) {
     atom.deserialize(JSON.parse(storedValue));
   }
   atom.subscribe(() => {
-    window.localStorage.setItem(storageKey, JSON.stringify(atom.serialize()));
+    atomStorage!.setItem(storageKey, JSON.stringify(atom.serialize()));
   });
 }
 

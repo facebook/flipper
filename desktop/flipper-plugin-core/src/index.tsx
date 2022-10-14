@@ -54,6 +54,8 @@ export {createDataSource} from './state/createDataSource';
 
 export {
   createState,
+  _setAtomPersistentStorage,
+  AtomPersistentStorage,
   Atom,
   isAtom,
   ReadOnlyAtom as _ReadOnlyAtom,
