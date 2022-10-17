@@ -1,3 +1,10 @@
+# 0.171.0 (17/10/2022)
+
+ * [D40338164](https://github.com/facebook/flipper/search?q=D40338164&type=Commits) -  Better error message for EADDRINUSE
+ * [D40340272](https://github.com/facebook/flipper/search?q=D40340272&type=Commits) -  Enhance a warning about taking too much time to process plugin messages
+ * [D40341873](https://github.com/facebook/flipper/search?q=D40341873&type=Commits) -  Ignore persistToLocalStorage in headless mode
+
+
 # 0.169.0 (7/10/2022)
 
  * [D40099777](https://github.com/facebook/flipper/search?q=D40099777&type=Commits) -  Update com.vanniktech:gradle-maven-publish-plugin
