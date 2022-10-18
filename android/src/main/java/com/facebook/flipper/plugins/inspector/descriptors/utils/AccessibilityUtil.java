@@ -211,7 +211,7 @@ public final class AccessibilityUtil {
     }
   }
 
-  private static boolean supportsAction(AccessibilityNodeInfoCompat node, int action) {
+  protected static boolean supportsAction(AccessibilityNodeInfoCompat node, int action) {
     if (node != null) {
       final int supportedActions = node.getActions();
 
