@@ -17,7 +17,7 @@
     "@types/node": "*",
     "@types/react": "*",
     "@types/react-dom": "*",
-    "antd": "*",
+    "antd": "^4.23.4",
     "flipper": "*",
     "flipper-plugin": "*",
     "react": "*",

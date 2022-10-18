@@ -18,7 +18,7 @@
     "@emotion/css": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@types/fs-extra": "^9.0.13",
-    "antd": "^4.18.7",
+    "antd": "^4.23.4",
     "docusaurus-plugin-internaldocs-fb": "1.0.0",
     "file-cli": "^1.2.0",
     "flipper-plugin": "^0.131.1",
