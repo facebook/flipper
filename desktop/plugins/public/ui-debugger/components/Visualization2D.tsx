@@ -60,6 +60,7 @@ export const Visualization2D: React.FC<
           position: 'relative',
           width: toPx(rootBounds.width),
           height: toPx(rootBounds.height),
+          overflow: 'hidden',
         }}>
         <OuterBorder />
         {rootSnapshot ? (
