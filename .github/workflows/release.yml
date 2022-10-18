@@ -210,7 +210,7 @@ jobs:
         path: 'flipper-server.tgz'
     - name: GitHub Upload Release Artifacts
       if: ${{ needs.release.outputs.tag != '' }}
-      uses: passy/github-upload-release-artifacts-action@v2.2.2
+      uses: aigoncharov/github-upload-release-artifacts-action@2.2.3
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
