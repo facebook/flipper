@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.plugins.uidebugger.common
+package com.facebook.flipper.plugins.uidebugger.model
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -21,13 +21,15 @@ sealed class Inspectable {
   abstract val mutable: kotlin.Boolean
 }
 
-// mutable here means you can add/remove items, for native android this should probably be false
+// In this context, mutable means you can add/remove items,
+// for native android this should probably be false.
 @SerialName("array")
 @Serializable
 data class InspectableArray(val items: List<Inspectable>, override val mutable: Boolean = false) :
     Inspectable()
 
-// mutable here means you can add / remove keys, for native android this should probably be false
+// In this context, mutable means you can add / remove keys,
+// for native android this should probably be false.
 @SerialName("object")
 @Serializable
 data class InspectableObject(
@@ -40,34 +42,75 @@ sealed class InspectableValue : Inspectable() {
 
   @kotlinx.serialization.Serializable
   @SerialName("text")
-  class Text(val value: String, override val mutable: kotlin.Boolean) : InspectableValue()
+  class Text(val value: String, override val mutable: kotlin.Boolean = false) : InspectableValue()
 
   @kotlinx.serialization.Serializable
   @SerialName("boolean")
-  class Boolean(val value: kotlin.Boolean, override val mutable: kotlin.Boolean) :
+  class Boolean(val value: kotlin.Boolean, override val mutable: kotlin.Boolean = false) :
       InspectableValue()
 
   @SerialName("number")
   @kotlinx.serialization.Serializable
   data class Number(
       @Serializable(with = NumberSerializer::class) val value: kotlin.Number,
-      override val mutable: kotlin.Boolean
+      override val mutable: kotlin.Boolean = false
   ) : InspectableValue()
 
   @SerialName("color")
   @kotlinx.serialization.Serializable
-  data class Color(val value: Int, override val mutable: kotlin.Boolean) : InspectableValue()
+  data class Color(
+      val value: com.facebook.flipper.plugins.uidebugger.model.Color,
+      override val mutable: kotlin.Boolean = false
+  ) : InspectableValue()
+
+  @SerialName("coordinate")
+  @kotlinx.serialization.Serializable
+  data class Coordinate(
+      val value: com.facebook.flipper.plugins.uidebugger.model.Coordinate,
+      override val mutable: kotlin.Boolean = false
+  ) : InspectableValue()
+
+  @SerialName("coordinate3d")
+  @kotlinx.serialization.Serializable
+  data class Coordinate3D(
+      val value: com.facebook.flipper.plugins.uidebugger.model.Coordinate3D,
+      override val mutable: kotlin.Boolean = false
+  ) : InspectableValue()
+
+  @SerialName("size")
+  @kotlinx.serialization.Serializable
+  data class Size(
+      val value: com.facebook.flipper.plugins.uidebugger.model.Size,
+      override val mutable: kotlin.Boolean = false
+  ) : InspectableValue()
+
+  @SerialName("bounds")
+  @kotlinx.serialization.Serializable
+  data class Bounds(
+      val value: com.facebook.flipper.plugins.uidebugger.model.Bounds,
+      override val mutable: kotlin.Boolean = false
+  ) : InspectableValue()
+
+  @SerialName("space")
+  @kotlinx.serialization.Serializable
+  data class SpaceBox(
+      val value: com.facebook.flipper.plugins.uidebugger.model.SpaceBox,
+      override val mutable: kotlin.Boolean = false
+  ) : InspectableValue()
 
   @SerialName("enum")
   @kotlinx.serialization.Serializable
-  data class Enum(val value: EnumData, override val mutable: kotlin.Boolean) : InspectableValue()
+  data class Enum(
+      val value: com.facebook.flipper.plugins.uidebugger.model.Enumeration,
+      override val mutable: kotlin.Boolean = false
+  ) : InspectableValue()
 
   companion object {
     /**
      * Will attempt to convert Any ref to a suitable primitive inspectable value. Only use if you
-     * are dealing with an Any / object type. Prefer the specific contructors
+     * are dealing with an Any / object type. Prefer the specific constructors
      */
-    fun fromAny(any: Any, mutable: kotlin.Boolean): Inspectable? {
+    fun fromAny(any: Any, mutable: kotlin.Boolean = false): Inspectable? {
       return when (any) {
         is kotlin.Number -> InspectableValue.Number(any, mutable)
         is kotlin.Boolean -> InspectableValue.Boolean(any, mutable)
@@ -77,8 +120,6 @@ sealed class InspectableValue : Inspectable() {
     }
   }
 }
-
-@kotlinx.serialization.Serializable data class EnumData(val values: Set<String>, val value: String)
 
 object NumberSerializer : KSerializer<Number> {
   override val descriptor: SerialDescriptor =

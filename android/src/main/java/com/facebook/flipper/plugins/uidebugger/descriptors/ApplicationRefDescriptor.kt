@@ -20,7 +20,7 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
   }
 
   override fun onGetBounds(node: ApplicationRef): Bounds {
-    val displayMetrics = Resources.getSystem().getDisplayMetrics()
+    val displayMetrics = Resources.getSystem().displayMetrics
     return Bounds(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)
   }
 

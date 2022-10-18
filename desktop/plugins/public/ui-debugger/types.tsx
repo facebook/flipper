@@ -51,6 +51,13 @@ export type Bounds = {
   height: number;
 };
 
+export type Color = {
+  r: number;
+  g: number;
+  b: number;
+  alpha: number;
+};
+
 export type Snapshot = string;
 export type Id = number;
 
@@ -76,7 +83,13 @@ export type InspectableNumber = {
 
 export type InspectableColor = {
   type: 'number';
-  value: number;
+  value: Color;
+  mutable: boolean;
+};
+
+export type InspectableBounds = {
+  type: 'bounds';
+  value: Bounds;
   mutable: boolean;
 };
 

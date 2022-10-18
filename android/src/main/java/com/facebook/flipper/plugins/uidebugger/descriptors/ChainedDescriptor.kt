@@ -8,8 +8,8 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.graphics.Bitmap
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 
 /**
  * A chained descriptor is a special type of descriptor that models the inheritance hierarchy in

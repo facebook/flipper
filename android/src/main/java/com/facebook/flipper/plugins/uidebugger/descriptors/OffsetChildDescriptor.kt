@@ -8,8 +8,8 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.graphics.Bitmap
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 
 /** a drawable or view that is mounted, along with the correct descriptor */
 class OffsetChild(val child: Any, val descriptor: NodeDescriptor<Any>, val x: Int, val y: Int) {
@@ -22,7 +22,10 @@ object OffsetChildDescriptor : NodeDescriptor<OffsetChild> {
 
   override fun getBounds(node: OffsetChild): Bounds? {
     val bounds = node.descriptor.getBounds(node.child)
-    return bounds?.copy(x = node.x, y = node.y)
+    bounds?.let { b ->
+      return Bounds(node.x, node.y, b.width, b.height)
+    }
+    return null
   }
 
   override fun getName(node: OffsetChild): String = node.descriptor.getName(node.child)

@@ -8,13 +8,13 @@
 package com.facebook.flipper.plugins.uidebugger.litho.descriptors
 
 import android.graphics.Bitmap
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.OffsetChild
 import com.facebook.flipper.plugins.uidebugger.litho.LithoTag
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.litho.DebugComponent
 
 class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {

@@ -8,8 +8,8 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import androidx.viewpager.widget.ViewPager
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
-import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 
 object ViewPagerDescriptor : ChainedDescriptor<ViewPager>() {
 
@@ -25,6 +25,6 @@ object ViewPagerDescriptor : ChainedDescriptor<ViewPager>() {
         InspectableObject(
             mapOf("currentItemIndex" to InspectableValue.Number(node.currentItem, false)))
 
-    attributeSections.put("ViewPager", props)
+    attributeSections["ViewPager"] = props
   }
 }

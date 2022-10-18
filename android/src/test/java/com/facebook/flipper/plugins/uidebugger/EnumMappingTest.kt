@@ -8,9 +8,9 @@
 package com.facebook.flipper.plugins.uidebugger
 
 import android.view.View
-import com.facebook.flipper.plugins.uidebugger.common.EnumData
 import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
-import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.Enumeration
+import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
@@ -42,6 +42,6 @@ class EnumMappingTest {
         visibility.toInspectable(View.GONE, true),
         equalTo(
             InspectableValue.Enum(
-                EnumData(setOf("VISIBLE", "INVISIBLE", "GONE"), "GONE"), mutable = true)))
+                Enumeration(setOf("VISIBLE", "INVISIBLE", "GONE"), "GONE"), mutable = true)))
   }
 }

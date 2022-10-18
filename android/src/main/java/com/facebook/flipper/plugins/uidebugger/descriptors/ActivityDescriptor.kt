@@ -8,8 +8,8 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.app.Activity
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.core.FragmentTracker
+import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 
 object ActivityDescriptor : ChainedDescriptor<Activity>() {
 

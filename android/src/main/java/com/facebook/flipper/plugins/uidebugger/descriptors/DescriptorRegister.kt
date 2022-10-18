@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.viewpager.widget.ViewPager
 import com.facebook.flipper.plugins.uidebugger.common.UIDebuggerException
@@ -32,6 +33,7 @@ class DescriptorRegister {
       mapping.register(ViewGroup::class.java, ViewGroupDescriptor)
       mapping.register(View::class.java, ViewDescriptor)
       mapping.register(TextView::class.java, TextViewDescriptor)
+      mapping.register(ImageView::class.java, ImageViewDescriptor)
       mapping.register(ViewPager::class.java, ViewPagerDescriptor)
       mapping.register(Drawable::class.java, DrawableDescriptor)
       mapping.register(ColorDrawable::class.java, ColorDrawableDescriptor)

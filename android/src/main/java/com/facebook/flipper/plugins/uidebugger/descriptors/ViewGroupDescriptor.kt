@@ -11,8 +11,9 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewGroupCompat
-import com.facebook.flipper.plugins.uidebugger.common.*
+import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
 import com.facebook.flipper.plugins.uidebugger.core.FragmentTracker
+import com.facebook.flipper.plugins.uidebugger.model.*
 
 object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
 

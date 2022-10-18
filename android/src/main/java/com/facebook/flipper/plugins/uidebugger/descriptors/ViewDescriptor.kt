@@ -20,8 +20,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import com.facebook.flipper.plugins.uidebugger.common.*
-import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
+import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
+import com.facebook.flipper.plugins.uidebugger.model.*
 import com.facebook.flipper.plugins.uidebugger.util.ResourcesUtil
 import java.lang.reflect.Field
 
@@ -47,14 +48,16 @@ object ViewDescriptor : ChainedDescriptor<View>() {
   ) {
 
     val props = mutableMapOf<String, Inspectable>()
-    props["height"] = InspectableValue.Number(node.height, mutable = true)
-    props["width"] = InspectableValue.Number(node.width, mutable = true)
+    props["size"] = InspectableValue.Size(Size(node.width, node.height), mutable = true)
     props["alpha"] = InspectableValue.Number(node.alpha, mutable = true)
     props["visibility"] = VisibilityMapping.toInspectable(node.visibility, mutable = false)
 
-    fromDrawable(node.background)?.let { props["background"] = it }
+    fromDrawable(node.background)?.let { background -> props["background"] = background }
 
-    node.tag?.let { InspectableValue.fromAny(it, mutable = false) }?.let { props.put("tag", it) }
+    node.tag
+        ?.let { InspectableValue.fromAny(it, mutable = false) }
+        ?.let { tag -> props.put("tag", tag) }
+
     props["keyedTags"] = InspectableObject(getViewTags(node))
     props["layoutParams"] = getLayoutParams(node)
     props["state"] =
@@ -66,46 +69,20 @@ object ViewDescriptor : ChainedDescriptor<View>() {
                 "selected" to InspectableValue.Boolean(node.isSelected, mutable = false)))
 
     props["bounds"] =
-        InspectableObject(
-            mapOf<String, Inspectable>(
-                "left" to InspectableValue.Number(node.left, mutable = true),
-                "right" to InspectableValue.Number(node.right, mutable = true),
-                "top" to InspectableValue.Number(node.top, mutable = true),
-                "bottom" to InspectableValue.Number(node.bottom, mutable = true)))
+        InspectableValue.SpaceBox(SpaceBox(node.top, node.right, node.bottom, node.left))
     props["padding"] =
-        InspectableObject(
-            mapOf<String, Inspectable>(
-                "left" to InspectableValue.Number(node.paddingLeft, mutable = true),
-                "right" to InspectableValue.Number(node.paddingRight, mutable = true),
-                "top" to InspectableValue.Number(node.paddingTop, mutable = true),
-                "bottom" to InspectableValue.Number(node.paddingBottom, mutable = true)))
-
+        InspectableValue.SpaceBox(
+            SpaceBox(node.paddingTop, node.paddingRight, node.paddingBottom, node.paddingLeft))
     props["rotation"] =
-        InspectableObject(
-            mapOf<String, Inspectable>(
-                "x" to InspectableValue.Number(node.rotationX, mutable = true),
-                "y" to InspectableValue.Number(node.rotationY, mutable = true),
-                "z" to InspectableValue.Number(node.rotation, mutable = true)))
-
-    props["scale"] =
-        InspectableObject(
-            mapOf(
-                "x" to InspectableValue.Number(node.scaleX, mutable = true),
-                "y" to InspectableValue.Number(node.scaleY, mutable = true)))
-    props["pivot"] =
-        InspectableObject(
-            mapOf(
-                "x" to InspectableValue.Number(node.pivotX, mutable = true),
-                "y" to InspectableValue.Number(node.pivotY, mutable = true)))
+        InspectableValue.Coordinate3D(Coordinate3D(node.rotationX, node.rotationY, node.rotation))
+    props["scale"] = InspectableValue.Coordinate(Coordinate(node.scaleX, node.scaleY))
+    props["pivot"] = InspectableValue.Coordinate(Coordinate(node.pivotX, node.pivotY))
 
     val positionOnScreen = IntArray(2)
     node.getLocationOnScreen(positionOnScreen)
 
     props["globalPosition"] =
-        InspectableObject(
-            mapOf(
-                "x" to InspectableValue.Number(positionOnScreen[0], mutable = false),
-                "y" to InspectableValue.Number(positionOnScreen[1], mutable = false)))
+        InspectableValue.Coordinate(Coordinate(positionOnScreen[0], positionOnScreen[1]))
 
     val localVisible = Rect()
     node.getLocalVisibleRect(localVisible)
@@ -113,11 +90,38 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     props["localVisible"] =
         InspectableObject(
             mapOf(
-                "x" to InspectableValue.Number(localVisible.left, mutable = true),
-                "y" to InspectableValue.Number(node.top, mutable = true),
-                "width" to InspectableValue.Number(node.width, mutable = true),
-                "height" to InspectableValue.Number(node.height, mutable = true)),
+                "position" to InspectableValue.Coordinate(Coordinate(localVisible.left, node.top)),
+                "size" to InspectableValue.Size(Size(node.width, node.height))),
         )
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      props["layoutDirection"] = LayoutDirectionMapping.toInspectable(node.layoutDirection, false)
+      props["textDirection"] = TextDirectionMapping.toInspectable(node.textDirection, false)
+      props["textAlignment"] = TextAlignmentMapping.toInspectable(node.textAlignment, false)
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      props["elevation"] = InspectableValue.Number(node.elevation)
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      props["translation"] =
+          InspectableValue.Coordinate3D(
+              Coordinate3D(node.translationX, node.translationY, node.translationZ))
+    } else {
+      props["translation"] =
+          InspectableValue.Coordinate(Coordinate(node.translationX, node.translationY))
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+      props["position"] = InspectableValue.Coordinate3D(Coordinate3D(node.x, node.y, node.z))
+    } else {
+      props["position"] = InspectableValue.Coordinate(Coordinate(node.x, node.y))
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      fromDrawable(node.foreground)?.let { foreground -> props["foreground"] = foreground }
+    }
 
     attributeSections["View"] = InspectableObject(props.toMap())
   }
@@ -148,7 +152,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
   private fun fromDrawable(d: Drawable?): Inspectable? {
     return if (d is ColorDrawable) {
-      InspectableValue.Color(d.color, mutable = false)
+      InspectableValue.Color(Color.fromColor(d.color), mutable = false)
     } else null
   }
 
@@ -160,15 +164,13 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     params["height"] = LayoutParamsMapping.toInspectable(layoutParams.height, mutable = true)
 
     if (layoutParams is ViewGroup.MarginLayoutParams) {
-      val margin =
-          InspectableObject(
-              mapOf<String, Inspectable>(
-                  "left" to InspectableValue.Number(layoutParams.leftMargin, mutable = true),
-                  "top" to InspectableValue.Number(layoutParams.topMargin, mutable = true),
-                  "right" to InspectableValue.Number(layoutParams.rightMargin, mutable = true),
-                  "bottom" to InspectableValue.Number(layoutParams.bottomMargin, mutable = true)))
-
-      params["margin"] = margin
+      params["margin"] =
+          InspectableValue.SpaceBox(
+              SpaceBox(
+                  layoutParams.topMargin,
+                  layoutParams.rightMargin,
+                  layoutParams.bottomMargin,
+                  layoutParams.leftMargin))
     }
     if (layoutParams is FrameLayout.LayoutParams) {
       params["gravity"] = GravityMapping.toInspectable(layoutParams.gravity, mutable = true)

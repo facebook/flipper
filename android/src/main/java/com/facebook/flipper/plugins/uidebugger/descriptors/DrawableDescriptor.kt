@@ -9,10 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.graphics.drawable.Drawable
 import android.os.Build
-import com.facebook.flipper.plugins.uidebugger.common.Inspectable
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
-import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
-import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.*
 
 object DrawableDescriptor : ChainedDescriptor<Drawable>() {
   override fun onGetName(node: Drawable): String = node.javaClass.simpleName
@@ -24,13 +21,15 @@ object DrawableDescriptor : ChainedDescriptor<Drawable>() {
       node: Drawable,
       attributeSections: MutableMap<SectionName, InspectableObject>
   ) {
-    val props = mutableMapOf<String, Inspectable>()
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      props.put("alpha", InspectableValue.Number(node.getAlpha(), true))
-    }
+      val props = mutableMapOf<String, Inspectable>()
+      props["alpha"] = InspectableValue.Number(node.alpha, true)
 
-    attributeSections["Drawable"] = InspectableObject(props.toMap())
+      val bounds = node.bounds
+      props["bounds"] = InspectableValue.SpaceBox(SpaceBox.fromRect(bounds))
+
+      attributeSections["Drawable"] = InspectableObject(props.toMap())
+    }
   }
 
   override fun onGetTags(node: Drawable): Set<String> = BaseTags.NativeAndroid

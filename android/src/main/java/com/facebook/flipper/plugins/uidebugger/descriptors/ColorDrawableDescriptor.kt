@@ -9,9 +9,10 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import com.facebook.flipper.plugins.uidebugger.common.Inspectable
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
-import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.Color
+import com.facebook.flipper.plugins.uidebugger.model.Inspectable
+import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 
 object ColorDrawableDescriptor : ChainedDescriptor<ColorDrawable>() {
 
@@ -22,9 +23,8 @@ object ColorDrawableDescriptor : ChainedDescriptor<ColorDrawable>() {
       attributeSections: MutableMap<SectionName, InspectableObject>
   ) {
     val props = mutableMapOf<String, Inspectable>()
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      props.put("color", InspectableValue.Color(node.color, mutable = true))
+      props["color"] = InspectableValue.Color(Color.fromColor(node.color), mutable = true)
     }
 
     attributeSections["ColorDrawable"] = InspectableObject(props.toMap())

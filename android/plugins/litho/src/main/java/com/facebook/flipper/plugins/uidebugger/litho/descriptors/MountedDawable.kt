@@ -8,9 +8,9 @@
 package com.facebook.flipper.plugins.uidebugger.litho.descriptors
 
 import android.graphics.Bitmap
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.descriptors.*
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 
 /** a drawable or view that is mounted, along with the correct descriptor */
 class MountedObject(val obj: Any, val descriptor: NodeDescriptor<Any>)
@@ -19,14 +19,16 @@ object MountedObjectDescriptor : NodeDescriptor<MountedObject> {
 
   override fun getBounds(node: MountedObject): Bounds? {
     val bounds = node.descriptor.getBounds(node.obj)
-
-    /**
-     * When we ask android for the bounds the x,y offset is w.r.t to the nearest android parent view
-     * group. From UI debuggers perspective using the raw android offset will double the total
-     * offset of this native view as the offset is included by the litho components between the
-     * mounted view and its native parent
-     */
-    return bounds?.copy(x = 0, y = 0)
+    bounds?.let { b ->
+      /**
+       * When we ask android for the bounds the x,y offset is w.r.t to the nearest android parent
+       * view group. From UI debuggers perspective using the raw android offset will double the
+       * total offset of this native view as the offset is included by the litho components between
+       * the mounted view and its native parent
+       */
+      return Bounds(0, 0, b.width, b.height)
+    }
+    return null
   }
 
   override fun getName(node: MountedObject): String = node.descriptor.getName(node.obj)

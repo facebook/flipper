@@ -7,11 +7,11 @@
 
 package com.facebook.flipper.plugins.uidebugger.litho.descriptors
 
-import com.facebook.flipper.plugins.uidebugger.common.Inspectable
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
-import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.descriptors.ChainedDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.SectionName
+import com.facebook.flipper.plugins.uidebugger.model.Inspectable
+import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 import com.facebook.litho.widget.TextDrawable
 
 object TextDrawableDescriptor : ChainedDescriptor<TextDrawable>() {

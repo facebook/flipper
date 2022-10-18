@@ -9,9 +9,10 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.os.Build
 import android.widget.TextView
-import com.facebook.flipper.plugins.uidebugger.common.Inspectable
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
-import com.facebook.flipper.plugins.uidebugger.common.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.Color
+import com.facebook.flipper.plugins.uidebugger.model.Inspectable
+import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 
 object TextViewDescriptor : ChainedDescriptor<TextView>() {
 
@@ -26,7 +27,8 @@ object TextViewDescriptor : ChainedDescriptor<TextView>() {
         mutableMapOf<String, Inspectable>(
             "text" to InspectableValue.Text(node.text.toString(), false),
             "textSize" to InspectableValue.Number(node.textSize, false),
-            "textColor" to InspectableValue.Color(node.getTextColors().getDefaultColor(), false))
+            "textColor" to
+                InspectableValue.Color(Color.fromColor(node.textColors.defaultColor), false))
 
     val typeface = node.typeface
     if (typeface != null) {
@@ -50,6 +52,6 @@ object TextViewDescriptor : ChainedDescriptor<TextView>() {
       props["maxWidth"] = InspectableValue.Number(node.maxWidth, false)
     }
 
-    attributeSections.put("TextView", InspectableObject(props))
+    attributeSections["TextView"] = InspectableObject(props)
   }
 }

@@ -7,7 +7,9 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
-import com.facebook.flipper.plugins.uidebugger.common.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.Inspectable
+import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 
 object FragmentSupportDescriptor : ChainedDescriptor<androidx.fragment.app.Fragment>() {
 
@@ -21,5 +23,18 @@ object FragmentSupportDescriptor : ChainedDescriptor<androidx.fragment.app.Fragm
   override fun onGetData(
       node: androidx.fragment.app.Fragment,
       attributeSections: MutableMap<String, InspectableObject>
-  ) {}
+  ) {
+    val args = node.arguments
+    args?.let { bundle ->
+      val props = mutableMapOf<String, Inspectable>()
+      for (key in bundle.keySet()) {
+        when (val value = bundle[key]) {
+          is Number -> props[key] = InspectableValue.Number(value)
+          is Boolean -> props[key] = InspectableValue.Boolean(value)
+          is String -> props[key] = InspectableValue.Text(value)
+        }
+      }
+      attributeSections["Fragment"] = InspectableObject(props.toMap())
+    }
+  }
 }
