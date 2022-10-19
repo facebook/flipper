@@ -68,6 +68,11 @@ export type DataInspectorProps = {
   filter?: string;
 
   /**
+   * Highlight color of the search text
+   */
+  highlightColor?: string;
+
+  /**
    * these should be ant design Menu.Item's
    */
   additionalContextMenuItems?: (
@@ -202,7 +207,9 @@ export class DataInspector extends PureComponent<
     return (
       <Layout.Container onMouseLeave={this.removeHover}>
         <RootDataContext.Provider value={this.getRootData}>
-          <HighlightProvider text={this.props.filter}>
+          <HighlightProvider
+            text={this.props.filter}
+            highlightColor={this.props.highlightColor}>
             <DataInspectorNode
               hoveredNodePath={this.state.hoveredNodePath}
               setHoveredNodePath={this.setHoveredNodePath}
