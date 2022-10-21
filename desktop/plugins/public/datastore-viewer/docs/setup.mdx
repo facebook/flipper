@@ -1,0 +1,31 @@
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+The plugin is for Android only.
+
+## Android
+
+```java
+import com.facebook.flipper.plugins.datastoreviewer.DataStoreFlipperPlugin;
+
+client.addPlugin(
+    new DataStoreFlipperPlugin(
+        Map.of(
+            "name1", getDatastore1(context),
+            "name2", getDatastore2(context)
+        )
+    )
+);
+```
+
+```kotlin
+import com.facebook.flipper.plugins.datastoreviewer.DataStoreFlipperPlugin
+
+client.addPlugin(
+    DataStoreFlipperPlugin(
+        mapOf(
+            "name1" to getDatastore1(context),
+            "name2" to getDatastore2(context)
+        )
+    )
+);
+```
