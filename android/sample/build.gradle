@@ -6,6 +6,8 @@
  */
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.google.protobuf'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -42,6 +44,9 @@ android {
 
 
 dependencies {
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION"
+
     // Android Support Library
     implementation deps.supportAppCompat
 
@@ -57,6 +62,8 @@ dependencies {
     implementation deps.soloader
     implementation deps.okhttp3
     implementation deps.fresco
+    implementation deps.protobuf
+    implementation deps.datastorePreferences
 
     // Integration test
     androidTestImplementation deps.testCore
@@ -72,5 +79,21 @@ dependencies {
     debugImplementation project(':fresco-plugin')
     debugImplementation project(':network-plugin')
     debugImplementation project(':litho-plugin')
+    debugImplementation project(':datastore-viewer')
     releaseImplementation project(':noop')
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.18.0"
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
 }

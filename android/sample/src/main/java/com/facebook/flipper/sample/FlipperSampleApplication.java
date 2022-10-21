@@ -7,6 +7,8 @@
 
 package com.facebook.flipper.sample;
 
+import static com.facebook.flipper.sample.DataStoreHelperKt.initDataStore;
+
 import android.app.Application;
 import android.content.Context;
 import android.database.DatabaseUtils;
@@ -42,5 +44,7 @@ public class FlipperSampleApplication extends Application {
 
     DatabaseUtils.queryNumEntries(db1Helper.getReadableDatabase(), "db1_first_table", null, null);
     DatabaseUtils.queryNumEntries(db2Helper.getReadableDatabase(), "db2_first_table", null, null);
+
+    initDataStore(this);
   }
 }

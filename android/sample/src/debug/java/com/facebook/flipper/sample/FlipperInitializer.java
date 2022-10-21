@@ -9,9 +9,11 @@ package com.facebook.flipper.sample;
 
 import android.app.Application;
 import android.content.Context;
+
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
 import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin;
+import com.facebook.flipper.plugins.datastoreviewer.DataStoreFlipperPlugin;
 import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
@@ -27,8 +29,11 @@ import com.facebook.flipper.plugins.uidebugger.litho.UIDebuggerLithoSupport;
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.editor.flipper.LithoFlipperDescriptors;
+
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 
 public final class FlipperInitializer {
@@ -68,6 +73,12 @@ public final class FlipperInitializer {
     client.addPlugin(
         new UIDebuggerFlipperPlugin(
             (Application) context, descriptorRegister, treeObserverFactory));
+    client.addPlugin(new DataStoreFlipperPlugin(
+        Map.of(
+            DataStoreHelperKt.KEY_DATASTORE_1, DataStoreHelperKt.getDatastore1(context),
+            DataStoreHelperKt.KEY_DATASTORE_2, DataStoreHelperKt.getDatastore2(context)
+        )
+    ));
     client.start();
 
     final OkHttpClient okHttpClient =

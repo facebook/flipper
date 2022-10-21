@@ -16,6 +16,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.7.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.19"
     }
 }
 
@@ -110,5 +111,8 @@ ext.deps = [
         // Plugin dependencies
         frescoFlipper      : 'com.facebook.fresco:flipper:2.6.0',
         frescoStetho       : 'com.facebook.fresco:stetho:2.6.0',
-        fresco             : 'com.facebook.fresco:fresco:2.6.0'
+        fresco             : 'com.facebook.fresco:fresco:2.6.0',
+        // Datastore Viewer
+        datastorePreferences: "androidx.datastore:datastore-preferences:1.0.0",
+        datastorePreferencesCore: "androidx.datastore:datastore-preferences-core:1.0.0",
 ]
