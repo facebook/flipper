@@ -143,6 +143,11 @@ export async function handleOpenPluginDeeplink(
     return;
   }
   console.debug('[deeplink] Cleared device plugin support check.');
+
+  await client?.initializationPromise;
+
+  console.debug('[deeplink] Client initialized');
+
   if (!isDevicePlugin && !client!.plugins.has(params.pluginId)) {
     await Dialog.alert({
       title,

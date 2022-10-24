@@ -50,6 +50,7 @@ export type RequestMetadata = {
 
 export interface ClientConnection {
   send(data: any): void;
+
   sendExpectResponse(data: any): Promise<ClientResponseType>;
 }
 
@@ -63,13 +64,17 @@ export default abstract class AbstractClient extends EventEmitter {
   backgroundPlugins: Plugins;
   connection: ClientConnection | null | undefined;
   activePlugins: Set<string>;
-
   device: BaseDevice;
   logger: Logger;
 
   sandyPluginStates = new Map<string /*pluginID*/, _SandyPluginInstance>();
   private readonly serverAddOnControls: ServerAddOnControls;
   private readonly flipperServer: FlipperServer;
+
+  private resolveInitPromise!: (_: unknown) => void;
+  readonly initializationPromise = new Promise((_resolve) => {
+    this.resolveInitPromise = _resolve;
+  });
 
   constructor(
     id: string,
@@ -116,6 +121,7 @@ export default abstract class AbstractClient extends EventEmitter {
       }
     });
     this.emit('plugins-change');
+    this.resolveInitPromise?.(null);
   }
 
   // get the supported plugins
