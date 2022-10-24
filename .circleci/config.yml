@@ -12,6 +12,8 @@ jobs:
       resource-class: large
     steps:
       - checkout
+      - android/restore-gradle-cache:
+          cache-prefix: v1a
       - run:
           name: install retry
           command: scripts/install-retry.sh
