@@ -7,7 +7,7 @@
 
 package com.facebook.flipper.sample;
 
-import static com.facebook.flipper.sample.DataStoreHelperKt.initDataStore;
+import static com.facebook.flipper.sample.datastore.DataStoreHelperKt.initDataStore;
 
 import android.app.Application;
 import android.content.Context;

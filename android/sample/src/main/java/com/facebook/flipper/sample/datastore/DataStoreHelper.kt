@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.sample
+package com.facebook.flipper.sample.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -20,6 +20,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.facebook.flipper.sample.SampleProto
 import com.google.protobuf.ByteString
 import kotlinx.coroutines.runBlocking
 

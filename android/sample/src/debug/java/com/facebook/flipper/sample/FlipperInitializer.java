@@ -27,6 +27,7 @@ import com.facebook.flipper.plugins.uidebugger.UIDebuggerFlipperPlugin;
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister;
 import com.facebook.flipper.plugins.uidebugger.litho.UIDebuggerLithoSupport;
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory;
+import com.facebook.flipper.sample.datastore.DataStoreHelperKt;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.editor.flipper.LithoFlipperDescriptors;
 

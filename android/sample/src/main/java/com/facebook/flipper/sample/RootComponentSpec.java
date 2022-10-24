@@ -11,6 +11,7 @@ import android.content.Intent;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity;
+import com.facebook.flipper.sample.datastore.DataStoreTestActivity;
 import com.facebook.flipper.sample.network.NetworkClient;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
@@ -116,8 +117,15 @@ public class RootComponentSpec {
                     .clickHandler(RootComponent.openIncrementActivity(c)))
             .child(
                 Text.create(c)
-                    .text("Crash this app")
+                    .text("Navigate to datastore test page")
                     .key("12")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openDataStoreTestActivity(c)))
+            .child(
+                Text.create(c)
+                    .text("Crash this app")
+                    .key("13")
                     .marginDip(YogaEdge.ALL, 10)
                     .textSizeSp(20)
                     .clickHandler(RootComponent.triggerCrash(c)))
@@ -201,6 +209,12 @@ public class RootComponentSpec {
   @OnEvent(ClickEvent.class)
   static void openIncrementActivity(final ComponentContext c) {
     final Intent intent = new Intent(c.getAndroidContext(), ButtonsActivity.class);
+    c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void openDataStoreTestActivity(final ComponentContext c) {
+    final Intent intent = new Intent(c.getAndroidContext(), DataStoreTestActivity.class);
     c.getAndroidContext().startActivity(intent);
   }
 }

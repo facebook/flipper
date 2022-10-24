@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.sample
+package com.facebook.flipper.sample.datastore
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
+import com.facebook.flipper.sample.SampleProto
 import java.io.InputStream
 import java.io.OutputStream
 

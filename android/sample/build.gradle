@@ -49,6 +49,7 @@ dependencies {
 
     // Android Support Library
     implementation deps.supportAppCompat
+    implementation deps.supportRecyclerView
 
     // Litho
     implementation deps.lithoCore
