@@ -7,11 +7,17 @@
 
 package com.facebook.flipper.plugins.uidebugger.litho
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.ViewTreeObserver
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.descriptors.ViewDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.LithoViewDescriptor
+import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.Coordinate
+import com.facebook.flipper.plugins.uidebugger.observers.CoordinateUpdate
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverBuilder
 import com.facebook.flipper.plugins.uidebugger.scheduler.throttleLatest
@@ -22,30 +28,32 @@ import kotlinx.coroutines.*
 
 /**
  * There are 2 ways a litho view can update:
- * 1. a view was added / updated / removed through a mount ,we use the mount extension to capture
- * these
- * 2. The user scrolled. This does not cause a mount to the litho view but it may cause new
- * components to mount as they come on screen On the native side we capture scrolls as it causes the
- * draw listener to first but but the layout traversal would stop once it sees the lithoview.
+ * 1. A view was added / updated / removed through a mount, This should be refelected in a change in
+ * props / state so we use the mount extension to capture these including the entire component tree
+ * 2. The coordinate of the litho view changes externally and doesn't cause a mount, examples:
+ * - Sibling changed size or position and shifted this view
+ * - User scrolled
  *
- * Therefore we need a way to capture the changes in the position of views in a litho view hierarchy
- * as they are scrolled. A property that seems to hold for litho is if there is a scrolling view in
- * the heierachy, its direct children are lithoview.
+ * These are not interesting from UI debugger perspective, we don't want to send the whole subtree
+ * as only the Coordinate of the root litho view has changed. For this situation we send a
+ * lightweight coordinate update event to distinguish these 2 cases
  *
- * Given that we are observing a litho view in this class for mount extension we can also attach a
- * on scroll changed listener to it to be notified by android when it is scrolled. We just need to
- * then update the bounds for this view as nothing else has changed. If this scroll does lead to a
- * mount this will be picked up by the mount extension
+ * If an external event such as a scroll does does lead to a mount (new view in recycler view) this
+ * will be picked up by the mount extension
  */
 class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
 
   override val type = "Litho"
-  private val throttleTimeMs = 500L
+  private val throttleTimeMs = 100L
 
   private val waitScope = CoroutineScope(Dispatchers.IO)
   private val mainScope = CoroutineScope(Dispatchers.Main)
+
+  var lastBounds: Bounds? = null
+
   var nodeRef: LithoView? = null
   private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
+  @SuppressLint("PrivateApi")
   override fun subscribe(node: Any) {
 
     Log.d(LogTag, "Subscribing to litho view ${node.nodeId()}")
@@ -55,21 +63,28 @@ class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
     val lithoDebuggerExtension = LithoDebuggerExtension(this)
     node.registerUIDebugger(lithoDebuggerExtension)
 
-    val throttledUpdate =
-        throttleLatest<Any>(throttleTimeMs, waitScope, mainScope) { node ->
-          // todo only send bounds for the view rather than the entire hierachy
-          processUpdate(context, node)
+    val throttledCordinateUpdate =
+        throttleLatest<LithoView>(throttleTimeMs, waitScope, mainScope) { node ->
+          // use the descriptor to get the bounds since we do some magic in there
+          val bounds = ViewDescriptor.onGetBounds(node)
+          if (bounds != lastBounds) {
+            context.treeObserverManager.enqueueUpdate(
+                CoordinateUpdate(this.type, node.nodeId(), Coordinate(bounds.x, bounds.y)))
+            lastBounds = bounds
+          }
         }
 
     preDrawListener =
         ViewTreeObserver.OnPreDrawListener {
-          throttledUpdate(node)
+          // this cases case 2
+          throttledCordinateUpdate(node)
           true
         }
 
     node.viewTreeObserver.addOnPreDrawListener(preDrawListener)
 
     // we have already missed the first mount so we trigger it manually on subscribe
+    lastBounds = LithoViewDescriptor.onGetBounds(node)
     processUpdate(context, node)
   }
 
@@ -93,7 +108,7 @@ class LithoDebuggerExtension(val observer: LithoViewTreeObserver) : MountExtensi
    */
   override fun afterMount(state: ExtensionState<Void?>) {
     Log.i(LogTag, "After mount called for litho view ${observer.nodeRef?.nodeId()}")
-    // todo sparse update
+    observer.lastBounds = ViewDescriptor.onGetBounds(state.rootHost)
     observer.processUpdate(observer.context, state.rootHost as Any)
   }
 }

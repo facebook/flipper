@@ -29,6 +29,17 @@ data class SubtreeUpdateEvent(
   }
 }
 
+@kotlinx.serialization.Serializable
+data class CoordinateUpdateEvent(
+    val observerType: String,
+    val nodeId: Id,
+    val coordinate: Coordinate
+) {
+  companion object {
+    const val name = "coordinateUpdate"
+  }
+}
+
 /** Separate optional performance statistics event */
 @kotlinx.serialization.Serializable
 data class PerfStatsEvent(

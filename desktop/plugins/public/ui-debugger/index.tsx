@@ -24,6 +24,18 @@ export function plugin(client: PluginClient<Events>) {
 
   const nodesAtom = createState<Map<Id, UINode>>(new Map());
   const snapshotsAtom = createState<Map<Id, Snapshot>>(new Map());
+
+  client.onMessage('coordinateUpdate', (event) => {
+    nodesAtom.update((draft) => {
+      const node = draft.get(event.nodeId);
+      if (!node) {
+        console.warn(`Coordinate update for non existing node `, event);
+      } else {
+        node.bounds.x = event.coordinate.x;
+        node.bounds.y = event.coordinate.y;
+      }
+    });
+  });
   client.onMessage('subtreeUpdate', (event) => {
     snapshotsAtom.update((draft) => {
       draft.set(event.rootId, event.snapshot);

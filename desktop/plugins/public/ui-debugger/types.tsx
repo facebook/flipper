@@ -10,7 +10,14 @@
 export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
+  coordinateUpdate: CoordinateUpdateEvent;
   perfStats: PerfStatsEvent;
+};
+
+export type CoordinateUpdateEvent = {
+  observerType: String;
+  nodeId: Id;
+  coordinate: Coordinate;
 };
 
 export type SubtreeUpdateEvent = {
@@ -39,7 +46,7 @@ export type UINode = {
   name: string;
   attributes: Record<string, Inspectable>;
   children: Id[];
-  bounds?: Bounds;
+  bounds: Bounds;
   tags: Tag[];
   activeChild?: Id;
 };
