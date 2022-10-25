@@ -471,9 +471,7 @@ function ExportEverythingEverywhereAllAtOnceButton() {
               <p>Exporting Flipper debug files from all devices...</p>
               <p>It could take a long time!</p>
               <p>Let's count sheep while we wait: {sheepCount++}.</p>
-              <p>
-                Scream for help if the sheep count reaches 42, but not earlier.
-              </p>
+              <p>We'll skip it automatically if it exceeds 3 minutes.</p>
             </>,
           );
         };
@@ -491,14 +489,14 @@ function ExportEverythingEverywhereAllAtOnceButton() {
               <p>Exporting Flipper state...</p>
               <p>It also could take a long time!</p>
               <p>This time we could count dinosaurs: {dinosaursCount++}.</p>
-              <p>You already know what to do when the counter reaches 42.</p>
+              <p>We'll skip it automatically if it exceeds 2 minutes.</p>
             </>,
           );
         };
 
         setStateExportMessage();
 
-        const interval = setInterval(setStateExportMessage, 1000);
+        const interval = setInterval(setStateExportMessage, 2000);
         return () => clearInterval(interval);
       }
       case 'archive': {

@@ -8,7 +8,12 @@
  */
 
 import * as React from 'react';
-import {getLogger, DeviceDebugFile, DeviceDebugCommand} from 'flipper-common';
+import {
+  getLogger,
+  DeviceDebugFile,
+  DeviceDebugCommand,
+  timeout,
+} from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from 'flipper-frontend-core';
 import {selectedPlugins, State as PluginsState} from '../reducers/plugins';
@@ -643,44 +648,58 @@ export async function exportEverythingEverywhereAllAtOnce(
 
   zip.file('flipper_logs.txt', serializedLogs);
 
-  // Step 2: Export device logs
-  onStatusUpdate?.('files');
-  const flipperFolderContent = await startDeviceFlipperFolderExport();
+  try {
+    // Step 2: Export device logs
+    onStatusUpdate?.('files');
+    const flipperFolderContent = await startDeviceFlipperFolderExport();
 
-  const deviceFlipperFolder = zip.folder('device_flipper_folder')!;
-  flipperFolderContent.forEach((deviceDebugItem) => {
-    const deviceAppFolder = deviceFlipperFolder.folder(
-      safeFilename(`${deviceDebugItem.serial}__${deviceDebugItem.appId}`),
-    )!;
+    const deviceFlipperFolder = zip.folder('device_flipper_folder')!;
+    flipperFolderContent.forEach((deviceDebugItem) => {
+      const deviceAppFolder = deviceFlipperFolder.folder(
+        safeFilename(`${deviceDebugItem.serial}__${deviceDebugItem.appId}`),
+      )!;
 
-    deviceDebugItem.data.forEach((appDebugItem) => {
-      const appDebugItemIsFile = (
-        item: DeviceDebugFile | DeviceDebugCommand,
-      ): item is DeviceDebugFile => !!(appDebugItem as DeviceDebugFile).path;
+      deviceDebugItem.data.forEach((appDebugItem) => {
+        const appDebugItemIsFile = (
+          item: DeviceDebugFile | DeviceDebugCommand,
+        ): item is DeviceDebugFile => !!(appDebugItem as DeviceDebugFile).path;
 
-      if (appDebugItemIsFile(appDebugItem)) {
-        deviceAppFolder.file(
-          safeFilename(appDebugItem.path),
-          appDebugItem.data,
-        );
-      } else {
-        deviceAppFolder.file(
-          safeFilename(appDebugItem.command),
-          appDebugItem.result,
-        );
-      }
+        if (appDebugItemIsFile(appDebugItem)) {
+          deviceAppFolder.file(
+            safeFilename(appDebugItem.path),
+            appDebugItem.data,
+          );
+        } else {
+          deviceAppFolder.file(
+            safeFilename(appDebugItem.command),
+            appDebugItem.result,
+          );
+        }
+      });
     });
-  });
+  } catch (e) {
+    console.error(
+      'exportEverythingEverywhereAllAtOnce -> failed to export Flipper device debug data',
+      e,
+    );
+  }
 
-  // Step 3: Export Flipper State
-  onStatusUpdate?.('state');
-  const exportablePlugins = getExportablePlugins(store.getState());
-  // TODO: no need to put this in the store,
-  // need to be cleaned up later in combination with SupportForm
-  store.dispatch(selectedPlugins(exportablePlugins.map(({id}) => id)));
-  const {serializedString} = await exportStore(store);
+  try {
+    // Step 3: Export Flipper State
+    onStatusUpdate?.('state');
+    const exportablePlugins = getExportablePlugins(store.getState());
+    // TODO: no need to put this in the store,
+    // need to be cleaned up later in combination with SupportForm
+    store.dispatch(selectedPlugins(exportablePlugins.map(({id}) => id)));
+    const {serializedString} = await timeout(2 * 60 * 1000, exportStore(store));
 
-  zip.file('flipper_export', serializedString);
+    zip.file('flipper_export', serializedString);
+  } catch (e) {
+    console.error(
+      'exportEverythingEverywhereAllAtOnce -> failed to export Flipper state',
+      e,
+    );
+  }
 
   onStatusUpdate?.('archive');
   const archiveData = await zip.generateAsync({type: 'uint8array'});
