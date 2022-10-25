@@ -8,7 +8,7 @@
  */
 
 import * as React from 'react';
-import {getLogger} from 'flipper-common';
+import {getLogger, DeviceDebugFile, DeviceDebugCommand} from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from 'flipper-frontend-core';
 import {selectedPlugins, State as PluginsState} from '../reducers/plugins';
@@ -33,6 +33,8 @@ import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {uploadFlipperMedia} from '../fb-stubs/user';
 import {exportLogs} from '../chrome/ConsoleLogs';
+import JSZip from 'jszip';
+import {safeFilename} from './safeFilename';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -612,25 +614,50 @@ export async function startFlipperLogsExport() {
   await getRenderHostInstance().exportFile?.(serializedLogs);
 }
 
-export async function startClientLogsExport() {
-  const _clientLogs = await getRenderHostInstance().flipperServer.exec(
-    'fetch-debug-data',
-  );
-
-  // TODO: Save all log files
+async function startDeviceFlipperFolderExport() {
+  return await getRenderHostInstance().flipperServer.exec('fetch-debug-data');
 }
 
 export async function exportEverythingEverywhereAllAtOnce(
   store: MiddlewareAPI,
 ) {
   // TODO: Show a progress dialog
-  // TODO: Pack all files in a single archive
+  const zip = new JSZip();
 
   // Step 1: Export Flipper logs
-  await startFlipperLogsExport();
+  const serializedLogs = exportLogs
+    .map((item) => JSON.stringify(item))
+    .join('\n');
+
+  zip.file('flipper_logs.txt', serializedLogs);
 
   // Step 2: Export device logs
-  await startClientLogsExport();
+  const flipperFolderContent = await startDeviceFlipperFolderExport();
+
+  const deviceFlipperFolder = zip.folder('device_flipper_folder')!;
+  flipperFolderContent.forEach((deviceDebugItem) => {
+    const deviceAppFolder = deviceFlipperFolder.folder(
+      safeFilename(`${deviceDebugItem.serial}__${deviceDebugItem.appId}`),
+    )!;
+
+    deviceDebugItem.data.forEach((appDebugItem) => {
+      const appDebugItemIsFile = (
+        item: DeviceDebugFile | DeviceDebugCommand,
+      ): item is DeviceDebugFile => !!(appDebugItem as DeviceDebugFile).path;
+
+      if (appDebugItemIsFile(appDebugItem)) {
+        deviceAppFolder.file(
+          safeFilename(appDebugItem.path),
+          appDebugItem.data,
+        );
+      } else {
+        deviceAppFolder.file(
+          safeFilename(appDebugItem.command),
+          appDebugItem.result,
+        );
+      }
+    });
+  });
 
   // Step 3: Export Flipper State
   // TODO: Export all plugins automatically
@@ -642,7 +669,12 @@ export async function exportEverythingEverywhereAllAtOnce(
   // need to be cleaned up later in combination with SupportForm
   store.dispatch(selectedPlugins(plugins));
   const {serializedString} = await exportStore(store);
-  await getRenderHostInstance().exportFile?.(serializedString);
+
+  zip.file('flipper_export', serializedString);
+
+  const archiveData = await zip.generateAsync({type: 'uint8array'});
+
+  await getRenderHostInstance().exportFileBinary?.(archiveData);
 }
 
 export async function startFileExport(dispatch: Store['dispatch']) {

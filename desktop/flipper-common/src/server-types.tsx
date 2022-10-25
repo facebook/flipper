@@ -162,10 +162,18 @@ export interface FSStatsLike {
   birthtimeMs: number;
 }
 
+export interface DeviceDebugFile {
+  path: string;
+  data: string;
+}
+export interface DeviceDebugCommand {
+  command: string;
+  result: string;
+}
 export interface DeviceDebugData {
   serial: string;
   appId: string;
-  data: ({path: string; data: string} | {command: string; result: string})[];
+  data: (DeviceDebugFile | DeviceDebugCommand)[];
 }
 
 export type FlipperServerCommands = {
