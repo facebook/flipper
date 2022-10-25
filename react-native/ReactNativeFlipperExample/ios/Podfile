@@ -2,7 +2,7 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 source 'https://github.com/CocoaPods/Specs'
 
-platform :ios, '11'
+platform :ios, '12.4'
 
 # used for automatic bumping
 flipperkit_version = '0.171.1'
@@ -11,6 +11,8 @@ target 'ReactNativeFlipperExample' do
   config = use_native_modules!
   use_react_native!(
     :path => config["reactNativePath"],
+    # Versions are explicitly pinned to be able to forcefully test against the latest versions
+    :flipper_configuration => FlipperConfiguration.enabled(["Debug"], { 'Flipper' => flipperkit_version, 'Flipper-Folly' => '2.6.10', 'Flipper-DoubleConversion' => '3.2.0', 'Flipper-Glog' => '0.5.0.3', 'Flipper-PeerTalk' => '0.0.4', 'OpenSSL-Universal' => '1.1.1100' }),
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => true
   )
@@ -19,15 +21,6 @@ target 'ReactNativeFlipperExample' do
     inherit! :complete
     # Pods for testing
   end
-
-  # Enables Flipper.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable these next few lines.
-
-  # Versions are explicitly pinned to be able to forcefully test against the latest versions.
-  # use_flipper!() should work as well and pick the React Native defaults
-  use_flipper!({ 'Flipper' => flipperkit_version, 'Flipper-Folly' => '2.6.10', 'Flipper-DoubleConversion' => '3.2.0', 'Flipper-Glog' => '0.5.0.3', 'Flipper-PeerTalk' => '0.0.4', 'OpenSSL-Universal' => '1.1.1100' })
 
   post_install do |installer|
     react_native_post_install(installer)
