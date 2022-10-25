@@ -20,20 +20,12 @@ when dealing with platform-specific code.
 
 We actively welcome your pull requests.
 
-1. Fork the repo and create your branch from `main`.
+1. Fork the repo and create your branch from `master`.
 2. If you've added code that should be tested, add tests.
 3. If you've changed APIs, update the documentation.
 4. Ensure the test suite passes.
 5. Make sure your code lints.
 6. If you haven't already, complete the Contributor License Agreement ("CLA").
-
-### Verifying changes to Flipper
-
-![GitHub Actions artifact downloads](website/static/img/actions-artifacts.png)
-
-After opening a pull request or pushing to a branch, the CI will generate
-build artifacts for you for Linux, MacOS and Windows. You can download them
-from the GitHub Actions checks on your Pull Request.
 
 ## Contributor License Agreement ("CLA")
 

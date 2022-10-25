@@ -2,20 +2,13 @@ node_modules
 dist
 website/build
 yarn-error.log
-bundle.js
-bundle.map
-*.bundle.js
-*.bundle.map
-.env
-desktop-branch-*/
-
-# conflicts with FB internal infra
-.watchmanconfig
 
 # iOS / Xcode
 *.xcworkspace
 **/Pods/
 **/xcuserdata/
+build/
+Podfile.lock
 
 android/third-party/external/
 
@@ -31,23 +24,6 @@ local.properties
 android/*/bin/**/*.class
 libs/*/bin/**/*.class
 .cxx
-*.hprof
-
-android/build
-android/*/build
-android/plugins/*/build
-xplat/build
 
 # Mac OS X
 *.DS_Store
-
-# Automatically generated
-docs/extending/ui-components.mdx
-docs/setup/plugins/
-docs/features/plugins/
-website/src/embedded-pages/docs/plugins/
-
-# Logs
-**/*/flipper-server-log.out
-
-*.salive

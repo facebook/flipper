@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,15 +7,18 @@
 
 include ':android'
 include ':folly'
+include ':easywsclient'
 include ':sonarcpp'
 include ':sample'
 include ':tutorial'
 include ':doubleconversion'
 include ':glog'
 include ':libevent'
+include ':rsocket'
 include ':third-party'
 include ':noop'
 
+project(':easywsclient').projectDir = file('libs/easywsclient')
 project(':sonarcpp').projectDir = file('xplat')
 project(':sample').projectDir = file('android/sample')
 project(':tutorial').projectDir = file('android/tutorial')
@@ -24,6 +27,7 @@ project(':doubleconversion').projectDir = file('android/third-party/external/dou
 project(':glog').projectDir = file('android/third-party/external/glog/')
 project(':folly').projectDir = file('android/third-party/external/folly/')
 project(':libevent').projectDir = file('android/third-party/external/LibEvent/')
+project(':rsocket').projectDir = file('android/third-party/external/RSocket/')
 project(':third-party').projectDir = file('android/third-party/')
 project(':noop').projectDir = file('android/no-op/')
 
@@ -39,9 +43,3 @@ project(':litho-plugin').projectDir = file('android/plugins/litho')
 
 include ':leakcanary-plugin'
 project(':leakcanary-plugin').projectDir = file('android/plugins/leakcanary')
-
-include ':leakcanary2-plugin'
-project(':leakcanary2-plugin').projectDir = file('android/plugins/leakcanary2')
-
-include ':retrofit2-protobuf'
-project(':retrofit2-protobuf').projectDir = file('android/plugins/retrofit2-protobuf')

@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "system",
+    "lib": ["es7", "dom", "es2017"],
+    "esModuleInterop": true,
+    "target": "es6",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outFile": "../../built/local/tsc.js",
+    "sourceMap": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "downlevelIteration": true,
+    "paths": {
+      "flipper": ["./src/index.tsx"],
+      "live-plugin-manager": ["./types/live-plugin-manager.d.tsx"]
+    },
+    "strict": true
+  },
+  "include": ["src/**/*", "types/*", "headless/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}

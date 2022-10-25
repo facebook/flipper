@@ -1,0 +1,132 @@
+os: osx
+osx_image: xcode10.2
+
+matrix:
+  include:
+    - language: node_js
+      os: linux
+      node_js:
+        - "11"
+
+      install:
+        - cd website
+        - yarn
+        - cd ..
+
+      script:
+        - cd website
+        - yarn build
+        - cd ..
+
+      deploy:
+        - provider: pages
+          skip-cleanup: true
+          github-token: $GITHUB_TOKEN
+          fqdn: fbflipper.com
+          local-dir: website/build/flipper
+          keep-history: true
+          on:
+            branch: master
+    - language: node_js
+      node_js:
+        - "11"
+
+      install:
+        - yarn
+
+      script:
+        - yarn lint
+        - yarn test
+        - yarn build --mac --version=$TRAVIS_BUILD_NUMBER
+
+    - language: objective-c
+      cache:
+        cocoapods: true
+        directories:
+          - $HOME/Library/Caches/CocoaPods/Pods/Release/
+
+
+      before_install:
+        - gem install cocoapods
+        - pod --version
+        - rm -f iOS/Sample/Podfile.lock
+        - rm -f iOS/Sample/build.log
+        - rm -f iOS/SampleSwift/Podfile.lock
+        - pod repo update --silent
+
+      install:
+        - cd iOS/Sample
+        - rm -f Podfile.lock
+        - travis_wait 30 pod install --silent
+        - cd ../../
+
+      script:
+        - cd iOS/Sample
+        - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
+        - travis_wait xcodebuild clean build -workspace Sample.xcworkspace -scheme Sample -sdk $IPHONESIMULATOR -quiet > ./build.log
+        - tail -100 ./build.log
+
+    - language: objective-c
+      cache:
+        cocoapods: true
+        directories:
+          - $HOME/Library/Caches/CocoaPods/Pods/Release/
+
+      before_install:
+        - gem install cocoapods
+        - pod --version
+        - rm -f iOS/SampleSwift/Podfile.lock
+        - rm -f iOS/SampleSwift/build.log
+        - pod repo update --silent
+
+      install:
+        - cd iOS/SampleSwift
+        - rm -f Podfile.lock
+        - travis_wait 30 pod install --silent
+        - cd ../../
+      script:
+        - cd iOS/SampleSwift
+        - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
+        - travis_wait xcodebuild clean build -workspace SampleSwift.xcworkspace -scheme SampleSwift -sdk $IPHONESIMULATOR -quiet > ./build.log
+        - tail -100 ./build.log
+
+    - language: android
+      os: linux
+      dist: trusty
+      android:
+        components:
+          - tools
+          - platform-tools
+          - build-tools-27.0.3
+          - android-27
+          - extra-google-google_play_services
+          - extra-google-m2repository
+          - extra-android-m2repository
+          - addon-google_apis-google-27
+
+        licenses:
+          - android-sdk-preview-license-.+
+          - android-sdk-license-.+
+          - google-gdk-license-.+
+
+      cache:
+        directories:
+          - $HOME/.gradle/wrapper
+          - $HOME/.gradle/caches
+          - android/third-party/external
+
+      before_install:
+        - yes | sdkmanager "platforms;android-27"
+        - echo "y" | sdkmanager "cmake;3.6.4111459"
+        - wget -q https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip
+        - mkdir -p temp-android-ndk
+        - mv ./android-ndk-r20-linux-x86_64.zip temp-android-ndk
+        - cd temp-android-ndk
+        - unzip -q android-ndk-r20-linux-x86_64.zip
+        - export ANDROID_NDK_HOME=`pwd`/android-ndk-r20
+        - export PATH=${PATH}:${ANDROID_NDK_HOME}
+        - cd ../
+      script:
+        - ./gradlew :sample:assembleDebug
+        - ./gradlew :android:testDebugUnitTest :sample:testDebugUnitTest
+        - ./gradlew :tutorial:assembleDebug
