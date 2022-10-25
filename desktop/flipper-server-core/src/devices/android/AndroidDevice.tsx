@@ -19,7 +19,7 @@ import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {AndroidCrashWatcher} from './AndroidCrashUtils';
 import {AndroidLogListener} from './AndroidLogListener';
 import {DebuggableDevice} from '../DebuggableDevice';
-import {executeCommandAsApp} from './androidContainerUtility';
+import {executeCommandAsApp, pull} from './androidContainerUtility';
 
 const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 
@@ -297,7 +297,7 @@ export default class AndroidDevice
 
     const appIds = output
       .split('\n')
-      // Last each appId has \n at the end. The last appId also has it.
+      // Each appId has \n at the end. The last appId also has it.
       // As a result, there is an "" (empty string) item at the end after the split.
       .filter((appId) => appId !== '')
       // Cut off the "package:" prefix
@@ -309,18 +309,66 @@ export default class AndroidDevice
     );
 
     const appsCommandsResults = await Promise.all(
-      appIds.map(async (appId): Promise<DeviceDebugData> => {
+      appIds.map(async (appId): Promise<DeviceDebugData | undefined> => {
+        const sonarDirFileNames = await executeCommandAsApp(
+          this.adb,
+          this.info.serial,
+          appId,
+          `find /data/data/${appId}/files/sonar -type f -printf "%f\n"`,
+        ).then((output) => {
+          if (output.includes('No such file or directory')) {
+            console.debug(
+              'AndroidDevice.readFlipperFolderForAllApps -> skipping app because sonar dir does not exist',
+              this.info.serial,
+              appId,
+            );
+            return;
+          }
+
+          return (
+            output
+              .split('\n')
+              // Each entry has \n at the end. The last one also has it.
+              // As a result, there is an "" (empty string) item at the end after the split.
+              .filter((appId) => appId !== '')
+          );
+        });
+
+        if (!sonarDirFileNames) {
+          return;
+        }
+
+        const sonarDirContentPromises = sonarDirFileNames.map(
+          async (fileName) => {
+            const filePath = `/data/data/${appId}/files/sonar/${fileName}`;
+            if (fileName.endsWith('pem')) {
+              return {
+                path: filePath,
+                data: '===SECURE_CONTENT===',
+              };
+            }
+            return {
+              path: filePath,
+              data: await pull(this.adb, this.info.serial, appId, filePath),
+            };
+          },
+        );
+
+        const sonarDirContentWithStatsCommandPromise = executeCommandAsApp(
+          this.adb,
+          this.info.serial,
+          appId,
+          `ls -al /data/data/${appId}/files/sonar`,
+        ).then((output): DeviceDebugData['data'][0] => ({
+          command: `ls -al /data/data/${appId}/files/sonar`,
+          result: output,
+        }));
+
         const singleAppCommandResults = await Promise.all([
-          executeCommandAsApp(
-            this.adb,
-            this.info.serial,
-            appId,
-            `ls -al /data/data/${appId}/files/sonar`,
-          ).then((output): DeviceDebugData['data'][0] => ({
-            command: `ls -al /data/data/${appId}/files/sonar`,
-            result: output,
-          })),
+          sonarDirContentWithStatsCommandPromise,
+          ...sonarDirContentPromises,
         ]);
+
         return {
           serial: this.info.serial,
           appId,
@@ -329,7 +377,11 @@ export default class AndroidDevice
       }),
     );
 
-    return appsCommandsResults;
+    return (
+      appsCommandsResults
+        // Filter out apps without Flipper integration
+        .filter((res): res is DeviceDebugData => !!res)
+    );
   }
 }
 
