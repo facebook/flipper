@@ -325,6 +325,7 @@ export type FlipperServerCommands = {
   'intern-upload-scribe-logs': (
     messages: {category: string; message: string}[],
   ) => Promise<void>;
+  'intern-cloud-upload': (path: string) => Promise<string>;
   shutdown: () => Promise<void>;
   'is-logged-in': () => Promise<boolean>;
   'environment-info': () => Promise<EnvironmentInfo>;

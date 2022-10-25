@@ -55,6 +55,7 @@ import {assertNotNull} from './comms/Utilities';
 import {mkdirp} from 'fs-extra';
 import {flipperDataFolder, flipperSettingsFolder} from './utils/paths';
 import {DebuggableDevice} from './devices/DebuggableDevice';
+import {jfUpload} from './fb-stubs/jf';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
@@ -535,6 +536,13 @@ export class FlipperServerImpl implements FlipperServer {
       return internGraphGETAPIRequest(endpoint, params, options, token);
     },
     'intern-upload-scribe-logs': sendScribeLogs,
+    'intern-cloud-upload': async (path) => {
+      const uploadRes = await jfUpload(path);
+      if (!uploadRes) {
+        throw new Error('Upload failed');
+      }
+      return uploadRes;
+    },
     shutdown: async () => {
       process.exit(0);
     },
