@@ -14,8 +14,9 @@ import child_process from 'child_process';
 import type {IOSDeviceParams} from 'flipper-common';
 import {DeviceType, uuid} from 'flipper-common';
 import path from 'path';
-import {exec, execFile} from 'promisify-child-process';
+import {ChildProcessPromise, exec, execFile} from 'promisify-child-process';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
+import iOSContainerUtility from './iOSContainerUtility';
 export const ERR_NO_IDB_OR_XCODE_AVAILABLE =
   'Neither Xcode nor idb available. Cannot provide iOS device functionality.';
 
@@ -30,6 +31,16 @@ type iOSSimulatorDevice = {
   name: string;
   udid: string;
 };
+
+// https://fbidb.io/docs/commands#list-apps
+interface IOSInstalledAppDescriptor {
+  bundleID: string;
+  name: string;
+  installType: 'user' | 'user_development' | 'system';
+  architectures: string[];
+  runningStatus: 'Unknown' | 'Running';
+  debuggableStatus: boolean;
+}
 
 export interface IOSBridge {
   startLogListener: (
@@ -48,6 +59,14 @@ export interface IOSBridge {
     ipaPath: string,
     tempPath: string,
   ) => Promise<void>;
+  getInstalledApps: (serial: string) => Promise<IOSInstalledAppDescriptor[]>;
+  ls: (serial: string, appBundleId: string, path: string) => Promise<string[]>;
+  pull: (
+    serial: string,
+    src: string,
+    bundleId: string,
+    dst: string,
+  ) => Promise<void>;
 }
 
 export class IDBBridge implements IOSBridge {
@@ -55,6 +74,66 @@ export class IDBBridge implements IOSBridge {
     private idbPath: string,
     private enablePhysicalDevices: boolean,
   ) {}
+
+  async getInstalledApps(serial: string): Promise<IOSInstalledAppDescriptor[]> {
+    const {stdout} = await this._execIdb(`list-apps --udid ${serial}`);
+    if (typeof stdout !== 'string') {
+      throw new Error(
+        `IDBBridge.getInstalledApps -> returned ${typeof stdout}, not a string`,
+      );
+    }
+    // Skip last item, as the last line also has \n at the end
+    const appStrings = stdout.split('\n').slice(0, -1);
+    const appDescriptors = appStrings.map(
+      (appString): IOSInstalledAppDescriptor => {
+        const [
+          bundleID,
+          name,
+          installType,
+          architecturesString,
+          runningStatus,
+          debuggableStatusString,
+        ] = appString.split(' | ');
+        return {
+          bundleID,
+          name,
+          installType: installType as IOSInstalledAppDescriptor['installType'],
+          architectures: architecturesString.split(', '),
+          runningStatus:
+            runningStatus as IOSInstalledAppDescriptor['runningStatus'],
+          debuggableStatus: debuggableStatusString !== 'Not Debuggable',
+        };
+      },
+    );
+    return appDescriptors;
+  }
+
+  async ls(
+    serial: string,
+    appBundleId: string,
+    path: string,
+  ): Promise<string[]> {
+    const {stdout} = await this._execIdb(
+      `file ls --udid ${serial} --log ERROR --bundle-id ${appBundleId} '${path}'`,
+    );
+    if (typeof stdout !== 'string') {
+      throw new Error(
+        `IDBBridge.ls -> returned ${typeof stdout}, not a string`,
+      );
+    }
+    // Skip last item, as the last line also has \n at the end
+    const pathContent = stdout.split('\n').slice(0, -1);
+    return pathContent;
+  }
+
+  pull(
+    serial: string,
+    src: string,
+    bundleId: string,
+    dst: string,
+  ): Promise<void> {
+    return iOSContainerUtility.pull(serial, src, bundleId, dst, this.idbPath);
+  }
 
   async installApp(serial: string, ipaPath: string): Promise<void> {
     console.log(`Installing app via IDB ${ipaPath} ${serial}`);
@@ -100,12 +179,37 @@ export class IDBBridge implements IOSBridge {
     );
   }
 
-  _execIdb(command: string): child_process.ChildProcess {
+  _execIdb(command: string): ChildProcessPromise {
     return exec(`${this.idbPath} ${command}`);
   }
 }
 
 export class SimctlBridge implements IOSBridge {
+  pull(
+    serial: string,
+    src: string,
+    bundleId: string,
+    dst: string,
+  ): Promise<void> {
+    return iOSContainerUtility.pull(serial, src, bundleId, dst, '');
+  }
+
+  async getInstalledApps(
+    _serial: string,
+  ): Promise<IOSInstalledAppDescriptor[]> {
+    // TODO: Implement me
+    throw new Error(
+      'SimctlBridge does not support getInstalledApps. Install IDB (https://fbidb.io/).',
+    );
+  }
+
+  async ls(_serial: string, _appBundleId: string): Promise<string[]> {
+    // TODO: Implement me
+    throw new Error(
+      'SimctlBridge does not support ls.  Install IDB (https://fbidb.io/).',
+    );
+  }
+
   async installApp(
     serial: string,
     ipaPath: string,

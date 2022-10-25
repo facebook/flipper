@@ -605,7 +605,11 @@ export class FlipperServerImpl implements FlipperServer {
   private async fetchDebugLogs() {
     const debugDataForEachDevice = await Promise.all(
       [...this.devices.values()]
-        .filter((device) => device.info.os === 'Android')
+        .filter(
+          (device) =>
+            device.connected &&
+            (device.info.os === 'Android' || device.info.os === 'iOS'),
+        )
         .map((device) =>
           (device as unknown as DebuggableDevice).readFlipperFolderForAllApps(),
         ),
