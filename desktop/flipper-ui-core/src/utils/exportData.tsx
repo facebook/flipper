@@ -8,7 +8,13 @@
  */
 
 import * as React from 'react';
-import {getLogger} from 'flipper-common';
+import {
+  getLogger,
+  DeviceDebugFile,
+  DeviceDebugCommand,
+  timeout,
+  getStringFromErrorLike,
+} from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from 'flipper-frontend-core';
 import {selectedPlugins, State as PluginsState} from '../reducers/plugins';
@@ -32,7 +38,12 @@ import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {uploadFlipperMedia} from '../fb-stubs/user';
-import {logsAtom} from '../chrome/ConsoleLogs';
+import {exportLogs} from '../chrome/ConsoleLogs';
+import JSZip from 'jszip';
+import {safeFilename} from './safeFilename';
+import {getExportablePlugins} from '../selectors/connections';
+import {notification} from 'antd';
+import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -605,12 +616,152 @@ export function canFileExport() {
   return !!getRenderHostInstance().showSaveDialog;
 }
 
-export async function startLogsExport() {
-  const serializedLogs = logsAtom
-    .get()
+async function startDeviceFlipperFolderExport() {
+  return await getRenderHostInstance().flipperServer.exec(
+    {timeout: 3 * 60 * 1000},
+    'fetch-debug-data',
+  );
+}
+
+export type ExportEverythingEverywhereAllAtOnceStatus =
+  | ['logs']
+  | ['files']
+  | ['state']
+  | ['archive']
+  | ['upload']
+  | ['support']
+  | ['done']
+  | ['error', string]
+  | ['cancelled'];
+export async function exportEverythingEverywhereAllAtOnce(
+  store: MiddlewareAPI,
+  onStatusUpdate?: (...args: ExportEverythingEverywhereAllAtOnceStatus) => void,
+  openSupportRequest?: boolean,
+) {
+  const zip = new JSZip();
+
+  // Step 1: Export Flipper logs
+  onStatusUpdate?.('logs');
+  const serializedLogs = exportLogs
     .map((item) => JSON.stringify(item))
     .join('\n');
-  await getRenderHostInstance().exportFile?.(serializedLogs);
+
+  zip.file('flipper_logs.txt', serializedLogs);
+
+  try {
+    // Step 2: Export device logs
+    onStatusUpdate?.('files');
+    const flipperFolderContent = await startDeviceFlipperFolderExport();
+
+    const deviceFlipperFolder = zip.folder('device_flipper_folder')!;
+    flipperFolderContent.forEach((deviceDebugItem) => {
+      const deviceAppFolder = deviceFlipperFolder.folder(
+        safeFilename(`${deviceDebugItem.serial}__${deviceDebugItem.appId}`),
+      )!;
+
+      deviceDebugItem.data.forEach((appDebugItem) => {
+        const appDebugItemIsFile = (
+          item: DeviceDebugFile | DeviceDebugCommand,
+        ): item is DeviceDebugFile => !!(appDebugItem as DeviceDebugFile).path;
+
+        if (appDebugItemIsFile(appDebugItem)) {
+          deviceAppFolder.file(
+            safeFilename(appDebugItem.path),
+            appDebugItem.data,
+          );
+        } else {
+          deviceAppFolder.file(
+            safeFilename(appDebugItem.command),
+            appDebugItem.result,
+          );
+        }
+      });
+    });
+  } catch (e) {
+    console.error(
+      'exportEverythingEverywhereAllAtOnce -> failed to export Flipper device debug data',
+      e,
+    );
+  }
+
+  try {
+    // Step 3: Export Flipper State
+    onStatusUpdate?.('state');
+    const exportablePlugins = getExportablePlugins(store.getState());
+    // TODO: no need to put this in the store,
+    // need to be cleaned up later in combination with SupportForm
+    store.dispatch(selectedPlugins(exportablePlugins.map(({id}) => id)));
+    const {serializedString} = await timeout(2 * 60 * 1000, exportStore(store));
+
+    zip.file('flipper_export', serializedString);
+  } catch (e) {
+    console.error(
+      'exportEverythingEverywhereAllAtOnce -> failed to export Flipper state',
+      e,
+    );
+  }
+
+  onStatusUpdate?.('archive');
+  const archiveData = await zip.generateAsync({type: 'uint8array'});
+
+  const exportedFilePath = await getRenderHostInstance().exportFileBinary?.(
+    archiveData,
+    {
+      defaultPath: 'flipper_EEAaO_export',
+    },
+  );
+
+  if (openSupportRequest) {
+    if (exportedFilePath) {
+      onStatusUpdate?.('upload');
+
+      let everythingEverywhereAllAtOnceExportDownloadURL: string | undefined;
+      try {
+        everythingEverywhereAllAtOnceExportDownloadURL =
+          await getRenderHostInstance().flipperServer.exec(
+            'intern-cloud-upload',
+            exportedFilePath,
+          );
+      } catch (e) {
+        console.error(
+          'exportEverythingEverywhereAllAtOnce -> failed to upload export to intern',
+          exportedFilePath,
+        );
+        notification.warn({
+          message: 'Failed to upload debug data',
+          description: `Flipper failed to upload debug export (${exportedFilePath}) automatically. Please, attach it to the support request manually in the comments after it is created.`,
+          duration: null,
+        });
+      }
+
+      onStatusUpdate?.('support');
+      try {
+        await openSupportRequestForm(store.getState(), {
+          everythingEverywhereAllAtOnceExportDownloadURL,
+        });
+        onStatusUpdate?.('done');
+      } catch (e) {
+        console.error(
+          'exportEverythingEverywhereAllAtOnce -> failed to create a support request',
+          e,
+        );
+        onStatusUpdate?.('error', getStringFromErrorLike(e));
+      }
+    } else {
+      notification.warn({
+        message: 'Export cancelled',
+        description: `Exporting Flipper debug data was cancelled. Flipper team will not be able to help you without this data. Please, restart the export.`,
+        duration: null,
+      });
+      onStatusUpdate?.('cancelled');
+    }
+  } else {
+    if (exportedFilePath) {
+      onStatusUpdate?.('done');
+    } else {
+      onStatusUpdate?.('cancelled');
+    }
+  }
 }
 
 export async function startFileExport(dispatch: Store['dispatch']) {

@@ -12,11 +12,12 @@ import {State} from '../reducers';
 export type SupportRequestDetails = {
   title?: string;
   whatAlreadyTried?: string;
+  everythingEverywhereAllAtOnceExportDownloadURL?: string;
 };
 
 export default function openSupportRequestForm(
   _state: State,
   _details?: SupportRequestDetails,
-): void {
+): Promise<void> {
   throw new Error('Not implemented!');
 }
