@@ -82,7 +82,7 @@ export type InspectableNumber = {
 };
 
 export type InspectableColor = {
-  type: 'number';
+  type: 'color';
   value: Color;
   mutable: boolean;
 };

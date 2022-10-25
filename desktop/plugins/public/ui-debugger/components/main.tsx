@@ -9,21 +9,14 @@
 
 import React, {useState} from 'react';
 import {plugin} from '../index';
-import {
-  DataInspector,
-  DetailSidebar,
-  Layout,
-  usePlugin,
-  useValue,
-} from 'flipper-plugin';
-import {Typography} from 'antd';
-
+import {DetailSidebar, Layout, usePlugin, useValue} from 'flipper-plugin';
 import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, Snapshot, UINode} from '../types';
 import {PerfStats} from './PerfStats';
 import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
 import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
+import {Inspector} from './sidebar/Inspector';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -39,19 +32,14 @@ export function Component() {
 
   const {ctrlPressed} = useKeyboardModifiers();
 
-  function renderAttributesInspector(node: UINode | undefined) {
+  function renderSidebar(node: UINode | undefined) {
     if (!node) {
       return;
     }
     return (
-      <>
-        <DetailSidebar>
-          <Layout.Container gap pad>
-            <Typography.Title level={2}>Attributes Inspector</Typography.Title>
-            <DataInspector data={node} expandRoot />
-          </Layout.Container>
-        </DetailSidebar>
-      </>
+      <DetailSidebar>
+        <Inspector node={node} />
+      </DetailSidebar>
     );
   }
 
@@ -81,7 +69,7 @@ export function Component() {
             />
           </Layout.Horizontal>
         </Layout.ScrollContainer>
-        {selectedNode && renderAttributesInspector(nodes.get(selectedNode))}
+        {selectedNode && renderSidebar(nodes.get(selectedNode))}
       </>
     );
   }
