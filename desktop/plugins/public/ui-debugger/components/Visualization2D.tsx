@@ -154,10 +154,8 @@ function Visualization2DNode({
         top: toPx(bounds.y),
         width: toPx(bounds.width),
         height: toPx(bounds.height),
-        opacity: isSelected || isHovered ? 0.5 : 1,
+        opacity: isSelected ? 0.5 : 1,
         backgroundColor: isSelected
-          ? theme.primaryColor
-          : isHovered
           ? theme.selectionBackgroundColor
           : 'transparent',
       }}
@@ -179,7 +177,7 @@ function Visualization2DNode({
           onSelectNode(hoveredNode);
         }
       }}>
-      <NodeBorder tags={node.tags}></NodeBorder>
+      <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
       {snapshot && (
         <img
           src={'data:image/jpeg;base64,' + snapshot}
@@ -197,13 +195,13 @@ function Visualization2DNode({
  * node itself so that it has the same size but the border doesnt affect the sizing of its children
  * as border is part of the box model
  */
-const NodeBorder = styled.div<{tags: Tag[]}>((props) => ({
+const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
   position: 'absolute',
   top: 0,
   left: 0,
   bottom: 0,
   right: 0,
-  borderWidth: '1px',
+  borderWidth: props.hovered ? '2px' : '1px',
   borderStyle: 'solid',
   color: 'transparent',
   borderColor: props.tags.includes('Declarative')
