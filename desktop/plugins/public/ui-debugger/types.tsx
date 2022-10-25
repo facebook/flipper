@@ -67,7 +67,9 @@ export type Inspectable =
   | InspectableObject
   | InspectableText
   | InspectableNumber
-  | InspectableColor;
+  | InspectableColor
+  | InspectableBoolean
+  | InspectableEnum;
 
 export type InspectableText = {
   type: 'text';
@@ -78,6 +80,18 @@ export type InspectableText = {
 export type InspectableNumber = {
   type: 'number';
   value: number;
+  mutable: boolean;
+};
+
+export type InspectableBoolean = {
+  type: 'boolean';
+  value: boolean;
+  mutable: boolean;
+};
+
+export type InspectableEnum = {
+  type: 'enum';
+  value: {value: string; values: string[]};
   mutable: boolean;
 };
 
