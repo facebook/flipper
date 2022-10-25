@@ -315,24 +315,33 @@ export default class AndroidDevice
           this.info.serial,
           appId,
           `find /data/data/${appId}/files/sonar -type f -printf "%f\n"`,
-        ).then((output) => {
-          if (output.includes('No such file or directory')) {
+        )
+          .then((output) => {
+            if (output.includes('No such file or directory')) {
+              console.debug(
+                'AndroidDevice.readFlipperFolderForAllApps -> skipping app because sonar dir does not exist',
+                this.info.serial,
+                appId,
+              );
+              return;
+            }
+
+            return (
+              output
+                .split('\n')
+                // Each entry has \n at the end. The last one also has it.
+                // As a result, there is an "" (empty string) item at the end after the split.
+                .filter((appId) => appId !== '')
+            );
+          })
+          .catch((e) => {
             console.debug(
-              'AndroidDevice.readFlipperFolderForAllApps -> skipping app because sonar dir does not exist',
+              'AndroidDevice.readFlipperFolderForAllApps -> failed to fetch sonar dir',
               this.info.serial,
               appId,
+              e,
             );
-            return;
-          }
-
-          return (
-            output
-              .split('\n')
-              // Each entry has \n at the end. The last one also has it.
-              // As a result, there is an "" (empty string) item at the end after the split.
-              .filter((appId) => appId !== '')
-          );
-        });
+          });
 
         if (!sonarDirFileNames) {
           return;
@@ -349,7 +358,12 @@ export default class AndroidDevice
             }
             return {
               path: filePath,
-              data: await pull(this.adb, this.info.serial, appId, filePath),
+              data: await pull(
+                this.adb,
+                this.info.serial,
+                appId,
+                filePath,
+              ).catch((e) => `Couldn't pull the file: ${e}`),
             };
           },
         );

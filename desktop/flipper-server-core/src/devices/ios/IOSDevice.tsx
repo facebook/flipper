@@ -184,41 +184,49 @@ export default class IOSDevice
               };
             }
             try {
-              await this.iOSBridge.pull(
-                this.info.serial,
-                filePath,
-                userApp.bundleID,
-                dir,
-              );
+              // See iOSCertificateProvider to learn why we need 2 pulls
+              try {
+                await this.iOSBridge.pull(
+                  this.info.serial,
+                  filePath,
+                  userApp.bundleID,
+                  dir,
+                );
+              } catch (e) {
+                console.debug(
+                  'IOSDevice.readFlipperFolderForAllApps -> Original idb pull failed. Most likely it is a physical device that requires us to handle the dest path dirrently. Forcing a re-try with the updated dest path. See D32106952 for details. Original error:',
+                  this.info.serial,
+                  userApp.bundleID,
+                  fileName,
+                  filePath,
+                  e,
+                );
+                await this.iOSBridge.pull(
+                  this.info.serial,
+                  filePath,
+                  userApp.bundleID,
+                  path.join(dir, fileName),
+                );
+                console.debug(
+                  'IOSDevice.readFlipperFolderForAllApps -> Subsequent idb pull succeeded. Nevermind previous warnings.',
+                  this.info.serial,
+                  userApp.bundleID,
+                  fileName,
+                  filePath,
+                );
+              }
+              return {
+                path: filePath,
+                data: await readFile(path.join(dir, fileName), {
+                  encoding: 'utf-8',
+                }),
+              };
             } catch (e) {
-              console.debug(
-                'IOSDevice.readFlipperFolderForAllApps -> Original idb pull failed. Most likely it is a physical device that requires us to handle the dest path dirrently. Forcing a re-try with the updated dest path. See D32106952 for details. Original error:',
-                this.info.serial,
-                userApp.bundleID,
-                fileName,
-                filePath,
-                e,
-              );
-              await this.iOSBridge.pull(
-                this.info.serial,
-                filePath,
-                userApp.bundleID,
-                path.join(dir, fileName),
-              );
-              console.debug(
-                'IOSDevice.readFlipperFolderForAllApps -> Subsequent idb pull succeeded. Nevermind previous wranings.',
-                this.info.serial,
-                userApp.bundleID,
-                fileName,
-                filePath,
-              );
+              return {
+                path: filePath,
+                data: `Couldn't pull the file: ${e}`,
+              };
             }
-            return {
-              path: filePath,
-              data: await readFile(path.join(dir, fileName), {
-                encoding: 'utf-8',
-              }),
-            };
           }),
         );
 

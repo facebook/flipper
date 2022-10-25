@@ -25,6 +25,7 @@ import {
   FlipperServerConfig,
   Logger,
   FlipperServerExecOptions,
+  DeviceDebugData,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
@@ -611,10 +612,21 @@ export class FlipperServerImpl implements FlipperServer {
             (device.info.os === 'Android' || device.info.os === 'iOS'),
         )
         .map((device) =>
-          (device as unknown as DebuggableDevice).readFlipperFolderForAllApps(),
+          (device as unknown as DebuggableDevice)
+            .readFlipperFolderForAllApps()
+
+            .catch((e) => {
+              console.warn(
+                'fetchDebugLogs -> could not fetch debug data',
+                device.info.serial,
+                e,
+              );
+            }),
         ),
     );
-    return debugDataForEachDevice.flat();
+    return debugDataForEachDevice
+      .filter((item): item is DeviceDebugData[] => !!item)
+      .flat();
   }
 
   public async close() {
