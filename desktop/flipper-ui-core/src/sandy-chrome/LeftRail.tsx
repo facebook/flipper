@@ -77,7 +77,6 @@ import {
 import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
 import {getRenderHostInstance} from 'flipper-frontend-core';
-import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
 import {StyleGuide} from './StyleGuide';
 import {useEffect} from 'react';
 
@@ -303,7 +302,6 @@ function ExtrasMenu() {
               </Menu.Item>
             </Menu.SubMenu>
             <Menu.Divider />
-            {config.isFBBuild ? <OpenSupportRequestMenuItem /> : null}
             <Menu.Item key="settings" onClick={() => setShowSettings(true)}>
               Settings
             </Menu.Item>
@@ -417,38 +415,6 @@ function DebugLogsButton({
   );
 }
 
-function OpenSupportRequestMenuItem() {
-  const store = useStore();
-
-  const [status, setStatus] = useState<
-    ExportEverythingEverywhereAllAtOnceStatus | undefined
-  >();
-
-  return (
-    <>
-      <ExportEverythingEverywhereAllAtOnceStatusModal
-        status={status}
-        setStatus={setStatus}
-      />
-      <Menu.Item
-        key="feedback"
-        onClick={async () => {
-          getLogger().track('usage', 'support-form-source', {
-            source: 'sidebar',
-            group: undefined,
-          });
-          await exportEverythingEverywhereAllAtOnce(
-            store,
-            (...args) => setStatus(args),
-            true,
-          );
-        }}>
-        Feedback
-      </Menu.Item>
-    </>
-  );
-}
-
 function ExportEverythingEverywhereAllAtOnceStatusModal({
   status,
   setStatus,
@@ -557,7 +523,11 @@ function ExportEverythingEverywhereAllAtOnceButton() {
   const exportEverythingEverywhereAllAtOnceTracked = useTrackedCallback(
     'Debug data export',
     () =>
-      exportEverythingEverywhereAllAtOnce(store, (...args) => setStatus(args)),
+      exportEverythingEverywhereAllAtOnce(
+        store,
+        (...args) => setStatus(args),
+        config.isFBBuild,
+      ),
     [store, setStatus],
   );
 
