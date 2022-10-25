@@ -39,10 +39,10 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
        */
       result.add(OffsetChild.zero(mountedView, descriptor))
     } else if (mountedDrawable != null) {
-      val descriptor: NodeDescriptor<Any> =
-          register.descriptorForClassUnsafe(mountedDrawable.javaClass)
-      // same here
-      result.add(OffsetChild.zero(mountedDrawable, descriptor))
+      /**
+       * don't emit mounted drawables since they are leaf nodes and its somewhat tricky to get the
+       * wireframe bounds to play nice. Something to address later if there is feedback
+       */
     } else {
       for (child in node.childComponents) {
         result.add(child)
