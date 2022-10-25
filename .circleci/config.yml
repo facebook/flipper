@@ -1,28 +1,32 @@
 version: 2.1
-executors:
-  default-executor:
-    docker:
-      - image: circleci/android:api-30-ndk
-    resource_class: large
-
-    environment:
-      _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
-      TERM: 'dumb'
-
+orbs:
+  android: circleci/android@2.1.2
 jobs:
   snapshot:
-    executor: default-executor
+    environment:
+      TERM: 'dumb'
+    executor:
+      name: android/android-machine
+      tag: 2021.10.1
+      resource-class: large
     steps:
       - checkout
+      - android/restore-gradle-cache:
+          cache-prefix: v1a
       - run:
           name: install retry
           command: scripts/install-retry.sh
       - run:
-          name: build and deploy
+          name: build
           command: |
-            yes | sdkmanager "platforms;android-27" || true
-            /tmp/retry -m 3 ./gradlew :android:assembleRelease
+            yes | sdkmanager "platforms;android-30" || true
+            /tmp/retry -m 3 ./gradlew :android:assembleRelease --info
+      - run:
+          name: deploy snapshot
+          command: |
             /tmp/retry -m 3 scripts/publish-android-snapshot.sh
+      - android/save-gradle-cache:
+          cache-prefix: v1a
 workflows:
   version: 2
   build-and-deploy:
