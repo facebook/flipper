@@ -19,22 +19,28 @@ import {useIsDarkMode} from '../utils/useIsDarkMode';
 import {Button, Dropdown, Menu, Checkbox} from 'antd';
 import {DownOutlined} from '@ant-design/icons';
 import {DeleteOutlined} from '@ant-design/icons';
+import CBuffer from 'cbuffer';
 
-const MAX_LOG_ITEMS = 1000;
+const MAX_DISPLAY_LOG_ITEMS = 1000;
+const MAX_EXPORT_LOG_ITEMS = 5000;
 
-export const logsAtom = createState<any[]>([]);
+// A list5 of log items meant to be used for exporting (and subsequent debugging) only
+export const exportLogs = new CBuffer<any>(MAX_EXPORT_LOG_ITEMS);
+export const displayLogsAtom = createState<any[]>([]);
 export const errorCounterAtom = createState(0);
 
 export function enableConsoleHook() {
   Hook(
     window.console,
     (log) => {
+      exportLogs.push(log);
+
       if (log.method === 'debug') {
         return; // See below, skip debug messages which are generated very aggressively by Flipper
       }
-      const newLogs = logsAtom.get().slice(-MAX_LOG_ITEMS);
+      const newLogs = displayLogsAtom.get().slice(-MAX_DISPLAY_LOG_ITEMS);
       newLogs.push(log);
-      logsAtom.set(newLogs);
+      displayLogsAtom.set(newLogs);
       if (log.method === 'error' || log.method === 'assert') {
         errorCounterAtom.set(errorCounterAtom.get() + 1);
       }
@@ -44,7 +50,8 @@ export function enableConsoleHook() {
 }
 
 function clearLogs() {
-  logsAtom.set([]);
+  exportLogs.empty();
+  displayLogsAtom.set([]);
   errorCounterAtom.set(0);
 }
 
@@ -67,7 +74,7 @@ const defaultLogLevels: Methods[] = ['warn', 'error', 'table', 'assert'];
 
 export function ConsoleLogs() {
   const isDarkMode = useIsDarkMode();
-  const logs = useValue(logsAtom);
+  const logs = useValue(displayLogsAtom);
   const [logLevels, setLogLevels] = useLocalStorageState<Methods[]>(
     'console-logs-loglevels',
     defaultLogLevels,
