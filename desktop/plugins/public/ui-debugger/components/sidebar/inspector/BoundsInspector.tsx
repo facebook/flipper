@@ -85,8 +85,8 @@ const BoundsInspector: React.FC<Props> = ({
       <text
         x={0}
         y={midY}
-        dominant-baseline="middle"
-        text-anchor="right"
+        dominantBaseline="middle"
+        textAnchor="right"
         fill={strokeColor}>
         {value.x}
       </text>
@@ -119,8 +119,8 @@ const BoundsInspector: React.FC<Props> = ({
       <text
         x={midX}
         y={originY + height + separator * 2}
-        dominant-baseline="middle"
-        text-anchor="middle"
+        dominantBaseline="middle"
+        textAnchor="middle"
         fill={strokeColor}>
         {value.width}
       </text>
@@ -153,8 +153,8 @@ const BoundsInspector: React.FC<Props> = ({
       <text
         x={midX}
         y={separator}
-        dominant-baseline="middle"
-        text-anchor="middle"
+        dominantBaseline="middle"
+        textAnchor="middle"
         fill={strokeColor}>
         {value.y}
       </text>
@@ -187,8 +187,8 @@ const BoundsInspector: React.FC<Props> = ({
       <text
         x={originX + width + separator * 3}
         y={midY}
-        dominant-baseline="middle"
-        text-anchor="middle"
+        dominantBaseline="middle"
+        textAnchor="middle"
         fill={strokeColor}>
         {value.height}
       </text>

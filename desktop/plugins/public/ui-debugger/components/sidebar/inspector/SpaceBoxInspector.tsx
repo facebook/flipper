@@ -162,8 +162,8 @@ const SpaceBoxInspector: React.FC<Props> = ({
       <text
         x={half}
         y={quarter - quarter / 2}
-        dominant-baseline="middle"
-        text-anchor="middle"
+        dominantBaseline="middle"
+        textAnchor="middle"
         fill={strokeColor}>
         {value.top}
       </text>
@@ -171,8 +171,8 @@ const SpaceBoxInspector: React.FC<Props> = ({
       <text
         x={half}
         y={size - quarter / 2}
-        dominant-baseline="middle"
-        text-anchor="middle"
+        dominantBaseline="middle"
+        textAnchor="middle"
         fill={strokeColor}>
         {value.bottom}
       </text>
@@ -180,8 +180,8 @@ const SpaceBoxInspector: React.FC<Props> = ({
       <text
         x={quarter - quarter / 2}
         y={half}
-        dominant-baseline="middle"
-        text-anchor="middle"
+        dominantBaseline="middle"
+        textAnchor="middle"
         fill={strokeColor}>
         {value.left}
       </text>
@@ -189,8 +189,8 @@ const SpaceBoxInspector: React.FC<Props> = ({
       <text
         x={size - quarter / 2}
         y={half}
-        dominant-baseline="middle"
-        text-anchor="middle"
+        dominantBaseline="middle"
+        textAnchor="middle"
         fill={strokeColor}>
         {value.right}
       </text>
