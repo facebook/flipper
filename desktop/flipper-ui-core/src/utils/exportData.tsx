@@ -616,16 +616,27 @@ export async function startFlipperLogsExport() {
 }
 
 async function startDeviceFlipperFolderExport() {
-  return await getRenderHostInstance().flipperServer.exec('fetch-debug-data');
+  return await getRenderHostInstance().flipperServer.exec(
+    {timeout: 3 * 60 * 1000},
+    'fetch-debug-data',
+  );
 }
 
+export type ExportEverythingEverywhereAllAtOnceStatus =
+  | 'logs'
+  | 'files'
+  | 'state'
+  | 'archive'
+  | 'done'
+  | 'cancelled';
 export async function exportEverythingEverywhereAllAtOnce(
   store: MiddlewareAPI,
+  onStatusUpdate?: (status: ExportEverythingEverywhereAllAtOnceStatus) => void,
 ) {
-  // TODO: Show a progress dialog
   const zip = new JSZip();
 
   // Step 1: Export Flipper logs
+  onStatusUpdate?.('logs');
   const serializedLogs = exportLogs
     .map((item) => JSON.stringify(item))
     .join('\n');
@@ -633,6 +644,7 @@ export async function exportEverythingEverywhereAllAtOnce(
   zip.file('flipper_logs.txt', serializedLogs);
 
   // Step 2: Export device logs
+  onStatusUpdate?.('files');
   const flipperFolderContent = await startDeviceFlipperFolderExport();
 
   const deviceFlipperFolder = zip.folder('device_flipper_folder')!;
@@ -661,6 +673,7 @@ export async function exportEverythingEverywhereAllAtOnce(
   });
 
   // Step 3: Export Flipper State
+  onStatusUpdate?.('state');
   const exportablePlugins = getExportablePlugins(store.getState());
   // TODO: no need to put this in the store,
   // need to be cleaned up later in combination with SupportForm
@@ -669,9 +682,21 @@ export async function exportEverythingEverywhereAllAtOnce(
 
   zip.file('flipper_export', serializedString);
 
+  onStatusUpdate?.('archive');
   const archiveData = await zip.generateAsync({type: 'uint8array'});
 
-  await getRenderHostInstance().exportFileBinary?.(archiveData);
+  const exportedFilePath = await getRenderHostInstance().exportFileBinary?.(
+    archiveData,
+    {
+      defaultPath: 'flipper_EEAaO_export',
+    },
+  );
+
+  if (exportedFilePath) {
+    onStatusUpdate?.('done');
+  } else {
+    onStatusUpdate?.('cancelled');
+  }
 }
 
 export async function startFileExport(dispatch: Store['dispatch']) {

@@ -8,7 +8,16 @@
  */
 
 import React, {cloneElement, useState, useCallback, useMemo} from 'react';
-import {Button, Divider, Badge, Tooltip, Avatar, Popover, Menu} from 'antd';
+import {
+  Button,
+  Divider,
+  Badge,
+  Tooltip,
+  Avatar,
+  Popover,
+  Menu,
+  Modal,
+} from 'antd';
 import {
   MobileFilled,
   AppstoreOutlined,
@@ -64,12 +73,14 @@ import {
   startFileExport,
   startLinkExport,
   startFlipperLogsExport,
+  ExportEverythingEverywhereAllAtOnceStatus,
 } from '../utils/exportData';
 import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
 import {StyleGuide} from './StyleGuide';
+import {useEffect} from 'react';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -435,22 +446,97 @@ function DebugLogsButton({
 
 function ExportEverythingEverywhereAllAtOnceButton() {
   const store = useStore();
+  const [status, setStatus] = useState<
+    ExportEverythingEverywhereAllAtOnceStatus | undefined
+  >();
+  const [statusMessage, setStatusMessage] = useState<JSX.Element | undefined>();
 
   const exportEverythingEverywhereAllAtOnceTracked = useTrackedCallback(
     'Debug data export',
-    () => exportEverythingEverywhereAllAtOnce(store),
-    [store],
+    () => exportEverythingEverywhereAllAtOnce(store, setStatus),
+    [store, setStatus],
   );
 
+  useEffect(() => {
+    switch (status) {
+      case 'logs': {
+        setStatusMessage(<p>Exporting Flipper logs...</p>);
+        return;
+      }
+      case 'files': {
+        let sheepCount = 0;
+        const setFileExportMessage = () => {
+          setStatusMessage(
+            <>
+              <p>Exporting Flipper debug files from all devices...</p>
+              <p>It could take a long time!</p>
+              <p>Let's count sheep while we wait: {sheepCount++}.</p>
+              <p>
+                Scream for help if the sheep count reaches 42, but not earlier.
+              </p>
+            </>,
+          );
+        };
+
+        setFileExportMessage();
+
+        const interval = setInterval(setFileExportMessage, 3000);
+        return () => clearInterval(interval);
+      }
+      case 'state': {
+        let dinosaursCount = 0;
+        const setStateExportMessage = () => {
+          setStatusMessage(
+            <>
+              <p>Exporting Flipper state...</p>
+              <p>It also could take a long time!</p>
+              <p>This time we could count dinosaurs: {dinosaursCount++}.</p>
+              <p>You already know what to do when the counter reaches 42.</p>
+            </>,
+          );
+        };
+
+        setStateExportMessage();
+
+        const interval = setInterval(setStateExportMessage, 1000);
+        return () => clearInterval(interval);
+      }
+      case 'archive': {
+        setStatusMessage(<p>Creating an archive...</p>);
+        return;
+      }
+      case 'done': {
+        setStatusMessage(<p>Done!</p>);
+        return;
+      }
+      case 'cancelled': {
+        setStatusMessage(<p>Cancelled! Why? 😱🤯👏</p>);
+        return;
+      }
+    }
+  }, [status]);
+
   return (
-    <LeftRailButton
-      icon={<BugOutlined />}
-      title="Export Flipper debug data"
-      onClick={() => {
-        exportEverythingEverywhereAllAtOnceTracked();
-      }}
-      small
-    />
+    <>
+      <Modal
+        visible={!!status}
+        centered
+        onCancel={() => {
+          setStatus(undefined);
+        }}
+        title="Exporting everything everywhere all at once"
+        footer={null}>
+        {statusMessage}
+      </Modal>
+      <LeftRailButton
+        icon={<BugOutlined />}
+        title="Export Flipper debug data"
+        onClick={() => {
+          exportEverythingEverywhereAllAtOnceTracked();
+        }}
+        small
+      />
+    </>
   );
 }
 
