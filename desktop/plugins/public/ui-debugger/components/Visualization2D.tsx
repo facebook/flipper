@@ -10,11 +10,10 @@
 import React from 'react';
 import {Id, Snapshot, Tag, UINode} from '../types';
 import {styled, Layout, theme} from 'flipper-plugin';
-import {Typography} from 'antd';
 
 export const Visualization2D: React.FC<
   {
-    root: Id;
+    rootId: Id;
     nodes: Map<Id, UINode>;
     snapshots: Map<Id, Snapshot>;
     hoveredNode?: Id;
@@ -24,7 +23,7 @@ export const Visualization2D: React.FC<
     modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
 > = ({
-  root,
+  rootId,
   nodes,
   snapshots,
   hoveredNode,
@@ -34,53 +33,49 @@ export const Visualization2D: React.FC<
   modifierPressed,
 }) => {
   //todo, do a bfs search for the first bounds found
-  const rootBounds = nodes.get(root)?.bounds;
-  const rootSnapshot = snapshots.get(root);
+  const rootBounds = nodes.get(rootId)?.bounds;
+  const rootSnapshot = snapshots.get(rootId);
 
   if (!rootBounds) {
     return null;
   }
   return (
-    <Layout.Container gap="large">
-      <Typography.Title>Visualizer</Typography.Title>
-
-      <div
-        onMouseLeave={(e) => {
-          e.stopPropagation();
-          onHoverNode(undefined);
-        }}
-        style={{
-          /**
-           * This relative position is so the root visualization 2DNode and outer border has a non static element to
-           * position itself relative to.
-           *
-           * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
-           * which despite the name acts are a reference point for absolute positioning...
-           */
-          position: 'relative',
-          width: toPx(rootBounds.width),
-          height: toPx(rootBounds.height),
-          overflow: 'hidden',
-        }}>
-        <OuterBorder />
-        {rootSnapshot ? (
-          <img
-            src={'data:image/jpeg;base64,' + rootSnapshot}
-            style={{maxWidth: '100%'}}
-          />
-        ) : null}
-        <Visualization2DNode
-          nodeId={root}
-          nodes={nodes}
-          snapshots={snapshots}
-          hoveredNode={hoveredNode}
-          selectedNode={selectedNode}
-          onSelectNode={onSelectNode}
-          onHoverNode={onHoverNode}
-          modifierPressed={modifierPressed}
+    <div
+      onMouseLeave={(e) => {
+        e.stopPropagation();
+        onHoverNode(undefined);
+      }}
+      style={{
+        /**
+         * This relative position is so the root visualization 2DNode and outer border has a non static element to
+         * position itself relative to.
+         *
+         * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
+         * which despite the name acts are a reference point for absolute positioning...
+         */
+        position: 'relative',
+        width: toPx(rootBounds.width),
+        height: toPx(rootBounds.height),
+        overflow: 'hidden',
+      }}>
+      <OuterBorder />
+      {rootSnapshot ? (
+        <img
+          src={'data:image/jpeg;base64,' + rootSnapshot}
+          style={{maxWidth: '100%'}}
         />
-      </div>
-    </Layout.Container>
+      ) : null}
+      <Visualization2DNode
+        nodeId={rootId}
+        nodes={nodes}
+        snapshots={snapshots}
+        hoveredNode={hoveredNode}
+        selectedNode={selectedNode}
+        onSelectNode={onSelectNode}
+        onHoverNode={onHoverNode}
+        modifierPressed={modifierPressed}
+      />
+    </div>
   );
 };
 

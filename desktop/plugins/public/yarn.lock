@@ -1644,6 +1644,11 @@ react-color@^2.19.3:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
+react-complex-tree@^1.1.11:
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/react-complex-tree/-/react-complex-tree-1.1.11.tgz#430520d12908b033a4b278be0dfd8d0aa6654a85"
+  integrity sha512-hAkm2ZRH2lwZd7NEzZMQI8db/jI5T2fJsbwHX8oNPrG/WPdakc3eNpm2A4gLk2SBa88HeU6mnauVXg6Q6fJLow==
+
 react-devtools-core@^4.26.1:
   version "4.26.1"
   resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.26.1.tgz#2893fea58089be64c5356d5bd0eebda8d1bbf317"

@@ -7,6 +7,8 @@
  * @format
  */
 
+import {TreeItemIndex} from 'react-complex-tree';
+
 export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
@@ -89,7 +91,9 @@ export type Color = {
 };
 
 export type Snapshot = string;
-export type Id = number;
+export type Id = number | TreeItemIndex;
+
+export type TreeState = {expandedNodes: Id[]};
 
 export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho ';
 

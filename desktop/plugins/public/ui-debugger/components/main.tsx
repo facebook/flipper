@@ -47,32 +47,31 @@ export function Component() {
 
   if (rootId) {
     return (
-      <>
+      <Layout.Horizontal grow>
         <Layout.ScrollContainer>
-          <Layout.Horizontal>
-            <Tree
-              selectedNode={selectedNode}
-              onSelectNode={setSelectedNode}
-              onHoveredNode={setHoveredNode}
-              nodes={nodes}
-              rootId={rootId}
-            />
-            <Visualization2D
-              root={rootId}
-              nodes={nodes}
-              snapshots={snapshots}
-              hoveredNode={hoveredNode}
-              onHoverNode={setHoveredNode}
-              selectedNode={selectedNode}
-              onSelectNode={setSelectedNode}
-              modifierPressed={ctrlPressed}
-            />
-          </Layout.Horizontal>
+          <Tree
+            selectedNode={selectedNode}
+            hoveredNode={hoveredNode}
+            onSelectNode={setSelectedNode}
+            onHoveredNode={setHoveredNode}
+            nodes={nodes}
+            rootId={rootId}
+          />
         </Layout.ScrollContainer>
+        <Visualization2D
+          rootId={rootId}
+          nodes={nodes}
+          snapshots={snapshots}
+          hoveredNode={hoveredNode}
+          onHoverNode={setHoveredNode}
+          selectedNode={selectedNode}
+          onSelectNode={setSelectedNode}
+          modifierPressed={ctrlPressed}
+        />
         {selectedNode && renderSidebar(nodes.get(selectedNode))}
-      </>
+      </Layout.Horizontal>
     );
   }
 
-  return <div>Nothing yet</div>;
+  return <div>Loading...</div>;
 }

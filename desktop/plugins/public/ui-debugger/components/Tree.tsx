@@ -8,76 +8,108 @@
  */
 
 import {Id, UINode} from '../types';
-import {Tree as AntTree, TreeDataNode} from 'antd';
-import {DownOutlined} from '@ant-design/icons';
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
+import {
+  Tree as ComplexTree,
+  ControlledTreeEnvironment,
+  TreeItem,
+} from 'react-complex-tree';
+
+import {plugin} from '../index';
+import {usePlugin, useValue} from 'flipper-plugin';
+import {
+  InteractionMode,
+  TreeEnvironmentRef,
+} from 'react-complex-tree/lib/esm/types';
 
 export function Tree(props: {
   rootId: Id;
   nodes: Map<Id, UINode>;
   selectedNode?: Id;
+  hoveredNode?: Id;
   onSelectNode: (id: Id) => void;
   onHoveredNode: (id?: Id) => void;
 }) {
-  const [antTree, inactive] = nodesToAntTree(props.rootId, props.nodes);
+  const instance = usePlugin(plugin);
+  const expandedItems = useValue(instance.treeState).expandedNodes;
+  const items = toComplexTree(props.nodes);
 
+  const treeRef = useRef<TreeEnvironmentRef>();
+  useEffect(() => {
+    //this makes the keyboard arrow  controls work always, even when using the visualiser
+    treeRef.current?.focusTree('tree', true);
+  }, [props.hoveredNode, props.selectedNode]);
   return (
-    <div
-      onMouseLeave={() => {
-        //This div exists so when mouse exits the entire tree then unhover
-        props.onHoveredNode(undefined);
-      }}>
-      <AntTree
-        showIcon
-        showLine
-        titleRender={(node) => {
-          return (
-            <div
-              onMouseEnter={() => {
-                props.onHoveredNode(node.key as Id);
-              }}>
-              {node.title}
-            </div>
+    <ControlledTreeEnvironment
+      ref={treeRef as any}
+      items={items}
+      getItemTitle={(item) => item.data.name}
+      canRename={false}
+      canDragAndDrop={false}
+      canSearch
+      autoFocus
+      viewState={{
+        tree: {
+          focusedItem: props.hoveredNode,
+          expandedItems,
+          selectedItems: props.selectedNode ? [props.selectedNode] : [],
+        },
+      }}
+      onFocusItem={(item) => props.onHoveredNode(item.index)}
+      onExpandItem={(item) => {
+        instance.treeState.update((draft) => {
+          draft.expandedNodes.push(item.index);
+        });
+      }}
+      onCollapseItem={(item) =>
+        instance.treeState.update((draft) => {
+          draft.expandedNodes = draft.expandedNodes.filter(
+            (expandedItemIndex) => expandedItemIndex !== item.index,
           );
-        }}
-        selectedKeys={[props.selectedNode ?? '']}
-        onSelect={(selected) => {
-          props.onSelectNode(selected[0] as Id);
-        }}
-        defaultExpandAll
-        expandedKeys={[...props.nodes.keys()].filter(
-          (key) => !inactive.includes(key),
-        )}
-        switcherIcon={<DownOutlined />}
-        treeData={[antTree]}
+        })
+      }
+      onSelectItems={(items) => props.onSelectNode(items[0])}
+      defaultInteractionMode={{
+        mode: 'custom',
+        extends: InteractionMode.DoubleClickItemToExpand,
+        createInteractiveElementProps: (
+          item,
+          treeId,
+          actions,
+          renderFlags,
+        ) => ({
+          onClick: () => {
+            if (renderFlags.isSelected) {
+              actions.unselectItem();
+            } else {
+              actions.selectItem();
+            }
+          },
+          onMouseOver: () => {
+            props.onHoveredNode(item.index);
+          },
+        }),
+      }}>
+      <ComplexTree
+        treeId="tree"
+        rootItem={props.rootId as any} //the typing in in the library is wrong here
+        treeLabel="UI"
       />
-    </div>
+    </ControlledTreeEnvironment>
   );
 }
 
-function nodesToAntTree(
-  root: Id,
-  nodes: Map<Id, UINode>,
-): [TreeDataNode, Id[]] {
-  const inactive: Id[] = [];
-
-  function uiNodeToAntNode(id: Id): TreeDataNode {
-    const node = nodes.get(id);
-
-    if (node?.activeChild) {
-      for (const child of node.children) {
-        if (child !== node?.activeChild) {
-          inactive.push(child);
-        }
-      }
-    }
-
-    return {
-      key: id,
-      title: node?.name,
-      children: node?.children.map((id) => uiNodeToAntNode(id)),
+function toComplexTree(nodes: Map<Id, UINode>): Record<Id, TreeItem<UINode>> {
+  const res: Record<Id, TreeItem<UINode>> = {};
+  for (const node of nodes.values()) {
+    res[node.id] = {
+      index: node.id,
+      canMove: false,
+      canRename: false,
+      children: node.children,
+      data: node,
+      hasChildren: node.children.length > 0,
     };
   }
-
-  return [uiNodeToAntNode(root), inactive];
+  return res;
 }

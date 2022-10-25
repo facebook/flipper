@@ -8,7 +8,7 @@
  */
 
 import {PluginClient, createState, createDataSource} from 'flipper-plugin';
-import {Events, Id, PerfStatsEvent, Snapshot, UINode} from './types';
+import {Events, Id, PerfStatsEvent, Snapshot, TreeState, UINode} from './types';
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
@@ -25,6 +25,8 @@ export function plugin(client: PluginClient<Events>) {
   const nodesAtom = createState<Map<Id, UINode>>(new Map());
   const snapshotsAtom = createState<Map<Id, Snapshot>>(new Map());
 
+  const treeState = createState<TreeState>({expandedNodes: []});
+
   client.onMessage('coordinateUpdate', (event) => {
     nodesAtom.update((draft) => {
       const node = draft.get(event.nodeId);
@@ -36,6 +38,8 @@ export function plugin(client: PluginClient<Events>) {
       }
     });
   });
+
+  const seenNodes = new Set<Id>();
   client.onMessage('subtreeUpdate', (event) => {
     snapshotsAtom.update((draft) => {
       draft.set(event.rootId, event.snapshot);
@@ -45,9 +49,35 @@ export function plugin(client: PluginClient<Events>) {
         draft.set(node.id, node);
       }
     });
+
+    treeState.update((draft) => {
+      for (const node of event.nodes) {
+        if (!seenNodes.has(node.id)) {
+          draft.expandedNodes.push(node.id);
+        }
+        seenNodes.add(node.id);
+
+        if (node.activeChild) {
+          const inactiveChildren = node.children.filter(
+            (child) => child !== node.activeChild,
+          );
+
+          draft.expandedNodes = draft.expandedNodes.filter(
+            (nodeId) => !inactiveChildren.includes(nodeId),
+          );
+          draft.expandedNodes.push(node.activeChild);
+        }
+      }
+    });
   });
 
-  return {rootId, snapshots: snapshotsAtom, nodes: nodesAtom, perfEvents};
+  return {
+    rootId,
+    snapshots: snapshotsAtom,
+    nodes: nodesAtom,
+    perfEvents,
+    treeState,
+  };
 }
 
 export {Component} from './components/main';
