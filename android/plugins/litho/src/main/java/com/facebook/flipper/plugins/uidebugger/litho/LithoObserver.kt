@@ -45,8 +45,7 @@ class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
   private val waitScope = CoroutineScope(Dispatchers.IO)
   private val mainScope = CoroutineScope(Dispatchers.Main)
   var nodeRef: LithoView? = null
-  var onScrollChangedListener: ViewTreeObserver.OnScrollChangedListener? = null
-
+  private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
   override fun subscribe(node: Any) {
 
     Log.d(LogTag, "Subscribing to litho view ${node.nodeId()}")
@@ -62,8 +61,13 @@ class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
           processUpdate(context, node)
         }
 
-    onScrollChangedListener = ViewTreeObserver.OnScrollChangedListener({ throttledUpdate(node) })
-    node.viewTreeObserver.addOnScrollChangedListener(onScrollChangedListener)
+    preDrawListener =
+        ViewTreeObserver.OnPreDrawListener {
+          throttledUpdate(node)
+          true
+        }
+
+    node.viewTreeObserver.addOnPreDrawListener(preDrawListener)
 
     // we have already missed the first mount so we trigger it manually on subscribe
     processUpdate(context, node)
@@ -71,7 +75,7 @@ class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
 
   override fun unsubscribe() {
     Log.d(LogTag, "Unsubscribing from litho view ${nodeRef?.nodeId()}")
-    nodeRef?.viewTreeObserver?.removeOnScrollChangedListener(onScrollChangedListener)
+    nodeRef?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
     nodeRef?.unregisterUIDebugger()
     nodeRef = null
   }
