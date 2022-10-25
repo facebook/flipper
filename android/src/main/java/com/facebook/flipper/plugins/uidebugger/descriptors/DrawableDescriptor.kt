@@ -26,7 +26,7 @@ object DrawableDescriptor : ChainedDescriptor<Drawable>() {
       props["alpha"] = InspectableValue.Number(node.alpha, true)
 
       val bounds = node.bounds
-      props["bounds"] = InspectableValue.SpaceBox(SpaceBox.fromRect(bounds))
+      props["bounds"] = InspectableValue.Bounds(Bounds.fromRect(bounds))
 
       attributeSections["Drawable"] = InspectableObject(props.toMap())
     }

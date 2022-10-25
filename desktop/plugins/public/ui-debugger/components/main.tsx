@@ -37,7 +37,7 @@ export function Component() {
       return;
     }
     return (
-      <DetailSidebar>
+      <DetailSidebar width={350}>
         <Inspector node={node} />
       </DetailSidebar>
     );

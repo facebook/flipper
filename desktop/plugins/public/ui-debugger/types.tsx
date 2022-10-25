@@ -51,6 +51,29 @@ export type Bounds = {
   height: number;
 };
 
+export type Size = {
+  width: number;
+  height: number;
+};
+
+export type SpaceBox = {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+};
+
+export type Coordinate = {
+  x: number;
+  y: number;
+};
+
+export type Coordinate3D = {
+  x: number;
+  y: number;
+  z: number;
+};
+
 export type Color = {
   r: number;
   g: number;
@@ -69,7 +92,12 @@ export type Inspectable =
   | InspectableNumber
   | InspectableColor
   | InspectableBoolean
-  | InspectableEnum;
+  | InspectableEnum
+  | InspectableCoordinate
+  | InspectableCoordinate3D
+  | InspectableSize
+  | InspectableBounds
+  | InspectableSpaceBox;
 
 export type InspectableText = {
   type: 'text';
@@ -104,6 +132,30 @@ export type InspectableColor = {
 export type InspectableBounds = {
   type: 'bounds';
   value: Bounds;
+  mutable: boolean;
+};
+
+export type InspectableSize = {
+  type: 'size';
+  value: Size;
+  mutable: boolean;
+};
+
+export type InspectableCoordinate = {
+  type: 'coordinate';
+  value: Coordinate;
+  mutable: boolean;
+};
+
+export type InspectableCoordinate3D = {
+  type: 'coordinate3d';
+  value: Coordinate3D;
+  mutable: boolean;
+};
+
+export type InspectableSpaceBox = {
+  type: 'space';
+  value: SpaceBox;
   mutable: boolean;
 };
 

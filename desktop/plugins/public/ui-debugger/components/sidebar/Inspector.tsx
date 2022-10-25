@@ -15,7 +15,6 @@ import {UINode} from '../../types';
 import {IdentityInspector} from './inspector/IdentityInspector';
 import {AttributesInspector} from './inspector/AttributesInspector';
 import {DocumentationInspector} from './inspector/DocumentationInspector';
-import {LayoutInspector} from './inspector/LayoutInspector';
 
 type Props = {
   node: UINode;
@@ -39,7 +38,7 @@ export const Inspector: React.FC<Props> = ({node}) => {
               <Glyph name="data-table" size={16} />
             </Layout.Horizontal>
           }>
-          <AttributesInspector node={node} />
+          <AttributesInspector mode="attributes" node={node} />
         </Tab>
         <Tab
           tab={
@@ -47,7 +46,7 @@ export const Inspector: React.FC<Props> = ({node}) => {
               <Glyph name="square-ruler" size={16} />
             </Layout.Horizontal>
           }>
-          <LayoutInspector node={node} />
+          <AttributesInspector mode="layout" node={node} />
         </Tab>
         <Tab
           tab={

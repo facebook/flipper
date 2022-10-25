@@ -48,60 +48,44 @@ object ViewDescriptor : ChainedDescriptor<View>() {
   ) {
 
     val props = mutableMapOf<String, Inspectable>()
-    props["size"] = InspectableValue.Size(Size(node.width, node.height), mutable = true)
-    props["alpha"] = InspectableValue.Number(node.alpha, mutable = true)
-    props["visibility"] = VisibilityMapping.toInspectable(node.visibility, mutable = false)
-
-    fromDrawable(node.background)?.let { background -> props["background"] = background }
-
-    node.tag
-        ?.let { InspectableValue.fromAny(it, mutable = false) }
-        ?.let { tag -> props.put("tag", tag) }
-
-    props["keyedTags"] = InspectableObject(getViewTags(node))
-    props["layoutParams"] = getLayoutParams(node)
-    props["state"] =
-        InspectableObject(
-            mapOf(
-                "enabled" to InspectableValue.Boolean(node.isEnabled, mutable = false),
-                "activated" to InspectableValue.Boolean(node.isActivated, mutable = false),
-                "focused" to InspectableValue.Boolean(node.isFocused, mutable = false),
-                "selected" to InspectableValue.Boolean(node.isSelected, mutable = false)))
-
-    props["bounds"] =
-        InspectableValue.SpaceBox(SpaceBox(node.top, node.right, node.bottom, node.left))
-    props["padding"] =
-        InspectableValue.SpaceBox(
-            SpaceBox(node.paddingTop, node.paddingRight, node.paddingBottom, node.paddingLeft))
-    props["rotation"] =
-        InspectableValue.Coordinate3D(Coordinate3D(node.rotationX, node.rotationY, node.rotation))
-    props["scale"] = InspectableValue.Coordinate(Coordinate(node.scaleX, node.scaleY))
-    props["pivot"] = InspectableValue.Coordinate(Coordinate(node.pivotX, node.pivotY))
 
     val positionOnScreen = IntArray(2)
     node.getLocationOnScreen(positionOnScreen)
 
-    props["globalPosition"] =
-        InspectableValue.Coordinate(Coordinate(positionOnScreen[0], positionOnScreen[1]))
-
     val localVisible = Rect()
     node.getLocalVisibleRect(localVisible)
 
-    props["localVisible"] =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+      props["position"] = InspectableValue.Coordinate3D(Coordinate3D(node.x, node.y, node.z))
+    } else {
+      props["position"] = InspectableValue.Coordinate(Coordinate(node.x, node.y))
+    }
+
+    props["globalPosition"] =
+        InspectableValue.Coordinate(Coordinate(positionOnScreen[0], positionOnScreen[1]))
+
+    props["size"] = InspectableValue.Size(Size(node.width, node.height), mutable = true)
+
+    props["bounds"] = InspectableValue.Bounds(Bounds(node.left, node.top, node.right, node.bottom))
+    props["padding"] =
+        InspectableValue.SpaceBox(
+            SpaceBox(node.paddingTop, node.paddingRight, node.paddingBottom, node.paddingLeft))
+
+    props["localVisibleRect"] =
         InspectableObject(
             mapOf(
                 "position" to InspectableValue.Coordinate(Coordinate(localVisible.left, node.top)),
                 "size" to InspectableValue.Size(Size(node.width, node.height))),
         )
 
+    props["rotation"] =
+        InspectableValue.Coordinate3D(Coordinate3D(node.rotationX, node.rotationY, node.rotation))
+    props["scale"] = InspectableValue.Coordinate(Coordinate(node.scaleX, node.scaleY))
+    props["pivot"] = InspectableValue.Coordinate(Coordinate(node.pivotX, node.pivotY))
+
+    props["layoutParams"] = getLayoutParams(node)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       props["layoutDirection"] = LayoutDirectionMapping.toInspectable(node.layoutDirection, false)
-      props["textDirection"] = TextDirectionMapping.toInspectable(node.textDirection, false)
-      props["textAlignment"] = TextAlignmentMapping.toInspectable(node.textAlignment, false)
-    }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      props["elevation"] = InspectableValue.Number(node.elevation)
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -113,15 +97,39 @@ object ViewDescriptor : ChainedDescriptor<View>() {
           InspectableValue.Coordinate(Coordinate(node.translationX, node.translationY))
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-      props["position"] = InspectableValue.Coordinate3D(Coordinate3D(node.x, node.y, node.z))
-    } else {
-      props["position"] = InspectableValue.Coordinate(Coordinate(node.x, node.y))
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      props["elevation"] = InspectableValue.Number(node.elevation)
     }
 
+    props["visibility"] = VisibilityMapping.toInspectable(node.visibility, mutable = false)
+
+    fromDrawable(node.background)?.let { background -> props["background"] = background }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       fromDrawable(node.foreground)?.let { foreground -> props["foreground"] = foreground }
     }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+      props["alpha"] = InspectableValue.Number(node.alpha, mutable = true)
+    }
+
+    props["state"] =
+        InspectableObject(
+            mapOf(
+                "enabled" to InspectableValue.Boolean(node.isEnabled, mutable = false),
+                "activated" to InspectableValue.Boolean(node.isActivated, mutable = false),
+                "focused" to InspectableValue.Boolean(node.isFocused, mutable = false),
+                "selected" to InspectableValue.Boolean(node.isSelected, mutable = false)))
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      props["textDirection"] = TextDirectionMapping.toInspectable(node.textDirection, false)
+      props["textAlignment"] = TextAlignmentMapping.toInspectable(node.textAlignment, false)
+    }
+
+    node.tag
+        ?.let { InspectableValue.fromAny(it, mutable = false) }
+        ?.let { tag -> props.put("tag", tag) }
+
+    props["keyedTags"] = InspectableObject(getViewTags(node))
 
     attributeSections["View"] = InspectableObject(props.toMap())
   }
@@ -297,6 +305,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       object :
           EnumMapping<Int>(
               mapOf(
+                  "NONE" to -1,
                   "NO_GRAVITY" to Gravity.NO_GRAVITY,
                   "LEFT" to Gravity.LEFT,
                   "TOP" to Gravity.TOP,

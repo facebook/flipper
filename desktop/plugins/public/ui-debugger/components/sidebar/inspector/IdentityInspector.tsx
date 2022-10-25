@@ -10,26 +10,31 @@
 import React from 'react';
 import {Col, Row} from 'antd';
 import {UINode} from '../../../types';
+import {styled} from 'flipper-plugin';
 
 type Props = {
   node: UINode;
 };
 
+const IdentityContainer = styled.div({
+  marginTop: '10px',
+});
+
 export const IdentityInspector: React.FC<Props> = ({node}) => {
   return (
-    <>
-      <Row gutter={4} style={{marginTop: '10px'}}>
-        <Col flex="100px">
+    <IdentityContainer>
+      <Row gutter={4}>
+        <Col span="12">
           <div style={{padding: '0 16px'}}>Name:</div>
         </Col>
-        <Col flex="auto">{node.name}</Col>
+        <Col span="12">{node.name}</Col>
       </Row>
       <Row gutter={4}>
-        <Col flex="100px">
+        <Col span="12">
           <div style={{padding: '0 16px'}}>Id:</div>
         </Col>
-        <Col flex="auto">{node.id}</Col>
+        <Col span="12">{node.id}</Col>
       </Row>
-    </>
+    </IdentityContainer>
   );
 };

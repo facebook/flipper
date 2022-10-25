@@ -13,20 +13,21 @@
     "flipper-plugin"
   ],
   "dependencies": {
-    "react-hotkeys-hook" : "^3.4.7"
+    "react-color": "^2.19.3",
+    "react-hotkeys-hook": "^3.4.7"
   },
   "bugs": {
     "url": "https://github.com/facebook/flipper/issues"
   },
   "peerDependencies": {
-    "flipper-plugin": "*",
-    "antd": "*",
-    "react": "*",
-    "react-dom": "*",
-    "@emotion/styled": "*",
     "@ant-design/icons": "*",
+    "@emotion/styled": "*",
+    "@types/node": "*",
     "@types/react": "*",
     "@types/react-dom": "*",
-    "@types/node": "*"
+    "antd": "*",
+    "flipper-plugin": "*",
+    "react": "*",
+    "react-dom": "*"
   }
 }
