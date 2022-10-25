@@ -108,10 +108,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       fromDrawable(node.foreground)?.let { foreground -> props["foreground"] = foreground }
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      props["alpha"] = InspectableValue.Number(node.alpha, mutable = true)
-    }
-
+    props["alpha"] = InspectableValue.Number(node.alpha, mutable = true)
     props["state"] =
         InspectableObject(
             mapOf(

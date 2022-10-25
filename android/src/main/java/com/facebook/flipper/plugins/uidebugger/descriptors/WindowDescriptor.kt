@@ -87,9 +87,11 @@ object WindowDescriptor : ChainedDescriptor<Window>() {
             else -> {
               if (typedValue.type >= TypedValue.TYPE_FIRST_COLOR_INT &&
                   typedValue.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-                val hexColor = "#" + Integer.toHexString(typedValue.data)
-                val color = android.graphics.Color.parseColor(hexColor)
-                props[name] = InspectableValue.Color(Color.fromColor(color))
+                try {
+                  val hexColor = "#" + Integer.toHexString(typedValue.data)
+                  val color = android.graphics.Color.parseColor(hexColor)
+                  props[name] = InspectableValue.Color(Color.fromColor(color))
+                } catch (e: Exception) {}
               } else if (typedValue.type >= TypedValue.TYPE_FIRST_INT &&
                   typedValue.type <= TypedValue.TYPE_LAST_INT) {
                 props[name] = InspectableValue.Number(typedValue.data)

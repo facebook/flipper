@@ -38,6 +38,8 @@ class PartialLayoutTraversal(
     val stack = mutableListOf<Any>()
     stack.add(root)
 
+    val shallow = mutableSetOf<Any>()
+
     while (stack.isNotEmpty()) {
       val node = stack.removeLast()
 
@@ -49,26 +51,38 @@ class PartialLayoutTraversal(
         }
 
         val descriptor = descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
+
+        if (shallow.contains(node)) {
+          visited.add(
+              Node(
+                  node.nodeId(),
+                  descriptor.getName(node),
+                  emptyMap(),
+                  null,
+                  emptySet(),
+                  emptyList(),
+                  null))
+
+          shallow.remove(node)
+          continue
+        }
+
         val children = descriptor.getChildren(node)
+
         val activeChild = descriptor.getActiveChild(node)
+        var activeChildId: Id? = null
+        if (activeChild != null) {
+          activeChildId = activeChild.nodeId()
+        }
 
         val childrenIds = mutableListOf<Id>()
         children.forEach { child ->
-          // It might make sense one day to remove id from the descriptor since its always the
-          // hash code
-          val childDescriptor =
-              descriptorRegister.descriptorForClassUnsafe(child::class.java).asAny()
           childrenIds.add(child.nodeId())
+          stack.add(child)
           // If there is an active child then don't traverse it
-          if (activeChild == null) {
-            stack.add(child)
+          if (activeChild != null && activeChild != child) {
+            shallow.add(child)
           }
-        }
-
-        var activeChildId: Id? = null
-        if (activeChild != null) {
-          stack.add(activeChild)
-          activeChildId = activeChild.nodeId()
         }
 
         val attributes = descriptor.getData(node)

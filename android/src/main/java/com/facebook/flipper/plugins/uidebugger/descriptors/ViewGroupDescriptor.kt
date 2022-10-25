@@ -28,6 +28,7 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
     for (i in 0..count) {
       val child: View = node.getChildAt(i)
       val fragment = FragmentTracker.getFragment(child)
+
       if (fragment != null) {
         children.add(fragment)
       } else children.add(child)
