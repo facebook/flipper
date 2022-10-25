@@ -72,7 +72,6 @@ import {
   showOpenDialog,
   startFileExport,
   startLinkExport,
-  startFlipperLogsExport,
   ExportEverythingEverywhereAllAtOnceStatus,
 } from '../utils/exportData';
 import {openDeeplinkDialog} from '../deeplink';
@@ -238,11 +237,6 @@ function ExtrasMenu() {
     () => startFileExport(store.dispatch),
     [store.dispatch],
   );
-  const startLogsExportTracked = useTrackedCallback(
-    'Logs export',
-    startFlipperLogsExport,
-    [],
-  );
   const startLinkExportTracked = useTrackedCallback(
     'Link export',
     () => startLinkExport(store.dispatch),
@@ -278,11 +272,6 @@ function ExtrasMenu() {
             key="extras"
             title={<LeftRailButton icon={<SettingOutlined />} small />}
             className={submenu}>
-            {canFileExport() ? (
-              <Menu.Item key="exportLogs" onClick={startLogsExportTracked}>
-                Export Flipper logs
-              </Menu.Item>
-            ) : null}
             {canOpenDialog() ? (
               <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
                 Import Flipper file

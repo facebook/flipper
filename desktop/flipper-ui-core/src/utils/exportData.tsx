@@ -613,13 +613,6 @@ export function canFileExport() {
   return !!getRenderHostInstance().showSaveDialog;
 }
 
-export async function startFlipperLogsExport() {
-  const serializedLogs = exportLogs
-    .map((item) => JSON.stringify(item))
-    .join('\n');
-  await getRenderHostInstance().exportFile?.(serializedLogs);
-}
-
 async function startDeviceFlipperFolderExport() {
   return await getRenderHostInstance().flipperServer.exec(
     {timeout: 3 * 60 * 1000},
