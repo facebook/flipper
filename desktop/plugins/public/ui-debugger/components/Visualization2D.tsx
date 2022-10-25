@@ -19,7 +19,7 @@ export const Visualization2D: React.FC<
     snapshots: Map<Id, Snapshot>;
     hoveredNode?: Id;
     selectedNode?: Id;
-    onSelectNode: (id: Id) => void;
+    onSelectNode: (id?: Id) => void;
     onHoverNode: (id?: Id) => void;
     modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
@@ -102,7 +102,7 @@ function Visualization2DNode({
   modifierPressed: boolean;
   hoveredNode?: Id;
   selectedNode?: Id;
-  onSelectNode: (id: Id) => void;
+  onSelectNode: (id?: Id) => void;
   onHoverNode: (id?: Id) => void;
 }) {
   const node = nodes.get(nodeId);
@@ -124,6 +124,7 @@ function Visualization2DNode({
   } else {
     childrenIds = node.children;
   }
+
   // stop drawing children if hovered with the modifier so you
   // can see parent views without their children getting in the way
   if (isHovered && modifierPressed) {
@@ -175,7 +176,13 @@ function Visualization2DNode({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        onSelectNode(nodeId);
+
+        if (hoveredNode === selectedNode) {
+          onSelectNode(undefined);
+        } else {
+          //the way click is resolved doesn't always match what is hovered, this is a way to ensure what is hovered is selected
+          onSelectNode(hoveredNode);
+        }
       }}>
       <NodeBorder tags={node.tags}></NodeBorder>
       {snapshot && (
