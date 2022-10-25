@@ -35,6 +35,7 @@ import {uploadFlipperMedia} from '../fb-stubs/user';
 import {exportLogs} from '../chrome/ConsoleLogs';
 import JSZip from 'jszip';
 import {safeFilename} from './safeFilename';
+import {getExportablePlugins} from '../selectors/connections';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -660,14 +661,10 @@ export async function exportEverythingEverywhereAllAtOnce(
   });
 
   // Step 3: Export Flipper State
-  // TODO: Export all plugins automatically
-  const plugins = await selectPlugins();
-  if (plugins === false) {
-    return; // cancelled
-  }
+  const exportablePlugins = getExportablePlugins(store.getState());
   // TODO: no need to put this in the store,
   // need to be cleaned up later in combination with SupportForm
-  store.dispatch(selectedPlugins(plugins));
+  store.dispatch(selectedPlugins(exportablePlugins.map(({id}) => id)));
   const {serializedString} = await exportStore(store);
 
   zip.file('flipper_export', serializedString);
