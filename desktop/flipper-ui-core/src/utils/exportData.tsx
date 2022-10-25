@@ -13,6 +13,7 @@ import {
   DeviceDebugFile,
   DeviceDebugCommand,
   timeout,
+  getStringFromErrorLike,
 } from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from 'flipper-frontend-core';
@@ -41,6 +42,8 @@ import {exportLogs} from '../chrome/ConsoleLogs';
 import JSZip from 'jszip';
 import {safeFilename} from './safeFilename';
 import {getExportablePlugins} from '../selectors/connections';
+import {notification} from 'antd';
+import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -621,15 +624,19 @@ async function startDeviceFlipperFolderExport() {
 }
 
 export type ExportEverythingEverywhereAllAtOnceStatus =
-  | 'logs'
-  | 'files'
-  | 'state'
-  | 'archive'
-  | 'done'
-  | 'cancelled';
+  | ['logs']
+  | ['files']
+  | ['state']
+  | ['archive']
+  | ['upload']
+  | ['support']
+  | ['done']
+  | ['error', string]
+  | ['cancelled'];
 export async function exportEverythingEverywhereAllAtOnce(
   store: MiddlewareAPI,
-  onStatusUpdate?: (status: ExportEverythingEverywhereAllAtOnceStatus) => void,
+  onStatusUpdate?: (...args: ExportEverythingEverywhereAllAtOnceStatus) => void,
+  openSupportRequest?: boolean,
 ) {
   const zip = new JSZip();
 
@@ -704,10 +711,56 @@ export async function exportEverythingEverywhereAllAtOnce(
     },
   );
 
-  if (exportedFilePath) {
-    onStatusUpdate?.('done');
+  if (openSupportRequest) {
+    if (exportedFilePath) {
+      onStatusUpdate?.('upload');
+
+      let everythingEverywhereAllAtOnceExportDownloadURL: string | undefined;
+      try {
+        everythingEverywhereAllAtOnceExportDownloadURL =
+          await getRenderHostInstance().flipperServer.exec(
+            'intern-cloud-upload',
+            exportedFilePath,
+          );
+      } catch (e) {
+        console.error(
+          'exportEverythingEverywhereAllAtOnce -> failed to upload export to intern',
+          exportedFilePath,
+        );
+        notification.warn({
+          message: 'Failed to upload debug data',
+          description: `Flipper failed to upload debug export (${exportedFilePath}) automatically. Please, attach it to the support request manually in the comments after it is created.`,
+          duration: null,
+        });
+      }
+
+      onStatusUpdate?.('support');
+      try {
+        await openSupportRequestForm(store.getState(), {
+          everythingEverywhereAllAtOnceExportDownloadURL,
+        });
+        onStatusUpdate?.('done');
+      } catch (e) {
+        console.error(
+          'exportEverythingEverywhereAllAtOnce -> failed to create a support request',
+          e,
+        );
+        onStatusUpdate?.('error', getStringFromErrorLike(e));
+      }
+    } else {
+      notification.warn({
+        message: 'Export cancelled',
+        description: `Exporting Flipper debug data was cancelled. Flipper team will not be able to help you without this data. Please, restart the export.`,
+        duration: null,
+      });
+      onStatusUpdate?.('cancelled');
+    }
   } else {
-    onStatusUpdate?.('cancelled');
+    if (exportedFilePath) {
+      onStatusUpdate?.('done');
+    } else {
+      onStatusUpdate?.('cancelled');
+    }
   }
 }
 
