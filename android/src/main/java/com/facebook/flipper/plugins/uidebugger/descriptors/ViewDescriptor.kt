@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.widget.NestedScrollView
+import androidx.viewpager.widget.ViewPager
 import com.facebook.flipper.plugins.uidebugger.common.*
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
@@ -35,13 +36,18 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
   override fun onGetBounds(node: View): Bounds {
 
+    if (node.parent is ViewPager) {
+      // override
+      return Bounds(0, 0, node.width, node.height)
+    }
+
     var offsetX = 0
     var offsetY = 0
     if (node.parent is NestedScrollView) {
       /**
        * when a node is a child of nested scroll view android does not adjust the left/ top as the
        * view scrolls. This seems to be unique to nested scroll view so we have this trick to find
-       * its
+       * its actual position.
        */
       val localVisible = Rect()
       node.getLocalVisibleRect(localVisible)
