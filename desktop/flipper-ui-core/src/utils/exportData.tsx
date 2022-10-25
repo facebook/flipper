@@ -612,6 +612,31 @@ export async function startLogsExport() {
   await getRenderHostInstance().exportFile?.(serializedLogs);
 }
 
+export async function exportEverythingEverywhereAllAtOnce(
+  store: MiddlewareAPI,
+) {
+  // TODO: Show a progress dialog
+  // TODO: Pack all files in a single archive
+
+  // Step 1: Export Flipper logs
+  await startLogsExport();
+
+  // Step 2: Export device logs
+  // TODO: Implement me
+
+  // Step 3: Export Flipper State
+  // TODO: Export all plugins automatically
+  const plugins = await selectPlugins();
+  if (plugins === false) {
+    return; // cancelled
+  }
+  // TODO: no need to put this in the store,
+  // need to be cleaned up later in combination with SupportForm
+  store.dispatch(selectedPlugins(plugins));
+  const {serializedString} = await exportStore(store);
+  await getRenderHostInstance().exportFile?.(serializedString);
+}
+
 export async function startFileExport(dispatch: Store['dispatch']) {
   const file = await getRenderHostInstance().showSaveDialog?.({
     title: 'FlipperExport',

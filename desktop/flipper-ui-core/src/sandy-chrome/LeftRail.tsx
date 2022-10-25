@@ -59,6 +59,7 @@ import constants from '../fb-stubs/constants';
 import {
   canFileExport,
   canOpenDialog,
+  exportEverythingEverywhereAllAtOnce,
   showOpenDialog,
   startFileExport,
   startLinkExport,
@@ -433,10 +434,12 @@ function DebugLogsButton({
 }
 
 function ExportEverythingEverywhereAllAtOnceButton() {
-  const startLogsExportTracked = useTrackedCallback(
+  const store = useStore();
+
+  const exportEverythingEverywhereAllAtOnceTracked = useTrackedCallback(
     'Debug data export',
-    startLogsExport,
-    [],
+    () => exportEverythingEverywhereAllAtOnce(store),
+    [store],
   );
 
   return (
@@ -444,7 +447,7 @@ function ExportEverythingEverywhereAllAtOnceButton() {
       icon={<BugOutlined />}
       title="Export Flipper debug data"
       onClick={() => {
-        startLogsExportTracked();
+        exportEverythingEverywhereAllAtOnceTracked();
       }}
       small
     />
