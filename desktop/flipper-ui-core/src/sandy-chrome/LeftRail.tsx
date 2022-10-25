@@ -515,14 +515,16 @@ function ExportEverythingEverywhereAllAtOnceButton() {
         footer={null}>
         {statusMessage}
       </Modal>
-      <LeftRailButton
-        icon={<BugOutlined />}
-        title="Export Flipper debug data"
-        onClick={() => {
-          exportEverythingEverywhereAllAtOnceTracked();
-        }}
-        small
-      />
+      <NUX title="Press this button if you have issues with Flipper. It will collect Flipper debug data that you can send to the Flipper team to get help.">
+        <LeftRailButton
+          icon={<BugOutlined />}
+          title="Export Flipper debug data"
+          onClick={() => {
+            exportEverythingEverywhereAllAtOnceTracked();
+          }}
+          small
+        />
+      </NUX>
     </>
   );
 }
