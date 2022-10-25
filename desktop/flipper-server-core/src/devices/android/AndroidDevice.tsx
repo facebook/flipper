@@ -7,10 +7,10 @@
  * @format
  */
 
-import adb, {Client as ADBClient, PullTransfer} from 'adbkit';
+import adb, {util, Client as ADBClient, PullTransfer} from 'adbkit';
 import {Reader} from 'adbkit-logcat';
 import {createWriteStream} from 'fs';
-import type {DeviceType} from 'flipper-common';
+import type {DeviceDebugData, DeviceType} from 'flipper-common';
 import {spawn} from 'child_process';
 import {dirname, join} from 'path';
 import {DeviceSpec} from 'flipper-common';
@@ -18,10 +18,15 @@ import {ServerDevice} from '../ServerDevice';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {AndroidCrashWatcher} from './AndroidCrashUtils';
 import {AndroidLogListener} from './AndroidLogListener';
+import {DebuggableDevice} from '../DebuggableDevice';
+import {executeCommandAsApp} from './androidContainerUtility';
 
 const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 
-export default class AndroidDevice extends ServerDevice {
+export default class AndroidDevice
+  extends ServerDevice
+  implements DebuggableDevice
+{
   adb: ADBClient;
   pidAppMapping: {[key: number]: string} = {};
   private recordingProcess?: Promise<string>;
@@ -278,6 +283,53 @@ export default class AndroidDevice extends ServerDevice {
   async installApp(apkPath: string) {
     console.log(`Installing app with adb ${apkPath}`);
     await this.adb.install(this.serial, apkPath);
+  }
+
+  async readFlipperFolderForAllApps(): Promise<DeviceDebugData[]> {
+    console.debug(
+      'AndroidDevice.readFlipperFolderForAllApps',
+      this.info.serial,
+    );
+    const output = await this.adb
+      .shell(this.info.serial, 'pm list packages -3 -e')
+      .then(util.readAll)
+      .then((buffer) => buffer.toString());
+
+    const appIds = output
+      .split('\n')
+      // Last each appId has \n at the end. The last appId also has it.
+      // As a result, there is an "" (empty string) item at the end after the split.
+      .filter((appId) => appId !== '')
+      // Cut off the "package:" prefix
+      .map((appIdRaw) => appIdRaw.substring('package:'.length));
+    console.debug(
+      'AndroidDevice.readFlipperFolderForAllApps -> found apps',
+      this.info.serial,
+      appIds,
+    );
+
+    const appsCommandsResults = await Promise.all(
+      appIds.map(async (appId): Promise<DeviceDebugData> => {
+        const singleAppCommandResults = await Promise.all([
+          executeCommandAsApp(
+            this.adb,
+            this.info.serial,
+            appId,
+            `ls -al /data/data/${appId}/files/sonar`,
+          ).then((output): DeviceDebugData['data'][0] => ({
+            command: `ls -al /data/data/${appId}/files/sonar`,
+            result: output,
+          })),
+        ]);
+        return {
+          serial: this.info.serial,
+          appId,
+          data: singleAppCommandResults,
+        };
+      }),
+    );
+
+    return appsCommandsResults;
   }
 }
 

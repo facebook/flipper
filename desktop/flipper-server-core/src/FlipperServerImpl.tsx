@@ -53,6 +53,7 @@ import {initializeAdbClient} from './devices/android/adbClient';
 import {assertNotNull} from './comms/Utilities';
 import {mkdirp} from 'fs-extra';
 import {flipperDataFolder, flipperSettingsFolder} from './utils/paths';
+import {DebuggableDevice} from './devices/DebuggableDevice';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
@@ -419,10 +420,7 @@ export class FlipperServerImpl implements FlipperServer {
     'device-clear-logs': async (serial) => this.getDevice(serial).clearLogs(),
     'device-navigate': async (serial, loc) =>
       this.getDevice(serial).navigateToLocation(loc),
-    'fetch-debug-data': async () => {
-      // TODO: Implement fetching client logs from all devices
-      return [];
-    },
+    'fetch-debug-data': () => this.fetchDebugLogs(),
     'metro-command': async (serial: string, command: string) => {
       const device = this.getDevice(serial);
       if (!(device instanceof MetroDevice)) {
@@ -602,6 +600,17 @@ export class FlipperServerImpl implements FlipperServer {
 
   getDevices(): ServerDevice[] {
     return Array.from(this.devices.values());
+  }
+
+  private async fetchDebugLogs() {
+    const debugDataForEachDevice = await Promise.all(
+      [...this.devices.values()]
+        .filter((device) => device.info.os === 'Android')
+        .map((device) =>
+          (device as unknown as DebuggableDevice).readFlipperFolderForAllApps(),
+        ),
+    );
+    return debugDataForEachDevice.flat();
   }
 
   public async close() {

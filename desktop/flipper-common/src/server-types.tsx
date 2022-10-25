@@ -165,7 +165,7 @@ export interface FSStatsLike {
 export interface DeviceDebugData {
   serial: string;
   appId: string;
-  files: {path: string; data: string}[];
+  data: ({path: string; data: string} | {command: string; result: string})[];
 }
 
 export type FlipperServerCommands = {

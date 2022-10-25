@@ -120,7 +120,7 @@ function _pull(
 }
 
 // Keep this method private since it relies on pre-validated arguments
-function executeCommandAsApp(
+export function executeCommandAsApp(
   client: Client,
   deviceId: string,
   app: string,
