@@ -18,6 +18,7 @@ import {
   SettingOutlined,
   MedicineBoxOutlined,
   RocketOutlined,
+  BugOutlined,
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
@@ -192,6 +193,7 @@ export const LeftRail = withTrackingScope(function LeftRail({
           <SetupDoctorButton />
           <RightSidebarToggleButton />
           <LeftSidebarToggleButton />
+          <ExportEverythingEverywhereAllAtOnceButton />
           <ExtrasMenu />
           {config.showLogin && <LoginButton />}
         </Layout.Container>
@@ -426,6 +428,25 @@ function DebugLogsButton({
       onClick={() => {
         setToplevelSelection('flipperlogs');
       }}
+    />
+  );
+}
+
+function ExportEverythingEverywhereAllAtOnceButton() {
+  const startLogsExportTracked = useTrackedCallback(
+    'Debug data export',
+    startLogsExport,
+    [],
+  );
+
+  return (
+    <LeftRailButton
+      icon={<BugOutlined />}
+      title="Export Flipper debug data"
+      onClick={() => {
+        startLogsExportTracked();
+      }}
+      small
     />
   );
 }
