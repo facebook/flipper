@@ -419,6 +419,10 @@ export class FlipperServerImpl implements FlipperServer {
     'device-clear-logs': async (serial) => this.getDevice(serial).clearLogs(),
     'device-navigate': async (serial, loc) =>
       this.getDevice(serial).navigateToLocation(loc),
+    'fetch-debug-data': async () => {
+      // TODO: Implement fetching client logs from all devices
+      return [];
+    },
     'metro-command': async (serial: string, command: string) => {
       const device = this.getDevice(serial);
       if (!(device instanceof MetroDevice)) {

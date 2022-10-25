@@ -63,7 +63,7 @@ import {
   showOpenDialog,
   startFileExport,
   startLinkExport,
-  startLogsExport,
+  startFlipperLogsExport,
 } from '../utils/exportData';
 import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
@@ -229,7 +229,7 @@ function ExtrasMenu() {
   );
   const startLogsExportTracked = useTrackedCallback(
     'Logs export',
-    startLogsExport,
+    startFlipperLogsExport,
     [],
   );
   const startLinkExportTracked = useTrackedCallback(

@@ -605,11 +605,19 @@ export function canFileExport() {
   return !!getRenderHostInstance().showSaveDialog;
 }
 
-export async function startLogsExport() {
+export async function startFlipperLogsExport() {
   const serializedLogs = exportLogs
     .map((item) => JSON.stringify(item))
     .join('\n');
   await getRenderHostInstance().exportFile?.(serializedLogs);
+}
+
+export async function startClientLogsExport() {
+  const _clientLogs = await getRenderHostInstance().flipperServer.exec(
+    'fetch-debug-data',
+  );
+
+  // TODO: Save all log files
 }
 
 export async function exportEverythingEverywhereAllAtOnce(
@@ -619,10 +627,10 @@ export async function exportEverythingEverywhereAllAtOnce(
   // TODO: Pack all files in a single archive
 
   // Step 1: Export Flipper logs
-  await startLogsExport();
+  await startFlipperLogsExport();
 
   // Step 2: Export device logs
-  // TODO: Implement me
+  await startClientLogsExport();
 
   // Step 3: Export Flipper State
   // TODO: Export all plugins automatically

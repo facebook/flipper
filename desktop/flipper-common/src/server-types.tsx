@@ -162,6 +162,12 @@ export interface FSStatsLike {
   birthtimeMs: number;
 }
 
+export interface DeviceDebugData {
+  serial: string;
+  appId: string;
+  files: {path: string; data: string}[];
+}
+
 export type FlipperServerCommands = {
   'get-server-state': () => Promise<{
     state: FlipperServerState;
@@ -234,6 +240,7 @@ export type FlipperServerCommands = {
   ) => Promise<boolean>;
   'device-clear-logs': (serial: string) => Promise<void>;
   'device-navigate': (serial: string, location: string) => Promise<void>;
+  'fetch-debug-data': () => Promise<DeviceDebugData[]>;
   'metro-command': (serial: string, command: string) => Promise<void>;
   'client-list': () => Promise<ClientDescription[]>;
   'client-find': (clientId: string) => Promise<ClientDescription | undefined>;
