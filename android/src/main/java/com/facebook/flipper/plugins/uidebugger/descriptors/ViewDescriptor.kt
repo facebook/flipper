@@ -20,9 +20,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import androidx.core.widget.NestedScrollView
+import com.facebook.flipper.plugins.uidebugger.common.*
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
 import com.facebook.flipper.plugins.uidebugger.model.*
+import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.util.ResourcesUtil
 import java.lang.reflect.Field
 
@@ -31,11 +34,24 @@ object ViewDescriptor : ChainedDescriptor<View>() {
   override fun onGetName(node: View): String = node.javaClass.simpleName
 
   override fun onGetBounds(node: View): Bounds {
-    val localVisible = Rect()
-    node.getLocalVisibleRect(localVisible)
+
+    var offsetX = 0
+    var offsetY = 0
+    if (node.parent is NestedScrollView) {
+      /**
+       * when a node is a child of nested scroll view android does not adjust the left/ top as the
+       * view scrolls. This seems to be unique to nested scroll view so we have this trick to find
+       * its
+       */
+      val localVisible = Rect()
+      node.getLocalVisibleRect(localVisible)
+      offsetX = localVisible.left
+      offsetY = localVisible.top
+    }
+
     return Bounds(
-        node.left - localVisible.left + node.translationX.toInt(),
-        node.top - localVisible.top + node.translationY.toInt(),
+        node.left + node.translationX.toInt() - offsetX,
+        node.top + node.translationY.toInt() - offsetY,
         node.width,
         node.height)
   }
@@ -74,8 +90,9 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     props["localVisibleRect"] =
         InspectableObject(
             mapOf(
-                "position" to InspectableValue.Coordinate(Coordinate(localVisible.left, node.top)),
-                "size" to InspectableValue.Size(Size(node.width, node.height))),
+                "position" to
+                    InspectableValue.Coordinate(Coordinate(localVisible.left, localVisible.top)),
+                "size" to InspectableValue.Size(Size(localVisible.width(), localVisible.height()))),
         )
 
     props["rotation"] =
