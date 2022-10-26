@@ -1,3 +1,10 @@
+# 0.172.0 (26/10/2022)
+
+ * [D40394563](https://github.com/facebook/flipper/search?q=D40394563&type=Commits)
+ * [D40552235](https://github.com/facebook/flipper/search?q=D40552235&type=Commits) -  Add a universal debug export button
+ * [D40715523](https://github.com/facebook/flipper/search?q=D40715523&type=Commits) -  Stop doing eval to load server add-ons
+
+
 # 0.171.0 (17/10/2022)
 
  * [D40338164](https://github.com/facebook/flipper/search?q=D40338164&type=Commits) -  Better error message for EADDRINUSE
