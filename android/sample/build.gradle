@@ -5,6 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.19"
+    }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.protobuf'
@@ -41,7 +50,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
-
 
 dependencies {
     // Kotlin
