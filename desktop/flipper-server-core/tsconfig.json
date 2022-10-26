@@ -8,7 +8,8 @@
       "../types/JSONStream",
       "../types/adbkit",
       "../types/openssl-wrapper",
-      "../types/adbkit-logcat"
+      "../types/adbkit-logcat",
+      "../types/flipperGlobals"
     ]
   },
   "references": [
