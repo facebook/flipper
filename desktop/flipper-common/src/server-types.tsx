@@ -176,6 +176,10 @@ export interface DeviceDebugData {
   data: (DeviceDebugFile | DeviceDebugCommand)[];
 }
 
+export interface PluginSource {
+  js: string;
+  css?: string;
+}
 export type FlipperServerCommands = {
   'get-server-state': () => Promise<{
     state: FlipperServerState;
@@ -275,7 +279,7 @@ export type FlipperServerCommands = {
   'plugin-start-download': (
     plugin: DownloadablePluginDetails,
   ) => Promise<InstalledPluginDetails>;
-  'plugin-source': (path: string) => Promise<string>;
+  'plugin-source': (path: string) => Promise<PluginSource>;
   'plugins-install-from-marketplace': (
     name: string,
   ) => Promise<InstalledPluginDetails>;

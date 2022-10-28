@@ -142,7 +142,7 @@ export interface RenderHost {
   GK(gatekeeper: string): boolean;
   flipperServer: FlipperServer;
   serverConfig: FlipperServerConfig;
-  requirePlugin(path: string): Promise<any>;
+  requirePlugin(path: string): Promise<{plugin: any; css?: string}>;
   getStaticResourceUrl(relativePath: string): string;
   // given the requested icon and proposed public url of the icon, rewrite it to a local icon if needed
   getLocalIconUrl?(icon: Icon, publicUrl: string): string;

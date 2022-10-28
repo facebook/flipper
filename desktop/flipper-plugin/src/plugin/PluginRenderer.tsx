@@ -28,9 +28,18 @@ export const SandyPluginRenderer = memo(({plugin}: Props) => {
     throw new Error('Expected plugin, got ' + plugin);
   }
   useEffect(() => {
+    const style = document.createElement('style');
+    if (plugin.definition.css) {
+      style.innerText = plugin.definition.css;
+      document.head.appendChild(style);
+    }
+
     plugin.activate();
     return () => {
       plugin.deactivate();
+      if (plugin.definition.css) {
+        document.head.removeChild(style);
+      }
     };
   }, [plugin]);
 

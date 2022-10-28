@@ -189,8 +189,24 @@ export async function initializeElectron(
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },
     flipperServer,
-    async requirePlugin(path) {
-      return electronRequire(path);
+    async requirePlugin(path): Promise<{plugin: any; css?: string}> {
+      const plugin = electronRequire(path);
+      /**
+       * Check if the plugin includes a bundled css. If so,
+       * load its content too.
+       */
+      const idx = path.lastIndexOf('.');
+      const cssPath = path.substring(0, idx < 0 ? path.length : idx) + '.css';
+      try {
+        await fs.promises.access(cssPath);
+
+        const buffer = await fs.promises.readFile(cssPath, {encoding: 'utf-8'});
+        const css = buffer.toString();
+
+        return {plugin, css};
+      } catch (e) {}
+
+      return {plugin};
     },
     getStaticResourceUrl(relativePath): string {
       return (

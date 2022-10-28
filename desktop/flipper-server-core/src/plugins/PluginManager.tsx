@@ -17,9 +17,10 @@ import {
   ExecuteMessage,
   FlipperServerForServerAddOn,
   InstalledPluginDetails,
+  PluginSource,
   ServerAddOnStartDetails,
 } from 'flipper-common';
-import {getStaticPath} from '../utils/pathUtils';
+
 import {loadDynamicPlugins} from './loadDynamicPlugins';
 import {
   cleanupOldInstalledPluginVersions,
@@ -72,8 +73,27 @@ export class PluginManager {
   installPluginFromFile = installPluginFromFile;
   installPluginFromNpm = installPluginFromNpm;
 
-  async loadSource(path: string) {
-    return await fs.readFile(path, 'utf8');
+  async loadSource(path: string): Promise<PluginSource> {
+    const js = await fs.readFile(path, 'utf8');
+
+    /**
+     * Check if the plugin includes a bundled css. If so,
+     * load its content too.
+     */
+    let css = undefined;
+    const idx = path.lastIndexOf('.');
+    const cssPath = path.substring(0, idx < 0 ? path.length : idx) + '.css';
+    try {
+      await fs.promises.access(cssPath);
+
+      const buffer = await fs.promises.readFile(cssPath, {encoding: 'utf-8'});
+      css = buffer.toString();
+    } catch (e) {}
+
+    return {
+      js,
+      css,
+    };
   }
 
   async loadMarketplacePlugins() {

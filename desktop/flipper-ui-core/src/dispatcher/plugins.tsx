@@ -131,19 +131,24 @@ export const requirePlugin = (pluginDetails: ActivatablePluginDetails) =>
 export const requirePluginInternal = async (
   pluginDetails: ActivatablePluginDetails,
 ): Promise<PluginDefinition> => {
-  let plugin = await getRenderHostInstance().requirePlugin(
+  const requiredPlugin = await getRenderHostInstance().requirePlugin(
     (pluginDetails as InstalledPluginDetails).entry,
   );
-  if (!plugin) {
+  if (!requiredPlugin || !requiredPlugin.plugin) {
     throw new Error(
       `Failed to obtain plugin source for: ${pluginDetails.name}`,
     );
   }
   if (isSandyPlugin(pluginDetails)) {
     // Sandy plugin
-    return new _SandyPluginDefinition(pluginDetails, plugin);
+    return new _SandyPluginDefinition(
+      pluginDetails,
+      requiredPlugin.plugin,
+      requiredPlugin.css,
+    );
   } else {
-    // classic plugin
+    // Classic plugin
+    let plugin = requiredPlugin.plugin;
     if (plugin.default) {
       plugin = plugin.default;
     }

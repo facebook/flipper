@@ -190,7 +190,7 @@ function createStubRenderHost(): RenderHost {
     },
     flipperServer: TestUtils.createFlipperServerMock(),
     async requirePlugin(path: string) {
-      return require(path);
+      return {plugin: require(path)};
     },
     getStaticResourceUrl(relativePath): string {
       return 'file://' + resolve(rootPath, 'static', relativePath);

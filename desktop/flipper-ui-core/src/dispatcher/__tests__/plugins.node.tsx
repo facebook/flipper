@@ -79,6 +79,7 @@ test('requirePluginInternal loads plugin', async () => {
   expect(plugin).not.toBeNull();
   expect(Object.keys(plugin as any)).toEqual([
     'id',
+    'css',
     'details',
     'isDevicePlugin',
     'module',

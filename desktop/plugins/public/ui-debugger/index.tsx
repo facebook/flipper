@@ -9,6 +9,7 @@
 
 import {PluginClient, createState, createDataSource} from 'flipper-plugin';
 import {Events, Id, PerfStatsEvent, Snapshot, TreeState, UINode} from './types';
+import './node_modules/react-complex-tree/lib/style.css';
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
