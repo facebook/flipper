@@ -56,7 +56,8 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
   override fun getData(node: DebugComponent) = mapOf<String, InspectableObject>()
 
-  override fun getBounds(node: DebugComponent): Bounds = Bounds.fromRect(node.bounds)
+  override fun getBounds(node: DebugComponent): Bounds =
+      Bounds.fromRect(node.boundsInParentDebugComponent)
 
   override fun getTags(node: DebugComponent): Set<String> = setOf(BaseTags.Declarative, LithoTag)
 
