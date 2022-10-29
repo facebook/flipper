@@ -137,6 +137,7 @@ function createStubRenderHost(): RenderHost {
       launcherEnabled: false,
       launcherMsg: null,
       screenCapturePath: `/dev/null`,
+      updaterEnabled: true,
       suppressPluginUpdateNotifications: false,
     },
     settings: {

@@ -85,6 +85,7 @@ export default function UpdateIndicator() {
       }
     } else if (
       version &&
+      config.updaterEnabled &&
       !config.suppressPluginUpdateNotifications &&
       isProduction()
     ) {
