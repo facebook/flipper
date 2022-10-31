@@ -17,7 +17,7 @@ import {
 import {
   createFlipperServerWithSocket,
   FlipperServerState,
-} from 'flipper-frontend-core';
+} from 'flipper-server-client';
 import {
   FlipperServerImpl,
   getEnvironmentInfo,
@@ -89,7 +89,7 @@ async function getExternalServer(url: string) {
   };
   const socket = new ReconnectingWebSocket(url, [], options);
   const server = await createFlipperServerWithSocket(
-    socket,
+    socket as WebSocket,
     (_state: FlipperServerState) => {},
   );
   return server;

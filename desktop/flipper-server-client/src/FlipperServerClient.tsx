@@ -25,6 +25,7 @@ export enum FlipperServerState {
   CONNECTED,
   DISCONNECTED,
 }
+export type {FlipperServer};
 
 export function createFlipperServer(
   host: string,
@@ -32,11 +33,11 @@ export function createFlipperServer(
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
   const socket = new ReconnectingWebSocket(`ws://${host}:${port}`);
-  return createFlipperServerWithSocket(socket, onStateChange);
+  return createFlipperServerWithSocket(socket as WebSocket, onStateChange);
 }
 
 export function createFlipperServerWithSocket(
-  socket: ReconnectingWebSocket,
+  socket: WebSocket,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
   onStateChange(FlipperServerState.CONNECTING);

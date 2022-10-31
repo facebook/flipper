@@ -183,6 +183,7 @@
       "flipper-frontend-core",
       "flipper-plugin",
       "flipper-plugin-core",
+      "flipper-server-client",
       "flipper-server-companion",
       "flipper-server-core",
       "flipper-ui-core",

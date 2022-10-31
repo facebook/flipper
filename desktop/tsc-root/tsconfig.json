@@ -25,6 +25,9 @@
       "path": "../flipper-server"
     },
     {
+      "path": "../flipper-server-client"
+    },
+    {
       "path": "../flipper-server-companion"
     },
     {

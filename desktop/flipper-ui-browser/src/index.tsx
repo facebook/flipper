@@ -9,7 +9,7 @@
 
 import {getLogger, Logger, setLoggerInstance} from 'flipper-common';
 import {initializeRenderHost} from './initializeRenderHost';
-import {createFlipperServer, FlipperServerState} from 'flipper-frontend-core';
+import {createFlipperServer, FlipperServerState} from 'flipper-server-client';
 
 document.getElementById('root')!.innerText = 'flipper-ui-browser started';
 

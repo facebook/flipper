@@ -14,6 +14,9 @@
       "path": "../flipper-frontend-core"
     },
     {
+      "path": "../flipper-server-client"
+    },
+    {
       "path": "../flipper-ui-core"
     }
   ]

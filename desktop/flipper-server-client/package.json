@@ -1,8 +1,7 @@
 {
-  "name": "flipper-ui-browser",
-  "private": true,
+  "name": "flipper-server-client",
   "version": "0.0.0",
-  "description": "Flipper's UI, packaged for the browser",
+  "description": "Lightweight abstraction to connect to Flipper Server and provide an API to interact with it",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
   "flipperBundlerEntry": "src",
@@ -10,18 +9,9 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "reconnecting-websocket": "^4.4.0"
-  },
-  "devDependencies": {
     "eventemitter3": "^4.0.7",
     "flipper-common": "0.0.0",
-    "flipper-frontend-core": "0.0.0",
-    "flipper-server-client": "0.0.0",
-    "flipper-ui-core": "0.0.0",
-    "invariant": "^2.2.4",
-    "metro-runtime": "^0.70.2",
-    "pretty-format": "^27.5.0",
-    "react-refresh": "^0.10.0"
+    "reconnecting-websocket": "^4.4.0"
   },
   "peerDependencies": {},
   "scripts": {
