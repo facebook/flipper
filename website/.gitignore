@@ -5,7 +5,6 @@ lib/core/MetadataBlog.js
 static/schemas
 website/translated_docs
 build/
-website/yarn.lock
 website/node_modules
 flipper-themes
 static/css/style-guide.css
