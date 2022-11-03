@@ -207,6 +207,7 @@ export interface FlipperLib {
 interface InternAPI {
   graphGet: FlipperServerCommands['intern-graph-get'];
   graphPost: FlipperServerCommands['intern-graph-post'];
+  isLoggedIn: FlipperServerCommands['is-logged-in'];
 }
 
 export let flipperLibInstance: FlipperLib | undefined;

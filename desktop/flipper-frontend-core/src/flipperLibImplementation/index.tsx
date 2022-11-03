@@ -51,6 +51,7 @@ export function baseFlipperLibImplementation(
         renderHost.flipperServer.exec('intern-graph-get', ...args),
       graphPost: (...args) =>
         renderHost.flipperServer.exec('intern-graph-post', ...args),
+      isLoggedIn: () => renderHost.flipperServer.exec('is-logged-in'),
     },
     remoteServerContext: {
       childProcess: {
