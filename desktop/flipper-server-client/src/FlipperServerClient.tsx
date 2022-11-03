@@ -84,50 +84,57 @@ export function createFlipperServerWithSocket(
     });
 
     socket.addEventListener('message', ({data}) => {
-      const {event, payload} = JSON.parse(
-        data.toString(),
-      ) as ServerWebSocketMessage;
+      try {
+        const {event, payload} = JSON.parse(
+          data.toString(),
+        ) as ServerWebSocketMessage;
 
-      switch (event) {
-        case 'exec-response': {
-          console.debug('flipper-server: exec <<<', payload);
-          const entry = pendingRequests.get(payload.id);
-          if (!entry) {
-            console.warn(`Unknown request id `, payload.id);
-          } else {
-            pendingRequests.delete(payload.id);
-            clearTimeout(entry.timeout);
-            entry.resolve(payload.data);
+        switch (event) {
+          case 'exec-response': {
+            console.debug('flipper-server: exec <<<', payload);
+            const entry = pendingRequests.get(payload.id);
+            if (!entry) {
+              console.warn(`Unknown request id `, payload.id);
+            } else {
+              pendingRequests.delete(payload.id);
+              clearTimeout(entry.timeout);
+              entry.resolve(payload.data);
+            }
+            break;
           }
-          break;
-        }
-        case 'exec-response-error': {
-          // TODO: Deserialize error
-          console.debug(
-            'flipper-server: exec <<< [SERVER ERROR]',
-            payload.id,
-            payload.data,
-          );
-          const entry = pendingRequests.get(payload.id);
-          if (!entry) {
-            console.warn(`flipper-server: Unknown request id `, payload.id);
-          } else {
-            pendingRequests.delete(payload.id);
-            clearTimeout(entry.timeout);
-            entry.reject(payload.data);
+          case 'exec-response-error': {
+            // TODO: Deserialize error
+            console.debug(
+              'flipper-server: exec <<< [SERVER ERROR]',
+              payload.id,
+              payload.data,
+            );
+            const entry = pendingRequests.get(payload.id);
+            if (!entry) {
+              console.warn(`flipper-server: Unknown request id `, payload.id);
+            } else {
+              pendingRequests.delete(payload.id);
+              clearTimeout(entry.timeout);
+              entry.reject(payload.data);
+            }
+            break;
           }
-          break;
+          case 'server-event': {
+            eventEmitter.emit(payload.event, payload.data);
+            break;
+          }
+          default: {
+            console.warn(
+              'flipper-server: received unknown message type',
+              data.toString(),
+            );
+          }
         }
-        case 'server-event': {
-          eventEmitter.emit(payload.event, payload.data);
-          break;
-        }
-        default: {
-          console.warn(
-            'flipper-server: received unknown message type',
-            data.toString(),
-          );
-        }
+      } catch (e) {
+        console.warn(
+          'flipper-server: failed to process message',
+          data.toString(),
+        );
       }
     });
 
