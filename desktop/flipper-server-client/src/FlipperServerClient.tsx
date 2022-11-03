@@ -25,7 +25,7 @@ export enum FlipperServerState {
   CONNECTED,
   DISCONNECTED,
 }
-export type {FlipperServer};
+export type {FlipperServer, FlipperServerCommands, FlipperServerExecOptions};
 
 export function createFlipperServer(
   host: string,
@@ -43,11 +43,12 @@ export function createFlipperServerWithSocket(
   onStateChange(FlipperServerState.CONNECTING);
 
   return new Promise<FlipperServer>((resolve, reject) => {
-    let initialConnectionTimeout: number | undefined = window.setTimeout(() => {
-      reject(
-        new Error('Failed to connect to flipper-server in a timely manner'),
-      );
-    }, CONNECTION_TIMEOUT);
+    let initialConnectionTimeout: ReturnType<typeof setTimeout> | undefined =
+      setTimeout(() => {
+        reject(
+          new Error('Failed to connect to flipper-server in a timely manner'),
+        );
+      }, CONNECTION_TIMEOUT);
 
     const eventEmitter = new EventEmitter();
 
