@@ -310,11 +310,11 @@ export default class AndroidDevice
 
     const appsCommandsResults = await Promise.all(
       appIds.map(async (appId): Promise<DeviceDebugData | undefined> => {
-        const sonarDirFileNames = await executeCommandAsApp(
+        const sonarDirFilePaths = await executeCommandAsApp(
           this.adb,
           this.info.serial,
           appId,
-          `find /data/data/${appId}/files/sonar -type f -printf "%f\n"`,
+          `find /data/data/${appId}/files/sonar -type f`,
         )
           .then((output) => {
             if (output.includes('No such file or directory')) {
@@ -343,14 +343,13 @@ export default class AndroidDevice
             );
           });
 
-        if (!sonarDirFileNames) {
+        if (!sonarDirFilePaths) {
           return;
         }
 
-        const sonarDirContentPromises = sonarDirFileNames.map(
-          async (fileName) => {
-            const filePath = `/data/data/${appId}/files/sonar/${fileName}`;
-            if (fileName.endsWith('pem')) {
+        const sonarDirContentPromises = sonarDirFilePaths.map(
+          async (filePath) => {
+            if (filePath.endsWith('pem')) {
               return {
                 path: filePath,
                 data: '===SECURE_CONTENT===',
