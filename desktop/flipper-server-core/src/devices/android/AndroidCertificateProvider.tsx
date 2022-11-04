@@ -27,12 +27,24 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     appDirectory: string,
     csr: string,
   ): Promise<string> {
+    console.debug(
+      'AndroidCertificateProvider.getTargetDeviceId',
+      appName,
+      appDirectory,
+      csr,
+    );
     const devicesInAdb = await this.adb.listDevices();
     if (devicesInAdb.length === 0) {
       throw new Error('No Android devices found');
     }
     const deviceMatchList = devicesInAdb.map(async (device) => {
       try {
+        console.debug(
+          'AndroidCertificateProvider.getTargetDeviceId -> matching device',
+          device.id,
+          appName,
+          appDirectory,
+        );
         const result = await this.androidDeviceHasMatchingCSR(
           appDirectory,
           device.id,
@@ -112,6 +124,14 @@ export default class AndroidCertificateProvider extends CertificateProvider {
       deviceCsr.toString(),
       csr,
     ].map((s) => this.santitizeString(s));
+    console.debug(
+      'AndroidCertificateProvider.androidDeviceHasMatchingCSR',
+      directory,
+      deviceId,
+      processName,
+      sanitizedDeviceCsr,
+      sanitizedClientCsr,
+    );
     const isMatch = sanitizedDeviceCsr === sanitizedClientCsr;
     return {isMatch: isMatch, foundCsr: sanitizedDeviceCsr};
   }
