@@ -165,7 +165,12 @@ export function createFlipperServerWithSocket(
         if (connected) {
           const id = ++requestId;
           return new Promise<any>((resolve, reject) => {
-            console.debug('flipper-server: exec >>>', id, command, args);
+            console.debug(
+              'flipper-server: exec >>>',
+              id,
+              command,
+              command === 'intern-upload-scribe-logs' ? undefined : args,
+            );
 
             pendingRequests.set(id, {
               resolve,
