@@ -11,6 +11,7 @@ import React from 'react';
 import {Col, Row} from 'antd';
 import {UINode} from '../../../types';
 import {styled} from 'flipper-plugin';
+import {CodeInspector} from './fb-stubs/CodeInspector';
 
 type Props = {
   node: UINode;
@@ -35,6 +36,7 @@ export const IdentityInspector: React.FC<Props> = ({node}) => {
         </Col>
         <Col span="12">{node.id}</Col>
       </Row>
+      <CodeInspector name={node.name} tags={node.tags} />
     </IdentityContainer>
   );
 };
