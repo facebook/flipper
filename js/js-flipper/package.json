@@ -1,7 +1,7 @@
 {
   "name": "js-flipper",
   "title": "JS Flipper Bindings for Web-Socket based clients",
-  "version": "0.173.0",
+  "version": "0.174.0",
   "main": "lib/index.js",
   "browser": {
     "os": false
