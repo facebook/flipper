@@ -12,6 +12,15 @@ import android.os.Build
 import com.facebook.flipper.plugins.uidebugger.model.*
 
 object DrawableDescriptor : ChainedDescriptor<Drawable>() {
+
+  private const val NAMESPACE = "Drawable"
+  private var SectionId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
+  private var AlphaAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "alpha")
+  private var BoundsAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "bounds")
+
   override fun onGetName(node: Drawable): String = node.javaClass.simpleName
 
   override fun onGetBounds(node: Drawable): Bounds =
@@ -19,16 +28,16 @@ object DrawableDescriptor : ChainedDescriptor<Drawable>() {
 
   override fun onGetData(
       node: Drawable,
-      attributeSections: MutableMap<SectionName, InspectableObject>
+      attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      val props = mutableMapOf<String, Inspectable>()
-      props["alpha"] = InspectableValue.Number(node.alpha, true)
+      val props = mutableMapOf<Int, Inspectable>()
+      props[AlphaAttributeId] = InspectableValue.Number(node.alpha)
 
       val bounds = node.bounds
-      props["bounds"] = InspectableValue.Bounds(Bounds.fromRect(bounds))
+      props[BoundsAttributeId] = InspectableValue.Bounds(Bounds.fromRect(bounds))
 
-      attributeSections["Drawable"] = InspectableObject(props.toMap())
+      attributeSections[SectionId] = InspectableObject(props.toMap())
     }
   }
 

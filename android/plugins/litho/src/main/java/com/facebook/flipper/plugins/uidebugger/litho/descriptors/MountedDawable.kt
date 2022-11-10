@@ -11,6 +11,7 @@ import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.descriptors.*
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 
 /** a drawable or view that is mounted, along with the correct descriptor */
 class MountedObject(val obj: Any, val descriptor: NodeDescriptor<Any>)
@@ -37,7 +38,7 @@ object MountedObjectDescriptor : NodeDescriptor<MountedObject> {
 
   override fun getActiveChild(node: MountedObject): Any? = node.descriptor.getActiveChild(node.obj)
 
-  override fun getData(node: MountedObject): Map<SectionName, InspectableObject> =
+  override fun getData(node: MountedObject): Map<MetadataId, InspectableObject> =
       node.descriptor.getData(node.obj)
 
   override fun getTags(node: MountedObject): Set<String> = node.descriptor.getTags(node.obj)

@@ -8,7 +8,13 @@
  */
 
 import React from 'react';
-import {Inspectable, InspectableObject, UINode} from '../../../types';
+import {
+  Inspectable,
+  InspectableObject,
+  Metadata,
+  MetadataId,
+  UINode,
+} from '../../../types';
 import {DataInspector, Panel, styled} from 'flipper-plugin';
 import {Checkbox, Col, Row} from 'antd';
 import {displayableName} from '../utilities/displayableName';
@@ -73,21 +79,25 @@ const NamedAttributeInspector: React.FC<NamedAttributeInspectorProps> = ({
 };
 
 const ObjectAttributeInspector: React.FC<{
+  metadata: Map<MetadataId, Metadata>;
   name: string;
-  value: Record<string, Inspectable>;
+  fields: Record<MetadataId, Inspectable>;
   level: number;
-}> = ({name, value, level}) => {
+}> = ({metadata, name, fields, level}) => {
   return (
     <div style={ContainerStyle}>
       {name}
-      {Object.keys(value).map(function (key, _) {
+      {Object.keys(fields).map(function (key, _) {
+        const metadataId: number = Number(key);
+        const inspectableValue = fields[metadataId];
+        const attributeName = metadata.get(metadataId)?.name ?? '';
         return (
           <ObjectContainer
-            key={key}
+            key={metadataId}
             style={{
               paddingLeft: level,
             }}>
-            {create(key, value[key], level + 2)}
+            {create(metadata, attributeName, inspectableValue, level + 2)}
           </ObjectContainer>
         );
       })}
@@ -95,145 +105,143 @@ const ObjectAttributeInspector: React.FC<{
   );
 };
 
-function create(key: string, inspectable: Inspectable, level: number = 2) {
+function create(
+  metadata: Map<MetadataId, Metadata>,
+  name: string,
+  inspectable: Inspectable,
+  level: number = 2,
+) {
   switch (inspectable.type) {
     case 'boolean':
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <Checkbox checked={inspectable.value} disabled />
         </NamedAttributeInspector>
       );
     case 'enum':
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <EnumValue>{inspectable.value.value}</EnumValue>
         </NamedAttributeInspector>
       );
     case 'text':
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <TextValue>{inspectable.value}</TextValue>
         </NamedAttributeInspector>
       );
     case 'number':
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <NumberValue>{inspectable.value}</NumberValue>
         </NamedAttributeInspector>
       );
     case 'color':
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <ColorInspector color={inspectable.value} />
         </NamedAttributeInspector>
       );
     case 'size':
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <SizeInspector value={inspectable.value} />
         </NamedAttributeInspector>
       );
     case 'bounds':
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <BoundsInspector value={inspectable.value} />
         </NamedAttributeInspector>
       );
     case 'coordinate':
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <CoordinateInspector value={inspectable.value} />
         </NamedAttributeInspector>
       );
     case 'coordinate3d':
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <Coordinate3DInspector value={inspectable.value} />
         </NamedAttributeInspector>
       );
     case 'space':
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <SpaceBoxInspector value={inspectable.value} />
         </NamedAttributeInspector>
       );
     case 'object':
       return (
         <ObjectAttributeInspector
-          name={displayableName(key)}
-          value={inspectable.fields}
+          metadata={metadata}
+          name={displayableName(name)}
+          fields={inspectable.fields}
           level={level}
         />
       );
     default:
       return (
-        <NamedAttributeInspector name={displayableName(key)}>
+        <NamedAttributeInspector name={displayableName(name)}>
           <TextValue>{JSON.stringify(inspectable)}</TextValue>
         </NamedAttributeInspector>
       );
   }
 }
 
-/**
- * Filter out those inspectables that affect sizing, positioning, and
- * overall layout of elements.
- */
-const layoutFilter = new Set([
-  'size',
-  'padding',
-  'margin',
-  'bounds',
-  'position',
-  'globalPosition',
-  'localVisibleRect',
-  'rotation',
-  'scale',
-  'pivot',
-  'layoutParams',
-  'layoutDirection',
-  'translation',
-  'elevation',
-]);
 function createSection(
   mode: InspectorMode,
+  metadata: Map<MetadataId, Metadata>,
   name: string,
   inspectable: InspectableObject,
 ) {
-  const fields = Object.keys(inspectable.fields).filter(
-    (key) =>
-      (mode === 'attributes' && !layoutFilter.has(key)) ||
-      (mode === 'layout' && layoutFilter.has(key)),
-  );
-  if (!fields || fields.length === 0) {
-    return;
+  const children: any[] = [];
+  Object.keys(inspectable.fields).forEach((key, _index) => {
+    const metadataId: number = Number(key);
+    const attributeMetadata = metadata.get(metadataId);
+    if (attributeMetadata && attributeMetadata.type === mode) {
+      const attributeValue = inspectable.fields[metadataId];
+      children.push(create(metadata, attributeMetadata.name, attributeValue));
+    }
+  });
+
+  if (children.length > 0) {
+    return (
+      <Panel key={mode.concat(name)} title={name}>
+        {...children}
+      </Panel>
+    );
   }
-  return (
-    <Panel key={name} title={name}>
-      {fields.map(function (key, _) {
-        return create(key, inspectable.fields[key]);
-      })}
-    </Panel>
-  );
 }
 
-type InspectorMode = 'layout' | 'attributes';
+type InspectorMode = 'layout' | 'attribute';
 type Props = {
   node: UINode;
+  metadata: Map<MetadataId, Metadata>;
   mode: InspectorMode;
   rawDisplayEnabled?: boolean;
 };
 export const AttributesInspector: React.FC<Props> = ({
   node,
+  metadata,
   mode,
   rawDisplayEnabled = false,
 }) => {
   return (
     <>
       {Object.keys(node.attributes).map(function (key, _) {
+        const metadataId: number = Number(key);
+        /**
+         * The node top-level attributes refer to the displayable panels.
+         * The panel name is obtained by querying the metadata.
+         * The inspectable contains the actual attributes belonging to each panel.
+         */
         return createSection(
           mode,
-          key,
-          node.attributes[key] as InspectableObject,
+          metadata,
+          metadata.get(metadataId)?.name ?? '',
+          node.attributes[metadataId] as InspectableObject,
         );
       })}
       {rawDisplayEnabled ?? (

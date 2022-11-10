@@ -8,14 +8,18 @@
 package com.facebook.flipper.plugins.uidebugger.litho.descriptors
 
 import com.facebook.flipper.plugins.uidebugger.descriptors.ChainedDescriptor
-import com.facebook.flipper.plugins.uidebugger.descriptors.SectionName
-import com.facebook.flipper.plugins.uidebugger.model.Inspectable
+import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.litho.DebugComponent
 import com.facebook.litho.LithoView
 
 object LithoViewDescriptor : ChainedDescriptor<LithoView>() {
+
+  private const val NAMESPACE = "LithoView"
+  private val SectionId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
 
   override fun onGetName(node: LithoView): String = node.javaClass.simpleName
 
@@ -28,14 +32,18 @@ object LithoViewDescriptor : ChainedDescriptor<LithoView>() {
     return result
   }
 
+  private val IsIncrementalMountEnabledAttributeId =
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isIncrementalMountEnabled")
+
   override fun onGetData(
       node: LithoView,
-      attributeSections: MutableMap<SectionName, InspectableObject>
+      attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
-    attributeSections["Litho"] =
+    attributeSections[SectionId] =
         InspectableObject(
-            mapOf<String, Inspectable>(
-                "isIncrementalMountEnabled" to
-                    InspectableValue.Boolean(node.isIncrementalMountEnabled, false)))
+            mapOf(
+                IsIncrementalMountEnabledAttributeId to
+                    InspectableValue.Boolean(node.isIncrementalMountEnabled)))
   }
 }

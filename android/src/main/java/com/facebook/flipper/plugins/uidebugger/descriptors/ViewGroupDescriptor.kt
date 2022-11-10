@@ -17,6 +17,9 @@ import com.facebook.flipper.plugins.uidebugger.model.*
 
 object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
 
+  private const val NAMESPACE = "ViewGroup"
+  private var SectionId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
   override fun onGetName(node: ViewGroup): String {
     return node.javaClass.simpleName
   }
@@ -37,21 +40,28 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
     return children
   }
 
+  private val LayoutModeAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "layoutMode")
+  private val ClipChildrenAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "layoutMode")
+  private val ClipToPaddingAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "clipToPadding")
+
   override fun onGetData(
       node: ViewGroup,
-      attributeSections: MutableMap<SectionName, InspectableObject>
+      attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
-    val viewGroupAttrs = mutableMapOf<String, Inspectable>()
+    val props = mutableMapOf<Int, Inspectable>()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      viewGroupAttrs["LayoutMode"] = LayoutModeMapping.toInspectable(node.layoutMode, true)
-      viewGroupAttrs["ClipChildren"] = InspectableValue.Boolean(node.clipChildren, true)
+      props[LayoutModeAttributeId] = LayoutModeMapping.toInspectable(node.layoutMode)
+      props[ClipChildrenAttributeId] = InspectableValue.Boolean(node.clipChildren)
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      viewGroupAttrs["ClipToPadding"] = InspectableValue.Boolean(node.clipToPadding, true)
+      props[ClipToPaddingAttributeId] = InspectableValue.Boolean(node.clipToPadding)
     }
 
-    attributeSections["ViewGroup"] = InspectableObject(viewGroupAttrs)
+    attributeSections[SectionId] = InspectableObject(props)
   }
 
   private val LayoutModeMapping: EnumMapping<Int> =

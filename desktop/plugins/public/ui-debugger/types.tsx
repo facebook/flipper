@@ -14,6 +14,7 @@ export type Events = {
   subtreeUpdate: SubtreeUpdateEvent;
   coordinateUpdate: CoordinateUpdateEvent;
   perfStats: PerfStatsEvent;
+  metadataUpdate: UpdateMetadataEvent;
 };
 
 export type CoordinateUpdateEvent = {
@@ -29,7 +30,9 @@ export type SubtreeUpdateEvent = {
   snapshot: Snapshot;
 };
 
-export type InitEvent = {rootId: Id};
+export type InitEvent = {
+  rootId: Id;
+};
 
 export type PerfStatsEvent = {
   txId: number;
@@ -43,14 +46,27 @@ export type PerfStatsEvent = {
   nodesCount: number;
 };
 
+export type UpdateMetadataEvent = {
+  attributeMetadata: Record<MetadataId, Metadata>;
+};
+
 export type UINode = {
   id: Id;
   name: string;
-  attributes: Record<string, Inspectable>;
+  attributes: Record<MetadataId, Inspectable>;
   children: Id[];
   bounds: Bounds;
   tags: Tag[];
   activeChild?: Id;
+};
+
+export type Metadata = {
+  id: MetadataId;
+  type: string;
+  namespace: string;
+  name: string;
+  mutable: boolean;
+  tags?: string[];
 };
 
 export type Bounds = {
@@ -93,6 +109,7 @@ export type Color = {
 export type Snapshot = string;
 export type Id = number | TreeItemIndex;
 
+export type MetadataId = number;
 export type TreeState = {expandedNodes: Id[]};
 
 export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho ';
@@ -113,64 +130,54 @@ export type Inspectable =
 export type InspectableText = {
   type: 'text';
   value: string;
-  mutable: boolean;
 };
 
 export type InspectableNumber = {
   type: 'number';
   value: number;
-  mutable: boolean;
 };
 
 export type InspectableBoolean = {
   type: 'boolean';
   value: boolean;
-  mutable: boolean;
 };
 
 export type InspectableEnum = {
   type: 'enum';
   value: {value: string; values: string[]};
-  mutable: boolean;
 };
 
 export type InspectableColor = {
   type: 'color';
   value: Color;
-  mutable: boolean;
 };
 
 export type InspectableBounds = {
   type: 'bounds';
   value: Bounds;
-  mutable: boolean;
 };
 
 export type InspectableSize = {
   type: 'size';
   value: Size;
-  mutable: boolean;
 };
 
 export type InspectableCoordinate = {
   type: 'coordinate';
   value: Coordinate;
-  mutable: boolean;
 };
 
 export type InspectableCoordinate3D = {
   type: 'coordinate3d';
   value: Coordinate3D;
-  mutable: boolean;
 };
 
 export type InspectableSpaceBox = {
   type: 'space';
   value: SpaceBox;
-  mutable: boolean;
 };
 
 export type InspectableObject = {
   type: 'object';
-  fields: Record<string, Inspectable>;
+  fields: Record<MetadataId, Inspectable>;
 };

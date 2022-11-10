@@ -8,12 +8,36 @@
  */
 
 import {PluginClient, createState, createDataSource} from 'flipper-plugin';
-import {Events, Id, PerfStatsEvent, Snapshot, TreeState, UINode} from './types';
+import {
+  Events,
+  Id,
+  Metadata,
+  MetadataId,
+  PerfStatsEvent,
+  Snapshot,
+  TreeState,
+  UINode,
+} from './types';
 import './node_modules/react-complex-tree/lib/style.css';
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
-  client.onMessage('init', (root) => rootId.set(root.rootId));
+  const metadata = createState<Map<MetadataId, Metadata>>(new Map());
+
+  client.onMessage('init', (event) => {
+    rootId.set(event.rootId);
+  });
+
+  client.onMessage('metadataUpdate', (event) => {
+    if (!event.attributeMetadata) {
+      return;
+    }
+    metadata.update((draft) => {
+      for (const [_key, value] of Object.entries(event.attributeMetadata)) {
+        draft.set(value.id, value);
+      }
+    });
+  });
 
   const perfEvents = createDataSource<PerfStatsEvent, 'txId'>([], {
     key: 'txId',
@@ -23,13 +47,13 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents.append(event);
   });
 
-  const nodesAtom = createState<Map<Id, UINode>>(new Map());
-  const snapshotsAtom = createState<Map<Id, Snapshot>>(new Map());
+  const nodes = createState<Map<Id, UINode>>(new Map());
+  const snapshots = createState<Map<Id, Snapshot>>(new Map());
 
   const treeState = createState<TreeState>({expandedNodes: []});
 
   client.onMessage('coordinateUpdate', (event) => {
-    nodesAtom.update((draft) => {
+    nodes.update((draft) => {
       const node = draft.get(event.nodeId);
       if (!node) {
         console.warn(`Coordinate update for non existing node `, event);
@@ -42,13 +66,13 @@ export function plugin(client: PluginClient<Events>) {
 
   const seenNodes = new Set<Id>();
   client.onMessage('subtreeUpdate', (event) => {
-    snapshotsAtom.update((draft) => {
+    snapshots.update((draft) => {
       draft.set(event.rootId, event.snapshot);
     });
-    nodesAtom.update((draft) => {
-      for (const node of event.nodes) {
+    nodes.update((draft) => {
+      event.nodes.forEach((node) => {
         draft.set(node.id, node);
-      }
+      });
     });
 
     treeState.update((draft) => {
@@ -74,8 +98,9 @@ export function plugin(client: PluginClient<Events>) {
 
   return {
     rootId,
-    snapshots: snapshotsAtom,
-    nodes: nodesAtom,
+    nodes,
+    metadata,
+    snapshots,
     perfEvents,
     treeState,
   };

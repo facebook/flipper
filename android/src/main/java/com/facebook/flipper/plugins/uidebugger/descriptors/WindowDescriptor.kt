@@ -14,10 +14,14 @@ import com.facebook.flipper.plugins.uidebugger.model.Color
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import java.lang.reflect.Field
 
 object WindowDescriptor : ChainedDescriptor<Window>() {
 
+  private const val NAMESPACE = "Window"
+  private var SectionId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
   private var internalRStyleableClass: Class<*>? = null
   private var internalRStyleableFields: Array<Field>? = null
   private var internalRStyleableWindowField: Field? = null
@@ -32,7 +36,7 @@ object WindowDescriptor : ChainedDescriptor<Window>() {
   @SuppressLint("PrivateApi")
   override fun onGetData(
       node: Window,
-      attributeSections: MutableMap<SectionName, InspectableObject>
+      attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
     try {
       if (internalRStyleableClass == null) {
@@ -58,7 +62,7 @@ object WindowDescriptor : ChainedDescriptor<Window>() {
         }
       }
 
-      val props = mutableMapOf<String, Inspectable>()
+      val props = mutableMapOf<Int, Inspectable>()
 
       val typedValue = TypedValue()
       for ((index, attr) in windowStyleable.withIndex()) {
@@ -68,20 +72,28 @@ object WindowDescriptor : ChainedDescriptor<Window>() {
           // Strip 'Windows_' (length: 7) from the name.
           val name = fieldName.substring(7)
 
+          val metadata = MetadataRegister.get(NAMESPACE, name)
+          val identifier =
+              metadata?.id
+                  ?: MetadataRegister.registerDynamic(
+                      MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, name)
+
           when (typedValue.type) {
             TypedValue.TYPE_STRING ->
-                props[name] = InspectableValue.Text(typedValue.string.toString())
+                props[identifier] = InspectableValue.Text(typedValue.string.toString())
             TypedValue.TYPE_INT_BOOLEAN ->
-                props[name] = InspectableValue.Boolean(typedValue.data != 0)
+                props[identifier] = InspectableValue.Boolean(typedValue.data != 0)
             TypedValue.TYPE_INT_HEX ->
-                props[name] = InspectableValue.Text("0x" + Integer.toHexString(typedValue.data))
+                props[identifier] =
+                    InspectableValue.Text("0x" + Integer.toHexString(typedValue.data))
             TypedValue.TYPE_FLOAT ->
-                props[name] =
+                props[identifier] =
                     InspectableValue.Number(java.lang.Float.intBitsToFloat(typedValue.data))
             TypedValue.TYPE_REFERENCE -> {
               val resId = typedValue.data
               if (resId != 0) {
-                props[name] = InspectableValue.Text(node.context.resources.getResourceName(resId))
+                props[identifier] =
+                    InspectableValue.Text(node.context.resources.getResourceName(resId))
               }
             }
             else -> {
@@ -90,18 +102,18 @@ object WindowDescriptor : ChainedDescriptor<Window>() {
                 try {
                   val hexColor = "#" + Integer.toHexString(typedValue.data)
                   val color = android.graphics.Color.parseColor(hexColor)
-                  props[name] = InspectableValue.Color(Color.fromColor(color))
+                  props[identifier] = InspectableValue.Color(Color.fromColor(color))
                 } catch (e: Exception) {}
               } else if (typedValue.type >= TypedValue.TYPE_FIRST_INT &&
                   typedValue.type <= TypedValue.TYPE_LAST_INT) {
-                props[name] = InspectableValue.Number(typedValue.data)
+                props[identifier] = InspectableValue.Number(typedValue.data)
               }
             }
           }
         }
       }
 
-      attributeSections["Window"] = InspectableObject(props.toMap())
+      attributeSections[SectionId] = InspectableObject(props.toMap())
     }
   }
 }

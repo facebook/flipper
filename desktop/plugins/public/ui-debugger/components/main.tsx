@@ -11,7 +11,7 @@ import React, {useState} from 'react';
 import {plugin} from '../index';
 import {DetailSidebar, Layout, usePlugin, useValue} from 'flipper-plugin';
 import {useHotkeys} from 'react-hotkeys-hook';
-import {Id, Snapshot, UINode} from '../types';
+import {Id, Metadata, MetadataId, Snapshot, UINode} from '../types';
 import {PerfStats} from './PerfStats';
 import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
@@ -22,6 +22,7 @@ export function Component() {
   const instance = usePlugin(plugin);
   const rootId = useValue(instance.rootId);
   const nodes: Map<Id, UINode> = useValue(instance.nodes);
+  const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
   const snapshots: Map<Id, Snapshot> = useValue(instance.snapshots);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
@@ -32,13 +33,16 @@ export function Component() {
 
   const {ctrlPressed} = useKeyboardModifiers();
 
-  function renderSidebar(node: UINode | undefined) {
+  function renderSidebar(
+    node: UINode | undefined,
+    metadata: Map<MetadataId, Metadata>,
+  ) {
     if (!node) {
       return;
     }
     return (
       <DetailSidebar width={350}>
-        <Inspector node={node} />
+        <Inspector metadata={metadata} node={node} />
       </DetailSidebar>
     );
   }
@@ -68,7 +72,7 @@ export function Component() {
           onSelectNode={setSelectedNode}
           modifierPressed={ctrlPressed}
         />
-        {selectedNode && renderSidebar(nodes.get(selectedNode))}
+        {selectedNode && renderSidebar(nodes.get(selectedNode), metadata)}
       </Layout.Horizontal>
     );
   }

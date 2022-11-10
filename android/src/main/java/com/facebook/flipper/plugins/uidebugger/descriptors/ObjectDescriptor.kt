@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 
 object ObjectDescriptor : NodeDescriptor<Any> {
 
@@ -21,7 +22,7 @@ object ObjectDescriptor : NodeDescriptor<Any> {
 
   override fun getChildren(node: Any) = listOf<Any>()
 
-  override fun getData(node: Any) = mutableMapOf<SectionName, InspectableObject>()
+  override fun getData(node: Any) = mutableMapOf<MetadataId, InspectableObject>()
 
   override fun getBounds(node: Any): Bounds? = null
 

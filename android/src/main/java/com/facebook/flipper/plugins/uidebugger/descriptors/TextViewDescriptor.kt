@@ -13,45 +13,73 @@ import com.facebook.flipper.plugins.uidebugger.model.Color
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 
 object TextViewDescriptor : ChainedDescriptor<TextView>() {
+
+  private const val NAMESPACE = "TextView"
+
+  private var SectionId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
+  private val TextAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "text")
+  private val TextSizeAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textSize")
+  private val TextColorAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textColor")
+  private val IsBoldAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isBold")
+  private val IsItalicAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isItalic")
+  private val WeightAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "weight")
+  private val TypefaceAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "typeface")
+  private val MinLinesAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minLines")
+  private val MaxLinesAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxLines")
+  private val MinWidthAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minWidth")
+  private val MaxWidthAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxWidth")
 
   override fun onGetName(node: TextView): String = node.javaClass.simpleName
 
   override fun onGetData(
       node: TextView,
-      attributeSections: MutableMap<SectionName, InspectableObject>
+      attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
 
     val props =
-        mutableMapOf<String, Inspectable>(
-            "text" to InspectableValue.Text(node.text.toString(), false),
-            "textSize" to InspectableValue.Number(node.textSize, false),
-            "textColor" to
-                InspectableValue.Color(Color.fromColor(node.textColors.defaultColor), false))
+        mutableMapOf<Int, Inspectable>(
+            TextAttributeId to InspectableValue.Text(node.text.toString()),
+            TextSizeAttributeId to InspectableValue.Number(node.textSize),
+            TextColorAttributeId to
+                InspectableValue.Color(Color.fromColor(node.textColors.defaultColor)))
 
     val typeface = node.typeface
     if (typeface != null) {
       val typeFaceProp =
-          mutableMapOf<String, InspectableValue>(
-              "isBold" to InspectableValue.Boolean(typeface.isBold, false),
-              "isItalic" to InspectableValue.Boolean(typeface.isItalic, false),
+          mutableMapOf<Int, InspectableValue>(
+              IsBoldAttributeId to InspectableValue.Boolean(typeface.isBold),
+              IsItalicAttributeId to InspectableValue.Boolean(typeface.isItalic),
           )
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        typeFaceProp["weight"] = InspectableValue.Number(typeface.weight, false)
+        typeFaceProp[WeightAttributeId] = InspectableValue.Number(typeface.weight)
       }
 
-      props["typeface"] = InspectableObject(typeFaceProp)
+      props[TypefaceAttributeId] = InspectableObject(typeFaceProp)
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      props["minLines"] = InspectableValue.Number(node.minLines, false)
-      props["maxLines"] = InspectableValue.Number(node.maxLines, false)
-      props["minWidth"] = InspectableValue.Number(node.minWidth, false)
-      props["maxWidth"] = InspectableValue.Number(node.maxWidth, false)
+      props[MinLinesAttributeId] = InspectableValue.Number(node.minLines)
+      props[MaxLinesAttributeId] = InspectableValue.Number(node.maxLines)
+      props[MinWidthAttributeId] = InspectableValue.Number(node.minWidth)
+      props[MaxWidthAttributeId] = InspectableValue.Number(node.maxWidth)
     }
 
-    attributeSections["TextView"] = InspectableObject(props)
+    attributeSections[SectionId] = InspectableObject(props)
   }
 }

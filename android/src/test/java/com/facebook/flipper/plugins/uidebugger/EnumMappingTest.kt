@@ -39,9 +39,7 @@ class EnumMappingTest {
   @Test
   fun testTurnsIntoEnumInspectable() {
     assertThat(
-        visibility.toInspectable(View.GONE, true),
-        equalTo(
-            InspectableValue.Enum(
-                Enumeration(setOf("VISIBLE", "INVISIBLE", "GONE"), "GONE"), mutable = true)))
+        visibility.toInspectable(View.GONE),
+        equalTo(InspectableValue.Enum(Enumeration(setOf("VISIBLE", "INVISIBLE", "GONE"), "GONE"))))
   }
 }

@@ -16,8 +16,10 @@ import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.core.Context
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
+import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.Coordinate
 import com.facebook.flipper.plugins.uidebugger.model.CoordinateUpdateEvent
+import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
 import com.facebook.flipper.plugins.uidebugger.model.SubtreeUpdateEvent
@@ -69,9 +71,7 @@ class TreeObserverManager(val context: Context) {
         workerScope.launch {
           while (isActive) {
             try {
-
-              val update = updates.receive()
-              when (update) {
+              when (val update = updates.receive()) {
                 is SubtreeUpdate -> sendSubtreeUpdate(update)
                 is CoordinateUpdate -> {
                   val event =
@@ -88,11 +88,22 @@ class TreeObserverManager(val context: Context) {
         }
   }
 
-  fun sendSubtreeUpdate(treeUpdate: SubtreeUpdate) {
+  private fun sendMetadata() {
+    val metadata = MetadataRegister.dynamicMetadata()
+    if (metadata.size > 0) {
+      context.connectionRef.connection?.send(
+          MetadataUpdateEvent.name,
+          Json.encodeToString(MetadataUpdateEvent.serializer(), MetadataUpdateEvent(metadata)))
+    }
+  }
+
+  private fun sendSubtreeUpdate(treeUpdate: SubtreeUpdate) {
     val onWorkerThread = System.currentTimeMillis()
     val txId = txId.getAndIncrement().toLong()
 
-    var serialized: String?
+    sendMetadata()
+
+    val serialized: String?
     if (treeUpdate.snapshot == null) {
       serialized =
           Json.encodeToString(

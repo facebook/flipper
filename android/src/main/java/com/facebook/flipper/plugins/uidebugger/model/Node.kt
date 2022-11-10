@@ -13,7 +13,7 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 data class Node(
     val id: Id,
     val name: String,
-    val attributes: Map<String, InspectableObject>,
+    val attributes: Map<MetadataId, InspectableObject>,
     val bounds: Bounds?,
     val tags: Set<String>,
     val children: List<Id>,

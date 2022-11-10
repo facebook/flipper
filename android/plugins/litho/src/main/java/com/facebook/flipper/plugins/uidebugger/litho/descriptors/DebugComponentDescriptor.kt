@@ -8,16 +8,15 @@
 package com.facebook.flipper.plugins.uidebugger.litho.descriptors
 
 import android.graphics.Bitmap
-import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
-import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
-import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
-import com.facebook.flipper.plugins.uidebugger.descriptors.OffsetChild
+import com.facebook.flipper.plugins.uidebugger.descriptors.*
 import com.facebook.flipper.plugins.uidebugger.litho.LithoTag
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.litho.DebugComponent
 
 class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {
+  private val NAMESPACE = "DebugComponent"
 
   override fun getName(node: DebugComponent): String {
     return node.component.simpleName
@@ -54,7 +53,15 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
   override fun getActiveChild(node: DebugComponent): Any? = null
 
-  override fun getData(node: DebugComponent) = mapOf<String, InspectableObject>()
+  private val LayoutId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "Litho Layout")
+  private val UserPropsId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "User Props")
+  override fun getData(node: DebugComponent): Map<MetadataId, InspectableObject> {
+    val attributeSections = mutableMapOf<MetadataId, InspectableObject>()
+
+    return attributeSections
+  }
 
   override fun getBounds(node: DebugComponent): Bounds =
       Bounds.fromRect(node.boundsInParentDebugComponent)

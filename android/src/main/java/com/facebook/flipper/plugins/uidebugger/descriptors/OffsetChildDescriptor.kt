@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 
 /** a drawable or view that is mounted, along with the correct descriptor */
 class OffsetChild(val child: Any, val descriptor: NodeDescriptor<Any>, val x: Int, val y: Int) {
@@ -34,7 +35,7 @@ object OffsetChildDescriptor : NodeDescriptor<OffsetChild> {
 
   override fun getActiveChild(node: OffsetChild): Any? = node.descriptor.getActiveChild(node.child)
 
-  override fun getData(node: OffsetChild): Map<SectionName, InspectableObject> =
+  override fun getData(node: OffsetChild): Map<MetadataId, InspectableObject> =
       node.descriptor.getData(node.child)
 
   override fun getTags(node: OffsetChild): Set<String> = node.descriptor.getTags(node.child)

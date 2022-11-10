@@ -33,8 +33,8 @@ open class EnumMapping<T>(private val mapping: Map<String, T>) {
             "Could not convert string $key to enum value, possible values ${mapping.entries} ")
   }
 
-  fun toInspectable(value: T, mutable: Boolean): InspectableValue.Enum {
-    return InspectableValue.Enum(Enumeration(mapping.keys, getStringRepresentation(value)), mutable)
+  fun toInspectable(value: T): InspectableValue.Enum {
+    return InspectableValue.Enum(Enumeration(mapping.keys, getStringRepresentation(value)))
   }
   companion object {
     const val NoMapping = "__UNKNOWN_ENUM_VALUE__"

@@ -11,16 +11,17 @@ import React from 'react';
 // eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Glyph} from 'flipper';
 import {Layout, Tab, Tabs} from 'flipper-plugin';
-import {UINode} from '../../types';
+import {Metadata, MetadataId, UINode} from '../../types';
 import {IdentityInspector} from './inspector/IdentityInspector';
 import {AttributesInspector} from './inspector/AttributesInspector';
 import {DocumentationInspector} from './inspector/DocumentationInspector';
 
 type Props = {
   node: UINode;
+  metadata: Map<MetadataId, Metadata>;
 };
 
-export const Inspector: React.FC<Props> = ({node}) => {
+export const Inspector: React.FC<Props> = ({node, metadata}) => {
   return (
     <Layout.Container gap pad>
       <Tabs grow centered>
@@ -38,7 +39,11 @@ export const Inspector: React.FC<Props> = ({node}) => {
               <Glyph name="data-table" size={16} />
             </Layout.Horizontal>
           }>
-          <AttributesInspector mode="attributes" node={node} />
+          <AttributesInspector
+            mode="attribute"
+            node={node}
+            metadata={metadata}
+          />
         </Tab>
         <Tab
           tab={
@@ -46,7 +51,7 @@ export const Inspector: React.FC<Props> = ({node}) => {
               <Glyph name="square-ruler" size={16} />
             </Layout.Horizontal>
           }>
-          <AttributesInspector mode="layout" node={node} />
+          <AttributesInspector mode="layout" node={node} metadata={metadata} />
         </Tab>
         <Tab
           tab={

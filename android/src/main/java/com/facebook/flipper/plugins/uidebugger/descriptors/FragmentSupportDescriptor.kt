@@ -10,8 +10,13 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 
 object FragmentSupportDescriptor : ChainedDescriptor<androidx.fragment.app.Fragment>() {
+
+  private const val NAMESPACE = "Fragment"
+  private var SectionId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
 
   override fun onGetName(node: androidx.fragment.app.Fragment): String {
     return node.javaClass.simpleName
@@ -22,19 +27,23 @@ object FragmentSupportDescriptor : ChainedDescriptor<androidx.fragment.app.Fragm
 
   override fun onGetData(
       node: androidx.fragment.app.Fragment,
-      attributeSections: MutableMap<String, InspectableObject>
+      attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
     val args = node.arguments
     args?.let { bundle ->
-      val props = mutableMapOf<String, Inspectable>()
+      val props = mutableMapOf<Int, Inspectable>()
       for (key in bundle.keySet()) {
+        val metadata = MetadataRegister.get(NAMESPACE, key)
+        val identifier =
+            metadata?.id
+                ?: MetadataRegister.registerDynamic(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, key)
         when (val value = bundle[key]) {
-          is Number -> props[key] = InspectableValue.Number(value)
-          is Boolean -> props[key] = InspectableValue.Boolean(value)
-          is String -> props[key] = InspectableValue.Text(value)
+          is Number -> props[identifier] = InspectableValue.Number(value)
+          is Boolean -> props[identifier] = InspectableValue.Boolean(value)
+          is String -> props[identifier] = InspectableValue.Text(value)
         }
       }
-      attributeSections["Fragment"] = InspectableObject(props.toMap())
+      attributeSections[SectionId] = InspectableObject(props.toMap())
     }
   }
 }
