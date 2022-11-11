@@ -10,7 +10,12 @@
 import React from 'react';
 import {Coordinate} from '../../../types';
 import {Col, Row} from 'antd';
-import {theme} from 'flipper-plugin';
+import {
+  CenteredContentStyle,
+  CenteredHeadingContentStyle,
+  CenteredNumberStyle,
+  CenteredTextStyle,
+} from './Styles';
 
 type Props = {
   value: Coordinate;
@@ -19,34 +24,19 @@ type Props = {
 const CoordinateInspector: React.FC<Props> = ({value}) => {
   return (
     <>
-      <Row
-        style={{
-          fontSize: theme.fontSize.small,
-          paddingLeft: '20%',
-          paddingRight: '20%',
-        }}>
-        <Col span={12} style={{textAlign: 'center'}}>
+      <Row style={CenteredHeadingContentStyle}>
+        <Col span={12} style={CenteredTextStyle}>
           x
         </Col>
-        <Col span={12} style={{textAlign: 'center'}}>
+        <Col span={12} style={CenteredTextStyle}>
           y
         </Col>
       </Row>
-      <Row style={{paddingLeft: '20%', paddingRight: '20%'}}>
-        <Col
-          span={12}
-          style={{
-            textAlign: 'center',
-            color: theme.semanticColors.numberValue,
-          }}>
+      <Row style={CenteredContentStyle}>
+        <Col span={12} style={CenteredNumberStyle}>
           {value.x}
         </Col>
-        <Col
-          span={12}
-          style={{
-            textAlign: 'center',
-            color: theme.semanticColors.numberValue,
-          }}>
+        <Col span={12} style={CenteredNumberStyle}>
           {value.y}
         </Col>
       </Row>

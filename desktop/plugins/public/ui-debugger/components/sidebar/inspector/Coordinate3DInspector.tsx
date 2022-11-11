@@ -10,7 +10,12 @@
 import React from 'react';
 import {Coordinate3D} from '../../../types';
 import {Col, Row} from 'antd';
-import {theme} from 'flipper-plugin';
+import {
+  CenteredContentStyle,
+  CenteredHeadingContentStyle,
+  CenteredNumberStyle,
+  CenteredTextStyle,
+} from './Styles';
 
 type Props = {
   value: Coordinate3D;
@@ -19,45 +24,25 @@ type Props = {
 const Coordinate3DInspector: React.FC<Props> = ({value}) => {
   return (
     <>
-      <Row
-        style={{
-          fontSize: theme.fontSize.small,
-          paddingLeft: '20%',
-          paddingRight: '20%',
-        }}>
-        <Col span={8} style={{textAlign: 'center'}}>
+      <Row style={CenteredHeadingContentStyle}>
+        <Col span={8} style={CenteredTextStyle}>
           x
         </Col>
-        <Col span={8} style={{textAlign: 'center'}}>
+        <Col span={8} style={CenteredTextStyle}>
           y
         </Col>
-        <Col span={8} style={{textAlign: 'center'}}>
+        <Col span={8} style={CenteredTextStyle}>
           z
         </Col>
       </Row>
-      <Row style={{paddingLeft: '20%', paddingRight: '20%'}}>
-        <Col
-          span={8}
-          style={{
-            textAlign: 'center',
-            color: theme.semanticColors.numberValue,
-          }}>
+      <Row style={CenteredContentStyle}>
+        <Col span={8} style={CenteredNumberStyle}>
           {value.x}
         </Col>
-        <Col
-          span={8}
-          style={{
-            textAlign: 'center',
-            color: theme.semanticColors.numberValue,
-          }}>
+        <Col span={8} style={CenteredNumberStyle}>
           {value.y}
         </Col>
-        <Col
-          span={8}
-          style={{
-            textAlign: 'center',
-            color: theme.semanticColors.numberValue,
-          }}>
+        <Col span={8} style={CenteredNumberStyle}>
           {value.z}
         </Col>
       </Row>

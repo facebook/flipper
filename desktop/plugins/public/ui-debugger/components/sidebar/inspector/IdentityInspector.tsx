@@ -10,33 +10,44 @@
 import React from 'react';
 import {Col, Row} from 'antd';
 import {UINode} from '../../../types';
-import {styled} from 'flipper-plugin';
+import {styled, theme} from 'flipper-plugin';
 import {CodeInspector} from './fb-stubs/CodeInspector';
+import {TopSpacedContainerStyle} from './Styles';
 
 type Props = {
   node: UINode;
 };
 
-const IdentityContainer = styled.div({
-  marginTop: '10px',
-});
+const IdentityContainer = styled.div(TopSpacedContainerStyle);
 
 export const IdentityInspector: React.FC<Props> = ({node}) => {
   return (
     <IdentityContainer>
       <Row gutter={4}>
-        <Col span="12">
+        <Col span="10">
           <div style={{padding: '0 16px'}}>Name:</div>
         </Col>
-        <Col span="12">{node.name}</Col>
+        <Col span="14" style={{fontSize: theme.fontSize.small}}>
+          {node.name}
+        </Col>
       </Row>
       <Row gutter={4}>
-        <Col span="12">
+        <Col span="10">
+          <div style={{padding: '0 16px'}}>Qualified name:</div>
+        </Col>
+        <Col span="14" style={{fontSize: theme.fontSize.small}}>
+          {node.qualifiedName}
+        </Col>
+      </Row>
+      <Row gutter={4}>
+        <Col span="10">
           <div style={{padding: '0 16px'}}>Id:</div>
         </Col>
-        <Col span="12">{node.id}</Col>
+        <Col span="14" style={{fontSize: theme.fontSize.small}}>
+          {node.id}
+        </Col>
       </Row>
-      <CodeInspector name={node.name} tags={node.tags} />
+      <CodeInspector name={node.qualifiedName} tags={node.tags} />
     </IdentityContainer>
   );
 };

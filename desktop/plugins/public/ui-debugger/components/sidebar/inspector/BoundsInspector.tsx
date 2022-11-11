@@ -9,6 +9,7 @@
 
 import React from 'react';
 import {Bounds} from '../../../types';
+import {InspectorStyle} from './Styles';
 
 type Props = {
   size?: number;
@@ -22,13 +23,13 @@ type Props = {
 };
 
 const BoundsInspector: React.FC<Props> = ({
-  size = 180,
-  strokeColor = '#4A5967',
-  outerBoxColor = '#F2F3F7',
-  innerBoxColor = '#CCD1D9',
-  multiplier = 0.4,
-  margin = 4,
-  separator = 10,
+  size = InspectorStyle.bounds.size,
+  strokeColor = InspectorStyle.strokeColor,
+  outerBoxColor = InspectorStyle.outerFillColor,
+  innerBoxColor = InspectorStyle.innerFillColor,
+  multiplier = InspectorStyle.bounds.multiplier,
+  margin = InspectorStyle.bounds.margin,
+  separator = InspectorStyle.bounds.separator,
   value,
 }) => {
   const scale =

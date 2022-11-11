@@ -20,45 +20,24 @@ import {Checkbox, Col, Row} from 'antd';
 import {displayableName} from '../utilities/displayableName';
 import ColorInspector from './ColorInspector';
 import SizeInspector from './SizeInspector';
-import {theme} from 'flipper-plugin';
 import SpaceBoxInspector from './SpaceBoxInspector';
 import BoundsInspector from './BoundsInspector';
 import Coordinate3DInspector from './Coordinate3DInspector';
 import CoordinateInspector from './CoordinateInspector';
+import {
+  AutoMarginStyle,
+  EnumAttributeValueStyle,
+  NumberAttributeValueStyle,
+  ObjectContainerStyle,
+  RowStyle,
+  TextAttributeValueStyle,
+} from './Styles';
 
-const NumberValue = styled.span({
-  color: theme.semanticColors.numberValue,
-  display: 'flex',
-});
-
-const TextValue = styled.span({
-  color: theme.semanticColors.stringValue,
-  display: 'flex',
-});
-
-const EnumValue = styled.span({
-  color: theme.semanticColors.stringValue,
-  fontSize: theme.fontSize.small,
-  margin: 'auto',
-});
-
-const ContainerStyle = {
-  marginTop: 4,
-  marginBottom: 4,
-  borderStyle: 'solid',
-  borderColor: theme.dividerColor,
-  borderWidth: '0 0 1px 0',
-};
-
-const ObjectContainer = styled.div({
-  borderLeftWidth: 5,
-  borderLeftColor: 'lightgray',
-  borderLeftStyle: 'solid',
-});
-
-const CenterContainer = styled.div({
-  margin: 'auto',
-});
+const NumberValue = styled.span(NumberAttributeValueStyle);
+const TextValue = styled.span(TextAttributeValueStyle);
+const EnumValue = styled.span(EnumAttributeValueStyle);
+const ObjectContainer = styled.div(ObjectContainerStyle);
+const CenteredContentContainer = styled.div(AutoMarginStyle);
 type NamedAttributeInspectorProps = {
   name: string;
 };
@@ -67,12 +46,12 @@ const NamedAttributeInspector: React.FC<NamedAttributeInspectorProps> = ({
   children,
 }) => {
   return (
-    <Row style={ContainerStyle}>
-      <Col span={8} style={{margin: 'auto'}}>
+    <Row style={RowStyle}>
+      <Col span={8} style={AutoMarginStyle}>
         {name}
       </Col>
       <Col span={16}>
-        <CenterContainer>{children}</CenterContainer>
+        <CenteredContentContainer>{children}</CenteredContentContainer>
       </Col>
     </Row>
   );
@@ -85,7 +64,7 @@ const ObjectAttributeInspector: React.FC<{
   level: number;
 }> = ({metadata, name, fields, level}) => {
   return (
-    <div style={ContainerStyle}>
+    <div style={RowStyle}>
       {name}
       {Object.keys(fields).map(function (key, _) {
         const metadataId: number = Number(key);

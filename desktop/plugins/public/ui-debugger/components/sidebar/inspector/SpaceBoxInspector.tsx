@@ -9,6 +9,7 @@
 
 import React from 'react';
 import {SpaceBox} from '../../../types';
+import {InspectorStyle} from './Styles';
 
 type Props = {
   size?: number;
@@ -21,12 +22,12 @@ type Props = {
 };
 
 const SpaceBoxInspector: React.FC<Props> = ({
-  size = 180,
-  strokeColor = '#4A5967',
-  outerBoxColor = '#F2F3F7',
-  innerBoxColor = '#CCD1D9',
-  margin = 10,
-  separator = 4,
+  size = InspectorStyle.spaceBox.size,
+  strokeColor = InspectorStyle.strokeColor,
+  outerBoxColor = InspectorStyle.outerFillColor,
+  innerBoxColor = InspectorStyle.innerFillColor,
+  margin = InspectorStyle.spaceBox.margin,
+  separator = InspectorStyle.spaceBox.separator,
   value,
 }) => {
   const half = size / 2;

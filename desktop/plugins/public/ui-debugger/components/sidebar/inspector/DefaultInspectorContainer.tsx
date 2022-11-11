@@ -9,21 +9,14 @@
 
 import React from 'react';
 import {Col, Row} from 'antd';
-import {styled, theme} from 'flipper-plugin';
+import {styled} from 'flipper-plugin';
+import {DefaultInputContainerStyle} from './Styles';
 
 type Props = {
   name: string;
 };
 
-export const DefaultInputContainer = styled.div({
-  margin: 'auto',
-  padding: '2px',
-  minWidth: '50px',
-  backgroundColor: theme.backgroundDefault,
-  borderRadius: '5px',
-  boxShadow: '0 0 0 1px rgba(0,0,0,.2)',
-  display: 'inline-block',
-});
+export const DefaultInputContainer = styled.div(DefaultInputContainerStyle);
 
 export const DefaultInspectorContainer: React.FC<Props> = (props) => {
   return (

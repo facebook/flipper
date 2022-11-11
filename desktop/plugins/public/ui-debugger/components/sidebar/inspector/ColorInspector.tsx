@@ -12,25 +12,14 @@ import {Popover} from 'antd';
 import {Color} from '../../../types';
 import {SketchPicker, RGBColor, ColorResult} from 'react-color';
 import {styled} from 'flipper-plugin';
+import {ColorInnerButtonStyle, ColorOuterButtonStyle} from './Styles';
 
 type State = {
   color: RGBColor;
 };
 
-const OuterColorButton = styled.div({
-  padding: '5px',
-  backgroundColor: '#fff',
-  borderRadius: '5px',
-  boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-  display: 'inline-block',
-  cursor: 'pointer',
-});
-
-const InnerColorButton = styled.div({
-  width: '36px',
-  height: '14px',
-  borderRadius: '2px',
-});
+const OuterColorButton = styled.div(ColorOuterButtonStyle);
+const InnerColorButton = styled.div(ColorInnerButtonStyle);
 
 class ColorInspector extends React.Component<{color: Color}> {
   state: State = {
