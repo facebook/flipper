@@ -18,11 +18,17 @@ import {
   styled,
   Select,
 } from 'flipper';
-import {PluginClient, createState, usePlugin, useValue} from 'flipper-plugin';
+import {
+  PluginClient,
+  createState,
+  usePlugin,
+  useValue,
+  getFlipperLib,
+} from 'flipper-plugin';
 import {clone} from 'lodash';
 
 import React from 'react';
-
+import {Button, notification} from 'antd';
 type SharedPreferencesChangeEvent = {
   preferences: string;
   name: string;
@@ -96,6 +102,51 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
   }
 
+  async function saveToFile() {
+    if (selectedPreferences.get() != null) {
+      try {
+        const name = selectedPreferences.get() as string;
+        await getFlipperLib().exportFile(
+          JSON.stringify(sharedPreferences.get()[name]),
+          {
+            defaultPath: name,
+          },
+        );
+      } catch (e) {
+        notification.error({
+          message: 'Save failed',
+          description: `Could not save shared preferences to file`,
+          duration: 15,
+        });
+      }
+    }
+  }
+  async function loadFromFile() {
+    const file = await getFlipperLib().importFile();
+    if (file?.path != undefined) {
+      const data = await getFlipperLib().remoteServerContext.fs.readFile(
+        file.path,
+        {encoding: 'utf-8'},
+      );
+      const preferences = JSON.parse(data) as SharedPreferencesEntry;
+      const name = selectedPreferences.get();
+      if (name != null) {
+        updateSharedPreferences({
+          name: name,
+          preferences: preferences.preferences,
+        });
+
+        for (const key in preferences.preferences) {
+          await client.send('setSharedPreference', {
+            sharedPreferencesName: name,
+            preferenceName: key,
+            preferenceValue: preferences.preferences[key],
+          });
+        }
+      }
+    }
+  }
+
   client.onMessage('sharedPreferencesChange', (change) =>
     sharedPreferences.update((draft) => {
       const entry = draft[change.preferences];
@@ -124,6 +175,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
     setSelectedPreferences,
     setSharedPreference,
     deleteSharedPreference,
+    saveToFile,
+    loadFromFile,
   };
 }
 
@@ -179,6 +232,16 @@ export function Component() {
           selected={selectedPreferences}
           onChange={instance.setSelectedPreferences}
         />
+        <span style={{marginLeft: '16px', marginRight: '16px'}}>Options</span>
+        <Button size="small" onClick={() => instance.saveToFile()}>
+          Save
+        </Button>
+        <Button
+          style={{marginLeft: '8px'}}
+          size="small"
+          onClick={() => instance.loadFromFile()}>
+          Load
+        </Button>
       </Heading>
       <FlexRow grow scrollable style={{overflowX: 'hidden'}}>
         <InspectorColumn>
