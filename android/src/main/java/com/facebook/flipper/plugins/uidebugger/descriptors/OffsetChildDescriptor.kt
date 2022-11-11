@@ -31,6 +31,9 @@ object OffsetChildDescriptor : NodeDescriptor<OffsetChild> {
 
   override fun getName(node: OffsetChild): String = node.descriptor.getName(node.child)
 
+  override fun getQualifiedName(node: OffsetChild): String =
+      node.descriptor.getQualifiedName(node.child)
+
   override fun getChildren(node: OffsetChild): List<Any> = node.descriptor.getChildren(node.child)
 
   override fun getActiveChild(node: OffsetChild): Any? = node.descriptor.getActiveChild(node.child)

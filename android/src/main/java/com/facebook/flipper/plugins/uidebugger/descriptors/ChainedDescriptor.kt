@@ -49,6 +49,13 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
     return onGetName(node)
   }
 
+  final override fun getQualifiedName(node: T): String {
+    node?.let { n ->
+      return n::class.qualifiedName ?: ""
+    }
+    return ""
+  }
+
   final override fun getTags(node: T): Set<String> {
     val tags = onGetTags(node) ?: mSuper?.getTags(node)
     return tags ?: setOf()

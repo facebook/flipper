@@ -56,6 +56,7 @@ class PartialLayoutTraversal(
           visited.add(
               Node(
                   node.nodeId(),
+                  descriptor.getQualifiedName(node),
                   descriptor.getName(node),
                   emptyMap(),
                   null,
@@ -91,6 +92,7 @@ class PartialLayoutTraversal(
         visited.add(
             Node(
                 node.nodeId(),
+                descriptor.getQualifiedName(node),
                 descriptor.getName(node),
                 attributes,
                 bounds,

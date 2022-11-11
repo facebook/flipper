@@ -20,6 +20,10 @@ object ObjectDescriptor : NodeDescriptor<Any> {
     return node.javaClass.simpleName
   }
 
+  override fun getQualifiedName(node: Any): String {
+    return node::class.qualifiedName ?: ""
+  }
+
   override fun getChildren(node: Any) = listOf<Any>()
 
   override fun getData(node: Any) = mutableMapOf<MetadataId, InspectableObject>()

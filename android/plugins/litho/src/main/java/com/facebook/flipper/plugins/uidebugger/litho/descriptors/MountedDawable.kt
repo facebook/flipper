@@ -34,6 +34,9 @@ object MountedObjectDescriptor : NodeDescriptor<MountedObject> {
 
   override fun getName(node: MountedObject): String = node.descriptor.getName(node.obj)
 
+  override fun getQualifiedName(node: MountedObject): String =
+      node.descriptor.getQualifiedName(node.obj)
+
   override fun getChildren(node: MountedObject): List<Any> = node.descriptor.getChildren(node.obj)
 
   override fun getActiveChild(node: MountedObject): Any? = node.descriptor.getActiveChild(node.obj)

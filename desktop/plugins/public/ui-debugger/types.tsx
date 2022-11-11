@@ -52,6 +52,7 @@ export type UpdateMetadataEvent = {
 
 export type UINode = {
   id: Id;
+  qualifiedName: string;
   name: string;
   attributes: Record<MetadataId, Inspectable>;
   children: Id[];
@@ -112,7 +113,7 @@ export type Id = number | TreeItemIndex;
 export type MetadataId = number;
 export type TreeState = {expandedNodes: Id[]};
 
-export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho ';
+export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho';
 
 export type Inspectable =
   | InspectableObject

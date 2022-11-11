@@ -18,9 +18,10 @@ import com.facebook.litho.DebugComponent
 class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {
   private val NAMESPACE = "DebugComponent"
 
-  override fun getName(node: DebugComponent): String {
-    return node.component.simpleName
-  }
+  override fun getName(node: DebugComponent): String = node.component.simpleName
+
+  override fun getQualifiedName(node: com.facebook.litho.DebugComponent): String =
+      node.component::class.qualifiedName ?: ""
 
   override fun getChildren(node: DebugComponent): List<Any> {
     val result = mutableListOf<Any>()

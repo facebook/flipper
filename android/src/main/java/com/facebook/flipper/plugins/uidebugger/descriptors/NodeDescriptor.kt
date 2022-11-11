@@ -42,6 +42,12 @@ interface NodeDescriptor<T> {
    */
   fun getName(node: T): String
 
+  /**
+   * The qualified name used to identify this node in the inspector. Does not need to be unique. A
+   * good default is to use the class qualified name of the node.
+   */
+  fun getQualifiedName(node: T): String
+
   /** The children this node exposes in the inspector. */
   fun getChildren(node: T): List<Any>
 
