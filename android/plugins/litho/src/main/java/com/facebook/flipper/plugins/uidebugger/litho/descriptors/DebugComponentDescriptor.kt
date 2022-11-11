@@ -10,6 +10,8 @@ package com.facebook.flipper.plugins.uidebugger.litho.descriptors
 import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.descriptors.*
 import com.facebook.flipper.plugins.uidebugger.litho.LithoTag
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.ComponentPropExtractor
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.LayoutPropExtractor
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
@@ -57,9 +59,19 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
   private val LayoutId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "Litho Layout")
   private val UserPropsId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "User Props")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho Props")
+
   override fun getData(node: DebugComponent): Map<MetadataId, InspectableObject> {
+
     val attributeSections = mutableMapOf<MetadataId, InspectableObject>()
+
+    val layoutProps = LayoutPropExtractor.getProps(node)
+    attributeSections[LayoutId] = InspectableObject(layoutProps.toMap())
+
+    if (!node.canResolve()) {
+      val props = ComponentPropExtractor.getProps(node.component)
+      attributeSections[UserPropsId] = InspectableObject(props.toMap())
+    }
 
     return attributeSections
   }

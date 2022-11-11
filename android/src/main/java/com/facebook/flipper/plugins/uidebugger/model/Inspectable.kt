@@ -89,6 +89,10 @@ sealed class InspectableValue : Inspectable() {
       val value: com.facebook.flipper.plugins.uidebugger.model.Enumeration,
   ) : InspectableValue()
 
+  @SerialName("unknown")
+  @kotlinx.serialization.Serializable
+  data class Unknown(val value: String?) : InspectableValue() {}
+
   companion object {
     /**
      * Will attempt to convert Any ref to a suitable primitive inspectable value. Only use if you
