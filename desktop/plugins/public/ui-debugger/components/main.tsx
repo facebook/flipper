@@ -27,7 +27,6 @@ export function Component() {
 
   const [showPerfStats, setShowPerfStats] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Id | undefined>(undefined);
-  const [hoveredNode, setHoveredNode] = useState<Id | undefined>(undefined);
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
@@ -55,9 +54,7 @@ export function Component() {
         <Layout.ScrollContainer>
           <Tree
             selectedNode={selectedNode}
-            hoveredNode={hoveredNode}
             onSelectNode={setSelectedNode}
-            onHoveredNode={setHoveredNode}
             nodes={nodes}
             rootId={rootId}
           />
@@ -66,8 +63,6 @@ export function Component() {
           rootId={rootId}
           nodes={nodes}
           snapshots={snapshots}
-          hoveredNode={hoveredNode}
-          onHoverNode={setHoveredNode}
           selectedNode={selectedNode}
           onSelectNode={setSelectedNode}
           modifierPressed={ctrlPressed}

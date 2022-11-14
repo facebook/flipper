@@ -52,6 +52,8 @@ export function plugin(client: PluginClient<Events>) {
 
   const treeState = createState<TreeState>({expandedNodes: []});
 
+  const hoveredNode = createState<Id | undefined>(undefined);
+
   client.onMessage('coordinateUpdate', (event) => {
     nodes.update((draft) => {
       const node = draft.get(event.nodeId);
@@ -101,6 +103,7 @@ export function plugin(client: PluginClient<Events>) {
     nodes,
     metadata,
     snapshots,
+    hoveredNode,
     perfEvents,
     treeState,
   };

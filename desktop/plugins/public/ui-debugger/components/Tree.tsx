@@ -8,7 +8,7 @@
  */
 
 import {Id, UINode} from '../types';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {
   Tree as ComplexTree,
   ControlledTreeEnvironment,
@@ -26,19 +26,19 @@ export function Tree(props: {
   rootId: Id;
   nodes: Map<Id, UINode>;
   selectedNode?: Id;
-  hoveredNode?: Id;
   onSelectNode: (id: Id) => void;
-  onHoveredNode: (id?: Id) => void;
 }) {
   const instance = usePlugin(plugin);
   const expandedItems = useValue(instance.treeState).expandedNodes;
-  const items = toComplexTree(props.nodes);
+  const items = useMemo(() => toComplexTree(props.nodes), [props.nodes]);
 
+  const hoveredNode = useValue(instance.hoveredNode);
   const treeRef = useRef<TreeEnvironmentRef>();
+
   useEffect(() => {
     //this makes the keyboard arrow  controls work always, even when using the visualiser
     treeRef.current?.focusTree('tree', true);
-  }, [props.hoveredNode, props.selectedNode]);
+  }, [hoveredNode, props.selectedNode]);
   return (
     <ControlledTreeEnvironment
       ref={treeRef as any}
@@ -50,12 +50,14 @@ export function Tree(props: {
       autoFocus
       viewState={{
         tree: {
-          focusedItem: props.hoveredNode,
+          focusedItem: hoveredNode,
           expandedItems,
           selectedItems: props.selectedNode ? [props.selectedNode] : [],
         },
       }}
-      onFocusItem={(item) => props.onHoveredNode(item.index)}
+      onFocusItem={(item) => {
+        instance.hoveredNode.set(item.index);
+      }}
       onExpandItem={(item) => {
         instance.treeState.update((draft) => {
           draft.expandedNodes.push(item.index);
@@ -85,8 +87,9 @@ export function Tree(props: {
               actions.selectItem();
             }
           },
+
           onMouseOver: () => {
-            props.onHoveredNode(item.index);
+            instance.hoveredNode.set(item.index);
           },
         }),
       }}>
