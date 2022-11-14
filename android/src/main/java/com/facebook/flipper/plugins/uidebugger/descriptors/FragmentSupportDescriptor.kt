@@ -7,20 +7,27 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import androidx.fragment.app.Fragment
+import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 
-object FragmentSupportDescriptor : ChainedDescriptor<androidx.fragment.app.Fragment>() {
+class FragmentSupportDescriptor(val register: DescriptorRegister) :
+    ChainedDescriptor<androidx.fragment.app.Fragment>() {
 
-  private const val NAMESPACE = "Fragment"
+  private val NAMESPACE = "Fragment"
+
   private var SectionId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
 
   override fun onGetName(node: androidx.fragment.app.Fragment): String {
     return node.javaClass.simpleName
   }
+
+  override fun onGetBounds(node: Fragment): Bounds? =
+      node.view?.let { register.descriptorForClassUnsafe(it.javaClass).getBounds(it) }
 
   override fun onGetChildren(node: androidx.fragment.app.Fragment): List<Any> =
       node.view?.let { view -> listOf(view) } ?: listOf()
