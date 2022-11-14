@@ -34,7 +34,7 @@ object BaseTags {
 interface NodeDescriptor<T> {
 
   /** Should be w.r.t the direct parent */
-  fun getBounds(node: T): Bounds?
+  fun getBounds(node: T): Bounds
 
   /**
    * The name used to identify this node in the inspector. Does not need to be unique. A good

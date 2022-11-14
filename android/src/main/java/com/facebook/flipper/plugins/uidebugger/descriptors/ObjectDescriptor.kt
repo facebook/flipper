@@ -28,7 +28,7 @@ object ObjectDescriptor : NodeDescriptor<Any> {
 
   override fun getData(node: Any) = mutableMapOf<MetadataId, InspectableObject>()
 
-  override fun getBounds(node: Any): Bounds? = null
+  override fun getBounds(node: Any): Bounds = Bounds(0, 0, 0, 0)
 
   override fun getTags(node: Any): Set<String> = setOf(BaseTags.Unknown)
 

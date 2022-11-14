@@ -59,7 +59,7 @@ class PartialLayoutTraversal(
                   descriptor.getQualifiedName(node),
                   descriptor.getName(node),
                   emptyMap(),
-                  null,
+                  descriptor.getBounds(node),
                   emptySet(),
                   emptyList(),
                   null))

@@ -67,8 +67,9 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
 
   abstract fun onGetName(node: T): String
 
-  final override fun getBounds(node: T): Bounds? {
-    return onGetBounds(node) ?: mSuper?.getBounds(node)
+  final override fun getBounds(node: T): Bounds {
+    val bounds = onGetBounds(node) ?: mSuper?.getBounds(node)
+    return bounds ?: Bounds(0, 0, 0, 0)
   }
 
   open fun onGetBounds(node: T): Bounds? = null

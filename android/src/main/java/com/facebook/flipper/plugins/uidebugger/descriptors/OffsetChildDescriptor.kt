@@ -21,12 +21,9 @@ class OffsetChild(val child: Any, val descriptor: NodeDescriptor<Any>, val x: In
 
 object OffsetChildDescriptor : NodeDescriptor<OffsetChild> {
 
-  override fun getBounds(node: OffsetChild): Bounds? {
+  override fun getBounds(node: OffsetChild): Bounds {
     val bounds = node.descriptor.getBounds(node.child)
-    bounds?.let { b ->
-      return Bounds(node.x, node.y, b.width, b.height)
-    }
-    return null
+    return Bounds(node.x, node.y, bounds.width, bounds.height)
   }
 
   override fun getName(node: OffsetChild): String = node.descriptor.getName(node.child)
