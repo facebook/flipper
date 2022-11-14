@@ -9,8 +9,12 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.app.Activity
 import com.facebook.flipper.plugins.uidebugger.core.FragmentTracker
+import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.util.DisplayMetrics
 
 object ActivityDescriptor : ChainedDescriptor<Activity>() {
+
+  override fun onGetBounds(node: Activity): Bounds = DisplayMetrics.getDisplayBounds()
 
   override fun onGetName(node: Activity): String {
     return node.javaClass.simpleName
