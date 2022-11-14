@@ -18,9 +18,9 @@ import {
   UINode,
 } from '../types';
 
-import {styled, theme, usePlugin, Atom} from 'flipper-plugin';
+import {styled, theme, usePlugin} from 'flipper-plugin';
 import {plugin} from '../index';
-import {throttle} from 'lodash';
+import {throttle, isEqual, head} from 'lodash';
 
 export const Visualization2D: React.FC<
   {
@@ -60,9 +60,13 @@ export const Visualization2D: React.FC<
         y: offsetMouse.y * pxScaleFactor,
       };
 
-      const targeted = hitTest(root, scaledMouse, root.bounds);
-      if (targeted && targeted.id !== instance.hoveredNode.get()) {
-        instance.hoveredNode.set(targeted.id);
+      const hitNodes = hitTest(root, scaledMouse).map((node) => node.id);
+
+      if (
+        hitNodes.length > 0 &&
+        !isEqual(hitNodes, instance.hoveredNodes.get())
+      ) {
+        instance.hoveredNodes.set(hitNodes);
       }
     }, MouseThrottle);
     window.addEventListener('mousemove', mouseListener);
@@ -70,7 +74,7 @@ export const Visualization2D: React.FC<
     return () => {
       window.removeEventListener('mousemove', mouseListener);
     };
-  }, [instance.hoveredNode, root]);
+  }, [instance.hoveredNodes, root]);
 
   if (!root) {
     return null;
@@ -81,7 +85,7 @@ export const Visualization2D: React.FC<
       ref={rootNodeRef as any}
       onMouseLeave={(e) => {
         e.stopPropagation();
-        instance.hoveredNode.set(undefined);
+        instance.hoveredNodes.set([]);
       }}
       style={{
         /**
@@ -137,16 +141,16 @@ function Visualization2DNode({
 
   const [isHovered, setIsHovered] = useState(false);
   useEffect(() => {
-    const listener = (newValue?: Id, prevValue?: Id) => {
-      if (prevValue === node.id || newValue === node.id) {
-        setIsHovered(newValue === node.id);
+    const listener = (newValue?: Id[], prevValue?: Id[]) => {
+      if (head(prevValue) === node.id || head(newValue) === node.id) {
+        setIsHovered(head(newValue) === node.id);
       }
     };
-    instance.hoveredNode.subscribe(listener);
+    instance.hoveredNodes.subscribe(listener);
     return () => {
-      instance.hoveredNode.unsubscribe(listener);
+      instance.hoveredNodes.unsubscribe(listener);
     };
-  }, [instance.hoveredNode, node.id]);
+  }, [instance.hoveredNodes, node.id]);
 
   const isSelected = selectedNode === node.id;
 
@@ -198,11 +202,11 @@ function Visualization2DNode({
       onClick={(e) => {
         e.stopPropagation();
 
-        const hoveredNode = instance.hoveredNode.get();
-        if (hoveredNode === selectedNode) {
+        const hoveredNodes = instance.hoveredNodes.get();
+        if (hoveredNodes[0] === selectedNode) {
           onSelectNode(undefined);
         } else {
-          onSelectNode(hoveredNode);
+          onSelectNode(hoveredNodes[0]);
         }
       }}>
       <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
@@ -291,35 +295,48 @@ function toNestedNode(
   return root ? uiNodeToNestedNode(root) : undefined;
 }
 
-function hitTest(
-  node: NestedNode,
-  mouseCoordinate: Coordinate,
-  parentBounds: Bounds,
-): NestedNode | undefined {
-  const nodeBounds = node.bounds || parentBounds;
+function hitTest(node: NestedNode, mouseCoordinate: Coordinate): NestedNode[] {
+  const res: NestedNode[] = [];
 
-  if (boundsContainsCoordinate(nodeBounds, mouseCoordinate)) {
-    let children = node.children;
+  function hitTestRec(node: NestedNode, mouseCoordinate: Coordinate): boolean {
+    const nodeBounds = node.bounds;
 
-    if (node.activeChildIdx) {
-      children = [node.children[node.activeChildIdx]];
-    }
-    const offsetMouseCoord = offsetCoordinate(mouseCoordinate, nodeBounds);
-    for (const child of children) {
-      const childHit = hitTest(
-        child,
-        offsetMouseCoord,
-        (parentBounds = nodeBounds),
-      );
-      if (childHit) {
-        return childHit;
+    if (boundsContainsCoordinate(nodeBounds, mouseCoordinate)) {
+      let children = node.children;
+
+      if (node.activeChildIdx != null) {
+        children = [node.children[node.activeChildIdx]];
       }
+      const offsetMouseCoord = offsetCoordinate(mouseCoordinate, nodeBounds);
+      let childHit = false;
+
+      for (const child of children) {
+        childHit = hitTestRec(child, offsetMouseCoord) || childHit;
+      }
+
+      if (!childHit) {
+        res.push(node);
+      }
+
+      return true;
     }
 
-    return node;
+    return false;
   }
 
-  return undefined;
+  hitTestRec(node, mouseCoordinate);
+
+  return res.sort((a, b) => {
+    const areaA = a.bounds.height * a.bounds.width;
+    const areaB = b.bounds.height * b.bounds.width;
+    if (areaA > areaB) {
+      return 1;
+    } else if (areaA < areaB) {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
 }
 
 function boundsContainsCoordinate(bounds: Bounds, coordinate: Coordinate) {

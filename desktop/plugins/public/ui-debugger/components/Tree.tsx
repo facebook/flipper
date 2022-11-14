@@ -21,6 +21,7 @@ import {
   InteractionMode,
   TreeEnvironmentRef,
 } from 'react-complex-tree/lib/esm/types';
+import {head} from 'lodash';
 
 export function Tree(props: {
   rootId: Id;
@@ -32,13 +33,13 @@ export function Tree(props: {
   const expandedItems = useValue(instance.treeState).expandedNodes;
   const items = useMemo(() => toComplexTree(props.nodes), [props.nodes]);
 
-  const hoveredNode = useValue(instance.hoveredNode);
+  const hoveredNodes = useValue(instance.hoveredNodes);
   const treeRef = useRef<TreeEnvironmentRef>();
 
   useEffect(() => {
     //this makes the keyboard arrow  controls work always, even when using the visualiser
     treeRef.current?.focusTree('tree', true);
-  }, [hoveredNode, props.selectedNode]);
+  }, [hoveredNodes, props.selectedNode]);
   return (
     <ControlledTreeEnvironment
       ref={treeRef as any}
@@ -50,13 +51,13 @@ export function Tree(props: {
       autoFocus
       viewState={{
         tree: {
-          focusedItem: hoveredNode,
+          focusedItem: head(hoveredNodes),
           expandedItems,
           selectedItems: props.selectedNode ? [props.selectedNode] : [],
         },
       }}
       onFocusItem={(item) => {
-        instance.hoveredNode.set(item.index);
+        instance.hoveredNodes.set([item.index]);
       }}
       onExpandItem={(item) => {
         instance.treeState.update((draft) => {
@@ -89,7 +90,7 @@ export function Tree(props: {
           },
 
           onMouseOver: () => {
-            instance.hoveredNode.set(item.index);
+            instance.hoveredNodes.set([item.index]);
           },
         }),
       }}>

@@ -52,7 +52,9 @@ export function plugin(client: PluginClient<Events>) {
 
   const treeState = createState<TreeState>({expandedNodes: []});
 
-  const hoveredNode = createState<Id | undefined>(undefined);
+  //The reason for the array as that user could be hovering multiple overlapping nodes at once in the visualiser.
+  //The nodes are sorted by area since you most likely want to select the smallest node under your cursor
+  const hoveredNodes = createState<Id[]>([]);
 
   client.onMessage('coordinateUpdate', (event) => {
     nodes.update((draft) => {
@@ -103,7 +105,7 @@ export function plugin(client: PluginClient<Events>) {
     nodes,
     metadata,
     snapshots,
-    hoveredNode,
+    hoveredNodes,
     perfEvents,
     treeState,
   };
