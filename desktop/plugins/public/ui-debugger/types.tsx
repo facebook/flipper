@@ -50,6 +50,16 @@ export type UpdateMetadataEvent = {
   attributeMetadata: Record<MetadataId, Metadata>;
 };
 
+export type NestedNode = {
+  id: Id;
+  name: string;
+  attributes: Record<string, Inspectable>;
+  children: NestedNode[];
+  bounds: Bounds;
+  tags: Tag[];
+  activeChildIdx?: number;
+};
+
 export type UINode = {
   id: Id;
   qualifiedName: string;

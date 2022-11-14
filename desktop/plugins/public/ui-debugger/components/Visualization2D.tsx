@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {Id, Snapshot, Tag, UINode} from '../types';
+import {Id, NestedNode, Snapshot, Tag, UINode} from '../types';
 import {styled, Layout, theme} from 'flipper-plugin';
 
 export const Visualization2D: React.FC<
@@ -33,12 +33,16 @@ export const Visualization2D: React.FC<
   modifierPressed,
 }) => {
   //todo, do a bfs search for the first bounds found
-  const rootBounds = nodes.get(rootId)?.bounds;
-  const rootSnapshot = snapshots.get(rootId);
 
-  if (!rootBounds) {
+  const rootSnapshot = snapshots.get(rootId);
+  const root = toNestedNode(rootId, nodes);
+
+  if (!root) {
     return null;
   }
+
+  const rootBounds = root.bounds;
+
   return (
     <div
       onMouseLeave={(e) => {
@@ -66,8 +70,7 @@ export const Visualization2D: React.FC<
         />
       ) : null}
       <Visualization2DNode
-        nodeId={rootId}
-        nodes={nodes}
+        node={root}
         snapshots={snapshots}
         hoveredNode={hoveredNode}
         selectedNode={selectedNode}
@@ -80,9 +83,7 @@ export const Visualization2D: React.FC<
 };
 
 function Visualization2DNode({
-  parentId,
-  nodeId,
-  nodes,
+  node,
   snapshots,
   hoveredNode,
   selectedNode,
@@ -90,9 +91,7 @@ function Visualization2DNode({
   onHoverNode,
   modifierPressed,
 }: {
-  nodeId: Id;
-  parentId?: Id;
-  nodes: Map<Id, UINode>;
+  node: NestedNode;
   snapshots: Map<Id, Snapshot>;
   modifierPressed: boolean;
   hoveredNode?: Id;
@@ -100,38 +99,31 @@ function Visualization2DNode({
   onSelectNode: (id?: Id) => void;
   onHoverNode: (id?: Id) => void;
 }) {
-  const node = nodes.get(nodeId);
-  const snapshot = snapshots.get(nodeId);
+  const snapshot = snapshots.get(node.id);
 
-  if (!node) {
-    return null;
-  }
+  const isHovered = hoveredNode === node.id;
+  const isSelected = selectedNode === node.id;
 
-  const isHovered = hoveredNode === nodeId;
-  const isSelected = selectedNode === nodeId;
-
-  let childrenIds: Id[] = [];
+  let nestedChildren: NestedNode[];
 
   //if there is an active child don't draw the other children
   //this means we don't draw overlapping activities / tabs etc
-  if (node.activeChild) {
-    childrenIds = [node.activeChild];
+  if (node.activeChildIdx) {
+    nestedChildren = [node.children[node.activeChildIdx]];
   } else {
-    childrenIds = node.children;
+    nestedChildren = node.children;
   }
 
   // stop drawing children if hovered with the modifier so you
   // can see parent views without their children getting in the way
   if (isHovered && modifierPressed) {
-    childrenIds = [];
+    nestedChildren = [];
   }
 
-  const children = childrenIds.map((childId) => (
+  const children = nestedChildren.map((child) => (
     <Visualization2DNode
-      parentId={nodeId}
-      key={childId}
-      nodeId={childId}
-      nodes={nodes}
+      key={child.id}
+      node={child}
       snapshots={snapshots}
       hoveredNode={hoveredNode}
       onSelectNode={onSelectNode}
@@ -161,11 +153,11 @@ function Visualization2DNode({
       }}
       onMouseEnter={(e) => {
         e.stopPropagation();
-        onHoverNode(nodeId);
+        onHoverNode(node.id);
       }}
       onMouseLeave={(e) => {
         e.stopPropagation();
-        onHoverNode(parentId);
+        // onHoverNode(parentId);
       }}
       onClick={(e) => {
         e.stopPropagation();
@@ -231,4 +223,31 @@ const OuterBorder = styled.div({
 
 function toPx(n: number) {
   return `${n / 2}px`;
+}
+
+function toNestedNode(
+  rootId: Id,
+  nodes: Map<Id, UINode>,
+): NestedNode | undefined {
+  function uiNodeToNestedNode(node: UINode): NestedNode {
+    const activeChildIdx = node.activeChild
+      ? node.children.indexOf(node.activeChild)
+      : undefined;
+
+    return {
+      id: node.id,
+      name: node.name,
+      attributes: node.attributes,
+      children: node.children
+        .map((childId) => nodes.get(childId))
+        .filter((child) => child != null)
+        .map((child) => uiNodeToNestedNode(child!!)),
+      bounds: node.bounds,
+      tags: node.tags,
+      activeChildIdx: activeChildIdx,
+    };
+  }
+
+  const root = nodes.get(rootId);
+  return root ? uiNodeToNestedNode(root) : undefined;
 }
