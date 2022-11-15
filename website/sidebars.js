@@ -161,6 +161,7 @@ module.exports = {
             'fb/connections',
             {
               'Data Pipelines': [
+                'fb/data-pipelines',
                 'fb/flipper-analytics',
                 'fb/scribe',
                 'fb/error-logging',
