@@ -77,7 +77,7 @@ export type LauncherSettings = {
 };
 
 // Settings that primarily only apply to Electron atm
-// TODO: further separte between flipper-ui config and Electron config
+// TODO: further separate between flipper-ui config and Electron config
 export type ProcessConfig = {
   disabledPlugins: string[];
   lastWindowPosition: {
@@ -90,6 +90,7 @@ export type ProcessConfig = {
   launcherMsg: string | null;
   // Controls whether to delegate to the launcher if present.
   launcherEnabled: boolean;
+  updaterEnabled: boolean;
   // Control whether to suppress "update available" notifications
   suppressPluginUpdateNotifications?: boolean;
 };

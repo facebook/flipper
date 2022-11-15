@@ -18,6 +18,7 @@ test('config is decoded from env', () => {
       screenCapturePath: '/my/screenshot/path',
       launcherEnabled: false,
       suppressPluginUpdateNotifications: true,
+      updaterEnabled: true,
     }),
   });
 
@@ -28,6 +29,7 @@ test('config is decoded from env', () => {
     screenCapturePath: '/my/screenshot/path',
     launcherEnabled: false,
     suppressPluginUpdateNotifications: true,
+    updaterEnabled: true,
   });
 });
 
@@ -39,5 +41,6 @@ test('config is decoded from env with defaults', () => {
     screenCapturePath: undefined,
     launcherEnabled: true,
     suppressPluginUpdateNotifications: false,
+    updaterEnabled: true,
   });
 });

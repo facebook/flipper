@@ -284,7 +284,12 @@ async function waitForLogin(store: Store) {
 
 async function verifyFlipperIsUpToDate(title: string) {
   const config = getRenderHostInstance().serverConfig.processConfig;
-  if (!isProduction() || isTest() || config.suppressPluginUpdateNotifications) {
+  if (
+    !isProduction() ||
+    isTest() ||
+    !config.updaterEnabled ||
+    config.suppressPluginUpdateNotifications
+  ) {
     return;
   }
   const currentVersion = getAppVersion();
