@@ -162,6 +162,7 @@ module.exports = {
             {
               'Data Pipelines': [
                 'fb/data-pipelines',
+                'fb/data-pipelines-details',
                 'fb/flipper-analytics',
                 'fb/scribe',
                 'fb/error-logging',
