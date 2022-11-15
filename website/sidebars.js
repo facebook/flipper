@@ -157,26 +157,46 @@ module.exports = {
       ...fbInternalOnly([
         {
           "Meta": [
-            'fb/release-infra',
-            'fb/LauncherConfig',
-            'fb/hacking-on-launcher',
             'fb/arc_uiqr',
-            'fb/Flipper-fbsource-Pinning',
-            'fb/Flipper-Release-Cycle',
-            'fb/Add-Support-Group-to-Flipper-Support-Form',
-            'fb/Alerts',
-            'fb/bundling',
-            'fb/Electron-Upgrade',
-            'fb/flipper-analytics',
-            'fb/Navigation-Plugin-Development-Guide',
-            'fb/Oncall-Runbook',
-            'fb/sandcastle',
-            'fb/Star-Ratings',
-            'fb/sandcastle-overview',
-            'fb/error-logging',
-            'fb/scribe',
-            'fb/async-testing',
             'fb/connections',
+            {
+              'Data Pipelines': [
+                'fb/flipper-analytics',
+                'fb/scribe',
+                'fb/error-logging',
+              ]
+            },
+            'fb/Electron-Upgrade',
+            {
+              'Launcher': [
+                'fb/hacking-on-launcher',
+                'fb/LauncherConfig',
+              ]
+            },
+            'fb/bundling',
+            'fb/Navigation-Plugin-Development-Guide',
+            {
+              'Releases': [
+                'fb/Flipper-Release-Cycle',
+                'fb/release-infra',
+                'fb/Flipper-fbsource-Pinning',
+              ]
+            },
+            {
+              'Sandcastle': [
+                'fb/sandcastle-overview',
+                'fb/sandcastle',
+              ]
+            },
+            {
+              'Support': [
+                'fb/Alerts',
+                'fb/Add-Support-Group-to-Flipper-Support-Form',
+                'fb/Oncall-Runbook',
+              ]
+            },
+            'fb/Star-Ratings',
+            'fb/async-testing',
           ]
         }
       ]),
