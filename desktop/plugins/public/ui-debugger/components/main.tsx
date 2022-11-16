@@ -9,49 +9,40 @@
 
 import React, {useState} from 'react';
 import {plugin} from '../index';
-import {
-  DataInspector,
-  DetailSidebar,
-  Layout,
-  usePlugin,
-  useValue,
-} from 'flipper-plugin';
-import {Typography} from 'antd';
-
+import {DetailSidebar, Layout, usePlugin, useValue} from 'flipper-plugin';
 import {useHotkeys} from 'react-hotkeys-hook';
-import {Id, Snapshot, UINode} from '../types';
+import {Id, Metadata, MetadataId, Snapshot, UINode} from '../types';
 import {PerfStats} from './PerfStats';
 import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
 import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
+import {Inspector} from './sidebar/Inspector';
 
 export function Component() {
   const instance = usePlugin(plugin);
   const rootId = useValue(instance.rootId);
   const nodes: Map<Id, UINode> = useValue(instance.nodes);
+  const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
   const snapshots: Map<Id, Snapshot> = useValue(instance.snapshots);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Id | undefined>(undefined);
-  const [hoveredNode, setHoveredNode] = useState<Id | undefined>(undefined);
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
   const {ctrlPressed} = useKeyboardModifiers();
 
-  function renderAttributesInspector(node: UINode | undefined) {
+  function renderSidebar(
+    node: UINode | undefined,
+    metadata: Map<MetadataId, Metadata>,
+  ) {
     if (!node) {
       return;
     }
     return (
-      <>
-        <DetailSidebar>
-          <Layout.Container gap pad>
-            <Typography.Title level={2}>Attributes Inspector</Typography.Title>
-            <DataInspector data={node} expandRoot />
-          </Layout.Container>
-        </DetailSidebar>
-      </>
+      <DetailSidebar width={350}>
+        <Inspector metadata={metadata} node={node} />
+      </DetailSidebar>
     );
   }
 
@@ -59,32 +50,27 @@ export function Component() {
 
   if (rootId) {
     return (
-      <>
+      <Layout.Horizontal grow>
         <Layout.ScrollContainer>
-          <Layout.Horizontal>
-            <Tree
-              selectedNode={selectedNode}
-              onSelectNode={setSelectedNode}
-              onHoveredNode={setHoveredNode}
-              nodes={nodes}
-              rootId={rootId}
-            />
-            <Visualization2D
-              root={rootId}
-              nodes={nodes}
-              snapshots={snapshots}
-              hoveredNode={hoveredNode}
-              onHoverNode={setHoveredNode}
-              selectedNode={selectedNode}
-              onSelectNode={setSelectedNode}
-              modifierPressed={ctrlPressed}
-            />
-          </Layout.Horizontal>
+          <Tree
+            selectedNode={selectedNode}
+            onSelectNode={setSelectedNode}
+            nodes={nodes}
+            rootId={rootId}
+          />
         </Layout.ScrollContainer>
-        {selectedNode && renderAttributesInspector(nodes.get(selectedNode))}
-      </>
+        <Visualization2D
+          rootId={rootId}
+          nodes={nodes}
+          snapshots={snapshots}
+          selectedNode={selectedNode}
+          onSelectNode={setSelectedNode}
+          modifierPressed={ctrlPressed}
+        />
+        {selectedNode && renderSidebar(nodes.get(selectedNode), metadata)}
+      </Layout.Horizontal>
     );
   }
 
-  return <div>Nothing yet</div>;
+  return <div>Loading...</div>;
 }

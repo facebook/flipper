@@ -1,0 +1,30 @@
+{
+  "name": "flipper-server-client",
+  "version": "0.0.0",
+  "description": "Lightweight abstraction to connect to Flipper Server and provide an API to interact with it",
+  "repository": "facebook/flipper",
+  "main": "lib/index.js",
+  "flipperBundlerEntry": "src",
+  "types": "lib/index.d.ts",
+  "license": "MIT",
+  "bugs": "https://github.com/facebook/flipper/issues",
+  "dependencies": {
+    "eventemitter3": "^4.0.7",
+    "flipper-common": "0.0.0",
+    "reconnecting-websocket": "^4.4.0"
+  },
+  "peerDependencies": {},
+  "scripts": {
+    "reset": "rimraf lib *.tsbuildinfo",
+    "build": "tsc -b",
+    "prepack": "yarn reset && yarn build"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "homepage": "https://github.com/facebook/flipper",
+  "keywords": [
+    "Flipper"
+  ],
+  "author": "Facebook, Inc"
+}

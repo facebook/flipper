@@ -20,110 +20,209 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
-import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
+import androidx.core.widget.NestedScrollView
+import androidx.viewpager.widget.ViewPager
+import com.facebook.flipper.plugins.uidebugger.common.*
 import com.facebook.flipper.plugins.uidebugger.model.*
 import com.facebook.flipper.plugins.uidebugger.util.ResourcesUtil
 import java.lang.reflect.Field
 
 object ViewDescriptor : ChainedDescriptor<View>() {
 
+  private const val NAMESPACE = "View"
+
+  private var SectionId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
+  private val PositionAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "position")
+  private val GlobalPositionAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "globalPosition")
+  private val SizeAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "size")
+  private val BoundsAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "bounds")
+  private val PaddingAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "padding")
+  private val LocalVisibleRectAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "localVisibleRect")
+  private val RotationAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "rotation")
+  private val ScaleAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "scale")
+  private val PivotAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "pivot")
+  private val LayoutParamsAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "layoutParams")
+  private val LayoutDirectionAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "layoutDirection")
+  private val TranslationAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "translation")
+  private val ElevationAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "elevation")
+  private val VisibilityAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "visibility")
+
+  private val BackgroundAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "background")
+  private val ForegroundAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "foreground")
+
+  private val AlphaAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "alpha")
+  private val StateAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "state")
+
+  private val StateEnabledAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "enabled")
+  private val StateActivatedAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "activated")
+  private val StateFocusedAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "focused")
+  private val StateSelectedAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "selected")
+
+  private val TextDirectionAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textDirection")
+  private val TextAlignmentAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textAlignment")
+
+  private val TagAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "tag")
+  private val KeyedTagsAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "keyedTags")
+
+  private val WidthAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "width")
+  private val HeightAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "height")
+
+  private val MarginAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "margin")
+  private val WeightAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "weight")
+  private val GravityAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "gravity")
+
   override fun onGetName(node: View): String = node.javaClass.simpleName
 
   override fun onGetBounds(node: View): Bounds {
-    val localVisible = Rect()
-    node.getLocalVisibleRect(localVisible)
+
+    if (node.parent is ViewPager) {
+      // override
+      return Bounds(0, 0, node.width, node.height)
+    }
+
+    var offsetX = 0
+    var offsetY = 0
+    if (node.parent is NestedScrollView) {
+      /**
+       * when a node is a child of nested scroll view android does not adjust the left/ top as the
+       * view scrolls. This seems to be unique to nested scroll view so we have this trick to find
+       * its actual position.
+       */
+      val localVisible = Rect()
+      node.getLocalVisibleRect(localVisible)
+      offsetX = localVisible.left
+      offsetY = localVisible.top
+    }
+
     return Bounds(
-        node.left - localVisible.left + node.translationX.toInt(),
-        node.top - localVisible.top + node.translationY.toInt(),
+        node.left + node.translationX.toInt() - offsetX,
+        node.top + node.translationY.toInt() - offsetY,
         node.width,
         node.height)
   }
 
   override fun onGetTags(node: View): Set<String> = BaseTags.NativeAndroid
 
-  override fun onGetData(
-      node: View,
-      attributeSections: MutableMap<SectionName, InspectableObject>
-  ) {
+  override fun onGetData(node: View, attributeSections: MutableMap<MetadataId, InspectableObject>) {
 
-    val props = mutableMapOf<String, Inspectable>()
-    props["size"] = InspectableValue.Size(Size(node.width, node.height), mutable = true)
-    props["alpha"] = InspectableValue.Number(node.alpha, mutable = true)
-    props["visibility"] = VisibilityMapping.toInspectable(node.visibility, mutable = false)
-
-    fromDrawable(node.background)?.let { background -> props["background"] = background }
-
-    node.tag
-        ?.let { InspectableValue.fromAny(it, mutable = false) }
-        ?.let { tag -> props.put("tag", tag) }
-
-    props["keyedTags"] = InspectableObject(getViewTags(node))
-    props["layoutParams"] = getLayoutParams(node)
-    props["state"] =
-        InspectableObject(
-            mapOf(
-                "enabled" to InspectableValue.Boolean(node.isEnabled, mutable = false),
-                "activated" to InspectableValue.Boolean(node.isActivated, mutable = false),
-                "focused" to InspectableValue.Boolean(node.isFocused, mutable = false),
-                "selected" to InspectableValue.Boolean(node.isSelected, mutable = false)))
-
-    props["bounds"] =
-        InspectableValue.SpaceBox(SpaceBox(node.top, node.right, node.bottom, node.left))
-    props["padding"] =
-        InspectableValue.SpaceBox(
-            SpaceBox(node.paddingTop, node.paddingRight, node.paddingBottom, node.paddingLeft))
-    props["rotation"] =
-        InspectableValue.Coordinate3D(Coordinate3D(node.rotationX, node.rotationY, node.rotation))
-    props["scale"] = InspectableValue.Coordinate(Coordinate(node.scaleX, node.scaleY))
-    props["pivot"] = InspectableValue.Coordinate(Coordinate(node.pivotX, node.pivotY))
+    val props = mutableMapOf<Int, Inspectable>()
 
     val positionOnScreen = IntArray(2)
     node.getLocationOnScreen(positionOnScreen)
 
-    props["globalPosition"] =
-        InspectableValue.Coordinate(Coordinate(positionOnScreen[0], positionOnScreen[1]))
-
     val localVisible = Rect()
     node.getLocalVisibleRect(localVisible)
 
-    props["localVisible"] =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+      props[PositionAttributeId] =
+          InspectableValue.Coordinate3D(Coordinate3D(node.x, node.y, node.z))
+    } else {
+      props[PositionAttributeId] = InspectableValue.Coordinate(Coordinate(node.x, node.y))
+    }
+
+    props[GlobalPositionAttributeId] =
+        InspectableValue.Coordinate(Coordinate(positionOnScreen[0], positionOnScreen[1]))
+
+    props[SizeAttributeId] = InspectableValue.Size(Size(node.width, node.height))
+
+    props[BoundsAttributeId] =
+        InspectableValue.Bounds(Bounds(node.left, node.top, node.right, node.bottom))
+    props[PaddingAttributeId] =
+        InspectableValue.SpaceBox(
+            SpaceBox(node.paddingTop, node.paddingRight, node.paddingBottom, node.paddingLeft))
+
+    props[LocalVisibleRectAttributeId] =
         InspectableObject(
             mapOf(
-                "position" to InspectableValue.Coordinate(Coordinate(localVisible.left, node.top)),
-                "size" to InspectableValue.Size(Size(node.width, node.height))),
+                PositionAttributeId to
+                    InspectableValue.Coordinate(Coordinate(localVisible.left, localVisible.top)),
+                SizeAttributeId to
+                    InspectableValue.Size(Size(localVisible.width(), localVisible.height()))),
         )
 
+    props[RotationAttributeId] =
+        InspectableValue.Coordinate3D(Coordinate3D(node.rotationX, node.rotationY, node.rotation))
+    props[ScaleAttributeId] = InspectableValue.Coordinate(Coordinate(node.scaleX, node.scaleY))
+    props[PivotAttributeId] = InspectableValue.Coordinate(Coordinate(node.pivotX, node.pivotY))
+
+    props[LayoutParamsAttributeId] = getLayoutParams(node)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      props["layoutDirection"] = LayoutDirectionMapping.toInspectable(node.layoutDirection, false)
-      props["textDirection"] = TextDirectionMapping.toInspectable(node.textDirection, false)
-      props["textAlignment"] = TextAlignmentMapping.toInspectable(node.textAlignment, false)
+      props[LayoutDirectionAttributeId] = LayoutDirectionMapping.toInspectable(node.layoutDirection)
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      props["elevation"] = InspectableValue.Number(node.elevation)
-    }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      props["translation"] =
+      props[TranslationAttributeId] =
           InspectableValue.Coordinate3D(
               Coordinate3D(node.translationX, node.translationY, node.translationZ))
     } else {
-      props["translation"] =
+      props[TranslationAttributeId] =
           InspectableValue.Coordinate(Coordinate(node.translationX, node.translationY))
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-      props["position"] = InspectableValue.Coordinate3D(Coordinate3D(node.x, node.y, node.z))
-    } else {
-      props["position"] = InspectableValue.Coordinate(Coordinate(node.x, node.y))
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      props[ElevationAttributeId] = InspectableValue.Number(node.elevation)
     }
 
+    props[VisibilityAttributeId] = VisibilityMapping.toInspectable(node.visibility)
+
+    fromDrawable(node.background)?.let { background -> props[BackgroundAttributeId] = background }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      fromDrawable(node.foreground)?.let { foreground -> props["foreground"] = foreground }
+      fromDrawable(node.foreground)?.let { foreground -> props[ForegroundAttributeId] = foreground }
     }
 
-    attributeSections["View"] = InspectableObject(props.toMap())
+    props[AlphaAttributeId] = InspectableValue.Number(node.alpha)
+    props[StateAttributeId] =
+        InspectableObject(
+            mapOf(
+                StateEnabledAttributeId to InspectableValue.Boolean(node.isEnabled),
+                StateActivatedAttributeId to InspectableValue.Boolean(node.isActivated),
+                StateFocusedAttributeId to InspectableValue.Boolean(node.isFocused),
+                StateSelectedAttributeId to InspectableValue.Boolean(node.isSelected)))
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      props[TextDirectionAttributeId] = TextDirectionMapping.toInspectable(node.textDirection)
+      props[TextAlignmentAttributeId] = TextAlignmentMapping.toInspectable(node.textAlignment)
+    }
+
+    node.tag
+        ?.let { InspectableValue.fromAny(it, mutable = false) }
+        ?.let { tag -> props.put(TagAttributeId, tag) }
+
+    props[KeyedTagsAttributeId] = InspectableObject(getViewTags(node))
+
+    attributeSections[SectionId] = InspectableObject(props.toMap())
   }
 
   override fun onGetSnapshot(node: View, bitmap: Bitmap?): Bitmap? {
@@ -152,19 +251,19 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
   private fun fromDrawable(d: Drawable?): Inspectable? {
     return if (d is ColorDrawable) {
-      InspectableValue.Color(Color.fromColor(d.color), mutable = false)
+      InspectableValue.Color(Color.fromColor(d.color))
     } else null
   }
 
   private fun getLayoutParams(node: View): InspectableObject {
     val layoutParams = node.layoutParams
 
-    val params = mutableMapOf<String, Inspectable>()
-    params["width"] = LayoutParamsMapping.toInspectable(layoutParams.width, mutable = true)
-    params["height"] = LayoutParamsMapping.toInspectable(layoutParams.height, mutable = true)
+    val params = mutableMapOf<Int, Inspectable>()
+    params[WidthAttributeId] = LayoutParamsMapping.toInspectable(layoutParams.width)
+    params[HeightAttributeId] = LayoutParamsMapping.toInspectable(layoutParams.height)
 
     if (layoutParams is ViewGroup.MarginLayoutParams) {
-      params["margin"] =
+      params[MarginAttributeId] =
           InspectableValue.SpaceBox(
               SpaceBox(
                   layoutParams.topMargin,
@@ -173,17 +272,17 @@ object ViewDescriptor : ChainedDescriptor<View>() {
                   layoutParams.leftMargin))
     }
     if (layoutParams is FrameLayout.LayoutParams) {
-      params["gravity"] = GravityMapping.toInspectable(layoutParams.gravity, mutable = true)
+      params[GravityAttributeId] = GravityMapping.toInspectable(layoutParams.gravity)
     }
     if (layoutParams is LinearLayout.LayoutParams) {
-      params["weight"] = InspectableValue.Number(layoutParams.weight, mutable = true)
-      params["gravity"] = GravityMapping.toInspectable(layoutParams.gravity, mutable = true)
+      params[WeightAttributeId] = InspectableValue.Number(layoutParams.weight)
+      params[GravityAttributeId] = GravityMapping.toInspectable(layoutParams.gravity)
     }
     return InspectableObject(params)
   }
 
-  private fun getViewTags(node: View): MutableMap<String, Inspectable> {
-    val tags = mutableMapOf<String, Inspectable>()
+  private fun getViewTags(node: View): MutableMap<Int, Inspectable> {
+    val tags = mutableMapOf<Int, Inspectable>()
 
     KeyedTagsField?.let { field ->
       val keyedTags = field.get(node) as SparseArray<*>?
@@ -196,7 +295,13 @@ object ViewDescriptor : ChainedDescriptor<View>() {
           keyedTags
               .valueAt(i)
               ?.let { InspectableValue.fromAny(it, false) }
-              ?.let { tags.put(id, it) }
+              ?.let {
+                val metadata = MetadataRegister.get(NAMESPACE, id)
+                val identifier =
+                    metadata?.id
+                        ?: MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, id)
+                tags.put(identifier, it)
+              }
           i++
         }
       }
@@ -297,6 +402,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       object :
           EnumMapping<Int>(
               mapOf(
+                  "NONE" to -1,
                   "NO_GRAVITY" to Gravity.NO_GRAVITY,
                   "LEFT" to Gravity.LEFT,
                   "TOP" to Gravity.TOP,

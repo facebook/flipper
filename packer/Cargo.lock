@@ -13,9 +13,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.65"
+version = "1.0.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98161a4e3e2184da77bb14f02184cdd111e83bbbcc9979dfee3c44b9a85f5602"
+checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
 
 [[package]]
 name = "atty"
@@ -632,18 +632,18 @@ checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
 
 [[package]]
 name = "serde"
-version = "1.0.145"
+version = "1.0.147"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "728eb6351430bccb993660dfffc5a72f91ccc1295abaa8ce19b27ebe4f75568b"
+checksum = "d193d69bae983fc11a79df82342761dfbf28a99fc8d203dca4c3c1b590948965"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.145"
+version = "1.0.147"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81fa1584d3d1bcacd84c277a0dfe21f5b0f6accf4a23d04d4c6d61f1af522b4c"
+checksum = "4f1d362ca8fc9c3e3a7484440752472d68a6caa98f1ab81d99b5dfe517cec852"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -663,9 +663,9 @@ dependencies = [
 
 [[package]]
 name = "serde_yaml"
-version = "0.9.13"
+version = "0.9.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8613d593412a0deb7bbd8de9d908efff5a0cb9ccd8f62c641e7b2ed2f57291d1"
+checksum = "6d232d893b10de3eb7258ff01974d6ee20663d8e833263c99409d4b13a0209da"
 dependencies = [
  "indexmap",
  "itoa",
@@ -800,9 +800,9 @@ checksum = "8ccb82d61f80a663efe1f787a51b16b5a51e3314d6ac365b08639f52387b33f3"
 
 [[package]]
 name = "unsafe-libyaml"
-version = "0.2.2"
+version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "931179334a56395bcf64ba5e0ff56781381c1a5832178280c7d7f91d1679aeb0"
+checksum = "c1e5fa573d8ac5f1a856f8d7be41d390ee973daf97c806b2c1a465e4e1406e68"
 
 [[package]]
 name = "version_check"

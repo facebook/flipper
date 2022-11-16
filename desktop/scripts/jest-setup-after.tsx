@@ -137,6 +137,7 @@ function createStubRenderHost(): RenderHost {
       launcherEnabled: false,
       launcherMsg: null,
       screenCapturePath: `/dev/null`,
+      updaterEnabled: true,
       suppressPluginUpdateNotifications: false,
     },
     settings: {
@@ -190,7 +191,7 @@ function createStubRenderHost(): RenderHost {
     },
     flipperServer: TestUtils.createFlipperServerMock(),
     async requirePlugin(path: string) {
-      return require(path);
+      return {plugin: require(path)};
     },
     getStaticResourceUrl(relativePath): string {
       return 'file://' + resolve(rootPath, 'static', relativePath);

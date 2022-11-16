@@ -25,6 +25,7 @@ import {
   FlipperServerConfig,
   Logger,
   FlipperServerExecOptions,
+  DeviceDebugData,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
@@ -53,6 +54,8 @@ import {initializeAdbClient} from './devices/android/adbClient';
 import {assertNotNull} from './comms/Utilities';
 import {mkdirp} from 'fs-extra';
 import {flipperDataFolder, flipperSettingsFolder} from './utils/paths';
+import {DebuggableDevice} from './devices/DebuggableDevice';
+import {jfUpload} from './fb-stubs/jf';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
@@ -419,6 +422,7 @@ export class FlipperServerImpl implements FlipperServer {
     'device-clear-logs': async (serial) => this.getDevice(serial).clearLogs(),
     'device-navigate': async (serial, loc) =>
       this.getDevice(serial).navigateToLocation(loc),
+    'fetch-debug-data': () => this.fetchDebugLogs(),
     'metro-command': async (serial: string, command: string) => {
       const device = this.getDevice(serial);
       if (!(device instanceof MetroDevice)) {
@@ -532,6 +536,13 @@ export class FlipperServerImpl implements FlipperServer {
       return internGraphGETAPIRequest(endpoint, params, options, token);
     },
     'intern-upload-scribe-logs': sendScribeLogs,
+    'intern-cloud-upload': async (path) => {
+      const uploadRes = await jfUpload(path);
+      if (!uploadRes) {
+        throw new Error('Upload failed');
+      }
+      return uploadRes;
+    },
     shutdown: async () => {
       process.exit(0);
     },
@@ -598,6 +609,32 @@ export class FlipperServerImpl implements FlipperServer {
 
   getDevices(): ServerDevice[] {
     return Array.from(this.devices.values());
+  }
+
+  private async fetchDebugLogs() {
+    const debugDataForEachDevice = await Promise.all(
+      [...this.devices.values()]
+        .filter(
+          (device) =>
+            device.connected &&
+            (device.info.os === 'Android' || device.info.os === 'iOS'),
+        )
+        .map((device) =>
+          (device as unknown as DebuggableDevice)
+            .readFlipperFolderForAllApps()
+
+            .catch((e) => {
+              console.warn(
+                'fetchDebugLogs -> could not fetch debug data',
+                device.info.serial,
+                e,
+              );
+            }),
+        ),
+    );
+    return debugDataForEachDevice
+      .filter((item): item is DeviceDebugData[] => !!item)
+      .flat();
   }
 
   public async close() {

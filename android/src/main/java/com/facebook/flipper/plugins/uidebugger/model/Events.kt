@@ -10,9 +10,18 @@ package com.facebook.flipper.plugins.uidebugger.model
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 
 @kotlinx.serialization.Serializable
-data class InitEvent(val rootId: Id) {
+data class InitEvent(
+    val rootId: Id,
+) {
   companion object {
     const val name = "init"
+  }
+}
+
+@kotlinx.serialization.Serializable
+data class MetadataUpdateEvent(val attributeMetadata: Map<MetadataId, Metadata> = emptyMap()) {
+  companion object {
+    const val name = "metadataUpdate"
   }
 }
 
@@ -26,6 +35,17 @@ data class SubtreeUpdateEvent(
 ) {
   companion object {
     const val name = "subtreeUpdate"
+  }
+}
+
+@kotlinx.serialization.Serializable
+data class CoordinateUpdateEvent(
+    val observerType: String,
+    val nodeId: Id,
+    val coordinate: Coordinate
+) {
+  companion object {
+    const val name = "coordinateUpdate"
   }
 }
 

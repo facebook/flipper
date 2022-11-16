@@ -110,14 +110,17 @@ async function startProxyServer(
   // listening at the specified port.
   if (os.platform() === 'win32') {
     if (!config.tcp) {
-      console.error(
-        'No port was supplied and domain socket access is not available for non-POSIX systems, unable to start server',
+      console.warn(
+        'No port was supplied and domain socket access is not available for non-POSIX systems, falling back to TCP',
       );
-      process.exit(1);
     }
     return new Promise((resolve) => {
       console.log(`Starting server on http://localhost:${config.port}`);
-      const readyForIncomingConnections = (): Promise<void> => {
+      const readyForIncomingConnections = (
+        serverImpl: FlipperServerImpl,
+        companionEnv: FlipperServerCompanionEnv,
+      ): Promise<void> => {
+        attachSocketServer(socket, serverImpl, companionEnv);
         return new Promise((resolve) => {
           server.listen(config.port, undefined, () => resolve());
         });

@@ -50,6 +50,7 @@ export const theme = {
     large: '16px',
     default: '14px',
     small: '12px',
+    smaller: '10px',
   } as const,
   monospace: {
     fontFamily: 'SF Mono,Monaco,Andale Mono,monospace',

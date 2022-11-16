@@ -25,6 +25,7 @@ export enum FlipperServerState {
   CONNECTED,
   DISCONNECTED,
 }
+export type {FlipperServer, FlipperServerCommands, FlipperServerExecOptions};
 
 export function createFlipperServer(
   host: string,
@@ -32,21 +33,22 @@ export function createFlipperServer(
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
   const socket = new ReconnectingWebSocket(`ws://${host}:${port}`);
-  return createFlipperServerWithSocket(socket, onStateChange);
+  return createFlipperServerWithSocket(socket as WebSocket, onStateChange);
 }
 
 export function createFlipperServerWithSocket(
-  socket: ReconnectingWebSocket,
+  socket: WebSocket,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
   onStateChange(FlipperServerState.CONNECTING);
 
   return new Promise<FlipperServer>((resolve, reject) => {
-    let initialConnectionTimeout: number | undefined = window.setTimeout(() => {
-      reject(
-        new Error('Failed to connect to flipper-server in a timely manner'),
-      );
-    }, CONNECTION_TIMEOUT);
+    let initialConnectionTimeout: ReturnType<typeof setTimeout> | undefined =
+      setTimeout(() => {
+        reject(
+          new Error('Failed to connect to flipper-server in a timely manner'),
+        );
+      }, CONNECTION_TIMEOUT);
 
     const eventEmitter = new EventEmitter();
 
@@ -82,50 +84,57 @@ export function createFlipperServerWithSocket(
     });
 
     socket.addEventListener('message', ({data}) => {
-      const {event, payload} = JSON.parse(
-        data.toString(),
-      ) as ServerWebSocketMessage;
+      try {
+        const {event, payload} = JSON.parse(
+          data.toString(),
+        ) as ServerWebSocketMessage;
 
-      switch (event) {
-        case 'exec-response': {
-          console.debug('flipper-server: exec <<<', payload);
-          const entry = pendingRequests.get(payload.id);
-          if (!entry) {
-            console.warn(`Unknown request id `, payload.id);
-          } else {
-            pendingRequests.delete(payload.id);
-            clearTimeout(entry.timeout);
-            entry.resolve(payload.data);
+        switch (event) {
+          case 'exec-response': {
+            console.debug('flipper-server: exec <<<', payload);
+            const entry = pendingRequests.get(payload.id);
+            if (!entry) {
+              console.warn(`Unknown request id `, payload.id);
+            } else {
+              pendingRequests.delete(payload.id);
+              clearTimeout(entry.timeout);
+              entry.resolve(payload.data);
+            }
+            break;
           }
-          break;
-        }
-        case 'exec-response-error': {
-          // TODO: Deserialize error
-          console.debug(
-            'flipper-server: exec <<< [SERVER ERROR]',
-            payload.id,
-            payload.data,
-          );
-          const entry = pendingRequests.get(payload.id);
-          if (!entry) {
-            console.warn(`flipper-server: Unknown request id `, payload.id);
-          } else {
-            pendingRequests.delete(payload.id);
-            clearTimeout(entry.timeout);
-            entry.reject(payload.data);
+          case 'exec-response-error': {
+            // TODO: Deserialize error
+            console.debug(
+              'flipper-server: exec <<< [SERVER ERROR]',
+              payload.id,
+              payload.data,
+            );
+            const entry = pendingRequests.get(payload.id);
+            if (!entry) {
+              console.warn(`flipper-server: Unknown request id `, payload.id);
+            } else {
+              pendingRequests.delete(payload.id);
+              clearTimeout(entry.timeout);
+              entry.reject(payload.data);
+            }
+            break;
           }
-          break;
+          case 'server-event': {
+            eventEmitter.emit(payload.event, payload.data);
+            break;
+          }
+          default: {
+            console.warn(
+              'flipper-server: received unknown message type',
+              data.toString(),
+            );
+          }
         }
-        case 'server-event': {
-          eventEmitter.emit(payload.event, payload.data);
-          break;
-        }
-        default: {
-          console.warn(
-            'flipper-server: received unknown message type',
-            data.toString(),
-          );
-        }
+      } catch (e) {
+        console.warn(
+          'flipper-server: failed to process message',
+          data.toString(),
+        );
       }
     });
 
@@ -156,7 +165,12 @@ export function createFlipperServerWithSocket(
         if (connected) {
           const id = ++requestId;
           return new Promise<any>((resolve, reject) => {
-            console.debug('flipper-server: exec >>>', id, command, args);
+            console.debug(
+              'flipper-server: exec >>>',
+              id,
+              command,
+              command === 'intern-upload-scribe-logs' ? undefined : args,
+            );
 
             pendingRequests.set(id, {
               resolve,

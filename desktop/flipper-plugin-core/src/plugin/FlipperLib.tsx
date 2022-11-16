@@ -26,6 +26,7 @@ import {
   EnvironmentInfo,
   FSStatsLike,
   FlipperServerCommands,
+  ENVIRONMENT_VARIABLES,
 } from 'flipper-common';
 import {CreatePasteArgs, CreatePasteResult} from './Paste';
 
@@ -199,6 +200,7 @@ export interface FlipperLib {
   };
   environmentInfo: {
     os: EnvironmentInfo['os'];
+    env: Partial<Record<ENVIRONMENT_VARIABLES, string>>;
   };
   remoteServerContext: RemoteServerContext;
   intern: InternAPI;
@@ -207,6 +209,7 @@ export interface FlipperLib {
 interface InternAPI {
   graphGet: FlipperServerCommands['intern-graph-get'];
   graphPost: FlipperServerCommands['intern-graph-post'];
+  isLoggedIn: FlipperServerCommands['is-logged-in'];
 }
 
 export let flipperLibInstance: FlipperLib | undefined;

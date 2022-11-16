@@ -30,9 +30,11 @@ To create your own plugins and integrate with Flipper using JavaScript, see the 
 
 By default, React Native might ship with an outdated Flipper SDK. To make sure you are using the latest version, determine the latest released version of Flipper by running `npm info flipper`.
 
+Latest version of Flipper requires react-native 0.69+! If you use react-native < 0.69.0, please, downgrade `react-native-flipper` to 0.162.0 (see [this GitHub issue](https://github.com/facebook/flipper/issues/4240) for details).
+
 Android:
 
-1. Bump the `FLIPPER_VERSION` variable in `android/gradle.properties`, for example: `FLIPPER_VERSION=0.171.1`.
+1. Bump the `FLIPPER_VERSION` variable in `android/gradle.properties`, for example: `FLIPPER_VERSION=0.174.0`.
 2. Run `./gradlew clean` in the `android` directory.
 
 iOS:
@@ -42,7 +44,7 @@ react-native version => 0.69.0
 2. Run `pod install --repo-update` in the `ios` directory.
 
 react-native version < 0.69.0
-1. Call `use_flipper` with a specific version in `ios/Podfile`, for example: `use_flipper!({ 'Flipper' => '0.171.1' })`.
+1. Call `use_flipper` with a specific version in `ios/Podfile`, for example: `use_flipper!({ 'Flipper' => '0.174.0' })`.
 2. Run `pod install --repo-update` in the `ios` directory.
 
 ## Manual Setup

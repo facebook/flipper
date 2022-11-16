@@ -17,7 +17,7 @@ import {
 import {
   createFlipperServerWithSocket,
   FlipperServerState,
-} from 'flipper-frontend-core';
+} from 'flipper-server-client';
 import {
   FlipperServerImpl,
   getEnvironmentInfo,
@@ -50,6 +50,7 @@ import {initCompanionEnv} from 'flipper-server-companion';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import WS from 'ws';
 import {Module} from 'module';
+import os from 'os';
 
 Module.prototype.require = wrapRequire(Module.prototype.require);
 enableMapSet();
@@ -76,7 +77,7 @@ async function getKeytarModule(staticPath: string): Promise<KeytarModule> {
   return keytar;
 }
 
-async function getExternalServer(path: string) {
+async function getExternalServer(url: string) {
   const options = {
     WebSocket: class WSWithUnixDomainSocketSupport extends WS {
       constructor(url: string, protocols: string | string[]) {
@@ -86,9 +87,9 @@ async function getExternalServer(path: string) {
       }
     },
   };
-  const socket = new ReconnectingWebSocket(`ws+unix://${path}`, [], options);
+  const socket = new ReconnectingWebSocket(url, [], options);
   const server = await createFlipperServerWithSocket(
-    socket,
+    socket as WebSocket,
     (_state: FlipperServerState) => {},
   );
   return server;
@@ -116,13 +117,15 @@ async function getFlipperServer(
   const settings = await loadSettings();
 
   const socketPath = await makeSocketPath();
-  let serverRunning = await checkSocketInUse(socketPath);
+  let externalServerConnectionURL = `ws+unix://${socketPath}`;
 
+  // On Windows this is going to return false at all times as we do not use domain sockets there.
+  let serverRunning = await checkSocketInUse(socketPath);
   if (serverRunning) {
     console.info(
       'flipper-server: currently running/listening, attempt to shutdown',
     );
-    const server = await getExternalServer(socketPath);
+    const server = await getExternalServer(externalServerConnectionURL);
     await server.exec('shutdown').catch(() => {
       /** shutdown will ultimately make this request fail, ignore error. */
     });
@@ -160,11 +163,16 @@ async function getFlipperServer(
     if (!serverRunning) {
       console.info('flipper-server: not running/listening, start');
 
+      const port = 52342;
+      if (os.platform() === 'win32') {
+        externalServerConnectionURL = `ws://localhost:${port}`;
+      }
+
       const {readyForIncomingConnections} = await startServer({
         staticDir: staticPath,
         entry: 'index.web.dev.html',
         tcp: false,
-        port: 52342,
+        port,
       });
 
       const server = await startFlipperServer(
@@ -182,7 +190,7 @@ async function getFlipperServer(
       await readyForIncomingConnections(server, companionEnv);
     }
 
-    return getExternalServer(socketPath);
+    return getExternalServer(externalServerConnectionURL);
   }
   return getEmbeddedServer();
 }

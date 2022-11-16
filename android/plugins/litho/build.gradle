@@ -20,6 +20,7 @@ android {
     dependencies {
         compileOnly deps.lithoAnnotations
         implementation project(':android')
+        implementation deps.kotlinCoroutinesAndroid
         implementation deps.lithoCore
         api deps.lithoEditorCore
         api(deps.lithoEditorFlipper) {

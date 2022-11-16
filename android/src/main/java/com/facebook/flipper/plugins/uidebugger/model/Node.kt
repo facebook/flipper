@@ -12,9 +12,10 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 @kotlinx.serialization.Serializable
 data class Node(
     val id: Id,
+    val qualifiedName: String,
     val name: String,
-    val attributes: Map<String, InspectableObject>,
-    val bounds: Bounds?,
+    val attributes: Map<MetadataId, InspectableObject>,
+    val bounds: Bounds,
     val tags: Set<String>,
     val children: List<Id>,
     val activeChild: Id?,

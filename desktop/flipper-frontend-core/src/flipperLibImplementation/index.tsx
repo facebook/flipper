@@ -45,12 +45,14 @@ export function baseFlipperLibImplementation(
     },
     environmentInfo: {
       os: renderHost.serverConfig.environmentInfo.os,
+      env: renderHost.serverConfig.env,
     },
     intern: {
       graphGet: (...args) =>
         renderHost.flipperServer.exec('intern-graph-get', ...args),
       graphPost: (...args) =>
         renderHost.flipperServer.exec('intern-graph-post', ...args),
+      isLoggedIn: () => renderHost.flipperServer.exec('is-logged-in'),
     },
     remoteServerContext: {
       childProcess: {

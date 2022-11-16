@@ -26,15 +26,15 @@ export class HeadlessPluginInitializer extends AbstractPluginInitializer {
   protected async requirePluginImpl(
     pluginDetails: ActivatablePluginDetails,
   ): Promise<_SandyPluginDefinition> {
-    const plugin = await getRenderHostInstance().requirePlugin(
+    const requiredPlugin = await getRenderHostInstance().requirePlugin(
       pluginDetails.entry,
     );
-    if (!plugin) {
+    if (!requiredPlugin || !requiredPlugin.plugin) {
       throw new Error(
         `Failed to obtain plugin source for: ${pluginDetails.name}`,
       );
     }
-    return new _SandyPluginDefinition(pluginDetails, plugin);
+    return new _SandyPluginDefinition(pluginDetails, requiredPlugin.plugin);
   }
 
   protected async filterAllLocalVersions(

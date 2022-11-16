@@ -10,7 +10,9 @@ package com.facebook.flipper.plugins.uidebugger.core
 import android.os.Looper
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
+import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
+import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
 import com.facebook.flipper.plugins.uidebugger.model.SubtreeUpdateEvent
@@ -50,7 +52,16 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
     return ScanResult(txId++, start, scanEnd, nodes)
   }
 
-  override fun process(input: ScanResult) {
+  private fun sendMetadata() {
+    val metadata = MetadataRegister.dynamicMetadata()
+    if (metadata.size > 0) {
+      context.connectionRef.connection?.send(
+          MetadataUpdateEvent.name,
+          Json.encodeToString(MetadataUpdateEvent.serializer(), MetadataUpdateEvent(metadata)))
+    }
+  }
+
+  private fun sendSubtreeUpdate(input: ScanResult) {
     val serialized =
         Json.encodeToString(
             SubtreeUpdateEvent.serializer(),
@@ -78,5 +89,10 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
                 serializationEnd,
                 socketEnd,
                 input.nodes.size)))
+  }
+
+  override fun process(input: ScanResult) {
+    sendMetadata()
+    sendSubtreeUpdate(input)
   }
 }

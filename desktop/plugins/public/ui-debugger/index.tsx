@@ -8,11 +8,36 @@
  */
 
 import {PluginClient, createState, createDataSource} from 'flipper-plugin';
-import {Events, Id, PerfStatsEvent, Snapshot, UINode} from './types';
+import {
+  Events,
+  Id,
+  Metadata,
+  MetadataId,
+  PerfStatsEvent,
+  Snapshot,
+  TreeState,
+  UINode,
+} from './types';
+import './node_modules/react-complex-tree/lib/style.css';
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
-  client.onMessage('init', (root) => rootId.set(root.rootId));
+  const metadata = createState<Map<MetadataId, Metadata>>(new Map());
+
+  client.onMessage('init', (event) => {
+    rootId.set(event.rootId);
+  });
+
+  client.onMessage('metadataUpdate', (event) => {
+    if (!event.attributeMetadata) {
+      return;
+    }
+    metadata.update((draft) => {
+      for (const [_key, value] of Object.entries(event.attributeMetadata)) {
+        draft.set(value.id, value);
+      }
+    });
+  });
 
   const perfEvents = createDataSource<PerfStatsEvent, 'txId'>([], {
     key: 'txId',
@@ -22,20 +47,68 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents.append(event);
   });
 
-  const nodesAtom = createState<Map<Id, UINode>>(new Map());
-  const snapshotsAtom = createState<Map<Id, Snapshot>>(new Map());
-  client.onMessage('subtreeUpdate', (event) => {
-    snapshotsAtom.update((draft) => {
-      draft.set(event.rootId, event.snapshot);
-    });
-    nodesAtom.update((draft) => {
-      for (const node of event.nodes) {
-        draft.set(node.id, node);
+  const nodes = createState<Map<Id, UINode>>(new Map());
+  const snapshots = createState<Map<Id, Snapshot>>(new Map());
+
+  const treeState = createState<TreeState>({expandedNodes: []});
+
+  //The reason for the array as that user could be hovering multiple overlapping nodes at once in the visualiser.
+  //The nodes are sorted by area since you most likely want to select the smallest node under your cursor
+  const hoveredNodes = createState<Id[]>([]);
+
+  client.onMessage('coordinateUpdate', (event) => {
+    nodes.update((draft) => {
+      const node = draft.get(event.nodeId);
+      if (!node) {
+        console.warn(`Coordinate update for non existing node `, event);
+      } else {
+        node.bounds.x = event.coordinate.x;
+        node.bounds.y = event.coordinate.y;
       }
     });
   });
 
-  return {rootId, snapshots: snapshotsAtom, nodes: nodesAtom, perfEvents};
+  const seenNodes = new Set<Id>();
+  client.onMessage('subtreeUpdate', (event) => {
+    snapshots.update((draft) => {
+      draft.set(event.rootId, event.snapshot);
+    });
+    nodes.update((draft) => {
+      event.nodes.forEach((node) => {
+        draft.set(node.id, node);
+      });
+    });
+
+    treeState.update((draft) => {
+      for (const node of event.nodes) {
+        if (!seenNodes.has(node.id)) {
+          draft.expandedNodes.push(node.id);
+        }
+        seenNodes.add(node.id);
+
+        if (node.activeChild) {
+          const inactiveChildren = node.children.filter(
+            (child) => child !== node.activeChild,
+          );
+
+          draft.expandedNodes = draft.expandedNodes.filter(
+            (nodeId) => !inactiveChildren.includes(nodeId),
+          );
+          draft.expandedNodes.push(node.activeChild);
+        }
+      }
+    });
+  });
+
+  return {
+    rootId,
+    nodes,
+    metadata,
+    snapshots,
+    hoveredNodes,
+    perfEvents,
+    treeState,
+  };
 }
 
 export {Component} from './components/main';

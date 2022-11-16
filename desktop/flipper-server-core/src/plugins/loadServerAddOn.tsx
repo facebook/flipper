@@ -35,7 +35,6 @@ export const loadServerAddOn = (
     `loadPlugin -> server add-on path is empty plugin ${pluginName}.`,
   );
 
-  // eslint-disable-next-line no-eval
-  const serverAddOnModule = eval(`require("${details.path}")`);
+  const serverAddOnModule = electronRequire(details.path);
   return serverAddOnModule;
 };

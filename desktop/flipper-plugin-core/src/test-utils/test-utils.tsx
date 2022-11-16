@@ -74,10 +74,12 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
         unixname: 'test',
         platform: 'linux',
       },
+      env: {},
     },
     intern: {
       graphGet: createStubFunction(),
       graphPost: createStubFunction(),
+      isLoggedIn: createStubFunction(),
     },
     remoteServerContext: {
       childProcess: {

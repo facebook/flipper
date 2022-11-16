@@ -7,10 +7,20 @@
  * @format
  */
 
+import {TreeItemIndex} from 'react-complex-tree';
+
 export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
+  coordinateUpdate: CoordinateUpdateEvent;
   perfStats: PerfStatsEvent;
+  metadataUpdate: UpdateMetadataEvent;
+};
+
+export type CoordinateUpdateEvent = {
+  observerType: String;
+  nodeId: Id;
+  coordinate: Coordinate;
 };
 
 export type SubtreeUpdateEvent = {
@@ -20,7 +30,9 @@ export type SubtreeUpdateEvent = {
   snapshot: Snapshot;
 };
 
-export type InitEvent = {rootId: Id};
+export type InitEvent = {
+  rootId: Id;
+};
 
 export type PerfStatsEvent = {
   txId: number;
@@ -34,14 +46,38 @@ export type PerfStatsEvent = {
   nodesCount: number;
 };
 
-export type UINode = {
+export type UpdateMetadataEvent = {
+  attributeMetadata: Record<MetadataId, Metadata>;
+};
+
+export type NestedNode = {
   id: Id;
   name: string;
   attributes: Record<string, Inspectable>;
+  children: NestedNode[];
+  bounds: Bounds;
+  tags: Tag[];
+  activeChildIdx?: number;
+};
+
+export type UINode = {
+  id: Id;
+  qualifiedName: string;
+  name: string;
+  attributes: Record<MetadataId, Inspectable>;
   children: Id[];
-  bounds?: Bounds;
+  bounds: Bounds;
   tags: Tag[];
   activeChild?: Id;
+};
+
+export type Metadata = {
+  id: MetadataId;
+  type: string;
+  namespace: string;
+  name: string;
+  mutable: boolean;
+  tags?: string[];
 };
 
 export type Bounds = {
@@ -49,6 +85,29 @@ export type Bounds = {
   y: number;
   width: number;
   height: number;
+};
+
+export type Size = {
+  width: number;
+  height: number;
+};
+
+export type SpaceBox = {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+};
+
+export type Coordinate = {
+  x: number;
+  y: number;
+};
+
+export type Coordinate3D = {
+  x: number;
+  y: number;
+  z: number;
 };
 
 export type Color = {
@@ -59,41 +118,77 @@ export type Color = {
 };
 
 export type Snapshot = string;
-export type Id = number;
+export type Id = number | TreeItemIndex;
 
-export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho ';
+export type MetadataId = number;
+export type TreeState = {expandedNodes: Id[]};
+
+export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho';
 
 export type Inspectable =
   | InspectableObject
   | InspectableText
   | InspectableNumber
-  | InspectableColor;
+  | InspectableColor
+  | InspectableBoolean
+  | InspectableEnum
+  | InspectableCoordinate
+  | InspectableCoordinate3D
+  | InspectableSize
+  | InspectableBounds
+  | InspectableSpaceBox;
 
 export type InspectableText = {
   type: 'text';
   value: string;
-  mutable: boolean;
 };
 
 export type InspectableNumber = {
   type: 'number';
   value: number;
-  mutable: boolean;
+};
+
+export type InspectableBoolean = {
+  type: 'boolean';
+  value: boolean;
+};
+
+export type InspectableEnum = {
+  type: 'enum';
+  value: {value: string; values: string[]};
 };
 
 export type InspectableColor = {
-  type: 'number';
+  type: 'color';
   value: Color;
-  mutable: boolean;
 };
 
 export type InspectableBounds = {
   type: 'bounds';
   value: Bounds;
-  mutable: boolean;
+};
+
+export type InspectableSize = {
+  type: 'size';
+  value: Size;
+};
+
+export type InspectableCoordinate = {
+  type: 'coordinate';
+  value: Coordinate;
+};
+
+export type InspectableCoordinate3D = {
+  type: 'coordinate3d';
+  value: Coordinate3D;
+};
+
+export type InspectableSpaceBox = {
+  type: 'space';
+  value: SpaceBox;
 };
 
 export type InspectableObject = {
   type: 'object';
-  fields: Record<string, Inspectable>;
+  fields: Record<MetadataId, Inspectable>;
 };

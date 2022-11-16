@@ -7,139 +7,175 @@
  * @format
  */
 
-import React from 'react';
-import {Id, Snapshot, Tag, UINode} from '../types';
-import {styled, Layout, theme} from 'flipper-plugin';
-import {Typography} from 'antd';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {
+  Bounds,
+  Coordinate,
+  Id,
+  NestedNode,
+  Snapshot,
+  Tag,
+  UINode,
+} from '../types';
+
+import {styled, theme, usePlugin} from 'flipper-plugin';
+import {plugin} from '../index';
+import {throttle, isEqual, head} from 'lodash';
 
 export const Visualization2D: React.FC<
   {
-    root: Id;
+    rootId: Id;
     nodes: Map<Id, UINode>;
     snapshots: Map<Id, Snapshot>;
-    hoveredNode?: Id;
     selectedNode?: Id;
-    onSelectNode: (id: Id) => void;
-    onHoverNode: (id?: Id) => void;
+    onSelectNode: (id?: Id) => void;
     modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
 > = ({
-  root,
+  rootId,
   nodes,
   snapshots,
-  hoveredNode,
   selectedNode,
   onSelectNode,
-  onHoverNode,
   modifierPressed,
 }) => {
-  //todo, do a bfs search for the first bounds found
-  const rootBounds = nodes.get(root)?.bounds;
-  const rootSnapshot = snapshots.get(root);
+  const root = useMemo(() => toNestedNode(rootId, nodes), [rootId, nodes]);
+  const rootNodeRef = useRef<HTMLDivElement>();
+  const instance = usePlugin(plugin);
 
-  if (!rootBounds) {
+  useEffect(() => {
+    const mouseListener = throttle((ev: MouseEvent) => {
+      const domRect = rootNodeRef.current?.getBoundingClientRect();
+      if (!root || !domRect) {
+        return;
+      }
+
+      //make the mouse coord relative to the dom rect of the visualizer
+      const offsetMouse = offsetCoordinate(
+        {x: ev.clientX, y: ev.clientY},
+        domRect,
+      );
+      const scaledMouse = {
+        x: offsetMouse.x * pxScaleFactor,
+        y: offsetMouse.y * pxScaleFactor,
+      };
+
+      const hitNodes = hitTest(root, scaledMouse).map((node) => node.id);
+
+      if (
+        hitNodes.length > 0 &&
+        !isEqual(hitNodes, instance.hoveredNodes.get())
+      ) {
+        instance.hoveredNodes.set(hitNodes);
+      }
+    }, MouseThrottle);
+    window.addEventListener('mousemove', mouseListener);
+
+    return () => {
+      window.removeEventListener('mousemove', mouseListener);
+    };
+  }, [instance.hoveredNodes, root]);
+
+  if (!root) {
     return null;
   }
-  return (
-    <Layout.Container gap="large">
-      <Typography.Title>Visualizer</Typography.Title>
 
-      <div
-        onMouseLeave={(e) => {
-          e.stopPropagation();
-          onHoverNode(undefined);
-        }}
-        style={{
-          /**
-           * This relative position is so the root visualization 2DNode and outer border has a non static element to
-           * position itself relative to.
-           *
-           * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
-           * which despite the name acts are a reference point for absolute positioning...
-           */
-          position: 'relative',
-          width: toPx(rootBounds.width),
-          height: toPx(rootBounds.height),
-          overflow: 'hidden',
-        }}>
-        <OuterBorder />
-        {rootSnapshot ? (
-          <img
-            src={'data:image/jpeg;base64,' + rootSnapshot}
-            style={{maxWidth: '100%'}}
-          />
-        ) : null}
-        <Visualization2DNode
-          nodeId={root}
-          nodes={nodes}
-          snapshots={snapshots}
-          hoveredNode={hoveredNode}
-          selectedNode={selectedNode}
-          onSelectNode={onSelectNode}
-          onHoverNode={onHoverNode}
-          modifierPressed={modifierPressed}
-        />
-      </div>
-    </Layout.Container>
+  return (
+    <div
+      ref={rootNodeRef as any}
+      onMouseLeave={(e) => {
+        e.stopPropagation();
+        instance.hoveredNodes.set([]);
+      }}
+      style={{
+        /**
+         * This relative position is so the root visualization 2DNode and outer border has a non static element to
+         * position itself relative to.
+         *
+         * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
+         * which despite the name acts are a reference point for absolute positioning...
+         */
+        position: 'relative',
+        width: toPx(root.bounds.width),
+        height: toPx(root.bounds.height),
+        overflow: 'hidden',
+      }}>
+      <OuterBorder />
+      <MemoedVisualizationNode2D
+        node={root}
+        snapshots={snapshots}
+        selectedNode={selectedNode}
+        onSelectNode={onSelectNode}
+        modifierPressed={modifierPressed}
+      />
+    </div>
   );
 };
 
+const MemoedVisualizationNode2D = React.memo(
+  Visualization2DNode,
+  (prev, next) => {
+    return (
+      prev.node === next.node &&
+      prev.modifierPressed === next.modifierPressed &&
+      prev.selectedNode === next.selectedNode
+    );
+  },
+);
+
 function Visualization2DNode({
-  parentId,
-  nodeId,
-  nodes,
+  node,
   snapshots,
-  hoveredNode,
   selectedNode,
   onSelectNode,
-  onHoverNode,
   modifierPressed,
 }: {
-  nodeId: Id;
-  parentId?: Id;
-  nodes: Map<Id, UINode>;
+  node: NestedNode;
   snapshots: Map<Id, Snapshot>;
   modifierPressed: boolean;
-  hoveredNode?: Id;
   selectedNode?: Id;
-  onSelectNode: (id: Id) => void;
-  onHoverNode: (id?: Id) => void;
+  onSelectNode: (id?: Id) => void;
 }) {
-  const node = nodes.get(nodeId);
-  const snapshot = snapshots.get(nodeId);
+  const snapshot = snapshots.get(node.id);
+  const instance = usePlugin(plugin);
 
-  if (!node) {
-    return null;
-  }
+  const [isHovered, setIsHovered] = useState(false);
+  useEffect(() => {
+    const listener = (newValue?: Id[], prevValue?: Id[]) => {
+      if (head(prevValue) === node.id || head(newValue) === node.id) {
+        setIsHovered(head(newValue) === node.id);
+      }
+    };
+    instance.hoveredNodes.subscribe(listener);
+    return () => {
+      instance.hoveredNodes.unsubscribe(listener);
+    };
+  }, [instance.hoveredNodes, node.id]);
 
-  const isHovered = hoveredNode === nodeId;
-  const isSelected = selectedNode === nodeId;
+  const isSelected = selectedNode === node.id;
 
-  let childrenIds: Id[] = [];
+  let nestedChildren: NestedNode[];
 
   //if there is an active child don't draw the other children
   //this means we don't draw overlapping activities / tabs etc
-  if (node.activeChild) {
-    childrenIds = [node.activeChild];
+  if (node.activeChildIdx) {
+    nestedChildren = [node.children[node.activeChildIdx]];
   } else {
-    childrenIds = node.children;
+    nestedChildren = node.children;
   }
+
   // stop drawing children if hovered with the modifier so you
   // can see parent views without their children getting in the way
   if (isHovered && modifierPressed) {
-    childrenIds = [];
+    nestedChildren = [];
   }
 
-  const children = childrenIds.map((childId) => (
-    <Visualization2DNode
-      parentId={nodeId}
-      key={childId}
-      nodeId={childId}
-      nodes={nodes}
+  const children = nestedChildren.map((child) => (
+    <MemoedVisualizationNode2D
+      key={child.id}
+      node={child}
       snapshots={snapshots}
-      hoveredNode={hoveredNode}
       onSelectNode={onSelectNode}
-      onHoverNode={onHoverNode}
       selectedNode={selectedNode}
       modifierPressed={modifierPressed}
     />
@@ -158,26 +194,22 @@ function Visualization2DNode({
         top: toPx(bounds.y),
         width: toPx(bounds.width),
         height: toPx(bounds.height),
-        opacity: isSelected || isHovered ? 0.5 : 1,
+        opacity: isSelected ? 0.5 : 1,
         backgroundColor: isSelected
-          ? theme.primaryColor
-          : isHovered
           ? theme.selectionBackgroundColor
           : 'transparent',
       }}
-      onMouseEnter={(e) => {
-        e.stopPropagation();
-        onHoverNode(nodeId);
-      }}
-      onMouseLeave={(e) => {
-        e.stopPropagation();
-        onHoverNode(parentId);
-      }}
       onClick={(e) => {
         e.stopPropagation();
-        onSelectNode(nodeId);
+
+        const hoveredNodes = instance.hoveredNodes.get();
+        if (hoveredNodes[0] === selectedNode) {
+          onSelectNode(undefined);
+        } else {
+          onSelectNode(hoveredNodes[0]);
+        }
       }}>
-      <NodeBorder tags={node.tags}></NodeBorder>
+      <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
       {snapshot && (
         <img
           src={'data:image/jpeg;base64,' + snapshot}
@@ -195,13 +227,13 @@ function Visualization2DNode({
  * node itself so that it has the same size but the border doesnt affect the sizing of its children
  * as border is part of the box model
  */
-const NodeBorder = styled.div<{tags: Tag[]}>((props) => ({
+const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
   position: 'absolute',
   top: 0,
   left: 0,
   bottom: 0,
   right: 0,
-  borderWidth: '1px',
+  borderWidth: props.hovered ? '2px' : '1px',
   borderStyle: 'solid',
   color: 'transparent',
   borderColor: props.tags.includes('Declarative')
@@ -229,6 +261,99 @@ const OuterBorder = styled.div({
   borderRadius: '10px',
 });
 
+const pxScaleFactor = 2;
+const MouseThrottle = 32;
+
 function toPx(n: number) {
-  return `${n / 2}px`;
+  return `${n / pxScaleFactor}px`;
+}
+
+function toNestedNode(
+  rootId: Id,
+  nodes: Map<Id, UINode>,
+): NestedNode | undefined {
+  function uiNodeToNestedNode(node: UINode): NestedNode {
+    const activeChildIdx = node.activeChild
+      ? node.children.indexOf(node.activeChild)
+      : undefined;
+
+    return {
+      id: node.id,
+      name: node.name,
+      attributes: node.attributes,
+      children: node.children
+        .map((childId) => nodes.get(childId))
+        .filter((child) => child != null)
+        .map((child) => uiNodeToNestedNode(child!!)),
+      bounds: node.bounds,
+      tags: node.tags,
+      activeChildIdx: activeChildIdx,
+    };
+  }
+
+  const root = nodes.get(rootId);
+  return root ? uiNodeToNestedNode(root) : undefined;
+}
+
+function hitTest(node: NestedNode, mouseCoordinate: Coordinate): NestedNode[] {
+  const res: NestedNode[] = [];
+
+  function hitTestRec(node: NestedNode, mouseCoordinate: Coordinate): boolean {
+    const nodeBounds = node.bounds;
+
+    if (boundsContainsCoordinate(nodeBounds, mouseCoordinate)) {
+      let children = node.children;
+
+      if (node.activeChildIdx != null) {
+        children = [node.children[node.activeChildIdx]];
+      }
+      const offsetMouseCoord = offsetCoordinate(mouseCoordinate, nodeBounds);
+      let childHit = false;
+
+      for (const child of children) {
+        childHit = hitTestRec(child, offsetMouseCoord) || childHit;
+      }
+
+      if (!childHit) {
+        res.push(node);
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  hitTestRec(node, mouseCoordinate);
+
+  return res.sort((a, b) => {
+    const areaA = a.bounds.height * a.bounds.width;
+    const areaB = b.bounds.height * b.bounds.width;
+    if (areaA > areaB) {
+      return 1;
+    } else if (areaA < areaB) {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
+}
+
+function boundsContainsCoordinate(bounds: Bounds, coordinate: Coordinate) {
+  return (
+    coordinate.x >= bounds.x &&
+    coordinate.x <= bounds.x + bounds.width &&
+    coordinate.y >= bounds.y &&
+    coordinate.y <= bounds.y + bounds.height
+  );
+}
+
+function offsetCoordinate(
+  coordinate: Coordinate,
+  offset: Coordinate,
+): Coordinate {
+  return {
+    x: coordinate.x - offset.x,
+    y: coordinate.y - offset.y,
+  };
 }

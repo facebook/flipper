@@ -57,6 +57,7 @@ exports[`can create a Fake flipper with legacy wrapper 2`] = `
 Object {
   "clientPlugins": Map {
     "TestPlugin" => SandyPluginDefinition {
+      "css": undefined,
       "details": Object {
         "dir": "/Users/mock/.flipper/thirdparty/flipper-plugin-sample1",
         "entry": "./test/index.js",

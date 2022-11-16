@@ -8,10 +8,10 @@
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.app.Activity
-import android.content.res.Resources
 import android.view.View
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.util.DisplayMetrics
 
 object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
 
@@ -19,10 +19,7 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
     return if (node.activitiesStack.isNotEmpty()) node.activitiesStack.last() else null
   }
 
-  override fun onGetBounds(node: ApplicationRef): Bounds {
-    val displayMetrics = Resources.getSystem().displayMetrics
-    return Bounds(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)
-  }
+  override fun onGetBounds(node: ApplicationRef): Bounds = DisplayMetrics.getDisplayBounds()
 
   override fun onGetName(node: ApplicationRef): String {
     val applicationInfo = node.application.applicationInfo

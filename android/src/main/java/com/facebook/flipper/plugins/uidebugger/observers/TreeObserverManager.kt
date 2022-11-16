@@ -16,6 +16,10 @@ import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.core.Context
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
+import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
+import com.facebook.flipper.plugins.uidebugger.model.Coordinate
+import com.facebook.flipper.plugins.uidebugger.model.CoordinateUpdateEvent
+import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
 import com.facebook.flipper.plugins.uidebugger.model.SubtreeUpdateEvent
@@ -25,6 +29,11 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.serialization.json.Json
 
+sealed interface Update
+
+data class CoordinateUpdate(val observerType: String, val nodeId: Id, val coordinate: Coordinate) :
+    Update
+
 data class SubtreeUpdate(
     val observerType: String,
     val rootId: Id,
@@ -33,19 +42,19 @@ data class SubtreeUpdate(
     val traversalCompleteTime: Long,
     val snapshotComplete: Long,
     val snapshot: BitmapPool.ReusableBitmap?
-)
+) : Update
 
 /** Holds the root observer and manages sending updates to desktop */
 class TreeObserverManager(val context: Context) {
 
   private val rootObserver = ApplicationTreeObserver(context)
-  private lateinit var treeUpdates: Channel<SubtreeUpdate>
+  private lateinit var updates: Channel<Update>
   private var job: Job? = null
   private val workerScope = CoroutineScope(Dispatchers.IO)
   private val txId = AtomicInteger()
 
-  fun enqueueUpdate(update: SubtreeUpdate) {
-    treeUpdates.trySend(update)
+  fun enqueueUpdate(update: Update) {
+    updates.trySend(update)
   }
 
   /**
@@ -55,64 +64,22 @@ class TreeObserverManager(val context: Context) {
   @SuppressLint("NewApi")
   fun start() {
 
-    treeUpdates = Channel(Channel.UNLIMITED)
+    updates = Channel(Channel.UNLIMITED)
     rootObserver.subscribe(context.applicationRef)
 
     job =
         workerScope.launch {
           while (isActive) {
             try {
-              val treeUpdate = treeUpdates.receive()
-              val onWorkerThread = System.currentTimeMillis()
-              val txId = txId.getAndIncrement().toLong()
-
-              var serialized: String?
-              if (treeUpdate.snapshot == null) {
-                serialized =
-                    Json.encodeToString(
-                        SubtreeUpdateEvent.serializer(),
-                        SubtreeUpdateEvent(
-                            txId, treeUpdate.observerType, treeUpdate.rootId, treeUpdate.nodes))
-              } else {
-                val stream = ByteArrayOutputStream()
-                val base64Stream = Base64OutputStream(stream, Base64.DEFAULT)
-                treeUpdate.snapshot.bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, base64Stream)
-                val snapshot = stream.toString()
-                serialized =
-                    Json.encodeToString(
-                        SubtreeUpdateEvent.serializer(),
-                        SubtreeUpdateEvent(
-                            txId,
-                            treeUpdate.observerType,
-                            treeUpdate.rootId,
-                            treeUpdate.nodes,
-                            snapshot))
-
-                treeUpdate.snapshot.readyForReuse()
+              when (val update = updates.receive()) {
+                is SubtreeUpdate -> sendSubtreeUpdate(update)
+                is CoordinateUpdate -> {
+                  val event =
+                      CoordinateUpdateEvent(update.observerType, update.nodeId, update.coordinate)
+                  val serialized = Json.encodeToString(CoordinateUpdateEvent.serializer(), event)
+                  context.connectionRef.connection?.send(CoordinateUpdateEvent.name, serialized)
+                }
               }
-
-              val serializationEnd = System.currentTimeMillis()
-
-              context.connectionRef.connection?.send(SubtreeUpdateEvent.name, serialized)
-              val socketEnd = System.currentTimeMillis()
-              Log.i(
-                  LogTag,
-                  "Sent event for ${treeUpdate.observerType} root ID ${treeUpdate.rootId} nodes ${treeUpdate.nodes.size}")
-
-              val perfStats =
-                  PerfStatsEvent(
-                      txId = txId,
-                      observerType = treeUpdate.observerType,
-                      start = treeUpdate.startTime,
-                      traversalComplete = treeUpdate.traversalCompleteTime,
-                      snapshotComplete = treeUpdate.snapshotComplete,
-                      queuingComplete = onWorkerThread,
-                      serializationComplete = serializationEnd,
-                      socketComplete = socketEnd,
-                      nodesCount = treeUpdate.nodes.size)
-
-              context.connectionRef.connection?.send(
-                  PerfStatsEvent.name, Json.encodeToString(PerfStatsEvent.serializer(), perfStats))
             } catch (e: CancellationException) {} catch (e: java.lang.Exception) {
               Log.e(LogTag, "Unexpected Error in channel ", e)
             }
@@ -121,9 +88,69 @@ class TreeObserverManager(val context: Context) {
         }
   }
 
+  private fun sendMetadata() {
+    val metadata = MetadataRegister.dynamicMetadata()
+    if (metadata.size > 0) {
+      context.connectionRef.connection?.send(
+          MetadataUpdateEvent.name,
+          Json.encodeToString(MetadataUpdateEvent.serializer(), MetadataUpdateEvent(metadata)))
+    }
+  }
+
+  private fun sendSubtreeUpdate(treeUpdate: SubtreeUpdate) {
+    val onWorkerThread = System.currentTimeMillis()
+    val txId = txId.getAndIncrement().toLong()
+
+    sendMetadata()
+
+    val serialized: String?
+    if (treeUpdate.snapshot == null) {
+      serialized =
+          Json.encodeToString(
+              SubtreeUpdateEvent.serializer(),
+              SubtreeUpdateEvent(
+                  txId, treeUpdate.observerType, treeUpdate.rootId, treeUpdate.nodes))
+    } else {
+      val stream = ByteArrayOutputStream()
+      val base64Stream = Base64OutputStream(stream, Base64.DEFAULT)
+      treeUpdate.snapshot.bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, base64Stream)
+      val snapshot = stream.toString()
+      serialized =
+          Json.encodeToString(
+              SubtreeUpdateEvent.serializer(),
+              SubtreeUpdateEvent(
+                  txId, treeUpdate.observerType, treeUpdate.rootId, treeUpdate.nodes, snapshot))
+
+      treeUpdate.snapshot.readyForReuse()
+    }
+
+    val serializationEnd = System.currentTimeMillis()
+
+    context.connectionRef.connection?.send(SubtreeUpdateEvent.name, serialized)
+    val socketEnd = System.currentTimeMillis()
+    Log.i(
+        LogTag,
+        "Sent event for ${treeUpdate.observerType} root ID ${treeUpdate.rootId} nodes ${treeUpdate.nodes.size}")
+
+    val perfStats =
+        PerfStatsEvent(
+            txId = txId,
+            observerType = treeUpdate.observerType,
+            start = treeUpdate.startTime,
+            traversalComplete = treeUpdate.traversalCompleteTime,
+            snapshotComplete = treeUpdate.snapshotComplete,
+            queuingComplete = onWorkerThread,
+            serializationComplete = serializationEnd,
+            socketComplete = socketEnd,
+            nodesCount = treeUpdate.nodes.size)
+
+    context.connectionRef.connection?.send(
+        PerfStatsEvent.name, Json.encodeToString(PerfStatsEvent.serializer(), perfStats))
+  }
+
   fun stop() {
     rootObserver.cleanUpRecursive()
     job?.cancel()
-    treeUpdates.cancel()
+    updates.cancel()
   }
 }

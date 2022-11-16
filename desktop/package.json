@@ -169,7 +169,7 @@
     "npm": "use yarn instead",
     "yarn": "^1.16"
   },
-  "version": "0.171.1",
+  "version": "0.174.0",
   "workspaces": {
     "packages": [
       "scripts",
@@ -183,6 +183,7 @@
       "flipper-frontend-core",
       "flipper-plugin",
       "flipper-plugin-core",
+      "flipper-server-client",
       "flipper-server-companion",
       "flipper-server-core",
       "flipper-ui-core",

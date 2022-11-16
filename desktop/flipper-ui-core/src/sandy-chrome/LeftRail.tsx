@@ -8,7 +8,16 @@
  */
 
 import React, {cloneElement, useState, useCallback, useMemo} from 'react';
-import {Button, Divider, Badge, Tooltip, Avatar, Popover, Menu} from 'antd';
+import {
+  Button,
+  Divider,
+  Badge,
+  Tooltip,
+  Avatar,
+  Popover,
+  Menu,
+  Modal,
+} from 'antd';
 import {
   MobileFilled,
   AppstoreOutlined,
@@ -18,6 +27,7 @@ import {
   SettingOutlined,
   MedicineBoxOutlined,
   RocketOutlined,
+  BugOutlined,
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
@@ -58,16 +68,17 @@ import constants from '../fb-stubs/constants';
 import {
   canFileExport,
   canOpenDialog,
+  exportEverythingEverywhereAllAtOnce,
   showOpenDialog,
   startFileExport,
   startLinkExport,
-  startLogsExport,
+  ExportEverythingEverywhereAllAtOnceStatus,
 } from '../utils/exportData';
 import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
 import {getRenderHostInstance} from 'flipper-frontend-core';
-import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
 import {StyleGuide} from './StyleGuide';
+import {useEffect} from 'react';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -192,6 +203,7 @@ export const LeftRail = withTrackingScope(function LeftRail({
           <SetupDoctorButton />
           <RightSidebarToggleButton />
           <LeftSidebarToggleButton />
+          <ExportEverythingEverywhereAllAtOnceButton />
           <ExtrasMenu />
           {config.showLogin && <LoginButton />}
         </Layout.Container>
@@ -224,11 +236,6 @@ function ExtrasMenu() {
     () => startFileExport(store.dispatch),
     [store.dispatch],
   );
-  const startLogsExportTracked = useTrackedCallback(
-    'Logs export',
-    startLogsExport,
-    [],
-  );
   const startLinkExportTracked = useTrackedCallback(
     'Link export',
     () => startLinkExport(store.dispatch),
@@ -247,8 +254,6 @@ function ExtrasMenu() {
   const {showWelcomeAtStartup} = settings;
   const [welcomeVisible, setWelcomeVisible] = useState(showWelcomeAtStartup);
 
-  const fullState = useStore((state) => state);
-
   return (
     <>
       <NUX
@@ -264,11 +269,6 @@ function ExtrasMenu() {
             key="extras"
             title={<LeftRailButton icon={<SettingOutlined />} small />}
             className={submenu}>
-            {canFileExport() ? (
-              <Menu.Item key="exportLogs" onClick={startLogsExportTracked}>
-                Export Flipper logs
-              </Menu.Item>
-            ) : null}
             {canOpenDialog() ? (
               <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
                 Import Flipper file
@@ -302,21 +302,6 @@ function ExtrasMenu() {
               </Menu.Item>
             </Menu.SubMenu>
             <Menu.Divider />
-            {config.isFBBuild ? (
-              <>
-                <Menu.Item
-                  key="feedback"
-                  onClick={() => {
-                    getLogger().track('usage', 'support-form-source', {
-                      source: 'sidebar',
-                      group: undefined,
-                    });
-                    openSupportRequestForm(fullState);
-                  }}>
-                  Feedback
-                </Menu.Item>
-              </>
-            ) : null}
             <Menu.Item key="settings" onClick={() => setShowSettings(true)}>
               Settings
             </Menu.Item>
@@ -427,6 +412,142 @@ function DebugLogsButton({
         setToplevelSelection('flipperlogs');
       }}
     />
+  );
+}
+
+function ExportEverythingEverywhereAllAtOnceStatusModal({
+  status,
+  setStatus,
+}: {
+  status: ExportEverythingEverywhereAllAtOnceStatus | undefined;
+  setStatus: (
+    newStatus: ExportEverythingEverywhereAllAtOnceStatus | undefined,
+  ) => void;
+}) {
+  const [statusMessage, setStatusMessage] = useState<JSX.Element | undefined>();
+
+  useEffect(() => {
+    switch (status?.[0]) {
+      case 'logs': {
+        setStatusMessage(<p>Exporting Flipper logs...</p>);
+        return;
+      }
+      case 'files': {
+        let sheepCount = 0;
+        const setFileExportMessage = () => {
+          setStatusMessage(
+            <>
+              <p>Exporting Flipper debug files from all devices...</p>
+              <p>It could take a long time!</p>
+              <p>Let's count sheep while we wait: {sheepCount++}.</p>
+              <p>We'll skip it automatically if it exceeds 3 minutes.</p>
+            </>,
+          );
+        };
+
+        setFileExportMessage();
+
+        const interval = setInterval(setFileExportMessage, 3000);
+        return () => clearInterval(interval);
+      }
+      case 'state': {
+        let dinosaursCount = 0;
+        const setStateExportMessage = () => {
+          setStatusMessage(
+            <>
+              <p>Exporting Flipper state...</p>
+              <p>It also could take a long time!</p>
+              <p>This time we could count dinosaurs: {dinosaursCount++}.</p>
+              <p>We'll skip it automatically if it exceeds 2 minutes.</p>
+            </>,
+          );
+        };
+
+        setStateExportMessage();
+
+        const interval = setInterval(setStateExportMessage, 2000);
+        return () => clearInterval(interval);
+      }
+      case 'archive': {
+        setStatusMessage(<p>Creating an archive...</p>);
+        return;
+      }
+      case 'upload': {
+        setStatusMessage(<p>Uploading the archive...</p>);
+        return;
+      }
+      case 'support': {
+        setStatusMessage(<p>Creating a support request...</p>);
+        return;
+      }
+      case 'error': {
+        setStatusMessage(
+          <>
+            <p>Oops! Something went wrong.</p>
+            <p>{status[1]}</p>
+          </>,
+        );
+        return;
+      }
+      case 'done': {
+        setStatusMessage(<p>Done!</p>);
+        return;
+      }
+      case 'cancelled': {
+        setStatusMessage(<p>Cancelled! Why? 😱🤯👏</p>);
+        return;
+      }
+    }
+  }, [status]);
+
+  return (
+    <Modal
+      visible={!!status}
+      centered
+      onCancel={() => {
+        setStatus(undefined);
+      }}
+      title="Exporting everything everywhere all at once"
+      footer={null}>
+      {statusMessage}
+    </Modal>
+  );
+}
+
+function ExportEverythingEverywhereAllAtOnceButton() {
+  const store = useStore();
+  const [status, setStatus] = useState<
+    ExportEverythingEverywhereAllAtOnceStatus | undefined
+  >();
+
+  const exportEverythingEverywhereAllAtOnceTracked = useTrackedCallback(
+    'Debug data export',
+    () =>
+      exportEverythingEverywhereAllAtOnce(
+        store,
+        (...args) => setStatus(args),
+        config.isFBBuild,
+      ),
+    [store, setStatus],
+  );
+
+  return (
+    <>
+      <ExportEverythingEverywhereAllAtOnceStatusModal
+        status={status}
+        setStatus={setStatus}
+      />
+      <NUX title="Press this button if you have issues with Flipper. It will collect Flipper debug data that you can send to the Flipper team to get help.">
+        <LeftRailButton
+          icon={<BugOutlined />}
+          title="Export Flipper debug data"
+          onClick={() => {
+            exportEverythingEverywhereAllAtOnceTracked();
+          }}
+          small
+        />
+      </NUX>
+    </>
   );
 }
 

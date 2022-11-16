@@ -139,6 +139,8 @@ Start up an android emulator and run the following in the project root:
 
 ## React Native SDK + Sample app
 
+> Requires RN 0.69+!
+
 ```bash
 cd react-native/ReactNativeFlipperExample
 yarn

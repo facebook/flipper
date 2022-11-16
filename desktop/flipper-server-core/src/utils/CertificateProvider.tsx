@@ -33,19 +33,45 @@ export default abstract class CertificateProvider {
     os: string,
     appDirectory: string,
   ): Promise<{deviceId: string}> {
+    console.debug(
+      `${this.constructor.name}.processCertificateSigningRequest`,
+      unsanitizedCsr,
+      os,
+      appDirectory,
+    );
     const csr = this.santitizeString(unsanitizedCsr);
     if (csr === '') {
       return Promise.reject(new Error(`Received empty CSR from ${os} device`));
     }
+    console.debug(
+      `${this.constructor.name}.processCertificateSigningRequest -> ensureOpenSSLIsAvailable`,
+      os,
+      appDirectory,
+    );
     await ensureOpenSSLIsAvailable();
     const caCert = await getCACertificate();
+    console.debug(
+      `${this.constructor.name}.processCertificateSigningRequest -> deploy caCert`,
+      os,
+      appDirectory,
+    );
     await this.deployOrStageFileForDevice(
       appDirectory,
       deviceCAcertFile,
       caCert,
       csr,
     );
+    console.debug(
+      `${this.constructor.name}.processCertificateSigningRequest -> generateClientCertificate`,
+      os,
+      appDirectory,
+    );
     const clientCert = await generateClientCertificate(csr);
+    console.debug(
+      `${this.constructor.name}.processCertificateSigningRequest -> deploy clientCert`,
+      os,
+      appDirectory,
+    );
     await this.deployOrStageFileForDevice(
       appDirectory,
       deviceClientCertFile,
@@ -53,7 +79,20 @@ export default abstract class CertificateProvider {
       csr,
     );
     const appName = await extractAppNameFromCSR(csr);
+    console.debug(
+      `${this.constructor.name}.processCertificateSigningRequest -> getTargetDeviceId`,
+      os,
+      appDirectory,
+      appName,
+    );
     const deviceId = await this.getTargetDeviceId(appName, appDirectory, csr);
+    console.debug(
+      `${this.constructor.name}.processCertificateSigningRequest -> done`,
+      os,
+      appDirectory,
+      appName,
+      deviceId,
+    );
     return {
       deviceId,
     };

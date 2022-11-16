@@ -64,4 +64,4 @@ data class Size(
 ) {}
 
 @kotlinx.serialization.Serializable
-data class Enumeration(val values: Set<String>, val value: String)
+data class Enumeration(val values: Set<String>, val value: String?)

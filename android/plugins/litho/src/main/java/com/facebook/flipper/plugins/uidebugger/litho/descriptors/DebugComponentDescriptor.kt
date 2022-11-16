@@ -8,20 +8,22 @@
 package com.facebook.flipper.plugins.uidebugger.litho.descriptors
 
 import android.graphics.Bitmap
-import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
-import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
-import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
-import com.facebook.flipper.plugins.uidebugger.descriptors.OffsetChild
+import com.facebook.flipper.plugins.uidebugger.descriptors.*
 import com.facebook.flipper.plugins.uidebugger.litho.LithoTag
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.ComponentPropExtractor
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.LayoutPropExtractor
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.litho.DebugComponent
 
 class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {
+  private val NAMESPACE = "DebugComponent"
 
-  override fun getName(node: DebugComponent): String {
-    return node.component.simpleName
-  }
+  override fun getName(node: DebugComponent): String = node.component.simpleName
+
+  override fun getQualifiedName(node: com.facebook.litho.DebugComponent): String =
+      node.component::class.qualifiedName ?: ""
 
   override fun getChildren(node: DebugComponent): List<Any> {
     val result = mutableListOf<Any>()
@@ -39,10 +41,10 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
        */
       result.add(OffsetChild.zero(mountedView, descriptor))
     } else if (mountedDrawable != null) {
-      val descriptor: NodeDescriptor<Any> =
-          register.descriptorForClassUnsafe(mountedDrawable.javaClass)
-      // same here
-      result.add(OffsetChild.zero(mountedDrawable, descriptor))
+      /**
+       * don't emit mounted drawables since they are leaf nodes and its somewhat tricky to get the
+       * wireframe bounds to play nice. Something to address later if there is feedback
+       */
     } else {
       for (child in node.childComponents) {
         result.add(child)
@@ -54,9 +56,28 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
   override fun getActiveChild(node: DebugComponent): Any? = null
 
-  override fun getData(node: DebugComponent) = mapOf<String, InspectableObject>()
+  private val LayoutId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "Litho Layout")
+  private val UserPropsId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho Props")
 
-  override fun getBounds(node: DebugComponent): Bounds = Bounds.fromRect(node.bounds)
+  override fun getData(node: DebugComponent): Map<MetadataId, InspectableObject> {
+
+    val attributeSections = mutableMapOf<MetadataId, InspectableObject>()
+
+    val layoutProps = LayoutPropExtractor.getProps(node)
+    attributeSections[LayoutId] = InspectableObject(layoutProps.toMap())
+
+    if (!node.canResolve()) {
+      val props = ComponentPropExtractor.getProps(node.component)
+      attributeSections[UserPropsId] = InspectableObject(props.toMap())
+    }
+
+    return attributeSections
+  }
+
+  override fun getBounds(node: DebugComponent): Bounds =
+      Bounds.fromRect(node.boundsInParentDebugComponent)
 
   override fun getTags(node: DebugComponent): Set<String> = setOf(BaseTags.Declarative, LithoTag)
 

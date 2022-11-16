@@ -162,6 +162,24 @@ export interface FSStatsLike {
   birthtimeMs: number;
 }
 
+export interface DeviceDebugFile {
+  path: string;
+  data: string;
+}
+export interface DeviceDebugCommand {
+  command: string;
+  result: string;
+}
+export interface DeviceDebugData {
+  serial: string;
+  appId: string;
+  data: (DeviceDebugFile | DeviceDebugCommand)[];
+}
+
+export interface PluginSource {
+  js: string;
+  css?: string;
+}
 export type FlipperServerCommands = {
   'get-server-state': () => Promise<{
     state: FlipperServerState;
@@ -234,6 +252,7 @@ export type FlipperServerCommands = {
   ) => Promise<boolean>;
   'device-clear-logs': (serial: string) => Promise<void>;
   'device-navigate': (serial: string, location: string) => Promise<void>;
+  'fetch-debug-data': () => Promise<DeviceDebugData[]>;
   'metro-command': (serial: string, command: string) => Promise<void>;
   'client-list': () => Promise<ClientDescription[]>;
   'client-find': (clientId: string) => Promise<ClientDescription | undefined>;
@@ -260,7 +279,7 @@ export type FlipperServerCommands = {
   'plugin-start-download': (
     plugin: DownloadablePluginDetails,
   ) => Promise<InstalledPluginDetails>;
-  'plugin-source': (path: string) => Promise<string>;
+  'plugin-source': (path: string) => Promise<PluginSource>;
   'plugins-install-from-marketplace': (
     name: string,
   ) => Promise<InstalledPluginDetails>;
@@ -310,6 +329,7 @@ export type FlipperServerCommands = {
   'intern-upload-scribe-logs': (
     messages: {category: string; message: string}[],
   ) => Promise<void>;
+  'intern-cloud-upload': (path: string) => Promise<string>;
   shutdown: () => Promise<void>;
   'is-logged-in': () => Promise<boolean>;
   'environment-info': () => Promise<EnvironmentInfo>;

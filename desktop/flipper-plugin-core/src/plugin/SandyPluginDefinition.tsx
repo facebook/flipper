@@ -55,15 +55,18 @@ export type FlipperPluginModule<
 export class SandyPluginDefinition {
   id: string;
   module: FlipperPluginModule<any> | FlipperDevicePluginModule;
+  css?: string;
   details: ActivatablePluginDetails;
   isDevicePlugin: boolean;
 
   constructor(
     details: ActivatablePluginDetails,
     module: FlipperPluginModule<any> | FlipperDevicePluginModule,
+    css?: string,
   );
-  constructor(details: ActivatablePluginDetails, module: any) {
+  constructor(details: ActivatablePluginDetails, module: any, css?: string) {
     this.id = details.id;
+    this.css = css;
     this.details = details;
     if (
       details.pluginType === 'device' ||

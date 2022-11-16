@@ -19,11 +19,17 @@ export type KeytarModule = {
 };
 
 export class KeytarManager {
+  private memoryFallback = new Map<string, string>();
+
   constructor(private keytar: KeytarModule | undefined) {}
 
   public async writeKeychain(service: string, password: string): Promise<void> {
     if (this.keytar == null) {
-      throw new Error('Keytar is not available.');
+      console.warn(
+        'Keytar is not available, using session only memory storage as fallback',
+      );
+      this.memoryFallback.set(service, password);
+      return;
     }
 
     await this.keytar.deletePassword(service, os.userInfo().username);
@@ -31,17 +37,17 @@ export class KeytarManager {
   }
 
   public async unsetKeychain(service: string): Promise<void> {
-    await this.keytar?.deletePassword(service, os.userInfo().username);
+    if (this.keytar) {
+      await this.keytar.deletePassword(service, os.userInfo().username);
+    } else {
+      this.memoryFallback.delete(service);
+    }
   }
 
   public async retrieveToken(service: string): Promise<string> {
-    if (this.keytar == null) {
-      throw new Error('Keytar is not available.');
-    }
-    const token = await this.keytar.getPassword(
-      service,
-      os.userInfo().username,
-    );
+    const token = this.keytar
+      ? await this.keytar.getPassword(service, os.userInfo().username)
+      : this.memoryFallback.get(service);
     if (!token) {
       throw new UserNotSignedInError();
     }

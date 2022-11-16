@@ -38,8 +38,9 @@ class DescriptorRegister {
       mapping.register(Drawable::class.java, DrawableDescriptor)
       mapping.register(ColorDrawable::class.java, ColorDrawableDescriptor)
       mapping.register(OffsetChild::class.java, OffsetChildDescriptor)
-      mapping.register(android.app.Fragment::class.java, FragmentFrameworkDescriptor)
-      mapping.register(androidx.fragment.app.Fragment::class.java, FragmentSupportDescriptor)
+      mapping.register(android.app.Fragment::class.java, FragmentFrameworkDescriptor(mapping))
+      mapping.register(
+          androidx.fragment.app.Fragment::class.java, FragmentSupportDescriptor(mapping))
 
       return mapping
     }

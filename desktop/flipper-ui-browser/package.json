@@ -16,6 +16,7 @@
     "eventemitter3": "^4.0.7",
     "flipper-common": "0.0.0",
     "flipper-frontend-core": "0.0.0",
+    "flipper-server-client": "0.0.0",
     "flipper-ui-core": "0.0.0",
     "invariant": "^2.2.4",
     "metro-runtime": "^0.70.2",

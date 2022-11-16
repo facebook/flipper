@@ -162,9 +162,9 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
     SupportSQLiteDatabase database =
         sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
     try {
-      Cursor structureCursor = database.query("PRAGMA table_info(" + table + ")", null);
-      Cursor foreignKeysCursor = database.query("PRAGMA foreign_key_list(" + table + ")", null);
-      Cursor indexesCursor = database.query("PRAGMA index_list(" + table + ")", null);
+      Cursor structureCursor = database.query("PRAGMA table_info(" + table + ")");
+      Cursor foreignKeysCursor = database.query("PRAGMA foreign_key_list(" + table + ")");
+      Cursor indexesCursor = database.query("PRAGMA index_list(" + table + ")");
 
       try {
         // Structure & foreign keys
@@ -210,7 +210,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
         while (indexesCursor.moveToNext()) {
           List<String> indexedColumnNames = new ArrayList<>();
           String indexName = indexesCursor.getString(indexesCursor.getColumnIndex("name"));
-          Cursor indexInfoCursor = database.query("PRAGMA index_info(" + indexName + ")", null);
+          Cursor indexInfoCursor = database.query("PRAGMA index_info(" + indexName + ")");
           try {
             while (indexInfoCursor.moveToNext()) {
               indexedColumnNames.add(
@@ -307,7 +307,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
 
   private static DatabaseExecuteSqlResponse executeSelect(
       SupportSQLiteDatabase database, String query) {
-    Cursor cursor = database.query(query, null);
+    Cursor cursor = database.query(query);
     try {
       String[] columnNames = cursor.getColumnNames();
       List<List<Object>> rows = cursorToList(cursor);

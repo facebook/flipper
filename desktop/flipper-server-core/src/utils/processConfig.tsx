@@ -18,6 +18,8 @@ export function loadProcessConfig(env: NodeJS.ProcessEnv): ProcessConfig {
     screenCapturePath: json.screenCapturePath,
     launcherEnabled:
       typeof json.launcherEnabled === 'boolean' ? json.launcherEnabled : true,
+    updaterEnabled:
+      typeof json.updaterEnabled === 'boolean' ? json.updaterEnabled : true,
     suppressPluginUpdateNotifications:
       typeof json.suppressPluginUpdateNotifications === 'boolean'
         ? json.suppressPluginUpdateNotifications

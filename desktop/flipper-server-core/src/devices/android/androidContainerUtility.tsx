@@ -14,6 +14,7 @@ const allowedAppNameRegex = /^[\w.-]+$/;
 const appNotApplicationRegex = /not an application/;
 const appNotDebuggableRegex = /debuggable/;
 const operationNotPermittedRegex = /not permitted/;
+const permissionDeniedRegex = /permission denied/;
 const logTag = 'androidContainerUtility';
 
 export type AppName = string;
@@ -66,6 +67,7 @@ function validateFileContent(content: string): void {
 enum RunAsErrorCode {
   NotAnApp = 1,
   NotDebuggable = 2,
+  PermissionDenied = 3,
 }
 
 class RunAsError extends Error {
@@ -118,7 +120,7 @@ function _pull(
 }
 
 // Keep this method private since it relies on pre-validated arguments
-function executeCommandAsApp(
+export function executeCommandAsApp(
   client: Client,
   deviceId: string,
   app: string,
@@ -175,6 +177,12 @@ function _executeCommandWithRunner(
       if (output.toLowerCase().match(operationNotPermittedRegex)) {
         throw new UnsupportedError(
           `Your android device (${deviceId}) does not support the adb shell run-as command. We're tracking this at https://github.com/facebook/flipper/issues/92`,
+        );
+      }
+      if (output.toLowerCase().match(permissionDeniedRegex)) {
+        throw new RunAsError(
+          RunAsErrorCode.PermissionDenied,
+          `No permission to run-as application. To use it with Flipper, either run adb as root or allow running as app`,
         );
       }
       return output;

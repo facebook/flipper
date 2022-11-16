@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 
 /*
  Descriptors are an extension point used during traversal to extract data out of arbitrary
@@ -18,8 +19,6 @@ import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 
  Descriptors should be stateless and each descriptor should be a singleton
 */
-
-typealias SectionName = String
 
 object BaseTags {
 
@@ -35,13 +34,19 @@ object BaseTags {
 interface NodeDescriptor<T> {
 
   /** Should be w.r.t the direct parent */
-  fun getBounds(node: T): Bounds?
+  fun getBounds(node: T): Bounds
 
   /**
    * The name used to identify this node in the inspector. Does not need to be unique. A good
    * default is to use the class name of the node.
    */
   fun getName(node: T): String
+
+  /**
+   * The qualified name used to identify this node in the inspector. Does not need to be unique. A
+   * good default is to use the class qualified name of the node.
+   */
+  fun getQualifiedName(node: T): String
 
   /** The children this node exposes in the inspector. */
   fun getChildren(node: T): List<Any>
@@ -63,7 +68,7 @@ interface NodeDescriptor<T> {
    * Get the data to show for this node in the sidebar of the inspector. The object will be shown in
    * order and with a header matching the given name.
    */
-  fun getData(node: T): Map<SectionName, InspectableObject>
+  fun getData(node: T): Map<MetadataId, InspectableObject>
 
   /**
    * Set of tags to describe this node in an abstract way for the UI Unfortunately this can't be an
