@@ -26,7 +26,5 @@ object UIDebuggerLithoSupport {
     register.register(MatrixDrawable::class.java, MatrixDrawableDescriptor)
   }
 
-  fun addObserver(observerFactory: TreeObserverFactory) {
-    observerFactory.register(LithoViewTreeObserverBuilder)
-  }
+  fun addObserver(observerFactory: TreeObserverFactory) {}
 }
