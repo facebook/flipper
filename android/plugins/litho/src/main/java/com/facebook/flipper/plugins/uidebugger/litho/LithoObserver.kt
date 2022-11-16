@@ -13,7 +13,6 @@ import android.view.ViewTreeObserver
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.Context
 import com.facebook.flipper.plugins.uidebugger.descriptors.ViewDescriptor
-import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
 import com.facebook.flipper.plugins.uidebugger.litho.descriptors.LithoViewDescriptor
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.Coordinate
@@ -21,6 +20,7 @@ import com.facebook.flipper.plugins.uidebugger.observers.CoordinateUpdate
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserver
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverBuilder
 import com.facebook.flipper.plugins.uidebugger.scheduler.throttleLatest
+import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 import com.facebook.litho.LithoView
 import com.facebook.rendercore.extensions.ExtensionState
 import com.facebook.rendercore.extensions.MountExtension
@@ -56,9 +56,9 @@ class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
   @SuppressLint("PrivateApi")
   override fun subscribe(node: Any) {
 
-    Log.d(LogTag, "Subscribing to litho view ${node.nodeId()}")
-
     nodeRef = node as LithoView
+
+    Log.d(LogTag, "Subscribing to litho view ${nodeRef?.objectIdentity()}")
 
     val lithoDebuggerExtension = LithoDebuggerExtension(this)
     node.registerUIDebugger(lithoDebuggerExtension)
@@ -69,7 +69,8 @@ class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
           val bounds = ViewDescriptor.onGetBounds(node)
           if (bounds != lastBounds) {
             context.treeObserverManager.enqueueUpdate(
-                CoordinateUpdate(this.type, node.nodeId(), Coordinate(bounds.x, bounds.y)))
+                CoordinateUpdate(
+                    this.type, LithoViewDescriptor.getId(node), Coordinate(bounds.x, bounds.y)))
             lastBounds = bounds
           }
         }
@@ -89,7 +90,7 @@ class LithoViewTreeObserver(val context: Context) : TreeObserver<LithoView>() {
   }
 
   override fun unsubscribe() {
-    Log.d(LogTag, "Unsubscribing from litho view ${nodeRef?.nodeId()}")
+    Log.d(LogTag, "Unsubscribing from litho view ${nodeRef?.objectIdentity()}")
     nodeRef?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
     nodeRef?.unregisterUIDebugger()
     nodeRef = null
@@ -107,7 +108,7 @@ class LithoDebuggerExtension(val observer: LithoViewTreeObserver) : MountExtensi
    * mounting includes adding updating or removing views from the heriachy
    */
   override fun afterMount(state: ExtensionState<Void?>) {
-    Log.i(LogTag, "After mount called for litho view ${observer.nodeRef?.nodeId()}")
+    Log.i(LogTag, "After mount called for litho view ${observer.nodeRef?.objectIdentity()}")
     observer.lastBounds = ViewDescriptor.onGetBounds(state.rootHost)
     observer.processUpdate(observer.context, state.rootHost as Any)
   }

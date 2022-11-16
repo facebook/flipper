@@ -13,7 +13,7 @@ import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.core.Context
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
-import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
+import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 
 /*
  * Represents a stateful observer that manages some subtree in the UI Hierarchy.
@@ -49,19 +49,19 @@ abstract class TreeObserver<T> {
 
     // Add any new observers
     observableRoots.forEach { observable ->
-      if (!children.containsKey(observable.nodeId())) {
+      if (!children.containsKey(observable.objectIdentity())) {
         context.observerFactory.createObserver(observable, context)?.let { observer ->
           Log.d(
               LogTag,
-              "Observer ${this.type} discovered new child of type ${observer.type} Node ID ${observable.nodeId()}")
+              "Observer ${this.type} discovered new child of type ${observer.type} Node ID ${observable.objectIdentity()}")
           observer.subscribe(observable)
-          children[observable.nodeId()] = observer
+          children[observable.objectIdentity()] = observer
         }
       }
     }
 
     // Remove any old observers
-    val observableRootsIdentifiers = observableRoots.map { it.nodeId() }
+    val observableRootsIdentifiers = observableRoots.map { it.objectIdentity() }
     val removables = mutableListOf<Id>()
     children.keys.forEach { key ->
       if (!observableRootsIdentifiers.contains(key)) {
@@ -92,7 +92,7 @@ abstract class TreeObserver<T> {
     context.treeObserverManager.enqueueUpdate(
         SubtreeUpdate(
             type,
-            root.nodeId(),
+            root.objectIdentity(),
             visitedNodes,
             startTimestamp,
             traversalCompleteTime,
