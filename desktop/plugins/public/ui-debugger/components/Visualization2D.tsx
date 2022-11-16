@@ -301,27 +301,26 @@ function hitTest(node: NestedNode, mouseCoordinate: Coordinate): NestedNode[] {
   function hitTestRec(node: NestedNode, mouseCoordinate: Coordinate): boolean {
     const nodeBounds = node.bounds;
 
-    if (boundsContainsCoordinate(nodeBounds, mouseCoordinate)) {
-      let children = node.children;
+    const thisNodeHit = boundsContainsCoordinate(nodeBounds, mouseCoordinate);
 
-      if (node.activeChildIdx != null) {
-        children = [node.children[node.activeChildIdx]];
-      }
-      const offsetMouseCoord = offsetCoordinate(mouseCoordinate, nodeBounds);
-      let childHit = false;
+    let children = node.children;
 
-      for (const child of children) {
-        childHit = hitTestRec(child, offsetMouseCoord) || childHit;
-      }
+    if (node.activeChildIdx != null) {
+      children = [node.children[node.activeChildIdx]];
+    }
+    const offsetMouseCoord = offsetCoordinate(mouseCoordinate, nodeBounds);
+    let childHit = false;
 
-      if (!childHit) {
-        res.push(node);
-      }
-
-      return true;
+    for (const child of children) {
+      childHit = hitTestRec(child, offsetMouseCoord) || childHit;
     }
 
-    return false;
+    const hit = thisNodeHit && !childHit;
+    if (hit) {
+      res.push(node);
+    }
+
+    return hit;
   }
 
   hitTestRec(node, mouseCoordinate);
