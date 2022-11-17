@@ -21,6 +21,9 @@ test('default formatter', () => {
   expect(
     DataFormatter.format(new Date(2020, 2, 3, 5, 8, 4, 244654)),
   ).toMatchInlineSnapshot(`"05:12:08.654"`);
+  expect(
+    DataFormatter.format(new Date(1668609938.068577 * 1000)),
+  ).toMatchInlineSnapshot(`"01:45:38.068"`);
   expect(DataFormatter.format('test')).toMatchInlineSnapshot(`"test"`);
 
   expect(DataFormatter.format({hello: 'world'})).toMatchInlineSnapshot(`

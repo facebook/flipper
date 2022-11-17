@@ -13,7 +13,7 @@ import {
   CopyOutlined,
 } from '@ant-design/icons';
 import {Button, Typography} from 'antd';
-import {isPlainObject, pad} from 'lodash';
+import {isPlainObject, padStart} from 'lodash';
 import React, {createElement, Fragment, isValidElement, useState} from 'react';
 import {_tryGetFlipperLibImplementation} from 'flipper-plugin-core';
 import {safeStringify} from 'flipper-plugin-core';
@@ -57,7 +57,7 @@ export const DataFormatter = {
           res =
             value.toTimeString().split(' ')[0] +
             '.' +
-            pad('' + value.getMilliseconds(), 3, '0');
+            padStart('' + value.getMilliseconds(), 3, '0');
           break;
         }
         if (value instanceof Map) {
