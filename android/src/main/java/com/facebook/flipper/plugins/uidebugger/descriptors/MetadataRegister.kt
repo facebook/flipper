@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 
@@ -34,7 +35,8 @@ object MetadataRegister {
       type: String,
       namespace: String,
       name: String,
-      mutable: Boolean
+      mutable: Boolean,
+      possibleValues: Set<InspectableValue>?
   ): MetadataId {
     val key = key(namespace, name)
     metadata[key]?.let { m ->
@@ -42,7 +44,7 @@ object MetadataRegister {
     }
 
     val identifier = ++generator
-    metadata[key] = Metadata(identifier, type, namespace, name, mutable)
+    metadata[key] = Metadata(identifier, type, namespace, name, mutable, possibleValues)
     return identifier
   }
 
@@ -50,18 +52,20 @@ object MetadataRegister {
       type: String,
       namespace: String,
       name: String,
-      mutable: Boolean = false
+      mutable: Boolean = false,
+      possibleValues: Set<InspectableValue>? = emptySet()
   ): MetadataId {
-    return register(staticMetadata, type, namespace, name, mutable)
+    return register(staticMetadata, type, namespace, name, mutable, possibleValues)
   }
 
   fun registerDynamic(
       type: String,
       namespace: String,
       name: String,
-      mutable: Boolean = false
+      mutable: Boolean = false,
+      possibleValues: Set<InspectableValue>? = emptySet()
   ): MetadataId {
-    return register(dynamicMetadata, type, namespace, name, mutable)
+    return register(dynamicMetadata, type, namespace, name, mutable, possibleValues)
   }
 
   fun get(namespace: String, name: String): Metadata? {

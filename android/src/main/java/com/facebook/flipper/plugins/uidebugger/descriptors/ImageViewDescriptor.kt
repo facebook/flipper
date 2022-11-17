@@ -10,6 +10,8 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
 import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
+import com.facebook.flipper.plugins.uidebugger.common.enumMapping
+import com.facebook.flipper.plugins.uidebugger.common.enumToInspectableSet
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
@@ -21,7 +23,12 @@ object ImageViewDescriptor : ChainedDescriptor<ImageView>() {
   private var SectionId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
   private var ScaleTypeAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "scaleType")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE,
+          NAMESPACE,
+          "scaleType",
+          false,
+          enumToInspectableSet<ScaleType>())
 
   override fun onGetName(node: ImageView): String = node.javaClass.simpleName
 
@@ -35,17 +42,5 @@ object ImageViewDescriptor : ChainedDescriptor<ImageView>() {
     attributeSections[SectionId] = InspectableObject(props)
   }
 
-  private val scaleTypeMapping: EnumMapping<ScaleType> =
-      object :
-          EnumMapping<ScaleType>(
-              mapOf(
-                  "CENTER" to ScaleType.CENTER,
-                  "CENTER_CROP" to ScaleType.CENTER_CROP,
-                  "CENTER_INSIDE" to ScaleType.CENTER_INSIDE,
-                  "FIT_CENTER" to ScaleType.FIT_CENTER,
-                  "FIT_END" to ScaleType.FIT_END,
-                  "FIT_START" to ScaleType.FIT_START,
-                  "FIT_XY" to ScaleType.FIT_XY,
-                  "MATRIX" to ScaleType.MATRIX,
-              )) {}
+  private val scaleTypeMapping: EnumMapping<ScaleType> = enumMapping<ScaleType>()
 }

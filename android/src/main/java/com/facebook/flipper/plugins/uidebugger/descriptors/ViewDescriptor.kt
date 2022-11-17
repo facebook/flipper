@@ -29,6 +29,111 @@ import java.lang.reflect.Field
 
 object ViewDescriptor : ChainedDescriptor<View>() {
 
+  private val LayoutParamsMapping: EnumMapping<Int> =
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "WRAP_CONTENT" to ViewGroup.LayoutParams.WRAP_CONTENT,
+                  "MATCH_PARENT" to ViewGroup.LayoutParams.MATCH_PARENT,
+                  "FILL_PARENT" to ViewGroup.LayoutParams.FILL_PARENT,
+              )) {}
+
+  private val VisibilityMapping: EnumMapping<Int> =
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "VISIBLE" to View.VISIBLE,
+                  "INVISIBLE" to View.INVISIBLE,
+                  "GONE" to View.GONE,
+              )) {}
+
+  private val LayoutDirectionMapping: EnumMapping<Int> =
+      when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 -> {
+          object :
+              EnumMapping<Int>(
+                  mapOf(
+                      "LAYOUT_DIRECTION_INHERIT" to View.LAYOUT_DIRECTION_INHERIT,
+                      "LAYOUT_DIRECTION_LOCALE" to View.LAYOUT_DIRECTION_LOCALE,
+                      "LAYOUT_DIRECTION_LTR" to View.LAYOUT_DIRECTION_LTR,
+                      "LAYOUT_DIRECTION_RTL" to View.LAYOUT_DIRECTION_RTL,
+                  )) {}
+        }
+        else -> {
+          object : EnumMapping<Int>(emptyMap()) {}
+        }
+      }
+
+  private val TextDirectionMapping: EnumMapping<Int> =
+      when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 -> {
+          object :
+              EnumMapping<Int>(
+                  mapOf(
+                      "TEXT_DIRECTION_INHERIT" to View.TEXT_DIRECTION_INHERIT,
+                      "TEXT_DIRECTION_FIRST_STRONG" to View.TEXT_DIRECTION_FIRST_STRONG,
+                      "TEXT_DIRECTION_ANY_RTL" to View.TEXT_DIRECTION_ANY_RTL,
+                      "TEXT_DIRECTION_LTR" to View.TEXT_DIRECTION_LTR,
+                      "TEXT_DIRECTION_RTL" to View.TEXT_DIRECTION_RTL,
+                      "TEXT_DIRECTION_LOCALE" to View.TEXT_DIRECTION_LOCALE,
+                  )) {}
+        }
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
+          object :
+              EnumMapping<Int>(
+                  mapOf(
+                      "TEXT_DIRECTION_INHERIT" to View.TEXT_DIRECTION_INHERIT,
+                      "TEXT_DIRECTION_FIRST_STRONG" to View.TEXT_DIRECTION_FIRST_STRONG,
+                      "TEXT_DIRECTION_ANY_RTL" to View.TEXT_DIRECTION_ANY_RTL,
+                      "TEXT_DIRECTION_LTR" to View.TEXT_DIRECTION_LTR,
+                      "TEXT_DIRECTION_RTL" to View.TEXT_DIRECTION_RTL,
+                      "TEXT_DIRECTION_LOCALE" to View.TEXT_DIRECTION_LOCALE,
+                      "TEXT_DIRECTION_FIRST_STRONG_LTR" to View.TEXT_DIRECTION_FIRST_STRONG_LTR,
+                      "TEXT_DIRECTION_FIRST_STRONG_RTL" to View.TEXT_DIRECTION_FIRST_STRONG_RTL,
+                  )) {}
+        }
+        else -> {
+          object : EnumMapping<Int>(emptyMap()) {}
+        }
+      }
+
+  private val TextAlignmentMapping: EnumMapping<Int> =
+      when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 -> {
+          object :
+              EnumMapping<Int>(
+                  mapOf(
+                      "TEXT_ALIGNMENT_INHERIT" to View.TEXT_ALIGNMENT_INHERIT,
+                      "TEXT_ALIGNMENT_GRAVITY" to View.TEXT_ALIGNMENT_GRAVITY,
+                      "TEXT_ALIGNMENT_TEXT_START" to View.TEXT_ALIGNMENT_TEXT_START,
+                      "TEXT_ALIGNMENT_TEXT_END" to View.TEXT_ALIGNMENT_TEXT_END,
+                      "TEXT_ALIGNMENT_CENTER" to View.TEXT_ALIGNMENT_CENTER,
+                      "TEXT_ALIGNMENT_VIEW_START" to View.TEXT_ALIGNMENT_VIEW_START,
+                      "TEXT_ALIGNMENT_VIEW_END" to View.TEXT_ALIGNMENT_VIEW_END,
+                  )) {}
+        }
+        else -> {
+          object : EnumMapping<Int>(emptyMap()) {}
+        }
+      }
+
+  private val GravityMapping =
+      object :
+          EnumMapping<Int>(
+              mapOf(
+                  "NONE" to -1,
+                  "NO_GRAVITY" to Gravity.NO_GRAVITY,
+                  "LEFT" to Gravity.LEFT,
+                  "TOP" to Gravity.TOP,
+                  "RIGHT" to Gravity.RIGHT,
+                  "BOTTOM" to Gravity.BOTTOM,
+                  "CENTER" to Gravity.CENTER,
+                  "CENTER_VERTICAL" to Gravity.CENTER_VERTICAL,
+                  "FILL_VERTICAL" to Gravity.FILL_VERTICAL,
+                  "CENTER_HORIZONTAL" to Gravity.CENTER_HORIZONTAL,
+                  "FILL_HORIZONTAL" to Gravity.FILL_HORIZONTAL,
+              )) {}
+
   private const val NAMESPACE = "View"
 
   private var SectionId =
@@ -54,13 +159,23 @@ object ViewDescriptor : ChainedDescriptor<View>() {
   private val LayoutParamsAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "layoutParams")
   private val LayoutDirectionAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "layoutDirection")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "layoutDirection",
+          false,
+          LayoutDirectionMapping.getInspectableValues())
   private val TranslationAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "translation")
   private val ElevationAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "elevation")
   private val VisibilityAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "visibility")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE,
+          NAMESPACE,
+          "visibility",
+          false,
+          VisibilityMapping.getInspectableValues())
 
   private val BackgroundAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "background")
@@ -82,9 +197,19 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "selected")
 
   private val TextDirectionAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textDirection")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE,
+          NAMESPACE,
+          "textDirection",
+          false,
+          TextDirectionMapping.getInspectableValues())
   private val TextAlignmentAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textAlignment")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE,
+          NAMESPACE,
+          "textAlignment",
+          false,
+          TextAlignmentMapping.getInspectableValues())
 
   private val TagAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "tag")
@@ -92,16 +217,31 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "keyedTags")
 
   private val WidthAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "width")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "width",
+          false,
+          LayoutParamsMapping.getInspectableValues())
   private val HeightAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "height")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "height",
+          false,
+          LayoutParamsMapping.getInspectableValues())
 
   private val MarginAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "margin")
   private val WeightAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "weight")
   private val GravityAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "gravity")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "gravity",
+          false,
+          GravityMapping.getInspectableValues())
 
   override fun onGetName(node: View): String = node.javaClass.simpleName
 
@@ -309,111 +449,6 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
     return tags
   }
-
-  private val LayoutParamsMapping: EnumMapping<Int> =
-      object :
-          EnumMapping<Int>(
-              mapOf(
-                  "WRAP_CONTENT" to ViewGroup.LayoutParams.WRAP_CONTENT,
-                  "MATCH_PARENT" to ViewGroup.LayoutParams.MATCH_PARENT,
-                  "FILL_PARENT" to ViewGroup.LayoutParams.FILL_PARENT,
-              )) {}
-
-  private val VisibilityMapping: EnumMapping<Int> =
-      object :
-          EnumMapping<Int>(
-              mapOf(
-                  "VISIBLE" to View.VISIBLE,
-                  "INVISIBLE" to View.INVISIBLE,
-                  "GONE" to View.GONE,
-              )) {}
-
-  private val LayoutDirectionMapping: EnumMapping<Int> =
-      when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 -> {
-          object :
-              EnumMapping<Int>(
-                  mapOf(
-                      "LAYOUT_DIRECTION_INHERIT" to View.LAYOUT_DIRECTION_INHERIT,
-                      "LAYOUT_DIRECTION_LOCALE" to View.LAYOUT_DIRECTION_LOCALE,
-                      "LAYOUT_DIRECTION_LTR" to View.LAYOUT_DIRECTION_LTR,
-                      "LAYOUT_DIRECTION_RTL" to View.LAYOUT_DIRECTION_RTL,
-                  )) {}
-        }
-        else -> {
-          object : EnumMapping<Int>(emptyMap()) {}
-        }
-      }
-
-  private val TextDirectionMapping: EnumMapping<Int> =
-      when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 -> {
-          object :
-              EnumMapping<Int>(
-                  mapOf(
-                      "TEXT_DIRECTION_INHERIT" to View.TEXT_DIRECTION_INHERIT,
-                      "TEXT_DIRECTION_FIRST_STRONG" to View.TEXT_DIRECTION_FIRST_STRONG,
-                      "TEXT_DIRECTION_ANY_RTL" to View.TEXT_DIRECTION_ANY_RTL,
-                      "TEXT_DIRECTION_LTR" to View.TEXT_DIRECTION_LTR,
-                      "TEXT_DIRECTION_RTL" to View.TEXT_DIRECTION_RTL,
-                      "TEXT_DIRECTION_LOCALE" to View.TEXT_DIRECTION_LOCALE,
-                  )) {}
-        }
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
-          object :
-              EnumMapping<Int>(
-                  mapOf(
-                      "TEXT_DIRECTION_INHERIT" to View.TEXT_DIRECTION_INHERIT,
-                      "TEXT_DIRECTION_FIRST_STRONG" to View.TEXT_DIRECTION_FIRST_STRONG,
-                      "TEXT_DIRECTION_ANY_RTL" to View.TEXT_DIRECTION_ANY_RTL,
-                      "TEXT_DIRECTION_LTR" to View.TEXT_DIRECTION_LTR,
-                      "TEXT_DIRECTION_RTL" to View.TEXT_DIRECTION_RTL,
-                      "TEXT_DIRECTION_LOCALE" to View.TEXT_DIRECTION_LOCALE,
-                      "TEXT_DIRECTION_FIRST_STRONG_LTR" to View.TEXT_DIRECTION_FIRST_STRONG_LTR,
-                      "TEXT_DIRECTION_FIRST_STRONG_RTL" to View.TEXT_DIRECTION_FIRST_STRONG_RTL,
-                  )) {}
-        }
-        else -> {
-          object : EnumMapping<Int>(emptyMap()) {}
-        }
-      }
-
-  private val TextAlignmentMapping: EnumMapping<Int> =
-      when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 -> {
-          object :
-              EnumMapping<Int>(
-                  mapOf(
-                      "TEXT_ALIGNMENT_INHERIT" to View.TEXT_ALIGNMENT_INHERIT,
-                      "TEXT_ALIGNMENT_GRAVITY" to View.TEXT_ALIGNMENT_GRAVITY,
-                      "TEXT_ALIGNMENT_TEXT_START" to View.TEXT_ALIGNMENT_TEXT_START,
-                      "TEXT_ALIGNMENT_TEXT_END" to View.TEXT_ALIGNMENT_TEXT_END,
-                      "TEXT_ALIGNMENT_CENTER" to View.TEXT_ALIGNMENT_CENTER,
-                      "TEXT_ALIGNMENT_VIEW_START" to View.TEXT_ALIGNMENT_VIEW_START,
-                      "TEXT_ALIGNMENT_VIEW_END" to View.TEXT_ALIGNMENT_VIEW_END,
-                  )) {}
-        }
-        else -> {
-          object : EnumMapping<Int>(emptyMap()) {}
-        }
-      }
-
-  private val GravityMapping =
-      object :
-          EnumMapping<Int>(
-              mapOf(
-                  "NONE" to -1,
-                  "NO_GRAVITY" to Gravity.NO_GRAVITY,
-                  "LEFT" to Gravity.LEFT,
-                  "TOP" to Gravity.TOP,
-                  "RIGHT" to Gravity.RIGHT,
-                  "BOTTOM" to Gravity.BOTTOM,
-                  "CENTER" to Gravity.CENTER,
-                  "CENTER_VERTICAL" to Gravity.CENTER_VERTICAL,
-                  "FILL_VERTICAL" to Gravity.FILL_VERTICAL,
-                  "CENTER_HORIZONTAL" to Gravity.CENTER_HORIZONTAL,
-                  "FILL_HORIZONTAL" to Gravity.FILL_HORIZONTAL,
-              )) {}
 
   private var KeyedTagsField: Field? = null
   private var ListenerInfoField: Field? = null

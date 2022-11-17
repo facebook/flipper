@@ -39,13 +39,6 @@ object ComponentPropExtractor {
       declaredField.isAccessible = true
 
       val name = declaredField.name
-
-      val metadata = MetadataRegister.get(component.simpleName, name)
-      val identifier =
-          metadata?.id
-              ?: MetadataRegister.registerDynamic(
-                  MetadataRegister.TYPE_ATTRIBUTE, component.simpleName, name)
-
       val declaredFieldAnnotation = declaredField.getAnnotation(Prop::class.java)
 
       // Only expose `@Prop` annotated fields for Spec components
@@ -64,10 +57,12 @@ object ComponentPropExtractor {
         val resType = declaredFieldAnnotation.resType
         if (resType == ResType.COLOR) {
           if (prop != null) {
+            val identifier = getMetadataId(component.simpleName, name)
             props[identifier] = InspectableValue.Color(Color.fromColor(prop as Int))
           }
           continue
         } else if (resType == ResType.DRAWABLE) {
+          val identifier = getMetadataId(component.simpleName, name)
           props[identifier] = fromDrawable(prop as Drawable?)
           continue
         }
@@ -77,18 +72,42 @@ object ComponentPropExtractor {
           EditorRegistry.read(declaredField.type, declaredField, component)
 
       if (editorValue != null) {
-        props[identifier] = toInspectable(name, editorValue)
+        addProp(props, component.simpleName, name, editorValue)
       }
     }
 
     return props
   }
 
-  private fun fromDrawable(d: Drawable?): Inspectable =
-      when (d) {
-        is ColorDrawable -> InspectableValue.Color(Color.fromColor(d.color))
-        else -> InspectableValue.Unknown(d.toString())
-      }
+  private fun getMetadataId(
+      namespace: String,
+      key: String,
+      mutable: Boolean = false,
+      possibleValues: Set<InspectableValue>? = emptySet()
+  ): MetadataId {
+    val metadata = MetadataRegister.get(namespace, key)
+    val identifier =
+        metadata?.id
+            ?: MetadataRegister.registerDynamic(
+                MetadataRegister.TYPE_ATTRIBUTE, namespace, key, mutable, possibleValues)
+    return identifier
+  }
+
+  private fun addProp(
+      props: MutableMap<MetadataId, Inspectable>,
+      namespace: String,
+      name: String,
+      value: EditorValue
+  ) {
+    var possibleValues: MutableSet<InspectableValue>? = null
+    if (value is EditorPick) {
+      possibleValues = mutableSetOf()
+      value.values.forEach { possibleValues.add(InspectableValue.Text(it)) }
+    }
+
+    val identifier = getMetadataId(namespace, name, false, possibleValues)
+    props[identifier] = toInspectable(name, value)
+  }
 
   private fun toInspectable(name: String, editorValue: EditorValue): Inspectable {
     return editorValue.`when`(
@@ -97,13 +116,16 @@ object ComponentPropExtractor {
 
             val fields = mutableMapOf<MetadataId, Inspectable>()
             shape.value.entries.forEach { entry ->
-              val metadata = MetadataRegister.get(name, entry.key)
-              val identifier =
-                  metadata?.id
-                      ?: MetadataRegister.registerDynamic(
-                          MetadataRegister.TYPE_LAYOUT, name, entry.key)
-
               val value = toInspectable(entry.key, entry.value)
+
+              val shapeEditorValue = entry.value
+              var possibleValues: MutableSet<InspectableValue>? = null
+              if (shapeEditorValue is EditorPick) {
+                possibleValues = mutableSetOf()
+                shapeEditorValue.values.forEach { possibleValues.add(InspectableValue.Text(it)) }
+              }
+
+              val identifier = getMetadataId(name, entry.key, false, possibleValues)
               fields[identifier] = value
             }
 
@@ -116,7 +138,7 @@ object ComponentPropExtractor {
           }
 
           override fun isPick(pick: EditorPick?): Inspectable =
-              InspectableValue.Enum(Enumeration(pick?.values ?: setOf(), pick?.selected))
+              InspectableValue.Enum(Enumeration(pick?.selected))
 
           override fun isNumber(number: EditorNumber): Inspectable =
               InspectableValue.Number(number.value)
@@ -130,4 +152,10 @@ object ComponentPropExtractor {
           override fun isBool(bool: EditorBool): Inspectable = InspectableValue.Boolean(bool.value)
         })
   }
+
+  private fun fromDrawable(d: Drawable?): Inspectable =
+      when (d) {
+        is ColorDrawable -> InspectableValue.Color(Color.fromColor(d.color))
+        else -> InspectableValue.Unknown(d.toString())
+      }
 }
