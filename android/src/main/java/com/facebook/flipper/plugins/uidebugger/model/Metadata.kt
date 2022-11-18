@@ -21,5 +21,6 @@ data class Metadata(
     val namespace: String,
     val name: String,
     val mutable: kotlin.Boolean,
+    val possibleValues: Set<InspectableValue>? = emptySet(),
     val tags: List<String>? = emptyList()
 ) {}

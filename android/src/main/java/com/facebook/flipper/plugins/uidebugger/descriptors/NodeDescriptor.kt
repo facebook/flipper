@@ -31,7 +31,12 @@ object BaseTags {
   val AccessibleNativeAndroid = setOf(Android, Native, Accessibility)
 }
 
+typealias Id = Int
+
 interface NodeDescriptor<T> {
+
+  /** Used to detect the same node across traversals */
+  fun getId(node: T): Id = System.identityHashCode(node)
 
   /** Should be w.r.t the direct parent */
   fun getBounds(node: T): Bounds
@@ -75,10 +80,4 @@ interface NodeDescriptor<T> {
    * enum as we have to plugin 3rd party frameworks dynamically
    */
   fun getTags(node: T): Set<String>
-}
-
-typealias Id = Int
-
-fun Any.nodeId(): Id {
-  return System.identityHashCode(this)
 }

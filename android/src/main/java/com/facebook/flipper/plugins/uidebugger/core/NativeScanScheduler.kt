@@ -10,8 +10,8 @@ package com.facebook.flipper.plugins.uidebugger.core
 import android.os.Looper
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
+import com.facebook.flipper.plugins.uidebugger.descriptors.ApplicationRefDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
-import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
@@ -66,7 +66,10 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
         Json.encodeToString(
             SubtreeUpdateEvent.serializer(),
             SubtreeUpdateEvent(
-                input.txId, observerType, context.applicationRef.nodeId(), input.nodes))
+                input.txId,
+                observerType,
+                ApplicationRefDescriptor.getId(context.applicationRef),
+                input.nodes))
     val serializationEnd = System.currentTimeMillis()
 
     context.connectionRef.connection?.send(

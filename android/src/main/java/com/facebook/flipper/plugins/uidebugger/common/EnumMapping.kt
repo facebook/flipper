@@ -33,10 +33,39 @@ open class EnumMapping<T>(private val mapping: Map<String, T>) {
             "Could not convert string $key to enum value, possible values ${mapping.entries} ")
   }
 
+  fun getInspectableValues(): Set<InspectableValue> {
+    val set: MutableSet<InspectableValue> = mutableSetOf()
+    mapping.entries.forEach { set.add(InspectableValue.Text(it.key)) }
+    return set
+  }
+
   fun toInspectable(value: T): InspectableValue.Enum {
-    return InspectableValue.Enum(Enumeration(mapping.keys, getStringRepresentation(value)))
+    return InspectableValue.Enum(Enumeration(getStringRepresentation(value)))
   }
   companion object {
     const val NoMapping = "__UNKNOWN_ENUM_VALUE__"
   }
+}
+
+inline fun <reified T : Enum<T>> enumerator(): Iterator<T> = enumValues<T>().iterator()
+
+inline fun <reified T : Enum<T>> enumToSet(): Set<String> {
+  val set = mutableSetOf<String>()
+  val values = enumerator<T>()
+  values.forEach { set.add(it.name) }
+  return set
+}
+
+inline fun <reified T : Enum<T>> enumToInspectableSet(): Set<InspectableValue> {
+  val set = mutableSetOf<InspectableValue>()
+  val values = enumerator<T>()
+  values.forEach { set.add(InspectableValue.Text(it.name)) }
+  return set
+}
+
+inline fun <reified T : Enum<T>> enumMapping(): EnumMapping<T> {
+  val map = mutableMapOf<String, T>()
+  val values = enumerator<T>()
+  values.forEach { map[it.name] = it }
+  return EnumMapping<T>(map)
 }

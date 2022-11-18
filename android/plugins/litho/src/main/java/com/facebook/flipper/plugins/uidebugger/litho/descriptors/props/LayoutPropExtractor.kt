@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.litho.descriptors.props
 
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import com.facebook.flipper.plugins.uidebugger.common.enumToInspectableSet
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.*
 import com.facebook.litho.DebugComponent
@@ -23,19 +24,54 @@ object LayoutPropExtractor {
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "foreground")
 
   private val DirectionId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "direction")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "direction",
+          false,
+          enumToInspectableSet<YogaDirection>())
   private val FlexDirectionId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "flexDirection")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "flexDirection",
+          false,
+          enumToInspectableSet<YogaFlexDirection>())
   private val JustifyContentId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "justifyContent")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "justifyContent",
+          false,
+          enumToInspectableSet<YogaJustify>())
   private val AlignItemsId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "alignItems")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "alignItems",
+          false,
+          enumToInspectableSet<YogaAlign>())
   private val AlignSelfId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "alignSelf")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "alignSelf",
+          false,
+          enumToInspectableSet<YogaAlign>())
   private val AlignContentId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "alignContent")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "alignContent",
+          false,
+          enumToInspectableSet<YogaAlign>())
   private val PositionTypeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "positionType")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_LAYOUT,
+          NAMESPACE,
+          "positionType",
+          false,
+          enumToInspectableSet<YogaPositionType>())
 
   private val FlexGrowId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "flexGrow")
@@ -94,22 +130,14 @@ object LayoutPropExtractor {
     layout.background?.let { drawable -> props[BackgroundId] = fromDrawable(drawable) }
     layout.foreground?.let { drawable -> props[ForegroundId] = fromDrawable(drawable) }
 
-    props[DirectionId] =
-        InspectableValue.Enum(Enumeration(enumToSet<YogaDirection>(), layout.layoutDirection.name))
+    props[DirectionId] = InspectableValue.Enum(Enumeration(layout.layoutDirection.name))
 
-    props[FlexDirectionId] =
-        InspectableValue.Enum(
-            Enumeration(enumToSet<YogaFlexDirection>(), layout.flexDirection.name))
-    props[JustifyContentId] =
-        InspectableValue.Enum(Enumeration(enumToSet<YogaJustify>(), layout.justifyContent.name))
-    props[AlignItemsId] =
-        InspectableValue.Enum(Enumeration(enumToSet<YogaAlign>(), layout.alignItems.name))
-    props[AlignSelfId] =
-        InspectableValue.Enum(Enumeration(enumToSet<YogaAlign>(), layout.alignSelf.name))
-    props[AlignContentId] =
-        InspectableValue.Enum(Enumeration(enumToSet<YogaAlign>(), layout.alignContent.name))
-    props[PositionTypeId] =
-        InspectableValue.Enum(Enumeration(enumToSet<YogaPositionType>(), layout.positionType.name))
+    props[FlexDirectionId] = InspectableValue.Enum(Enumeration(layout.flexDirection.name))
+    props[JustifyContentId] = InspectableValue.Enum(Enumeration(layout.justifyContent.name))
+    props[AlignItemsId] = InspectableValue.Enum(Enumeration(layout.alignItems.name))
+    props[AlignSelfId] = InspectableValue.Enum(Enumeration(layout.alignSelf.name))
+    props[AlignContentId] = InspectableValue.Enum(Enumeration(layout.alignContent.name))
+    props[PositionTypeId] = InspectableValue.Enum(Enumeration(layout.positionType.name))
 
     props[FlexGrowId] = InspectableValue.Text(layout.flexGrow.toString())
     props[FlexShrinkId] = InspectableValue.Text(layout.flexShrink.toString())
@@ -199,12 +227,4 @@ object LayoutPropExtractor {
         is ColorDrawable -> InspectableValue.Color(Color.fromColor(d.color))
         else -> InspectableValue.Unknown(d.toString())
       }
-
-  private inline fun <reified T : Enum<T>> enumerator(): Iterator<T> = enumValues<T>().iterator()
-  private inline fun <reified T : Enum<T>> enumToSet(): Set<String> {
-    val set = mutableSetOf<String>()
-    val values = enumerator<T>()
-    values.forEach { set.add(it.name) }
-    return set
-  }
 }

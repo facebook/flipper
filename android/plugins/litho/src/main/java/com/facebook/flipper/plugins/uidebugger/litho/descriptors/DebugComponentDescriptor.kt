@@ -20,6 +20,12 @@ import com.facebook.litho.DebugComponent
 class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {
   private val NAMESPACE = "DebugComponent"
 
+  /*
+   * Debug component is generated on the fly so use the underlying component instance which is
+   * immutable
+   */
+  override fun getId(node: DebugComponent): Id = System.identityHashCode(node.component)
+
   override fun getName(node: DebugComponent): String = node.component.simpleName
 
   override fun getQualifiedName(node: com.facebook.litho.DebugComponent): String =

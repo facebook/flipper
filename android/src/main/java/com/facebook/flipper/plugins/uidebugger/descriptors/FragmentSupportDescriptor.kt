@@ -26,8 +26,7 @@ class FragmentSupportDescriptor(val register: DescriptorRegister) :
     return node.javaClass.simpleName
   }
 
-  override fun onGetBounds(node: Fragment): Bounds? =
-      node.view?.let { register.descriptorForClassUnsafe(it.javaClass).getBounds(it) }
+  override fun onGetBounds(node: Fragment): Bounds = Bounds(0, 0, 0, 0)
 
   override fun onGetChildren(node: androidx.fragment.app.Fragment): List<Any> =
       node.view?.let { view -> listOf(view) } ?: listOf()

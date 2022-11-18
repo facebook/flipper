@@ -12,9 +12,9 @@ import android.util.Log
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.core.FlipperPlugin
 import com.facebook.flipper.plugins.uidebugger.core.*
+import com.facebook.flipper.plugins.uidebugger.descriptors.ApplicationRefDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
-import com.facebook.flipper.plugins.uidebugger.descriptors.nodeId
 import com.facebook.flipper.plugins.uidebugger.model.InitEvent
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
@@ -51,7 +51,9 @@ class UIDebuggerFlipperPlugin(
 
     connection.send(
         InitEvent.name,
-        Json.encodeToString(InitEvent.serializer(), InitEvent(context.applicationRef.nodeId())))
+        Json.encodeToString(
+            InitEvent.serializer(),
+            InitEvent(ApplicationRefDescriptor.getId(context.applicationRef))))
 
     connection.send(
         MetadataUpdateEvent.name,
