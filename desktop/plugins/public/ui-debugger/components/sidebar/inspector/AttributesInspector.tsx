@@ -32,6 +32,7 @@ import {
   RowStyle,
   TextAttributeValueStyle,
 } from './Styles';
+import {Glyph} from 'flipper';
 
 const NumberValue = styled.span(NumberAttributeValueStyle);
 const TextValue = styled.span(TextAttributeValueStyle);
@@ -207,23 +208,37 @@ export const AttributesInspector: React.FC<Props> = ({
   mode,
   rawDisplayEnabled = false,
 }) => {
+  const keys = Object.keys(node.attributes);
+  const sections = keys
+    .map(function (key, _) {
+      const metadataId: number = Number(key);
+      /**
+       * The node top-level attributes refer to the displayable panels.
+       * The panel name is obtained by querying the metadata.
+       * The inspectable contains the actual attributes belonging to each panel.
+       */
+      return createSection(
+        mode,
+        metadata,
+        metadata.get(metadataId)?.name ?? '',
+        node.attributes[metadataId] as InspectableObject,
+      );
+    })
+    .filter((section) => section !== undefined);
+
+  if (sections.length === 0) {
+    return (
+      <div style={{textAlign: 'center'}}>
+        <Glyph name="stop" size={24} style={{margin: 20}} />
+        <p>No data is available</p>
+      </div>
+    );
+  }
+
   return (
     <>
-      {Object.keys(node.attributes).map(function (key, _) {
-        const metadataId: number = Number(key);
-        /**
-         * The node top-level attributes refer to the displayable panels.
-         * The panel name is obtained by querying the metadata.
-         * The inspectable contains the actual attributes belonging to each panel.
-         */
-        return createSection(
-          mode,
-          metadata,
-          metadata.get(metadataId)?.name ?? '',
-          node.attributes[metadataId] as InspectableObject,
-        );
-      })}
-      {rawDisplayEnabled ?? (
+      {...sections}
+      {rawDisplayEnabled && (
         <Panel key="Raw" title="Raw Data" collapsed>
           <DataInspector data={node.attributes} />
         </Panel>
