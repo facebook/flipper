@@ -122,102 +122,299 @@ object LayoutPropExtractor {
   private val RotationId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "rotation")
 
+  private val EmptyId = MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "")
+  private val NoneId = MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "none")
+  private val SizeId = MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "size")
+  private val ViewOutputId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "viewOutput")
+
+  fun getInspectableBox(
+      left: YogaValue?,
+      top: YogaValue?,
+      right: YogaValue?,
+      bottom: YogaValue?,
+      horizontal: YogaValue?,
+      vertical: YogaValue?,
+      all: YogaValue?,
+      start: YogaValue?,
+      end: YogaValue?
+  ): InspectableObject {
+    val props = mutableMapOf<MetadataId, Inspectable>()
+
+    var actualLeft = 0
+    var actualTop = 0
+    var actualRight = 0
+    var actualBottom = 0
+
+    all?.let { yogaValue ->
+      if (yogaValue.unit != YogaUnit.UNDEFINED) {
+        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
+          val intValue = yogaValue.value.toInt()
+          actualLeft = intValue
+          actualTop = intValue
+          actualRight = intValue
+          actualBottom = intValue
+        }
+
+        props[AllId] = InspectableValue.Text(yogaValue.toString())
+      }
+    }
+
+    horizontal?.let { yogaValue ->
+      if (yogaValue.unit != YogaUnit.UNDEFINED) {
+        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
+          val intValue = yogaValue.value.toInt()
+          actualLeft = intValue
+          actualRight = intValue
+        }
+
+        props[HorizontalId] = InspectableValue.Text(yogaValue.toString())
+      }
+    }
+
+    vertical?.let { yogaValue ->
+      if (yogaValue.unit != YogaUnit.UNDEFINED) {
+        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
+          val intValue = yogaValue.value.toInt()
+          actualTop = intValue
+          actualBottom = intValue
+        }
+
+        props[VerticalId] = InspectableValue.Text(yogaValue.toString())
+      }
+    }
+
+    left?.let { yogaValue ->
+      if (yogaValue.unit != YogaUnit.UNDEFINED) {
+        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
+          val intValue = yogaValue.value.toInt()
+          actualLeft = intValue
+        }
+
+        props[LeftId] = InspectableValue.Text(yogaValue.toString())
+      }
+    }
+
+    right?.let { yogaValue ->
+      if (yogaValue.unit != YogaUnit.UNDEFINED) {
+        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
+          val intValue = yogaValue.value.toInt()
+          actualRight = intValue
+        }
+
+        props[RightId] = InspectableValue.Text(yogaValue.toString())
+      }
+    }
+
+    top?.let { yogaValue ->
+      if (yogaValue.unit != YogaUnit.UNDEFINED) {
+        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
+          val intValue = yogaValue.value.toInt()
+          actualTop = intValue
+        }
+
+        props[TopId] = InspectableValue.Text(yogaValue.toString())
+      }
+    }
+
+    bottom?.let { yogaValue ->
+      if (yogaValue.unit != YogaUnit.UNDEFINED) {
+        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
+          val intValue = yogaValue.value.toInt()
+          actualBottom = intValue
+        }
+
+        props[BottomId] = InspectableValue.Text(yogaValue.toString())
+      }
+    }
+
+    props[EmptyId] =
+        InspectableValue.SpaceBox(SpaceBox(actualTop, actualRight, actualBottom, actualLeft))
+
+    return InspectableObject(props)
+  }
+
+  fun getInspectableBoxRaw(
+      left: Float?,
+      top: Float?,
+      right: Float?,
+      bottom: Float?,
+      horizontal: Float?,
+      vertical: Float?,
+      all: Float?,
+      start: Float?,
+      end: Float?
+  ): InspectableObject {
+    val props = mutableMapOf<MetadataId, Inspectable>()
+
+    var actualLeft = 0
+    var actualTop = 0
+    var actualRight = 0
+    var actualBottom = 0
+
+    all?.let { value ->
+      if (!value.isNaN()) {
+        val intValue = value.toInt()
+        actualLeft = intValue
+        actualTop = intValue
+        actualRight = intValue
+        actualBottom = intValue
+        props[AllId] = InspectableValue.Number(value)
+      }
+    }
+
+    horizontal?.let { value ->
+      if (!value.isNaN()) {
+        val intValue = value.toInt()
+        actualLeft = intValue
+        actualRight = intValue
+        props[HorizontalId] = InspectableValue.Number(value)
+      }
+    }
+
+    vertical?.let { value ->
+      if (!value.isNaN()) {
+        val intValue = value.toInt()
+        actualTop = intValue
+        actualBottom = intValue
+        props[VerticalId] = InspectableValue.Number(value)
+      }
+    }
+
+    left?.let { value ->
+      if (!value.isNaN()) {
+        val intValue = value.toInt()
+        actualLeft = intValue
+        props[LeftId] = InspectableValue.Number(value)
+      }
+    }
+
+    right?.let { value ->
+      if (!value.isNaN()) {
+        val intValue = value.toInt()
+        actualRight = intValue
+        props[RightId] = InspectableValue.Number(value)
+      }
+    }
+
+    top?.let { value ->
+      if (!value.isNaN()) {
+        val intValue = value.toInt()
+        actualTop = intValue
+        props[TopId] = InspectableValue.Number(value)
+      }
+    }
+
+    bottom?.let { value ->
+      if (!value.isNaN()) {
+        val intValue = value.toInt()
+        actualBottom = intValue
+        props[BottomId] = InspectableValue.Number(value)
+      }
+    }
+
+    props[EmptyId] =
+        InspectableValue.SpaceBox(SpaceBox(actualTop, actualRight, actualBottom, actualLeft))
+
+    return InspectableObject(props)
+  }
+
   fun getProps(component: DebugComponent): Map<MetadataId, Inspectable> {
     val props = mutableMapOf<MetadataId, Inspectable>()
 
     val layout = component.layoutNode ?: return props
 
-    layout.background?.let { drawable -> props[BackgroundId] = fromDrawable(drawable) }
-    layout.foreground?.let { drawable -> props[ForegroundId] = fromDrawable(drawable) }
-
-    props[DirectionId] = InspectableValue.Enum(Enumeration(layout.layoutDirection.name))
-
-    props[FlexDirectionId] = InspectableValue.Enum(Enumeration(layout.flexDirection.name))
-    props[JustifyContentId] = InspectableValue.Enum(Enumeration(layout.justifyContent.name))
     props[AlignItemsId] = InspectableValue.Enum(Enumeration(layout.alignItems.name))
     props[AlignSelfId] = InspectableValue.Enum(Enumeration(layout.alignSelf.name))
     props[AlignContentId] = InspectableValue.Enum(Enumeration(layout.alignContent.name))
-    props[PositionTypeId] = InspectableValue.Enum(Enumeration(layout.positionType.name))
-
-    props[FlexGrowId] = InspectableValue.Text(layout.flexGrow.toString())
-    props[FlexShrinkId] = InspectableValue.Text(layout.flexShrink.toString())
-    props[FlexBasisId] = InspectableValue.Text(layout.flexBasis.toString())
-
-    props[WidthId] = InspectableValue.Text(layout.width.toString())
-    props[MinWidthId] = InspectableValue.Text(layout.minWidth.toString())
-    props[MaxWidthId] = InspectableValue.Text(layout.maxWidth.toString())
-
-    props[HeightId] = InspectableValue.Text(layout.height.toString())
-    props[MinHeightId] = InspectableValue.Text(layout.minHeight.toString())
-    props[MaxHeightId] = InspectableValue.Text(layout.maxHeight.toString())
 
     props[AspectRatioId] = InspectableValue.Text(layout.aspectRatio.toString())
 
-    val marginProps = mutableMapOf<MetadataId, Inspectable>()
-    marginProps[LeftId] = InspectableValue.Text(layout.getMargin(YogaEdge.LEFT).toString())
-    marginProps[TopId] = InspectableValue.Text(layout.getMargin(YogaEdge.TOP).toString())
-    marginProps[RightId] = InspectableValue.Text(layout.getMargin(YogaEdge.RIGHT).toString())
-    marginProps[BottomId] = InspectableValue.Text(layout.getMargin(YogaEdge.BOTTOM).toString())
-    marginProps[StartId] = InspectableValue.Text(layout.getMargin(YogaEdge.START).toString())
-    marginProps[EndId] = InspectableValue.Text(layout.getMargin(YogaEdge.END).toString())
-    marginProps[HorizontalId] =
-        InspectableValue.Text(layout.getMargin(YogaEdge.HORIZONTAL).toString())
-    marginProps[VerticalId] = InspectableValue.Text(layout.getMargin(YogaEdge.VERTICAL).toString())
-    marginProps[AllId] = InspectableValue.Text(layout.getMargin(YogaEdge.ALL).toString())
+    layout.background?.let { drawable -> props[BackgroundId] = fromDrawable(drawable) }
 
-    props[MarginId] = InspectableObject(marginProps)
+    props[DirectionId] = InspectableValue.Enum(Enumeration(layout.layoutDirection.name))
 
-    val paddingProps = mutableMapOf<MetadataId, Inspectable>()
-    paddingProps[LeftId] = InspectableValue.Text(layout.getPadding(YogaEdge.LEFT).toString())
-    paddingProps[TopId] = InspectableValue.Text(layout.getPadding(YogaEdge.TOP).toString())
-    paddingProps[RightId] = InspectableValue.Text(layout.getPadding(YogaEdge.RIGHT).toString())
-    paddingProps[BottomId] = InspectableValue.Text(layout.getPadding(YogaEdge.BOTTOM).toString())
-    paddingProps[StartId] = InspectableValue.Text(layout.getPadding(YogaEdge.START).toString())
-    paddingProps[EndId] = InspectableValue.Text(layout.getPadding(YogaEdge.END).toString())
-    paddingProps[HorizontalId] =
-        InspectableValue.Text(layout.getPadding(YogaEdge.HORIZONTAL).toString())
-    paddingProps[VerticalId] =
-        InspectableValue.Text(layout.getPadding(YogaEdge.VERTICAL).toString())
-    paddingProps[AllId] = InspectableValue.Text(layout.getPadding(YogaEdge.ALL).toString())
+    props[FlexBasisId] = InspectableValue.Text(layout.flexBasis.toString())
+    props[FlexDirectionId] = InspectableValue.Enum(Enumeration(layout.flexDirection.name))
+    props[FlexGrowId] = InspectableValue.Text(layout.flexGrow.toString())
+    props[FlexShrinkId] = InspectableValue.Text(layout.flexShrink.toString())
 
-    props[PaddingId] = InspectableObject(paddingProps)
+    layout.foreground?.let { drawable -> props[ForegroundId] = fromDrawable(drawable) }
 
-    val borderProps = mutableMapOf<MetadataId, Inspectable>()
-    borderProps[LeftId] = InspectableValue.Text(layout.getBorderWidth(YogaEdge.LEFT).toString())
-    borderProps[TopId] = InspectableValue.Text(layout.getBorderWidth(YogaEdge.TOP).toString())
-    borderProps[RightId] = InspectableValue.Text(layout.getBorderWidth(YogaEdge.RIGHT).toString())
-    borderProps[BottomId] = InspectableValue.Text(layout.getBorderWidth(YogaEdge.BOTTOM).toString())
-    borderProps[StartId] = InspectableValue.Text(layout.getBorderWidth(YogaEdge.START).toString())
-    borderProps[EndId] = InspectableValue.Text(layout.getBorderWidth(YogaEdge.END).toString())
-    borderProps[HorizontalId] =
-        InspectableValue.Text(layout.getBorderWidth(YogaEdge.HORIZONTAL).toString())
-    borderProps[VerticalId] =
-        InspectableValue.Text(layout.getBorderWidth(YogaEdge.VERTICAL).toString())
-    borderProps[AllId] = InspectableValue.Text(layout.getBorderWidth(YogaEdge.ALL).toString())
+    props[JustifyContentId] = InspectableValue.Enum(Enumeration(layout.justifyContent.name))
 
-    props[BorderId] = InspectableObject(borderProps)
+    props[PositionTypeId] = InspectableValue.Enum(Enumeration(layout.positionType.name))
 
-    val positionProps = mutableMapOf<MetadataId, Inspectable>()
-    positionProps[LeftId] = InspectableValue.Text(layout.getPosition(YogaEdge.LEFT).toString())
-    positionProps[TopId] = InspectableValue.Text(layout.getPosition(YogaEdge.TOP).toString())
-    positionProps[RightId] = InspectableValue.Text(layout.getPosition(YogaEdge.RIGHT).toString())
-    positionProps[BottomId] = InspectableValue.Text(layout.getPosition(YogaEdge.BOTTOM).toString())
-    positionProps[StartId] = InspectableValue.Text(layout.getPosition(YogaEdge.START).toString())
-    positionProps[EndId] = InspectableValue.Text(layout.getPosition(YogaEdge.END).toString())
-    positionProps[HorizontalId] =
-        InspectableValue.Text(layout.getPosition(YogaEdge.HORIZONTAL).toString())
-    positionProps[VerticalId] =
-        InspectableValue.Text(layout.getPosition(YogaEdge.VERTICAL).toString())
-    positionProps[AllId] = InspectableValue.Text(layout.getPosition(YogaEdge.ALL).toString())
+    val size: MutableMap<MetadataId, Inspectable> = mutableMapOf()
+    size[WidthId] = InspectableValue.Text(layout.width.toString())
+    if (layout.minWidth.unit != YogaUnit.UNDEFINED)
+        size[MinWidthId] = InspectableValue.Text(layout.minWidth.toString())
+    if (layout.maxWidth.unit != YogaUnit.UNDEFINED)
+        size[MaxWidthId] = InspectableValue.Text(layout.maxWidth.toString())
+    size[HeightId] = InspectableValue.Text(layout.height.toString())
+    if (layout.minHeight.unit != YogaUnit.UNDEFINED)
+        size[MinHeightId] = InspectableValue.Text(layout.minHeight.toString())
+    if (layout.maxHeight.unit != YogaUnit.UNDEFINED)
+        size[MaxHeightId] = InspectableValue.Text(layout.maxHeight.toString())
 
-    props[PositionId] = InspectableObject(positionProps)
+    props[SizeId] = InspectableObject(size)
 
-    props[HasViewOutputId] = InspectableValue.Boolean(layout.hasViewOutput())
+    props[MarginId] =
+        getInspectableBox(
+            layout.getMargin(YogaEdge.LEFT),
+            layout.getMargin(YogaEdge.TOP),
+            layout.getMargin(YogaEdge.RIGHT),
+            layout.getMargin(YogaEdge.BOTTOM),
+            layout.getMargin(YogaEdge.HORIZONTAL),
+            layout.getMargin(YogaEdge.VERTICAL),
+            layout.getMargin(YogaEdge.ALL),
+            layout.getMargin(YogaEdge.START),
+            layout.getMargin(YogaEdge.END))
+
+    props[PaddingId] =
+        getInspectableBox(
+            layout.getPadding(YogaEdge.LEFT),
+            layout.getPadding(YogaEdge.TOP),
+            layout.getPadding(YogaEdge.RIGHT),
+            layout.getPadding(YogaEdge.BOTTOM),
+            layout.getPadding(YogaEdge.HORIZONTAL),
+            layout.getPadding(YogaEdge.VERTICAL),
+            layout.getPadding(YogaEdge.ALL),
+            layout.getPadding(YogaEdge.START),
+            layout.getPadding(YogaEdge.END))
+
+    props[BorderId] =
+        getInspectableBoxRaw(
+            layout.getBorderWidth(YogaEdge.LEFT),
+            layout.getBorderWidth(YogaEdge.TOP),
+            layout.getBorderWidth(YogaEdge.RIGHT),
+            layout.getBorderWidth(YogaEdge.BOTTOM),
+            layout.getBorderWidth(YogaEdge.HORIZONTAL),
+            layout.getBorderWidth(YogaEdge.VERTICAL),
+            layout.getBorderWidth(YogaEdge.ALL),
+            layout.getBorderWidth(YogaEdge.START),
+            layout.getBorderWidth(YogaEdge.END))
+
+    props[PositionId] =
+        getInspectableBox(
+            layout.getPosition(YogaEdge.LEFT),
+            layout.getPosition(YogaEdge.TOP),
+            layout.getPosition(YogaEdge.RIGHT),
+            layout.getPosition(YogaEdge.BOTTOM),
+            layout.getPosition(YogaEdge.HORIZONTAL),
+            layout.getPosition(YogaEdge.VERTICAL),
+            layout.getPosition(YogaEdge.ALL),
+            layout.getPosition(YogaEdge.START),
+            layout.getPosition(YogaEdge.END))
+
+    val viewOutput: MutableMap<MetadataId, Inspectable> = mutableMapOf()
+    viewOutput[HasViewOutputId] = InspectableValue.Boolean(layout.hasViewOutput())
     if (layout.hasViewOutput()) {
-      props[AlphaId] = InspectableValue.Number(layout.alpha)
-      props[ScaleId] = InspectableValue.Number(layout.scale)
-      props[RotationId] = InspectableValue.Number(layout.rotation)
+      viewOutput[AlphaId] = InspectableValue.Number(layout.alpha)
+      viewOutput[RotationId] = InspectableValue.Number(layout.rotation)
+      viewOutput[ScaleId] = InspectableValue.Number(layout.scale)
     }
+    props[ViewOutputId] = InspectableObject(viewOutput)
 
     return props
   }
