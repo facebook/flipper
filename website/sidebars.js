@@ -199,6 +199,7 @@ module.exports = {
             },
             'fb/Star-Ratings',
             'fb/async-testing',
+            'fb/code-freeze',
           ]
         }
       ]),
