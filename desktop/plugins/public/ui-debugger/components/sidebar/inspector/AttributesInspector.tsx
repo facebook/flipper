@@ -33,6 +33,7 @@ import {
   TextAttributeValueStyle,
 } from './Styles';
 import {Glyph} from 'flipper';
+import {transform} from '../../../dataTransform';
 
 const NumberValue = styled.span(NumberAttributeValueStyle);
 const TextValue = styled.span(TextAttributeValueStyle);
@@ -240,7 +241,7 @@ export const AttributesInspector: React.FC<Props> = ({
       {...sections}
       {rawDisplayEnabled && (
         <Panel key="Raw" title="Raw Data" collapsed>
-          <DataInspector data={node.attributes} />
+          <DataInspector data={transform(node.attributes, metadata)} />
         </Panel>
       )}
     </>
