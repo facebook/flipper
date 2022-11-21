@@ -10,7 +10,6 @@
 #import <FlipperKit/FlipperDiagnosticsViewController.h>
 #import "CommunicationDemoViewController.h"
 #import "NetworkViewController.h"
-#import "RootViewController.h"
 #import "UserDefaultsViewController.h"
 
 @interface MainViewController ()
@@ -27,13 +26,6 @@
   FlipperDiagnosticsViewController* controller =
       [[FlipperDiagnosticsViewController alloc] init];
   [self.navigationController pushViewController:controller animated:true];
-}
-
-- (IBAction)tappedComponentKitLayout:(UIButton*)sender {
-  RootViewController* rootViewController = [RootViewController new];
-
-  [self.navigationController pushViewController:rootViewController
-                                       animated:true];
 }
 
 - (IBAction)tappedNetworkInspector:(UIButton*)sender {
