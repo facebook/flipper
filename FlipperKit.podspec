@@ -153,7 +153,7 @@ Pod::Spec.new do |spec|
     ss.header_dir = "FlipperKitLayoutComponentKitSupport"
     ss.dependency             'FlipperKit/Core'
     ss.dependency             'ComponentKit', '0.31'
-    ss.dependency             'RenderCore', '0.31' # Pinning it to 0.30, as there won't be any new releases from CK team.
+    ss.dependency             'RenderCore', '0.31'
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
     ss.dependency             'FlipperKit/FlipperKitHighlightOverlay'
