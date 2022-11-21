@@ -155,7 +155,7 @@ export type InspectableBoolean = {
 
 export type InspectableEnum = {
   type: 'enum';
-  value: {value: string; values: string[]};
+  value: string;
 };
 
 export type InspectableColor = {

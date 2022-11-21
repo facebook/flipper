@@ -324,26 +324,26 @@ object LayoutPropExtractor {
 
     val layout = component.layoutNode ?: return props
 
-    props[AlignItemsId] = InspectableValue.Enum(Enumeration(layout.alignItems.name))
-    props[AlignSelfId] = InspectableValue.Enum(Enumeration(layout.alignSelf.name))
-    props[AlignContentId] = InspectableValue.Enum(Enumeration(layout.alignContent.name))
+    props[AlignItemsId] = InspectableValue.Enum(layout.alignItems.name)
+    props[AlignSelfId] = InspectableValue.Enum(layout.alignSelf.name)
+    props[AlignContentId] = InspectableValue.Enum(layout.alignContent.name)
 
     props[AspectRatioId] = InspectableValue.Text(layout.aspectRatio.toString())
 
     layout.background?.let { drawable -> props[BackgroundId] = fromDrawable(drawable) }
 
-    props[DirectionId] = InspectableValue.Enum(Enumeration(layout.layoutDirection.name))
+    props[DirectionId] = InspectableValue.Enum(layout.layoutDirection.name)
 
     props[FlexBasisId] = InspectableValue.Text(layout.flexBasis.toString())
-    props[FlexDirectionId] = InspectableValue.Enum(Enumeration(layout.flexDirection.name))
+    props[FlexDirectionId] = InspectableValue.Enum(layout.flexDirection.name)
     props[FlexGrowId] = InspectableValue.Text(layout.flexGrow.toString())
     props[FlexShrinkId] = InspectableValue.Text(layout.flexShrink.toString())
 
     layout.foreground?.let { drawable -> props[ForegroundId] = fromDrawable(drawable) }
 
-    props[JustifyContentId] = InspectableValue.Enum(Enumeration(layout.justifyContent.name))
+    props[JustifyContentId] = InspectableValue.Enum(layout.justifyContent.name)
 
-    props[PositionTypeId] = InspectableValue.Enum(Enumeration(layout.positionType.name))
+    props[PositionTypeId] = InspectableValue.Enum(layout.positionType.name)
 
     val size: MutableMap<MetadataId, Inspectable> = mutableMapOf()
     size[WidthId] = InspectableValue.Text(layout.width.toString())

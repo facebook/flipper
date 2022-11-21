@@ -137,8 +137,7 @@ object ComponentPropExtractor {
             return InspectableArray(0, values ?: listOf())
           }
 
-          override fun isPick(pick: EditorPick?): Inspectable =
-              InspectableValue.Enum(Enumeration(pick?.selected))
+          override fun isPick(pick: EditorPick): Inspectable = InspectableValue.Enum(pick.selected)
 
           override fun isNumber(number: EditorNumber): Inspectable =
               InspectableValue.Number(number.value)
@@ -146,8 +145,8 @@ object ComponentPropExtractor {
           override fun isColor(number: EditorColor): Inspectable =
               InspectableValue.Color(number.value.toInt().let { Color.fromColor(it) })
 
-          override fun isString(string: EditorString?): Inspectable =
-              InspectableValue.Text(string?.value ?: "")
+          override fun isString(string: EditorString): Inspectable =
+              InspectableValue.Text(string.value ?: "")
 
           override fun isBool(bool: EditorBool): Inspectable = InspectableValue.Boolean(bool.value)
         })

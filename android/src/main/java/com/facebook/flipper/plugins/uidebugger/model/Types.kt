@@ -62,5 +62,3 @@ data class Size(
     @Serializable(with = NumberSerializer::class) val width: Number,
     @Serializable(with = NumberSerializer::class) val height: Number
 ) {}
-
-@kotlinx.serialization.Serializable data class Enumeration(val value: String?)

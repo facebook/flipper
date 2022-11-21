@@ -85,9 +85,7 @@ sealed class InspectableValue : Inspectable() {
 
   @SerialName("enum")
   @kotlinx.serialization.Serializable
-  data class Enum(
-      val value: com.facebook.flipper.plugins.uidebugger.model.Enumeration,
-  ) : InspectableValue()
+  data class Enum(val value: String) : InspectableValue()
 
   @SerialName("unknown")
   @kotlinx.serialization.Serializable

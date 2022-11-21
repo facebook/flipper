@@ -9,7 +9,6 @@ package com.facebook.flipper.plugins.uidebugger.common
 
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.model.Enumeration
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 
 // Maintains 2 way mapping between some enum value and a readable string representation
@@ -40,7 +39,7 @@ open class EnumMapping<T>(private val mapping: Map<String, T>) {
   }
 
   fun toInspectable(value: T): InspectableValue.Enum {
-    return InspectableValue.Enum(Enumeration(getStringRepresentation(value)))
+    return InspectableValue.Enum(getStringRepresentation(value))
   }
   companion object {
     const val NoMapping = "__UNKNOWN_ENUM_VALUE__"

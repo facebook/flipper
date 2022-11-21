@@ -22,10 +22,9 @@ function transformAny(
     case 'bounds':
     case 'coordinate':
     case 'coordinate3d':
+    case 'enum':
     case 'space':
       return inspectable.value;
-    case 'enum':
-      return inspectable.value.value;
     case 'object':
       return transformObject(metadata, inspectable);
     default:

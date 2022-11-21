@@ -102,7 +102,7 @@ function create(
     case 'enum':
       return (
         <NamedAttributeInspector name={displayableName(name)}>
-          <EnumValue>{inspectable.value.value}</EnumValue>
+          <EnumValue>{inspectable.value}</EnumValue>
         </NamedAttributeInspector>
       );
     case 'text':
