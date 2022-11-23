@@ -15,6 +15,8 @@ import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.LayoutPro
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
+import com.facebook.flipper.plugins.uidebugger.util.Deferred
+import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import com.facebook.litho.DebugComponent
 
 class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {
@@ -67,19 +69,20 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
   private val UserPropsId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho Props")
 
-  override fun getData(node: DebugComponent): Map<MetadataId, InspectableObject> {
+  override fun getData(node: DebugComponent): MaybeDeferred<Map<MetadataId, InspectableObject>> {
+    return Deferred {
+      val attributeSections = mutableMapOf<MetadataId, InspectableObject>()
 
-    val attributeSections = mutableMapOf<MetadataId, InspectableObject>()
+      val layoutProps = LayoutPropExtractor.getProps(node)
+      attributeSections[LayoutId] = InspectableObject(layoutProps.toMap())
 
-    val layoutProps = LayoutPropExtractor.getProps(node)
-    attributeSections[LayoutId] = InspectableObject(layoutProps.toMap())
+      if (!node.canResolve()) {
+        val props = ComponentPropExtractor.getProps(node.component)
+        attributeSections[UserPropsId] = InspectableObject(props.toMap())
+      }
 
-    if (!node.canResolve()) {
-      val props = ComponentPropExtractor.getProps(node.component)
-      attributeSections[UserPropsId] = InspectableObject(props.toMap())
+      attributeSections
     }
-
-    return attributeSections
   }
 
   override fun getBounds(node: DebugComponent): Bounds =

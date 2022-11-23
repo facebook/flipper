@@ -40,8 +40,9 @@ export type PerfStatsEvent = {
   start: number;
   traversalComplete: number;
   snapshotComplete: number;
-  serializationComplete: number;
   queuingComplete: number;
+  deferredComputationComplete: number;
+  serializationComplete: number;
   socketComplete: number;
   nodesCount: number;
 };

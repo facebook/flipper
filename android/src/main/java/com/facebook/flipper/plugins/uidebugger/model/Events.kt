@@ -58,6 +58,7 @@ data class PerfStatsEvent(
     val traversalComplete: Long,
     val snapshotComplete: Long,
     val queuingComplete: Long,
+    val deferredComputationComplete: Long,
     val serializationComplete: Long,
     val socketComplete: Long,
     val nodesCount: Int

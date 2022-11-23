@@ -11,6 +11,8 @@ import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
+import com.facebook.flipper.plugins.uidebugger.util.Immediate
+import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 
 /**
  * A chained descriptor is a special type of descriptor that models the inheritance hierarchy in
@@ -81,7 +83,7 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
 
   open fun onGetChildren(node: T): List<Any>? = null
 
-  final override fun getData(node: T): Map<MetadataId, InspectableObject> {
+  final override fun getData(node: T): MaybeDeferred<Map<MetadataId, InspectableObject>> {
     val builder = mutableMapOf<MetadataId, InspectableObject>()
     onGetData(node, builder)
 
@@ -92,7 +94,7 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
       curDescriptor = curDescriptor.mSuper
     }
 
-    return builder
+    return Immediate(builder)
   }
 
   /**

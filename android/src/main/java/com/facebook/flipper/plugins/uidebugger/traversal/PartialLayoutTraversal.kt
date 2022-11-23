@@ -14,6 +14,8 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
+import com.facebook.flipper.plugins.uidebugger.util.Immediate
+import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 
 /**
  * This will traverse the layout hierarchy until it sees a node that has an observer registered for
@@ -29,9 +31,9 @@ class PartialLayoutTraversal(
   @Suppress("unchecked_cast")
   internal fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
 
-  fun traverse(root: Any): Pair<List<Node>, List<Any>> {
+  fun traverse(root: Any): Pair<List<MaybeDeferred<Node>>, List<Any>> {
 
-    val visited = mutableListOf<Node>()
+    val visited = mutableListOf<MaybeDeferred<Node>>()
     val observableRoots = mutableListOf<Any>()
 
     val stack = mutableListOf<Any>()
@@ -53,15 +55,16 @@ class PartialLayoutTraversal(
 
         if (shallow.contains(node)) {
           visited.add(
-              Node(
-                  descriptor.getId(node),
-                  descriptor.getQualifiedName(node),
-                  descriptor.getName(node),
-                  emptyMap(),
-                  descriptor.getBounds(node),
-                  emptySet(),
-                  emptyList(),
-                  null))
+              Immediate(
+                  Node(
+                      descriptor.getId(node),
+                      descriptor.getQualifiedName(node),
+                      descriptor.getName(node),
+                      emptyMap(),
+                      descriptor.getBounds(node),
+                      emptySet(),
+                      emptyList(),
+                      null)))
 
           shallow.remove(node)
           continue
@@ -93,15 +96,17 @@ class PartialLayoutTraversal(
         val bounds = descriptor.getBounds(node)
         val tags = descriptor.getTags(node)
         visited.add(
-            Node(
-                descriptor.getId(node),
-                descriptor.getQualifiedName(node),
-                descriptor.getName(node),
-                attributes,
-                bounds,
-                tags,
-                childrenIds,
-                activeChildId))
+            attributes.map { attrs ->
+              Node(
+                  descriptor.getId(node),
+                  descriptor.getQualifiedName(node),
+                  descriptor.getName(node),
+                  attrs,
+                  bounds,
+                  tags,
+                  childrenIds,
+                  activeChildId)
+            })
       } catch (exception: Exception) {
         Log.e(LogTag, "Error while processing node ${node.javaClass.name} $node", exception)
       }

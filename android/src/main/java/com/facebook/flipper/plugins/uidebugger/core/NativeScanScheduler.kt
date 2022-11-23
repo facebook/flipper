@@ -19,13 +19,14 @@ import com.facebook.flipper.plugins.uidebugger.model.SubtreeUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import com.facebook.flipper.plugins.uidebugger.scheduler.Scheduler
 import com.facebook.flipper.plugins.uidebugger.traversal.PartialLayoutTraversal
+import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import kotlinx.serialization.json.Json
 
 data class ScanResult(
     val txId: Long,
     val scanStart: Long,
     val scanEnd: Long,
-    val nodes: List<Node>
+    val nodes: List<MaybeDeferred<Node>>
 )
 
 const val observerType = "FullScan"
@@ -62,6 +63,9 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
   }
 
   private fun sendSubtreeUpdate(input: ScanResult) {
+    val nodes = input.nodes.map { it.value() }
+    val deferredComputationComplete = System.currentTimeMillis()
+
     val serialized =
         Json.encodeToString(
             SubtreeUpdateEvent.serializer(),
@@ -69,7 +73,7 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
                 input.txId,
                 observerType,
                 ApplicationRefDescriptor.getId(context.applicationRef),
-                input.nodes))
+                nodes))
     val serializationEnd = System.currentTimeMillis()
 
     context.connectionRef.connection?.send(
@@ -89,6 +93,7 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
                 input.scanStart,
                 input.scanEnd,
                 input.scanEnd,
+                deferredComputationComplete,
                 serializationEnd,
                 socketEnd,
                 input.nodes.size)))

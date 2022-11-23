@@ -11,6 +11,7 @@ import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
+import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 
 /*
  Descriptors are an extension point used during traversal to extract data out of arbitrary
@@ -73,7 +74,7 @@ interface NodeDescriptor<T> {
    * Get the data to show for this node in the sidebar of the inspector. The object will be shown in
    * order and with a header matching the given name.
    */
-  fun getData(node: T): Map<MetadataId, InspectableObject>
+  fun getData(node: T): MaybeDeferred<Map<MetadataId, InspectableObject>>
 
   /**
    * Set of tags to describe this node in an abstract way for the UI Unfortunately this can't be an
