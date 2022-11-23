@@ -153,6 +153,12 @@ function create(
           <SpaceBoxInspector value={inspectable.value} />
         </NamedAttributeInspector>
       );
+    case 'unknown':
+      return (
+        <NamedAttributeInspector name={displayableName(name)}>
+          <TextValue>{inspectable.value}</TextValue>
+        </NamedAttributeInspector>
+      );
     case 'object':
       return (
         <ObjectAttributeInspector

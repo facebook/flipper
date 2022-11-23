@@ -137,7 +137,8 @@ export type Inspectable =
   | InspectableCoordinate3D
   | InspectableSize
   | InspectableBounds
-  | InspectableSpaceBox;
+  | InspectableSpaceBox
+  | InspectableUnknown;
 
 export type InspectableText = {
   type: 'text';
@@ -192,4 +193,9 @@ export type InspectableSpaceBox = {
 export type InspectableObject = {
   type: 'object';
   fields: Record<MetadataId, Inspectable>;
+};
+
+export type InspectableUnknown = {
+  type: 'unknown';
+  value: string;
 };
