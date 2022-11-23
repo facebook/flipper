@@ -210,13 +210,13 @@ type Props = {
   node: UINode;
   metadata: Map<MetadataId, Metadata>;
   mode: InspectorMode;
-  rawDisplayEnabled?: boolean;
+  rawEnabled?: boolean;
 };
 export const AttributesInspector: React.FC<Props> = ({
   node,
   metadata,
   mode,
-  rawDisplayEnabled = false,
+  rawEnabled = true,
 }) => {
   const keys = Object.keys(node.attributes);
   const sections = keys
@@ -248,7 +248,7 @@ export const AttributesInspector: React.FC<Props> = ({
   return (
     <>
       {...sections}
-      {rawDisplayEnabled && (
+      {rawEnabled && (
         <Panel key="Raw" title="Raw Data" collapsed>
           <DataInspector data={transform(node.attributes, metadata)} />
         </Panel>
