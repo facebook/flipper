@@ -228,7 +228,7 @@ export function MasterDetail<T extends object>({
       return (
         <Layout.Container grow>
           {table}
-          <DetailSidebar>{sidebar}</DetailSidebar>
+          <DetailSidebar width={sidebarSize}>{sidebar}</DetailSidebar>
         </Layout.Container>
       );
     case 'right':
