@@ -115,7 +115,7 @@ export type Color = {
   r: number;
   g: number;
   b: number;
-  alpha: number;
+  a: number;
 };
 
 export type Snapshot = string;

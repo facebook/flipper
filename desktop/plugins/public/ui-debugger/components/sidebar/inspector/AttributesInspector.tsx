@@ -40,9 +40,11 @@ const TextValue = styled.span(TextAttributeValueStyle);
 const EnumValue = styled.span(EnumAttributeValueStyle);
 const ObjectContainer = styled.div(ObjectContainerStyle);
 const CenteredContentContainer = styled.div(AutoMarginStyle);
+
 type NamedAttributeInspectorProps = {
   name: string;
 };
+
 const NamedAttributeInspector: React.FC<NamedAttributeInspectorProps> = ({
   name,
   children,
@@ -119,9 +121,10 @@ function create(
       );
     case 'color':
       return (
-        <NamedAttributeInspector name={displayableName(name)}>
-          <ColorInspector color={inspectable.value} />
-        </NamedAttributeInspector>
+        <ColorInspector
+          name={displayableName(name)}
+          color={inspectable.value}
+        />
       );
     case 'size':
       return (
