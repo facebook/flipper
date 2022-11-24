@@ -25,12 +25,12 @@ import {
   useValue,
   HighlightManager,
   HighlightProvider,
-  HighlightContext,
   useHighlighter,
   theme,
 } from 'flipper-plugin';
 
 import {head} from 'lodash';
+import {Dropdown, Menu} from 'antd';
 
 export function Tree(props: {
   rootId: Id;
@@ -40,7 +40,12 @@ export function Tree(props: {
 }) {
   const instance = usePlugin(plugin);
   const expandedItems = useValue(instance.treeState).expandedNodes;
-  const items = useMemo(() => toComplexTree(props.nodes), [props.nodes]);
+  const focused = useValue(instance.focusedNode);
+
+  const items = useMemo(
+    () => toComplexTree(focused || props.rootId, props.nodes),
+    [focused, props.nodes, props.rootId],
+  );
   const hoveredNodes = useValue(instance.hoveredNodes);
   const treeEnvRef = useRef<TreeEnvironmentRef>();
 
@@ -109,7 +114,7 @@ export function Tree(props: {
         }}>
         <ComplexTree
           treeId="tree"
-          rootItem={props.rootId as any} //the typing in in the library is wrong here
+          rootItem={FakeNode.id as any} //the typing in in the library is wrong here
           treeLabel="UI"
         />
       </ControlledTreeEnvironment>
@@ -149,58 +154,116 @@ function renderItem<C extends string = never>({
         context.isDraggingOver && 'rct-tree-item-li-dragging-over',
         context.isSearchMatching && 'rct-tree-item-li-search-match',
       )}>
-      <div
-        {...(context.itemContainerWithoutChildrenProps as any)}
-        style={{
-          paddingLeft: `${(depth + 1) * renderDepthOffset}px`,
-        }}
-        className={cx(
-          'rct-tree-item-title-container',
-          item.hasChildren && 'rct-tree-item-title-container-hasChildren',
-          context.isSelected && 'rct-tree-item-title-container-selected',
-          context.isExpanded && 'rct-tree-item-title-container-expanded',
-          context.isFocused && 'rct-tree-item-title-container-focused',
-          context.isDraggingOver &&
-            'rct-tree-item-title-container-dragging-over',
-          context.isSearchMatching &&
-            'rct-tree-item-title-container-search-match',
-        )}>
-        {arrow}
+      <ContextMenu node={item.data} id={item.index} title={item.data.name}>
         <div
-          {...(context.interactiveElementProps as any)}
+          {...(context.itemContainerWithoutChildrenProps as any)}
+          style={{
+            paddingLeft: `${(depth + 1) * renderDepthOffset}px`,
+          }}
           className={cx(
-            'rct-tree-item-button',
-            item.hasChildren && 'rct-tree-item-button-hasChildren',
-            context.isSelected && 'rct-tree-item-button-selected',
-            context.isExpanded && 'rct-tree-item-button-expanded',
-            context.isFocused && 'rct-tree-item-button-focused',
-            context.isDraggingOver && 'rct-tree-item-button-dragging-over',
-            context.isSearchMatching && 'rct-tree-item-button-search-match',
+            'rct-tree-item-title-container',
+            item.hasChildren && 'rct-tree-item-title-container-hasChildren',
+            context.isSelected && 'rct-tree-item-title-container-selected',
+            context.isExpanded && 'rct-tree-item-title-container-expanded',
+            context.isFocused && 'rct-tree-item-title-container-focused',
+            context.isDraggingOver &&
+              'rct-tree-item-title-container-dragging-over',
+            context.isSearchMatching &&
+              'rct-tree-item-title-container-search-match',
           )}>
-          <HighlightedText text={item.data.name} />
+          {arrow}
+          <div
+            {...(context.interactiveElementProps as any)}
+            className={cx(
+              'rct-tree-item-button',
+              item.hasChildren && 'rct-tree-item-button-hasChildren',
+              context.isSelected && 'rct-tree-item-button-selected',
+              context.isExpanded && 'rct-tree-item-button-expanded',
+              context.isFocused && 'rct-tree-item-button-focused',
+              context.isDraggingOver && 'rct-tree-item-button-dragging-over',
+              context.isSearchMatching && 'rct-tree-item-button-search-match',
+            )}>
+            <HighlightedText text={item.data.name} />
+          </div>
         </div>
-      </div>
+      </ContextMenu>
+
       {children}
     </li>
   );
 }
+
+type ContextMenuProps = {node: UINode; id: Id; title: string};
+
+const ContextMenu: React.FC<ContextMenuProps> = ({id, title, children}) => {
+  const instance = usePlugin(plugin);
+  const focusedNode = instance.focusedNode.get();
+
+  return (
+    <Dropdown
+      overlay={() => (
+        <Menu>
+          {focusedNode !== head(instance.hoveredNodes.get()) && (
+            <Menu.Item
+              onClick={() => {
+                instance.focusedNode.set(id);
+              }}>
+              Focus {title}
+            </Menu.Item>
+          )}
+
+          {focusedNode && (
+            <Menu.Item
+              onClick={() => {
+                instance.focusedNode.set(undefined);
+              }}>
+              Remove focus
+            </Menu.Item>
+          )}
+        </Menu>
+      )}
+      trigger={['contextMenu']}>
+      <div>{children}</div>
+    </Dropdown>
+  );
+};
 
 function HighlightedText(props: {text: string}) {
   const highlightManager: HighlightManager = useHighlighter();
   return <span>{highlightManager.render(props.text)}</span>;
 }
 
-function toComplexTree(nodes: Map<Id, UINode>): Record<Id, TreeItem<UINode>> {
+const FakeNode: UINode = {
+  id: 'Fakeroot',
+  qualifiedName: 'Fakeroot',
+  name: 'Fakeroot',
+  children: [],
+  attributes: {},
+  bounds: {x: 0, y: 0, height: 0, width: 0},
+  tags: [],
+};
+
+function toComplexTree(
+  root: Id,
+  nodes: Map<Id, UINode>,
+): Record<Id, TreeItem<UINode>> {
   const res: Record<Id, TreeItem<UINode>> = {};
   for (const node of nodes.values()) {
     res[node.id] = {
       index: node.id,
-      canMove: false,
-      canRename: false,
       children: node.children,
       data: node,
       hasChildren: node.children.length > 0,
     };
   }
+
+  //the library doesnt render the root node so we insert a fake one which will never be rendered
+  //https://github.com/lukasbach/react-complex-tree/issues/42
+  res[FakeNode.id] = {
+    index: FakeNode.id,
+    children: [root],
+    hasChildren: true,
+    data: FakeNode,
+  };
   return res;
 }

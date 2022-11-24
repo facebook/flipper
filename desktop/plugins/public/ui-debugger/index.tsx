@@ -48,6 +48,8 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents.append(event);
   });
 
+  const focusedNode = createState<Id | undefined>(undefined);
+
   const nodes = createState<Map<Id, UINode>>(new Map());
   const snapshot = createState<{nodeId: Id; base64Image: Snapshot} | null>(
     null,
@@ -108,6 +110,7 @@ export function plugin(client: PluginClient<Events>) {
     rootId,
     nodes,
     metadata,
+    focusedNode,
     snapshot,
     hoveredNodes,
     perfEvents,
