@@ -7,7 +7,7 @@ custom_edit_url: https://www.internalfb.com/intern/diffusion/FBS/browsefile/mast
 
 import InternalAndroid from './fb/_android.mdx';
 
-Flipper is a work in progress and issues may occur. This page contains known issues associated with the Android platform and provides steps you can take to try to resolve them.
+Flipper is a 'work in progress' and issues may occur. This page contains known issues associated with the Android platform and provides steps you can take to try to resolve them.
 
 <InternalAndroid />
 
@@ -61,19 +61,11 @@ debugImplementation('com.facebook.flipper:flipper:*') {
 
 ## Duplicate class `com.facebook.jni.*`
 
-This can occur when mixing different versions of [FBJNI](https://github.com/facebookincubator/fbjni),
-a library we use to interact with native C++ code.
+This can occur when mixing different versions of [FBJNI](https://github.com/facebookincubator/fbjni), a library we use to interact with native C++ code.
 
-Speficially, this can happen when the versions `0.0.x` and `0.1.x` are mixed. Version `0.1.0` of FBJNI
-switched to using [Google Prefab](https://google.github.io/prefab/) for distributing native artifacts,
-which made the split into combined, "java-only" and "header" packages redundant and only requires
-a single dependency in your projects.
+Speficially, this can happen when the versions `0.0.x` and `0.1.x` are mixed. Version `0.1.0` of FBJNI switched to using [Google Prefab](https://google.github.io/prefab/) for distributing native artifacts, which made the split into combined, "java-only" and "header" packages redundant and only requires a single dependency in your projects.
 
-When including both "fbjni-java-only:0.0.1" and "fbjni:0.1.0" in one project, you will now
-duplicate class errors during the build process. You must ensure that only one of the two
-versions is used in your entire dependency tree. Start by looking at `./gradlew :myapp:dependencies`
-to see where the different version requirements come from. Then exclude the FBJNI dependency from
-one of them, e.g.
+When including both "fbjni-java-only:0.0.1" and "fbjni:0.1.0" in one project, you will now duplicate class errors during the build process. You must ensure that only one of the two versions is used in your entire dependency tree. Start by looking at `./gradlew :myapp:dependencies` to see where the different version requirements come from. Then exclude the FBJNI dependency from one of them, as follows:
 
 ```groovy
 implementation("com.facebook.react:react-native:+") {
