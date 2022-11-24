@@ -147,16 +147,16 @@ module.exports = {
     'Under the Hood': [
       'internals/index',
       'internals/contributing',
-      {
-        'Contributing to the Documentation': ['internals/documentation-formatting', 'internals/documentation-writing-guide'],
-      },
       'internals/device-identifiers',
       'internals/linters',
       'extending/public-releases',
       'extending/testing-rn',
       ...fbInternalOnly([
         {
-          "Meta": [
+          'Internal': [
+            {
+              'Contributing to the Documentation': ['internals/documentation-formatting', 'internals/documentation-writing-guide'],
+            },
             'fb/arc_uiqr',
             'fb/connections',
             {
