@@ -13,6 +13,7 @@ import {Bounds, Coordinate, Id, NestedNode, Tag, UINode} from '../types';
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
 import {plugin} from '../index';
 import {head, isEqual, throttle} from 'lodash';
+import {Dropdown, Menu} from 'antd';
 
 export const Visualization2D: React.FC<
   {
@@ -37,7 +38,8 @@ export const Visualization2D: React.FC<
   useEffect(() => {
     const mouseListener = throttle((ev: MouseEvent) => {
       const domRect = rootNodeRef.current?.getBoundingClientRect();
-      if (!focusState || !domRect) {
+
+      if (!focusState || !domRect || instance.isContextMenuOpen.get()) {
         return;
       }
       const rawMouse = {x: ev.clientX, y: ev.clientY};
@@ -70,63 +72,68 @@ export const Visualization2D: React.FC<
     return () => {
       window.removeEventListener('mousemove', mouseListener);
     };
-  }, [instance.hoveredNodes, focusState, nodes]);
+  }, [instance.hoveredNodes, focusState, nodes, instance.isContextMenuOpen]);
 
   if (!focusState) {
     return null;
   }
 
   const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
-  return (
-    <div
-      //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
-      style={{
-        width: toPx(focusState.actualRoot.bounds.width),
-        height: toPx(focusState.actualRoot.bounds.height),
-      }}>
-      <div
-        ref={rootNodeRef as any}
-        onMouseLeave={(e) => {
-          e.stopPropagation();
-          instance.hoveredNodes.set([]);
-        }}
-        style={{
-          /**
-           * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
-           * position itself relative to.
-           *
-           * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
-           * which despite the name acts are a reference point for absolute positioning...
-           *
-           * When focused the global offset of the focussed node is used to offset and size this 'root' node
-           */
-          position: 'relative',
 
-          marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
-          marginTop: toPx(focusState.focusedRootGlobalOffset.y),
-          width: toPx(focusState.focusedRoot.bounds.width),
-          height: toPx(focusState.focusedRoot.bounds.height),
-          overflow: 'hidden',
+  return (
+    <ContextMenu nodes={nodes}>
+      <div
+        //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
+        style={{
+          width: toPx(focusState.actualRoot.bounds.width),
+          height: toPx(focusState.actualRoot.bounds.height),
         }}>
-        {snapshotNode && (
-          <img
-            src={'data:image/png;base64,' + snapshot.base64Image}
-            style={{
-              marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
-              marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
-              width: toPx(snapshotNode.bounds.width),
-              height: toPx(snapshotNode.bounds.height),
-            }}
+        <div
+          ref={rootNodeRef as any}
+          onMouseLeave={(e) => {
+            e.stopPropagation();
+            //the context menu triggers this callback but we dont want to remove hover effect
+            if (!instance.isContextMenuOpen.get()) {
+              instance.hoveredNodes.set([]);
+            }
+          }}
+          style={{
+            /**
+             * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
+             * position itself relative to.
+             *
+             * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
+             * which despite the name acts are a reference point for absolute positioning...
+             *
+             * When focused the global offset of the focussed node is used to offset and size this 'root' node
+             */
+            position: 'relative',
+            marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
+            marginTop: toPx(focusState.focusedRootGlobalOffset.y),
+            width: toPx(focusState.focusedRoot.bounds.width),
+            height: toPx(focusState.focusedRoot.bounds.height),
+            overflow: 'hidden',
+          }}>
+          {snapshotNode && (
+            <img
+              src={'data:image/png;base64,' + snapshot.base64Image}
+              style={{
+                marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
+                marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
+                width: toPx(snapshotNode.bounds.width),
+                height: toPx(snapshotNode.bounds.height),
+              }}
+            />
+          )}
+          <MemoedVisualizationNode2D
+            node={focusState.focusedRoot}
+            selectedNode={selectedNode}
+            onSelectNode={onSelectNode}
+            modifierPressed={modifierPressed}
           />
-        )}
-        <MemoedVisualizationNode2D
-          node={focusState.focusedRoot}
-          selectedNode={selectedNode}
-          onSelectNode={onSelectNode}
-          modifierPressed={modifierPressed}
-        />
+        </div>
       </div>
-    </div>
+    </ContextMenu>
   );
 };
 
@@ -229,6 +236,52 @@ function Visualization2DNode({
     </div>
   );
 }
+
+const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
+  const instance = usePlugin(plugin);
+
+  const focusedNodeId = useValue(instance.focusedNode);
+  const hoveredNodeId = head(useValue(instance.hoveredNodes));
+  const nodes = useValue(instance.nodes);
+  const hoveredNode = hoveredNodeId ? nodes.get(hoveredNodeId) : null;
+  const isMenuOpen = useValue(instance.isContextMenuOpen);
+
+  return (
+    <Dropdown
+      onVisibleChange={(open) => {
+        instance.isContextMenuOpen.set(open);
+      }}
+      trigger={['contextMenu']}
+      overlay={() => {
+        return (
+          <Menu>
+            {isMenuOpen && hoveredNode?.id !== focusedNodeId && (
+              <Menu.Item
+                key="focus"
+                onClick={() => {
+                  instance.focusedNode.set(hoveredNode?.id);
+                  instance.isContextMenuOpen.set(false);
+                }}>
+                Focus {hoveredNode?.name}
+              </Menu.Item>
+            )}
+            {isMenuOpen && focusedNodeId != null && (
+              <Menu.Item
+                key="remove-focus"
+                onClick={() => {
+                  instance.focusedNode.set(undefined);
+                  instance.isContextMenuOpen.set(false);
+                }}>
+                Remove focus
+              </Menu.Item>
+            )}
+          </Menu>
+        );
+      }}>
+      {children}
+    </Dropdown>
+  );
+};
 
 /**
  * this is the border that shows the green or blue line, it is implemented as a sibling to the
