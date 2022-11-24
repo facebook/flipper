@@ -23,6 +23,7 @@ import './node_modules/react-complex-tree/lib/style.css';
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
+  const searchTerm = createState<string>('');
 
   client.onMessage('init', (event) => {
     rootId.set(event.rootId);
@@ -108,6 +109,7 @@ export function plugin(client: PluginClient<Events>) {
     hoveredNodes,
     perfEvents,
     treeState,
+    searchTerm,
   };
 }
 

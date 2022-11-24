@@ -17,6 +17,7 @@ import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
 import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
+import {Input} from 'antd';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -30,6 +31,7 @@ export function Component() {
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
+  const searchTerm = useValue(instance.searchTerm);
   const {ctrlPressed} = useKeyboardModifiers();
 
   function renderSidebar(
@@ -51,14 +53,20 @@ export function Component() {
   if (rootId) {
     return (
       <Layout.Horizontal grow>
-        <Layout.ScrollContainer>
-          <Tree
-            selectedNode={selectedNode}
-            onSelectNode={setSelectedNode}
-            nodes={nodes}
-            rootId={rootId}
+        <Layout.Container grow pad="medium" gap="small">
+          <Input
+            value={searchTerm}
+            onChange={(e) => instance.searchTerm.set(e.target.value)}
           />
-        </Layout.ScrollContainer>
+          <Layout.ScrollContainer>
+            <Tree
+              selectedNode={selectedNode}
+              onSelectNode={setSelectedNode}
+              nodes={nodes}
+              rootId={rootId}
+            />
+          </Layout.ScrollContainer>
+        </Layout.Container>
         <Visualization2D
           rootId={rootId}
           nodes={nodes}
