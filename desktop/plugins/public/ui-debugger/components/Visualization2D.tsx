@@ -10,9 +10,9 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Bounds, Coordinate, Id, NestedNode, Tag, UINode} from '../types';
 
-import {styled, theme, usePlugin, useValue} from 'flipper-plugin';
+import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
 import {plugin} from '../index';
-import {throttle, isEqual, head} from 'lodash';
+import {head, isEqual, throttle} from 'lodash';
 
 export const Visualization2D: React.FC<
   {
@@ -23,15 +23,21 @@ export const Visualization2D: React.FC<
     modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
 > = ({rootId, nodes, selectedNode, onSelectNode, modifierPressed}) => {
-  const root = useMemo(() => toNestedNode(rootId, nodes), [rootId, nodes]);
   const rootNodeRef = useRef<HTMLDivElement>();
   const instance = usePlugin(plugin);
 
   const snapshot = useValue(instance.snapshot);
+  const focusedNodeId = useValue(instance.focusedNode);
+
+  const focusState = useMemo(() => {
+    const rootNode = toNestedNode(rootId, nodes);
+    return rootNode && caclulateFocusState(rootNode, focusedNodeId);
+  }, [focusedNodeId, rootId, nodes]);
+
   useEffect(() => {
     const mouseListener = throttle((ev: MouseEvent) => {
       const domRect = rootNodeRef.current?.getBoundingClientRect();
-      if (!root || !domRect) {
+      if (!focusState || !domRect) {
         return;
       }
 
@@ -45,7 +51,9 @@ export const Visualization2D: React.FC<
         y: offsetMouse.y * pxScaleFactor,
       };
 
-      const hitNodes = hitTest(root, scaledMouse).map((node) => node.id);
+      const hitNodes = hitTest(focusState.focusedRoot, scaledMouse).map(
+        (node) => node.id,
+      );
 
       if (
         hitNodes.length > 0 &&
@@ -59,49 +67,62 @@ export const Visualization2D: React.FC<
     return () => {
       window.removeEventListener('mousemove', mouseListener);
     };
-  }, [instance.hoveredNodes, root]);
+  }, [instance.hoveredNodes, focusState, nodes]);
 
-  if (!root) {
+  if (!focusState) {
     return null;
   }
 
   const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
   return (
     <div
-      ref={rootNodeRef as any}
-      onMouseLeave={(e) => {
-        e.stopPropagation();
-        instance.hoveredNodes.set([]);
-      }}
+      //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
       style={{
-        /**
-         * This relative position is so the root visualization 2DNode and outer border has a non static element to
-         * position itself relative to.
-         *
-         * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
-         * which despite the name acts are a reference point for absolute positioning...
-         */
-        position: 'relative',
-        width: toPx(root.bounds.width),
-        height: toPx(root.bounds.height),
-        overflow: 'hidden',
+        width: toPx(focusState.actualRoot.bounds.width),
+        height: toPx(focusState.actualRoot.bounds.height),
       }}>
-      {snapshot && snapshotNode && (
-        <img
-          src={'data:image/png;base64,' + snapshot.base64Image}
-          style={{
-            width: toPx(snapshotNode.bounds.width),
-            height: toPx(snapshotNode.bounds.height),
-          }}
+      <div
+        ref={rootNodeRef as any}
+        onMouseLeave={(e) => {
+          e.stopPropagation();
+          instance.hoveredNodes.set([]);
+        }}
+        style={{
+          /**
+           * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
+           * position itself relative to.
+           *
+           * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
+           * which despite the name acts are a reference point for absolute positioning...
+           *
+           * When focused the global offset of the focussed node is used to offset and size this 'root' node
+           */
+          position: 'relative',
+
+          marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
+          marginTop: toPx(focusState.focusedRootGlobalOffset.y),
+          width: toPx(focusState.focusedRoot.bounds.width),
+          height: toPx(focusState.focusedRoot.bounds.height),
+          overflow: 'hidden',
+        }}>
+        {snapshotNode && (
+          <img
+            src={'data:image/png;base64,' + snapshot.base64Image}
+            style={{
+              marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
+              marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
+              width: toPx(snapshotNode.bounds.width),
+              height: toPx(snapshotNode.bounds.height),
+            }}
+          />
+        )}
+        <MemoedVisualizationNode2D
+          node={focusState.focusedRoot}
+          selectedNode={selectedNode}
+          onSelectNode={onSelectNode}
+          modifierPressed={modifierPressed}
         />
-      )}
-      <OuterBorder />
-      <MemoedVisualizationNode2D
-        node={root}
-        selectedNode={selectedNode}
-        onSelectNode={onSelectNode}
-        modifierPressed={modifierPressed}
-      />
+      </div>
     </div>
   );
 };
@@ -277,6 +298,59 @@ function toNestedNode(
 
   const root = nodes.get(rootId);
   return root ? uiNodeToNestedNode(root) : undefined;
+}
+
+type FocusState = {
+  actualRoot: NestedNode;
+  focusedRoot: NestedNode;
+  focusedRootGlobalOffset: Coordinate;
+};
+
+function caclulateFocusState(root: NestedNode, target?: Id): FocusState {
+  const rootFocusState = {
+    actualRoot: root,
+    focusedRoot: root,
+    focusedRootGlobalOffset: {x: 0, y: 0},
+  };
+  if (target == null) {
+    return rootFocusState;
+  }
+  return (
+    findNodeAndGlobalOffsetRec(root, {x: 0, y: 0}, root, target) ||
+    rootFocusState
+  );
+}
+
+function findNodeAndGlobalOffsetRec(
+  node: NestedNode,
+  globalOffset: Coordinate,
+  root: NestedNode,
+  target: Id,
+): FocusState | undefined {
+  const nextOffset = {
+    x: globalOffset.x + node.bounds.x,
+    y: globalOffset.y + node.bounds.y,
+  };
+  if (node.id === target) {
+    //since we have already applied the this nodes offset to the root node in the visualiser we zero it out here so it isn't counted twice
+    const focusedRoot = produce(node, (draft) => {
+      draft.bounds.x = 0;
+      draft.bounds.y = 0;
+    });
+    return {
+      actualRoot: root,
+      focusedRoot,
+      focusedRootGlobalOffset: nextOffset,
+    };
+  }
+
+  for (const child of node.children) {
+    const offset = findNodeAndGlobalOffsetRec(child, nextOffset, root, target);
+    if (offset != null) {
+      return offset;
+    }
+  }
+  return undefined;
 }
 
 function hitTest(node: NestedNode, mouseCoordinate: Coordinate): NestedNode[] {
