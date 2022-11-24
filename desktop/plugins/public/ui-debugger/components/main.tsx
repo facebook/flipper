@@ -24,7 +24,6 @@ export function Component() {
   const rootId = useValue(instance.rootId);
   const nodes: Map<Id, UINode> = useValue(instance.nodes);
   const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
-  const snapshots: Map<Id, Snapshot> = useValue(instance.snapshots);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Id | undefined>(undefined);
@@ -70,7 +69,6 @@ export function Component() {
         <Visualization2D
           rootId={rootId}
           nodes={nodes}
-          snapshots={snapshots}
           selectedNode={selectedNode}
           onSelectNode={setSelectedNode}
           modifierPressed={ctrlPressed}

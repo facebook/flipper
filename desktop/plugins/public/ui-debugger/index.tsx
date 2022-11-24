@@ -49,7 +49,9 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const nodes = createState<Map<Id, UINode>>(new Map());
-  const snapshots = createState<Map<Id, Snapshot>>(new Map());
+  const snapshot = createState<{nodeId: Id; base64Image: Snapshot} | null>(
+    null,
+  );
 
   const treeState = createState<TreeState>({expandedNodes: []});
 
@@ -71,9 +73,10 @@ export function plugin(client: PluginClient<Events>) {
 
   const seenNodes = new Set<Id>();
   client.onMessage('subtreeUpdate', (event) => {
-    snapshots.update((draft) => {
-      draft.set(event.rootId, event.snapshot);
-    });
+    if (event.snapshot) {
+      snapshot.set({nodeId: event.rootId, base64Image: event.snapshot});
+    }
+
     nodes.update((draft) => {
       event.nodes.forEach((node) => {
         draft.set(node.id, node);
@@ -105,7 +108,7 @@ export function plugin(client: PluginClient<Events>) {
     rootId,
     nodes,
     metadata,
-    snapshots,
+    snapshot,
     hoveredNodes,
     perfEvents,
     treeState,

@@ -8,17 +8,9 @@
  */
 
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {
-  Bounds,
-  Coordinate,
-  Id,
-  NestedNode,
-  Snapshot,
-  Tag,
-  UINode,
-} from '../types';
+import {Bounds, Coordinate, Id, NestedNode, Tag, UINode} from '../types';
 
-import {styled, theme, usePlugin} from 'flipper-plugin';
+import {styled, theme, usePlugin, useValue} from 'flipper-plugin';
 import {plugin} from '../index';
 import {throttle, isEqual, head} from 'lodash';
 
@@ -26,23 +18,16 @@ export const Visualization2D: React.FC<
   {
     rootId: Id;
     nodes: Map<Id, UINode>;
-    snapshots: Map<Id, Snapshot>;
     selectedNode?: Id;
     onSelectNode: (id?: Id) => void;
     modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({
-  rootId,
-  nodes,
-  snapshots,
-  selectedNode,
-  onSelectNode,
-  modifierPressed,
-}) => {
+> = ({rootId, nodes, selectedNode, onSelectNode, modifierPressed}) => {
   const root = useMemo(() => toNestedNode(rootId, nodes), [rootId, nodes]);
   const rootNodeRef = useRef<HTMLDivElement>();
   const instance = usePlugin(plugin);
 
+  const snapshot = useValue(instance.snapshot);
   useEffect(() => {
     const mouseListener = throttle((ev: MouseEvent) => {
       const domRect = rootNodeRef.current?.getBoundingClientRect();
@@ -80,6 +65,7 @@ export const Visualization2D: React.FC<
     return null;
   }
 
+  const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
   return (
     <div
       ref={rootNodeRef as any}
@@ -100,10 +86,18 @@ export const Visualization2D: React.FC<
         height: toPx(root.bounds.height),
         overflow: 'hidden',
       }}>
+      {snapshot && snapshotNode && (
+        <img
+          src={'data:image/png;base64,' + snapshot.base64Image}
+          style={{
+            width: toPx(snapshotNode.bounds.width),
+            height: toPx(snapshotNode.bounds.height),
+          }}
+        />
+      )}
       <OuterBorder />
       <MemoedVisualizationNode2D
         node={root}
-        snapshots={snapshots}
         selectedNode={selectedNode}
         onSelectNode={onSelectNode}
         modifierPressed={modifierPressed}
@@ -125,18 +119,15 @@ const MemoedVisualizationNode2D = React.memo(
 
 function Visualization2DNode({
   node,
-  snapshots,
   selectedNode,
   onSelectNode,
   modifierPressed,
 }: {
   node: NestedNode;
-  snapshots: Map<Id, Snapshot>;
   modifierPressed: boolean;
   selectedNode?: Id;
   onSelectNode: (id?: Id) => void;
 }) {
-  const snapshot = snapshots.get(node.id);
   const instance = usePlugin(plugin);
 
   const [isHovered, setIsHovered] = useState(false);
@@ -174,7 +165,6 @@ function Visualization2DNode({
     <MemoedVisualizationNode2D
       key={child.id}
       node={child}
-      snapshots={snapshots}
       onSelectNode={onSelectNode}
       selectedNode={selectedNode}
       modifierPressed={modifierPressed}
@@ -210,12 +200,6 @@ function Visualization2DNode({
         }
       }}>
       <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
-      {snapshot && (
-        <img
-          src={'data:image/png;base64,' + snapshot}
-          style={{maxWidth: '100%'}}
-        />
-      )}
       {isHovered && <p style={{float: 'right'}}>{node.name}</p>}
       {children}
     </div>
