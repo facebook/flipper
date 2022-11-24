@@ -17,7 +17,7 @@ import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
 import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
-import {Input} from 'antd';
+import {Input, Spin} from 'antd';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -80,5 +80,19 @@ export function Component() {
     );
   }
 
-  return <div>Loading...</div>;
+  return (
+    <Centered>
+      <Spin data-testid="loading-indicator" />
+    </Centered>
+  );
+}
+
+export function Centered(props: {children: React.ReactNode}) {
+  return (
+    <Layout.Horizontal center grow>
+      <Layout.Container center grow>
+        {props.children}
+      </Layout.Container>
+    </Layout.Horizontal>
+  );
 }
