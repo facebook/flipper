@@ -29,7 +29,7 @@ export const Visualization2D: React.FC<
   const instance = usePlugin(plugin);
 
   const snapshot = useValue(instance.snapshot);
-  const focusedNodeId = useValue(instance.focusedNode);
+  const focusedNodeId = useValue(instance.uiState.focusedNode);
 
   const focusState = useMemo(() => {
     const rootNode = toNestedNode(rootId, nodes);
@@ -40,7 +40,7 @@ export const Visualization2D: React.FC<
     const mouseListener = throttle((ev: MouseEvent) => {
       const domRect = rootNodeRef.current?.getBoundingClientRect();
 
-      if (!focusState || !domRect || instance.isContextMenuOpen.get()) {
+      if (!focusState || !domRect || instance.uiState.isContextMenuOpen.get()) {
         return;
       }
       const rawMouse = {x: ev.clientX, y: ev.clientY};
@@ -63,9 +63,9 @@ export const Visualization2D: React.FC<
 
       if (
         hitNodes.length > 0 &&
-        !isEqual(hitNodes, instance.hoveredNodes.get())
+        !isEqual(hitNodes, instance.uiState.hoveredNodes.get())
       ) {
-        instance.hoveredNodes.set(hitNodes);
+        instance.uiState.hoveredNodes.set(hitNodes);
       }
     }, MouseThrottle);
     window.addEventListener('mousemove', mouseListener);
@@ -73,7 +73,12 @@ export const Visualization2D: React.FC<
     return () => {
       window.removeEventListener('mousemove', mouseListener);
     };
-  }, [instance.hoveredNodes, focusState, nodes, instance.isContextMenuOpen]);
+  }, [
+    instance.uiState.hoveredNodes,
+    focusState,
+    nodes,
+    instance.uiState.isContextMenuOpen,
+  ]);
 
   if (!focusState) {
     return null;
@@ -94,8 +99,8 @@ export const Visualization2D: React.FC<
           onMouseLeave={(e) => {
             e.stopPropagation();
             //the context menu triggers this callback but we dont want to remove hover effect
-            if (!instance.isContextMenuOpen.get()) {
-              instance.hoveredNodes.set([]);
+            if (!instance.uiState.isContextMenuOpen.get()) {
+              instance.uiState.hoveredNodes.set([]);
             }
           }}
           style={{
@@ -169,11 +174,11 @@ function Visualization2DNode({
         setIsHovered(head(newValue) === node.id);
       }
     };
-    instance.hoveredNodes.subscribe(listener);
+    instance.uiState.hoveredNodes.subscribe(listener);
     return () => {
-      instance.hoveredNodes.unsubscribe(listener);
+      instance.uiState.hoveredNodes.unsubscribe(listener);
     };
-  }, [instance.hoveredNodes, node.id]);
+  }, [instance.uiState.hoveredNodes, node.id]);
 
   const isSelected = selectedNode === node.id;
 
@@ -224,7 +229,7 @@ function Visualization2DNode({
       onClick={(e) => {
         e.stopPropagation();
 
-        const hoveredNodes = instance.hoveredNodes.get();
+        const hoveredNodes = instance.uiState.hoveredNodes.get();
         if (hoveredNodes[0] === selectedNode) {
           onSelectNode(undefined);
         } else {
@@ -241,15 +246,15 @@ function Visualization2DNode({
 const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
   const instance = usePlugin(plugin);
 
-  const focusedNodeId = useValue(instance.focusedNode);
-  const hoveredNodeId = head(useValue(instance.hoveredNodes));
+  const focusedNodeId = useValue(instance.uiState.focusedNode);
+  const hoveredNodeId = head(useValue(instance.uiState.hoveredNodes));
   const nodes = useValue(instance.nodes);
   const hoveredNode = hoveredNodeId ? nodes.get(hoveredNodeId) : null;
 
   return (
     <Dropdown
       onVisibleChange={(open) => {
-        instance.isContextMenuOpen.set(open);
+        instance.uiState.isContextMenuOpen.set(open);
       }}
       trigger={['contextMenu']}
       overlay={() => {
@@ -260,7 +265,7 @@ const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
                 key="focus"
                 text={`Focus ${hoveredNode?.name}`}
                 onClick={() => {
-                  instance.focusedNode.set(hoveredNode?.id);
+                  instance.uiState.focusedNode.set(hoveredNode?.id);
                 }}
               />
             )}
@@ -269,7 +274,7 @@ const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
                 key="remove-focus"
                 text="Remove focus"
                 onClick={() => {
-                  instance.focusedNode.set(undefined);
+                  instance.uiState.focusedNode.set(undefined);
                 }}
               />
             )}

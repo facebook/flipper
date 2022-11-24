@@ -23,7 +23,6 @@ import './node_modules/react-complex-tree/lib/style.css';
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
-  const searchTerm = createState<string>('');
 
   client.onMessage('init', (event) => {
     rootId.set(event.rootId);
@@ -48,21 +47,23 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents.append(event);
   });
 
-  //used to disabled hover effects which cause rerenders and mess up the existing context menu
-  const isContextMenuOpen = createState<boolean>(false);
-
-  const focusedNode = createState<Id | undefined>(undefined);
-
   const nodes = createState<Map<Id, UINode>>(new Map());
   const snapshot = createState<{nodeId: Id; base64Image: Snapshot} | null>(
     null,
   );
 
-  const treeState = createState<TreeState>({expandedNodes: []});
+  const uiState = {
+    //used to disabled hover effects which cause rerenders and mess up the existing context menu
+    isContextMenuOpen: createState<boolean>(false),
 
-  //The reason for the array as that user could be hovering multiple overlapping nodes at once in the visualiser.
-  //The nodes are sorted by area since you most likely want to select the smallest node under your cursor
-  const hoveredNodes = createState<Id[]>([]);
+    //The reason for the array as that user could be hovering multiple overlapping nodes at once in the visualiser.
+    //The nodes are sorted by area since you most likely want to select the smallest node under your cursor
+    hoveredNodes: createState<Id[]>([]),
+
+    searchTerm: createState<string>(''),
+    focusedNode: createState<Id | undefined>(undefined),
+    treeState: createState<TreeState>({expandedNodes: []}),
+  };
 
   client.onMessage('coordinateUpdate', (event) => {
     nodes.update((draft) => {
@@ -88,7 +89,7 @@ export function plugin(client: PluginClient<Events>) {
       });
     });
 
-    treeState.update((draft) => {
+    uiState.treeState.update((draft) => {
       for (const node of event.nodes) {
         if (!seenNodes.has(node.id)) {
           draft.expandedNodes.push(node.id);
@@ -111,15 +112,11 @@ export function plugin(client: PluginClient<Events>) {
 
   return {
     rootId,
-    isContextMenuOpen,
+    uiState,
     nodes,
     metadata,
-    focusedNode,
     snapshot,
-    hoveredNodes,
     perfEvents,
-    treeState,
-    searchTerm,
   };
 }
 

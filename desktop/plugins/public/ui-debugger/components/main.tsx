@@ -30,7 +30,7 @@ export function Component() {
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
-  const searchTerm = useValue(instance.searchTerm);
+  const searchTerm = useValue(instance.uiState.searchTerm);
   const {ctrlPressed} = useKeyboardModifiers();
 
   function renderSidebar(
@@ -55,7 +55,7 @@ export function Component() {
         <Layout.Container grow pad="medium" gap="small">
           <Input
             value={searchTerm}
-            onChange={(e) => instance.searchTerm.set(e.target.value)}
+            onChange={(e) => instance.uiState.searchTerm.set(e.target.value)}
           />
           <Layout.ScrollContainer>
             <Tree

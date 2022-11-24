@@ -40,17 +40,17 @@ export function Tree(props: {
   onSelectNode: (id: Id) => void;
 }) {
   const instance = usePlugin(plugin);
-  const expandedItems = useValue(instance.treeState).expandedNodes;
-  const focused = useValue(instance.focusedNode);
+  const expandedItems = useValue(instance.uiState.treeState).expandedNodes;
+  const focused = useValue(instance.uiState.focusedNode);
 
   const items = useMemo(
     () => toComplexTree(focused || props.rootId, props.nodes),
     [focused, props.nodes, props.rootId],
   );
-  const hoveredNodes = useValue(instance.hoveredNodes);
+  const hoveredNodes = useValue(instance.uiState.hoveredNodes);
   const treeEnvRef = useRef<TreeEnvironmentRef>();
 
-  const searchTerm = useValue(instance.searchTerm);
+  const searchTerm = useValue(instance.uiState.searchTerm);
 
   useEffect(() => {
     //this makes the keyboard arrow  controls work always, even when using the visualiser
@@ -75,15 +75,15 @@ export function Tree(props: {
           },
         }}
         onFocusItem={(item) => {
-          instance.hoveredNodes.set([item.index]);
+          instance.uiState.hoveredNodes.set([item.index]);
         }}
         onExpandItem={(item) => {
-          instance.treeState.update((draft) => {
+          instance.uiState.treeState.update((draft) => {
             draft.expandedNodes.push(item.index);
           });
         }}
         onCollapseItem={(item) =>
-          instance.treeState.update((draft) => {
+          instance.uiState.treeState.update((draft) => {
             draft.expandedNodes = draft.expandedNodes.filter(
               (expandedItemIndex) => expandedItemIndex !== item.index,
             );
@@ -109,8 +109,8 @@ export function Tree(props: {
             },
 
             onMouseOver: () => {
-              if (!instance.isContextMenuOpen.get()) {
-                instance.hoveredNodes.set([item.index]);
+              if (!instance.uiState.isContextMenuOpen.get()) {
+                instance.uiState.hoveredNodes.set([item.index]);
               }
             },
           }),
@@ -200,21 +200,21 @@ type ContextMenuProps = {node: UINode; id: Id; title: string};
 
 const ContextMenu: React.FC<ContextMenuProps> = ({id, title, children}) => {
   const instance = usePlugin(plugin);
-  const focusedNode = instance.focusedNode.get();
+  const focusedNode = instance.uiState.focusedNode.get();
 
   return (
     <Dropdown
       onVisibleChange={(visible) => {
-        instance.isContextMenuOpen.set(visible);
+        instance.uiState.isContextMenuOpen.set(visible);
       }}
       overlay={() => (
         <Menu>
-          {focusedNode !== head(instance.hoveredNodes.get()) && (
+          {focusedNode !== head(instance.uiState.hoveredNodes.get()) && (
             <UIDebuggerMenuItem
               key="focus"
               text={`Focus ${title}`}
               onClick={() => {
-                instance.focusedNode.set(id);
+                instance.uiState.focusedNode.set(id);
               }}
             />
           )}
@@ -224,7 +224,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({id, title, children}) => {
               key="remove-focus"
               text="Remove focus"
               onClick={() => {
-                instance.focusedNode.set(undefined);
+                instance.uiState.focusedNode.set(undefined);
               }}
             />
           )}

@@ -24,7 +24,7 @@ export const UIDebuggerMenuItem: React.FC<{
 }> = ({text, onClick}) => {
   const instance = usePlugin(plugin);
 
-  const isMenuOpen = useValue(instance.isContextMenuOpen);
+  const isMenuOpen = useValue(instance.uiState.isContextMenuOpen);
   /**
    * The menu is not a controlled component and seems to be a bit slow to close when user clicks on it.
    * React may rerender the menu before it has time to close resulting in seeing an incorrect context menu for a frame.
@@ -37,7 +37,7 @@ export const UIDebuggerMenuItem: React.FC<{
     <Menu.Item
       onClick={() => {
         onClick();
-        instance.isContextMenuOpen.set(false);
+        instance.uiState.isContextMenuOpen.set(false);
       }}>
       {text}
     </Menu.Item>
