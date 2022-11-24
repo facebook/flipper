@@ -40,12 +40,15 @@ export const Visualization2D: React.FC<
       if (!focusState || !domRect) {
         return;
       }
+      const rawMouse = {x: ev.clientX, y: ev.clientY};
+
+      if (!boundsContainsCoordinate(domRect, rawMouse)) {
+        return;
+      }
 
       //make the mouse coord relative to the dom rect of the visualizer
-      const offsetMouse = offsetCoordinate(
-        {x: ev.clientX, y: ev.clientY},
-        domRect,
-      );
+
+      const offsetMouse = offsetCoordinate(rawMouse, domRect);
       const scaledMouse = {
         x: offsetMouse.x * pxScaleFactor,
         y: offsetMouse.y * pxScaleFactor,
