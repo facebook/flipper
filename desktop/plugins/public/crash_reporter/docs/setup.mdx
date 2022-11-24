@@ -10,7 +10,7 @@ In order to send custom notifications, take the steps detailed below.
 
 ## Android
 
-Instantiate and add the plugin in `FlipperClient`.
+1. Instantiate and add the plugin in `FlipperClient`.
 
 ```java
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
@@ -18,7 +18,7 @@ import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
 client.addPlugin(CrashReporterPlugin.getInstance());
 ```
 
-Use the following API to trigger your custom crash notification.
+2. Use the following API to trigger your custom crash notification.
 
 ```java
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
