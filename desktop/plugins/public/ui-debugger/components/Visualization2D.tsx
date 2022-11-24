@@ -14,6 +14,7 @@ import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
 import {plugin} from '../index';
 import {head, isEqual, throttle} from 'lodash';
 import {Dropdown, Menu} from 'antd';
+import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 
 export const Visualization2D: React.FC<
   {
@@ -244,7 +245,6 @@ const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
   const hoveredNodeId = head(useValue(instance.hoveredNodes));
   const nodes = useValue(instance.nodes);
   const hoveredNode = hoveredNodeId ? nodes.get(hoveredNodeId) : null;
-  const isMenuOpen = useValue(instance.isContextMenuOpen);
 
   return (
     <Dropdown
@@ -255,25 +255,23 @@ const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
       overlay={() => {
         return (
           <Menu>
-            {isMenuOpen && hoveredNode?.id !== focusedNodeId && (
-              <Menu.Item
+            {hoveredNode?.id !== focusedNodeId && (
+              <UIDebuggerMenuItem
                 key="focus"
+                text={`Focus ${hoveredNode?.name}`}
                 onClick={() => {
                   instance.focusedNode.set(hoveredNode?.id);
-                  instance.isContextMenuOpen.set(false);
-                }}>
-                Focus {hoveredNode?.name}
-              </Menu.Item>
+                }}
+              />
             )}
-            {isMenuOpen && focusedNodeId != null && (
-              <Menu.Item
+            {focusedNodeId != null && (
+              <UIDebuggerMenuItem
                 key="remove-focus"
+                text="Remove focus"
                 onClick={() => {
                   instance.focusedNode.set(undefined);
-                  instance.isContextMenuOpen.set(false);
-                }}>
-                Remove focus
-              </Menu.Item>
+                }}
+              />
             )}
           </Menu>
         );

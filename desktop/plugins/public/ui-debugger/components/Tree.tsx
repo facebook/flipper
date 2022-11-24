@@ -31,6 +31,7 @@ import {
 
 import {head} from 'lodash';
 import {Dropdown, Menu} from 'antd';
+import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 
 export function Tree(props: {
   rootId: Id;
@@ -209,23 +210,23 @@ const ContextMenu: React.FC<ContextMenuProps> = ({id, title, children}) => {
       overlay={() => (
         <Menu>
           {focusedNode !== head(instance.hoveredNodes.get()) && (
-            <Menu.Item
+            <UIDebuggerMenuItem
+              key="focus"
+              text={`Focus ${title}`}
               onClick={() => {
                 instance.focusedNode.set(id);
-                instance.isContextMenuOpen.set(false);
-              }}>
-              Focus {title}
-            </Menu.Item>
+              }}
+            />
           )}
 
           {focusedNode && (
-            <Menu.Item
+            <UIDebuggerMenuItem
+              key="remove-focus"
+              text="Remove focus"
               onClick={() => {
                 instance.focusedNode.set(undefined);
-                instance.isContextMenuOpen.set(false);
-              }}>
-              Remove focus
-            </Menu.Item>
+              }}
+            />
           )}
         </Menu>
       )}
