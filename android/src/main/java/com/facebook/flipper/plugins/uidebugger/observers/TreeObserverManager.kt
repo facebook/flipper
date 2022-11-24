@@ -115,7 +115,7 @@ class TreeObserverManager(val context: Context) {
     } else {
       val stream = ByteArrayOutputStream()
       val base64Stream = Base64OutputStream(stream, Base64.DEFAULT)
-      treeUpdate.snapshot.bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, base64Stream)
+      treeUpdate.snapshot.bitmap?.compress(Bitmap.CompressFormat.PNG, 100, base64Stream)
       val snapshot = stream.toString()
       serialized =
           Json.encodeToString(

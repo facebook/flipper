@@ -212,7 +212,7 @@ function Visualization2DNode({
       <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
       {snapshot && (
         <img
-          src={'data:image/jpeg;base64,' + snapshot}
+          src={'data:image/png;base64,' + snapshot}
           style={{maxWidth: '100%'}}
         />
       )}
