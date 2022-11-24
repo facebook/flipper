@@ -108,7 +108,9 @@ export function Tree(props: {
             },
 
             onMouseOver: () => {
-              instance.hoveredNodes.set([item.index]);
+              if (!instance.isContextMenuOpen.get()) {
+                instance.hoveredNodes.set([item.index]);
+              }
             },
           }),
         }}>
@@ -201,12 +203,16 @@ const ContextMenu: React.FC<ContextMenuProps> = ({id, title, children}) => {
 
   return (
     <Dropdown
+      onVisibleChange={(visible) => {
+        instance.isContextMenuOpen.set(visible);
+      }}
       overlay={() => (
         <Menu>
           {focusedNode !== head(instance.hoveredNodes.get()) && (
             <Menu.Item
               onClick={() => {
                 instance.focusedNode.set(id);
+                instance.isContextMenuOpen.set(false);
               }}>
               Focus {title}
             </Menu.Item>
@@ -216,6 +222,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({id, title, children}) => {
             <Menu.Item
               onClick={() => {
                 instance.focusedNode.set(undefined);
+                instance.isContextMenuOpen.set(false);
               }}>
               Remove focus
             </Menu.Item>

@@ -48,6 +48,9 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents.append(event);
   });
 
+  //used to disabled hover effects which cause rerenders and mess up the existing context menu
+  const isContextMenuOpen = createState<boolean>(false);
+
   const focusedNode = createState<Id | undefined>(undefined);
 
   const nodes = createState<Map<Id, UINode>>(new Map());
@@ -108,6 +111,7 @@ export function plugin(client: PluginClient<Events>) {
 
   return {
     rootId,
+    isContextMenuOpen,
     nodes,
     metadata,
     focusedNode,
