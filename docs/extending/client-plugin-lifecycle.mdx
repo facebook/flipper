@@ -13,7 +13,7 @@ For both types of plugin, it's recommended you start work after the `onConnect` 
 For regular plugins, `onConnect` and `onDisconnect` are triggered when the user opens the plugin in the Flipper UI, and when they switch to another plugin, respectively.
 The process is illustrated in the following diagram.
 
-<img alt="Regular Plugin Lifecycle diagram" src={useBaseUrl("img/regular-plugin-lifecycle.png")} />
+<img height="300" alt="Regular Plugin Lifecycle diagram" src={useBaseUrl("img/regular-plugin-lifecycle.png")} />
 
 ## Background Plugin Lifecycle
 
@@ -21,8 +21,8 @@ For background plugins, `onConnect` is called when Flipper first connects, and `
 
 Even for background plugins, `onDisconnect` and `onConnect` may be called on a plugin (such as if the user restarts Flipper). Plugins should handle this accordingly by making sure to resend any important data to the reconnected instance. The process is illustrated in the following diagram.
 
+<img height="300" alt="Background Plugin Lifecycle diagram" src={useBaseUrl("img/bg-plugin-lifecycle.png")} />
+
 :::warning
 Note that a plugin must be enabled by the user for its messages to be queued up.
 :::
-
-<img alt="Background Plugin Lifecycle diagram" src={useBaseUrl("img/bg-plugin-lifecycle.png")} />
