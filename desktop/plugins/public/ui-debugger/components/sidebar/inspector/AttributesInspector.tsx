@@ -16,7 +16,7 @@ import {
   UINode,
 } from '../../../types';
 import {DataInspector, Panel, styled} from 'flipper-plugin';
-import {Checkbox, Col, Row} from 'antd';
+import {Col, Row} from 'antd';
 import {displayableName} from '../utilities/displayableName';
 import ColorInspector from './ColorInspector';
 import SizeInspector from './SizeInspector';
@@ -26,6 +26,7 @@ import Coordinate3DInspector from './Coordinate3DInspector';
 import CoordinateInspector from './CoordinateInspector';
 import {
   AutoMarginStyle,
+  BooleanAttributeValueStyle,
   EnumAttributeValueStyle,
   NumberAttributeValueStyle,
   ObjectContainerStyle,
@@ -36,6 +37,7 @@ import {Glyph} from 'flipper';
 import {transform} from '../../../dataTransform';
 
 const NumberValue = styled.span(NumberAttributeValueStyle);
+const BooleanValue = styled.span(BooleanAttributeValueStyle);
 const TextValue = styled.span(TextAttributeValueStyle);
 const EnumValue = styled.span(EnumAttributeValueStyle);
 const ObjectContainer = styled.div(ObjectContainerStyle);
@@ -98,7 +100,7 @@ function create(
     case 'boolean':
       return (
         <NamedAttributeInspector name={displayableName(name)}>
-          <Checkbox checked={inspectable.value} disabled />
+          <BooleanValue>{inspectable.value ? 'TRUE' : 'FALSE'}</BooleanValue>
         </NamedAttributeInspector>
       );
     case 'enum':
