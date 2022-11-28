@@ -22,7 +22,7 @@ import kotlinx.serialization.encoding.Encoder
 // for native android this should probably be false.
 @SerialName("array")
 @Serializable
-data class InspectableArray(val id: Int, val items: List<Inspectable>) : Inspectable()
+data class InspectableArray(val items: List<Inspectable>) : Inspectable()
 
 // In this context, mutable means you can add / remove keys,
 // for native android this should probably be false.

@@ -90,6 +90,32 @@ const ObjectAttributeInspector: React.FC<{
   );
 };
 
+const ArrayAttributeInspector: React.FC<{
+  metadata: Map<MetadataId, Metadata>;
+  name: string;
+  items: Inspectable[];
+  level: number;
+}> = ({metadata, name, items, level}) => {
+  return (
+    <div style={RowStyle}>
+      {name}
+      {items.map(function (item, idx) {
+        const inspectableValue = item;
+        const attributeName = idx.toString();
+        return (
+          <ObjectContainer
+            key={name + idx}
+            style={{
+              paddingLeft: level,
+            }}>
+            {create(metadata, attributeName, inspectableValue, level + 2)}
+          </ObjectContainer>
+        );
+      })}
+    </div>
+  );
+};
+
 function create(
   metadata: Map<MetadataId, Metadata>,
   name: string,
@@ -163,6 +189,15 @@ function create(
         <NamedAttributeInspector name={displayableName(name)}>
           <TextValue>{inspectable.value}</TextValue>
         </NamedAttributeInspector>
+      );
+    case 'array':
+      return (
+        <ArrayAttributeInspector
+          metadata={metadata}
+          name={displayableName(name)}
+          items={inspectable.items}
+          level={level}
+        />
       );
     case 'object':
       return (
