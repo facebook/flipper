@@ -17,8 +17,8 @@ import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
 import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
-import {Button, Input, Spin, Tooltip} from 'antd';
-import {PauseCircleOutlined, PlayCircleOutlined} from '@ant-design/icons';
+import {Spin} from 'antd';
+import {Controls} from './Controls';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -31,10 +31,8 @@ export function Component() {
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
-  const searchTerm = useValue(instance.uiState.searchTerm);
   const {ctrlPressed} = useKeyboardModifiers();
 
-  const isPaused = useValue(instance.uiState.isPaused);
   function renderSidebar(
     node: UINode | undefined,
     metadata: Map<MetadataId, Metadata>,
@@ -53,46 +51,31 @@ export function Component() {
 
   if (rootId) {
     return (
-      <Layout.Horizontal grow>
-        <Layout.Container grow pad="medium" gap="small">
-          <Layout.Horizontal padh="small" gap="small">
-            <Input
-              value={searchTerm}
-              onChange={(e) => instance.uiState.searchTerm.set(e.target.value)}
-            />
-            <Button
-              type="default"
-              shape="circle"
-              onClick={() =>
-                instance.setPlayPause(!instance.uiState.isPaused.get())
-              }
-              icon={
-                <Tooltip
-                  title={
-                    isPaused ? 'Resume live updates' : 'Pause incoming updates'
-                  }>
-                  {isPaused ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
-                </Tooltip>
-              }></Button>
-          </Layout.Horizontal>
-          <Layout.ScrollContainer>
-            <Tree
-              selectedNode={selectedNode}
-              onSelectNode={setSelectedNode}
-              nodes={nodes}
-              rootId={rootId}
-            />
-          </Layout.ScrollContainer>
-        </Layout.Container>
-        <Visualization2D
-          rootId={rootId}
-          nodes={nodes}
-          selectedNode={selectedNode}
-          onSelectNode={setSelectedNode}
-          modifierPressed={ctrlPressed}
-        />
-        {selectedNode && renderSidebar(nodes.get(selectedNode), metadata)}
-      </Layout.Horizontal>
+      <Layout.Container grow padh="small" padv="medium">
+        <Controls />
+        <Layout.Horizontal grow pad="small" gap="small">
+          <Layout.Container grow gap="small">
+            <Layout.ScrollContainer>
+              <Tree
+                selectedNode={selectedNode}
+                onSelectNode={setSelectedNode}
+                nodes={nodes}
+                rootId={rootId}
+              />
+            </Layout.ScrollContainer>
+          </Layout.Container>
+
+          <Visualization2D
+            rootId={rootId}
+            nodes={nodes}
+            selectedNode={selectedNode}
+            onSelectNode={setSelectedNode}
+            modifierPressed={ctrlPressed}
+          />
+
+          {selectedNode && renderSidebar(nodes.get(selectedNode), metadata)}
+        </Layout.Horizontal>
+      </Layout.Container>
     );
   }
 

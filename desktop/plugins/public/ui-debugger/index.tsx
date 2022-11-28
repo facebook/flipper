@@ -32,6 +32,15 @@ type LiveClientState = {
   nodes: Map<Id, UINode>;
 };
 
+type UIState = {
+  isPaused: Atom<boolean>;
+  searchTerm: Atom<string>;
+  isContextMenuOpen: Atom<boolean>;
+  hoveredNodes: Atom<Id[]>;
+  focusedNode: Atom<Id | undefined>;
+  treeState: Atom<TreeState>;
+};
+
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
@@ -63,7 +72,7 @@ export function plugin(client: PluginClient<Events>) {
   const nodes = createState<Map<Id, UINode>>(new Map());
   const snapshot = createState<SnapshotInfo | null>(null);
 
-  const uiState = {
+  const uiState: UIState = {
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
     isContextMenuOpen: createState<boolean>(false),
 
