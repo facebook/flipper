@@ -1,35 +1,40 @@
 ---
 id: documentation-formatting
-title: Formatting Tips
+title: Markdown Formatting
+description: Tips and guidelines for Mardown used within Static Docs documentation
+keywords:
+    - flipper website formatting
+    - flipper docs formatting
 ---
 
 This page provides recommendations on the use of a variety of Markdown features that help you create properly formatted documentation.
 
-## Subsections
+For tips and guidelines on when to use the same tools, and several others, see the [Writing Guide](documentation-writing-guide.mdx).
 
-Use regular H2..H6 markdown headings for subsections.
+## Structural format
 
-```markdown
-## Level 2 title
+### Headers
 
-### Level 3 title
+* Start each main section with a level 2 header.
+* Sub-sections should follow a hierarchical structure and should use header levels 3 to 5.
 
-#### Level 4 title
+**Markdown Example**:
+
+The following example Markdown shows how to use headers.
+
+```bash
+## Level 2 header
+
+### Level 3 header
+
+#### Level 4 header
+
+##### Level 5 header
 ```
 
-```diff
-- **Testing complex components**
-+ ### Testing complex components
-```
+## Markdown tools
 
-:::tip
-
-* The page title will implicitly be formatted with H1, so start with H2.
-
-* Headings appear in the Table of Contents, which gives the reader an overview of the page and assists with navigation.
-:::
-
-## Backticks
+### Backticks
 
 Use Markdown backticks ( \` \), to provide emphasis for items such as file names, classes, methods, parameters, and expressions.
 
@@ -91,26 +96,20 @@ addPlugin({
 
 For more code blocks features, such as line highlighting, see the Docusaurus [Code blocks](https://docusaurus.io/docs/markdown-features/code-blocks) document.
 
-## Links
+### Links
 
-Docusaurus supports regular Markdown links with absolute URLs, relative URLs, and relative file paths.
+Avoid using bare URLs in your documentation. Instead, use referenced hyperlinks, as shown in the following table.
 
-However, due to the [trailing slash issue](https://github.com/facebook/docusaurus/pull/4908), it's strongly recommended to link to page files (including their extension) instead of the page's URL.
-
-```diff
-- Don't link to markdown page URLs: [Create a page](create-a-page).
-+ Create links using full file names: [Create a page](create-a-page.md).
-other text
-- [Create internal only document](contributing-documentation#internal-only-content]
-+ [Create internal only document](contributing-documentation.md#internal-only-content]
-```
+| Type | Code | Displays as |
+| :-- | :-- | :-- |
+| **Bare URL** | `Upload the video to Pixelcloud at https://www.internalfb.com/intern/px/search` | Upload the video to Pixelcloud at https://www.internalfb.com/intern/px/search |
+| **Referenced** | `Upload the video to [Pixelcloud](https://www.internalfb.com/intern/px/search)`| Upload the video to [Pixelcloud](https://www.internalfb.com/intern/px/search) |
 
 :::tip
-Don't use absolute or internal docs links.
-With relative links, the Static Docs engine will automatically use the right host depending on whether docs are accessed externally or internally.
+Notice the use of square brackets around 'PixelCloud' in the referenced hyperlink.
 :::
 
-## Tabs
+### Tabs
 
 To organize content in tabs, Docusaurus provides the `Tabs` React component:
 
@@ -120,16 +119,16 @@ import TabItem from '@theme/TabItem';
 
 <Tabs
   groupId="platform"
-  defaultValue="iOS"
+  defaultValue="kotlin"
   values={[
-    {label: 'iOS', value: 'ios'},
-    {label: 'Android', value: 'android'},
+    {label: 'Kotlin', value: 'kotlin'},
+    {label: 'Java', value: 'java'},
   ]}>
-  <TabItem value="ios">
-    Information about Flipper on iOS.
+  <TabItem value="kotlin">
+    Information about using Kotlin with Flipper.
   </TabItem>
-  <TabItem value="android">
-    Information about Flipper on Android.
+  <TabItem value="java">
+    Information about using Java  with Flipper.
   </TabItem>
 </Tabs>
 ```
@@ -140,16 +139,16 @@ import TabItem from '@theme/TabItem';
 **Result:**
 <Tabs
   groupId="platform"
-  defaultValue="ios"
+  defaultValue="kotlin"
   values={[
-    {label: 'iOS', value: 'ios'},
-    {label: 'Android', value: 'android'},
+    {label: 'Kotlin', value: 'kotlin'},
+    {label: 'Java', value: 'java'},
   ]}>
-  <TabItem value="ios">
-    Information about Flipper on iOS.
+  <TabItem value="kotlin">
+    Information about using Kotlin with Flipper.
   </TabItem>
-  <TabItem value="android">
-    Information about Flipper on Android.
+  <TabItem value="java">
+    Information about using Java with Flipper.
   </TabItem>
 </Tabs>
 
