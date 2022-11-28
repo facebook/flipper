@@ -13,7 +13,7 @@ import {Bounds, Coordinate, Id, NestedNode, Tag, UINode} from '../types';
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
 import {plugin} from '../index';
 import {head, isEqual, throttle} from 'lodash';
-import {Dropdown, Menu} from 'antd';
+import {Dropdown, Menu, Tooltip} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 
 export const Visualization2D: React.FC<
@@ -167,20 +167,8 @@ function Visualization2DNode({
 }) {
   const instance = usePlugin(plugin);
 
-  const [isHovered, setIsHovered] = useState(false);
-  useEffect(() => {
-    const listener = (newValue?: Id[], prevValue?: Id[]) => {
-      if (head(prevValue) === node.id || head(newValue) === node.id) {
-        setIsHovered(head(newValue) === node.id);
-      }
-    };
-    instance.uiState.hoveredNodes.subscribe(listener);
-    return () => {
-      instance.uiState.hoveredNodes.unsubscribe(listener);
-    };
-  }, [instance.uiState.hoveredNodes, node.id]);
-
   const isSelected = selectedNode === node.id;
+  const {isHovered, isLongHovered} = useHoverStates(node.id);
 
   let nestedChildren: NestedNode[];
 
@@ -208,39 +196,83 @@ function Visualization2DNode({
     />
   ));
 
-  const bounds = node.bounds ?? {x: 0, y: 0, width: 0, height: 0};
-
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      style={{
-        position: 'absolute',
-        cursor: 'pointer',
-        left: toPx(bounds.x),
-        top: toPx(bounds.y),
-        width: toPx(bounds.width),
-        height: toPx(bounds.height),
-        opacity: isSelected ? 0.5 : 1,
-        backgroundColor: isSelected
-          ? theme.selectionBackgroundColor
-          : 'transparent',
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-
-        const hoveredNodes = instance.uiState.hoveredNodes.get();
-        if (hoveredNodes[0] === selectedNode) {
-          onSelectNode(undefined);
-        } else {
-          onSelectNode(hoveredNodes[0]);
-        }
+    <Tooltip
+      visible={isLongHovered}
+      placement="top"
+      zIndex={100}
+      trigger={[]}
+      title={node.name}
+      align={{
+        offset: [0, 7],
       }}>
-      <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
-      {isHovered && <p style={{float: 'right'}}>{node.name}</p>}
-      {children}
-    </div>
+      <div
+        role="button"
+        tabIndex={0}
+        style={{
+          position: 'absolute',
+          cursor: 'pointer',
+          left: toPx(node.bounds.x),
+          top: toPx(node.bounds.y),
+          width: toPx(node.bounds.width),
+          height: toPx(node.bounds.height),
+          opacity: isSelected ? 0.5 : 1,
+          backgroundColor: isSelected
+            ? theme.selectionBackgroundColor
+            : 'transparent',
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+
+          const hoveredNodes = instance.uiState.hoveredNodes.get();
+          if (hoveredNodes[0] === selectedNode) {
+            onSelectNode(undefined);
+          } else {
+            onSelectNode(hoveredNodes[0]);
+          }
+        }}>
+        <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
+        {children}
+      </div>
+    </Tooltip>
   );
+}
+
+function useHoverStates(nodeId: Id) {
+  const instance = usePlugin(plugin);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isLongHovered, setIsLongHovered] = useState(false);
+  useEffect(() => {
+    const listener = (newValue?: Id[], prevValue?: Id[]) => {
+      //only change state if the prev or next hover state affect us, this avoids rerendering the whole tree for a hover
+      //change
+      if (head(prevValue) === nodeId || head(newValue) === nodeId) {
+        const hovered = head(newValue) === nodeId;
+        setIsHovered(hovered);
+
+        if (hovered === true) {
+          setTimeout(() => {
+            const isStillHovered =
+              head(instance.uiState.hoveredNodes.get()) === nodeId;
+            if (isStillHovered) {
+              setIsLongHovered(true);
+            }
+          }, longHoverDelay);
+        } else {
+          setIsLongHovered(false);
+        }
+      }
+    };
+    instance.uiState.hoveredNodes.subscribe(listener);
+    return () => {
+      instance.uiState.hoveredNodes.unsubscribe(listener);
+    };
+  }, [instance.uiState.hoveredNodes, nodeId]);
+
+  return {
+    isHovered,
+    isLongHovered,
+  };
 }
 
 const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
@@ -307,6 +339,7 @@ const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
     : 'black',
 }));
 
+const longHoverDelay = 200;
 const outerBorderWidth = '10px';
 const outerBorderOffset = `-${outerBorderWidth}`;
 
