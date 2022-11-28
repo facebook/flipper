@@ -44,6 +44,7 @@ export function plugin(client: PluginClient<Events>) {
     limit: 10 * 1024,
   });
   client.onMessage('perfStats', (event) => {
+    client.logger.track('performance', 'subtreeUpdate', event, 'ui-debugger');
     perfEvents.append(event);
   });
 
