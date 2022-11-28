@@ -25,4 +25,6 @@ jobs:
           branch: gh-pages
           folder: website/build
           clean: true
+          clean-exclude: |
+            .circleci
           commit-message: "[ci skip] Deploying documentation update"
