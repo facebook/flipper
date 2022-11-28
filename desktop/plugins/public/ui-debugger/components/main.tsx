@@ -17,8 +17,9 @@ import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
 import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
-import {Spin} from 'antd';
 import {Controls} from './Controls';
+import {Input, Spin} from 'antd';
+import FeedbackRequest from './fb-stubs/feedback';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -52,6 +53,7 @@ export function Component() {
   if (rootId) {
     return (
       <Layout.Container grow padh="small" padv="medium">
+        <FeedbackRequest />
         <Controls />
         <Layout.Horizontal grow pad="small" gap="small">
           <Layout.Container grow gap="small">
