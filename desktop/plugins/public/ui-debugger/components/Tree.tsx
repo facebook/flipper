@@ -58,70 +58,75 @@ export function Tree(props: {
   }, [props.selectedNode]);
 
   return (
-    <HighlightProvider
-      text={searchTerm}
-      highlightColor={theme.searchHighlightBackground.yellow}>
-      <ControlledTreeEnvironment
-        ref={treeEnvRef as any}
-        items={items}
-        getItemTitle={(item) => item.data.name}
-        canRename={false}
-        canDragAndDrop={false}
-        viewState={{
-          tree: {
-            focusedItem: head(hoveredNodes),
-            expandedItems,
-            selectedItems: props.selectedNode ? [props.selectedNode] : [],
-          },
-        }}
-        onFocusItem={(item) => {
-          instance.uiState.hoveredNodes.set([item.index]);
-        }}
-        onExpandItem={(item) => {
-          instance.uiState.treeState.update((draft) => {
-            draft.expandedNodes.push(item.index);
-          });
-        }}
-        onCollapseItem={(item) =>
-          instance.uiState.treeState.update((draft) => {
-            draft.expandedNodes = draft.expandedNodes.filter(
-              (expandedItemIndex) => expandedItemIndex !== item.index,
-            );
-          })
-        }
-        renderItem={renderItem}
-        onSelectItems={(items) => props.onSelectNode(items[0])}
-        defaultInteractionMode={{
-          mode: 'custom',
-          extends: InteractionMode.DoubleClickItemToExpand,
-          createInteractiveElementProps: (
-            item,
-            treeId,
-            actions,
-            renderFlags,
-          ) => ({
-            onClick: () => {
-              if (renderFlags.isSelected) {
-                actions.unselectItem();
-              } else {
-                actions.selectItem();
-              }
+    <div
+      onMouseLeave={() => {
+        instance.uiState.hoveredNodes.set([]);
+      }}>
+      <HighlightProvider
+        text={searchTerm}
+        highlightColor={theme.searchHighlightBackground.yellow}>
+        <ControlledTreeEnvironment
+          ref={treeEnvRef as any}
+          items={items}
+          getItemTitle={(item) => item.data.name}
+          canRename={false}
+          canDragAndDrop={false}
+          viewState={{
+            tree: {
+              focusedItem: head(hoveredNodes),
+              expandedItems,
+              selectedItems: props.selectedNode ? [props.selectedNode] : [],
             },
+          }}
+          onFocusItem={(item) => {
+            instance.uiState.hoveredNodes.set([item.index]);
+          }}
+          onExpandItem={(item) => {
+            instance.uiState.treeState.update((draft) => {
+              draft.expandedNodes.push(item.index);
+            });
+          }}
+          onCollapseItem={(item) =>
+            instance.uiState.treeState.update((draft) => {
+              draft.expandedNodes = draft.expandedNodes.filter(
+                (expandedItemIndex) => expandedItemIndex !== item.index,
+              );
+            })
+          }
+          renderItem={renderItem}
+          onSelectItems={(items) => props.onSelectNode(items[0])}
+          defaultInteractionMode={{
+            mode: 'custom',
+            extends: InteractionMode.DoubleClickItemToExpand,
+            createInteractiveElementProps: (
+              item,
+              treeId,
+              actions,
+              renderFlags,
+            ) => ({
+              onClick: () => {
+                if (renderFlags.isSelected) {
+                  actions.unselectItem();
+                } else {
+                  actions.selectItem();
+                }
+              },
 
-            onMouseOver: () => {
-              if (!instance.uiState.isContextMenuOpen.get()) {
-                instance.uiState.hoveredNodes.set([item.index]);
-              }
-            },
-          }),
-        }}>
-        <ComplexTree
-          treeId="tree"
-          rootItem={FakeNode.id as any} //the typing in in the library is wrong here
-          treeLabel="UI"
-        />
-      </ControlledTreeEnvironment>
-    </HighlightProvider>
+              onMouseOver: () => {
+                if (!instance.uiState.isContextMenuOpen.get()) {
+                  instance.uiState.hoveredNodes.set([item.index]);
+                }
+              },
+            }),
+          }}>
+          <ComplexTree
+            treeId="tree"
+            rootItem={FakeNode.id as any} //the typing in in the library is wrong here
+            treeLabel="UI"
+          />
+        </ControlledTreeEnvironment>
+      </HighlightProvider>
+    </div>
   );
 }
 
