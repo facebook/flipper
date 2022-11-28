@@ -38,6 +38,10 @@
   [self sendInternal:method withParams:params loggedTo:&_sent];
 }
 
+- (void)send:(NSString*)method withRawParams:(NSString*)params {
+  [self sendInternal:method withParams:params loggedTo:&_sent];
+}
+
 - (void)send:(NSString*)method withArrayParams:(NSArray*)params {
   [self sendInternal:method withParams:params loggedTo:&_sentWithArray];
 }

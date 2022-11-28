@@ -35,6 +35,10 @@
   [self sendInternal:method withParams:params];
 }
 
+- (void)send:(NSString*)method withRawParams:(NSString*)params {
+  conn_->sendRaw([method UTF8String], [params UTF8String]);
+}
+
 - (void)send:(NSString*)method withArrayParams:(NSArray*)params {
   [self sendInternal:method withParams:params];
 }
