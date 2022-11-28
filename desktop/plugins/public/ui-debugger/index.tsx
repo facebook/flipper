@@ -7,7 +7,12 @@
  * @format
  */
 
-import {PluginClient, createState, createDataSource} from 'flipper-plugin';
+import {
+  PluginClient,
+  createState,
+  createDataSource,
+  produce,
+} from 'flipper-plugin';
 import {
   Events,
   Id,
@@ -19,6 +24,12 @@ import {
   UINode,
 } from './types';
 import './node_modules/react-complex-tree/lib/style.css';
+
+type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};
+type LiveClientState = {
+  snapshotInfo: SnapshotInfo | null;
+  nodes: Map<Id, UINode>;
+};
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
@@ -49,13 +60,13 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const nodes = createState<Map<Id, UINode>>(new Map());
-  const snapshot = createState<{nodeId: Id; base64Image: Snapshot} | null>(
-    null,
-  );
+  const snapshot = createState<SnapshotInfo | null>(null);
 
   const uiState = {
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
     isContextMenuOpen: createState<boolean>(false),
+
+    isPaused: createState(false),
 
     //The reason for the array as that user could be hovering multiple overlapping nodes at once in the visualiser.
     //The nodes are sorted by area since you most likely want to select the smallest node under your cursor
@@ -67,8 +78,8 @@ export function plugin(client: PluginClient<Events>) {
   };
 
   client.onMessage('coordinateUpdate', (event) => {
-    nodes.update((draft) => {
-      const node = draft.get(event.nodeId);
+    liveClientData = produce(liveClientData, (draft) => {
+      const node = draft.nodes.get(event.nodeId);
       if (!node) {
         console.warn(`Coordinate update for non existing node `, event);
       } else {
@@ -76,17 +87,48 @@ export function plugin(client: PluginClient<Events>) {
         node.bounds.y = event.coordinate.y;
       }
     });
+
+    if (uiState.isPaused.get()) {
+      return;
+    }
+
+    nodes.set(liveClientData.nodes);
   });
+
+  const setPlayPause = (isPaused: boolean) => {
+    uiState.isPaused.set(isPaused);
+    if (!isPaused) {
+      //When going back to play mode then set the atoms to the live state to rerender the latest
+      //Also need to fixed expanded state for any change in active child state
+      uiState.treeState.update((draft) => {
+        liveClientData.nodes.forEach((node) => {
+          collapseinActiveChildren(node, draft);
+        });
+      });
+      nodes.set(liveClientData.nodes);
+      snapshot.set(liveClientData.snapshotInfo);
+    }
+  };
+
+  //this is the client data is what drives all of desktop UI
+  //it is always up-to-date with the client regardless of whether we are paused or not
+  let liveClientData: LiveClientState = {
+    snapshotInfo: null,
+    nodes: new Map(),
+  };
 
   const seenNodes = new Set<Id>();
   client.onMessage('subtreeUpdate', (event) => {
-    if (event.snapshot) {
-      snapshot.set({nodeId: event.rootId, base64Image: event.snapshot});
-    }
+    liveClientData = produce(liveClientData, (draft) => {
+      if (event.snapshot) {
+        draft.snapshotInfo = {
+          nodeId: event.rootId,
+          base64Image: event.snapshot,
+        };
+      }
 
-    nodes.update((draft) => {
       event.nodes.forEach((node) => {
-        draft.set(node.id, node);
+        draft.nodes.set(node.id, node);
       });
     });
 
@@ -97,28 +139,42 @@ export function plugin(client: PluginClient<Events>) {
         }
         seenNodes.add(node.id);
 
-        if (node.activeChild) {
-          const inactiveChildren = node.children.filter(
-            (child) => child !== node.activeChild,
-          );
-
-          draft.expandedNodes = draft.expandedNodes.filter(
-            (nodeId) => !inactiveChildren.includes(nodeId),
-          );
-          draft.expandedNodes.push(node.activeChild);
+        if (!uiState.isPaused.get()) {
+          //we need to not do this while paused as you may move to another screen / tab
+          //and it would collapse the tree node for the activity you were paused on.
+          collapseinActiveChildren(node, draft);
         }
       }
     });
+
+    if (!uiState.isPaused.get()) {
+      nodes.set(liveClientData.nodes);
+      snapshot.set(liveClientData.snapshotInfo);
+    }
   });
 
   return {
     rootId,
     uiState,
     nodes,
-    metadata,
     snapshot,
+    metadata,
     perfEvents,
+    setPlayPause,
   };
+}
+
+function collapseinActiveChildren(node: UINode, draft: TreeState) {
+  if (node.activeChild) {
+    const inactiveChildren = node.children.filter(
+      (child) => child !== node.activeChild,
+    );
+
+    draft.expandedNodes = draft.expandedNodes.filter(
+      (nodeId) => !inactiveChildren.includes(nodeId),
+    );
+    draft.expandedNodes.push(node.activeChild);
+  }
 }
 
 export {Component} from './components/main';

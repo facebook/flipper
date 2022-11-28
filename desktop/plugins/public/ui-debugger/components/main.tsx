@@ -11,13 +11,14 @@ import React, {useState} from 'react';
 import {plugin} from '../index';
 import {DetailSidebar, Layout, usePlugin, useValue} from 'flipper-plugin';
 import {useHotkeys} from 'react-hotkeys-hook';
-import {Id, Metadata, MetadataId, Snapshot, UINode} from '../types';
+import {Id, Metadata, MetadataId, UINode} from '../types';
 import {PerfStats} from './PerfStats';
 import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
 import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
-import {Input, Spin} from 'antd';
+import {Button, Input, Spin, Tooltip} from 'antd';
+import {PauseCircleOutlined, PlayCircleOutlined} from '@ant-design/icons';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -33,6 +34,7 @@ export function Component() {
   const searchTerm = useValue(instance.uiState.searchTerm);
   const {ctrlPressed} = useKeyboardModifiers();
 
+  const isPaused = useValue(instance.uiState.isPaused);
   function renderSidebar(
     node: UINode | undefined,
     metadata: Map<MetadataId, Metadata>,
@@ -53,10 +55,26 @@ export function Component() {
     return (
       <Layout.Horizontal grow>
         <Layout.Container grow pad="medium" gap="small">
-          <Input
-            value={searchTerm}
-            onChange={(e) => instance.uiState.searchTerm.set(e.target.value)}
-          />
+          <Layout.Horizontal padh="small" gap="small">
+            <Input
+              value={searchTerm}
+              onChange={(e) => instance.uiState.searchTerm.set(e.target.value)}
+            />
+            <Button
+              type="default"
+              shape="circle"
+              onClick={() =>
+                instance.setPlayPause(!instance.uiState.isPaused.get())
+              }
+              icon={
+                <Tooltip
+                  title={
+                    isPaused ? 'Resume live updates' : 'Pause incoming updates'
+                  }>
+                  {isPaused ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
+                </Tooltip>
+              }></Button>
+          </Layout.Horizontal>
           <Layout.ScrollContainer>
             <Tree
               selectedNode={selectedNode}
