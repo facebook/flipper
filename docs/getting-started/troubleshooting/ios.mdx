@@ -5,6 +5,8 @@ sidebar_label: iOS Issues
 custom_edit_url: https://www.internalfb.com/intern/diffusion/FBS/browsefile/master/xplat/sonar/docs/getting-started/troubleshooting/ios.mdx
 ---
 
+Flipper is a 'work in progress' and issues may occur. This page contains known issues associated with the iOS platform and provides steps you can take to try to resolve them.
+
 import InternalIos from './fb/_ios.mdx';
 
 <InternalIos />
@@ -17,17 +19,14 @@ You'll need to manually add this [ViewController](https://github.com/facebook/fl
 
 ## iOS device not showing up
 
-- Make sure [`idb`](https://fbidb.io/docs/installation) is installed and configured in the Flipper settings.
+Make sure [idb](https://fbidb.io/docs/installation) is installed and configured in the Flipper settings.
 
 </OssOnly>
 
 ## iOS simulator device not showing up
 
-Ensure that your simulator is on the same version as selected in `xcode-select`. 
-You can do that by checking that commands `ps aux | grep CoreSimulator` and `xcode-select -p` shows the same Xcode version. 
-If not, update the xcode version by sudo `xcode-select --switch <Path to xcode>`
+Ensure that your simulator is on the same version as selected in `xcode-select`. You can do that by checking that commands `ps aux | grep CoreSimulator` and `xcode-select -p` shows the same Xcode version. If not, update the xcode version by sudo `xcode-select --switch <Path to xcode>`
 
 ## iOS app connection error "Connection failed. Failed to find device..."
 
-If during connecting iOS app to Flipper you see error message "Connection failed. Failed to find device <device_id> while trying to connect app" - 
-try executing `idb kill` on a terminal and restarting Flipper as workaround to reset idb state.
+If during connecting iOS app to Flipper you see error message "Connection failed. Failed to find device <device_id> while trying to connect app" - try executing `idb kill` on a terminal and restarting Flipper as workaround to reset idb state.

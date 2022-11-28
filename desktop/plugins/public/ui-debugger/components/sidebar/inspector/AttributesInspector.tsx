@@ -16,7 +16,7 @@ import {
   UINode,
 } from '../../../types';
 import {DataInspector, Panel, styled} from 'flipper-plugin';
-import {Checkbox, Col, Row} from 'antd';
+import {Col, Row} from 'antd';
 import {displayableName} from '../utilities/displayableName';
 import ColorInspector from './ColorInspector';
 import SizeInspector from './SizeInspector';
@@ -26,6 +26,7 @@ import Coordinate3DInspector from './Coordinate3DInspector';
 import CoordinateInspector from './CoordinateInspector';
 import {
   AutoMarginStyle,
+  BooleanAttributeValueStyle,
   EnumAttributeValueStyle,
   NumberAttributeValueStyle,
   ObjectContainerStyle,
@@ -36,6 +37,7 @@ import {Glyph} from 'flipper';
 import {transform} from '../../../dataTransform';
 
 const NumberValue = styled.span(NumberAttributeValueStyle);
+const BooleanValue = styled.span(BooleanAttributeValueStyle);
 const TextValue = styled.span(TextAttributeValueStyle);
 const EnumValue = styled.span(EnumAttributeValueStyle);
 const ObjectContainer = styled.div(ObjectContainerStyle);
@@ -88,6 +90,32 @@ const ObjectAttributeInspector: React.FC<{
   );
 };
 
+const ArrayAttributeInspector: React.FC<{
+  metadata: Map<MetadataId, Metadata>;
+  name: string;
+  items: Inspectable[];
+  level: number;
+}> = ({metadata, name, items, level}) => {
+  return (
+    <div style={RowStyle}>
+      {name}
+      {items.map(function (item, idx) {
+        const inspectableValue = item;
+        const attributeName = idx.toString();
+        return (
+          <ObjectContainer
+            key={name + idx}
+            style={{
+              paddingLeft: level,
+            }}>
+            {create(metadata, attributeName, inspectableValue, level + 2)}
+          </ObjectContainer>
+        );
+      })}
+    </div>
+  );
+};
+
 function create(
   metadata: Map<MetadataId, Metadata>,
   name: string,
@@ -98,7 +126,7 @@ function create(
     case 'boolean':
       return (
         <NamedAttributeInspector name={displayableName(name)}>
-          <Checkbox checked={inspectable.value} disabled />
+          <BooleanValue>{inspectable.value ? 'TRUE' : 'FALSE'}</BooleanValue>
         </NamedAttributeInspector>
       );
     case 'enum':
@@ -161,6 +189,15 @@ function create(
         <NamedAttributeInspector name={displayableName(name)}>
           <TextValue>{inspectable.value}</TextValue>
         </NamedAttributeInspector>
+      );
+    case 'array':
+      return (
+        <ArrayAttributeInspector
+          metadata={metadata}
+          name={displayableName(name)}
+          items={inspectable.items}
+          level={level}
+        />
       );
     case 'object':
       return (

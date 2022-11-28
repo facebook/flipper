@@ -55,6 +55,12 @@ export const NumberAttributeValueStyle = {
   display: 'flex',
 } as const;
 
+export const BooleanAttributeValueStyle = {
+  color: theme.semanticColors.booleanValue,
+  fontSize: theme.fontSize.small,
+  alignItems: 'center',
+} as const;
+
 export const TextAttributeValueStyle = {
   color: theme.semanticColors.stringValue,
   display: 'flex',

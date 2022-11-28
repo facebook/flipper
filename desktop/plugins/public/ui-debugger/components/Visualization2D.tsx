@@ -8,65 +8,64 @@
  */
 
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {
-  Bounds,
-  Coordinate,
-  Id,
-  NestedNode,
-  Snapshot,
-  Tag,
-  UINode,
-} from '../types';
+import {Bounds, Coordinate, Id, NestedNode, Tag, UINode} from '../types';
 
-import {styled, theme, usePlugin} from 'flipper-plugin';
+import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
 import {plugin} from '../index';
-import {throttle, isEqual, head} from 'lodash';
+import {head, isEqual, throttle} from 'lodash';
+import {Dropdown, Menu, Tooltip} from 'antd';
+import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 
 export const Visualization2D: React.FC<
   {
     rootId: Id;
     nodes: Map<Id, UINode>;
-    snapshots: Map<Id, Snapshot>;
     selectedNode?: Id;
     onSelectNode: (id?: Id) => void;
     modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({
-  rootId,
-  nodes,
-  snapshots,
-  selectedNode,
-  onSelectNode,
-  modifierPressed,
-}) => {
-  const root = useMemo(() => toNestedNode(rootId, nodes), [rootId, nodes]);
+> = ({rootId, nodes, selectedNode, onSelectNode, modifierPressed}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
   const instance = usePlugin(plugin);
+
+  const snapshot = useValue(instance.snapshot);
+  const focusedNodeId = useValue(instance.uiState.focusedNode);
+
+  const focusState = useMemo(() => {
+    const rootNode = toNestedNode(rootId, nodes);
+    return rootNode && caclulateFocusState(rootNode, focusedNodeId);
+  }, [focusedNodeId, rootId, nodes]);
 
   useEffect(() => {
     const mouseListener = throttle((ev: MouseEvent) => {
       const domRect = rootNodeRef.current?.getBoundingClientRect();
-      if (!root || !domRect) {
+
+      if (!focusState || !domRect || instance.uiState.isContextMenuOpen.get()) {
+        return;
+      }
+      const rawMouse = {x: ev.clientX, y: ev.clientY};
+
+      if (!boundsContainsCoordinate(domRect, rawMouse)) {
         return;
       }
 
       //make the mouse coord relative to the dom rect of the visualizer
-      const offsetMouse = offsetCoordinate(
-        {x: ev.clientX, y: ev.clientY},
-        domRect,
-      );
+
+      const offsetMouse = offsetCoordinate(rawMouse, domRect);
       const scaledMouse = {
         x: offsetMouse.x * pxScaleFactor,
         y: offsetMouse.y * pxScaleFactor,
       };
 
-      const hitNodes = hitTest(root, scaledMouse).map((node) => node.id);
+      const hitNodes = hitTest(focusState.focusedRoot, scaledMouse).map(
+        (node) => node.id,
+      );
 
       if (
         hitNodes.length > 0 &&
-        !isEqual(hitNodes, instance.hoveredNodes.get())
+        !isEqual(hitNodes, instance.uiState.hoveredNodes.get())
       ) {
-        instance.hoveredNodes.set(hitNodes);
+        instance.uiState.hoveredNodes.set(hitNodes);
       }
     }, MouseThrottle);
     window.addEventListener('mousemove', mouseListener);
@@ -74,41 +73,73 @@ export const Visualization2D: React.FC<
     return () => {
       window.removeEventListener('mousemove', mouseListener);
     };
-  }, [instance.hoveredNodes, root]);
+  }, [
+    instance.uiState.hoveredNodes,
+    focusState,
+    nodes,
+    instance.uiState.isContextMenuOpen,
+  ]);
 
-  if (!root) {
+  if (!focusState) {
     return null;
   }
 
+  const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
+
   return (
-    <div
-      ref={rootNodeRef as any}
-      onMouseLeave={(e) => {
-        e.stopPropagation();
-        instance.hoveredNodes.set([]);
-      }}
-      style={{
-        /**
-         * This relative position is so the root visualization 2DNode and outer border has a non static element to
-         * position itself relative to.
-         *
-         * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
-         * which despite the name acts are a reference point for absolute positioning...
-         */
-        position: 'relative',
-        width: toPx(root.bounds.width),
-        height: toPx(root.bounds.height),
-        overflow: 'hidden',
-      }}>
-      <OuterBorder />
-      <MemoedVisualizationNode2D
-        node={root}
-        snapshots={snapshots}
-        selectedNode={selectedNode}
-        onSelectNode={onSelectNode}
-        modifierPressed={modifierPressed}
-      />
-    </div>
+    <ContextMenu nodes={nodes}>
+      <div
+        //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
+        style={{
+          width: toPx(focusState.actualRoot.bounds.width),
+          height: toPx(focusState.actualRoot.bounds.height),
+        }}>
+        <div
+          ref={rootNodeRef as any}
+          onMouseLeave={(e) => {
+            e.stopPropagation();
+            //the context menu triggers this callback but we dont want to remove hover effect
+            if (!instance.uiState.isContextMenuOpen.get()) {
+              instance.uiState.hoveredNodes.set([]);
+            }
+          }}
+          style={{
+            /**
+             * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
+             * position itself relative to.
+             *
+             * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
+             * which despite the name acts are a reference point for absolute positioning...
+             *
+             * When focused the global offset of the focussed node is used to offset and size this 'root' node
+             */
+            position: 'relative',
+            marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
+            marginTop: toPx(focusState.focusedRootGlobalOffset.y),
+            width: toPx(focusState.focusedRoot.bounds.width),
+            height: toPx(focusState.focusedRoot.bounds.height),
+            overflow: 'hidden',
+          }}>
+          {snapshotNode && (
+            <img
+              src={'data:image/png;base64,' + snapshot.base64Image}
+              style={{
+                marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
+                marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
+                width: toPx(snapshotNode.bounds.width),
+                height: toPx(snapshotNode.bounds.height),
+              }}
+            />
+          )}
+          <MemoedVisualizationNode2D
+            node={focusState.focusedRoot}
+            selectedNode={selectedNode}
+            onSelectNode={onSelectNode}
+            modifierPressed={modifierPressed}
+          />
+        </div>
+      </div>
+    </ContextMenu>
   );
 };
 
@@ -125,34 +156,19 @@ const MemoedVisualizationNode2D = React.memo(
 
 function Visualization2DNode({
   node,
-  snapshots,
   selectedNode,
   onSelectNode,
   modifierPressed,
 }: {
   node: NestedNode;
-  snapshots: Map<Id, Snapshot>;
   modifierPressed: boolean;
   selectedNode?: Id;
   onSelectNode: (id?: Id) => void;
 }) {
-  const snapshot = snapshots.get(node.id);
   const instance = usePlugin(plugin);
 
-  const [isHovered, setIsHovered] = useState(false);
-  useEffect(() => {
-    const listener = (newValue?: Id[], prevValue?: Id[]) => {
-      if (head(prevValue) === node.id || head(newValue) === node.id) {
-        setIsHovered(head(newValue) === node.id);
-      }
-    };
-    instance.hoveredNodes.subscribe(listener);
-    return () => {
-      instance.hoveredNodes.unsubscribe(listener);
-    };
-  }, [instance.hoveredNodes, node.id]);
-
   const isSelected = selectedNode === node.id;
+  const {isHovered, isLongHovered} = useHoverStates(node.id);
 
   let nestedChildren: NestedNode[];
 
@@ -174,53 +190,133 @@ function Visualization2DNode({
     <MemoedVisualizationNode2D
       key={child.id}
       node={child}
-      snapshots={snapshots}
       onSelectNode={onSelectNode}
       selectedNode={selectedNode}
       modifierPressed={modifierPressed}
     />
   ));
 
-  const bounds = node.bounds ?? {x: 0, y: 0, width: 0, height: 0};
-
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      style={{
-        position: 'absolute',
-        cursor: 'pointer',
-        left: toPx(bounds.x),
-        top: toPx(bounds.y),
-        width: toPx(bounds.width),
-        height: toPx(bounds.height),
-        opacity: isSelected ? 0.5 : 1,
-        backgroundColor: isSelected
-          ? theme.selectionBackgroundColor
-          : 'transparent',
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-
-        const hoveredNodes = instance.hoveredNodes.get();
-        if (hoveredNodes[0] === selectedNode) {
-          onSelectNode(undefined);
-        } else {
-          onSelectNode(hoveredNodes[0]);
-        }
+    <Tooltip
+      visible={isLongHovered}
+      placement="top"
+      zIndex={100}
+      trigger={[]}
+      title={node.name}
+      align={{
+        offset: [0, 7],
       }}>
-      <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
-      {snapshot && (
-        <img
-          src={'data:image/jpeg;base64,' + snapshot}
-          style={{maxWidth: '100%'}}
-        />
-      )}
-      {isHovered && <p style={{float: 'right'}}>{node.name}</p>}
-      {children}
-    </div>
+      <div
+        role="button"
+        tabIndex={0}
+        style={{
+          position: 'absolute',
+          cursor: 'pointer',
+          left: toPx(node.bounds.x),
+          top: toPx(node.bounds.y),
+          width: toPx(node.bounds.width),
+          height: toPx(node.bounds.height),
+          opacity: isSelected ? 0.5 : 1,
+          backgroundColor: isSelected
+            ? theme.selectionBackgroundColor
+            : 'transparent',
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+
+          const hoveredNodes = instance.uiState.hoveredNodes.get();
+          if (hoveredNodes[0] === selectedNode) {
+            onSelectNode(undefined);
+          } else {
+            onSelectNode(hoveredNodes[0]);
+          }
+        }}>
+        <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
+        {children}
+      </div>
+    </Tooltip>
   );
 }
+
+function useHoverStates(nodeId: Id) {
+  const instance = usePlugin(plugin);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isLongHovered, setIsLongHovered] = useState(false);
+  useEffect(() => {
+    const listener = (newValue?: Id[], prevValue?: Id[]) => {
+      //only change state if the prev or next hover state affect us, this avoids rerendering the whole tree for a hover
+      //change
+      if (head(prevValue) === nodeId || head(newValue) === nodeId) {
+        const hovered = head(newValue) === nodeId;
+        setIsHovered(hovered);
+
+        if (hovered === true) {
+          setTimeout(() => {
+            const isStillHovered =
+              head(instance.uiState.hoveredNodes.get()) === nodeId;
+            if (isStillHovered) {
+              setIsLongHovered(true);
+            }
+          }, longHoverDelay);
+        } else {
+          setIsLongHovered(false);
+        }
+      }
+    };
+    instance.uiState.hoveredNodes.subscribe(listener);
+    return () => {
+      instance.uiState.hoveredNodes.unsubscribe(listener);
+    };
+  }, [instance.uiState.hoveredNodes, nodeId]);
+
+  return {
+    isHovered,
+    isLongHovered,
+  };
+}
+
+const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
+  const instance = usePlugin(plugin);
+
+  const focusedNodeId = useValue(instance.uiState.focusedNode);
+  const hoveredNodeId = head(useValue(instance.uiState.hoveredNodes));
+  const nodes = useValue(instance.nodes);
+  const hoveredNode = hoveredNodeId ? nodes.get(hoveredNodeId) : null;
+
+  return (
+    <Dropdown
+      onVisibleChange={(open) => {
+        instance.uiState.isContextMenuOpen.set(open);
+      }}
+      trigger={['contextMenu']}
+      overlay={() => {
+        return (
+          <Menu>
+            {hoveredNode?.id !== focusedNodeId && (
+              <UIDebuggerMenuItem
+                key="focus"
+                text={`Focus ${hoveredNode?.name}`}
+                onClick={() => {
+                  instance.uiState.focusedNode.set(hoveredNode?.id);
+                }}
+              />
+            )}
+            {focusedNodeId != null && (
+              <UIDebuggerMenuItem
+                key="remove-focus"
+                text="Remove focus"
+                onClick={() => {
+                  instance.uiState.focusedNode.set(undefined);
+                }}
+              />
+            )}
+          </Menu>
+        );
+      }}>
+      {children}
+    </Dropdown>
+  );
+};
 
 /**
  * this is the border that shows the green or blue line, it is implemented as a sibling to the
@@ -243,6 +339,7 @@ const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
     : 'black',
 }));
 
+const longHoverDelay = 200;
 const outerBorderWidth = '10px';
 const outerBorderOffset = `-${outerBorderWidth}`;
 
@@ -293,6 +390,59 @@ function toNestedNode(
 
   const root = nodes.get(rootId);
   return root ? uiNodeToNestedNode(root) : undefined;
+}
+
+type FocusState = {
+  actualRoot: NestedNode;
+  focusedRoot: NestedNode;
+  focusedRootGlobalOffset: Coordinate;
+};
+
+function caclulateFocusState(root: NestedNode, target?: Id): FocusState {
+  const rootFocusState = {
+    actualRoot: root,
+    focusedRoot: root,
+    focusedRootGlobalOffset: {x: 0, y: 0},
+  };
+  if (target == null) {
+    return rootFocusState;
+  }
+  return (
+    findNodeAndGlobalOffsetRec(root, {x: 0, y: 0}, root, target) ||
+    rootFocusState
+  );
+}
+
+function findNodeAndGlobalOffsetRec(
+  node: NestedNode,
+  globalOffset: Coordinate,
+  root: NestedNode,
+  target: Id,
+): FocusState | undefined {
+  const nextOffset = {
+    x: globalOffset.x + node.bounds.x,
+    y: globalOffset.y + node.bounds.y,
+  };
+  if (node.id === target) {
+    //since we have already applied the this nodes offset to the root node in the visualiser we zero it out here so it isn't counted twice
+    const focusedRoot = produce(node, (draft) => {
+      draft.bounds.x = 0;
+      draft.bounds.y = 0;
+    });
+    return {
+      actualRoot: root,
+      focusedRoot,
+      focusedRootGlobalOffset: nextOffset,
+    };
+  }
+
+  for (const child of node.children) {
+    const offset = findNodeAndGlobalOffsetRec(child, nextOffset, root, target);
+    if (offset != null) {
+      return offset;
+    }
+  }
+  return undefined;
 }
 
 function hitTest(node: NestedNode, mouseCoordinate: Coordinate): NestedNode[] {

@@ -7,7 +7,7 @@
   "flipperBundlerEntry": "index.tsx",
   "main": "dist/bundle.js",
   "license": "MIT",
-  "title": "UI Debugger (alpha)",
+  "title": "UI Debugger (beta)",
   "icon": "nav-magnifying-glass",
   "keywords": [
     "flipper-plugin"

@@ -134,7 +134,7 @@ object ComponentPropExtractor {
 
           override fun isArray(array: EditorArray?): Inspectable {
             val values = array?.value?.map { value -> toInspectable(name, value) }
-            return InspectableArray(0, values ?: listOf())
+            return InspectableArray(values ?: listOf())
           }
 
           override fun isPick(pick: EditorPick): Inspectable = InspectableValue.Enum(pick.selected)

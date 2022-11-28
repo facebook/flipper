@@ -21,7 +21,7 @@ buildscript {
 
 plugins {
     id 'de.undercouch.download' version '5.2.1'
-    id 'com.github.ben-manes.versions' version '0.42.0'
+    id 'com.github.ben-manes.versions' version '0.44.0'
 }
 
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
@@ -64,7 +64,7 @@ ext.deps = [
         supportConstraintLayout: "androidx.constraintlayout:constraintlayout:2.1.4",
         supportSqlite      : "androidx.sqlite:sqlite-framework:2.2.0",
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.4.0',
-        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.4.0',
+        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.5.0',
         supportTestRunner  : 'androidx.test:runner:1.4.0',
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.1',
@@ -106,7 +106,7 @@ ext.deps = [
         leakcanary2        : 'com.squareup.leakcanary:leakcanary-android:2.8.1',
         protobuf           : 'com.google.protobuf:protobuf-java:3.21.8',
         testCore           : 'androidx.test:core:1.4.0',
-        testRules          : 'androidx.test:rules:1.4.0',
+        testRules          : 'androidx.test:rules:1.5.0',
         // Plugin dependencies
         frescoFlipper      : 'com.facebook.fresco:flipper:2.6.0',
         frescoStetho       : 'com.facebook.fresco:stetho:2.6.0',

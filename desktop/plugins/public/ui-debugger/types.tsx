@@ -63,6 +63,7 @@ export type NestedNode = {
 
 export type UINode = {
   id: Id;
+  parent?: Id; //this attribute doesn't come from the client and is set by the desktop
   qualifiedName: string;
   name: string;
   attributes: Record<MetadataId, Inspectable>;
@@ -128,6 +129,7 @@ export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho';
 
 export type Inspectable =
   | InspectableObject
+  | InspectableArray
   | InspectableText
   | InspectableNumber
   | InspectableColor
@@ -193,6 +195,11 @@ export type InspectableSpaceBox = {
 export type InspectableObject = {
   type: 'object';
   fields: Record<MetadataId, Inspectable>;
+};
+
+export type InspectableArray = {
+  type: 'array';
+  items: Inspectable[];
 };
 
 export type InspectableUnknown = {

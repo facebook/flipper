@@ -129,7 +129,7 @@ module.exports = {
           'extending/node-apis',
           ...fbInternalOnly([
             {
-              'QPL Linting': ['fb/building-a-linter', 'fb/active-linters'],
+              'QPL Linting': ['fb/active-linters'],
             },
           ]),
         ],
@@ -147,16 +147,20 @@ module.exports = {
     'Under the Hood': [
       'internals/index',
       'internals/contributing',
-      {
-        'Contributing to the Documentation': ['internals/documentation-formatting', 'internals/documentation-writing-guide'],
-      },
       'internals/device-identifiers',
       'internals/linters',
       'extending/public-releases',
       'extending/testing-rn',
       ...fbInternalOnly([
         {
-          "Meta": [
+          'Internal': [
+            {
+              'Contributing to the Documentation': [
+                'internals/documentation-standards',
+                'internals/documentation-writing-guide',
+                'internals/documentation-formatting',
+              ]
+            },
             'fb/arc_uiqr',
             'fb/connections',
             {
