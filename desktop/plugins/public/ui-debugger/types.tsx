@@ -63,6 +63,7 @@ export type NestedNode = {
 
 export type UINode = {
   id: Id;
+  parent?: Id; //this attribute doesn't come from the client and is set by the desktop
   qualifiedName: string;
   name: string;
   attributes: Record<MetadataId, Inspectable>;

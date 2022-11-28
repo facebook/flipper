@@ -128,8 +128,9 @@ export function plugin(client: PluginClient<Events>) {
       }
 
       event.nodes.forEach((node) => {
-        draft.nodes.set(node.id, node);
+        draft.nodes.set(node.id, {...node});
       });
+      setParentPointers(rootId.get()!!, undefined, draft.nodes);
     });
 
     uiState.treeState.update((draft) => {
@@ -162,6 +163,21 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents,
     setPlayPause,
   };
+}
+
+function setParentPointers(
+  cur: Id,
+  parent: Id | undefined,
+  nodes: Map<Id, UINode>,
+) {
+  const node = nodes.get(cur);
+  if (node == null) {
+    return;
+  }
+  node.parent = parent;
+  node.children.forEach((child) => {
+    setParentPointers(child, cur, nodes);
+  });
 }
 
 function collapseinActiveChildren(node: UINode, draft: TreeState) {
