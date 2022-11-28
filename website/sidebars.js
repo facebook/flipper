@@ -129,7 +129,7 @@ module.exports = {
           'extending/node-apis',
           ...fbInternalOnly([
             {
-              'QPL Linting': ['fb/building-a-linter', 'fb/active-linters'],
+              'QPL Linting': ['fb/active-linters'],
             },
           ]),
         ],
@@ -155,7 +155,11 @@ module.exports = {
         {
           'Internal': [
             {
-              'Contributing to the Documentation': ['internals/documentation-formatting', 'internals/documentation-writing-guide'],
+              'Contributing to the Documentation': [
+                'internals/documentation-standards',
+                'internals/documentation-writing-guide',
+                'internals/documentation-formatting',
+              ]
             },
             'fb/arc_uiqr',
             'fb/connections',
