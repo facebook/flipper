@@ -12,6 +12,7 @@ import {
   createState,
   createDataSource,
   produce,
+  Atom,
 } from 'flipper-plugin';
 import {
   Events,
@@ -107,6 +108,7 @@ export function plugin(client: PluginClient<Events>) {
       });
       nodes.set(liveClientData.nodes);
       snapshot.set(liveClientData.snapshotInfo);
+      checkFocusedNodeStillActive(uiState, nodes.get());
     }
   };
 
@@ -151,6 +153,8 @@ export function plugin(client: PluginClient<Events>) {
     if (!uiState.isPaused.get()) {
       nodes.set(liveClientData.nodes);
       snapshot.set(liveClientData.snapshotInfo);
+
+      checkFocusedNodeStillActive(uiState, nodes.get());
     }
   });
 
@@ -178,6 +182,52 @@ function setParentPointers(
   node.children.forEach((child) => {
     setParentPointers(child, cur, nodes);
   });
+}
+
+function checkFocusedNodeStillActive(
+  uiState: {
+    isPaused: Atom<boolean>;
+    searchTerm: Atom<string>;
+    isContextMenuOpen: Atom<boolean>;
+    hoveredNodes: Atom<Id[]>;
+    focusedNode: Atom<Id | undefined>;
+    treeState: Atom<TreeState>;
+  },
+  nodes: Map<Id, UINode>,
+) {
+  const focusedNodeId = uiState.focusedNode.get();
+  const focusedNode = focusedNodeId && nodes.get(focusedNodeId);
+  if (focusedNode && !isFocusedNodeAncestryAllActive(focusedNode, nodes)) {
+    uiState.focusedNode.set(undefined);
+  }
+}
+
+function isFocusedNodeAncestryAllActive(
+  focused: UINode,
+  nodes: Map<Id, UINode>,
+): boolean {
+  let node = focused;
+
+  while (node != null) {
+    if (node.parent == null) {
+      return true;
+    }
+
+    const parent = nodes.get(node.parent);
+
+    if (parent == null) {
+      //should also never happen
+      return false;
+    }
+
+    if (parent.activeChild != null && parent.activeChild !== node.id) {
+      return false;
+    }
+
+    node = parent;
+  }
+  //wont happen
+  return false;
 }
 
 function collapseinActiveChildren(node: UINode, draft: TreeState) {
