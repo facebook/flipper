@@ -102,11 +102,14 @@ class TreeObserverManager(val context: Context) {
     val onWorkerThread = System.currentTimeMillis()
     val txId = txId.getAndIncrement().toLong()
 
-    sendMetadata()
-
     val serialized: String?
     val nodes = treeUpdate.deferredNodes.map { it.value() }
     val deferredComptationComplete = System.currentTimeMillis()
+
+    // send metadata needs to occur after the deferred metadata extraction since inside the deferred
+    // computation we may create some fresh metadata
+    sendMetadata()
+
     if (treeUpdate.snapshot == null) {
       serialized =
           Json.encodeToString(
