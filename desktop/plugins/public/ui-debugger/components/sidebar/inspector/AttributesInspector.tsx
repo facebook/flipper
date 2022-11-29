@@ -33,8 +33,8 @@ import {
   RowStyle,
   TextAttributeValueStyle,
 } from './Styles';
-import {Glyph} from 'flipper';
 import {transform} from '../../../dataTransform';
+import {NoData} from './NoData';
 
 const NumberValue = styled.span(NumberAttributeValueStyle);
 const BooleanValue = styled.span(BooleanAttributeValueStyle);
@@ -274,12 +274,7 @@ export const AttributesInspector: React.FC<Props> = ({
     .filter((section) => section !== undefined);
 
   if (sections.length === 0) {
-    return (
-      <div style={{textAlign: 'center'}}>
-        <Glyph name="stop" size={24} style={{margin: 20}} />
-        <p>No data is available</p>
-      </div>
-    );
+    return <NoData message="No data available in this section" />;
   }
 
   return (

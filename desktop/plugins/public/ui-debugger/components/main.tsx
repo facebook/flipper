@@ -34,20 +34,6 @@ export function Component() {
 
   const {ctrlPressed} = useKeyboardModifiers();
 
-  function renderSidebar(
-    node: UINode | undefined,
-    metadata: Map<MetadataId, Metadata>,
-  ) {
-    if (!node) {
-      return;
-    }
-    return (
-      <DetailSidebar width={350}>
-        <Inspector metadata={metadata} node={node} />
-      </DetailSidebar>
-    );
-  }
-
   if (showPerfStats) return <PerfStats events={instance.perfEvents} />;
 
   if (rootId) {
@@ -74,8 +60,12 @@ export function Component() {
             onSelectNode={setSelectedNode}
             modifierPressed={ctrlPressed}
           />
-
-          {selectedNode && renderSidebar(nodes.get(selectedNode), metadata)}
+          <DetailSidebar width={350}>
+            <Inspector
+              metadata={metadata}
+              node={selectedNode ? nodes.get(selectedNode) : undefined}
+            />
+          </DetailSidebar>
         </Layout.Horizontal>
       </Layout.Container>
     );

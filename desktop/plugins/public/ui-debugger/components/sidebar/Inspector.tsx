@@ -14,15 +14,18 @@ import {Layout, Tab, Tabs} from 'flipper-plugin';
 import {Metadata, MetadataId, UINode} from '../../types';
 import {IdentityInspector} from './inspector/IdentityInspector';
 import {AttributesInspector} from './inspector/AttributesInspector';
-import {DocumentationInspector} from './inspector/DocumentationInspector';
 import {Tooltip} from 'antd';
+import {NoData} from './inspector/NoData';
 
 type Props = {
-  node: UINode;
+  node?: UINode;
   metadata: Map<MetadataId, Metadata>;
 };
 
 export const Inspector: React.FC<Props> = ({node, metadata}) => {
+  if (!node) {
+    return <NoData message="Please select a node to view its details" />;
+  }
   return (
     <Layout.Container gap pad>
       <Tabs grow centered>
