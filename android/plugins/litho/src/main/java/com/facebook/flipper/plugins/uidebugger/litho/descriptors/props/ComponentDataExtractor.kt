@@ -13,8 +13,10 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.*
 import com.facebook.litho.Component
 import com.facebook.litho.SpecGeneratedComponent
+import com.facebook.litho.StateContainer
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType
+import com.facebook.litho.annotations.State
 import com.facebook.litho.editor.EditorRegistry
 import com.facebook.litho.editor.model.EditorArray
 import com.facebook.litho.editor.model.EditorBool
@@ -25,10 +27,8 @@ import com.facebook.litho.editor.model.EditorShape
 import com.facebook.litho.editor.model.EditorString
 import com.facebook.litho.editor.model.EditorValue
 import com.facebook.litho.editor.model.EditorValue.EditorVisitor
-import com.facebook.yoga.*
 
-object ComponentPropExtractor {
-  private const val NAMESPACE = "ComponentPropExtractor"
+object ComponentDataExtractor {
 
   fun getProps(component: Component): Map<MetadataId, Inspectable> {
     val props = mutableMapOf<MetadataId, Inspectable>()
@@ -77,6 +77,25 @@ object ComponentPropExtractor {
     }
 
     return props
+  }
+
+  fun getState(stateContainer: StateContainer, componentName: String): InspectableObject {
+
+    val stateFields = mutableMapOf<MetadataId, Inspectable>()
+    for (field in stateContainer.javaClass.declaredFields) {
+      field.isAccessible = true
+      val stateAnnotation = field.getAnnotation(State::class.java)
+      val isKStateField = field.name == "mStates"
+      if (stateAnnotation != null || isKStateField) {
+        val id = getMetadataId(componentName, field.name)
+        val editorValue: EditorValue? = EditorRegistry.read(field.type, field, stateContainer)
+        if (editorValue != null) {
+          stateFields[id] = toInspectable(field.name, editorValue)
+        }
+      }
+    }
+
+    return InspectableObject(stateFields)
   }
 
   private fun getMetadataId(

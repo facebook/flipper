@@ -10,7 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.litho.descriptors
 import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.descriptors.*
 import com.facebook.flipper.plugins.uidebugger.litho.LithoTag
-import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.ComponentPropExtractor
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.ComponentDataExtractor
 import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.LayoutPropExtractor
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
@@ -69,6 +69,9 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
   private val UserPropsId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho Props")
 
+  private val StateId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho State")
+
   override fun getData(node: DebugComponent): MaybeDeferred<Map<MetadataId, InspectableObject>> {
     return Deferred {
       val attributeSections = mutableMapOf<MetadataId, InspectableObject>()
@@ -77,7 +80,14 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
       attributeSections[LayoutId] = InspectableObject(layoutProps.toMap())
 
       if (!node.canResolve()) {
-        val props = ComponentPropExtractor.getProps(node.component)
+        val stateContainer = node.stateContainer
+        if (stateContainer != null) {
+          attributeSections[StateId] =
+              ComponentDataExtractor.getState(stateContainer, node.component.simpleName)
+        }
+
+        val props = ComponentDataExtractor.getProps(node.component)
+
         attributeSections[UserPropsId] = InspectableObject(props.toMap())
       }
 
