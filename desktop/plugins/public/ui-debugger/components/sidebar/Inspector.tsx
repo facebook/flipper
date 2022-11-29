@@ -15,6 +15,7 @@ import {Metadata, MetadataId, UINode} from '../../types';
 import {IdentityInspector} from './inspector/IdentityInspector';
 import {AttributesInspector} from './inspector/AttributesInspector';
 import {DocumentationInspector} from './inspector/DocumentationInspector';
+import {Tooltip} from 'antd';
 
 type Props = {
   node: UINode;
@@ -27,17 +28,22 @@ export const Inspector: React.FC<Props> = ({node, metadata}) => {
       <Tabs grow centered>
         <Tab
           tab={
-            <Layout.Horizontal center>
-              <Glyph name="badge" size={16} />
-            </Layout.Horizontal>
+            <Tooltip title="Identity">
+              <Layout.Horizontal center>
+                <Glyph name="badge" size={16} />
+              </Layout.Horizontal>
+            </Tooltip>
           }>
           <IdentityInspector node={node} />
         </Tab>
+
         <Tab
           tab={
-            <Layout.Horizontal center>
-              <Glyph name="data-table" size={16} />
-            </Layout.Horizontal>
+            <Tooltip title="Attributes">
+              <Layout.Horizontal center>
+                <Glyph name="data-table" size={16} />
+              </Layout.Horizontal>
+            </Tooltip>
           }>
           <AttributesInspector
             mode="attribute"
@@ -47,19 +53,13 @@ export const Inspector: React.FC<Props> = ({node, metadata}) => {
         </Tab>
         <Tab
           tab={
-            <Layout.Horizontal center>
-              <Glyph name="square-ruler" size={16} />
-            </Layout.Horizontal>
+            <Tooltip title="Layout">
+              <Layout.Horizontal center>
+                <Glyph name="square-ruler" size={16} />
+              </Layout.Horizontal>
+            </Tooltip>
           }>
           <AttributesInspector mode="layout" node={node} metadata={metadata} />
-        </Tab>
-        <Tab
-          tab={
-            <Layout.Horizontal center>
-              <Glyph name="info-circle" size={16} />
-            </Layout.Horizontal>
-          }>
-          <DocumentationInspector node={node} />
         </Tab>
       </Tabs>
     </Layout.Container>
