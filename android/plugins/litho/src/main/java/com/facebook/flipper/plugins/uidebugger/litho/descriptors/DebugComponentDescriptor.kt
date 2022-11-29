@@ -26,7 +26,7 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
    * Debug component is generated on the fly so use the underlying component instance which is
    * immutable
    */
-  override fun getId(node: DebugComponent): Id = System.identityHashCode(node.component)
+  override fun getId(node: DebugComponent): Id = node.globalKey.hashCode()
 
   override fun getName(node: DebugComponent): String = node.component.simpleName
 
