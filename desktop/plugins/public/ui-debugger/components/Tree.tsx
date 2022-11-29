@@ -27,6 +27,7 @@ import {
   HighlightProvider,
   useHighlighter,
   theme,
+  styled,
 } from 'flipper-plugin';
 
 import {head} from 'lodash';
@@ -61,7 +62,19 @@ export function Tree(props: {
     <div
       onMouseLeave={() => {
         instance.uiState.hoveredNodes.set([]);
-      }}>
+      }}
+      style={
+        {
+          '--rct-color-tree-bg': theme.white,
+          '--rct-color-tree-focus-outline': theme.dividerColor,
+          '--rct-color-focustree-item-focused-border':
+            theme.selectionBackgroundColor,
+          '--rct-color-focustree-item-selected-bg':
+            theme.selectionBackgroundColor,
+          '--rct-color-nonfocustree-item-selected-bg':
+            theme.selectionBackgroundColor,
+        } as React.CSSProperties
+      }>
       <HighlightProvider
         text={searchTerm}
         highlightColor={theme.searchHighlightBackground.yellow}>
@@ -135,6 +148,17 @@ const cx = (...classNames: Array<string | undefined | false>) =>
   classNames.filter((cn) => !!cn).join(' ');
 const renderDepthOffset = 5;
 
+const DecorationImage = styled.img({
+  height: 12,
+  marginRight: 5,
+  width: 12,
+});
+function defaultIcon(node: UINode) {
+  if (node.tags.includes('Litho')) {
+    return <DecorationImage src="icons/litho-logo.png" />;
+  }
+}
+
 function renderItem<C extends string = never>({
   item,
   depth,
@@ -191,6 +215,7 @@ function renderItem<C extends string = never>({
               context.isDraggingOver && 'rct-tree-item-button-dragging-over',
               context.isSearchMatching && 'rct-tree-item-button-search-match',
             )}>
+            {defaultIcon(item.data)}
             <HighlightedText text={item.data.name} />
           </div>
         </div>
