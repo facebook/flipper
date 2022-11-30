@@ -2876,78 +2876,20 @@
     is-wsl "^2.1.1"
     tslib "^2.3.1"
 
-"@oclif/core@^1.0.8":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.0.11.tgz#5ad1258c0c756073744ac8b9403e9314757d949f"
-  integrity sha512-CQw9dbzh+BTF73cp53mnDZnTJF4hth7oab761Si4pEW18PDYDLyOv7TnEtJkvPu4rlTaGBh2jge9BDXgwye4vQ==
+"@oclif/core@^1.1.1", "@oclif/core@^1.20.4", "@oclif/core@^1.3.6":
+  version "1.20.4"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.20.4.tgz#7378b52e1f1b502e383ffb07f95dffc9fd8588ff"
+  integrity sha512-giug32M4YhSYNYKQwE1L57/+k5gp1+Bq3/0vKNQmzAY1tizFGhvBJc6GIRZasHjU+xtZLutQvrVrJo7chX3hxg==
   dependencies:
     "@oclif/linewrap" "^1.0.0"
-    chalk "^4.1.2"
-    clean-stack "^3.0.1"
-    cli-ux "6.0.5"
-    debug "^4.3.3"
-    fs-extra "^9.1.0"
-    get-package-type "^0.1.0"
-    globby "^11.0.4"
-    indent-string "^4.0.0"
-    is-wsl "^2.2.0"
-    lodash "^4.17.21"
-    semver "^7.3.5"
-    string-width "^4.2.3"
-    strip-ansi "^6.0.1"
-    tslib "^2.3.1"
-    widest-line "^3.1.0"
-    wrap-ansi "^7.0.0"
-
-"@oclif/core@^1.1.1":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.3.4.tgz#80c8c24f2f5fc82b913703b7226200cdd941416d"
-  integrity sha512-IqwfP1qHJ7V6LXxyCBBX12T0vNvrcK9Mlxv0xyt+snhslwThBXJY09umWcQJhWe+vxA8Y/mihB1bUkfURd2P2A==
-  dependencies:
-    "@oclif/linewrap" "^1.0.0"
-    "@oclif/screen" "^3.0.2"
-    ansi-escapes "^4.3.0"
-    ansi-styles "^4.2.0"
-    cardinal "^2.1.1"
-    chalk "^4.1.2"
-    clean-stack "^3.0.1"
-    cli-progress "^3.10.0"
-    debug "^4.3.3"
-    ejs "^3.1.6"
-    fs-extra "^9.1.0"
-    get-package-type "^0.1.0"
-    globby "^11.0.4"
-    hyperlinker "^1.0.0"
-    indent-string "^4.0.0"
-    is-wsl "^2.2.0"
-    js-yaml "^3.13.1"
-    lodash "^4.17.21"
-    natural-orderby "^2.0.3"
-    object-treeify "^1.1.4"
-    password-prompt "^1.1.2"
-    semver "^7.3.5"
-    string-width "^4.2.3"
-    strip-ansi "^6.0.1"
-    supports-color "^8.1.1"
-    supports-hyperlinks "^2.2.0"
-    tslib "^2.3.1"
-    widest-line "^3.1.0"
-    wrap-ansi "^7.0.0"
-
-"@oclif/core@^1.3.6":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.6.0.tgz#a91333275cd43a49097158f4ae8e15ccf718bd48"
-  integrity sha512-JHerjgRd29EtUVpDIrzohq2XdxJfgmZVGHAFlf75QVhLGFaleopZAQNBXkHkxG//kGib0LhyVGW7azcFKzr1eQ==
-  dependencies:
-    "@oclif/linewrap" "^1.0.0"
-    "@oclif/screen" "^3.0.2"
+    "@oclif/screen" "^3.0.3"
     ansi-escapes "^4.3.2"
     ansi-styles "^4.3.0"
     cardinal "^2.1.1"
     chalk "^4.1.2"
     clean-stack "^3.0.1"
     cli-progress "^3.10.0"
-    debug "^4.3.3"
+    debug "^4.3.4"
     ejs "^3.1.6"
     fs-extra "^9.1.0"
     get-package-type "^0.1.0"
@@ -2956,16 +2898,15 @@
     indent-string "^4.0.0"
     is-wsl "^2.2.0"
     js-yaml "^3.14.1"
-    lodash "^4.17.21"
     natural-orderby "^2.0.3"
     object-treeify "^1.1.33"
     password-prompt "^1.1.2"
-    semver "^7.3.5"
+    semver "^7.3.7"
     string-width "^4.2.3"
     strip-ansi "^6.0.1"
     supports-color "^8.1.1"
     supports-hyperlinks "^2.2.0"
-    tslib "^2.3.1"
+    tslib "^2.4.1"
     widest-line "^3.1.0"
     wrap-ansi "^7.0.0"
 
@@ -3064,28 +3005,28 @@
   dependencies:
     "@oclif/core" "^1.3.6"
 
-"@oclif/plugin-warn-if-update-available@^2.0.3":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-warn-if-update-available/-/plugin-warn-if-update-available-2.0.4.tgz#3d509ca2394cccf65e6622be812d7be4065a60aa"
-  integrity sha512-9dprC1CWPjesg0Vf/rDSQH2tzJXhP1ow84cb2My1kj6e6ESulPKpctiCFSZ1WaCQFfq+crKhzlNoP/vRaXNUAg==
+"@oclif/plugin-warn-if-update-available@^2.0.14":
+  version "2.0.14"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-warn-if-update-available/-/plugin-warn-if-update-available-2.0.14.tgz#f9142095f13c5e8300705533165ae039daa0c5f8"
+  integrity sha512-gEgFZuNtFx3yPfSuxhAm9F8nLZ4+UnBJhbjTywY0Cvrqvd+OvKvo6PfwRm0lWmH4EgWwQEq39pfaks1fg+y1gw==
   dependencies:
-    "@oclif/core" "^1.0.8"
+    "@oclif/core" "^1.20.4"
     chalk "^4.1.0"
     debug "^4.1.0"
     fs-extra "^9.0.1"
     http-call "^5.2.2"
     lodash "^4.17.21"
-    semver "^7.3.2"
+    semver "^7.3.8"
 
 "@oclif/screen@^1.0.4", "@oclif/screen@^1.0.4 ":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@oclif/screen/-/screen-1.0.4.tgz#b740f68609dfae8aa71c3a6cab15d816407ba493"
   integrity sha512-60CHpq+eqnTxLZQ4PGHYNwUX572hgpMHGPtTWMjdTMsAvlm69lZV/4ly6O3sAYkomo4NggGcomrDpBe34rxUqw==
 
-"@oclif/screen@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@oclif/screen/-/screen-3.0.2.tgz#969054308fe98d130c02844a45cc792199b75670"
-  integrity sha512-S/SF/XYJeevwIgHFmVDAFRUvM3m+OjhvCAYMk78ZJQCYCQ5wS7j+LTt1ZEv2jpEEGg2tx/F6TYYWxddNAYHrFQ==
+"@oclif/screen@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@oclif/screen/-/screen-3.0.3.tgz#e679ad10535e31d333f809f7a71335cc9aef1e55"
+  integrity sha512-KX8gMYA9ujBPOd1HFsV9e0iEx7Uoj8AG/3YsW4TtWQTg4lJvr82qNm7o/cFQfYRIt+jw7Ew/4oL4A22zOT+IRA==
 
 "@reach/observe-rect@^1.1.0", "@reach/observe-rect@^1.2.0":
   version "1.2.0"
@@ -5384,14 +5325,6 @@ cli-progress@^3.4.0:
     colors "^1.1.2"
     string-width "^2.1.1"
 
-cli-progress@^3.9.1:
-  version "3.9.1"
-  resolved "https://registry.yarnpkg.com/cli-progress/-/cli-progress-3.9.1.tgz#a22eba6a20f53289fdd05d5ee8cb2cc8c28f866e"
-  integrity sha512-AXxiCe2a0Lm0VN+9L0jzmfQSkcZm5EYspfqXKaSIQKqIk+0hnkZ3/v1E9B39mkD6vYhKih3c/RPsJBSwq9O99Q==
-  dependencies:
-    colors "^1.1.2"
-    string-width "^4.2.0"
-
 cli-spinners@^2.5.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/cli-spinners/-/cli-spinners-2.6.0.tgz#36c7dc98fb6a9a76bd6238ec3f77e2425627e939"
@@ -5420,37 +5353,6 @@ cli-ux@5.6.7:
     chalk "^4.1.0"
     clean-stack "^3.0.0"
     cli-progress "^3.4.0"
-    extract-stack "^2.0.0"
-    fs-extra "^8.1"
-    hyperlinker "^1.0.0"
-    indent-string "^4.0.0"
-    is-wsl "^2.2.0"
-    js-yaml "^3.13.1"
-    lodash "^4.17.21"
-    natural-orderby "^2.0.1"
-    object-treeify "^1.1.4"
-    password-prompt "^1.1.2"
-    semver "^7.3.2"
-    string-width "^4.2.0"
-    strip-ansi "^6.0.0"
-    supports-color "^8.1.0"
-    supports-hyperlinks "^2.1.0"
-    tslib "^2.0.0"
-
-cli-ux@6.0.5:
-  version "6.0.5"
-  resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-6.0.5.tgz#5461dffb6c29e4a727e071f8b74bbebcc6b7be08"
-  integrity sha512-q2pvzDiXMNISMqCBh0P2dkofQ/8OiWlEAjl6MDNk5oUZ6p54Fnk1rOaXxohYm+YkLX5YNUonGOrwkvuiwVreIg==
-  dependencies:
-    "@oclif/core" "^1.0.8"
-    "@oclif/linewrap" "^1.0.0"
-    "@oclif/screen" "^1.0.4 "
-    ansi-escapes "^4.3.0"
-    ansi-styles "^4.2.0"
-    cardinal "^2.1.1"
-    chalk "^4.1.0"
-    clean-stack "^3.0.0"
-    cli-progress "^3.9.1"
     extract-stack "^2.0.0"
     fs-extra "^8.1"
     hyperlinker "^1.0.0"
@@ -5995,7 +5897,7 @@ debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.8, debug@^2.6.
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@^4.0.0, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.3, debug@^4.3.4, debug@~4.3.1, debug@~4.3.2:
+debug@4, debug@^4.0.0, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4, debug@~4.3.1, debug@~4.3.2:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
@@ -13077,10 +12979,10 @@ semver@7.0.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.0.0.tgz#5f3ca35761e47e05b206c6daff2cf814f0316b8e"
   integrity sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==
 
-semver@7.x, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4, semver@^7.3.5, semver@^7.3.7:
-  version "7.3.7"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.7.tgz#12c5b649afdbf9049707796e22a4028814ce523f"
-  integrity sha512-QlYTucUYOews+WeEujDoEGziz4K6c47V/Bd+LjSSYcA94p+DmINdf7ncaUinThfvZyu13lN9OY1XDxt8C0Tw0g==
+semver@7.x, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4, semver@^7.3.5, semver@^7.3.7, semver@^7.3.8:
+  version "7.3.8"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.8.tgz#07a78feafb3f7b32347d725e33de7e2a2df67798"
+  integrity sha512-NB1ctGL5rlHrPJtFDVIVzTyQylMLu9N9VICA6HSFJo8MCGVTMW6gfpicwKmmK/dAjTOrqu5l63JJOpDSrAis3A==
   dependencies:
     lru-cache "^6.0.0"
 
