@@ -79,8 +79,7 @@ object WindowDescriptor : ChainedDescriptor<Window>() {
           val metadata = MetadataRegister.get(NAMESPACE, name)
           val identifier =
               metadata?.id
-                  ?: MetadataRegister.registerDynamic(
-                      MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, name)
+                  ?: MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, name)
 
           when (typedValue.type) {
             TypedValue.TYPE_STRING ->

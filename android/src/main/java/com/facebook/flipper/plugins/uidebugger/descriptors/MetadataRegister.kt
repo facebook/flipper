@@ -24,29 +24,10 @@ object MetadataRegister {
   const val TYPE_DOCUMENTATION = "documentation"
 
   private var generator: MetadataId = 0
-  private val staticMetadata: MutableMap<String, Metadata> = mutableMapOf()
-  private val dynamicMetadata: MutableMap<String, Metadata> = mutableMapOf()
-  private val queried: MutableSet<MetadataId> = mutableSetOf()
+  private val register: MutableMap<String, Metadata> = mutableMapOf()
+  private val pending: MutableSet<String> = mutableSetOf()
 
-  fun key(namespace: String, name: String): String = "${namespace}_$name"
-
-  private fun register(
-      metadata: MutableMap<String, Metadata>,
-      type: String,
-      namespace: String,
-      name: String,
-      mutable: Boolean,
-      possibleValues: Set<InspectableValue>?
-  ): MetadataId {
-    val key = key(namespace, name)
-    metadata[key]?.let { m ->
-      return m.id
-    }
-
-    val identifier = ++generator
-    metadata[key] = Metadata(identifier, type, namespace, name, mutable, possibleValues)
-    return identifier
-  }
+  private fun key(namespace: String, name: String): String = "${namespace}_$name"
 
   fun register(
       type: String,
@@ -55,46 +36,43 @@ object MetadataRegister {
       mutable: Boolean = false,
       possibleValues: Set<InspectableValue>? = emptySet()
   ): MetadataId {
-    return register(staticMetadata, type, namespace, name, mutable, possibleValues)
-  }
+    val key = key(namespace, name)
+    register[key]?.let { m ->
+      return m.id
+    }
 
-  fun registerDynamic(
-      type: String,
-      namespace: String,
-      name: String,
-      mutable: Boolean = false,
-      possibleValues: Set<InspectableValue>? = emptySet()
-  ): MetadataId {
-    return register(dynamicMetadata, type, namespace, name, mutable, possibleValues)
+    val identifier = ++generator
+    val metadata = Metadata(identifier, type, namespace, name, mutable, possibleValues)
+
+    register[key] = metadata
+    pending.add(key)
+
+    return identifier
   }
 
   fun get(namespace: String, name: String): Metadata? {
     val key = key(namespace, name)
-    staticMetadata[key]?.let {
-      return it
-    }
-    return dynamicMetadata[key]
+    return register[key]
   }
 
-  fun staticMetadata(): Map<MetadataId, Metadata> {
+  fun getMetadata(): Map<MetadataId, Metadata> {
     val metadata: MutableMap<MetadataId, Metadata> = mutableMapOf()
-    staticMetadata.forEach { entry -> metadata[entry.value.id] = entry.value }
-    return metadata
-  }
-
-  fun dynamicMetadata(): Map<MetadataId, Metadata> {
-    val metadata: MutableMap<MetadataId, Metadata> = mutableMapOf()
-    dynamicMetadata.forEach { entry ->
-      if (!queried.contains(entry.value.id)) {
-        metadata[entry.value.id] = entry.value
-        queried.add(entry.value.id)
-      }
-    }
+    register.forEach { entry -> metadata[entry.value.id] = entry.value }
 
     return metadata
   }
 
-  fun clear() {
-    queried.clear()
+  fun getPendingMetadata(): Map<MetadataId, Metadata> {
+    val pendingMetadata: MutableMap<MetadataId, Metadata> = mutableMapOf()
+    pending.forEach { key ->
+      register[key]?.let { metadata -> pendingMetadata[metadata.id] = metadata }
+    }
+
+    return pendingMetadata
+  }
+
+  fun reset() {
+    pending.clear()
+    register.forEach { entry -> pending.add(entry.key) }
   }
 }

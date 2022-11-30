@@ -54,7 +54,7 @@ class NativeScanScheduler(val context: Context) : Scheduler.Task<ScanResult> {
   }
 
   private fun sendMetadata() {
-    val metadata = MetadataRegister.dynamicMetadata()
+    val metadata = MetadataRegister.getPendingMetadata()
     if (metadata.size > 0) {
       context.connectionRef.connection?.send(
           MetadataUpdateEvent.name,

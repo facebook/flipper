@@ -107,7 +107,7 @@ object ComponentDataExtractor {
     val metadata = MetadataRegister.get(namespace, key)
     val identifier =
         metadata?.id
-            ?: MetadataRegister.registerDynamic(
+            ?: MetadataRegister.register(
                 MetadataRegister.TYPE_ATTRIBUTE, namespace, key, mutable, possibleValues)
     return identifier
   }

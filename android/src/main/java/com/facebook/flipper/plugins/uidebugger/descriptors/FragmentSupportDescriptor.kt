@@ -42,7 +42,7 @@ class FragmentSupportDescriptor(val register: DescriptorRegister) :
         val metadata = MetadataRegister.get(NAMESPACE, key)
         val identifier =
             metadata?.id
-                ?: MetadataRegister.registerDynamic(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, key)
+                ?: MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, key)
         when (val value = bundle[key]) {
           is Number -> props[identifier] = InspectableValue.Number(value)
           is Boolean -> props[identifier] = InspectableValue.Boolean(value)
