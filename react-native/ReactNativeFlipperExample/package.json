@@ -13,7 +13,7 @@
   "dependencies": {
     "react": "^18.0.0",
     "react-native": "^0.69.0",
-    "react-native-flipper": "^0.171.1",
+    "react-native-flipper": "^0.174.0",
     "react-native-windows": "^0.69.0"
   },
   "devDependencies": {
