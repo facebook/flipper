@@ -28,6 +28,14 @@ test('parse required numeric parameters from uri', () => {
   expect(getRequiredParameters(testURI)).toEqual(expectedResult);
 });
 
+// https://fb.workplace.com/groups/flippersupport/permalink/1513232162490770/
+test('ignore params with JSON values', () => {
+  const testURI =
+    'fb://test_uri/?parameter1={"test":"value"}&parameter2="{\\"test\\":\\"value\\"}"';
+  const expectedResult: string[] = [];
+  expect(getRequiredParameters(testURI)).toEqual(expectedResult);
+});
+
 test('replace required parameters with values', () => {
   const testURI =
     'fb://test_uri/?parameter1={parameter1}&parameter2={parameter2}';
