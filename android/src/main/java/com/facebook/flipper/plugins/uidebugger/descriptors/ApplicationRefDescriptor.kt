@@ -16,7 +16,8 @@ import com.facebook.flipper.plugins.uidebugger.util.DisplayMetrics
 object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
 
   override fun onGetActiveChild(node: ApplicationRef): Any? {
-    return if (node.activitiesStack.isNotEmpty()) node.activitiesStack.last() else null
+    val children = onGetChildren(node)
+    return if (children.isNotEmpty()) children.last() else null
   }
 
   override fun onGetBounds(node: ApplicationRef): Bounds = DisplayMetrics.getDisplayBounds()
@@ -31,7 +32,7 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
   override fun onGetChildren(node: ApplicationRef): List<Any> {
     val children = mutableListOf<Any>()
 
-    val activeRoots = node.rootViews
+    val activeRoots = node.rootsResolver.rootViews()
 
     val added = mutableSetOf<View>()
     for (activity: Activity in node.activitiesStack) {

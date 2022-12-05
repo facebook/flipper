@@ -174,7 +174,7 @@ function Visualization2DNode({
 
   //if there is an active child don't draw the other children
   //this means we don't draw overlapping activities / tabs etc
-  if (node.activeChildIdx) {
+  if (node.activeChildIdx && node.activeChildIdx < node.children.length) {
     nestedChildren = [node.children[node.activeChildIdx]];
   } else {
     nestedChildren = node.children;

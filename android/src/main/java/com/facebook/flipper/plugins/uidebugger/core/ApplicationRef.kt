@@ -9,31 +9,20 @@ package com.facebook.flipper.plugins.uidebugger.core
 
 import android.app.Activity
 import android.app.Application
-import android.view.View
 
 class ApplicationRef(val application: Application) {
   init {
     ActivityTracker.start(application)
   }
 
+  // the root view resolver will contain all root views 100% It is needed for 2 cases:
+  // 1. In some cases an activity will not be picked up by the activity tracker,
+  // the root view resolver will at least find the decor view
+  // 2. Dialog fragments
   val rootsResolver: RootViewResolver = RootViewResolver()
 
   val activitiesStack: List<Activity>
     get() {
       return ActivityTracker.activitiesStack
-    }
-
-  val rootViews: List<View>
-    get() {
-      val activeRootViews = rootsResolver.listActiveRootViews()
-      activeRootViews?.let { roots ->
-        val viewRoots: MutableList<View> = ArrayList(roots.size)
-        for (root in roots) {
-          viewRoots.add(root.view)
-        }
-        return viewRoots
-      }
-
-      return emptyList()
     }
 }

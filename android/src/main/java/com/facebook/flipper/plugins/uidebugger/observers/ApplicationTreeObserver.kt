@@ -40,9 +40,9 @@ class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRe
         }
     context.applicationRef.rootsResolver.attachListener(rootViewListener)
     // On subscribe, trigger a traversal on whatever roots we have
-    rootViewListener.onRootViewsChanged(applicationRef.rootViews)
+    rootViewListener.onRootViewsChanged(applicationRef.rootsResolver.rootViews())
 
-    Log.i(LogTag, "${context.applicationRef.rootViews.size} root views")
+    Log.i(LogTag, "${context.applicationRef.rootsResolver.rootViews().size} root views")
     Log.i(LogTag, "${context.applicationRef.activitiesStack.size} activities")
   }
 
