@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useState, useLayoutEffect} from 'react';
+import React, {useLayoutEffect, useEffect, useRef} from 'react';
 import {
   Typography,
   Button,
@@ -33,6 +33,7 @@ import {
 import {css} from '@emotion/css';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {IFrame} from './IFrame';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 const {Title, Text, Link} = Typography;
 
@@ -550,29 +551,25 @@ const DesignComponentDemos = () => (
 );
 
 function SandyDesignSystem() {
-  const [root, setRoot] = useState(null);
+  const root = useRef(null);
 
+  // Whenever layout happens, or if the size of root changes, measure it and send a message to the parent frame.
   useLayoutEffect(() => {
-    if (root) {
-      const iframe = window.parent.document.getElementById('styleguide');
-      iframe.style.height = `${root.scrollHeight}px`;
+    if (root.current) {
+      const sendUpdate = () => window.postMessage({name: 'setStyleGuideHeight', value: `${root.current.scrollHeight}px`}, '*');
+      const observer = new ResizeObserver(() => {
+        sendUpdate();
+      });
+      observer.observe(root.current);
 
-      const observer = new MutationObserver(() => {
-        iframe.style.height = `${root.scrollHeight}px`;
-      });
-      observer.observe(root, {
-        subtree: true,
-        childList: true,
-        attributes: true,
-        characterData: true,
-      });
+      sendUpdate();
 
       return () => observer.disconnect();
     }
-  }, [root]);
+  }, [root.current]);
 
   return (
-    <Layout.Container className={reset} gap="large" ref={setRoot}>
+    <Layout.Container className={reset} gap="large" ref={root}>
       <Card title="Flipper Design System" bordered={false}>
         <p>
           Welcome to the Flipper Design System. The Flipper design system is
@@ -694,9 +691,20 @@ function SandyDesignSystem() {
 }
 
 export default function DesignSystemFramed() {
+  // We're displaying the style guide in an iframe to isolate it's styles.
+  // But we don't know how big it is, so don't know how high to make the iframe to avoid a double scroll bar.
+  // So lets get the js inside the frame measure itself and post a message to this frame, where we'll then
+  // adjust the size of the iframe to match.
+  useEffect(() => {
+    window.addEventListener("message", (event) => {
+      if (event.data.name === 'setStyleGuideHeight') {
+        document.getElementById('styleguide').style.height = event.data.value;
+      }
+    })
+  }, [])
   return (
     <IFrame className={iframe} id="styleguide">
-      <link rel="stylesheet" href="/css/style-guide.css" />
+      <link id="styleguidestylesheet" rel="stylesheet" href={useBaseUrl("/css/style-guide.css")} />
       <style>{innerCss}</style>
       <SandyDesignSystem />
     </IFrame>
