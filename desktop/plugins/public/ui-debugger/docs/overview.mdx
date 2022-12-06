@@ -1,1 +1,10 @@
-This is an experimental plugin in development. Everything will change and comes with no warranty / support guarantees
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+The UIDebugger is a replacement for the Layout inspector. It streams the full hierarchy of the running app to flipper desktop in near real time. We display a 2D visualization with all of your view and component bounds overlayed on top.
+You can focus on a particular view or component from the context menu. Additionally, you can pause incoming updates to focus on a particular frame.
+
+You can inspect what views the hierarchy is made up of as well as what properties each view has; this is useful when debugging issues with your product.
+
+We currently support Native android and [Litho](https://fblitho.com) components, it integrates with these frameworks to present components in the hierarchy just as if they were native views, exposing all the layout properties, props, and state of the components.
+
+<img alt="UIDebugger" src={useBaseUrl("img/uidebugger.png")} />
