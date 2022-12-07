@@ -167,6 +167,17 @@ export default class AndroidDevice
     }
   }
 
+  async screenShotAvailable(): Promise<boolean> {
+    try {
+      await this.executeShellOrDie(
+        `[ ! -f /system/bin/screencap ] && echo "File does not exist"`,
+      );
+      return true;
+    } catch (_e) {
+      return false;
+    }
+  }
+
   async executeShell(command: string): Promise<string> {
     return await this.adb
       .shell(this.serial, command)
