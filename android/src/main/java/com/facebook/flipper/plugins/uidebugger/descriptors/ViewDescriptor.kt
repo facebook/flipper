@@ -20,7 +20,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import androidx.core.widget.NestedScrollView
 import androidx.viewpager.widget.ViewPager
 import com.facebook.flipper.plugins.uidebugger.common.*
 import com.facebook.flipper.plugins.uidebugger.model.*
@@ -156,6 +155,8 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "scale")
   private val PivotAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "pivot")
+  private val ScrollAttributeId =
+      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "scroll")
   private val LayoutParamsAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "layoutParams")
   private val LayoutDirectionAttributeId =
@@ -247,28 +248,25 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
   override fun onGetBounds(node: View): Bounds {
 
-    if (node.parent is ViewPager) {
+    val parent = node.parent
+    if (parent is ViewPager) {
       // override
       return Bounds(0, 0, node.width, node.height)
     }
 
-    var offsetX = 0
-    var offsetY = 0
-    if (node.parent is NestedScrollView) {
-      /**
-       * when a node is a child of nested scroll view android does not adjust the left/ top as the
-       * view scrolls. This seems to be unique to nested scroll view so we have this trick to find
-       * its actual position.
-       */
-      val localVisible = Rect()
-      node.getLocalVisibleRect(localVisible)
-      offsetX = localVisible.left
-      offsetY = localVisible.top
+    var xScrollOffset = 0
+    var yScrollOffset = 0
+
+    if (parent is View) {
+      // NestedScrollView, HorizontalScrollView and ScrollView all set scroll x and y
+      // we need to account for this in the childs bounds
+      xScrollOffset = parent.scrollX
+      yScrollOffset = parent.scrollY
     }
 
     return Bounds(
-        node.left + node.translationX.toInt() - offsetX,
-        node.top + node.translationY.toInt() - offsetY,
+        node.left + node.translationX.toInt() - xScrollOffset,
+        node.top + node.translationY.toInt() - yScrollOffset,
         node.width,
         node.height)
   }
@@ -316,6 +314,8 @@ object ViewDescriptor : ChainedDescriptor<View>() {
         InspectableValue.Coordinate3D(Coordinate3D(node.rotationX, node.rotationY, node.rotation))
     props[ScaleAttributeId] = InspectableValue.Coordinate(Coordinate(node.scaleX, node.scaleY))
     props[PivotAttributeId] = InspectableValue.Coordinate(Coordinate(node.pivotX, node.pivotY))
+
+    props[ScrollAttributeId] = InspectableValue.Coordinate(Coordinate(node.scrollX, node.scrollY))
 
     props[LayoutParamsAttributeId] = getLayoutParams(node)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
