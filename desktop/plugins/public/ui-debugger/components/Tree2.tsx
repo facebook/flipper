@@ -8,8 +8,16 @@
  */
 
 import {Id, UINode} from '../types';
-import React, {Ref, useEffect, useState} from 'react';
+import React, {
+  Ref,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
+  Atom,
   HighlightManager,
   HighlightProvider,
   styled,
@@ -37,11 +45,25 @@ export function Tree2({
   const expandedNodes = useValue(instance.uiState.expandedNodes);
   const searchTerm = useValue(instance.uiState.searchTerm);
 
-  const treeNodes = toTreeList(nodes, rootId, expandedNodes);
+  const {treeNodes, refs} = useMemo(() => {
+    const treeNodes = toTreeList(nodes, rootId, expandedNodes);
 
-  const refs = treeNodes.map(() => React.createRef<HTMLLIElement>());
+    const refs: React.RefObject<HTMLLIElement>[] = treeNodes.map(() =>
+      React.createRef<HTMLLIElement>(),
+    );
 
-  useKeyboardShortcuts(treeNodes, selectedNode, onSelectNode);
+    return {treeNodes, refs};
+  }, [expandedNodes, nodes, rootId]);
+
+  const isUsingKBToScroll = useRef(false);
+
+  useKeyboardShortcuts(
+    treeNodes,
+    refs,
+    selectedNode,
+    onSelectNode,
+    isUsingKBToScroll,
+  );
 
   useEffect(() => {
     if (selectedNode) {
@@ -64,6 +86,7 @@ export function Tree2({
         {treeNodes.map((treeNode, index) => (
           <TreeItemContainer
             innerRef={refs[index]}
+            isUsingKBToScroll={isUsingKBToScroll}
             key={treeNode.id}
             treeNode={treeNode}
             selectedNode={selectedNode}
@@ -82,11 +105,13 @@ export type TreeNode = UINode & {
 
 function TreeItemContainer({
   innerRef,
+  isUsingKBToScroll,
   treeNode,
   selectedNode,
   onSelectNode,
 }: {
   innerRef: Ref<any>;
+  isUsingKBToScroll: RefObject<boolean>;
   treeNode: TreeNode;
   selectedNode?: Id;
   hoveredNode?: Id;
@@ -100,7 +125,9 @@ function TreeItemContainer({
       isSelected={treeNode.id === selectedNode}
       isHovered={isHovered}
       onMouseEnter={() => {
-        instance.uiState.hoveredNodes.set([treeNode.id]);
+        if (isUsingKBToScroll.current === false) {
+          instance.uiState.hoveredNodes.set([treeNode.id]);
+        }
       }}
       onClick={() => {
         onSelectNode(treeNode.id);
@@ -238,14 +265,24 @@ function toTreeList(
 
 function useKeyboardShortcuts(
   treeNodes: TreeNode[],
+  refs: React.RefObject<HTMLLIElement>[],
   selectedNode: Id | undefined,
   onSelectNode: (id?: Id) => void,
+  isUsingKBToScroll: React.MutableRefObject<boolean>,
 ) {
   const instance = usePlugin(plugin);
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
       switch (event.key) {
+        case 'Enter': {
+          const hoveredNode = head(instance.uiState.hoveredNodes.get());
+          if (hoveredNode != null) {
+            onSelectNode(hoveredNode);
+          }
+
+          break;
+        }
         case 'ArrowRight': {
           event.preventDefault();
 
@@ -267,37 +304,18 @@ function useKeyboardShortcuts(
           break;
         }
 
-        case 'ArrowDown': {
+        case 'ArrowDown':
+        case 'ArrowUp':
           event.preventDefault();
-
-          const curIdx = treeNodes.findIndex(
-            (item) => item.id === head(instance.uiState.hoveredNodes.get()),
+          moveHoveredNodeUpOrDown(
+            event.key,
+            treeNodes,
+            refs,
+            instance.uiState.hoveredNodes,
+            isUsingKBToScroll,
           );
-          if (curIdx != -1) {
-            const nextIdx = curIdx + 1;
-            if (nextIdx < treeNodes.length) {
-              const nextNode = treeNodes[nextIdx];
-              instance.uiState.hoveredNodes.set([nextNode.id]);
-            }
-          }
-          break;
-        }
 
-        case 'ArrowUp': {
-          event.preventDefault();
-
-          const curIdx = treeNodes.findIndex(
-            (item) => item.id === head(instance.uiState.hoveredNodes.get()),
-          );
-          if (curIdx != -1) {
-            const prevIdx = curIdx - 1;
-            if (prevIdx >= 0) {
-              const prevNode = treeNodes[prevIdx];
-              instance.uiState.hoveredNodes.set([prevNode.id]);
-            }
-          }
           break;
-        }
       }
     };
     window.addEventListener('keydown', listener);
@@ -305,10 +323,48 @@ function useKeyboardShortcuts(
       window.removeEventListener('keydown', listener);
     };
   }, [
+    refs,
     instance.uiState.expandedNodes,
     treeNodes,
     onSelectNode,
     selectedNode,
     instance.uiState.hoveredNodes,
+    isUsingKBToScroll,
   ]);
+}
+
+export type UpOrDown = 'ArrowDown' | 'ArrowUp';
+
+function moveHoveredNodeUpOrDown(
+  direction: UpOrDown,
+  treeNodes: TreeNode[],
+  refs: React.RefObject<HTMLLIElement>[],
+  hoveredNodes: Atom<Id[]>,
+  isUsingKBToScroll: React.MutableRefObject<boolean>,
+) {
+  const curIdx = treeNodes.findIndex(
+    (item) => item.id === head(hoveredNodes.get()),
+  );
+  if (curIdx != -1) {
+    const increment = direction === 'ArrowDown' ? 1 : -1;
+    const newIdx = curIdx + increment;
+    if (newIdx >= 0 && newIdx < treeNodes.length) {
+      const newNode = treeNodes[newIdx];
+      hoveredNodes.set([newNode.id]);
+
+      const newNodeDomRef = refs[newIdx].current;
+      /**
+       * The reason for this grossness is that when scrolling to an element via keyboard, it will move a new dom node
+       * under the cursor which will trigger the onmouseenter event for that node even if the mouse never actually was moved.
+       * This will in turn cause that event handler to hover that node rather than the one the user is trying to get to via keyboard.
+       * This is a dubious way to work around this. Effectively set this flag for a few hundred milliseconds after using keyboard movement
+       * to disable the onmouseenter -> hover behaviour temporarily
+       */
+      isUsingKBToScroll.current = true;
+      newNodeDomRef?.scrollIntoView({block: 'nearest'});
+      setTimeout(() => {
+        isUsingKBToScroll.current = false;
+      }, 250);
+    }
+  }
 }
