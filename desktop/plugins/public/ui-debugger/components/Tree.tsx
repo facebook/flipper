@@ -273,6 +273,7 @@ const FakeNode: UINode = {
   id: 'Fakeroot',
   qualifiedName: 'Fakeroot',
   name: 'Fakeroot',
+  inlineAttributes: {},
   children: [],
   attributes: {},
   bounds: {x: 0, y: 0, height: 0, width: 0},

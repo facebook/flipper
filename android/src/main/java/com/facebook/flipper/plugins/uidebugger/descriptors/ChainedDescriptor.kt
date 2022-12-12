@@ -83,14 +83,14 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
 
   open fun onGetChildren(node: T): List<Any>? = null
 
-  final override fun getData(node: T): MaybeDeferred<Map<MetadataId, InspectableObject>> {
+  final override fun getAttributes(node: T): MaybeDeferred<Map<MetadataId, InspectableObject>> {
     val builder = mutableMapOf<MetadataId, InspectableObject>()
-    onGetData(node, builder)
+    onGetAttributes(node, builder)
 
     var curDescriptor: ChainedDescriptor<T>? = mSuper
 
     while (curDescriptor != null) {
-      curDescriptor.onGetData(node, builder)
+      curDescriptor.onGetAttributes(node, builder)
       curDescriptor = curDescriptor.mSuper
     }
 
@@ -101,7 +101,7 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
    * Get the data to show for this node in the sidebar of the inspector. Each key will be a have its
    * own section
    */
-  open fun onGetData(node: T, attributeSections: MutableMap<MetadataId, InspectableObject>) {}
+  open fun onGetAttributes(node: T, attributeSections: MutableMap<MetadataId, InspectableObject>) {}
 
   /** Get a snapshot of the node. */
   final override fun getSnapshot(node: T, bitmap: Bitmap?): Bitmap? {
@@ -111,4 +111,21 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
   open fun onGetSnapshot(node: T, bitmap: Bitmap?): Bitmap? {
     return null
   }
+
+  final override fun getInlineAttributes(node: T): Map<String, String> {
+
+    val builder = mutableMapOf<String, String>()
+    onGetInlineAttributes(node, builder)
+
+    var curDescriptor: ChainedDescriptor<T>? = mSuper
+
+    while (curDescriptor != null) {
+      curDescriptor.onGetInlineAttributes(node, builder)
+      curDescriptor = curDescriptor.mSuper
+    }
+
+    return builder
+  }
+
+  open fun onGetInlineAttributes(node: T, attributes: MutableMap<String, String>) {}
 }

@@ -60,7 +60,7 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
   private val ClipToPaddingAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "clipToPadding")
 
-  override fun onGetData(
+  override fun onGetAttributes(
       node: ViewGroup,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {

@@ -27,7 +27,7 @@ object ObjectDescriptor : NodeDescriptor<Any> {
 
   override fun getChildren(node: Any) = listOf<Any>()
 
-  override fun getData(node: Any) = Immediate(mapOf<MetadataId, InspectableObject>())
+  override fun getAttributes(node: Any) = Immediate(mapOf<MetadataId, InspectableObject>())
 
   override fun getBounds(node: Any): Bounds = Bounds(0, 0, 0, 0)
 

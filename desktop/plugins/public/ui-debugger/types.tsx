@@ -67,6 +67,7 @@ export type UINode = {
   qualifiedName: string;
   name: string;
   attributes: Record<MetadataId, Inspectable>;
+  inlineAttributes: Record<string, string>;
   children: Id[];
   bounds: Bounds;
   tags: Tag[];

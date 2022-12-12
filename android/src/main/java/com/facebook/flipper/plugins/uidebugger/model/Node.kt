@@ -15,6 +15,7 @@ data class Node(
     val qualifiedName: String,
     val name: String,
     val attributes: Map<MetadataId, InspectableObject>,
+    val inlineAttributes: Map<String, String>,
     val bounds: Bounds,
     val tags: Set<String>,
     val children: List<Id>,

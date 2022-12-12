@@ -273,7 +273,10 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
   override fun onGetTags(node: View): Set<String> = BaseTags.NativeAndroid
 
-  override fun onGetData(node: View, attributeSections: MutableMap<MetadataId, InspectableObject>) {
+  override fun onGetAttributes(
+      node: View,
+      attributeSections: MutableMap<MetadataId, InspectableObject>
+  ) {
 
     val props = mutableMapOf<Int, Inspectable>()
 
@@ -363,6 +366,16 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     props[KeyedTagsAttributeId] = InspectableObject(getViewTags(node))
 
     attributeSections[SectionId] = InspectableObject(props.toMap())
+  }
+
+  override fun onGetInlineAttributes(node: View, attributes: MutableMap<String, String>) {
+    val id = node.id
+    if (id == View.NO_ID) {
+      return
+    }
+
+    val value = ResourcesUtil.getIdStringQuietly(node.getContext(), node.getResources(), id)
+    attributes["id"] = value
   }
 
   override fun onGetSnapshot(node: View, bitmap: Bitmap?): Bitmap? {

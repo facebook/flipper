@@ -30,8 +30,10 @@ import {plugin} from '../index';
 import {Glyph} from 'flipper';
 import {head} from 'lodash';
 import {reverse} from 'lodash/fp';
-import {Dropdown, Menu} from 'antd';
+import {Dropdown, Menu, Typography} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
+
+const {Text} = Typography;
 
 export function Tree2({
   nodes,
@@ -168,8 +170,31 @@ function TreeItemContainer({
         />
         {nodeIcon(treeNode)}
         <HighlightedText text={treeNode.name} />
+        <InlineAttributes attributes={treeNode.inlineAttributes} />
       </TreeItem>
     </ContextMenu>
+  );
+}
+
+const TreeAttributeContainer = styled(Text)({
+  color: theme.textColorSecondary,
+  fontWeight: 300,
+  marginLeft: 5,
+  fontSize: 12,
+});
+
+function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
+  return (
+    <>
+      {Object.entries(attributes ?? {}).map(([key, value]) => (
+        <>
+          <TreeAttributeContainer key={key}>
+            <span style={{color: theme.warningColor}}>{key}</span>
+            <span>={value}</span>
+          </TreeAttributeContainer>
+        </>
+      ))}
+    </>
   );
 }
 
@@ -200,7 +225,7 @@ const TreeItem = styled.li<{
   isSelected: boolean;
 }>(({item, isHovered, isSelected}) => ({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'baseline',
   height: '26px',
   paddingLeft: `${(item.depth + 1) * renderDepthOffset}px`,
   borderWidth: '1px',

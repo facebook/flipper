@@ -58,7 +58,7 @@ class FragmentSupportDescriptor(val register: DescriptorRegister) :
     }
   }
 
-  override fun onGetData(
+  override fun onGetAttributes(
       node: androidx.fragment.app.Fragment,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {

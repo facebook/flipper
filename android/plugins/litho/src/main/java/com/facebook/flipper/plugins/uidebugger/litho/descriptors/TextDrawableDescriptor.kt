@@ -25,7 +25,7 @@ object TextDrawableDescriptor : ChainedDescriptor<TextDrawable>() {
 
   private val TextAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "text")
-  override fun onGetData(
+  override fun onGetAttributes(
       node: TextDrawable,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
