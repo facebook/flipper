@@ -292,7 +292,7 @@ const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
       overlay={() => {
         return (
           <Menu>
-            {hoveredNode?.id !== focusedNodeId && (
+            {hoveredNode != null && hoveredNode?.id !== focusedNodeId && (
               <UIDebuggerMenuItem
                 key="focus"
                 text={`Focus ${hoveredNode?.name}`}
