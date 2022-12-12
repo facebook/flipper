@@ -6,6 +6,7 @@
  *
  * @format
  */
+
 import {Id, UINode} from '../types';
 import React from 'react';
 import {
@@ -18,6 +19,7 @@ import {
   useValue,
 } from 'flipper-plugin';
 import {plugin} from '../index';
+import {Glyph} from 'flipper';
 
 export function Tree2({
   nodes,
@@ -56,6 +58,7 @@ export function Tree2({
 
 export type TreeNode = UINode & {
   depth: number;
+  isExpanded: boolean;
 };
 
 function TreeItemContainer({
@@ -69,6 +72,7 @@ function TreeItemContainer({
   hoveredNode?: Id;
   onSelectNode: (node?: Id) => void;
 }) {
+  const instance = usePlugin(plugin);
   return (
     <TreeItem
       isSelected={treeNode.id === selectedNode}
@@ -77,8 +81,20 @@ function TreeItemContainer({
         onSelectNode(treeNode.id);
       }}
       item={treeNode}>
-      {/*{arrow}*/}
-      {defaultIcon(treeNode)}
+      <Arrow
+        expanded={treeNode.isExpanded}
+        onClick={() => {
+          instance.uiState.expandedNodes.update((draft) => {
+            if (draft.has(treeNode.id)) {
+              draft.delete(treeNode.id);
+            } else {
+              draft.add(treeNode.id);
+            }
+          });
+        }}
+      />
+
+      {nodeIcon(treeNode)}
       <HighlightedText text={treeNode.name} />
     </TreeItem>
   );
@@ -100,12 +116,29 @@ const TreeItem = styled.li<{
   backgroundColor: isSelected ? theme.selectionBackgroundColor : theme.white,
 }));
 
+function Arrow(props: {onClick: () => void; expanded: boolean}) {
+  return (
+    <div style={{display: 'flex'}} onClick={props.onClick}>
+      <Glyph
+        style={{
+          transform: props.expanded ? 'rotate(90deg)' : '',
+          marginRight: '4px',
+          marginBottom: props.expanded ? '2px' : '',
+        }}
+        name="chevron-right"
+        size={12}
+        color="grey"
+      />
+    </div>
+  );
+}
+
 function HighlightedText(props: {text: string}) {
   const highlightManager: HighlightManager = useHighlighter();
   return <span>{highlightManager.render(props.text)}</span>;
 }
 
-function defaultIcon(node: UINode) {
+function nodeIcon(node: UINode) {
   if (node.tags.includes('Litho')) {
     return <DecorationImage src="icons/litho-logo.png" />;
   }
@@ -122,21 +155,27 @@ const renderDepthOffset = 4;
 function toTreeList(
   nodes: Map<Id, UINode>,
   rootId: Id,
-  expanded: Set<Id>,
+  expandedNodes: Set<Id>,
 ): TreeNode[] {
-  const stack = [[nodes.get(rootId), 0]] as [UINode, number][];
+  const root = nodes.get(rootId);
+  if (root == null) {
+    return [];
+  }
+  const stack = [[root, 0]] as [UINode, number][];
 
   const res = [] as TreeNode[];
 
   while (stack.length > 0) {
     const [cur, depth] = stack.pop()!!;
 
+    const isExpanded = expandedNodes.has(cur.id);
     res.push({
       ...cur,
       depth,
+      isExpanded,
     });
 
-    if (expanded.has(cur.id)) {
+    if (isExpanded) {
       for (const childId of cur.children) {
         const child = nodes.get(childId);
         if (child != null) {
