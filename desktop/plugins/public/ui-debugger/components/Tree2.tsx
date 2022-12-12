@@ -8,7 +8,7 @@
  */
 
 import {Id, UINode} from '../types';
-import React, {useEffect, useState} from 'react';
+import React, {Ref, useEffect, useState} from 'react';
 import {
   HighlightManager,
   HighlightProvider,
@@ -39,8 +39,20 @@ export function Tree2({
 
   const treeNodes = toTreeList(nodes, rootId, expandedNodes);
 
+  const refs = treeNodes.map(() => React.createRef<HTMLLIElement>());
+
   useKeyboardShortcuts(treeNodes, selectedNode, onSelectNode);
 
+  useEffect(() => {
+    if (selectedNode) {
+      const idx = treeNodes.findIndex((node) => node.id === selectedNode);
+      if (idx !== -1) {
+        refs[idx].current?.scrollIntoView({
+          block: 'nearest',
+        });
+      }
+    }
+  }, [refs, selectedNode, treeNodes]);
   return (
     <HighlightProvider
       text={searchTerm}
@@ -49,8 +61,9 @@ export function Tree2({
         onMouseLeave={() => {
           instance.uiState.hoveredNodes.set([]);
         }}>
-        {treeNodes.map((treeNode) => (
+        {treeNodes.map((treeNode, index) => (
           <TreeItemContainer
+            innerRef={refs[index]}
             key={treeNode.id}
             treeNode={treeNode}
             selectedNode={selectedNode}
@@ -68,10 +81,12 @@ export type TreeNode = UINode & {
 };
 
 function TreeItemContainer({
+  innerRef,
   treeNode,
   selectedNode,
   onSelectNode,
 }: {
+  innerRef: Ref<any>;
   treeNode: TreeNode;
   selectedNode?: Id;
   hoveredNode?: Id;
@@ -81,6 +96,7 @@ function TreeItemContainer({
   const isHovered = useIsHovered(treeNode.id);
   return (
     <TreeItem
+      ref={innerRef}
       isSelected={treeNode.id === selectedNode}
       isHovered={isHovered}
       onMouseEnter={() => {
