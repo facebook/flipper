@@ -88,7 +88,7 @@ export function Tree2({
           instance.uiState.hoveredNodes.set([]);
         }}>
         {treeNodes.map((treeNode, index) => (
-          <TreeItemContainer
+          <MemoTreeItemContainer
             innerRef={refs[index]}
             isUsingKBToScroll={isUsingKBToScroll}
             key={treeNode.id}
@@ -106,6 +106,18 @@ export type TreeNode = UINode & {
   depth: number;
   isExpanded: boolean;
 };
+
+const MemoTreeItemContainer = React.memo(
+  TreeItemContainer,
+  (prevProps, nextProps) => {
+    const id = prevProps.treeNode.id;
+    return (
+      prevProps.treeNode === nextProps.treeNode &&
+      id !== prevProps.selectedNode &&
+      id !== nextProps.selectedNode
+    );
+  },
+);
 
 function TreeItemContainer({
   innerRef,
