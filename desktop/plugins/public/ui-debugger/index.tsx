@@ -23,7 +23,6 @@ import {
   Snapshot,
   UINode,
 } from './types';
-import './node_modules/react-complex-tree/lib/style.css';
 import {Draft} from 'immer';
 
 type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};

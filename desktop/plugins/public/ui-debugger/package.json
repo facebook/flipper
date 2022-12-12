@@ -15,7 +15,6 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "react-color": "^2.19.3",
-    "react-complex-tree" : "^1.1.11",
     "react-hotkeys-hook": "^3.4.7"
   },
   "bugs": {
