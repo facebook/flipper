@@ -8,14 +8,7 @@
  */
 
 import {Id, UINode} from '../types';
-import React, {
-  Ref,
-  RefObject,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, {Ref, RefObject, useEffect, useMemo, useRef} from 'react';
 import {
   Atom,
   HighlightManager,
@@ -50,6 +43,8 @@ export function Tree2({
   const focusedNode = useValue(instance.uiState.focusedNode);
   const expandedNodes = useValue(instance.uiState.expandedNodes);
   const searchTerm = useValue(instance.uiState.searchTerm);
+  const isContextMenuOpen = useValue(instance.uiState.isContextMenuOpen);
+  const hoveredNode = head(useValue(instance.uiState.hoveredNodes));
 
   const {treeNodes, refs} = useMemo(() => {
     const treeNodes = toTreeList(nodes, focusedNode || rootId, expandedNodes);
@@ -67,7 +62,10 @@ export function Tree2({
     treeNodes,
     refs,
     selectedNode,
+    hoveredNode,
     onSelectNode,
+    instance.uiActions.onExpandNode,
+    instance.uiActions.onCollapseNode,
     isUsingKBToScroll,
   );
 
@@ -87,16 +85,26 @@ export function Tree2({
       highlightColor={theme.searchHighlightBackground.yellow}>
       <div
         onMouseLeave={() => {
-          instance.uiState.hoveredNodes.set([]);
+          if (isContextMenuOpen === false) {
+            instance.uiState.hoveredNodes.set([]);
+          }
         }}>
         {treeNodes.map((treeNode, index) => (
           <MemoTreeItemContainer
             innerRef={refs[index]}
-            isUsingKBToScroll={isUsingKBToScroll}
             key={treeNode.id}
             treeNode={treeNode}
             selectedNode={selectedNode}
+            hoveredNode={hoveredNode}
+            focusedNode={focusedNode}
+            isUsingKBToScroll={isUsingKBToScroll}
+            isContextMenuOpen={isContextMenuOpen}
             onSelectNode={onSelectNode}
+            onExpandNode={instance.uiActions.onExpandNode}
+            onCollapseNode={instance.uiActions.onCollapseNode}
+            onContextMenuOpen={instance.uiActions.onContextMenuOpen}
+            onFocusNode={instance.uiActions.onFocusNode}
+            onHoverNode={instance.uiActions.onHoverNode}
           />
         ))}
       </div>
@@ -112,43 +120,65 @@ export type TreeNode = UINode & {
 const MemoTreeItemContainer = React.memo(
   TreeItemContainer,
   (prevProps, nextProps) => {
-    const id = prevProps.treeNode.id;
+    const id = nextProps.treeNode.id;
     return (
       prevProps.treeNode === nextProps.treeNode &&
-      id !== prevProps.selectedNode &&
-      id !== nextProps.selectedNode
+      prevProps.isContextMenuOpen === nextProps.isContextMenuOpen &&
+      //make sure that prev or next hover/selected node doesnt concern this tree node
+      prevProps.hoveredNode !== id &&
+      nextProps.hoveredNode !== id &&
+      prevProps.selectedNode !== id &&
+      nextProps.selectedNode !== id
     );
   },
 );
 
 function TreeItemContainer({
   innerRef,
-  isUsingKBToScroll,
   treeNode,
   selectedNode,
+  hoveredNode,
+  focusedNode,
+  isUsingKBToScroll,
+  isContextMenuOpen,
+  onFocusNode,
+  onContextMenuOpen,
   onSelectNode,
+  onExpandNode,
+  onCollapseNode,
+  onHoverNode,
 }: {
   innerRef: Ref<any>;
-  isUsingKBToScroll: RefObject<boolean>;
   treeNode: TreeNode;
   selectedNode?: Id;
   hoveredNode?: Id;
+  focusedNode?: Id;
+  isUsingKBToScroll: RefObject<boolean>;
+  isContextMenuOpen: boolean;
+  onFocusNode: (id?: Id) => void;
+  onContextMenuOpen: (open: boolean) => void;
   onSelectNode: (node?: Id) => void;
+  onExpandNode: (node: Id) => void;
+  onCollapseNode: (node: Id) => void;
+  onHoverNode: (node: Id) => void;
 }) {
-  const instance = usePlugin(plugin);
-  const isHovered = useIsHovered(treeNode.id);
   return (
-    <ContextMenu node={treeNode}>
+    <ContextMenu
+      onContextMenuOpen={onContextMenuOpen}
+      onFocusNode={onFocusNode}
+      focusedNode={focusedNode}
+      hoveredNode={hoveredNode}
+      node={treeNode}>
       <TreeItem
         ref={innerRef}
         isSelected={treeNode.id === selectedNode}
-        isHovered={isHovered}
+        isHovered={hoveredNode === treeNode.id}
         onMouseEnter={() => {
           if (
             isUsingKBToScroll.current === false &&
-            instance.uiState.isContextMenuOpen.get() == false
+            isContextMenuOpen == false
           ) {
-            instance.uiState.hoveredNodes.set([treeNode.id]);
+            onHoverNode(treeNode.id);
           }
         }}
         onClick={() => {
@@ -157,15 +187,13 @@ function TreeItemContainer({
         item={treeNode}>
         <ExpandedIconOrSpace
           expanded={treeNode.isExpanded}
-          children={treeNode.children}
+          showIcon={treeNode.children.length > 0}
           onClick={() => {
-            instance.uiState.expandedNodes.update((draft) => {
-              if (draft.has(treeNode.id)) {
-                draft.delete(treeNode.id);
-              } else {
-                draft.add(treeNode.id);
-              }
-            });
+            if (treeNode.isExpanded) {
+              onCollapseNode(treeNode.id);
+            } else {
+              onExpandNode(treeNode.id);
+            }
           }}
         />
         {nodeIcon(treeNode)}
@@ -198,27 +226,6 @@ function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
   );
 }
 
-function useIsHovered(nodeId: Id) {
-  const instance = usePlugin(plugin);
-  const [isHovered, setIsHovered] = useState(false);
-  useEffect(() => {
-    const listener = (newValue?: Id[], prevValue?: Id[]) => {
-      //only change state if the prev or next hover state affect us, this avoids rerendering the whole tree for a hover
-      //change
-      if (head(prevValue) === nodeId || head(newValue) === nodeId) {
-        const hovered = head(newValue) === nodeId;
-        setIsHovered(hovered);
-      }
-    };
-    instance.uiState.hoveredNodes.subscribe(listener);
-    return () => {
-      instance.uiState.hoveredNodes.unsubscribe(listener);
-    };
-  }, [instance.uiState.hoveredNodes, nodeId]);
-
-  return isHovered;
-}
-
 const TreeItem = styled.li<{
   item: TreeNode;
   isHovered: boolean;
@@ -238,24 +245,30 @@ const TreeItem = styled.li<{
 function ExpandedIconOrSpace(props: {
   onClick: () => void;
   expanded: boolean;
-  children: Id[];
+  showIcon: boolean;
 }) {
-  return props.children.length > 0 ? (
-    <div style={{display: 'flex'}} onClick={props.onClick}>
-      <Glyph
-        style={{
-          transform: props.expanded ? 'rotate(90deg)' : '',
-          marginRight: '4px',
-          marginBottom: props.expanded ? '2px' : '',
-        }}
-        name="chevron-right"
-        size={12}
-        color="grey"
-      />
-    </div>
-  ) : (
-    <div style={{width: '12px'}}></div>
-  );
+  if (props.showIcon) {
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        style={{display: 'flex'}}
+        onClick={props.onClick}>
+        <Glyph
+          style={{
+            transform: props.expanded ? 'rotate(90deg)' : '',
+            marginRight: '4px',
+            marginBottom: props.expanded ? '2px' : '',
+          }}
+          name="chevron-right"
+          size={12}
+          color="grey"
+        />
+      </div>
+    );
+  } else {
+    return <div style={{width: '12px'}}></div>;
+  }
 }
 
 function HighlightedText(props: {text: string}) {
@@ -277,23 +290,33 @@ const DecorationImage = styled.img({
 
 const renderDepthOffset = 4;
 
-const ContextMenu: React.FC<{node: TreeNode}> = ({node, children}) => {
-  const instance = usePlugin(plugin);
-  const focusedNode = instance.uiState.focusedNode.get();
-
+const ContextMenu: React.FC<{
+  node: TreeNode;
+  hoveredNode?: Id;
+  focusedNode?: Id;
+  onFocusNode: (id?: Id) => void;
+  onContextMenuOpen: (open: boolean) => void;
+}> = ({
+  node,
+  hoveredNode,
+  children,
+  focusedNode,
+  onFocusNode,
+  onContextMenuOpen,
+}) => {
   return (
     <Dropdown
       onVisibleChange={(visible) => {
-        instance.uiState.isContextMenuOpen.set(visible);
+        onContextMenuOpen(visible);
       }}
       overlay={() => (
         <Menu>
-          {focusedNode !== head(instance.uiState.hoveredNodes.get()) && (
+          {focusedNode !== hoveredNode && (
             <UIDebuggerMenuItem
               key="focus"
               text={`Focus ${node.name}`}
               onClick={() => {
-                instance.uiState.focusedNode.set(node.id);
+                onFocusNode(node.id);
               }}
             />
           )}
@@ -303,7 +326,7 @@ const ContextMenu: React.FC<{node: TreeNode}> = ({node, children}) => {
               key="remove-focus"
               text="Remove focus"
               onClick={() => {
-                instance.uiState.focusedNode.set(undefined);
+                onFocusNode(undefined);
               }}
             />
           )}
@@ -356,7 +379,10 @@ function useKeyboardShortcuts(
   treeNodes: TreeNode[],
   refs: React.RefObject<HTMLLIElement>[],
   selectedNode: Id | undefined,
+  hoveredNode: Id | undefined,
   onSelectNode: (id?: Id) => void,
+  onExpandNode: (id: Id) => void,
+  onCollapseNode: (id: Id) => void,
   isUsingKBToScroll: React.MutableRefObject<boolean>,
 ) {
   const instance = usePlugin(plugin);
@@ -365,31 +391,24 @@ function useKeyboardShortcuts(
     const listener = (event: KeyboardEvent) => {
       switch (event.key) {
         case 'Enter': {
-          const hoveredNode = head(instance.uiState.hoveredNodes.get());
           if (hoveredNode != null) {
             onSelectNode(hoveredNode);
           }
 
           break;
         }
-        case 'ArrowRight': {
+
+        case 'ArrowRight':
           event.preventDefault();
-
-          instance.uiState.expandedNodes.update((draft) => {
-            if (selectedNode) {
-              draft.add(selectedNode);
-            }
-          });
-
+          if (hoveredNode) {
+            onExpandNode(hoveredNode);
+          }
           break;
-        }
         case 'ArrowLeft': {
           event.preventDefault();
-          instance.uiState.expandedNodes.update((draft) => {
-            if (selectedNode) {
-              draft.delete(selectedNode);
-            }
-          });
+          if (hoveredNode) {
+            onCollapseNode(hoveredNode);
+          }
           break;
         }
 
@@ -413,12 +432,14 @@ function useKeyboardShortcuts(
     };
   }, [
     refs,
-    instance.uiState.expandedNodes,
     treeNodes,
     onSelectNode,
     selectedNode,
-    instance.uiState.hoveredNodes,
     isUsingKBToScroll,
+    onExpandNode,
+    onCollapseNode,
+    instance.uiState.hoveredNodes,
+    hoveredNode,
   ]);
 }
 

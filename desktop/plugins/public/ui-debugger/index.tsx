@@ -21,7 +21,6 @@ import {
   MetadataId,
   PerfStatsEvent,
   Snapshot,
-  TreeState,
   UINode,
 } from './types';
 import './node_modules/react-complex-tree/lib/style.css';
@@ -171,6 +170,7 @@ export function plugin(client: PluginClient<Events>) {
   return {
     rootId,
     uiState,
+    uiActions: uiActions(uiState),
     nodes,
     snapshot,
     metadata,
@@ -192,6 +192,48 @@ function setParentPointers(
   node.children.forEach((child) => {
     setParentPointers(child, cur, nodes);
   });
+}
+
+type UIActions = {
+  onHoverNode: (node: Id) => void;
+  onFocusNode: (focused?: Id) => void;
+  onContextMenuOpen: (open: boolean) => void;
+  onExpandNode: (node: Id) => void;
+  onCollapseNode: (node: Id) => void;
+};
+
+function uiActions(uiState: UIState): UIActions {
+  const onExpandNode = (node: Id) => {
+    uiState.expandedNodes.update((draft) => {
+      draft.add(node);
+    });
+  };
+
+  const onCollapseNode = (node: Id) => {
+    uiState.expandedNodes.update((draft) => {
+      draft.delete(node);
+    });
+  };
+
+  const onHoverNode = (node: Id) => {
+    uiState.hoveredNodes.set([node]);
+  };
+
+  const onContextMenuOpen = (open: boolean) => {
+    uiState.isContextMenuOpen.set(open);
+  };
+
+  const onFocusNode = (focused?: Id) => {
+    uiState.focusedNode.set(focused);
+  };
+
+  return {
+    onExpandNode,
+    onCollapseNode,
+    onHoverNode,
+    onContextMenuOpen,
+    onFocusNode,
+  };
 }
 
 function checkFocusedNodeStillActive(uiState: UIState, nodes: Map<Id, UINode>) {
