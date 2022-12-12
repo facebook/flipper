@@ -8,7 +8,7 @@
  */
 
 import {Id, UINode} from '../types';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   HighlightManager,
   HighlightProvider,
@@ -20,6 +20,7 @@ import {
 } from 'flipper-plugin';
 import {plugin} from '../index';
 import {Glyph} from 'flipper';
+import {head} from 'lodash';
 
 export function Tree2({
   nodes,
@@ -42,7 +43,10 @@ export function Tree2({
     <HighlightProvider
       text={searchTerm}
       highlightColor={theme.searchHighlightBackground.yellow}>
-      <div>
+      <div
+        onMouseLeave={() => {
+          instance.uiState.hoveredNodes.set([]);
+        }}>
         {items.map((treeNode) => (
           <TreeItemContainer
             key={treeNode.id}
@@ -64,7 +68,6 @@ export type TreeNode = UINode & {
 function TreeItemContainer({
   treeNode,
   selectedNode,
-  hoveredNode,
   onSelectNode,
 }: {
   treeNode: TreeNode;
@@ -73,10 +76,14 @@ function TreeItemContainer({
   onSelectNode: (node?: Id) => void;
 }) {
   const instance = usePlugin(plugin);
+  const isHovered = useIsHovered(treeNode.id);
   return (
     <TreeItem
       isSelected={treeNode.id === selectedNode}
-      isHovered={treeNode.id === hoveredNode}
+      isHovered={isHovered}
+      onMouseEnter={() => {
+        instance.uiState.hoveredNodes.set([treeNode.id]);
+      }}
       onClick={() => {
         onSelectNode(treeNode.id);
       }}
@@ -98,6 +105,27 @@ function TreeItemContainer({
       <HighlightedText text={treeNode.name} />
     </TreeItem>
   );
+}
+
+function useIsHovered(nodeId: Id) {
+  const instance = usePlugin(plugin);
+  const [isHovered, setIsHovered] = useState(false);
+  useEffect(() => {
+    const listener = (newValue?: Id[], prevValue?: Id[]) => {
+      //only change state if the prev or next hover state affect us, this avoids rerendering the whole tree for a hover
+      //change
+      if (head(prevValue) === nodeId || head(newValue) === nodeId) {
+        const hovered = head(newValue) === nodeId;
+        setIsHovered(hovered);
+      }
+    };
+    instance.uiState.hoveredNodes.subscribe(listener);
+    return () => {
+      instance.uiState.hoveredNodes.unsubscribe(listener);
+    };
+  }, [instance.uiState.hoveredNodes, nodeId]);
+
+  return isHovered;
 }
 
 const TreeItem = styled.li<{
