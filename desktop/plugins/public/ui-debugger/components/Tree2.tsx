@@ -29,6 +29,7 @@ import {
 import {plugin} from '../index';
 import {Glyph} from 'flipper';
 import {head} from 'lodash';
+import {reverse} from 'lodash/fp';
 
 export function Tree2({
   nodes,
@@ -255,12 +256,11 @@ function toTreeList(
     });
 
     if (isExpanded) {
-      for (const childId of cur.children) {
+      //since we do dfs and use a stack we have to reverse children to get the order correct
+      for (const childId of reverse(cur.children)) {
         const child = nodes.get(childId);
         if (child != null) {
           stack.push([child, depth + 1]);
-        } else {
-          console.log('null', childId);
         }
       }
     }
