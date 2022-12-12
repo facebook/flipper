@@ -133,8 +133,9 @@ function TreeItemContainer({
         onSelectNode(treeNode.id);
       }}
       item={treeNode}>
-      <Arrow
+      <ExpandedIconOrSpace
         expanded={treeNode.isExpanded}
+        children={treeNode.children}
         onClick={() => {
           instance.uiState.expandedNodes.update((draft) => {
             if (draft.has(treeNode.id)) {
@@ -145,7 +146,6 @@ function TreeItemContainer({
           });
         }}
       />
-
       {nodeIcon(treeNode)}
       <HighlightedText text={treeNode.name} />
     </TreeItem>
@@ -189,8 +189,12 @@ const TreeItem = styled.li<{
   backgroundColor: isSelected ? theme.selectionBackgroundColor : theme.white,
 }));
 
-function Arrow(props: {onClick: () => void; expanded: boolean}) {
-  return (
+function ExpandedIconOrSpace(props: {
+  onClick: () => void;
+  expanded: boolean;
+  children: Id[];
+}) {
+  return props.children.length > 0 ? (
     <div style={{display: 'flex'}} onClick={props.onClick}>
       <Glyph
         style={{
@@ -203,6 +207,8 @@ function Arrow(props: {onClick: () => void; expanded: boolean}) {
         color="grey"
       />
     </div>
+  ) : (
+    <div style={{width: '12px'}}></div>
   );
 }
 
