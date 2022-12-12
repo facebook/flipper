@@ -83,31 +83,35 @@ export function Tree2({
     <HighlightProvider
       text={searchTerm}
       highlightColor={theme.searchHighlightBackground.yellow}>
-      <div
-        onMouseLeave={() => {
-          if (isContextMenuOpen === false) {
-            instance.uiState.hoveredNodes.set([]);
-          }
-        }}>
-        {treeNodes.map((treeNode, index) => (
-          <MemoTreeItemContainer
-            innerRef={refs[index]}
-            key={treeNode.id}
-            treeNode={treeNode}
-            selectedNode={selectedNode}
-            hoveredNode={hoveredNode}
-            focusedNode={focusedNode}
-            isUsingKBToScroll={isUsingKBToScroll}
-            isContextMenuOpen={isContextMenuOpen}
-            onSelectNode={onSelectNode}
-            onExpandNode={instance.uiActions.onExpandNode}
-            onCollapseNode={instance.uiActions.onCollapseNode}
-            onContextMenuOpen={instance.uiActions.onContextMenuOpen}
-            onFocusNode={instance.uiActions.onFocusNode}
-            onHoverNode={instance.uiActions.onHoverNode}
-          />
-        ))}
-      </div>
+      <ContextMenu
+        focusedNode={focusedNode}
+        hoveredNode={hoveredNode}
+        nodes={nodes}
+        onContextMenuOpen={instance.uiActions.onContextMenuOpen}
+        onFocusNode={instance.uiActions.onFocusNode}>
+        <div
+          onMouseLeave={() => {
+            if (isContextMenuOpen === false) {
+              instance.uiState.hoveredNodes.set([]);
+            }
+          }}>
+          {treeNodes.map((treeNode, index) => (
+            <MemoTreeItemContainer
+              innerRef={refs[index]}
+              key={treeNode.id}
+              treeNode={treeNode}
+              selectedNode={selectedNode}
+              hoveredNode={hoveredNode}
+              isUsingKBToScroll={isUsingKBToScroll}
+              isContextMenuOpen={isContextMenuOpen}
+              onSelectNode={onSelectNode}
+              onExpandNode={instance.uiActions.onExpandNode}
+              onCollapseNode={instance.uiActions.onCollapseNode}
+              onHoverNode={instance.uiActions.onHoverNode}
+            />
+          ))}
+        </div>
+      </ContextMenu>
     </HighlightProvider>
   );
 }
@@ -138,11 +142,8 @@ function TreeItemContainer({
   treeNode,
   selectedNode,
   hoveredNode,
-  focusedNode,
   isUsingKBToScroll,
   isContextMenuOpen,
-  onFocusNode,
-  onContextMenuOpen,
   onSelectNode,
   onExpandNode,
   onCollapseNode,
@@ -152,55 +153,42 @@ function TreeItemContainer({
   treeNode: TreeNode;
   selectedNode?: Id;
   hoveredNode?: Id;
-  focusedNode?: Id;
   isUsingKBToScroll: RefObject<boolean>;
   isContextMenuOpen: boolean;
-  onFocusNode: (id?: Id) => void;
-  onContextMenuOpen: (open: boolean) => void;
   onSelectNode: (node?: Id) => void;
   onExpandNode: (node: Id) => void;
   onCollapseNode: (node: Id) => void;
   onHoverNode: (node: Id) => void;
 }) {
   return (
-    <ContextMenu
-      onContextMenuOpen={onContextMenuOpen}
-      onFocusNode={onFocusNode}
-      focusedNode={focusedNode}
-      hoveredNode={hoveredNode}
-      node={treeNode}>
-      <TreeItem
-        ref={innerRef}
-        isSelected={treeNode.id === selectedNode}
-        isHovered={hoveredNode === treeNode.id}
-        onMouseEnter={() => {
-          if (
-            isUsingKBToScroll.current === false &&
-            isContextMenuOpen == false
-          ) {
-            onHoverNode(treeNode.id);
+    <TreeItem
+      ref={innerRef}
+      isSelected={treeNode.id === selectedNode}
+      isHovered={hoveredNode === treeNode.id}
+      onMouseEnter={() => {
+        if (isUsingKBToScroll.current === false && isContextMenuOpen == false) {
+          onHoverNode(treeNode.id);
+        }
+      }}
+      onClick={() => {
+        onSelectNode(treeNode.id);
+      }}
+      item={treeNode}>
+      <ExpandedIconOrSpace
+        expanded={treeNode.isExpanded}
+        showIcon={treeNode.children.length > 0}
+        onClick={() => {
+          if (treeNode.isExpanded) {
+            onCollapseNode(treeNode.id);
+          } else {
+            onExpandNode(treeNode.id);
           }
         }}
-        onClick={() => {
-          onSelectNode(treeNode.id);
-        }}
-        item={treeNode}>
-        <ExpandedIconOrSpace
-          expanded={treeNode.isExpanded}
-          showIcon={treeNode.children.length > 0}
-          onClick={() => {
-            if (treeNode.isExpanded) {
-              onCollapseNode(treeNode.id);
-            } else {
-              onExpandNode(treeNode.id);
-            }
-          }}
-        />
-        {nodeIcon(treeNode)}
-        <HighlightedText text={treeNode.name} />
-        <InlineAttributes attributes={treeNode.inlineAttributes} />
-      </TreeItem>
-    </ContextMenu>
+      />
+      {nodeIcon(treeNode)}
+      <HighlightedText text={treeNode.name} />
+      <InlineAttributes attributes={treeNode.inlineAttributes} />
+    </TreeItem>
   );
 }
 
@@ -291,13 +279,13 @@ const DecorationImage = styled.img({
 const renderDepthOffset = 4;
 
 const ContextMenu: React.FC<{
-  node: TreeNode;
+  nodes: Map<Id, UINode>;
   hoveredNode?: Id;
   focusedNode?: Id;
   onFocusNode: (id?: Id) => void;
   onContextMenuOpen: (open: boolean) => void;
 }> = ({
-  node,
+  nodes,
   hoveredNode,
   children,
   focusedNode,
@@ -311,12 +299,12 @@ const ContextMenu: React.FC<{
       }}
       overlay={() => (
         <Menu>
-          {focusedNode !== hoveredNode && (
+          {hoveredNode != null && focusedNode !== hoveredNode && (
             <UIDebuggerMenuItem
               key="focus"
-              text={`Focus ${node.name}`}
+              text={`Focus ${nodes.get(hoveredNode)?.name}`}
               onClick={() => {
-                onFocusNode(node.id);
+                onFocusNode(hoveredNode);
               }}
             />
           )}
