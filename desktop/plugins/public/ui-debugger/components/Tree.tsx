@@ -200,13 +200,15 @@ const TreeAttributeContainer = styled(Text)({
 });
 
 function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
+  const highlightManager: HighlightManager = useHighlighter();
+
   return (
     <>
       {Object.entries(attributes ?? {}).map(([key, value]) => (
         <>
           <TreeAttributeContainer key={key}>
             <span style={{color: theme.warningColor}}>{key}</span>
-            <span>={value}</span>
+            <span>={highlightManager.render(value)}</span>
           </TreeAttributeContainer>
         </>
       ))}
@@ -255,7 +257,7 @@ function ExpandedIconOrSpace(props: {
       </div>
     );
   } else {
-    return <div style={{width: '12px'}}></div>;
+    return <div style={{width: '16px'}}></div>;
   }
 }
 
@@ -276,7 +278,7 @@ const DecorationImage = styled.img({
   width: 12,
 });
 
-const renderDepthOffset = 4;
+const renderDepthOffset = 8;
 
 const ContextMenu: React.FC<{
   nodes: Map<Id, UINode>;
