@@ -37,7 +37,9 @@ export function Tree2({
   const expandedNodes = useValue(instance.uiState.expandedNodes);
   const searchTerm = useValue(instance.uiState.searchTerm);
 
-  const items = toTreeList(nodes, rootId, expandedNodes);
+  const treeNodes = toTreeList(nodes, rootId, expandedNodes);
+
+  useKeyboardShortcuts(treeNodes, selectedNode, onSelectNode);
 
   return (
     <HighlightProvider
@@ -47,7 +49,7 @@ export function Tree2({
         onMouseLeave={() => {
           instance.uiState.hoveredNodes.set([]);
         }}>
-        {items.map((treeNode) => (
+        {treeNodes.map((treeNode) => (
           <TreeItemContainer
             key={treeNode.id}
             treeNode={treeNode}
@@ -216,4 +218,81 @@ function toTreeList(
   }
 
   return res;
+}
+
+function useKeyboardShortcuts(
+  treeNodes: TreeNode[],
+  selectedNode: Id | undefined,
+  onSelectNode: (id?: Id) => void,
+) {
+  const instance = usePlugin(plugin);
+
+  useEffect(() => {
+    const listener = (event: KeyboardEvent) => {
+      switch (event.key) {
+        case 'ArrowRight': {
+          event.preventDefault();
+
+          instance.uiState.expandedNodes.update((draft) => {
+            if (selectedNode) {
+              draft.add(selectedNode);
+            }
+          });
+
+          break;
+        }
+        case 'ArrowLeft': {
+          event.preventDefault();
+          instance.uiState.expandedNodes.update((draft) => {
+            if (selectedNode) {
+              draft.delete(selectedNode);
+            }
+          });
+          break;
+        }
+
+        case 'ArrowDown': {
+          event.preventDefault();
+
+          const curIdx = treeNodes.findIndex(
+            (item) => item.id === head(instance.uiState.hoveredNodes.get()),
+          );
+          if (curIdx != -1) {
+            const nextIdx = curIdx + 1;
+            if (nextIdx < treeNodes.length) {
+              const nextNode = treeNodes[nextIdx];
+              instance.uiState.hoveredNodes.set([nextNode.id]);
+            }
+          }
+          break;
+        }
+
+        case 'ArrowUp': {
+          event.preventDefault();
+
+          const curIdx = treeNodes.findIndex(
+            (item) => item.id === head(instance.uiState.hoveredNodes.get()),
+          );
+          if (curIdx != -1) {
+            const prevIdx = curIdx - 1;
+            if (prevIdx >= 0) {
+              const prevNode = treeNodes[prevIdx];
+              instance.uiState.hoveredNodes.set([prevNode.id]);
+            }
+          }
+          break;
+        }
+      }
+    };
+    window.addEventListener('keydown', listener);
+    return () => {
+      window.removeEventListener('keydown', listener);
+    };
+  }, [
+    instance.uiState.expandedNodes,
+    treeNodes,
+    onSelectNode,
+    selectedNode,
+    instance.uiState.hoveredNodes,
+  ]);
 }
