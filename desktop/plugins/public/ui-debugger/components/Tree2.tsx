@@ -30,6 +30,8 @@ import {plugin} from '../index';
 import {Glyph} from 'flipper';
 import {head} from 'lodash';
 import {reverse} from 'lodash/fp';
+import {Dropdown, Menu} from 'antd';
+import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 
 export function Tree2({
   nodes,
@@ -43,18 +45,19 @@ export function Tree2({
   onSelectNode: (node?: Id) => void;
 }) {
   const instance = usePlugin(plugin);
+  const focusedNode = useValue(instance.uiState.focusedNode);
   const expandedNodes = useValue(instance.uiState.expandedNodes);
   const searchTerm = useValue(instance.uiState.searchTerm);
 
   const {treeNodes, refs} = useMemo(() => {
-    const treeNodes = toTreeList(nodes, rootId, expandedNodes);
+    const treeNodes = toTreeList(nodes, focusedNode || rootId, expandedNodes);
 
     const refs: React.RefObject<HTMLLIElement>[] = treeNodes.map(() =>
       React.createRef<HTMLLIElement>(),
     );
 
     return {treeNodes, refs};
-  }, [expandedNodes, nodes, rootId]);
+  }, [expandedNodes, focusedNode, nodes, rootId]);
 
   const isUsingKBToScroll = useRef(false);
 
@@ -121,35 +124,40 @@ function TreeItemContainer({
   const instance = usePlugin(plugin);
   const isHovered = useIsHovered(treeNode.id);
   return (
-    <TreeItem
-      ref={innerRef}
-      isSelected={treeNode.id === selectedNode}
-      isHovered={isHovered}
-      onMouseEnter={() => {
-        if (isUsingKBToScroll.current === false) {
-          instance.uiState.hoveredNodes.set([treeNode.id]);
-        }
-      }}
-      onClick={() => {
-        onSelectNode(treeNode.id);
-      }}
-      item={treeNode}>
-      <ExpandedIconOrSpace
-        expanded={treeNode.isExpanded}
-        children={treeNode.children}
-        onClick={() => {
-          instance.uiState.expandedNodes.update((draft) => {
-            if (draft.has(treeNode.id)) {
-              draft.delete(treeNode.id);
-            } else {
-              draft.add(treeNode.id);
-            }
-          });
+    <ContextMenu node={treeNode}>
+      <TreeItem
+        ref={innerRef}
+        isSelected={treeNode.id === selectedNode}
+        isHovered={isHovered}
+        onMouseEnter={() => {
+          if (
+            isUsingKBToScroll.current === false &&
+            instance.uiState.isContextMenuOpen.get() == false
+          ) {
+            instance.uiState.hoveredNodes.set([treeNode.id]);
+          }
         }}
-      />
-      {nodeIcon(treeNode)}
-      <HighlightedText text={treeNode.name} />
-    </TreeItem>
+        onClick={() => {
+          onSelectNode(treeNode.id);
+        }}
+        item={treeNode}>
+        <ExpandedIconOrSpace
+          expanded={treeNode.isExpanded}
+          children={treeNode.children}
+          onClick={() => {
+            instance.uiState.expandedNodes.update((draft) => {
+              if (draft.has(treeNode.id)) {
+                draft.delete(treeNode.id);
+              } else {
+                draft.add(treeNode.id);
+              }
+            });
+          }}
+        />
+        {nodeIcon(treeNode)}
+        <HighlightedText text={treeNode.name} />
+      </TreeItem>
+    </ContextMenu>
   );
 }
 
@@ -231,6 +239,44 @@ const DecorationImage = styled.img({
 });
 
 const renderDepthOffset = 4;
+
+const ContextMenu: React.FC<{node: TreeNode}> = ({node, children}) => {
+  const instance = usePlugin(plugin);
+  const focusedNode = instance.uiState.focusedNode.get();
+
+  return (
+    <Dropdown
+      onVisibleChange={(visible) => {
+        instance.uiState.isContextMenuOpen.set(visible);
+      }}
+      overlay={() => (
+        <Menu>
+          {focusedNode !== head(instance.uiState.hoveredNodes.get()) && (
+            <UIDebuggerMenuItem
+              key="focus"
+              text={`Focus ${node.name}`}
+              onClick={() => {
+                instance.uiState.focusedNode.set(node.id);
+              }}
+            />
+          )}
+
+          {focusedNode && (
+            <UIDebuggerMenuItem
+              key="remove-focus"
+              text="Remove focus"
+              onClick={() => {
+                instance.uiState.focusedNode.set(undefined);
+              }}
+            />
+          )}
+        </Menu>
+      )}
+      trigger={['contextMenu']}>
+      <div>{children}</div>
+    </Dropdown>
+  );
+};
 
 function toTreeList(
   nodes: Map<Id, UINode>,
