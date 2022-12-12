@@ -19,7 +19,7 @@ import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
 import {Spin} from 'antd';
 import FeedbackRequest from './fb-stubs/feedback';
-import {Tree2} from './Tree2';
+import {Tree2} from './Tree';
 
 export function Component() {
   const instance = usePlugin(plugin);
