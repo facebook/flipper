@@ -41,7 +41,7 @@ export function Tree(props: {
   onSelectNode: (id: Id) => void;
 }) {
   const instance = usePlugin(plugin);
-  const expandedItems = useValue(instance.uiState.treeState).expandedNodes;
+  const expandedItems = useValue(instance.uiState.expandedNodes);
   const focused = useValue(instance.uiState.focusedNode);
 
   const items = useMemo(
@@ -87,7 +87,7 @@ export function Tree(props: {
           viewState={{
             tree: {
               focusedItem: head(hoveredNodes),
-              expandedItems,
+              expandedItems: [...expandedItems],
               selectedItems: props.selectedNode ? [props.selectedNode] : [],
             },
           }}
@@ -95,15 +95,13 @@ export function Tree(props: {
             instance.uiState.hoveredNodes.set([item.index]);
           }}
           onExpandItem={(item) => {
-            instance.uiState.treeState.update((draft) => {
-              draft.expandedNodes.push(item.index);
+            instance.uiState.expandedNodes.update((draft) => {
+              draft.add(item.index);
             });
           }}
           onCollapseItem={(item) =>
-            instance.uiState.treeState.update((draft) => {
-              draft.expandedNodes = draft.expandedNodes.filter(
-                (expandedItemIndex) => expandedItemIndex !== item.index,
-              );
+            instance.uiState.expandedNodes.update((draft) => {
+              draft.delete(item.index);
             })
           }
           renderItem={renderItem}

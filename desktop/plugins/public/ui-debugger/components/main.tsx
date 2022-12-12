@@ -20,6 +20,7 @@ import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
 import {Input, Spin} from 'antd';
 import FeedbackRequest from './fb-stubs/feedback';
+import {Tree2} from './Tree2';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -44,7 +45,7 @@ export function Component() {
         <Layout.Horizontal grow pad="small" gap="small">
           <Layout.Container grow gap="small">
             <Layout.ScrollContainer>
-              <Tree
+              <Tree2
                 selectedNode={selectedNode}
                 onSelectNode={setSelectedNode}
                 nodes={nodes}
