@@ -21,12 +21,26 @@ import {
 } from 'flipper-plugin';
 import {plugin} from '../index';
 import {Glyph} from 'flipper';
-import {head} from 'lodash';
+import {head, last} from 'lodash';
 import {reverse} from 'lodash/fp';
 import {Dropdown, Menu, Typography} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 
 const {Text} = Typography;
+
+type LineStyle = 'ToParent' | 'ToChildren';
+
+type NodeIndentGuide = {
+  depth: number;
+  style: LineStyle;
+  addHorizontalMarker: boolean;
+  trimBottom: boolean;
+};
+export type TreeNode = UINode & {
+  depth: number;
+  isExpanded: boolean;
+  indentGuide: NodeIndentGuide | null;
+};
 
 export function Tree2({
   nodes,
@@ -47,14 +61,19 @@ export function Tree2({
   const hoveredNode = head(useValue(instance.uiState.hoveredNodes));
 
   const {treeNodes, refs} = useMemo(() => {
-    const treeNodes = toTreeList(nodes, focusedNode || rootId, expandedNodes);
+    const treeNodes = toTreeNodes(
+      nodes,
+      focusedNode || rootId,
+      expandedNodes,
+      selectedNode,
+    );
 
     const refs: React.RefObject<HTMLLIElement>[] = treeNodes.map(() =>
       React.createRef<HTMLLIElement>(),
     );
 
     return {treeNodes, refs};
-  }, [expandedNodes, focusedNode, nodes, rootId]);
+  }, [expandedNodes, focusedNode, nodes, rootId, selectedNode]);
 
   const isUsingKBToScroll = useRef(false);
 
@@ -116,11 +135,6 @@ export function Tree2({
   );
 }
 
-export type TreeNode = UINode & {
-  depth: number;
-  isExpanded: boolean;
-};
-
 const MemoTreeItemContainer = React.memo(
   TreeItemContainer,
   (prevProps, nextProps) => {
@@ -136,6 +150,41 @@ const MemoTreeItemContainer = React.memo(
     );
   },
 );
+
+function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
+  const verticalLinePadding = `${renderDepthOffset * indentGuide.depth + 8}px`;
+
+  const verticalLineStyle = `${
+    indentGuide.style === 'ToParent' ? 'dashed' : 'solid'
+  }`;
+  const horizontalLineStyle = `${
+    indentGuide.style === 'ToParent' ? 'dotted' : 'solid'
+  }`;
+
+  const color = indentGuide.style === 'ToParent' ? '#B0B0B0' : '#C0C0C0';
+
+  return (
+    <div>
+      <div
+        style={{
+          position: 'absolute',
+          width: verticalLinePadding,
+          height: indentGuide.trimBottom ? HalfTreeItemHeight : TreeItemHeight,
+          borderRight: `1px ${verticalLineStyle} ${color}`,
+        }}></div>
+      {indentGuide.addHorizontalMarker && (
+        <div
+          style={{
+            position: 'absolute',
+            width: 8,
+            height: HalfTreeItemHeight,
+            borderBottom: `2px ${horizontalLineStyle} ${color}`,
+            marginLeft: verticalLinePadding,
+          }}></div>
+      )}
+    </div>
+  );
+}
 
 function TreeItemContainer({
   innerRef,
@@ -161,34 +210,42 @@ function TreeItemContainer({
   onHoverNode: (node: Id) => void;
 }) {
   return (
-    <TreeItem
-      ref={innerRef}
-      isSelected={treeNode.id === selectedNode}
-      isHovered={hoveredNode === treeNode.id}
-      onMouseEnter={() => {
-        if (isUsingKBToScroll.current === false && isContextMenuOpen == false) {
-          onHoverNode(treeNode.id);
-        }
-      }}
-      onClick={() => {
-        onSelectNode(treeNode.id);
-      }}
-      item={treeNode}>
-      <ExpandedIconOrSpace
-        expanded={treeNode.isExpanded}
-        showIcon={treeNode.children.length > 0}
-        onClick={() => {
-          if (treeNode.isExpanded) {
-            onCollapseNode(treeNode.id);
-          } else {
-            onExpandNode(treeNode.id);
+    <div>
+      {treeNode.indentGuide != null && (
+        <IndentGuide indentGuide={treeNode.indentGuide} />
+      )}
+      <TreeItemContent
+        ref={innerRef}
+        isSelected={treeNode.id === selectedNode}
+        isHovered={hoveredNode === treeNode.id}
+        onMouseEnter={() => {
+          if (
+            isUsingKBToScroll.current === false &&
+            isContextMenuOpen == false
+          ) {
+            onHoverNode(treeNode.id);
           }
         }}
-      />
-      {nodeIcon(treeNode)}
-      <HighlightedText text={treeNode.name} />
-      <InlineAttributes attributes={treeNode.inlineAttributes} />
-    </TreeItem>
+        onClick={() => {
+          onSelectNode(treeNode.id);
+        }}
+        item={treeNode}>
+        <ExpandedIconOrSpace
+          expanded={treeNode.isExpanded}
+          showIcon={treeNode.children.length > 0}
+          onClick={() => {
+            if (treeNode.isExpanded) {
+              onCollapseNode(treeNode.id);
+            } else {
+              onExpandNode(treeNode.id);
+            }
+          }}
+        />
+        {nodeIcon(treeNode)}
+        <HighlightedText text={treeNode.name} />
+        <InlineAttributes attributes={treeNode.inlineAttributes} />
+      </TreeItemContent>
+    </div>
   );
 }
 
@@ -216,15 +273,18 @@ function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
   );
 }
 
-const TreeItem = styled.li<{
+const TreeItemHeight = '26px';
+const HalfTreeItemHeight = `calc(${TreeItemHeight} / 2)`;
+
+const TreeItemContent = styled.li<{
   item: TreeNode;
   isHovered: boolean;
   isSelected: boolean;
 }>(({item, isHovered, isSelected}) => ({
   display: 'flex',
   alignItems: 'baseline',
-  height: '26px',
-  paddingLeft: `${(item.depth + 1) * renderDepthOffset}px`,
+  height: TreeItemHeight,
+  paddingLeft: `${item.depth * renderDepthOffset}px`,
   borderWidth: '1px',
   borderRadius: '3px',
   borderColor: isHovered ? theme.selectionBackgroundColor : 'transparent',
@@ -243,7 +303,10 @@ function ExpandedIconOrSpace(props: {
         role="button"
         tabIndex={0}
         style={{display: 'flex'}}
-        onClick={props.onClick}>
+        onClick={(e) => {
+          e.stopPropagation();
+          props.onClick();
+        }}>
         <Glyph
           style={{
             transform: props.expanded ? 'rotate(90deg)' : '',
@@ -278,7 +341,7 @@ const DecorationImage = styled.img({
   width: 12,
 });
 
-const renderDepthOffset = 8;
+const renderDepthOffset = 16;
 
 const ContextMenu: React.FC<{
   nodes: Map<Id, UINode>;
@@ -328,41 +391,97 @@ const ContextMenu: React.FC<{
   );
 };
 
-function toTreeList(
+type TreeListStackItem = {
+  node: UINode;
+  depth: number;
+  isChildOfSelectedNode: boolean;
+  selectedNodeDepth: number;
+};
+
+function toTreeNodes(
   nodes: Map<Id, UINode>,
   rootId: Id,
   expandedNodes: Set<Id>,
+  selectedNode: Id | undefined,
 ): TreeNode[] {
   const root = nodes.get(rootId);
   if (root == null) {
     return [];
   }
-  const stack = [[root, 0]] as [UINode, number][];
+  const stack = [
+    {node: root, depth: 0, isChildOfSelectedNode: false, selectedNodeDepth: 0},
+  ] as TreeListStackItem[];
 
-  const res = [] as TreeNode[];
+  const treeNodes = [] as TreeNode[];
 
   while (stack.length > 0) {
-    const [cur, depth] = stack.pop()!!;
+    const stackItem = stack.pop()!!;
 
-    const isExpanded = expandedNodes.has(cur.id);
-    res.push({
-      ...cur,
+    const {node, depth} = stackItem;
+
+    //if the previous item has an indent guide but we don't then it was the last segment
+    //so we trim the bottom
+    const prevItemLine = last(treeNodes)?.indentGuide;
+    if (prevItemLine != null && stackItem.isChildOfSelectedNode === false) {
+      prevItemLine.trimBottom = true;
+    }
+
+    const isExpanded = expandedNodes.has(node.id);
+    const isSelected = node.id === selectedNode;
+
+    treeNodes.push({
+      ...node,
       depth,
       isExpanded,
+      indentGuide: stackItem.isChildOfSelectedNode
+        ? {
+            depth: stackItem.selectedNodeDepth,
+            style: 'ToChildren',
+            //if first child of selected node add horizontal marker
+            addHorizontalMarker: depth === stackItem.selectedNodeDepth + 1,
+            trimBottom: false,
+          }
+        : null,
     });
+
+    let isChildOfSelectedNode = stackItem.isChildOfSelectedNode;
+    let selectedNodeDepth = stackItem.selectedNodeDepth;
+    if (isSelected) {
+      isChildOfSelectedNode = true;
+      selectedNodeDepth = depth;
+      // walk back through tree nodes, while depth is greater or equal than current it is your
+      // parents child / your previous cousin so set dashed line
+      for (let i = treeNodes.length - 1; i >= 0; i--) {
+        const prevNode = treeNodes[i];
+        if (prevNode.depth < depth) {
+          break;
+        }
+        prevNode.indentGuide = {
+          depth: selectedNodeDepth - 1,
+          style: 'ToParent',
+          addHorizontalMarker: prevNode.depth == depth,
+          trimBottom: prevNode.id === selectedNode,
+        };
+      }
+    }
 
     if (isExpanded) {
       //since we do dfs and use a stack we have to reverse children to get the order correct
-      for (const childId of reverse(cur.children)) {
+      for (const childId of reverse(node.children)) {
         const child = nodes.get(childId);
         if (child != null) {
-          stack.push([child, depth + 1]);
+          stack.push({
+            node: child,
+            depth: depth + 1,
+            isChildOfSelectedNode: isChildOfSelectedNode,
+            selectedNodeDepth: selectedNodeDepth,
+          });
         }
       }
     }
   }
 
-  return res;
+  return treeNodes;
 }
 
 function useKeyboardShortcuts(
