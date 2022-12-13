@@ -124,7 +124,7 @@ export type Id = number;
 export type MetadataId = number;
 export type TreeState = {expandedNodes: Id[]};
 
-export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho';
+export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho' | 'CK' | 'iOS';
 
 export type Inspectable =
   | InspectableObject
