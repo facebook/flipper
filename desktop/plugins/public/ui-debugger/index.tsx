@@ -130,12 +130,9 @@ export function plugin(client: PluginClient<Events>) {
   const seenNodes = new Set<Id>();
   client.onMessage('subtreeUpdate', (event) => {
     liveClientData = produce(liveClientData, (draft) => {
-      // FIXME: remove node id from snapshot as is always
-      // for the entire screen.
-      const nodeId = rootId.get();
-      if (event.snapshot && nodeId) {
+      if (event.snapshot) {
         draft.snapshotInfo = {
-          nodeId,
+          nodeId: event.rootId,
           base64Image: event.snapshot,
         };
       }
