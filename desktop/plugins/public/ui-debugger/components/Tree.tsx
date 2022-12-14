@@ -486,6 +486,12 @@ function toTreeNodes(
     }
   }
 
+  //always trim last indent guide
+  const prevItemLine = last(treeNodes)?.indentGuide;
+  if (prevItemLine != null) {
+    prevItemLine.trimBottom = true;
+  }
+
   return treeNodes;
 }
 
