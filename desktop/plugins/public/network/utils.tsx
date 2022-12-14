@@ -119,6 +119,7 @@ export function decodeBody(
           if (!('' + e).includes('incorrect header check')) {
             throw e;
           }
+          break;
         }
       }
 
