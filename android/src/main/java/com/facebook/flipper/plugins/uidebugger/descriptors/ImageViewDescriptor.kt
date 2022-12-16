@@ -32,7 +32,7 @@ object ImageViewDescriptor : ChainedDescriptor<ImageView>() {
 
   override fun onGetName(node: ImageView): String = node.javaClass.simpleName
 
-  override fun onGetData(
+  override fun onGetAttributes(
       node: ImageView,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {

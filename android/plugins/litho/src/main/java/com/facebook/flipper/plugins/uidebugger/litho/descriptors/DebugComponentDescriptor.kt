@@ -72,7 +72,9 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
   private val StateId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho State")
 
-  override fun getData(node: DebugComponent): MaybeDeferred<Map<MetadataId, InspectableObject>> {
+  override fun getAttributes(
+      node: DebugComponent
+  ): MaybeDeferred<Map<MetadataId, InspectableObject>> {
     return Deferred {
       val attributeSections = mutableMapOf<MetadataId, InspectableObject>()
 
@@ -101,4 +103,17 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
   override fun getTags(node: DebugComponent): Set<String> = setOf(BaseTags.Declarative, LithoTag)
 
   override fun getSnapshot(node: DebugComponent, bitmap: Bitmap?): Bitmap? = null
+
+  override fun getInlineAttributes(node: DebugComponent): Map<String, String> {
+    val attributes = mutableMapOf<String, String>()
+    val key = node.key
+    val testKey = node.testKey
+    if (key != null && key.trim { it <= ' ' }.length > 0) {
+      attributes["key"] = key
+    }
+    if (testKey != null && testKey.trim { it <= ' ' }.length > 0) {
+      attributes["testKey"] = testKey
+    }
+    return attributes
+  }
 }

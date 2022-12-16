@@ -36,7 +36,7 @@ object LithoViewDescriptor : ChainedDescriptor<LithoView>() {
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isIncrementalMountEnabled")
 
-  override fun onGetData(
+  override fun onGetAttributes(
       node: LithoView,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {

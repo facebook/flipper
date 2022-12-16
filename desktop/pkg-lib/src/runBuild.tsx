@@ -17,10 +17,12 @@ const resolveFbStubsToFbPlugin: Plugin = {
   name: 'resolve-fb-stubs-to-fb',
   setup({onResolve}) {
     onResolve({filter: /fb-stubs/}, (args) => {
+      let moduleName = args.path.replace('fb-stubs', 'fb');
+      if (!moduleName.endsWith('.tsx')) {
+        moduleName = `${moduleName}.tsx`;
+      }
       return {
-        path: require.resolve(args.path.replace('fb-stubs', 'fb'), {
-          paths: [args.resolveDir],
-        }),
+        path: path.resolve(args.resolveDir, moduleName),
       };
     });
   },

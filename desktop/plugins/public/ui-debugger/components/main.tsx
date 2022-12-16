@@ -13,13 +13,13 @@ import {DetailSidebar, Layout, usePlugin, useValue} from 'flipper-plugin';
 import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, Metadata, MetadataId, UINode} from '../types';
 import {PerfStats} from './PerfStats';
-import {Tree} from './Tree';
 import {Visualization2D} from './Visualization2D';
 import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
-import {Input, Spin} from 'antd';
+import {Spin} from 'antd';
 import FeedbackRequest from './fb-stubs/feedback';
+import {Tree2} from './Tree';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -44,7 +44,7 @@ export function Component() {
         <Layout.Horizontal grow pad="small" gap="small">
           <Layout.Container grow gap="small">
             <Layout.ScrollContainer>
-              <Tree
+              <Tree2
                 selectedNode={selectedNode}
                 onSelectNode={setSelectedNode}
                 nodes={nodes}

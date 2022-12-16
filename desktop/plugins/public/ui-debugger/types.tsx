@@ -7,8 +7,6 @@
  * @format
  */
 
-import {TreeItemIndex} from 'react-complex-tree';
-
 export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
@@ -67,6 +65,7 @@ export type UINode = {
   qualifiedName: string;
   name: string;
   attributes: Record<MetadataId, Inspectable>;
+  inlineAttributes: Record<string, string>;
   children: Id[];
   bounds: Bounds;
   tags: Tag[];
@@ -120,12 +119,12 @@ export type Color = {
 };
 
 export type Snapshot = string;
-export type Id = number | TreeItemIndex;
+export type Id = number;
 
 export type MetadataId = number;
 export type TreeState = {expandedNodes: Id[]};
 
-export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho';
+export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho' | 'CK' | 'iOS';
 
 export type Inspectable =
   | InspectableObject

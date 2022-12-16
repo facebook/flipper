@@ -61,6 +61,7 @@ class PartialLayoutTraversal(
                       descriptor.getQualifiedName(node),
                       descriptor.getName(node),
                       emptyMap(),
+                      emptyMap(),
                       descriptor.getBounds(node),
                       emptySet(),
                       emptyList(),
@@ -92,7 +93,7 @@ class PartialLayoutTraversal(
           }
         }
 
-        val attributes = descriptor.getData(node)
+        val attributes = descriptor.getAttributes(node)
         val bounds = descriptor.getBounds(node)
         val tags = descriptor.getTags(node)
         visited.add(
@@ -102,6 +103,7 @@ class PartialLayoutTraversal(
                   descriptor.getQualifiedName(node),
                   descriptor.getName(node),
                   attrs,
+                  descriptor.getInlineAttributes(node),
                   bounds,
                   tags,
                   childrenIds,

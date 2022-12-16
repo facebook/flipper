@@ -29,7 +29,8 @@ import kotlinx.coroutines.*
 /**
  * There are 2 ways a litho view can update:
  * 1. A view was added / updated / removed through a mount, This should be refelected in a change in
- * props / state so we use the mount extension to capture these including the entire component tree
+ *    props / state so we use the mount extension to capture these including the entire component
+ *    tree
  * 2. The coordinate of the litho view changes externally and doesn't cause a mount, examples:
  * - Sibling changed size or position and shifted this view
  * - User scrolled

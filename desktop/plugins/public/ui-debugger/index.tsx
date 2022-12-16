@@ -21,10 +21,9 @@ import {
   MetadataId,
   PerfStatsEvent,
   Snapshot,
-  TreeState,
   UINode,
 } from './types';
-import './node_modules/react-complex-tree/lib/style.css';
+import {Draft} from 'immer';
 
 type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};
 type LiveClientState = {
@@ -38,7 +37,7 @@ type UIState = {
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
   focusedNode: Atom<Id | undefined>;
-  treeState: Atom<TreeState>;
+  expandedNodes: Atom<Set<Id>>;
 };
 
 export function plugin(client: PluginClient<Events>) {
@@ -84,7 +83,7 @@ export function plugin(client: PluginClient<Events>) {
 
     searchTerm: createState<string>(''),
     focusedNode: createState<Id | undefined>(undefined),
-    treeState: createState<TreeState>({expandedNodes: []}),
+    expandedNodes: createState<Set<Id>>(new Set()),
   };
 
   client.onMessage('coordinateUpdate', (event) => {
@@ -110,7 +109,7 @@ export function plugin(client: PluginClient<Events>) {
     if (!isPaused) {
       //When going back to play mode then set the atoms to the live state to rerender the latest
       //Also need to fixed expanded state for any change in active child state
-      uiState.treeState.update((draft) => {
+      uiState.expandedNodes.update((draft) => {
         liveClientData.nodes.forEach((node) => {
           collapseinActiveChildren(node, draft);
         });
@@ -144,10 +143,10 @@ export function plugin(client: PluginClient<Events>) {
       setParentPointers(rootId.get()!!, undefined, draft.nodes);
     });
 
-    uiState.treeState.update((draft) => {
+    uiState.expandedNodes.update((draft) => {
       for (const node of event.nodes) {
         if (!seenNodes.has(node.id)) {
-          draft.expandedNodes.push(node.id);
+          draft.add(node.id);
         }
         seenNodes.add(node.id);
 
@@ -170,6 +169,7 @@ export function plugin(client: PluginClient<Events>) {
   return {
     rootId,
     uiState,
+    uiActions: uiActions(uiState),
     nodes,
     snapshot,
     metadata,
@@ -193,17 +193,49 @@ function setParentPointers(
   });
 }
 
-function checkFocusedNodeStillActive(
-  uiState: {
-    isPaused: Atom<boolean>;
-    searchTerm: Atom<string>;
-    isContextMenuOpen: Atom<boolean>;
-    hoveredNodes: Atom<Id[]>;
-    focusedNode: Atom<Id | undefined>;
-    treeState: Atom<TreeState>;
-  },
-  nodes: Map<Id, UINode>,
-) {
+type UIActions = {
+  onHoverNode: (node: Id) => void;
+  onFocusNode: (focused?: Id) => void;
+  onContextMenuOpen: (open: boolean) => void;
+  onExpandNode: (node: Id) => void;
+  onCollapseNode: (node: Id) => void;
+};
+
+function uiActions(uiState: UIState): UIActions {
+  const onExpandNode = (node: Id) => {
+    uiState.expandedNodes.update((draft) => {
+      draft.add(node);
+    });
+  };
+
+  const onCollapseNode = (node: Id) => {
+    uiState.expandedNodes.update((draft) => {
+      draft.delete(node);
+    });
+  };
+
+  const onHoverNode = (node: Id) => {
+    uiState.hoveredNodes.set([node]);
+  };
+
+  const onContextMenuOpen = (open: boolean) => {
+    uiState.isContextMenuOpen.set(open);
+  };
+
+  const onFocusNode = (focused?: Id) => {
+    uiState.focusedNode.set(focused);
+  };
+
+  return {
+    onExpandNode,
+    onCollapseNode,
+    onHoverNode,
+    onContextMenuOpen,
+    onFocusNode,
+  };
+}
+
+function checkFocusedNodeStillActive(uiState: UIState, nodes: Map<Id, UINode>) {
   const focusedNodeId = uiState.focusedNode.get();
   const focusedNode = focusedNodeId && nodes.get(focusedNodeId);
   if (focusedNode && !isFocusedNodeAncestryAllActive(focusedNode, nodes)) {
@@ -239,16 +271,14 @@ function isFocusedNodeAncestryAllActive(
   return false;
 }
 
-function collapseinActiveChildren(node: UINode, draft: TreeState) {
+function collapseinActiveChildren(node: UINode, expandedNodes: Draft<Set<Id>>) {
   if (node.activeChild) {
-    const inactiveChildren = node.children.filter(
-      (child) => child !== node.activeChild,
-    );
-
-    draft.expandedNodes = draft.expandedNodes.filter(
-      (nodeId) => !inactiveChildren.includes(nodeId),
-    );
-    draft.expandedNodes.push(node.activeChild);
+    expandedNodes.add(node.activeChild);
+    for (const child of node.children) {
+      if (child !== node.activeChild) {
+        expandedNodes.delete(child);
+      }
+    }
   }
 }
 

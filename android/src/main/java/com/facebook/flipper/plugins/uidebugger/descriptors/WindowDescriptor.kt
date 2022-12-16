@@ -38,7 +38,7 @@ object WindowDescriptor : ChainedDescriptor<Window>() {
   override fun onGetChildren(node: Window): List<Any> = listOf(node.decorView)
 
   @SuppressLint("PrivateApi")
-  override fun onGetData(
+  override fun onGetAttributes(
       node: Window,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
