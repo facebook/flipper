@@ -7,6 +7,7 @@
  * @format
  */
 
+import decompress from 'brotli/decompress';
 import pako from 'pako';
 import {Request, Header, ResponseInfo} from './types';
 import {Base64} from 'js-base64';
@@ -99,26 +100,37 @@ export function decodeBody(
   }
 
   try {
-    const isGzip = getHeaderValue(headers, 'Content-Encoding') === 'gzip';
-    if (isGzip) {
-      try {
-        // The request is gzipped, so convert the raw bytes back to base64 first.
-        const dataArr = Base64.toUint8Array(data);
-        // then inflate.
-        return isTextual(headers, dataArr)
-          ? // pako will detect the BOM headers and return a proper utf-8 string right away
-            pako.inflate(dataArr, {to: 'string'})
-          : pako.inflate(dataArr);
-      } catch (e) {
-        // on iOS, the stream send to flipper is already inflated, so the content-encoding will not
-        // match the actual data anymore, and we should skip inflating.
-        // In that case, we intentionally fall-through
-        if (!('' + e).includes('incorrect header check')) {
-          throw e;
+    const contentEncoding = getHeaderValue(headers, 'Content-Encoding');
+    switch (contentEncoding) {
+      // Gzip encoding
+      case 'gzip': {
+        try {
+          // The request is gzipped, so convert the raw bytes back to base64 first.
+          const dataArr = Base64.toUint8Array(data);
+          // then inflate.
+          return isTextual(headers, dataArr)
+            ? // pako will detect the BOM headers and return a proper utf-8 string right away
+              pako.inflate(dataArr, {to: 'string'})
+            : pako.inflate(dataArr);
+        } catch (e) {
+          // on iOS, the stream send to flipper is already inflated, so the content-encoding will not
+          // match the actual data anymore, and we should skip inflating.
+          // In that case, we intentionally fall-through
+          if (!('' + e).includes('incorrect header check')) {
+            throw e;
+          }
+          break;
         }
       }
+
+      // Brotli encoding (https://github.com/facebook/flipper/issues/2578)
+      case 'br': {
+        return new TextDecoder().decode(
+          decompress(Buffer.from(Base64.toUint8Array(data))),
+        );
+      }
     }
-    // If this is not a gzipped request, assume we are interested in a proper utf-8 string.
+    // If this is not a gzipped or brotli-encoded request, assume we are interested in a proper utf-8 string.
     //  - If the raw binary data in is needed, in base64 form, use data directly
     //  - either directly use data (for example)
     const bytes = Base64.toUint8Array(data);
