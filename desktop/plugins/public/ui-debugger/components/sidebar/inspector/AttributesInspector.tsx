@@ -282,7 +282,12 @@ export const AttributesInspector: React.FC<Props> = ({
       {...sections}
       {rawEnabled && (
         <Panel key="Raw" title="Raw Data" collapsed>
-          <DataInspector data={transform(node.attributes, metadata)} />
+          <DataInspector
+            data={{
+              ...node,
+              attributes: transform(node.attributes, metadata),
+            }}
+          />
         </Panel>
       )}
     </>
