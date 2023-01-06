@@ -327,12 +327,6 @@ export default abstract class AbstractClient extends EventEmitter {
       resolve && resolve(data.success);
     } else if (data.error) {
       reject(data.error);
-      const {error} = data;
-      if (error) {
-        this.emit('error', error);
-      }
-    } else {
-      // ???
     }
   }
 
