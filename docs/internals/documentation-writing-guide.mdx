@@ -1,66 +1,138 @@
 ---
 id: documentation-writing-guide
 title: Writing Guide
+description: Provides tips and guidelines for effective writing.
+keywords:
+    - flipper website writing tips
+    - flipper docs writing tips
+    - flipper documentation guidelines
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-This page contains tips and guidelines on how to create effective documentation that will be valued by your target reader (a measure of its success).
+To assist you in writing your documentation, this page contains tips and guidelines on how to create effective documentation that is valued by your target reader (a measure of its success).
 
-We use StaticDocs, which is based on [Docusaurus](https://docusaurus.io/), for the Flipper documentation website.
-The [StaticDocs](https://www.internalfb.com/intern/staticdocs/staticdocs/) homepage is an excellent starting point for information.
+Flipper uses StaticDocs, which is based on [Docusaurus](https://docusaurus.io/), for the Flipper documentation website. The [StaticDocs](https://www.internalfb.com/intern/staticdocs/staticdocs/) homepage is an excellent starting point for information.
 
 ## Why Documentation Is Needed
 
 Some of the benefits of documentation include:
 
-* It's immediately available from the [Flipper Documentation website](https://www.internalfb.com/intern/staticdocs/flipper/)
-* Reduces the number of requests for support.
-* Provides a permanent record of your valuable knowledge.
+* **Immediate availability** -  from the easily accessible [Flipper Documentation website](https://www.internalfb.com/intern/staticdocs/flipper/)
+* **Fewer support requests** - the more information that's available online, the fewer the number of support requests. Also, colleagues that raise requests can be directed to the documentation website, which frees up the time of the person being asked.
+* **Knowledge base** - provides a permanent record of Flipper knowledge, rather than it being isolated to one or more specialists.
 
 By making documentation part of your work routine, it becomes less of a burden: the more you write, the easier it gets.
 
-## Getting Started
+## Adding or editing content
 
-Often, the most difficult aspect of creating documentation is figuring out how to get started. The following five steps provide some guidance that may help.
+You may be creating content for a new document or updating the content of an existing document. Whatever the reason, there are two key points to consider before you make any changes:
 
-1. **Consider your target reader** - reflect on questions similar to the following:
+1. [Tone of voice](#tone-of-voice) - this is the 'voice style' used to communicate the content to the reader.
+2. [Documentation style](#documentation-style) - this is the tools used to communicate the content to the reader, such as bullet points, images, tables, bold text, headers, videos, and so on. The trick is knowing when to use them and how to use them effectively.
 
-    * Why does the reader need this documentation?
-    * What is the reader's level of expertise?
-    * What is the best way to present the information to the reader?
+Both of these key points are detailed in the following sub-sections.
 
-2. **Create a document outline** - create a list of topics you would like to cover that help you to explain the main subject matter. Bearing in mind your target reader, put the topics into the order in which you think they make the most sense: this may involve grouping topics and noting any links between them.
-3. **Create a new page** - when relevant, create a new page (.md file) in the correct repository folder, making sure you insert the required metadata.
-4. **Convert topics into headers** - once you've organised the topics, convert them into headers for sections (topic groups) and sub-sections (topics).  See below for details of how to use [Headers](#headers).
-5. **Create an introduction** - write a brief introduction to your documentation, which states its purpose and an overview of its contents.  Your reader will use this to save time and to determine if the document contains the required knowledge or not.
+## Tone of voice
 
-After taking these five steps, you'll have a basic structure for your documentation!  The next step is to write the core content, that is, the information that is contained by each header.
+:::note Important
 
-## Creating the Core Content
+The content of any material you create for any aspect of Meta's documentation must fully comply with Meta's values, policies, and initiatives, and must incorporate Meta's principles of diversity, equity and inclusion.
 
-Using the right tone of voice can make your document interesting, engaging, and memorable.  The remainder of this page contains guidelines on which tone to use and how to use a range of Markdown features.
+For details, see the following:
 
-### Tone of Voice
+* [Meta People Portal](https://www.internalfb.com/intern/people/portal/facebook-inc).
+* [Building Better: The Meta Code of Conduct](https://s21.q4cdn.com/399680738/files/doc_downloads/governance_documents/2022/06/FB_CoC_EXTERNAL_en_EN_Update_Final-6_2-FINAL-ua.pdf).
+:::
 
-'Tone of voice' is the style that you use to communicate the information contained within your documentation, it's like tone of voice you choose to use when speaking with someone. The following guidelines may help you to adopt the right tone of voice in your documentation.
+Consider how you'd explain a work-related task to a colleague; the words you'd use and the manner in which you'd say them. Following are some points to consider, which will help you to adopt the write 'tone of voice' in your documentation:
 
-* **Write in the Second Person (You/Your/Yours)** - the main benefit is that it increases the readers' sense of involvement in the content and promotes a friendly tone by addressing your reader directly. As a result, your document's reader will find the content more engaging, easier to remember, and easier to understand.
-**Note**: this page has been written using the second person.
+* **Semi-formal** - imagine talking to a colleague whom you've just met in the workplace. When explaining something to them, you wouldn't want to be too formal, but you'd also like to appear friendly.
+* **Professional** - all communication must follow Meta company guidelines and policies and incorporate the principles of diversity, equity and inclusion.
+* **Descriptive** - don't go off-topic: keep to the topic that is relevant to the page/section. Textual information should be well-explained but not excessive. Lists, images and videos can be used to reduce large blocks of text (see [Markdown Formatting](documentation-formatting.mdx)).
+* **Engaging** - the correct use of pronouns can aid comprehension and help to keep the reader engaged and comprehension (see below).
 
-* **Use First-Person Plural Pronouns (We/Our) sparingly** - the main reason is that such pronouns emphasise the writer's team or organisation rather than the reader, which goes against the principle of writing in the second person. The use of 'we' and 'our' can cause distraction or irritation to the reader because the reader might not know which group of people are being referred to with 'we' or 'our'. 'We' could even mean the writer and the reader!
+### The magic of pronouns
+
+The correct use of pronouns can increase the reader's engagement, enjoyment, and comprehension of the information in your documentation. Following are some guidelines on when to use particular pronouns (it does matter):
+
+* **Use the pronouns 'You', 'Your', and 'Yours'** - the main benefit of using them is that it increases the reader's sense of involvement in the content and promotes a friendly tone by addressing the reader directly (think about how you'd explain something complex to your colleague). As a result, your page's reader will find the content more engaging, easier to remember, and easier to understand. These pronouns are especially useful when you want to detail a series of steps that the reader must follow.
+* **Use the pronouns 'We' and 'Our'** - the main reason for their use is that they emphasise the reader's team or organisation, which gives the reader a sense of community and team spirit. These pronouns are especially useful when you want to describe something that involves the Flipper team, such as the reasons for the decision to use a particular technology or how the reader's actions can benefit the team.
+* **Don't use the pronouns 'I' and 'My'** - the main reason is that it emphasizes the writer rather than the reader. Also, it may cause confusion, reduce engagement, or be the source of annoyance as the reader may not know the identity of the writer.
+
+### Spelling and grammar
+
+Bad spelling and grammar can have a negative effect on the tone of voice in your document (making it irritating to read and difficult to understand).
+
+The problem is that we all make unintentional spelling and grammar errors when writing. Fortunately, there are three steps you can take to reduce (or, hopefully, remove all) those errors:
+
+1. **Read it** - when you think you've finished, read though the content and make the appropriate corrections.
+2. **MS Word it** - use the spelling and grammar checker to identify any errors.
+3. **Review it** - before your page is published, it will be reviewed as part of its Diff lifecycle. Make sure you consider all of the changes suggested by the Reviewers.
+
+This is not going to be 100% effective every time, but it will definitely help to get as close to 100% as possible.
+
+## Documentation style
+
+Documentation style involves two areas of interest:
+
+* **Structural Format** - this includes the format of the page title and the headers and includes topics such as:
+    * How many words to use.
+    * How to capitalise.
+    * How to improve the discoverability of the content.
+* **Documentation Tools** - this includes the following:
+    * When and how to use the available tools (such as bullet points, tables images, videos, and much more).
+    * How to format the content for the selected tool.
+
+## Structural format
+
+### Page title
+
+The title provides an at-a-glance summary of a page's content. It is also used in the SideBar so assists with navigation of the Flipper Documentation website. Consider the following guidelines before choosing a page title.
+
+* **Short but descriptive** - the title should be short but also descriptive enough to convey the main topic of the page's content.
+* **Capitalization** - use the 'Title' case associated with the [Chicago Manual of Style (17th edition)](https://www.chicagomanualofstyle.org/home.html). For details of a helpful online tool, see [Header and title capitalization tool](#header-and-title-capitalization-tool), below.
+* **Titles should be unique** - use a title that is not used elsewhere within the Flipper Documentation website.
 
 ### Headers
 
-Good documentation is split into a series of sections that are logically structured and cover the subject matter. Headings are used for the document's Table of Contents, which provide the reader with an outline of the document and assist with navigation.
+Good documentation is split into a series of sections that are logically structured and cover the subject matter. Headings are used for the document's Table of Contents, which provide the reader with an outline of the document and assists with navigation.
 
-* **Headers indicate document structure** - start each main section with a level 2 header. Sub-sections (header levels 3 to 6) should follow a hierarchical structure and be associated with, or relevant to, their parent header.
+* **Headers indicate document structure** - start each main section with a level 2 header. Sub-sections (header levels 3 to 5) should follow a hierarchical structure and be associated with, or relevant to, their parent header.
 * **Keep headers short** - while keeping your headers as short as possible, make sure they contain enough words to indicate the information contained within the section/sub-section.
 * **Keep Headers unique** - consider how a header will be listed in the result set of a search from the Static Docs website.
-* **Capitalisation of headers** - capitalisation should be consistent throughout all Flipper documentation.  Headers should be capitalised according to the headline style defined in the [Chicago Manual of Style (17th edition)](https://www.chicagomanualofstyle.org/home.html).
+* **Capitalisation of headers** - use the 'Sentence' case associated with the [Chicago Manual of Style (17th edition)](https://www.chicagomanualofstyle.org/home.html). For details of a helpful online tool, see [Header and title capitalization tool](#header-and-title-capitalization-tool), below.
+* **Use Blank Lines** - make sure there is one blank line between a heading and the text in its section/sub-section.
 
-:::tip
-To ensure you're complying with the Chicago Manual of Style, go to the online tool [Capitalize My Title](https://capitalizemytitle.com/style/Chicago/), select the Chicago tab and enter your heading. As you enter the heading, the tool automatically converts it to the Chicago style.
+#### Header and title capitalization tool
+
+To assist with the capitalization of your page's title and headers, go to the online tool [Capitalize My Title](https://capitalizemytitle.com/style/Chicago/), then:
+
+* **For the title** - select the 'Chicago' tab and click the 'Title Case' option.
+* **For headers** -  select the 'Chicago' tab and click the 'Sentence case' option.
+
+As you enter the title/header, the tool automatically converts it to the selected style, which you can then copy/paste into your editor.
+
+#### Markdown code
+
+For examples of using Markdown for headers, see [Markdown Formatting](documentation-formatting.mdx#headers)
+
+## Markdown tools
+
+### Code snippets
+
+Code examples are one of the best ways to help your readers take their understanding to the next level by providing them with something they can actually view and experiment with on their own.
+
+:::note
+Remember that a snippet is 'a small part or piece of a thing' so keep your snippet as short as possible and relevant to the section in which it's located.
 :::
+
+When providing code snippets, first create an example in the Flipper shell and then directly reference that example in your documentation. This enables the Flipper website to **ensure that code in its documentation always stays up-to-date and functional**
+
+Make sure there is one blank line between the code snippet and any surrounding text.
+
+#### Markdown code
+
+For an example of using Markdown for code snippets, see [Markdown Formatting](documentation-formatting.mdx#code-snippets)
 
 ### Images
 
@@ -70,29 +142,81 @@ The well-known adage "*A picture is worth a thousand words.*" is true but must b
 
 * **No sensitive or personal data** - if you're taking a screenshot that features data, ensure it is test or sample data.
 * **Use a lossless format** - PNG and SVG files are ideal for websites and PDFs, other formats may look blurred.
-* **Use a transparent background** - you don't know what colour background your reader will use when reading your documentation. By using a transparent background, you avoid potential colour clashes and unwanted image borders.
-* **Avoid coloured borders and shadows** - again, you don't know what colour background your reader will use when reading your documentation. A coloured border or a shadow might look great against the colour you are using but could look ugly against a different background.
-* **Size for readability** - there's little purpose in using any type of image if the text within it can't be read or needs a magnifying glass. Consider splitting your image into two or more images and show how they are connected.  If using a screenshot, zoom in on a specific area of the screen and provide context.
-* **Be color-consistent** - use the same colour and style for callouts and annotations throughout your documentation.
-* **Consider dark mode backgrounds** - use of a dark mode is becoming increasingly common.  With this in mind, test your image using light and dark mode; as a result, you may need to replace black/dark grey colours with pastel-coloured alternatives.
+* **Use a transparent background** - by using a transparent background, you avoid potential color clashes and unwanted image borders caused by your reader's use of a colored or themed background.
+* **Avoid colored borders and shadows** - a colored border or a shadow might look great against the color you are using but could look ugly against a differently colored background.
+* **Consider dark mode backgrounds** - when relevant, test your image using light and dark mode; as a result, you may need to replace black/dark grey colors with pastel-colored alternatives (note: this does not apply to screenshots).
+* **Size for readability**:
+  * There's little purpose in using any type of image if the text within it can't be read or needs a magnifying glass.
+  * If your image is large, consider splitting into two or more images and show how they are connected.
+  * If using a screenshot, zoom in on a specific area of the screen and provide context rather than capturing the whole screen.
+* **Be consistent** - use the same color and style for callouts and annotations throughout your documentation.
 * **Refer to the image** - mention the image within the accompanying text.  Such as "*As shown in the following image...*", or "*The image below provides an overview of...*"
 
 :::tip
 Keep in mind that images are meant to complement text, not replace it. Though a picture may be worth a thousand words, the reader still needs the detail contained within the text.
 :::
 
-### Videos
+### Latin abbreviations
 
-Videos are an effective method to present a lot of information to the reader. However, just like images, the use of videos must be accompanied by knowledge of how to use them effectively. Following are guidelines for the use of video in your documentation.
+The use of some Latin abbreviations (such as 'e.g.', 'etc.', 'i.e.', 'et al.', and so on) should be avoided for the following reasons:
 
-* **Watch the video** - before you use the video in your documentation, watch it to check that its good quality, relevant to the section in which it's located, and provides sufficient information.
-* **Keep the content concise** - the content of the video should be limited to the specific purpose for which it is being used. For example, if a video is being used to illustrate configuration of a component, it should contain just that process.
-* **Refer to the video** - mention the video within the section in which it's being used.  Also, state the length of the video. For example: "*The above video demonstrates the slightly different 'Hg: Show Head Changes' command*".
-* **State the length of the video** - if the length of the video is not shown in the video object, state it in the text. For example, "*The above 11-second video demonstrates the slightly different 'Hg: Show Head Changes' command*".
+* Readers of the documentation may not use English as their 'first' language and may be unaware of the meaning of Latin abbreviations.
+* Often, when used, Latin abbreviations are not correctly punctuated, which detracts from the professional tone of the page's content.
 
-:::tip
-When deciding to use a video, keep in mind that it takes much more time to produce a video than to change some text.  A small change to a UI or a process is relatively easy to change in text.  The same change in a video may mean it  needs to be replaced or removed, which, ultimately, involves much more work.
+When tempted to use the Latin abbreviations shown in the following table, consider using the English equivalent.
+
+| Latin | English Equivalent
+|:--|:--|
+| e.g. | for example |
+| et al. | and colleagues / associates / team members |
+| etc. | and so on / and the rest |
+| i.e. | that is |
+| N.B. | Note |
+
+:::note
+**Key point**: whenever possible, use plain, easy-to-understand English in your documentation.
 :::
+
+### Links
+
+Within Flipper Docs, links are usually text-based and can be used to navigate your readers to several types of link targets, such as the following 'good' links:
+
+* For information on the type of links to avoid, see [Bad links](#bad-links), below.
+* For examples of using Markdown for headers, see the [Markdown Formatting](documentation-formatting.mdx#headers) page.
+* To learn all about Litho, see the [Litho Documentation](https://www.internalfb.com/intern/staticdocs/litho/docs/intro/motivation/) website.
+
+As can be seen in the link examples above, a link consists of the parts shown in the following table (but not necessarily in the same order).
+
+| Link part | Using the first example, above |
+| :-- | :-- |
+| Leading Phrase | "For information on the type of links to avoid, see" |
+| Target description | [Bad links] |
+| (Optional) Location | ", below" or "website"|
+| Target | (#bad-links) or a URL|
+
+:::tip Tips
+
+* **Navigation** - tell your readers where they are going, especially if the link takes them away from the Flipper Docs website (see [Bad links](#bad-links), below).
+* **Test** - check that your links do reach the expected target.
+* **Access** - keep in mind that some readers may not have access to certain pages or domains.
+* **Backticks** - don't use backticks in links as it changes the link's appearance. It has to look like a link for the user to know they can click on it.
+:::
+
+#### Bad links
+
+It's worth remembering that the reader won't know beforehand where a link is taking them unless it's stated (or at least suggested) in the 'Target description' or the 'Location'.
+
+Therefore, it's not a good idea to use links such as the following:
+
+* For information on the type of links to avoid, see [below](#markdown-code).
+* Click [here](documentation-formatting.mdx#headers) to see examples of using Markdown for headers.
+* To learn all about Litho, click [here](https://www.internalfb.com/intern/staticdocs/litho/docs/intro/motivation/).
+
+'Bad' links could lead to navigation confusion, frustration, and loss of comprehension.
+
+#### Markdown code
+
+For additional guidelines on using Markdown for links, see [Markdown Formatting](documentation-formatting.mdx#links).
 
 ### Lists
 
@@ -103,12 +227,14 @@ If the order of items in the list is irrelevant, use [bullet points](#bullet-poi
 #### Bullet Points
 
 * **Be concise but effective** - use as few words as possible but make sure the meaning is not lost.
-* **Capitalise the first word** of each bullet.
-* **Use emphasis** - where possible, emphasise the beginning of the bullet points to give the reader the chance to skim through easily but still get a basic understanding of the content of the list.
+* **Capitalise the first word** - do this for each bullet.
+* **One sentence per bullet point** - try to stick to one sentence per bullet point.
+* **Use emphasis** - where possible, emphasize the beginning of each bullet point to give the reader the chance to skim through easily but still get a basic understanding of the content of the list.
 * **Use sentences or fragments, not both** - within a single list, avoid using bullets that are full sentences mixed with other bullets that are just sentence fragments, phrases, or names.
 * **Punctuate consistently:**
-  * If at least one bullet is a sentence, end all bullets with a full stop.  Don't end a bullet with a semicolon (;).
+  * If at least one bullet is a sentence, end all bullets with a full stop. Don't end a bullet with a semicolon (;).
   * If all bullets are phrases, or fragments, use no end punctuation.
+* **Use Blank Lines** - make sure there is one blank line above and below the list.
 
 #### Numbered List
 
@@ -116,16 +242,42 @@ If the order of items in the list is irrelevant, use [bullet points](#bullet-poi
 2. **Be logical** - the items in the list should follow a logical flow, which guides the reader though the content in a manner that makes sense.
 3. **Keep the structure simple** - if your list is getting a bit complex in structure or stretches over several pages, consider breaking it up into a series of sub-sections.
 4. **Punctuate consistently** - each item in the list should end with a full stop, unless the item contains [bullet points](#bullet-points).
+5. **Use Blank Lines** - make sure there is one blank line above and below the numbered list.
 
-### Code Snippets
+###### Example lists
 
-Code snippets provide invaluable 'how to' examples to the reader: often, they are copied directly into a Developer's code.
+The bullet points used throughout this page provide examples of the style to be used.
 
-Remember that a snippet is 'a small part or piece of a thing' so keep your snippet short as short as possible and relevant to the section in which it is located.
+:::note
+Sometimes, it might not be possible to use an emphasized phrase (the part that is in bold) for each bullet. In such cases, try to apply the other bullet point guidelines to your list.
+:::
 
-### Markdown Features
+### Tabs
 
-For tips and guidelines on formatting Markdown features, see [Formatting Tips](documentation-formatting.mdx).
+Since Flipper supports multiple platforms, you may need to provide information that is specific to each platform. The Tab tool provides an excellent way of this information via use of the `CodeLanguageTabs` component.
+
+Tabs provide your reader with an easy method of switching from one platform (or process) to another without having to scroll up and down the page.
+
+#### Markdown code
+
+For an example of using Markdown for tabs, see [Markdown Formatting](documentation-formatting.mdx#tabs)
+
+### Videos
+
+Videos are an effective method of presenting a lot of information to the reader. However, just like [images](#images), the use of videos must be accompanied by knowledge of how to use them effectively. Following are guidelines for the use of video in your documentation:
+
+* **Watch the video** - before you use the video in your documentation, watch it to check that its good quality, relevant to the section in which it's located, and provides sufficient information.
+* **Keep the content concise**:
+  * The content of the video should be limited to the specific purpose for which it is being used.
+  * For example, if a video is being used to illustrate configuration of a component, it should contain just that process.
+* **Refer to the video** - mention the video within the section in which it's being used.
+* **State the length of the video**:
+  * If the length of the video is not shown in the video object, state it in the text.
+  * For example, "*The following 11-second video demonstrates the slightly different 'Hg: Show Head Changes' command*".
+
+:::tip
+When deciding to use a video, keep in mind that it takes much more time to produce a video than to change some text.  A small change to a UI or a process is relatively easy to change in text.  The same change in a video may mean it  needs to be replaced or removed, which, ultimately, involves much more work.
+:::
 
 ## Resources
 

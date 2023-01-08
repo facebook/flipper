@@ -5,27 +5,24 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import UIKit
 import FlipperKit
+import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
 
-
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     window = UIWindow()
 
     let client = FlipperClient.shared()
     let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
-    // If you want to debug componentkit view in swift, otherwise you can ignore the next line
-    FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper)
-    client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
+    client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper))
 
     client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
-    client?.add(FlipperKitExamplePlugin.sharedInstance());
-    client?.add(FKUserDefaultsPlugin.init(suiteName: nil))
+    client?.add(FlipperKitExamplePlugin.sharedInstance())
+    client?.add(FKUserDefaultsPlugin(suiteName: nil))
     client?.start()
 
     let storyboard = UIStoryboard(name: "MainStoryBoard", bundle: nil)
@@ -65,6 +62,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationWillTerminate(_ application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
   }
-
-
 }

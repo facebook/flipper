@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.app.Activity
 import android.view.View
+import android.view.ViewGroup
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.util.DisplayMetrics
@@ -16,7 +17,8 @@ import com.facebook.flipper.plugins.uidebugger.util.DisplayMetrics
 object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
 
   override fun onGetActiveChild(node: ApplicationRef): Any? {
-    return if (node.activitiesStack.isNotEmpty()) node.activitiesStack.last() else null
+    val children = onGetChildren(node)
+    return if (children.isNotEmpty()) children.last() else null
   }
 
   override fun onGetBounds(node: ApplicationRef): Bounds = DisplayMetrics.getDisplayBounds()
@@ -31,19 +33,23 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
   override fun onGetChildren(node: ApplicationRef): List<Any> {
     val children = mutableListOf<Any>()
 
-    val activeRoots = node.rootViews
+    val activeRoots = node.rootsResolver.rootViews()
 
-    val added = mutableSetOf<View>()
-    for (activity: Activity in node.activitiesStack) {
-      children.add(activity)
-      added.add(activity.window.decorView)
-    }
+    val decorViewToActivity: Map<View, Activity> =
+        node.activitiesStack.toList().map { it.window.decorView to it }.toMap()
 
-    // Picks up root views not tied to an activity (dialogs)
     for (root in activeRoots) {
-      if (!added.contains(root)) {
-        children.add(root)
-        added.add(root)
+      // if there is an activity for this root view use that,
+      // if not just return the mystery floating decor view
+      val activity = decorViewToActivity[root]
+      if (activity != null) {
+        children.add(activity)
+      } else {
+        if (root is ViewGroup && root.childCount > 0) {
+          // sometimes there is a root view on top that has no children and we dont want to add
+          // these as they will become active
+          children.add(root)
+        }
       }
     }
 

@@ -26,7 +26,7 @@ object DrawableDescriptor : ChainedDescriptor<Drawable>() {
   override fun onGetBounds(node: Drawable): Bounds =
       Bounds(node.bounds.left, node.bounds.top, node.bounds.width(), node.bounds.height())
 
-  override fun onGetData(
+  override fun onGetAttributes(
       node: Drawable,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {

@@ -26,6 +26,11 @@ Invoke a method on the Sonar desktop plugin with with a matching identifier.
 /**
 Invoke a method on the Sonar desktop plugin with with a matching identifier.
 */
+- (void)send:(NSString*)method withRawParams:(NSString*)params;
+
+/**
+Invoke a method on the Sonar desktop plugin with with a matching identifier.
+*/
 - (void)send:(NSString*)method withArrayParams:(NSArray*)params;
 
 /**

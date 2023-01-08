@@ -64,10 +64,20 @@ const columns: DataTableColumn<PerfStatsEvent>[] = [
     },
   },
   {
+    key: 'deferredComputationComplete',
+    title: 'Deferred processing time',
+    onRender: (row: PerfStatsEvent) => {
+      return formatDiff(row.queuingComplete, row.deferredComputationComplete);
+    },
+  },
+  {
     key: 'serializationComplete',
     title: 'Serialization time',
     onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.queuingComplete, row.serializationComplete);
+      return formatDiff(
+        row.deferredComputationComplete,
+        row.serializationComplete,
+      );
     },
   },
   {

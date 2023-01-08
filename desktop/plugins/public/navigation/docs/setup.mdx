@@ -18,7 +18,7 @@ This enables the Navigation Plugin to be integrated into existing navigation fra
 
 ### Using Android deep links
 
-The Navigation Plugin can be used with built in [deep links for Android](https://developer.android.com/training/app-links/deep-linking).
+The Navigation Plugin can be used with built-in [Deep Links for Android](https://developer.android.com/training/app-links/deep-linking).
 
 To deep link to an activity, edit the AndroidManifest.xml and add the intent filter for the given activity, as follows:
 
@@ -50,7 +50,7 @@ The Navigation Plugin can easily be integrated into a third-party navigation fra
 
 #### AirBnB deep link dispatch
 
-[Deep Link Dispatch](https://github.com/airbnb/DeepLinkDispatch) will work out of the box with Flipper for navigating to links, including support for url parameters.
+[DeepLinkDispatch](https://github.com/airbnb/DeepLinkDispatch) will work out of the box with Flipper for navigating to links, including support for url parameters.
 
 To add logging, simply add a BroadcastReceiver to your app that is called on any incoming deep links:
 
@@ -74,7 +74,3 @@ public class DeepLinkApplication extends Application {
   }
 }
 ```
-
-## iOS
-
-iOS support is coming soon.

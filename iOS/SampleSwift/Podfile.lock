@@ -1,9 +1,6 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - CocoaAsyncSocket (7.6.5)
-  - ComponentKit (0.31):
-    - RenderCore (= 0.31)
-    - Yoga (~> 1.14)
   - Flipper (0.172.0):
     - Flipper-Folly (~> 2.6)
   - Flipper-Boost-iOSX (1.76.0.1.11)
@@ -38,14 +35,6 @@ PODS:
   - FlipperKit/FlipperKitExamplePlugin (0.172.0):
     - FlipperKit/Core
   - FlipperKit/FlipperKitHighlightOverlay (0.172.0)
-  - FlipperKit/FlipperKitLayoutComponentKitSupport (0.172.0):
-    - ComponentKit (= 0.31)
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutHelpers
-    - FlipperKit/FlipperKitLayoutPlugin
-    - FlipperKit/FlipperKitLayoutTextSearchable
-    - RenderCore (= 0.31)
   - FlipperKit/FlipperKitLayoutHelpers (0.172.0):
     - FlipperKit/Core
     - FlipperKit/FlipperKitHighlightOverlay
@@ -72,7 +61,6 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
-  - RenderCore (0.31)
   - SocketRocket (0.6.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
@@ -88,7 +76,7 @@ DEPENDENCIES:
   - Flipper-PeerTalk
   - FlipperKit (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitExamplePlugin (from `../../FlipperKit.podspec`)
-  - FlipperKit/FlipperKitLayoutComponentKitSupport (from `../../FlipperKit.podspec`)
+  - FlipperKit/FlipperKitLayoutPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitUserDefaultsPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/SKIOSNetworkPlugin (from `../../FlipperKit.podspec`)
   - libevent
@@ -98,7 +86,6 @@ SPEC REPOS:
   https://github.com/CocoaPods/Specs:
     - boost-for-react-native
     - CocoaAsyncSocket
-    - ComponentKit
     - Flipper-Boost-iOSX
     - Flipper-DoubleConversion
     - Flipper-Fmt
@@ -107,7 +94,6 @@ SPEC REPOS:
     - Flipper-PeerTalk
     - libevent
     - OpenSSL-Universal
-    - RenderCore
     - SocketRocket
     - Yoga
     - YogaKit
@@ -121,7 +107,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  ComponentKit: 7bf7048b9814afc6b6641645a14177f95fd9b9ae
   Flipper: e57750a29313c49b9783a310150053d32b2b2b6f
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
@@ -132,11 +117,10 @@ SPEC CHECKSUMS:
   FlipperKit: 02fd59af13a1465d04268cbffe3f93505f0a1dc2
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  RenderCore: 090beb17b5bff80b86929a7ceb49df789923d23a
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: d2f6b1f5f7b3ca7994bb97a2c78943c23570db33
+PODFILE CHECKSUM: d4e5b460eb545e577a9a2a6843c68eb15ea4f4d9
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.11.2

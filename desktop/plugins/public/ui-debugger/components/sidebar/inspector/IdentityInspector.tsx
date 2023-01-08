@@ -18,6 +18,15 @@ type Props = {
   node: UINode;
 };
 
+const IdentityKey = styled.div({
+  padding: '0 16px',
+});
+
+const IdentityValue = styled.span({
+  fontSize: theme.fontSize.small,
+  wordBreak: 'break-all',
+});
+
 const IdentityContainer = styled.div(TopSpacedContainerStyle);
 
 export const IdentityInspector: React.FC<Props> = ({node}) => {
@@ -25,26 +34,28 @@ export const IdentityInspector: React.FC<Props> = ({node}) => {
     <IdentityContainer>
       <Row gutter={4}>
         <Col span="10">
-          <div style={{padding: '0 16px'}}>Name:</div>
+          <IdentityKey>Name:</IdentityKey>
         </Col>
-        <Col span="14" style={{fontSize: theme.fontSize.small}}>
-          {node.name}
-        </Col>
-      </Row>
-      <Row gutter={4}>
-        <Col span="10">
-          <div style={{padding: '0 16px'}}>Qualified name:</div>
-        </Col>
-        <Col span="14" style={{fontSize: theme.fontSize.small}}>
-          {node.qualifiedName}
+        <Col span="14">
+          <IdentityValue title={node.name}>{node.name}</IdentityValue>
         </Col>
       </Row>
       <Row gutter={4}>
         <Col span="10">
-          <div style={{padding: '0 16px'}}>Id:</div>
+          <IdentityKey>Qualified name:</IdentityKey>
         </Col>
-        <Col span="14" style={{fontSize: theme.fontSize.small}}>
-          {node.id}
+        <Col span="14">
+          <IdentityValue title={node.qualifiedName}>
+            {node.qualifiedName}
+          </IdentityValue>
+        </Col>
+      </Row>
+      <Row gutter={4}>
+        <Col span="10">
+          <IdentityKey>Id:</IdentityKey>
+        </Col>
+        <Col span="14">
+          <IdentityValue title={node.id.toString()}>{node.id}</IdentityValue>
         </Col>
       </Row>
       <CodeInspector name={node.qualifiedName} tags={node.tags} />

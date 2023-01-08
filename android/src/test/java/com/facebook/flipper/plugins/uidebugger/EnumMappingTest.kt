@@ -9,7 +9,6 @@ package com.facebook.flipper.plugins.uidebugger
 
 import android.view.View
 import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
-import com.facebook.flipper.plugins.uidebugger.model.Enumeration
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
@@ -38,7 +37,6 @@ class EnumMappingTest {
 
   @Test
   fun testTurnsIntoEnumInspectable() {
-    assertThat(
-        visibility.toInspectable(View.GONE), equalTo(InspectableValue.Enum(Enumeration("GONE"))))
+    assertThat(visibility.toInspectable(View.GONE), equalTo(InspectableValue.Enum("GONE")))
   }
 }

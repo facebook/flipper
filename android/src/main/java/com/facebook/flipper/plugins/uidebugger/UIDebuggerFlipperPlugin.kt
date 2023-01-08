@@ -59,7 +59,7 @@ class UIDebuggerFlipperPlugin(
         MetadataUpdateEvent.name,
         Json.encodeToString(
             MetadataUpdateEvent.serializer(),
-            MetadataUpdateEvent(MetadataRegister.staticMetadata())))
+            MetadataUpdateEvent(MetadataRegister.getPendingMetadata())))
 
     context.treeObserverManager.start()
   }
@@ -69,7 +69,7 @@ class UIDebuggerFlipperPlugin(
     this.context.connectionRef.connection = null
     Log.i(LogTag, "Disconnected")
 
-    MetadataRegister.clear()
+    MetadataRegister.reset()
 
     context.treeObserverManager.stop()
     context.bitmapPool.recycleAll()

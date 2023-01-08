@@ -6,8 +6,8 @@ target 'Sample' do
   platform :ios, '10.0'
 
   # See docs/getting-started/ios-native.mdx
-  pod 'FlipperKit', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit', :path => '../../FlipperKit.podspec', :configuration => 'Debug'  
+  pod 'FlipperKit/FlipperKitLayoutPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug' 
   pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitExamplePlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
@@ -21,7 +21,6 @@ target 'Sample' do
   pod 'Flipper-Boost-iOSX', :configuration => 'Debug'
   pod 'OpenSSL-Universal', :configuration => 'Debug'
   pod 'CocoaAsyncSocket', :configuration => 'Debug'
-  pod 'ComponentKit', '~> 0.31'
   pod 'SocketRocket', '~> 0.6.0'
   
 end

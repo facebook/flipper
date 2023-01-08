@@ -1,7 +1,7 @@
 {
   "name": "js-flipper",
   "title": "JS Flipper Bindings for Web-Socket based clients",
-  "version": "0.174.0",
+  "version": "0.176.1",
   "main": "lib/index.js",
   "browser": {
     "os": false
@@ -45,7 +45,7 @@
     "@types/node": "^17.0.41",
     "@types/sinon": "^10.0.11",
     "@types/ws": "^8.5.3",
-    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/eslint-plugin": "^5.43.0",
     "@typescript-eslint/parser": "^5.27.1",
     "ansi-to-html": "^0.7.2",
     "cross-env": "^7.0.3",

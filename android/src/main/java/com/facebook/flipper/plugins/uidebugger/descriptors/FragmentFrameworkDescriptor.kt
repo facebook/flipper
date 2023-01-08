@@ -32,7 +32,7 @@ class FragmentFrameworkDescriptor(val register: DescriptorRegister) :
   override fun onGetChildren(node: android.app.Fragment): List<Any> =
       node.view?.let { view -> listOf(view) } ?: listOf()
 
-  override fun onGetData(
+  override fun onGetAttributes(
       node: android.app.Fragment,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
@@ -42,8 +42,7 @@ class FragmentFrameworkDescriptor(val register: DescriptorRegister) :
     for (key in args.keySet()) {
       val metadata = MetadataRegister.get(NAMESPACE, key)
       val identifier =
-          metadata?.id
-              ?: MetadataRegister.registerDynamic(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, key)
+          metadata?.id ?: MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, key)
 
       when (val value = args[key]) {
         is Number -> props[identifier] = InspectableValue.Number(value)

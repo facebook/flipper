@@ -16,7 +16,7 @@
     "@oclif/config": "^1",
     "@oclif/parser": "^3.8.5",
     "@oclif/plugin-help": "^5.1.12",
-    "@oclif/plugin-warn-if-update-available": "^2.0.3",
+    "@oclif/plugin-warn-if-update-available": "^2.0.14",
     "ajv": "^6.12.2",
     "ajv-errors": "^1.0.1",
     "cli-ux": "^6.0.9",

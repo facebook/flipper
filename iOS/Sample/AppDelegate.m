@@ -8,7 +8,6 @@
 #import "AppDelegate.h"
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitExamplePlugin/FlipperKitExamplePlugin.h>
-#import <FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
@@ -16,7 +15,6 @@
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 
 #import "MainViewController.h"
-#import "RootViewController.h"
 
 #if !FB_SONARKIT_ENABLED
 #error \
@@ -34,8 +32,7 @@
 
   SKDescriptorMapper* layoutDescriptorMapper =
       [[SKDescriptorMapper alloc] initWithDefaults];
-  [FlipperKitLayoutComponentKitSupport
-      setUpWithDescriptorMapper:layoutDescriptorMapper];
+
   [client addPlugin:[[FlipperKitLayoutPlugin alloc]
                             initWithRootNode:application
                         withDescriptorMapper:layoutDescriptorMapper]];

@@ -20,7 +20,7 @@ object ColorDrawableDescriptor : ChainedDescriptor<ColorDrawable>() {
 
   override fun onGetName(node: ColorDrawable): String = node.javaClass.simpleName
 
-  override fun onGetData(
+  override fun onGetAttributes(
       node: ColorDrawable,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {

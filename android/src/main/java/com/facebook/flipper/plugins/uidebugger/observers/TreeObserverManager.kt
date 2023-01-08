@@ -23,6 +23,7 @@ import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
 import com.facebook.flipper.plugins.uidebugger.model.SubtreeUpdateEvent
+import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.*
@@ -37,7 +38,7 @@ data class CoordinateUpdate(val observerType: String, val nodeId: Id, val coordi
 data class SubtreeUpdate(
     val observerType: String,
     val rootId: Id,
-    val nodes: List<Node>,
+    val deferredNodes: List<MaybeDeferred<Node>>,
     val startTime: Long,
     val traversalCompleteTime: Long,
     val snapshotComplete: Long,
@@ -89,7 +90,7 @@ class TreeObserverManager(val context: Context) {
   }
 
   private fun sendMetadata() {
-    val metadata = MetadataRegister.dynamicMetadata()
+    val metadata = MetadataRegister.getPendingMetadata()
     if (metadata.size > 0) {
       context.connectionRef.connection?.send(
           MetadataUpdateEvent.name,
@@ -101,25 +102,28 @@ class TreeObserverManager(val context: Context) {
     val onWorkerThread = System.currentTimeMillis()
     val txId = txId.getAndIncrement().toLong()
 
+    val serialized: String?
+    val nodes = treeUpdate.deferredNodes.map { it.value() }
+    val deferredComptationComplete = System.currentTimeMillis()
+
+    // send metadata needs to occur after the deferred metadata extraction since inside the deferred
+    // computation we may create some fresh metadata
     sendMetadata()
 
-    val serialized: String?
     if (treeUpdate.snapshot == null) {
       serialized =
           Json.encodeToString(
               SubtreeUpdateEvent.serializer(),
-              SubtreeUpdateEvent(
-                  txId, treeUpdate.observerType, treeUpdate.rootId, treeUpdate.nodes))
+              SubtreeUpdateEvent(txId, treeUpdate.observerType, treeUpdate.rootId, nodes))
     } else {
       val stream = ByteArrayOutputStream()
       val base64Stream = Base64OutputStream(stream, Base64.DEFAULT)
-      treeUpdate.snapshot.bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, base64Stream)
+      treeUpdate.snapshot.bitmap?.compress(Bitmap.CompressFormat.PNG, 100, base64Stream)
       val snapshot = stream.toString()
       serialized =
           Json.encodeToString(
               SubtreeUpdateEvent.serializer(),
-              SubtreeUpdateEvent(
-                  txId, treeUpdate.observerType, treeUpdate.rootId, treeUpdate.nodes, snapshot))
+              SubtreeUpdateEvent(txId, treeUpdate.observerType, treeUpdate.rootId, nodes, snapshot))
 
       treeUpdate.snapshot.readyForReuse()
     }
@@ -130,7 +134,7 @@ class TreeObserverManager(val context: Context) {
     val socketEnd = System.currentTimeMillis()
     Log.i(
         LogTag,
-        "Sent event for ${treeUpdate.observerType} root ID ${treeUpdate.rootId} nodes ${treeUpdate.nodes.size}")
+        "Sent event for ${treeUpdate.observerType} root ID ${treeUpdate.rootId} nodes ${nodes.size}")
 
     val perfStats =
         PerfStatsEvent(
@@ -140,9 +144,10 @@ class TreeObserverManager(val context: Context) {
             traversalComplete = treeUpdate.traversalCompleteTime,
             snapshotComplete = treeUpdate.snapshotComplete,
             queuingComplete = onWorkerThread,
+            deferredComputationComplete = deferredComptationComplete,
             serializationComplete = serializationEnd,
             socketComplete = socketEnd,
-            nodesCount = treeUpdate.nodes.size)
+            nodesCount = nodes.size)
 
     context.connectionRef.connection?.send(
         PerfStatsEvent.name, Json.encodeToString(PerfStatsEvent.serializer(), perfStats))

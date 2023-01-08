@@ -13,7 +13,6 @@
 		53D59DB320ABA18400207065 /* NetworkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAA20ABA18300207065 /* NetworkViewController.m */; };
 		53D59DB420ABA18400207065 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAB20ABA18300207065 /* AppDelegate.m */; };
 		53D59DB520ABA18400207065 /* MainViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAD20ABA18300207065 /* MainViewController.mm */; };
-		53D59DB620ABA18400207065 /* RootViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAF20ABA18300207065 /* RootViewController.mm */; };
 		53D59DB720ABA18400207065 /* MainStoryBoard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 53D59DB020ABA18400207065 /* MainStoryBoard.storyboard */; };
 		53D59DB820ABA18400207065 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 53D59DB120ABA18400207065 /* Icons.xcassets */; };
 		53E0DE5420ABA0E4005682E1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E0DE5320ABA0E4005682E1 /* main.m */; };
@@ -29,8 +28,6 @@
 		53D59DAB20ABA18300207065 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		53D59DAC20ABA18300207065 /* NetworkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkViewController.h; sourceTree = SOURCE_ROOT; };
 		53D59DAD20ABA18300207065 /* MainViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MainViewController.mm; sourceTree = SOURCE_ROOT; };
-		53D59DAE20ABA18300207065 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = SOURCE_ROOT; };
-		53D59DAF20ABA18300207065 /* RootViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RootViewController.mm; sourceTree = SOURCE_ROOT; };
 		53D59DB020ABA18400207065 /* MainStoryBoard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryBoard.storyboard; sourceTree = SOURCE_ROOT; };
 		53D59DB120ABA18400207065 /* Icons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Icons.xcassets; sourceTree = SOURCE_ROOT; };
 		53D59DB220ABA18400207065 /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = SOURCE_ROOT; };
@@ -68,8 +65,6 @@
 				53D59DAA20ABA18300207065 /* NetworkViewController.m */,
 				4E10233F216AD7B400160734 /* UserDefaultsViewController.h */,
 				4E102340216AD7B400160734 /* UserDefaultsViewController.m */,
-				53D59DAE20ABA18300207065 /* RootViewController.h */,
-				53D59DAF20ABA18300207065 /* RootViewController.mm */,
 				53E0DE5220ABA0E4005682E1 /* Info.plist */,
 				53E0DE5320ABA0E4005682E1 /* main.m */,
 				534252A9217DECCD0092D02B /* CommunicationDemoViewController.h */,
@@ -228,7 +223,6 @@
 				53D59DB420ABA18400207065 /* AppDelegate.m in Sources */,
 				53B4A36B217E2B6200B36A53 /* CommunicationDemoViewController.mm in Sources */,
 				53D59DB520ABA18400207065 /* MainViewController.mm in Sources */,
-				53D59DB620ABA18400207065 /* RootViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,7 +353,6 @@
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
-					"\"${PODS_ROOT}/Headers/Public/ComponentKit\"",
 					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
 					"\"${PODS_ROOT}/Headers/Public/Folly\"",
 					"\"${PODS_ROOT}/Headers/Public/PeerTalk\"",
@@ -424,7 +417,6 @@
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
-					"\"${PODS_ROOT}/Headers/Public/ComponentKit\"",
 					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
 					"\"${PODS_ROOT}/Headers/Public/Folly\"",
 					"\"${PODS_ROOT}/Headers/Public/PeerTalk\"",

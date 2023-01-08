@@ -60,12 +60,20 @@ export const replaceRequiredParametersWithValues = (
 };
 
 export const getRequiredParameters = (uri: string) => {
-  const parameterRegExp = /{[^?]*?}/g;
+  // Add = to the matching group to filter out stringified JSON parameters
+  const parameterRegExp = /={[^?]*?}/g;
   const matches: Array<string> = [];
   let match = parameterRegExp.exec(uri);
   while (match != null) {
     if (match[0]) {
-      matches.push(match[0]);
+      // Remove = from the match
+      const target = match[0].substring(1);
+      try {
+        // If the value could be parsed asa valid JSON, ignore it
+        JSON.parse(target);
+      } catch {
+        matches.push(target);
+      }
     }
     match = parameterRegExp.exec(uri);
   }
