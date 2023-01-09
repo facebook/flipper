@@ -69,16 +69,16 @@ async function generatePluginDocs() {
       const id = name.replace('flipper-plugin-', '');
       const generatedPluginResourcesPath = path.join(generatedPluginSymlinksDir, id);      
       await fs.symlink(pluginSourceDocsDir, generatedPluginResourcesPath, 'junction');
-      const setupDocPath = path.join(pluginSourceDocsDir, 'setup.mdx');
-      const setupDocsExists = await fs.pathExists(
-        setupDocPath,
-      );
-      const overviewDocPath = path.join(pluginSourceDocsDir, 'overview.mdx');
-      const overviewDocsExists = await fs.pathExists(
-        overviewDocPath,
-      );
+      const [setupDocRelativePath, overviewDocRelativePath] = await Promise.all([
+        getInternalOrPublicDocRelativePathOrNull(pluginSourceDocsDir, 'setup.mdx'), 
+        getInternalOrPublicDocRelativePathOrNull(pluginSourceDocsDir, 'overview.mdx'),
+      ]);      
+      const setupDocsExists = setupDocRelativePath !== null;
+      const overviewDocsExists = overviewDocRelativePath !== null;
       if (setupDocsExists) {
+        const setupDocPath = path.join(pluginSourceDocsDir, setupDocRelativePath);
         const customEditUrl = `${repoUrl}/${path.relative(repoRoot, setupDocPath)}`;
+        const setupArticleImportPath = path.join(relativePluginSymlinksDir, id, setupDocRelativePath);
         await fs.writeFile(
           path.join(generatedPluginsSetupDocsDir, `${id}.mdx`),
           `---
@@ -87,7 +87,7 @@ title: ${title} Plugin Setup
 sidebar_label: ${title}
 custom_edit_url: ${customEditUrl}
 ---
-import Article from '${relativePluginSymlinksDir}/${id}/setup.mdx';
+import Article from '${setupArticleImportPath}';
 
 <Article />
 `,
@@ -95,7 +95,9 @@ import Article from '${relativePluginSymlinksDir}/${id}/setup.mdx';
       }
 
       if (overviewDocsExists) {
+        const overviewDocPath = path.join(pluginSourceDocsDir, overviewDocRelativePath);
         const customEditUrl = `${repoUrl}/${path.relative(repoRoot, overviewDocPath)}`;
+        const overviewArticleImportPath = path.join(relativePluginSymlinksDir, id, overviewDocRelativePath);
         const linkToSetup = setupDocsExists
           ? `
 → [See setup instructions for the ${title} plugin](../../setup/plugins/${id}.mdx)
@@ -110,7 +112,7 @@ title: ${title} Plugin
 sidebar_label: ${title}
 custom_edit_url: ${customEditUrl}
 ---
-import Article from '${relativePluginSymlinksDir}/${id}/overview.mdx';
+import Article from '${overviewArticleImportPath}';
 ${linkToSetup}
 
 <Article />
@@ -119,6 +121,16 @@ ${linkToSetup}
       }
     }
   }
+}
+
+async function getInternalOrPublicDocRelativePathOrNull(docsDir: string, docName: string) {  
+  if (process.env.FB_INTERNAL && await fs.pathExists(path.join(docsDir, 'fb', docName))) {    
+    return path.join('fb', docName);
+  }  
+  if (await fs.pathExists(path.join(docsDir, docName))) {
+    return docName;
+  }
+  return null
 }
 
 generatePluginDocs()
