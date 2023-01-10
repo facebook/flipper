@@ -16,6 +16,6 @@ elif [ "$IS_SNAPSHOT" == "" ]; then
   echo "Skipping build. Given build doesn't appear to be a SNAPSHOT release."
   exit 1
 else
-  openssl aes-256-cbc -d -in scripts/gradle-publish-keys.enc -k "$ANDROID_PUBLISH_KEY" >> "$BASEDIR/gradle.properties"
+  openssl aes-256-cbc -pbkdf2 -d -in scripts/gradle-publish-keys.enc -k "$ANDROID_PUBLISH_KEY" >> "$BASEDIR/gradle.properties"
   "$BASEDIR"/gradlew publish
 fi
