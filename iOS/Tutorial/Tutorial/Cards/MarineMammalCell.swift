@@ -20,23 +20,23 @@ struct MarineMammal {
 }
 
 class MarineMammalCell: UITableViewCell {
-  
+
   @IBOutlet weak var photo: UIImageView!
   @IBOutlet weak var name: UILabel!
-  
+
   func populate(marineMammal: MarineMammal) {
     let task = URLSession.shared.dataTask(with: marineMammal.image) { [weak self] (data, response, error) in
       if let unwrappedError = error {
         print(unwrappedError)
         return
       }
-      
+
       guard let unwrappedData = data else {
         print("No Image data received")
         return
       }
       let image = UIImage(data: unwrappedData)
-      
+
       guard let unwrappedImage = image else {
         print("Failed to instantiate an image from Image data")
         return
@@ -49,4 +49,3 @@ class MarineMammalCell: UITableViewCell {
     self.name.text = marineMammal.name
   }
 }
-
