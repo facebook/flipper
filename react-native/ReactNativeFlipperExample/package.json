@@ -17,7 +17,7 @@
     "react-native-windows": "^0.69.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.5",
+    "@babel/core": "^7.20.12",
     "@babel/runtime": "^7.20.6",
     "babel-jest": "^29.1.2",
     "jest": "^28.1.3",
