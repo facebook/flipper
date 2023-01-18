@@ -14,7 +14,7 @@ clap = { version = "^3", features = ["derive", "cargo"] }
 shellexpand = "^2"
 tar = "0.4.38"
 serde = { version = "^1", features = ["derive"] }
-serde_yaml = "0.9.14"
+serde_yaml = "0.9.16"
 anyhow = "^1"
 sha2 = "0.10.6"
 data-encoding = "^2"
