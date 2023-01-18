@@ -24,7 +24,7 @@
     "metro-react-native-babel-preset": "^0.73.1",
     "react-test-renderer": "18.2.0",
     "relative-deps": "^1.0.7",
-    "metro-config": "^0.66.2"
+    "metro-config": "^0.74.0"
   },
   "jest": {
     "preset": "react-native"
