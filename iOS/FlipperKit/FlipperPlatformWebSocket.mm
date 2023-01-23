@@ -144,6 +144,10 @@ static constexpr int connectionKeepaliveSeconds = 10;
     return;
   }
 
+  _socket = [[SRWebSocket alloc] initWithURL:self->_url
+                              securityPolicy:self->_policy];
+  _socket.delegate = self;
+
   __weak auto weakSelf = self;
   [_dispatchQueue addOperationWithBlock:^{
     __strong auto strongSelf = weakSelf;
@@ -158,33 +162,32 @@ static constexpr int connectionKeepaliveSeconds = 10;
       return;
     }
 
-    strongSelf->_socket = [[SRWebSocket alloc] initWithURL:self->_url
-                                            securityPolicy:self->_policy];
-    strongSelf->_socket.delegate = self;
     [strongSelf->_socket open];
   }];
 }
 
 - (void)disconnect {
+  _socket.delegate = nil;
+
+  // Manually trigger a 'close' event as SocketRocket close method will
+  // not notify the delegate. SocketRocket only triggers the close event
+  // when the connection is closed from the server. Furthermore,
+  // we are clearing the delegate above.
+  _eventHandler(facebook::flipper::SocketEvent::CLOSE);
+
+  _eventHandler = [](facebook::flipper::SocketEvent) {};
+  _messageHandler = ^(const std::string&) {
+  };
+  _policy.certificateProvider = [](char* _Nonnull, size_t) { return ""; };
+
   [_dispatchQueue cancelAllOperations];
+  [_dispatchQueue waitUntilAllOperationsAreFinished];
 
   if ([_keepAlive isValid]) {
     [_keepAlive invalidate];
   }
   _keepAlive = nil;
-
-  // Manually trigger a 'close' event as SocketRocket close method will
-  // not notify the delegate. SocketRocket only triggers the close event
-  // when the connection is closed from the server.
-  _eventHandler(facebook::flipper::SocketEvent::CLOSE);
-
-  if (_socket) {
-    // Clear the socket delegate before close. Ensures that we won't get
-    // any messages after the disconnect takes place.
-    _socket.delegate = nil;
-    [_socket close];
-    _socket = nil;
-  };
+  _socket = nil;
 }
 
 - (void)send:(NSString*)message
@@ -202,7 +205,6 @@ static constexpr int connectionKeepaliveSeconds = 10;
 
 - (void)setCertificateProvider:
     (facebook::flipper::SocketCertificateProvider)certificateProvider {
-  _certificateProvider = certificateProvider;
   _policy.certificateProvider = certificateProvider;
 }
 
@@ -241,7 +243,6 @@ static constexpr int connectionKeepaliveSeconds = 10;
   } else {
     _eventHandler(facebook::flipper::SocketEvent::ERROR);
   }
-  _socket = nil;
 }
 
 - (void)_webSocketDidClose {
@@ -251,7 +252,6 @@ static constexpr int connectionKeepaliveSeconds = 10;
   _keepAlive = nil;
 
   _eventHandler(facebook::flipper::SocketEvent::CLOSE);
-  _socket = nil;
 }
 
 - (void)_webSocketDidReceiveMessage:(id)message {

@@ -112,15 +112,15 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
   };
 
   if (endpoint_.secure) {
-    socket_.certificateProvider = [this](
-                                      char* _Nonnull password, size_t length) {
-      auto pkcs12 = connectionContextStore_->getCertificate();
-      if (pkcs12.first.length() == 0) {
-        return std::string("");
-      }
-      strncpy(password, pkcs12.second.c_str(), length);
-      return pkcs12.first;
-    };
+    [socket_
+        setCertificateProvider:[this](char* _Nonnull password, size_t length) {
+          auto pkcs12 = connectionContextStore_->getCertificate();
+          if (pkcs12.first.length() == 0) {
+            return std::string("");
+          }
+          strncpy(password, pkcs12.second.c_str(), length);
+          return pkcs12.first;
+        }];
   }
 
   [socket_ connect];
