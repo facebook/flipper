@@ -11,7 +11,7 @@
 #import <FlipperKitLayoutTextSearchable/FKTextSearchable.h>
 
 @implementation SKNodeDescriptor {
-  id<SKDescriptorMapperProtocol> _mapper;
+  __weak id<SKDescriptorMapperProtocol> _mapper;
 }
 
 - (void)setUp {
