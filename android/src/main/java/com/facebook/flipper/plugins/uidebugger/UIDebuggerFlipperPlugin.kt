@@ -18,9 +18,6 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.InitEvent
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 const val LogTag = "ui-debugger"
@@ -31,7 +28,6 @@ class UIDebuggerFlipperPlugin(
     observerFactory: TreeObserverFactory?
 ) : FlipperPlugin {
 
-  val mainScope = CoroutineScope(Dispatchers.Main)
   private val context: Context =
       Context(
           ApplicationRef(application),
@@ -65,7 +61,7 @@ class UIDebuggerFlipperPlugin(
             MetadataUpdateEvent.serializer(),
             MetadataUpdateEvent(MetadataRegister.extractPendingMetadata())))
 
-    mainScope.launch { context.treeObserverManager.start() }
+    context.treeObserverManager.start()
   }
 
   @Throws(Exception::class)
@@ -75,10 +71,8 @@ class UIDebuggerFlipperPlugin(
 
     MetadataRegister.reset()
 
-    mainScope.launch {
-      context.treeObserverManager.stop()
-      context.bitmapPool.recycleAll()
-    }
+    context.treeObserverManager.stop()
+    context.bitmapPool.recycleAll()
   }
 
   override fun runInBackground(): Boolean {

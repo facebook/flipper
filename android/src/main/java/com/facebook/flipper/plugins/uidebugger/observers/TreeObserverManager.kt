@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.observers
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.os.Looper
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
@@ -51,6 +52,7 @@ class TreeObserverManager(val context: Context) {
 
   private var job: Job? = null
   private val workerScope = CoroutineScope(Dispatchers.IO)
+  private val mainScope = CoroutineScope(Dispatchers.Main)
   private val txId = AtomicInteger()
 
   fun enqueueUpdate(update: SubtreeUpdate) {
@@ -68,6 +70,9 @@ class TreeObserverManager(val context: Context) {
   @SuppressLint("NewApi")
   fun start() {
 
+    if (Looper.myLooper() != Looper.getMainLooper()) {
+      mainScope.launch { start() }
+    }
     batchedUpdates = Channel(Channel.UNLIMITED)
     rootObserver.subscribe(context.applicationRef)
 
