@@ -14,7 +14,7 @@
     "fb-watchman": "^2.0.1",
     "flipper-common": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
-    "fs-extra": "^10.1.0",
+    "fs-extra": "^11.1.0",
     "metro": "^0.70.2",
     "metro-cache": "^0.70.2",
     "metro-minify-terser": "^0.70.2",
