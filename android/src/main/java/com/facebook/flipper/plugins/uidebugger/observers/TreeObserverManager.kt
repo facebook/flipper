@@ -17,8 +17,6 @@ import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.core.Context
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
-import com.facebook.flipper.plugins.uidebugger.model.Coordinate
-import com.facebook.flipper.plugins.uidebugger.model.CoordinateUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
@@ -32,9 +30,6 @@ import kotlinx.serialization.json.Json
 
 sealed interface Update
 
-data class CoordinateUpdate(val observerType: String, val nodeId: Id, val coordinate: Coordinate) :
-    Update
-
 data class SubtreeUpdate(
     val observerType: String,
     val rootId: Id,
@@ -43,18 +38,18 @@ data class SubtreeUpdate(
     val traversalCompleteTime: Long,
     val snapshotComplete: Long,
     val snapshot: BitmapPool.ReusableBitmap?
-) : Update
+)
 
 /** Holds the root observer and manages sending updates to desktop */
 class TreeObserverManager(val context: Context) {
 
   private val rootObserver = ApplicationTreeObserver(context)
-  private lateinit var updates: Channel<Update>
+  private lateinit var updates: Channel<SubtreeUpdate>
   private var job: Job? = null
   private val workerScope = CoroutineScope(Dispatchers.IO)
   private val txId = AtomicInteger()
 
-  fun enqueueUpdate(update: Update) {
+  fun enqueueUpdate(update: SubtreeUpdate) {
     updates.trySend(update)
   }
 
@@ -72,15 +67,8 @@ class TreeObserverManager(val context: Context) {
         workerScope.launch {
           while (isActive) {
             try {
-              when (val update = updates.receive()) {
-                is SubtreeUpdate -> sendSubtreeUpdate(update)
-                is CoordinateUpdate -> {
-                  val event =
-                      CoordinateUpdateEvent(update.observerType, update.nodeId, update.coordinate)
-                  val serialized = Json.encodeToString(CoordinateUpdateEvent.serializer(), event)
-                  context.connectionRef.connection?.send(CoordinateUpdateEvent.name, serialized)
-                }
-              }
+              val update = updates.receive()
+              sendSubtreeUpdate(update)
             } catch (e: CancellationException) {} catch (e: java.lang.Exception) {
               Log.e(LogTag, "Unexpected Error in channel ", e)
             }
