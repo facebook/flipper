@@ -90,7 +90,7 @@ class TreeObserverManager(val context: Context) {
   }
 
   private fun sendMetadata() {
-    val metadata = MetadataRegister.getPendingMetadata()
+    val metadata = MetadataRegister.extractPendingMetadata()
     if (metadata.size > 0) {
       context.connectionRef.connection?.send(
           MetadataUpdateEvent.name,
