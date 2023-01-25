@@ -93,6 +93,9 @@ class TreeObserverManager(val context: Context) {
 
   private fun sendBatchedUpdate(batchedUpdate: BatchedUpdate) {
 
+    Log.i(
+        LogTag,
+        "Got update from ${batchedUpdate.updates.size} observers at time ${batchedUpdate.frameTimeMs}")
     val onWorkerThread = System.currentTimeMillis()
 
     val nodes = batchedUpdate.updates.flatMap { it.deferredNodes.map { it.value() } }
