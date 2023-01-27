@@ -23,14 +23,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// A message handler used to dispatch messages received from the server.
 @property(nonatomic) facebook::flipper::SocketMessageHandler messageHandler;
 
+/// A certificate provider used to obtain the client certificate used for
+/// authentication.
+@property(nonatomic)
+    facebook::flipper::SocketCertificateProvider certificateProvider;
+
 /// Initializes an instance of FliperWebSocketTransport with an endpoint URL.
 /// @param url Endpoint URL used to establish the connection.
 - (instancetype)initWithURL:(NSURL* _Nonnull)url;
-
-/// A certificate provider used to obtain the client certificate used for
-/// authentication.
-- (void)setCertificateProvider:
-    (facebook::flipper::SocketCertificateProvider)certificateProvider;
 
 /// Connect to the endpoint.
 - (void)connect;
