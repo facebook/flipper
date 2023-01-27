@@ -20,8 +20,6 @@ object MetadataRegister {
 
   const val TYPE_IDENTITY = "identity"
   const val TYPE_ATTRIBUTE = "attribute"
-  const val TYPE_LAYOUT = "layout"
-  const val TYPE_DOCUMENTATION = "documentation"
 
   private val lock = "lock"
 
