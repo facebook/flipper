@@ -11,6 +11,15 @@ Flipper is a 'work in progress' and issues may occur. This page contains known i
 
 <InternalAndroid />
 
+## Stuck in "Currently Connecting..."
+
+There are sadly many non-deterministic reasons why Flipper may not be able to connect. It can often help to restart all pieces related to the connection:
+
+- Kill the app on the emulator and restart it.
+- Restart the emulator.
+- Restart adb with `adb kill-server && adb start-server`.
+- The nuclear option: Restart your computer (especially when USB connectivity is involved)
+
 <OssOnly>
 
 ## In-app diagnostics

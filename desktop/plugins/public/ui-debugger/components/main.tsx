@@ -24,7 +24,6 @@ import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
 import {Spin} from 'antd';
-import FeedbackRequest from './fb-stubs/feedback';
 import {Tree2} from './Tree';
 
 export function Component() {
@@ -47,7 +46,6 @@ export function Component() {
   if (rootId) {
     return (
       <Layout.Container grow padh="small" padv="medium">
-        <FeedbackRequest />
         <Controls />
         <Layout.Horizontal grow pad="small" gap="small">
           <Layout.Container grow gap="small">

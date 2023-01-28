@@ -39,7 +39,7 @@ abstract class TreeObserver<T> {
   abstract fun unsubscribe()
 
   /** Traverses the layout hierarchy while managing any encountered child observers. */
-  fun processUpdate(
+  fun traverseAndSend(
       context: Context,
       root: Any,
       snapshotBitmap: BitmapPool.ReusableBitmap? = null
