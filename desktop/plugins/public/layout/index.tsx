@@ -337,7 +337,38 @@ export default class LayoutPlugin extends FlipperPlugin<
       return;
     }
 
-    const key = `open-ui-debugger-${Date.now()}`;
+    const lastShownTimestampKey =
+      'layout-plugin-UIDebuggerBannerLastShownTimestamp';
+    let lastShownTimestampFromStorage = undefined;
+    try {
+      lastShownTimestampFromStorage = window.localStorage.getItem(
+        lastShownTimestampKey,
+      );
+    } catch (e) {}
+
+    if (lastShownTimestampFromStorage) {
+      const WithinOneDay = (timestamp: number) => {
+        const Day = 1 * 24 * 60 * 60 * 1000;
+        const DayAgo = Date.now() - Day;
+
+        return timestamp > DayAgo;
+      };
+      const lastShownTimestamp = Number(lastShownTimestampFromStorage);
+      if (WithinOneDay(lastShownTimestamp)) {
+        // The banner was shown less than 24-hours ago, don't show it again.
+        return;
+      }
+    }
+
+    const lastShownTimestamp = Date.now();
+    try {
+      window.localStorage.setItem(
+        lastShownTimestampKey,
+        String(lastShownTimestamp),
+      );
+    } catch (e) {}
+
+    const key = `open-ui-debugger-${lastShownTimestamp}`;
     const btn = (
       <Button
         type="primary"

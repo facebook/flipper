@@ -8,7 +8,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "devDependencies": {
     "@adobe/node-fetch-retry": "^2.2.0",
-    "@babel/code-frame": "^7.16.7",
+    "@babel/code-frame": "^7.18.6",
     "@types/adobe__node-fetch-retry": "^1.0.4",
     "@types/babel__code-frame": "^7.0.3",
     "@types/detect-port": "^1.3.2",
