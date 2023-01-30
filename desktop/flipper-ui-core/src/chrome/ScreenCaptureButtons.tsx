@@ -45,7 +45,7 @@ export default function ScreenCaptureButtons() {
       setIsRecording(true);
       const videoPath = path.join(getCaptureLocation(), getFileName('mp4'));
       return selectedDevice.startScreenCapture(videoPath).catch((e) => {
-        console.error('Failed to start recording', e);
+        console.warn('Failed to start recording', e);
         message.error('Failed to start recording' + e);
         setIsRecording(false);
       });
@@ -58,8 +58,8 @@ export default function ScreenCaptureButtons() {
           }
         })
         .catch((e) => {
-          console.error('Failed to start recording', e);
-          message.error('Failed to start recording' + e);
+          console.warn('Failed to stop recording', e);
+          message.error('Failed to stop recording' + e);
         })
         .finally(() => {
           setIsRecording(false);
