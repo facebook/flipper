@@ -9,7 +9,7 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "chalk": "^4",
+    "chalk": "^5",
     "exit-hook": "^2.1.1",
     "express": "^4.17.3",
     "file-stream-rotator": "^0.6.1",

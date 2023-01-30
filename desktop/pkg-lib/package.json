@@ -9,7 +9,7 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "chalk": "^4",
+    "chalk": "^5",
     "esbuild": "^0.15.7",
     "fb-watchman": "^2.0.1",
     "flipper-common": "0.0.0",
