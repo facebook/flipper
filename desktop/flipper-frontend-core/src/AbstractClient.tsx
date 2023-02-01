@@ -129,8 +129,11 @@ export default abstract class AbstractClient extends EventEmitter {
     const {plugins} = await timeout(
       30 * 1000,
       this.rawCall<{plugins: Plugins}>('getPlugins', false),
-      'Fetch plugin timeout for ' + this.id,
-    );
+      'Fetch plugin timeout',
+    ).catch((e) => {
+      console.warn('Fetch plugin timeout for ' + this.id);
+      throw e;
+    });
     this.plugins = new Set(plugins);
     console.info('AbstractClient.loadPlugins', this.query, plugins);
     return plugins;
