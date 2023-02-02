@@ -13,6 +13,7 @@ import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.core.Context
 import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
+import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 
 /**
  * Responsible for observing the activity stack and managing the subscription to the top most
@@ -35,9 +36,14 @@ class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRe
 
           override fun onRootViewsChanged(rootViews: List<View>) {
             Log.i(LogTag, "Root views updated, num ${rootViews.size}")
-            processUpdate(context, applicationRef)
+            context.sharedThrottle.trigger()
           }
         }
+
+    context.sharedThrottle.registerCallback(this.objectIdentity()) {
+      traverseAndSend(context, applicationRef)
+    }
+
     context.applicationRef.rootsResolver.attachListener(rootViewListener)
     // On subscribe, trigger a traversal on whatever roots we have
     rootViewListener.onRootViewsChanged(applicationRef.rootsResolver.rootViews())
@@ -48,5 +54,6 @@ class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRe
 
   override fun unsubscribe() {
     context.applicationRef.rootsResolver.attachListener(null)
+    context.sharedThrottle.deregisterCallback(this.objectIdentity())
   }
 }

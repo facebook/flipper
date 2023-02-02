@@ -19,16 +19,18 @@ import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 export const Visualization2D: React.FC<
   {
     rootId: Id;
+    width: number;
     nodes: Map<Id, UINode>;
     selectedNode?: Id;
     onSelectNode: (id?: Id) => void;
     modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({rootId, nodes, selectedNode, onSelectNode, modifierPressed}) => {
+> = ({rootId, width, nodes, selectedNode, onSelectNode, modifierPressed}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
   const instance = usePlugin(plugin);
 
   const snapshot = useValue(instance.snapshot);
+  const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
   const focusedNodeId = useValue(instance.uiState.focusedNode);
 
   const focusState = useMemo(() => {
@@ -40,7 +42,12 @@ export const Visualization2D: React.FC<
     const mouseListener = throttle((ev: MouseEvent) => {
       const domRect = rootNodeRef.current?.getBoundingClientRect();
 
-      if (!focusState || !domRect || instance.uiState.isContextMenuOpen.get()) {
+      if (
+        !focusState ||
+        !domRect ||
+        instance.uiState.isContextMenuOpen.get() ||
+        !snapshotNode
+      ) {
         return;
       }
       const rawMouse = {x: ev.clientX, y: ev.clientY};
@@ -50,6 +57,8 @@ export const Visualization2D: React.FC<
       }
 
       //make the mouse coord relative to the dom rect of the visualizer
+
+      const pxScaleFactor = calcPxScaleFactor(snapshotNode.bounds, width);
 
       const offsetMouse = offsetCoordinate(rawMouse, domRect);
       const scaledMouse = {
@@ -78,22 +87,27 @@ export const Visualization2D: React.FC<
     focusState,
     nodes,
     instance.uiState.isContextMenuOpen,
+    width,
+    snapshotNode,
   ]);
 
-  if (!focusState) {
+  if (!focusState || !snapshotNode) {
     return null;
   }
 
-  const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
+  const pxScaleFactor = calcPxScaleFactor(snapshotNode.bounds, width);
 
   return (
     <ContextMenu nodes={nodes}>
       <div
         //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
-        style={{
-          width: toPx(focusState.actualRoot.bounds.width),
-          height: toPx(focusState.actualRoot.bounds.height),
-        }}>
+        style={
+          {
+            [pxScaleFactorCssVar]: pxScaleFactor,
+            width: toPx(focusState.actualRoot.bounds.width),
+            height: toPx(focusState.actualRoot.bounds.height),
+          } as React.CSSProperties
+        }>
         <div
           ref={rootNodeRef as any}
           onMouseLeave={(e) => {
@@ -342,6 +356,8 @@ const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
 const longHoverDelay = 200;
 const outerBorderWidth = '10px';
 const outerBorderOffset = `-${outerBorderWidth}`;
+const pxScaleFactorCssVar = '--pxScaleFactor';
+const MouseThrottle = 32;
 
 //this is the thick black border around the whole vizualization, the border goes around the content
 //hence the top,left,right,botton being negative to increase its size
@@ -358,11 +374,8 @@ const OuterBorder = styled.div({
   borderRadius: '10px',
 });
 
-const pxScaleFactor = 2;
-const MouseThrottle = 32;
-
 function toPx(n: number) {
-  return `${n / pxScaleFactor}px`;
+  return `calc(${n}px / var(${pxScaleFactorCssVar})`;
 }
 
 function toNestedNode(
@@ -505,4 +518,8 @@ function offsetCoordinate(
     x: coordinate.x - offset.x,
     y: coordinate.y - offset.y,
   };
+}
+
+function calcPxScaleFactor(snapshotBounds: Bounds, availableWidth: number) {
+  return snapshotBounds.width / availableWidth;
 }

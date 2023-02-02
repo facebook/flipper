@@ -52,7 +52,7 @@ const NamedAttributeInspector: React.FC<NamedAttributeInspectorProps> = ({
   children,
 }) => {
   return (
-    <Row style={RowStyle}>
+    <Row style={RowStyle} justify="center" align="middle" gutter={[16, 0]}>
       <Col span={8} style={AutoMarginStyle}>
         {name}
       </Col>
@@ -82,7 +82,7 @@ const ObjectAttributeInspector: React.FC<{
             style={{
               paddingLeft: level,
             }}>
-            {create(metadata, attributeName, inspectableValue, level + 2)}
+            {create(metadata, attributeName, inspectableValue, level + 5)}
           </ObjectContainer>
         );
       })}
@@ -108,7 +108,7 @@ const ArrayAttributeInspector: React.FC<{
             style={{
               paddingLeft: level,
             }}>
-            {create(metadata, attributeName, inspectableValue, level + 2)}
+            {create(metadata, attributeName, inspectableValue, level + 5)}
           </ObjectContainer>
         );
       })}
@@ -282,7 +282,12 @@ export const AttributesInspector: React.FC<Props> = ({
       {...sections}
       {rawEnabled && (
         <Panel key="Raw" title="Raw Data" collapsed>
-          <DataInspector data={transform(node.attributes, metadata)} />
+          <DataInspector
+            data={{
+              ...node,
+              attributes: transform(node.attributes, metadata),
+            }}
+          />
         </Panel>
       )}
     </>

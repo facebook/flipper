@@ -9,7 +9,13 @@
 
 import React, {useState} from 'react';
 import {plugin} from '../index';
-import {DetailSidebar, Layout, usePlugin, useValue} from 'flipper-plugin';
+import {
+  DetailSidebar,
+  Layout,
+  usePlugin,
+  useValue,
+  _Sidebar as ResizablePanel,
+} from 'flipper-plugin';
 import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, Metadata, MetadataId, UINode} from '../types';
 import {PerfStats} from './PerfStats';
@@ -18,7 +24,6 @@ import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
 import {Spin} from 'antd';
-import FeedbackRequest from './fb-stubs/feedback';
 import {Tree2} from './Tree';
 
 export function Component() {
@@ -30,6 +35,8 @@ export function Component() {
   const [showPerfStats, setShowPerfStats] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Id | undefined>(undefined);
 
+  const [visualiserWidth, setVisualiserWidth] = useState(500);
+
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
   const {ctrlPressed} = useKeyboardModifiers();
@@ -39,7 +46,6 @@ export function Component() {
   if (rootId) {
     return (
       <Layout.Container grow padh="small" padv="medium">
-        <FeedbackRequest />
         <Controls />
         <Layout.Horizontal grow pad="small" gap="small">
           <Layout.Container grow gap="small">
@@ -53,13 +59,24 @@ export function Component() {
             </Layout.ScrollContainer>
           </Layout.Container>
 
-          <Visualization2D
-            rootId={rootId}
-            nodes={nodes}
-            selectedNode={selectedNode}
-            onSelectNode={setSelectedNode}
-            modifierPressed={ctrlPressed}
-          />
+          <ResizablePanel
+            position="right"
+            minWidth={200}
+            width={visualiserWidth}
+            maxWidth={800}
+            onResize={(width) => {
+              setVisualiserWidth(width);
+            }}
+            gutter>
+            <Visualization2D
+              rootId={rootId}
+              width={visualiserWidth}
+              nodes={nodes}
+              selectedNode={selectedNode}
+              onSelectNode={setSelectedNode}
+              modifierPressed={ctrlPressed}
+            />
+          </ResizablePanel>
           <DetailSidebar width={350}>
             <Inspector
               metadata={metadata}

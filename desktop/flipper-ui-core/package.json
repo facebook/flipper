@@ -26,8 +26,8 @@
     "flipper-plugin": "0.0.0",
     "flipper-ui-core": "0.0.0",
     "hotkeys-js": "^3.9.3",
-    "immer": "^9.0.12",
-    "js-base64": "^3.7.2",
+    "immer": "^9.0.18",
+    "js-base64": "^3.7.4",
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "lodash.memoize": "^4.1.2",
@@ -51,7 +51,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@testing-library/dom": "^8.17.1",
+    "@testing-library/dom": "^8.20.0",
     "@types/deep-equal": "^1.0.1",
     "@types/lodash.memoize": "^4.1.7",
     "@types/react": "^17.0.39",

@@ -59,7 +59,7 @@ class UIDebuggerFlipperPlugin(
         MetadataUpdateEvent.name,
         Json.encodeToString(
             MetadataUpdateEvent.serializer(),
-            MetadataUpdateEvent(MetadataRegister.getPendingMetadata())))
+            MetadataUpdateEvent(MetadataRegister.extractPendingMetadata())))
 
     context.treeObserverManager.start()
   }

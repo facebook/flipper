@@ -36,7 +36,7 @@ export const RowStyle = {
 
 export const ObjectContainerStyle = {
   borderLeftWidth: 5,
-  borderLeftColor: 'lightgray',
+  borderLeftColor: 'transparent',
   borderLeftStyle: 'solid',
 } as const;
 

@@ -100,12 +100,10 @@ export class AndroidDeviceManager {
           // The default way of capturing screenshots through adb does not seem to work
           // There is a way of getting a screenshot through KaiOS dev tools though
           if (androidLikeDevice instanceof AndroidDevice) {
-            const screenRecordAvailable =
-              await androidLikeDevice.screenRecordAvailable();
             androidLikeDevice.info.features.screenCaptureAvailable =
-              screenRecordAvailable;
+              await androidLikeDevice.screenRecordAvailable();
             androidLikeDevice.info.features.screenshotAvailable =
-              screenRecordAvailable;
+              await androidLikeDevice.screenShotAvailable();
           }
 
           resolve(androidLikeDevice);
