@@ -30,7 +30,7 @@
     "tslib": "^2.4.1"
   },
   "devDependencies": {
-    "rimraf": "^3.0.2"
+    "rimraf": "^4.1.2"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
