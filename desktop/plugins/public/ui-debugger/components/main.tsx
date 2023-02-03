@@ -24,6 +24,8 @@ import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
 import {Spin} from 'antd';
+import {QueryClientProvider} from 'react-query';
+
 import {Tree2} from './Tree';
 
 export function Component() {
@@ -45,46 +47,48 @@ export function Component() {
 
   if (rootId) {
     return (
-      <Layout.Container grow padh="small" padv="medium">
-        <Controls />
-        <Layout.Horizontal grow pad="small" gap="small">
-          <Layout.Container grow gap="small">
-            <Layout.ScrollContainer>
-              <Tree2
+      <QueryClientProvider client={instance.queryClient}>
+        <Layout.Container grow padh="small" padv="medium">
+          <Controls />
+          <Layout.Horizontal grow pad="small" gap="small">
+            <Layout.Container grow gap="small">
+              <Layout.ScrollContainer>
+                <Tree2
+                  selectedNode={selectedNode}
+                  onSelectNode={setSelectedNode}
+                  nodes={nodes}
+                  rootId={rootId}
+                />
+              </Layout.ScrollContainer>
+            </Layout.Container>
+
+            <ResizablePanel
+              position="right"
+              minWidth={200}
+              width={visualiserWidth}
+              maxWidth={800}
+              onResize={(width) => {
+                setVisualiserWidth(width);
+              }}
+              gutter>
+              <Visualization2D
+                rootId={rootId}
+                width={visualiserWidth}
+                nodes={nodes}
                 selectedNode={selectedNode}
                 onSelectNode={setSelectedNode}
-                nodes={nodes}
-                rootId={rootId}
+                modifierPressed={ctrlPressed}
               />
-            </Layout.ScrollContainer>
-          </Layout.Container>
-
-          <ResizablePanel
-            position="right"
-            minWidth={200}
-            width={visualiserWidth}
-            maxWidth={800}
-            onResize={(width) => {
-              setVisualiserWidth(width);
-            }}
-            gutter>
-            <Visualization2D
-              rootId={rootId}
-              width={visualiserWidth}
-              nodes={nodes}
-              selectedNode={selectedNode}
-              onSelectNode={setSelectedNode}
-              modifierPressed={ctrlPressed}
-            />
-          </ResizablePanel>
-          <DetailSidebar width={350}>
-            <Inspector
-              metadata={metadata}
-              node={selectedNode ? nodes.get(selectedNode) : undefined}
-            />
-          </DetailSidebar>
-        </Layout.Horizontal>
-      </Layout.Container>
+            </ResizablePanel>
+            <DetailSidebar width={350}>
+              <Inspector
+                metadata={metadata}
+                node={selectedNode ? nodes.get(selectedNode) : undefined}
+              />
+            </DetailSidebar>
+          </Layout.Horizontal>
+        </Layout.Container>
+      </QueryClientProvider>
     );
   }
 

@@ -24,6 +24,7 @@ import {
   UINode,
 } from './types';
 import {Draft} from 'immer';
+import {QueryClient, setLogger} from 'react-query';
 
 type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};
 type LiveClientState = {
@@ -166,6 +167,8 @@ export function plugin(client: PluginClient<Events>) {
     }
   });
 
+  const queryClient = new QueryClient({});
+
   return {
     rootId,
     uiState,
@@ -175,6 +178,7 @@ export function plugin(client: PluginClient<Events>) {
     metadata,
     perfEvents,
     setPlayPause,
+    queryClient,
   };
 }
 
@@ -283,3 +287,16 @@ function collapseinActiveChildren(node: UINode, expandedNodes: Draft<Set<Id>>) {
 }
 
 export {Component} from './components/main';
+
+setLogger({
+  log: (...args) => {
+    console.log(...args);
+  },
+  warn: (...args) => {
+    console.warn(...args);
+  },
+  error: (...args) => {
+    //downgrade react query network errors to warning so they dont get sent to scribe
+    console.warn(...args);
+  },
+});
