@@ -45,6 +45,8 @@ export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
 
+  const device = client.device.os;
+
   client.onMessage('init', (event) => {
     rootId.set(event.rootId);
   });
@@ -179,6 +181,7 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents,
     setPlayPause,
     queryClient,
+    device,
   };
 }
 

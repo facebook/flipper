@@ -25,7 +25,7 @@ import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
 import {Spin} from 'antd';
 import {QueryClientProvider} from 'react-query';
-
+import FeedbackRequest from './fb-stubs/feedback';
 import {Tree2} from './Tree';
 
 export function Component() {
@@ -49,6 +49,7 @@ export function Component() {
     return (
       <QueryClientProvider client={instance.queryClient}>
         <Layout.Container grow padh="small" padv="medium">
+          {instance.device === 'iOS' ? <FeedbackRequest /> : null}
           <Controls />
           <Layout.Horizontal grow pad="small" gap="small">
             <Layout.Container grow gap="small">
