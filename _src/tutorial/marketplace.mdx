@@ -1,0 +1,38 @@
+---
+id: marketplace
+title: Marketplace
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+Flipper provides this feature to allow distribution of `private` plugins, which are not published to [npmjs.com](https://npmjs.com).
+
+### Plugin discovery
+
+Plugins which are supported by currently connected app/device, will be listed under "Detected in app" section in sidebar.
+This significantly help users to discover useful plugins for their app.
+
+<img alt="Install plugins" src={useBaseUrl("img/marketplace-discovery.png")} />
+
+### Plugin auto-update
+Once plugin is installed, it will also keep updating to latest version. 
+
+
+## Enable markektplace
+
+### Setup server
+
+Instead of hosting plugins on npm server, we need to provide custom server, which will provide a list of internal plugins.
+
+> It is recommended to connect this server with internal package registry (to allow providing latest version).
+
+Here is a example implementation of server using Verdaccio as package registry: [marketplace-server-example](https://github.com/usrbowe/flipper-marketplace-server).
+
+
+### Enable marketplace
+
+Open Flipper settings and enter the URL to your Flipper marketplace server. It is also adviced to toggle ON the `Enable auto update`.
+
+<img alt="Install plugins" src={useBaseUrl("img/marketplace-settings.png")} />
+
+
+
