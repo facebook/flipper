@@ -53,6 +53,11 @@ export function plugin(client: PluginClient<Events>) {
 
   client.onMessage('init', (event) => {
     rootId.set(event.rootId);
+    uiState.frameworkEventMonitoring.update((draft) => {
+      event.frameworkEventMetadata.forEach((frameworkEventMeta) => {
+        draft.set(frameworkEventMeta.type, false);
+      });
+    });
   });
 
   client.onMessage('metadataUpdate', (event) => {
@@ -147,13 +152,6 @@ export function plugin(client: PluginClient<Events>) {
 
   const seenNodes = new Set<Id>();
   client.onMessage('subtreeUpdate', (subtreeUpdate) => {
-    uiState.frameworkEventMonitoring.update((draft) => {
-      (subtreeUpdate.frameworkEvents ?? []).forEach((frameworkEvent) => {
-        if (!draft.has(frameworkEvent.type))
-          draft.set(frameworkEvent.type, false);
-      });
-    });
-
     frameworkEvents.update((draft) => {
       if (subtreeUpdate.frameworkEvents) {
         subtreeUpdate.frameworkEvents.forEach((frameworkEvent) => {

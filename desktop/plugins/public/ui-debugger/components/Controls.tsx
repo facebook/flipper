@@ -6,6 +6,7 @@
  *
  * @format
  */
+
 import React, {useState} from 'react';
 import {plugin} from '../index';
 import {
@@ -26,15 +27,6 @@ import {
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout} from 'flipper-plugin';
 import {FrameworkEventType} from '../types';
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- */
 
 export const Controls: React.FC = () => {
   const instance = usePlugin(plugin);
@@ -70,10 +62,12 @@ export const Controls: React.FC = () => {
             {isPaused ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
           </Tooltip>
         }></Button>
-      <MoreOptionsMenu
-        onSetEventMonitored={onSetEventMonitored}
-        frameworkEventTypes={[...frameworkEventMonitoring.entries()]}
-      />
+      {frameworkEventMonitoring.size > 0 && (
+        <MoreOptionsMenu
+          onSetEventMonitored={onSetEventMonitored}
+          frameworkEventTypes={[...frameworkEventMonitoring.entries()]}
+        />
+      )}
     </Layout.Horizontal>
   );
 };

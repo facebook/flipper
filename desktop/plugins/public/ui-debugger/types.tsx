@@ -29,19 +29,22 @@ export type SubtreeUpdateEvent = {
   frameworkEvents?: FrameworkEvent[];
 };
 
-export type Thread = 'Main' | 'Background';
-
 export type FrameworkEventType = string;
+
+export type FrameworkEventMetadata = {
+  type: FrameworkEventType;
+  documentation: string;
+};
 
 export type FrameworkEvent = {
   nodeId: Id;
   type: FrameworkEventType;
-  thread: Thread;
   timestamp: number;
 };
 
 export type InitEvent = {
   rootId: Id;
+  frameworkEventMetadata: FrameworkEventMetadata[];
 };
 
 export type PerfStatsEvent = {
