@@ -1,3 +1,8 @@
+# 0.178.0 (1/2/2023)
+
+ * [D42543280](https://github.com/facebook/flipper/search?q=D42543280&type=Commits) -  Update RN to 0.69.7
+
+
 # 0.172.0 (26/10/2022)
 
  * [D40394563](https://github.com/facebook/flipper/search?q=D40394563&type=Commits)

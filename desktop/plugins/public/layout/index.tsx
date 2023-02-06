@@ -330,10 +330,7 @@ export default class LayoutPlugin extends FlipperPlugin<
   };
 
   onSuggestUIDebugger = () => {
-    if (
-      !getFlipperLib().GK('flipper_ui_debugger') ||
-      this.device.os !== 'Android'
-    ) {
+    if (!getFlipperLib().GK('flipper_ui_debugger')) {
       return;
     }
 

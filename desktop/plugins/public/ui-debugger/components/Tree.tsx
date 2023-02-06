@@ -176,7 +176,7 @@ function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
         <div
           style={{
             position: 'absolute',
-            width: 8,
+            width: renderDepthOffset / 3,
             height: HalfTreeItemHeight,
             borderBottom: `2px ${horizontalLineStyle} ${color}`,
             marginLeft: verticalLinePadding,
@@ -346,7 +346,7 @@ const DecorationImage = styled.img({
   width: 12,
 });
 
-const renderDepthOffset = 16;
+const renderDepthOffset = 8;
 
 const ContextMenu: React.FC<{
   nodes: Map<Id, UINode>;
