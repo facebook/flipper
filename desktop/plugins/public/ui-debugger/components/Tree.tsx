@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Id, UINode} from '../types';
+import {FrameworkEvent, FrameworkEventType, Id, UINode} from '../types';
 import React, {Ref, RefObject, useEffect, useMemo, useRef} from 'react';
 import {
   Atom,
@@ -21,7 +21,7 @@ import {
 } from 'flipper-plugin';
 import {plugin} from '../index';
 import {Glyph} from 'flipper';
-import {head, last} from 'lodash';
+import {groupBy, head, last} from 'lodash';
 import {reverse} from 'lodash/fp';
 import {Dropdown, Menu, Typography} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
@@ -59,6 +59,11 @@ export function Tree2({
   const searchTerm = useValue(instance.uiState.searchTerm);
   const isContextMenuOpen = useValue(instance.uiState.isContextMenuOpen);
   const hoveredNode = head(useValue(instance.uiState.hoveredNodes));
+
+  const frameworkEvents = useValue(instance.frameworkEvents);
+  const frameworkEventsMonitoring = useValue(
+    instance.uiState.frameworkEventMonitoring,
+  );
 
   const {treeNodes, refs} = useMemo(() => {
     const treeNodes = toTreeNodes(
@@ -119,6 +124,8 @@ export function Tree2({
               innerRef={refs[index]}
               key={treeNode.id}
               treeNode={treeNode}
+              frameworkEvents={frameworkEvents}
+              frameworkEventsMonitoring={frameworkEventsMonitoring}
               selectedNode={selectedNode}
               hoveredNode={hoveredNode}
               isUsingKBToScroll={isUsingKBToScroll}
@@ -142,8 +149,10 @@ const MemoTreeItemContainer = React.memo(
     return (
       prevProps.treeNode === nextProps.treeNode &&
       prevProps.isContextMenuOpen === nextProps.isContextMenuOpen &&
-      //make sure that prev or next hover/selected node doesnt concern this tree node
-      prevProps.hoveredNode !== id &&
+      prevProps.frameworkEvents === nextProps.frameworkEvents &&
+      prevProps.frameworkEventsMonitoring ===
+        nextProps.frameworkEventsMonitoring &&
+      prevProps.hoveredNode !== id && //make sure that prev or next hover/selected node doesnt concern this tree node
       nextProps.hoveredNode !== id &&
       prevProps.selectedNode !== id &&
       nextProps.selectedNode !== id
@@ -189,6 +198,8 @@ function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
 function TreeItemContainer({
   innerRef,
   treeNode,
+  frameworkEvents,
+  frameworkEventsMonitoring,
   selectedNode,
   hoveredNode,
   isUsingKBToScroll,
@@ -200,6 +211,8 @@ function TreeItemContainer({
 }: {
   innerRef: Ref<any>;
   treeNode: TreeNode;
+  frameworkEvents: Map<Id, FrameworkEvent[]>;
+  frameworkEventsMonitoring: Map<FrameworkEventType, boolean>;
   selectedNode?: Id;
   hoveredNode?: Id;
   isUsingKBToScroll: RefObject<boolean>;
@@ -244,6 +257,11 @@ function TreeItemContainer({
         {nodeIcon(treeNode)}
         <HighlightedText text={treeNode.name} />
         <InlineAttributes attributes={treeNode.inlineAttributes} />
+        <MonitoredEventSummary
+          node={treeNode}
+          frameworkEvents={frameworkEvents}
+          frameworkEventsMonitoring={frameworkEventsMonitoring}
+        />
       </TreeItemContent>
     </div>
   );
@@ -255,6 +273,35 @@ const TreeAttributeContainer = styled(Text)({
   marginLeft: 5,
   fontSize: 12,
 });
+
+function MonitoredEventSummary({
+  node,
+  frameworkEvents,
+  frameworkEventsMonitoring,
+}: {
+  node: UINode;
+  frameworkEvents: Map<Id, FrameworkEvent[]>;
+  frameworkEventsMonitoring: Map<FrameworkEventType, boolean>;
+}) {
+  const events = frameworkEvents.get(node.id);
+  if (events) {
+    return (
+      <>
+        {Object.entries(groupBy(events, (e) => e.type))
+          .filter(([type]) => frameworkEventsMonitoring.get(type))
+          .map(([key, values]) => (
+            <TreeAttributeContainer key={key}>
+              <span style={{color: theme.errorColor}}>
+                {last(key.split(':'))}
+              </span>
+              <span>={values.length}</span>
+            </TreeAttributeContainer>
+          ))}
+      </>
+    );
+  }
+  return null;
+}
 
 function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
   const highlightManager: HighlightManager = useHighlighter();
@@ -326,7 +373,7 @@ function ExpandedIconOrSpace(props: {
 
 function HighlightedText(props: {text: string}) {
   const highlightManager: HighlightManager = useHighlighter();
-  return <span>{highlightManager.render(props.text)}</span>;
+  return <span>{highlightManager.render(props.text)} </span>;
 }
 
 function nodeIcon(node: UINode) {
