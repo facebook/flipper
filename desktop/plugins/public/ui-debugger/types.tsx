@@ -26,6 +26,18 @@ export type SubtreeUpdateEvent = {
   rootId: Id;
   nodes: UINode[];
   snapshot: Snapshot;
+  frameworkEvents?: FrameworkEvent[];
+};
+
+export type Thread = 'Main' | 'Background';
+
+export type FrameworkEventType = string;
+
+export type FrameworkEvent = {
+  nodeId: Id;
+  type: FrameworkEventType;
+  thread: Thread;
+  timestamp: number;
 };
 
 export type InitEvent = {

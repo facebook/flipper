@@ -183,7 +183,7 @@ function Visualization2DNode({
 
   const isSelected = selectedNode === node.id;
   const {isHovered, isLongHovered} = useHoverStates(node.id);
-
+  const ref = useRef<HTMLDivElement>(null);
   let nestedChildren: NestedNode[];
 
   //if there is an active child don't draw the other children
@@ -210,6 +210,10 @@ function Visualization2DNode({
     />
   ));
 
+  const isHighlighted = useValue(instance.uiState.highlightedNodes).has(
+    node.id,
+  );
+
   return (
     <Tooltip
       visible={isLongHovered}
@@ -223,6 +227,7 @@ function Visualization2DNode({
       <div
         role="button"
         tabIndex={0}
+        ref={ref}
         style={{
           position: 'absolute',
           cursor: 'pointer',
@@ -230,8 +235,10 @@ function Visualization2DNode({
           top: toPx(node.bounds.y),
           width: toPx(node.bounds.width),
           height: toPx(node.bounds.height),
-          opacity: isSelected ? 0.5 : 1,
-          backgroundColor: isSelected
+          opacity: isSelected || isHighlighted ? 0.3 : 1,
+          backgroundColor: isHighlighted
+            ? 'red'
+            : isSelected
             ? theme.selectionBackgroundColor
             : 'transparent',
         }}

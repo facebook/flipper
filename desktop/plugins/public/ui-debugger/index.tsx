@@ -8,15 +8,17 @@
  */
 
 import {
-  PluginClient,
-  createState,
-  createDataSource,
-  produce,
   Atom,
+  createDataSource,
+  createState,
+  PluginClient,
+  produce,
 } from 'flipper-plugin';
 import {
   Events,
   Id,
+  FrameworkEvent,
+  FrameworkEventType,
   Metadata,
   MetadataId,
   PerfStatsEvent,
@@ -37,8 +39,10 @@ type UIState = {
   searchTerm: Atom<string>;
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
+  highlightedNodes: Atom<Set<Id>>;
   focusedNode: Atom<Id | undefined>;
   expandedNodes: Atom<Set<Id>>;
+  frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
 };
 
 export function plugin(client: PluginClient<Events>) {
@@ -72,11 +76,22 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const nodes = createState<Map<Id, UINode>>(new Map());
+  const frameworkEvents = createState<Map<Id, FrameworkEvent[]>>(new Map());
+
+  const highlightedNodes = createState(new Set<Id>());
   const snapshot = createState<SnapshotInfo | null>(null);
 
   const uiState: UIState = {
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
     isContextMenuOpen: createState<boolean>(false),
+
+    highlightedNodes,
+
+    //used to indicate whether we will higher the visualizer / tree when a matching event comes in
+    //also whether or not will show running total  in the tree
+    frameworkEventMonitoring: createState(
+      new Map<FrameworkEventType, boolean>(),
+    ),
 
     isPaused: createState(false),
 
@@ -131,23 +146,60 @@ export function plugin(client: PluginClient<Events>) {
   };
 
   const seenNodes = new Set<Id>();
-  client.onMessage('subtreeUpdate', (event) => {
+  client.onMessage('subtreeUpdate', (subtreeUpdate) => {
+    uiState.frameworkEventMonitoring.update((draft) => {
+      (subtreeUpdate.frameworkEvents ?? []).forEach((frameworkEvent) => {
+        if (!draft.has(frameworkEvent.type))
+          draft.set(frameworkEvent.type, false);
+      });
+    });
+
+    frameworkEvents.update((draft) => {
+      if (subtreeUpdate.frameworkEvents) {
+        subtreeUpdate.frameworkEvents.forEach((frameworkEvent) => {
+          if (
+            uiState.frameworkEventMonitoring.get().get(frameworkEvent.type) ===
+              true &&
+            uiState.isPaused.get() === false
+          ) {
+            highlightedNodes.update((draft) => {
+              draft.add(frameworkEvent.nodeId);
+            });
+          }
+
+          const frameworkEventsForNode = draft.get(frameworkEvent.nodeId);
+          if (frameworkEventsForNode) {
+            frameworkEventsForNode.push(frameworkEvent);
+          } else {
+            draft.set(frameworkEvent.nodeId, [frameworkEvent]);
+          }
+        });
+        setTimeout(() => {
+          highlightedNodes.update((laterDraft) => {
+            for (const event of subtreeUpdate.frameworkEvents!!.values()) {
+              laterDraft.delete(event.nodeId);
+            }
+          });
+        }, HighlightTime);
+      }
+    });
+
     liveClientData = produce(liveClientData, (draft) => {
-      if (event.snapshot) {
+      if (subtreeUpdate.snapshot) {
         draft.snapshotInfo = {
-          nodeId: event.rootId,
-          base64Image: event.snapshot,
+          nodeId: subtreeUpdate.rootId,
+          base64Image: subtreeUpdate.snapshot,
         };
       }
 
-      event.nodes.forEach((node) => {
+      subtreeUpdate.nodes.forEach((node) => {
         draft.nodes.set(node.id, {...node});
       });
       setParentPointers(rootId.get()!!, undefined, draft.nodes);
     });
 
     uiState.expandedNodes.update((draft) => {
-      for (const node of event.nodes) {
+      for (const node of subtreeUpdate.nodes) {
         if (!seenNodes.has(node.id)) {
           draft.add(node.id);
         }
@@ -176,6 +228,7 @@ export function plugin(client: PluginClient<Events>) {
     uiState,
     uiActions: uiActions(uiState),
     nodes,
+    frameworkEvents,
     snapshot,
     metadata,
     perfEvents,
@@ -288,6 +341,8 @@ function collapseinActiveChildren(node: UINode, expandedNodes: Draft<Set<Id>>) {
     }
   }
 }
+
+const HighlightTime = 300;
 
 export {Component} from './components/main';
 
