@@ -64,6 +64,7 @@ export function Tree2({
   const frameworkEventsMonitoring = useValue(
     instance.uiState.frameworkEventMonitoring,
   );
+  const highlightedNodes = useValue(instance.uiState.highlightedNodes);
 
   const {treeNodes, refs} = useMemo(() => {
     const treeNodes = toTreeNodes(
@@ -126,6 +127,7 @@ export function Tree2({
               treeNode={treeNode}
               frameworkEvents={frameworkEvents}
               frameworkEventsMonitoring={frameworkEventsMonitoring}
+              highlightedNodes={highlightedNodes}
               selectedNode={selectedNode}
               hoveredNode={hoveredNode}
               isUsingKBToScroll={isUsingKBToScroll}
@@ -150,6 +152,7 @@ const MemoTreeItemContainer = React.memo(
       prevProps.treeNode === nextProps.treeNode &&
       prevProps.isContextMenuOpen === nextProps.isContextMenuOpen &&
       prevProps.frameworkEvents === nextProps.frameworkEvents &&
+      prevProps.highlightedNodes === nextProps.highlightedNodes &&
       prevProps.frameworkEventsMonitoring ===
         nextProps.frameworkEventsMonitoring &&
       prevProps.hoveredNode !== id && //make sure that prev or next hover/selected node doesnt concern this tree node
@@ -200,6 +203,7 @@ function TreeItemContainer({
   treeNode,
   frameworkEvents,
   frameworkEventsMonitoring,
+  highlightedNodes,
   selectedNode,
   hoveredNode,
   isUsingKBToScroll,
@@ -212,6 +216,7 @@ function TreeItemContainer({
   innerRef: Ref<any>;
   treeNode: TreeNode;
   frameworkEvents: Map<Id, FrameworkEvent[]>;
+  highlightedNodes: Set<Id>;
   frameworkEventsMonitoring: Map<FrameworkEventType, boolean>;
   selectedNode?: Id;
   hoveredNode?: Id;
@@ -227,8 +232,9 @@ function TreeItemContainer({
       {treeNode.indentGuide != null && (
         <IndentGuide indentGuide={treeNode.indentGuide} />
       )}
-      <TreeItemContent
+      <TreeItemRow
         ref={innerRef}
+        isHighlighted={highlightedNodes.has(treeNode.id)}
         isSelected={treeNode.id === selectedNode}
         isHovered={hoveredNode === treeNode.id}
         onMouseEnter={() => {
@@ -262,7 +268,7 @@ function TreeItemContainer({
           frameworkEvents={frameworkEvents}
           frameworkEventsMonitoring={frameworkEventsMonitoring}
         />
-      </TreeItemContent>
+      </TreeItemRow>
     </div>
   );
 }
@@ -323,11 +329,12 @@ function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
 const TreeItemHeight = '26px';
 const HalfTreeItemHeight = `calc(${TreeItemHeight} / 2)`;
 
-const TreeItemContent = styled.li<{
+const TreeItemRow = styled.li<{
   item: TreeNode;
   isHovered: boolean;
   isSelected: boolean;
-}>(({item, isHovered, isSelected}) => ({
+  isHighlighted: boolean;
+}>(({item, isHovered, isSelected, isHighlighted}) => ({
   display: 'flex',
   alignItems: 'baseline',
   height: TreeItemHeight,
@@ -336,7 +343,12 @@ const TreeItemContent = styled.li<{
   borderRadius: '3px',
   borderColor: isHovered ? theme.selectionBackgroundColor : 'transparent',
   borderStyle: 'solid',
-  backgroundColor: isSelected ? theme.selectionBackgroundColor : theme.white,
+
+  backgroundColor: isHighlighted
+    ? 'rgba(255,0,0,.3)'
+    : isSelected
+    ? theme.selectionBackgroundColor
+    : theme.white,
 }));
 
 function ExpandedIconOrSpace(props: {
