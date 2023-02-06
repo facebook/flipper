@@ -65,4 +65,15 @@ This may be Maven Central, JCenter or GitHub Packages for Android, CocoaPods for
 
 Make sure to leave setup instructions in the README of your npm package.
 
+## Marketplace
+
+When developing plugins intended only for internal use (within certaing organisation/group), we might not want to expose those plugins to public.
+By default Flipper plugins will be published to [npmjs.com](https://www.npmjs.com). Thus anyone can try install&use this plugin.
+
+To keep plugin private, we can provide a `.tar.gz` archive with pluginc code and user can manually install the plugin.
+This is quite troublesome for most users and also does not provide a way to automatically update when new version is released.
+
+Flipper provides a marketplace feature, which does help with discovery of plugins within organisation and also keeps the plugins private.
+To read more details on how marketplace works and how it can be integrated, please read this document: [Marketplace](./marketplace.mdx).
+
 </OssOnly>
