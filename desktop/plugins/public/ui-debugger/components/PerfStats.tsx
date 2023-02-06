@@ -26,6 +26,13 @@ const columns: DataTableColumn<PerfStatsEvent>[] = [
   {
     key: 'txId',
     title: 'TXID',
+    onRender: (row: PerfStatsEvent) => {
+      try {
+        return new Date(row.txId).toISOString();
+      } catch {
+        return row.txId;
+      }
+    },
   },
   {
     key: 'observerType',
