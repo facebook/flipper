@@ -50,14 +50,6 @@ export const IdentityInspector: React.FC<Props> = ({node}) => {
           </IdentityValue>
         </Col>
       </Row>
-      <Row gutter={4}>
-        <Col span="10">
-          <IdentityKey>Id:</IdentityKey>
-        </Col>
-        <Col span="14">
-          <IdentityValue title={node.id.toString()}>{node.id}</IdentityValue>
-        </Col>
-      </Row>
       <CodeInspector name={node.qualifiedName} tags={node.tags} />
     </IdentityContainer>
   );
