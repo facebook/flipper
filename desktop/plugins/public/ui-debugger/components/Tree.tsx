@@ -348,7 +348,7 @@ const TreeItemRow = styled.li<{
     ? 'rgba(255,0,0,.3)'
     : isSelected
     ? theme.selectionBackgroundColor
-    : theme.white,
+    : theme.backgroundDefault,
 }));
 
 function ExpandedIconOrSpace(props: {

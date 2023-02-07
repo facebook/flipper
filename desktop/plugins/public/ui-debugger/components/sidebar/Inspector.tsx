@@ -10,7 +10,7 @@
 import React from 'react';
 // eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Glyph} from 'flipper';
-import {Layout, Tab, Tabs} from 'flipper-plugin';
+import {Layout, Tab, Tabs, theme} from 'flipper-plugin';
 import {Metadata, MetadataId, UINode} from '../../types';
 import {IdentityInspector} from './inspector/IdentityInspector';
 import {AttributesInspector} from './inspector/AttributesInspector';
@@ -33,7 +33,7 @@ export const Inspector: React.FC<Props> = ({node, metadata}) => {
           tab={
             <Tooltip title="Identity">
               <Layout.Horizontal center>
-                <Glyph name="badge" size={16} />
+                <Glyph name="badge" size={16} color={theme.primaryColor} />
               </Layout.Horizontal>
             </Tooltip>
           }>
@@ -44,7 +44,7 @@ export const Inspector: React.FC<Props> = ({node, metadata}) => {
           tab={
             <Tooltip title="Attributes">
               <Layout.Horizontal center>
-                <Glyph name="data-table" size={16} />
+                <Glyph name="data-table" size={16} color={theme.primaryColor} />
               </Layout.Horizontal>
             </Tooltip>
           }>
@@ -58,7 +58,11 @@ export const Inspector: React.FC<Props> = ({node, metadata}) => {
           tab={
             <Tooltip title="Layout">
               <Layout.Horizontal center>
-                <Glyph name="square-ruler" size={16} />
+                <Glyph
+                  name="square-ruler"
+                  size={16}
+                  color={theme.primaryColor}
+                />
               </Layout.Horizontal>
             </Tooltip>
           }>
