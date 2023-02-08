@@ -24,6 +24,7 @@ import {
   MoreOutlined,
   PauseCircleOutlined,
   PlayCircleOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout} from 'flipper-plugin';
 import {FrameworkEventType} from '../types';
@@ -51,6 +52,8 @@ export const Controls: React.FC = () => {
       <Input
         value={searchTerm}
         onChange={(e) => instance.uiState.searchTerm.set(e.target.value)}
+        prefix={<SearchOutlined />}
+        placeholder="Search"
       />
       <Button
         type="default"
