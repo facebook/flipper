@@ -3218,7 +3218,7 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@jridgewell/gen-mapping@^0.3.2":
+"@jridgewell/gen-mapping@^0.3.0", "@jridgewell/gen-mapping@^0.3.2":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@jridgewell/gen-mapping/-/gen-mapping-0.3.2.tgz#c1aedc61e853f2bb9f5dfe6d4442d3b565b253b9"
   integrity sha512-mh65xKQAzI6iBcFzwv28KVWSmCkdRBWoOh+bYQGW3+6OZvbbN3TqMGo5hqYxQniRcH9F2VZIoJCm4pa3BPDK/A==
@@ -3236,6 +3236,14 @@
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@jridgewell/set-array/-/set-array-1.1.2.tgz#7c6cf998d6d20b914c0a55a91ae928ff25965e72"
   integrity sha512-xnkseuNADM0gt2bs+BvhO0p78Mk762YnZdsuzFV018NoG1Sj1SCQvpSqa7XUaTam5vAGasABV9qXASMKnFMwMw==
+
+"@jridgewell/source-map@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@jridgewell/source-map/-/source-map-0.3.2.tgz#f45351aaed4527a298512ec72f81040c998580fb"
+  integrity sha512-m7O9o2uR8k2ObDysZYzdfhb08VuEml5oWGiosa1VdaPZ/A6QyPkAJuwN0Q1lhULOf6B7MtQmHENS743hWtCrgw==
+  dependencies:
+    "@jridgewell/gen-mapping" "^0.3.0"
+    "@jridgewell/trace-mapping" "^0.3.9"
 
 "@jridgewell/sourcemap-codec@^1.4.10":
   version "1.4.11"
@@ -10922,12 +10930,12 @@ metro-inspector-proxy@0.70.2:
     ws "^7.5.1"
     yargs "^15.3.1"
 
-metro-minify-terser@^0.70.2:
-  version "0.70.2"
-  resolved "https://registry.yarnpkg.com/metro-minify-terser/-/metro-minify-terser-0.70.2.tgz#08b85e40e0ada9f4a14ec6b80c127c97c23d0c2d"
-  integrity sha512-THeXayEayMrTqocla92D+q5K9kkPLX2v9xbK5p8HDU9q60+kGIpQXJ4iN7FUW/poU1v1EMgncftAlhJ8qD2fOw==
+metro-minify-terser@^0.75.0:
+  version "0.75.0"
+  resolved "https://registry.yarnpkg.com/metro-minify-terser/-/metro-minify-terser-0.75.0.tgz#98c7e3d5f8d24d8501aad87bb76e72134d68ba06"
+  integrity sha512-mcIL0k32xlIswucI9wwlIApvozgF87aNFL+3WGsLMArhjXTfG+NBGiV3WluZcgOUjIM9I96b8yvu/gcZAy19Gw==
   dependencies:
-    terser "^5.10.0"
+    terser "^5.15.0"
 
 metro-minify-uglify@0.70.2:
   version "0.70.2"
@@ -13892,13 +13900,6 @@ source-map@^0.7.3:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
   integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
 
-source-map@~0.8.0-beta.0:
-  version "0.8.0-beta.0"
-  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.8.0-beta.0.tgz#d4c1bb42c3f7ee925f005927ba10709e0d1d1f11"
-  integrity sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==
-  dependencies:
-    whatwg-url "^7.0.0"
-
 space-separated-tokens@^1.1.0:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/space-separated-tokens/-/space-separated-tokens-1.1.5.tgz#85f32c3d10d9682007e917414ddc5c26d1aa6899"
@@ -14307,14 +14308,14 @@ terminal-link@^2.0.0:
     ansi-escapes "^4.2.1"
     supports-hyperlinks "^2.0.0"
 
-terser@^5.10.0:
-  version "5.13.1"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-5.13.1.tgz#66332cdc5a01b04a224c9fad449fc1a18eaa1799"
-  integrity sha512-hn4WKOfwnwbYfe48NgrQjqNOH9jzLqRcIfbYytOXCOv46LBfWr9bDS17MQqOi+BWGD0sJK3Sj5NC/gJjiojaoA==
+terser@^5.15.0:
+  version "5.16.3"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-5.16.3.tgz#3266017a9b682edfe019b8ecddd2abaae7b39c6b"
+  integrity sha512-v8wWLaS/xt3nE9dgKEWhNUFP6q4kngO5B8eYFUuebsu7Dw/UNAnpUod6UHo04jSSkv8TzKHjZDSd7EXdDQAl8Q==
   dependencies:
+    "@jridgewell/source-map" "^0.3.2"
     acorn "^8.5.0"
     commander "^2.20.0"
-    source-map "~0.8.0-beta.0"
     source-map-support "~0.5.20"
 
 test-exclude@^6.0.0:
