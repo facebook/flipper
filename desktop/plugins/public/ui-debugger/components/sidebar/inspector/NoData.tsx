@@ -10,6 +10,7 @@
 import React from 'react';
 // eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Glyph} from 'flipper';
+import {theme} from 'flipper-plugin';
 
 type NoDataProps = {
   message: string;
@@ -17,7 +18,12 @@ type NoDataProps = {
 export const NoData: React.FC<NoDataProps> = ({message}) => {
   return (
     <div style={{textAlign: 'center'}}>
-      <Glyph name="stop" size={24} style={{margin: 20}} />
+      <Glyph
+        name="stop"
+        size={24}
+        style={{margin: 20}}
+        color={theme.primaryColor}
+      />
       <p>{message}</p>
     </div>
   );
