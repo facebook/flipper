@@ -14,16 +14,22 @@ import {theme} from 'flipper-plugin';
 
 type NoDataProps = {
   message: string;
+  displayIcon?: boolean;
 };
-export const NoData: React.FC<NoDataProps> = ({message}) => {
+export const NoData: React.FC<NoDataProps> = ({
+  message,
+  displayIcon = true,
+}) => {
   return (
     <div style={{textAlign: 'center'}}>
-      <Glyph
-        name="stop"
-        size={24}
-        style={{margin: 20}}
-        color={theme.primaryColor}
-      />
+      {displayIcon && (
+        <Glyph
+          name="stop"
+          size={24}
+          style={{margin: 20}}
+          color={theme.primaryColor}
+        />
+      )}
       <p>{message}</p>
     </div>
   );
