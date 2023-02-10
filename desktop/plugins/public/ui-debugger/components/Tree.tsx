@@ -315,12 +315,10 @@ function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
   return (
     <>
       {Object.entries(attributes ?? {}).map(([key, value]) => (
-        <>
-          <TreeAttributeContainer key={key}>
-            <span style={{color: theme.warningColor}}>{key}</span>
-            <span>={highlightManager.render(value)}</span>
-          </TreeAttributeContainer>
-        </>
+        <TreeAttributeContainer key={key}>
+          <span style={{color: theme.warningColor}}>{key}</span>
+          <span>={highlightManager.render(value)}</span>
+        </TreeAttributeContainer>
       ))}
     </>
   );
