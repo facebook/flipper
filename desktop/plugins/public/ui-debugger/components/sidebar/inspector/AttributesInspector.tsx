@@ -258,17 +258,25 @@ export const AttributesInspector: React.FC<Props> = ({
   const keys = Object.keys(node.attributes);
   const sections = keys
     .map(function (key, _) {
-      const metadataId: number = Number(key);
       /**
        * The node top-level attributes refer to the displayable panels.
        * The panel name is obtained by querying the metadata.
        * The inspectable contains the actual attributes belonging to each panel.
        */
+      const metadataId: number = Number(key);
+      const sectionMetadata = metadata.get(metadataId);
+      if (!sectionMetadata) {
+        return;
+      }
+      const sectionAttributes = node.attributes[
+        metadataId
+      ] as InspectableObject;
+
       return createSection(
         mode,
         metadata,
-        metadata.get(metadataId)?.name ?? '',
-        node.attributes[metadataId] as InspectableObject,
+        sectionMetadata.name,
+        sectionAttributes,
       );
     })
     .filter((section) => section !== undefined);
