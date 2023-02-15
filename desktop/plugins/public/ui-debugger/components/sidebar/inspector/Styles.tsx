@@ -26,12 +26,16 @@ export const InspectorStyle = {
   },
 } as const;
 
-export const RowStyle = {
-  marginTop: 4,
-  marginBottom: 4,
+export const BottomBorder = {
   borderStyle: 'solid',
   borderColor: theme.dividerColor,
   borderWidth: '0 0 1px 0',
+};
+
+export const RowStyle = {
+  ...BottomBorder,
+  marginTop: 4,
+  marginBottom: 4,
 } as const;
 
 export const ObjectContainerStyle = {
