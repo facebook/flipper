@@ -8,9 +8,17 @@
  */
 
 import {FrameworkEvent, FrameworkEventType, Id, UINode} from '../types';
-import React, {Ref, RefObject, useEffect, useMemo, useRef} from 'react';
+import React, {
+  ReactNode,
+  Ref,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   Atom,
+  getFlipperLib,
   HighlightManager,
   HighlightProvider,
   styled,
@@ -109,8 +117,8 @@ export function Tree2({
       text={searchTerm}
       highlightColor={theme.searchHighlightBackground.yellow}>
       <ContextMenu
-        focusedNode={focusedNode}
-        hoveredNode={hoveredNode}
+        focusedNodeId={focusedNode}
+        hoveredNodeId={hoveredNode}
         nodes={nodes}
         onContextMenuOpen={instance.uiActions.onContextMenuOpen}
         onFocusNode={instance.uiActions.onFocusNode}>
@@ -407,18 +415,44 @@ const renderDepthOffset = 8;
 
 const ContextMenu: React.FC<{
   nodes: Map<Id, UINode>;
-  hoveredNode?: Id;
-  focusedNode?: Id;
+  hoveredNodeId?: Id;
+  focusedNodeId?: Id;
   onFocusNode: (id?: Id) => void;
   onContextMenuOpen: (open: boolean) => void;
 }> = ({
   nodes,
-  hoveredNode,
+  hoveredNodeId,
   children,
-  focusedNode,
+  focusedNodeId,
   onFocusNode,
   onContextMenuOpen,
 }) => {
+  const copyItems: ReactNode[] = [];
+  const hoveredNode = nodes.get(hoveredNodeId ?? Number.MAX_SAFE_INTEGER);
+  if (hoveredNode) {
+    copyItems.push(<Menu.Divider />);
+    copyItems.push(
+      <UIDebuggerMenuItem
+        key={'Copy Element name'}
+        text={'Copy Element name'}
+        onClick={() => {
+          getFlipperLib().writeTextToClipboard(hoveredNode.name);
+        }}
+      />,
+    );
+
+    copyItems.push(
+      Object.entries(hoveredNode.inlineAttributes).map(([key, value]) => (
+        <UIDebuggerMenuItem
+          key={key}
+          text={`Copy ${key}`}
+          onClick={() => {
+            getFlipperLib().writeTextToClipboard(value);
+          }}
+        />
+      )),
+    );
+  }
   return (
     <Dropdown
       onVisibleChange={(visible) => {
@@ -426,17 +460,17 @@ const ContextMenu: React.FC<{
       }}
       overlay={() => (
         <Menu>
-          {hoveredNode != null && focusedNode !== hoveredNode && (
+          {hoveredNode != null && focusedNodeId !== hoveredNodeId && (
             <UIDebuggerMenuItem
               key="focus"
-              text={`Focus ${nodes.get(hoveredNode)?.name}`}
+              text={`Focus ${hoveredNode.name}`}
               onClick={() => {
-                onFocusNode(hoveredNode);
+                onFocusNode(hoveredNodeId);
               }}
             />
           )}
 
-          {focusedNode && (
+          {focusedNodeId && (
             <UIDebuggerMenuItem
               key="remove-focus"
               text="Remove focus"
@@ -445,6 +479,7 @@ const ContextMenu: React.FC<{
               }}
             />
           )}
+          {copyItems}
         </Menu>
       )}
       trigger={['contextMenu']}>
