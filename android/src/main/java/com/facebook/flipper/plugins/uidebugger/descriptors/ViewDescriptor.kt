@@ -299,7 +299,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     props[SizeAttributeId] = InspectableValue.Size(Size(node.width, node.height))
 
     props[BoundsAttributeId] =
-        InspectableValue.Bounds(Bounds(node.left, node.top, node.right, node.bottom))
+        InspectableValue.Bounds(Bounds(node.left, node.top, node.width, node.height))
     props[PaddingAttributeId] =
         InspectableValue.SpaceBox(
             SpaceBox(node.paddingTop, node.paddingRight, node.paddingBottom, node.paddingLeft))
