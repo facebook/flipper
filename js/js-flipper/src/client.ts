@@ -237,7 +237,7 @@ export class FlipperClient {
     };
     this.ws.onclose = ({code}) => {
       // Some WS implementations do not properly set `wasClean`
-      if (code !== WSCloseCode.NormalClosure) {
+      if (![WSCloseCode.NormalClosure, WSCloseCode.GoingAway].includes(code)) {
         this.reconnect();
       }
     };
