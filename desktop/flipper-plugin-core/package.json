@@ -12,7 +12,7 @@
     "eventemitter3": "^4.0.7",
     "flipper-common": "0.0.0",
     "immer": "^9.0.18",
-    "js-base64": "^3.7.4",
+    "js-base64": "^3.7.5",
     "lodash": "^4.17.21",
     "string-natural-compare": "^3.0.0"
   },

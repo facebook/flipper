@@ -20,7 +20,7 @@
     "flipper-common": "0.0.0",
     "flipper-plugin-core": "0.0.0",
     "immer": "^9.0.18",
-    "js-base64": "^3.7.4",
+    "js-base64": "^3.7.5",
     "lodash": "^4.17.21",
     "react-color": "^2.19.3",
     "react-element-to-jsx-string": "^14.3.4",
