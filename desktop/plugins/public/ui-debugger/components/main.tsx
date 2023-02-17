@@ -51,11 +51,7 @@ export function Component() {
           {instance.device === 'iOS' ? <FeedbackRequest /> : null}
           <Controls />
           <Layout.Horizontal grow pad="small">
-            <Layout.Container grow>
-              <Layout.ScrollContainer>
-                <Tree2 nodes={nodes} rootId={rootId} />
-              </Layout.ScrollContainer>
-            </Layout.Container>
+            <Tree2 nodes={nodes} rootId={rootId} />
 
             <ResizablePanel
               position="right"

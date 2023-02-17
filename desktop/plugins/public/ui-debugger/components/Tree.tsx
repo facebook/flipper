@@ -26,6 +26,7 @@ import {
   useHighlighter,
   usePlugin,
   useValue,
+  Layout,
 } from 'flipper-plugin';
 import {plugin} from '../index';
 import {Glyph} from 'flipper';
@@ -93,10 +94,15 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
     isUsingKBToScroll,
   );
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (selectedNode) {
       const idx = treeNodes.findIndex((node) => node.id === selectedNode);
       if (idx !== -1) {
+        scrollContainerRef.current!!.scrollLeft =
+          Math.max(0, treeNodes[idx].depth - 10) * renderDepthOffset;
+
         refs[idx].current?.scrollIntoView({
           block: 'nearest',
         });
@@ -104,42 +110,44 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
     }
   }, [refs, selectedNode, treeNodes]);
   return (
-    <HighlightProvider
-      text={searchTerm}
-      highlightColor={theme.searchHighlightBackground.yellow}>
-      <ContextMenu
-        focusedNodeId={focusedNode}
-        hoveredNodeId={hoveredNode}
-        nodes={nodes}
-        onContextMenuOpen={instance.uiActions.onContextMenuOpen}
-        onFocusNode={instance.uiActions.onFocusNode}>
-        <div
-          onMouseLeave={() => {
-            if (isContextMenuOpen === false) {
-              instance.uiState.hoveredNodes.set([]);
-            }
-          }}>
-          {treeNodes.map((treeNode, index) => (
-            <MemoTreeItemContainer
-              innerRef={refs[index]}
-              key={treeNode.id}
-              treeNode={treeNode}
-              frameworkEvents={frameworkEvents}
-              frameworkEventsMonitoring={frameworkEventsMonitoring}
-              highlightedNodes={highlightedNodes}
-              selectedNode={selectedNode}
-              hoveredNode={hoveredNode}
-              isUsingKBToScroll={isUsingKBToScroll}
-              isContextMenuOpen={isContextMenuOpen}
-              onSelectNode={instance.uiActions.onSelectNode}
-              onExpandNode={instance.uiActions.onExpandNode}
-              onCollapseNode={instance.uiActions.onCollapseNode}
-              onHoverNode={instance.uiActions.onHoverNode}
-            />
-          ))}
-        </div>
-      </ContextMenu>
-    </HighlightProvider>
+    <Layout.ScrollContainer ref={scrollContainerRef}>
+      <HighlightProvider
+        text={searchTerm}
+        highlightColor={theme.searchHighlightBackground.yellow}>
+        <ContextMenu
+          focusedNodeId={focusedNode}
+          hoveredNodeId={hoveredNode}
+          nodes={nodes}
+          onContextMenuOpen={instance.uiActions.onContextMenuOpen}
+          onFocusNode={instance.uiActions.onFocusNode}>
+          <div
+            onMouseLeave={() => {
+              if (isContextMenuOpen === false) {
+                instance.uiState.hoveredNodes.set([]);
+              }
+            }}>
+            {treeNodes.map((treeNode, index) => (
+              <MemoTreeItemContainer
+                innerRef={refs[index]}
+                key={treeNode.id}
+                treeNode={treeNode}
+                frameworkEvents={frameworkEvents}
+                frameworkEventsMonitoring={frameworkEventsMonitoring}
+                highlightedNodes={highlightedNodes}
+                selectedNode={selectedNode}
+                hoveredNode={hoveredNode}
+                isUsingKBToScroll={isUsingKBToScroll}
+                isContextMenuOpen={isContextMenuOpen}
+                onSelectNode={instance.uiActions.onSelectNode}
+                onExpandNode={instance.uiActions.onExpandNode}
+                onCollapseNode={instance.uiActions.onCollapseNode}
+                onHoverNode={instance.uiActions.onHoverNode}
+              />
+            ))}
+          </div>
+        </ContextMenu>
+      </HighlightProvider>
+    </Layout.ScrollContainer>
   );
 }
 
@@ -403,7 +411,7 @@ const DecorationImage = styled.img({
   width: 12,
 });
 
-const renderDepthOffset = 8;
+const renderDepthOffset = 12;
 
 const ContextMenu: React.FC<{
   nodes: Map<Id, UINode>;
