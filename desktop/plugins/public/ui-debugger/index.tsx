@@ -43,6 +43,7 @@ type UIState = {
   highlightedNodes: Atom<Set<Id>>;
   focusedNode: Atom<Id | undefined>;
   expandedNodes: Atom<Set<Id>>;
+  visualiserWidth: Atom<number>;
   frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
 };
 
@@ -90,6 +91,8 @@ export function plugin(client: PluginClient<Events>) {
   const uiState: UIState = {
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
     isContextMenuOpen: createState<boolean>(false),
+
+    visualiserWidth: createState(Math.min(window.innerWidth / 4.5, 500)),
 
     highlightedNodes,
 
@@ -260,6 +263,7 @@ type UIActions = {
   onSelectNode: (node?: Id) => void;
   onExpandNode: (node: Id) => void;
   onCollapseNode: (node: Id) => void;
+  setVisualiserWidth: (width: Id) => void;
 };
 
 function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
@@ -298,6 +302,11 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
     uiState.focusedNode.set(focused);
   };
 
+  const setVisualiserWidth = (width: number) => {
+    console.log('w', width);
+    uiState.visualiserWidth.set(width);
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
@@ -305,6 +314,7 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
     onSelectNode,
     onContextMenuOpen,
     onFocusNode,
+    setVisualiserWidth,
   };
 }
 

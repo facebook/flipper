@@ -31,12 +31,11 @@ import {Tree2} from './Tree';
 export function Component() {
   const instance = usePlugin(plugin);
   const rootId = useValue(instance.rootId);
+  const visualiserWidth = useValue(instance.uiState.visualiserWidth);
   const nodes: Map<Id, UINode> = useValue(instance.nodes);
   const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
-
-  const [visualiserWidth, setVisualiserWidth] = useState(500);
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
@@ -59,16 +58,18 @@ export function Component() {
               width={visualiserWidth}
               maxWidth={800}
               onResize={(width) => {
-                setVisualiserWidth(width);
+                instance.uiActions.setVisualiserWidth(width);
               }}
               gutter>
-              <Visualization2D
-                rootId={rootId}
-                width={visualiserWidth}
-                nodes={nodes}
-                onSelectNode={instance.uiActions.onSelectNode}
-                modifierPressed={ctrlPressed}
-              />
+              <Layout.ScrollContainer vertical>
+                <Visualization2D
+                  rootId={rootId}
+                  width={visualiserWidth}
+                  nodes={nodes}
+                  onSelectNode={instance.uiActions.onSelectNode}
+                  modifierPressed={ctrlPressed}
+                />
+              </Layout.ScrollContainer>
             </ResizablePanel>
             <DetailSidebar width={350}>
               <Inspector metadata={metadata} nodes={nodes} />
