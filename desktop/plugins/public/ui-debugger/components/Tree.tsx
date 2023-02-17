@@ -435,8 +435,8 @@ const ContextMenu: React.FC<{
 }) => {
   const copyItems: ReactNode[] = [];
   const hoveredNode = nodes.get(hoveredNodeId ?? Number.MAX_SAFE_INTEGER);
+
   if (hoveredNode) {
-    copyItems.push(<Menu.Divider />);
     copyItems.push(
       <UIDebuggerMenuItem
         key={'Copy Element name'}
@@ -459,6 +459,28 @@ const ContextMenu: React.FC<{
       )),
     );
   }
+  const focus = hoveredNode != null &&
+    focusedNodeId !== hoveredNodeId &&
+    hoveredNode.bounds.height !== 0 &&
+    hoveredNode.bounds.width !== 0 && (
+      <UIDebuggerMenuItem
+        key="focus"
+        text={`Focus ${hoveredNode.name}`}
+        onClick={() => {
+          onFocusNode(hoveredNodeId);
+        }}
+      />
+    );
+
+  const removeFocus = focusedNodeId && (
+    <UIDebuggerMenuItem
+      key="remove-focus"
+      text="Remove focus"
+      onClick={() => {
+        onFocusNode(undefined);
+      }}
+    />
+  );
   return (
     <Dropdown
       onVisibleChange={(visible) => {
@@ -466,25 +488,9 @@ const ContextMenu: React.FC<{
       }}
       overlay={() => (
         <Menu>
-          {hoveredNode != null && focusedNodeId !== hoveredNodeId && (
-            <UIDebuggerMenuItem
-              key="focus"
-              text={`Focus ${hoveredNode.name}`}
-              onClick={() => {
-                onFocusNode(hoveredNodeId);
-              }}
-            />
-          )}
-
-          {focusedNodeId && (
-            <UIDebuggerMenuItem
-              key="remove-focus"
-              text="Remove focus"
-              onClick={() => {
-                onFocusNode(undefined);
-              }}
-            />
-          )}
+          {focus}
+          {removeFocus}
+          {(focus || removeFocus) && <Menu.Divider />}
           {copyItems}
         </Menu>
       )}
