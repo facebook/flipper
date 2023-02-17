@@ -50,8 +50,8 @@ export function Component() {
         <Layout.Container grow padh="small" padv="medium">
           {instance.device === 'iOS' ? <FeedbackRequest /> : null}
           <Controls />
-          <Layout.Horizontal grow pad="small" gap="small">
-            <Layout.Container grow gap="small">
+          <Layout.Horizontal grow pad="small">
+            <Layout.Container grow>
               <Layout.ScrollContainer>
                 <Tree2 nodes={nodes} rootId={rootId} />
               </Layout.ScrollContainer>
