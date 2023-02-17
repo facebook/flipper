@@ -226,7 +226,7 @@ export function plugin(client: PluginClient<Events>) {
   return {
     rootId,
     uiState,
-    uiActions: uiActions(uiState),
+    uiActions: uiActions(uiState, nodes),
     nodes,
     frameworkEvents,
     snapshot,
@@ -262,7 +262,7 @@ type UIActions = {
   onCollapseNode: (node: Id) => void;
 };
 
-function uiActions(uiState: UIState): UIActions {
+function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
   const onExpandNode = (node: Id) => {
     uiState.expandedNodes.update((draft) => {
       draft.add(node);
@@ -270,6 +270,14 @@ function uiActions(uiState: UIState): UIActions {
   };
   const onSelectNode = (node?: Id) => {
     uiState.selectedNode.set(node);
+    let cur = node;
+    //expand entire ancestory in case it has been manually collapsed
+    uiState.expandedNodes.update((expandedNodesDraft) => {
+      while (cur != null) {
+        expandedNodesDraft.add(cur);
+        cur = nodes.get().get(cur)?.parent;
+      }
+    });
   };
 
   const onCollapseNode = (node: Id) => {

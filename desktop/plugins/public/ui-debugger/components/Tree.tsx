@@ -157,6 +157,7 @@ const MemoTreeItemContainer = React.memo(
     const id = nextProps.treeNode.id;
     return (
       prevProps.treeNode.id === nextProps.treeNode.id &&
+      prevProps.treeNode.isExpanded === nextProps.treeNode.isExpanded &&
       prevProps.isContextMenuOpen === nextProps.isContextMenuOpen &&
       prevProps.frameworkEvents === nextProps.frameworkEvents &&
       prevProps.highlightedNodes === nextProps.highlightedNodes &&
