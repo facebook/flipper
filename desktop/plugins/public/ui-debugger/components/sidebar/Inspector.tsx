@@ -10,20 +10,26 @@
 import React from 'react';
 // eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Glyph} from 'flipper';
-import {Layout, Tab, Tabs, theme} from 'flipper-plugin';
-import {Metadata, MetadataId, UINode} from '../../types';
+import {Layout, Tab, Tabs, theme, usePlugin, useValue} from 'flipper-plugin';
+import {Id, Metadata, MetadataId, UINode} from '../../types';
+
 import {IdentityInspector} from './inspector/IdentityInspector';
 import {AttributesInspector} from './inspector/AttributesInspector';
 import {Tooltip} from 'antd';
 import {NoData} from './inspector/NoData';
+import {plugin} from '../../index';
 
 type Props = {
-  node?: UINode;
+  nodes: Map<Id, UINode>;
   metadata: Map<MetadataId, Metadata>;
 };
 
-export const Inspector: React.FC<Props> = ({node, metadata}) => {
-  if (!node) {
+export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
+  const instance = usePlugin(plugin);
+  const selectedNodeId = useValue(instance.uiState.selectedNode);
+
+  const selectedNode = nodes.get(selectedNodeId!!);
+  if (!selectedNode) {
     return <NoData message="Please select a node to view its details" />;
   }
   return (
@@ -37,7 +43,7 @@ export const Inspector: React.FC<Props> = ({node, metadata}) => {
               </Layout.Horizontal>
             </Tooltip>
           }>
-          <IdentityInspector node={node} />
+          <IdentityInspector node={selectedNode} />
         </Tab>
 
         <Tab
@@ -50,7 +56,7 @@ export const Inspector: React.FC<Props> = ({node, metadata}) => {
           }>
           <AttributesInspector
             mode="attribute"
-            node={node}
+            node={selectedNode}
             metadata={metadata}
           />
         </Tab>
@@ -66,7 +72,11 @@ export const Inspector: React.FC<Props> = ({node, metadata}) => {
               </Layout.Horizontal>
             </Tooltip>
           }>
-          <AttributesInspector mode="layout" node={node} metadata={metadata} />
+          <AttributesInspector
+            mode="layout"
+            node={selectedNode}
+            metadata={metadata}
+          />
         </Tab>
       </Tabs>
     </Layout.Container>

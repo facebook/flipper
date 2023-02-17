@@ -35,7 +35,6 @@ export function Component() {
   const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
-  const [selectedNode, setSelectedNode] = useState<Id | undefined>(undefined);
 
   const [visualiserWidth, setVisualiserWidth] = useState(500);
 
@@ -54,12 +53,7 @@ export function Component() {
           <Layout.Horizontal grow pad="small" gap="small">
             <Layout.Container grow gap="small">
               <Layout.ScrollContainer>
-                <Tree2
-                  selectedNode={selectedNode}
-                  onSelectNode={setSelectedNode}
-                  nodes={nodes}
-                  rootId={rootId}
-                />
+                <Tree2 nodes={nodes} rootId={rootId} />
               </Layout.ScrollContainer>
             </Layout.Container>
 
@@ -76,16 +70,12 @@ export function Component() {
                 rootId={rootId}
                 width={visualiserWidth}
                 nodes={nodes}
-                selectedNode={selectedNode}
-                onSelectNode={setSelectedNode}
+                onSelectNode={instance.uiActions.onSelectNode}
                 modifierPressed={ctrlPressed}
               />
             </ResizablePanel>
             <DetailSidebar width={350}>
-              <Inspector
-                metadata={metadata}
-                node={selectedNode ? nodes.get(selectedNode) : undefined}
-              />
+              <Inspector metadata={metadata} nodes={nodes} />
             </DetailSidebar>
           </Layout.Horizontal>
         </Layout.Container>

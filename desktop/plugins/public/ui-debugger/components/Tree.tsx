@@ -29,7 +29,7 @@ import {
 } from 'flipper-plugin';
 import {plugin} from '../index';
 import {Glyph} from 'flipper';
-import {groupBy, head, last} from 'lodash';
+import {groupBy, head, isEqual, last} from 'lodash';
 import {reverse} from 'lodash/fp';
 import {Dropdown, Menu, Typography} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
@@ -50,21 +50,12 @@ export type TreeNode = UINode & {
   indentGuide: NodeIndentGuide | null;
 };
 
-export function Tree2({
-  nodes,
-  rootId,
-  selectedNode,
-  onSelectNode,
-}: {
-  nodes: Map<Id, UINode>;
-  rootId: Id;
-  selectedNode?: Id;
-  onSelectNode: (node?: Id) => void;
-}) {
+export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
   const instance = usePlugin(plugin);
   const focusedNode = useValue(instance.uiState.focusedNode);
   const expandedNodes = useValue(instance.uiState.expandedNodes);
   const searchTerm = useValue(instance.uiState.searchTerm);
+  const selectedNode = useValue(instance.uiState.selectedNode);
   const isContextMenuOpen = useValue(instance.uiState.isContextMenuOpen);
   const hoveredNode = head(useValue(instance.uiState.hoveredNodes));
 
@@ -96,7 +87,7 @@ export function Tree2({
     refs,
     selectedNode,
     hoveredNode,
-    onSelectNode,
+    instance.uiActions.onSelectNode,
     instance.uiActions.onExpandNode,
     instance.uiActions.onCollapseNode,
     isUsingKBToScroll,
@@ -140,7 +131,7 @@ export function Tree2({
               hoveredNode={hoveredNode}
               isUsingKBToScroll={isUsingKBToScroll}
               isContextMenuOpen={isContextMenuOpen}
-              onSelectNode={onSelectNode}
+              onSelectNode={instance.uiActions.onSelectNode}
               onExpandNode={instance.uiActions.onExpandNode}
               onCollapseNode={instance.uiActions.onCollapseNode}
               onHoverNode={instance.uiActions.onHoverNode}
@@ -157,7 +148,7 @@ const MemoTreeItemContainer = React.memo(
   (prevProps, nextProps) => {
     const id = nextProps.treeNode.id;
     return (
-      prevProps.treeNode === nextProps.treeNode &&
+      prevProps.treeNode.id === nextProps.treeNode.id &&
       prevProps.isContextMenuOpen === nextProps.isContextMenuOpen &&
       prevProps.frameworkEvents === nextProps.frameworkEvents &&
       prevProps.highlightedNodes === nextProps.highlightedNodes &&
@@ -166,7 +157,8 @@ const MemoTreeItemContainer = React.memo(
       prevProps.hoveredNode !== id && //make sure that prev or next hover/selected node doesnt concern this tree node
       nextProps.hoveredNode !== id &&
       prevProps.selectedNode !== id &&
-      nextProps.selectedNode !== id
+      nextProps.selectedNode !== id &&
+      isEqual(prevProps.treeNode.indentGuide, nextProps.treeNode.indentGuide)
     );
   },
 );

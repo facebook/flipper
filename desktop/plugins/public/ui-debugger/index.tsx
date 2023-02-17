@@ -39,6 +39,7 @@ type UIState = {
   searchTerm: Atom<string>;
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
+  selectedNode: Atom<Id | undefined>;
   highlightedNodes: Atom<Set<Id>>;
   focusedNode: Atom<Id | undefined>;
   expandedNodes: Atom<Set<Id>>;
@@ -92,6 +93,7 @@ export function plugin(client: PluginClient<Events>) {
 
     highlightedNodes,
 
+    selectedNode: createState<Id | undefined>(undefined),
     //used to indicate whether we will higher the visualizer / tree when a matching event comes in
     //also whether or not will show running total  in the tree
     frameworkEventMonitoring: createState(
@@ -255,6 +257,7 @@ type UIActions = {
   onHoverNode: (node: Id) => void;
   onFocusNode: (focused?: Id) => void;
   onContextMenuOpen: (open: boolean) => void;
+  onSelectNode: (node?: Id) => void;
   onExpandNode: (node: Id) => void;
   onCollapseNode: (node: Id) => void;
 };
@@ -264,6 +267,9 @@ function uiActions(uiState: UIState): UIActions {
     uiState.expandedNodes.update((draft) => {
       draft.add(node);
     });
+  };
+  const onSelectNode = (node?: Id) => {
+    uiState.selectedNode.set(node);
   };
 
   const onCollapseNode = (node: Id) => {
@@ -288,6 +294,7 @@ function uiActions(uiState: UIState): UIActions {
     onExpandNode,
     onCollapseNode,
     onHoverNode,
+    onSelectNode,
     onContextMenuOpen,
     onFocusNode,
   };

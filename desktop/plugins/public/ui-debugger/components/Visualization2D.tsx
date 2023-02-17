@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Bounds, Coordinate, Id, NestedNode, Tag, UINode} from '../types';
 
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
@@ -15,17 +15,17 @@ import {plugin} from '../index';
 import {head, isEqual, throttle} from 'lodash';
 import {Dropdown, Menu, Tooltip} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
+import {useFilteredValue} from '../hooks/usefilteredValue';
 
 export const Visualization2D: React.FC<
   {
     rootId: Id;
     width: number;
     nodes: Map<Id, UINode>;
-    selectedNode?: Id;
     onSelectNode: (id?: Id) => void;
     modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({rootId, width, nodes, selectedNode, onSelectNode, modifierPressed}) => {
+> = ({rootId, width, nodes, onSelectNode, modifierPressed}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
   const instance = usePlugin(plugin);
 
@@ -147,7 +147,6 @@ export const Visualization2D: React.FC<
           )}
           <MemoedVisualizationNode2D
             node={focusState.focusedRoot}
-            selectedNode={selectedNode}
             onSelectNode={onSelectNode}
             modifierPressed={modifierPressed}
           />
@@ -161,27 +160,34 @@ const MemoedVisualizationNode2D = React.memo(
   Visualization2DNode,
   (prev, next) => {
     return (
-      prev.node === next.node &&
-      prev.modifierPressed === next.modifierPressed &&
-      prev.selectedNode === next.selectedNode
+      prev.node === next.node && prev.modifierPressed === next.modifierPressed
     );
   },
 );
 
 function Visualization2DNode({
   node,
-  selectedNode,
   onSelectNode,
   modifierPressed,
 }: {
   node: NestedNode;
   modifierPressed: boolean;
-  selectedNode?: Id;
   onSelectNode: (id?: Id) => void;
 }) {
   const instance = usePlugin(plugin);
 
+  const wasOrIsSelected = useCallback(
+    (curValue?: Id, prevValue?: Id) =>
+      curValue === node.id || prevValue === node.id,
+    [node.id],
+  );
+  const selectedNode = useFilteredValue(
+    instance.uiState.selectedNode,
+    wasOrIsSelected,
+  );
+
   const isSelected = selectedNode === node.id;
+
   const {isHovered, isLongHovered} = useHoverStates(node.id);
   const ref = useRef<HTMLDivElement>(null);
   let nestedChildren: NestedNode[];
@@ -205,7 +211,6 @@ function Visualization2DNode({
       key={child.id}
       node={child}
       onSelectNode={onSelectNode}
-      selectedNode={selectedNode}
       modifierPressed={modifierPressed}
     />
   ));
