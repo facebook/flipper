@@ -19,13 +19,12 @@ import {useFilteredValue} from '../hooks/usefilteredValue';
 
 export const Visualization2D: React.FC<
   {
-    rootId: Id;
     width: number;
     nodes: Map<Id, UINode>;
     onSelectNode: (id?: Id) => void;
     modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({rootId, width, nodes, onSelectNode, modifierPressed}) => {
+> = ({width, nodes, onSelectNode, modifierPressed}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
   const instance = usePlugin(plugin);
 
@@ -34,9 +33,10 @@ export const Visualization2D: React.FC<
   const focusedNodeId = useValue(instance.uiState.focusedNode);
 
   const focusState = useMemo(() => {
-    const rootNode = toNestedNode(rootId, nodes);
+    //use the snapshot node as root since we cant realistically visualise any node above this
+    const rootNode = snapshot && toNestedNode(snapshot.nodeId, nodes);
     return rootNode && caclulateFocusState(rootNode, focusedNodeId);
-  }, [focusedNodeId, rootId, nodes]);
+  }, [snapshot, nodes, focusedNodeId]);
 
   useEffect(() => {
     const mouseListener = throttle((ev: MouseEvent) => {

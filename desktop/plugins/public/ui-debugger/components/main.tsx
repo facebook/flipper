@@ -63,7 +63,6 @@ export function Component() {
               gutter>
               <Layout.ScrollContainer vertical>
                 <Visualization2D
-                  rootId={rootId}
                   width={visualiserWidth}
                   nodes={nodes}
                   onSelectNode={instance.uiActions.onSelectNode}
