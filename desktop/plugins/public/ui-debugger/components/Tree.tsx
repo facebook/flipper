@@ -113,7 +113,7 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
     // otherwise we will keep scrolling back to the selected node overriding the users manual scroll offset.
     // We only should scroll when selection changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedNode]);
+  }, [selectedNode, focusedNode]);
   return (
     <Layout.ScrollContainer ref={scrollContainerRef}>
       <HighlightProvider
