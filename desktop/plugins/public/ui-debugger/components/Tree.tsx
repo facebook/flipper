@@ -13,6 +13,7 @@ import React, {
   Ref,
   RefObject,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
 } from 'react';
@@ -96,7 +97,7 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (selectedNode) {
       const idx = treeNodes.findIndex((node) => node.id === selectedNode);
       if (idx !== -1) {
@@ -108,7 +109,11 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
         });
       }
     }
-  }, [refs, selectedNode, treeNodes]);
+    // NOTE: We don't want to add refs or tree nodes to the dependency list since when new data comes in over the wire
+    // otherwise we will keep scrolling back to the selected node overriding the users manual scroll offset.
+    // We only should scroll when selection changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNode]);
   return (
     <Layout.ScrollContainer ref={scrollContainerRef}>
       <HighlightProvider
