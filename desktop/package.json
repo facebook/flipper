@@ -200,6 +200,6 @@
     ]
   },
   "dependencies": {
-    "js-flipper": "^0.146.1"
+    "js-flipper": "^0.182.0"
   }
 }
