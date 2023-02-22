@@ -36,6 +36,15 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    packagingOptions {
+        pickFirst "**/libcrypto.so"
+        pickFirst "**/libevent-2.1.so"
+        pickFirst "**/libevent_core-2.1.so"
+        pickFirst "**/libevent_extra-2.1.so"
+        pickFirst "**/libflipper.so"
+        pickFirst "**/libssl.so"
+    }
 }
 
 dependencies {
@@ -47,9 +56,9 @@ dependencies {
     // For simplicity, we use Flipper for both debug and release builds here.
     // Check out the "sample" app to see how to separate your build flavors.
     implementation project(':android')
-    implementation project(':fresco-plugin')
     implementation project(':network-plugin')
     implementation project(':litho-plugin')
+    implementation deps.flipperFrescoPlugin
     implementation deps.soloader
 
     // Litho
