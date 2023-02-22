@@ -10104,10 +10104,10 @@ js-base64@^3.7.5:
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-3.7.5.tgz#21e24cf6b886f76d6f5f165bfcd69cc55b9e3fca"
   integrity sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==
 
-js-flipper@^0.146.1:
-  version "0.146.1"
-  resolved "https://registry.yarnpkg.com/js-flipper/-/js-flipper-0.146.1.tgz#a2f9452912d576aa4a6db49ae2c8e70996895334"
-  integrity sha512-QPqgm3XssmisBJLC2pBc7pQumeZLdHmDlj1bRjff1djxMo4+pn7JSkm/JtooYZoHNdbrctFZ3eMUk0BSDvdSXA==
+js-flipper@^0.182.0:
+  version "0.182.0"
+  resolved "https://registry.yarnpkg.com/js-flipper/-/js-flipper-0.182.0.tgz#3d8a7e1b8eca7eab094281375229749518d3a518"
+  integrity sha512-CNJaBIXXPeg7FGsJ20WoBdt8+WkPH6WoludmHdznpL+vHUSfHJYr8yb+EE0dRX9TPbmUoq6wGxhp7DdOIvXarw==
 
 js-message@1.0.7:
   version "1.0.7"
