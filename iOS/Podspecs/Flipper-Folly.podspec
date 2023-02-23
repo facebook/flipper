@@ -11,7 +11,7 @@ Pod::Spec.new do |spec|
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
   spec.authors = 'Facebook'
   spec.source = { :git => 'https://github.com/facebook/folly.git',
-                  :tag => "v2021.06.14.00"}
+                  :tag => "v2023.02.20.00"}
   spec.module_name = 'folly'
   spec.dependency 'Flipper-Boost-iOSX'
   spec.dependency 'Flipper-Glog'
