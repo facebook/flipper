@@ -69,7 +69,7 @@ ext.deps = [
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.1',
         // First-party
-        soloader           : 'com.facebook.soloader:soloader:0.10.4',
+        soloader           : 'com.facebook.soloader:soloader:0.10.5',
         fbjni              : 'com.facebook.fbjni:fbjni:0.3.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.15.0',
         boltsTasks         : 'com.parse.bolts:bolts-tasks:1.4.0',
