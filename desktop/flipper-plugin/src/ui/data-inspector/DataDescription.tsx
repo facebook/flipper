@@ -15,6 +15,7 @@ import {SketchPicker, CompactPicker} from 'react-color';
 import React, {KeyboardEvent} from 'react';
 import {HighlightContext} from '../Highlight';
 import {parseColor} from '../../utils/parseColor';
+import {TimelineDataDescription} from './TimelineDataDescription';
 import {theme} from '../theme';
 import {EditOutlined} from '@ant-design/icons';
 // This import is OK since it is a type-only import
@@ -551,6 +552,25 @@ class DataDescriptionContainer extends PureComponent<{
     const highlighter = this.context;
 
     switch (type) {
+      case 'timeline': {
+        return (
+          <>
+            <TimelineDataDescription
+              canSetCurrent={editable}
+              timeline={JSON.parse(val)}
+              onClick={(id) => {
+                this.props.commit({
+                  value: id,
+                  keep: true,
+                  clear: false,
+                  set: true,
+                });
+              }}
+            />
+          </>
+        );
+      }
+
       case 'number':
         return <NumberValue>{+val}</NumberValue>;
 
