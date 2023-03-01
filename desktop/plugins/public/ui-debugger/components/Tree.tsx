@@ -355,7 +355,8 @@ const TreeItemRow = styled.li<{
   borderRadius: '3px',
   borderColor: isHovered ? theme.selectionBackgroundColor : 'transparent',
   borderStyle: 'solid',
-
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
   backgroundColor: isHighlighted
     ? 'rgba(255,0,0,.3)'
     : isSelected
