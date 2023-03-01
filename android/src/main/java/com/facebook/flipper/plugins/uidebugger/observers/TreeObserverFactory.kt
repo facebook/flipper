@@ -7,11 +7,11 @@
 
 package com.facebook.flipper.plugins.uidebugger.observers
 
-import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 
 interface TreeObserverBuilder<T> {
   fun canBuildFor(node: Any): Boolean
-  fun build(context: Context): TreeObserver<T>
+  fun build(context: UIDContext): TreeObserver<T>
 }
 
 class TreeObserverFactory {
@@ -28,7 +28,7 @@ class TreeObserverFactory {
   }
 
   // TODO: Not very efficient, need to cache this. Builders cannot be removed.
-  fun createObserver(node: Any, context: Context): TreeObserver<*>? {
+  fun createObserver(node: Any, context: UIDContext): TreeObserver<*>? {
     return builders.find { it.canBuildFor(node) }?.build(context)
   }
 

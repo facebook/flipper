@@ -7,13 +7,10 @@
 
 package com.facebook.flipper.plugins.uidebugger.litho
 
-import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
-import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 
 // this is not used internally
 object UIDebuggerLithoSupport {
 
-  fun addDescriptors(register: DescriptorRegister) {}
-
-  fun addObserver(observerFactory: TreeObserverFactory) {}
+  fun enable(context: UIDContext) {}
 }

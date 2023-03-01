@@ -12,14 +12,14 @@ import android.view.View
 import android.view.ViewTreeObserver
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
-import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 import java.lang.ref.WeakReference
 
 typealias DecorView = View
 
 /** Responsible for subscribing to updates to the content view of an activity */
-class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
+class DecorViewObserver(val context: UIDContext) : TreeObserver<DecorView>() {
 
   private var nodeRef: WeakReference<View>? = null
   private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
@@ -78,7 +78,7 @@ object DecorViewTreeObserverBuilder : TreeObserverBuilder<DecorView> {
     return node.javaClass.simpleName.contains("DecorView")
   }
 
-  override fun build(context: Context): TreeObserver<DecorView> {
+  override fun build(context: UIDContext): TreeObserver<DecorView> {
     Log.i(LogTag, "Building DecorView observer")
     return DecorViewObserver(context)
   }
