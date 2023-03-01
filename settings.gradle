@@ -28,9 +28,6 @@ project(':third-party').projectDir = file('android/third-party/')
 project(':noop').projectDir = file('android/no-op/')
 
 // Plugins
-include ':fresco-plugin'
-project(':fresco-plugin').projectDir = file('android/plugins/fresco')
-
 include ':network-plugin'
 project(':network-plugin').projectDir = file('android/plugins/network')
 

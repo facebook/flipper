@@ -138,38 +138,38 @@ object ViewDescriptor : ChainedDescriptor<View>() {
   private var SectionId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
   private val PositionAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "position")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "position")
   private val GlobalPositionAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "globalPosition")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "globalPosition")
   private val SizeAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "size")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "size")
   private val BoundsAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "bounds")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "bounds")
   private val PaddingAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "padding")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "padding")
   private val LocalVisibleRectAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "localVisibleRect")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "localVisibleRect")
   private val RotationAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "rotation")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "rotation")
   private val ScaleAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "scale")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "scale")
   private val PivotAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "pivot")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "pivot")
   private val ScrollAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "scroll")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "scroll")
   private val LayoutParamsAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "layoutParams")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "layoutParams")
   private val LayoutDirectionAttributeId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_LAYOUT,
+          MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "layoutDirection",
           false,
           LayoutDirectionMapping.getInspectableValues())
   private val TranslationAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "translation")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "translation")
   private val ElevationAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "elevation")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "elevation")
   private val VisibilityAttributeId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
@@ -219,26 +219,26 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
   private val WidthAttributeId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_LAYOUT,
+          MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "width",
           false,
           LayoutParamsMapping.getInspectableValues())
   private val HeightAttributeId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_LAYOUT,
+          MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "height",
           false,
           LayoutParamsMapping.getInspectableValues())
 
   private val MarginAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "margin")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "margin")
   private val WeightAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_LAYOUT, NAMESPACE, "weight")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "weight")
   private val GravityAttributeId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_LAYOUT,
+          MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "gravity",
           false,
@@ -299,7 +299,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     props[SizeAttributeId] = InspectableValue.Size(Size(node.width, node.height))
 
     props[BoundsAttributeId] =
-        InspectableValue.Bounds(Bounds(node.left, node.top, node.right, node.bottom))
+        InspectableValue.Bounds(Bounds(node.left, node.top, node.width, node.height))
     props[PaddingAttributeId] =
         InspectableValue.SpaceBox(
             SpaceBox(node.paddingTop, node.paddingRight, node.paddingBottom, node.paddingLeft))

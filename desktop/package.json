@@ -67,7 +67,7 @@
   "category": "facebook-intern",
   "description": "Mobile development tool",
   "devDependencies": {
-    "@babel/eslint-parser": "^7.17.0",
+    "@babel/eslint-parser": "^7.19.1",
     "@jest-runner/electron": "^3.0.1",
     "@testing-library/react": "^12.1.4",
     "@types/jest": "^26.0.24",
@@ -89,7 +89,7 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-react-hooks": "^4.5.0",
     "eslint-plugin-rulesdir": "^0.2.1",
@@ -169,7 +169,7 @@
     "npm": "use yarn instead",
     "yarn": "^1.16"
   },
-  "version": "0.176.1",
+  "version": "0.182.0",
   "workspaces": {
     "packages": [
       "scripts",
@@ -200,6 +200,6 @@
     ]
   },
   "dependencies": {
-    "js-flipper": "^0.146.1"
+    "js-flipper": "^0.182.0"
   }
 }

@@ -54,7 +54,6 @@ import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import {setStaticView} from '../reducers/connections';
-import {getLogger} from 'flipper-common';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
 import {useMemoize} from 'flipper-plugin';

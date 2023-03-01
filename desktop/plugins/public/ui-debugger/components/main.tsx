@@ -24,19 +24,18 @@ import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
 import {Spin} from 'antd';
+import {QueryClientProvider} from 'react-query';
 import FeedbackRequest from './fb-stubs/feedback';
 import {Tree2} from './Tree';
 
 export function Component() {
   const instance = usePlugin(plugin);
   const rootId = useValue(instance.rootId);
+  const visualiserWidth = useValue(instance.uiState.visualiserWidth);
   const nodes: Map<Id, UINode> = useValue(instance.nodes);
   const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
-  const [selectedNode, setSelectedNode] = useState<Id | undefined>(undefined);
-
-  const [visualiserWidth, setVisualiserWidth] = useState(500);
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
@@ -46,47 +45,37 @@ export function Component() {
 
   if (rootId) {
     return (
-      <Layout.Container grow padh="small" padv="medium">
-        <FeedbackRequest />
-        <Controls />
-        <Layout.Horizontal grow pad="small" gap="small">
-          <Layout.Container grow gap="small">
-            <Layout.ScrollContainer>
-              <Tree2
-                selectedNode={selectedNode}
-                onSelectNode={setSelectedNode}
-                nodes={nodes}
-                rootId={rootId}
-              />
-            </Layout.ScrollContainer>
-          </Layout.Container>
+      <QueryClientProvider client={instance.queryClient}>
+        <Layout.Container grow padh="small" padv="medium">
+          {instance.device === 'iOS' ? <FeedbackRequest /> : null}
+          <Controls />
+          <Layout.Horizontal grow pad="small">
+            <Tree2 nodes={nodes} rootId={rootId} />
 
-          <ResizablePanel
-            position="right"
-            minWidth={200}
-            width={visualiserWidth}
-            maxWidth={800}
-            onResize={(width) => {
-              setVisualiserWidth(width);
-            }}
-            gutter>
-            <Visualization2D
-              rootId={rootId}
+            <ResizablePanel
+              position="right"
+              minWidth={200}
               width={visualiserWidth}
-              nodes={nodes}
-              selectedNode={selectedNode}
-              onSelectNode={setSelectedNode}
-              modifierPressed={ctrlPressed}
-            />
-          </ResizablePanel>
-          <DetailSidebar width={350}>
-            <Inspector
-              metadata={metadata}
-              node={selectedNode ? nodes.get(selectedNode) : undefined}
-            />
-          </DetailSidebar>
-        </Layout.Horizontal>
-      </Layout.Container>
+              maxWidth={800}
+              onResize={(width) => {
+                instance.uiActions.setVisualiserWidth(width);
+              }}
+              gutter>
+              <Layout.ScrollContainer vertical>
+                <Visualization2D
+                  width={visualiserWidth}
+                  nodes={nodes}
+                  onSelectNode={instance.uiActions.onSelectNode}
+                  modifierPressed={ctrlPressed}
+                />
+              </Layout.ScrollContainer>
+            </ResizablePanel>
+            <DetailSidebar width={350}>
+              <Inspector metadata={metadata} nodes={nodes} />
+            </DetailSidebar>
+          </Layout.Horizontal>
+        </Layout.Container>
+      </QueryClientProvider>
     );
   }
 

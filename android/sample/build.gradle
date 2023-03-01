@@ -49,6 +49,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+
+    packagingOptions {
+        pickFirst "**/libcrypto.so"
+        pickFirst "**/libevent-2.1.so"
+        pickFirst "**/libevent_core-2.1.so"
+        pickFirst "**/libevent_extra-2.1.so"
+        pickFirst "**/libflipper.so"
+        pickFirst "**/libssl.so"
+    }
 }
 
 dependencies {
@@ -74,6 +83,8 @@ dependencies {
     implementation deps.protobuf
     implementation deps.datastorePreferences
 
+    debugImplementation deps.flipperFrescoPlugin
+
     // Integration test
     androidTestImplementation deps.testCore
     androidTestImplementation deps.testRules
@@ -85,7 +96,6 @@ dependencies {
     testImplementation deps.junit
 
     debugImplementation project(':android')
-    debugImplementation project(':fresco-plugin')
     debugImplementation project(':network-plugin')
     debugImplementation project(':litho-plugin')
     debugImplementation project(':datastore-viewer')

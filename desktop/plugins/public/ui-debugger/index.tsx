@@ -8,15 +8,17 @@
  */
 
 import {
-  PluginClient,
-  createState,
-  createDataSource,
-  produce,
   Atom,
+  createDataSource,
+  createState,
+  PluginClient,
+  produce,
 } from 'flipper-plugin';
 import {
   Events,
   Id,
+  FrameworkEvent,
+  FrameworkEventType,
   Metadata,
   MetadataId,
   PerfStatsEvent,
@@ -24,6 +26,7 @@ import {
   UINode,
 } from './types';
 import {Draft} from 'immer';
+import {QueryClient, setLogger} from 'react-query';
 
 type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};
 type LiveClientState = {
@@ -36,16 +39,27 @@ type UIState = {
   searchTerm: Atom<string>;
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
+  selectedNode: Atom<Id | undefined>;
+  highlightedNodes: Atom<Set<Id>>;
   focusedNode: Atom<Id | undefined>;
   expandedNodes: Atom<Set<Id>>;
+  visualiserWidth: Atom<number>;
+  frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
 };
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
 
+  const device = client.device.os;
+
   client.onMessage('init', (event) => {
     rootId.set(event.rootId);
+    uiState.frameworkEventMonitoring.update((draft) => {
+      event.frameworkEventMetadata.forEach((frameworkEventMeta) => {
+        draft.set(frameworkEventMeta.type, false);
+      });
+    });
   });
 
   client.onMessage('metadataUpdate', (event) => {
@@ -69,11 +83,25 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const nodes = createState<Map<Id, UINode>>(new Map());
+  const frameworkEvents = createState<Map<Id, FrameworkEvent[]>>(new Map());
+
+  const highlightedNodes = createState(new Set<Id>());
   const snapshot = createState<SnapshotInfo | null>(null);
 
   const uiState: UIState = {
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
     isContextMenuOpen: createState<boolean>(false),
+
+    visualiserWidth: createState(Math.min(window.innerWidth / 4.5, 500)),
+
+    highlightedNodes,
+
+    selectedNode: createState<Id | undefined>(undefined),
+    //used to indicate whether we will higher the visualizer / tree when a matching event comes in
+    //also whether or not will show running total  in the tree
+    frameworkEventMonitoring: createState(
+      new Map<FrameworkEventType, boolean>(),
+    ),
 
     isPaused: createState(false),
 
@@ -128,23 +156,53 @@ export function plugin(client: PluginClient<Events>) {
   };
 
   const seenNodes = new Set<Id>();
-  client.onMessage('subtreeUpdate', (event) => {
+  client.onMessage('subtreeUpdate', (subtreeUpdate) => {
+    frameworkEvents.update((draft) => {
+      if (subtreeUpdate.frameworkEvents) {
+        subtreeUpdate.frameworkEvents.forEach((frameworkEvent) => {
+          if (
+            uiState.frameworkEventMonitoring.get().get(frameworkEvent.type) ===
+              true &&
+            uiState.isPaused.get() === false
+          ) {
+            highlightedNodes.update((draft) => {
+              draft.add(frameworkEvent.nodeId);
+            });
+          }
+
+          const frameworkEventsForNode = draft.get(frameworkEvent.nodeId);
+          if (frameworkEventsForNode) {
+            frameworkEventsForNode.push(frameworkEvent);
+          } else {
+            draft.set(frameworkEvent.nodeId, [frameworkEvent]);
+          }
+        });
+        setTimeout(() => {
+          highlightedNodes.update((laterDraft) => {
+            for (const event of subtreeUpdate.frameworkEvents!!.values()) {
+              laterDraft.delete(event.nodeId);
+            }
+          });
+        }, HighlightTime);
+      }
+    });
+
     liveClientData = produce(liveClientData, (draft) => {
-      if (event.snapshot) {
+      if (subtreeUpdate.snapshot) {
         draft.snapshotInfo = {
-          nodeId: event.rootId,
-          base64Image: event.snapshot,
+          nodeId: subtreeUpdate.rootId,
+          base64Image: subtreeUpdate.snapshot,
         };
       }
 
-      event.nodes.forEach((node) => {
+      subtreeUpdate.nodes.forEach((node) => {
         draft.nodes.set(node.id, {...node});
       });
       setParentPointers(rootId.get()!!, undefined, draft.nodes);
     });
 
     uiState.expandedNodes.update((draft) => {
-      for (const node of event.nodes) {
+      for (const node of subtreeUpdate.nodes) {
         if (!seenNodes.has(node.id)) {
           draft.add(node.id);
         }
@@ -166,15 +224,20 @@ export function plugin(client: PluginClient<Events>) {
     }
   });
 
+  const queryClient = new QueryClient({});
+
   return {
     rootId,
     uiState,
-    uiActions: uiActions(uiState),
+    uiActions: uiActions(uiState, nodes),
     nodes,
+    frameworkEvents,
     snapshot,
     metadata,
     perfEvents,
     setPlayPause,
+    queryClient,
+    device,
   };
 }
 
@@ -197,14 +260,27 @@ type UIActions = {
   onHoverNode: (node: Id) => void;
   onFocusNode: (focused?: Id) => void;
   onContextMenuOpen: (open: boolean) => void;
+  onSelectNode: (node?: Id) => void;
   onExpandNode: (node: Id) => void;
   onCollapseNode: (node: Id) => void;
+  setVisualiserWidth: (width: Id) => void;
 };
 
-function uiActions(uiState: UIState): UIActions {
+function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
   const onExpandNode = (node: Id) => {
     uiState.expandedNodes.update((draft) => {
       draft.add(node);
+    });
+  };
+  const onSelectNode = (node?: Id) => {
+    uiState.selectedNode.set(node);
+    let cur = node;
+    //expand entire ancestory in case it has been manually collapsed
+    uiState.expandedNodes.update((expandedNodesDraft) => {
+      while (cur != null) {
+        expandedNodesDraft.add(cur);
+        cur = nodes.get().get(cur)?.parent;
+      }
     });
   };
 
@@ -226,12 +302,19 @@ function uiActions(uiState: UIState): UIActions {
     uiState.focusedNode.set(focused);
   };
 
+  const setVisualiserWidth = (width: number) => {
+    console.log('w', width);
+    uiState.visualiserWidth.set(width);
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
     onHoverNode,
+    onSelectNode,
     onContextMenuOpen,
     onFocusNode,
+    setVisualiserWidth,
   };
 }
 
@@ -282,4 +365,19 @@ function collapseinActiveChildren(node: UINode, expandedNodes: Draft<Set<Id>>) {
   }
 }
 
+const HighlightTime = 300;
+
 export {Component} from './components/main';
+
+setLogger({
+  log: (...args) => {
+    console.log(...args);
+  },
+  warn: (...args) => {
+    console.warn(...args);
+  },
+  error: (...args) => {
+    //downgrade react query network errors to warning so they dont get sent to scribe
+    console.warn(...args);
+  },
+});

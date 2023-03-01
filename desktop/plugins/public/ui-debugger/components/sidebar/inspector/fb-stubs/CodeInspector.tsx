@@ -13,6 +13,7 @@ import {Tag} from '../../../../types';
 type CodeInspectorProps = {
   tags: Tag[];
   name: string;
+  androidId?: string;
 };
 export const CodeInspector: React.FC<CodeInspectorProps> = () => {
   return <></>;

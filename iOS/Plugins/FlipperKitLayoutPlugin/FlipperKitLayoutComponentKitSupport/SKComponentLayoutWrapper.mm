@@ -23,8 +23,8 @@
 static char const kLayoutWrapperKey = ' ';
 
 static CK::Optional<CKFlexboxComponentChild> findFlexboxLayoutParams(
-    id<RCMountable> parent,
-    id<RCMountable> child) {
+    id<CKMountable> parent,
+    id<CKMountable> child) {
   if ([parent isKindOfClass:[CKFlexboxComponent class]]) {
     static Ivar ivar =
         class_getInstanceVariable([CKFlexboxComponent class], "_children");
@@ -59,7 +59,7 @@ static CK::Optional<CKFlexboxComponentChild> findFlexboxLayoutParams(
       return cachedWrapper;
     }
   }
-  // TODO: Add support for `RCMountable` components.
+  // TODO: Add support for `CKMountable` components.
   CKComponent* component = (CKComponent*)layout.component;
   CKComponentReuseWrapper* reuseWrapper =
       CKAnalyticsListenerHelpers::GetReusedNodes(component);

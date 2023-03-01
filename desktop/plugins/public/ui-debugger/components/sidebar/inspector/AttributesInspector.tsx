@@ -52,7 +52,7 @@ const NamedAttributeInspector: React.FC<NamedAttributeInspectorProps> = ({
   children,
 }) => {
   return (
-    <Row style={RowStyle}>
+    <Row style={RowStyle} justify="center" align="middle" gutter={[16, 0]}>
       <Col span={8} style={AutoMarginStyle}>
         {name}
       </Col>
@@ -82,7 +82,7 @@ const ObjectAttributeInspector: React.FC<{
             style={{
               paddingLeft: level,
             }}>
-            {create(metadata, attributeName, inspectableValue, level + 2)}
+            {create(metadata, attributeName, inspectableValue, level + 5)}
           </ObjectContainer>
         );
       })}
@@ -108,7 +108,7 @@ const ArrayAttributeInspector: React.FC<{
             style={{
               paddingLeft: level,
             }}>
-            {create(metadata, attributeName, inspectableValue, level + 2)}
+            {create(metadata, attributeName, inspectableValue, level + 5)}
           </ObjectContainer>
         );
       })}
@@ -258,17 +258,25 @@ export const AttributesInspector: React.FC<Props> = ({
   const keys = Object.keys(node.attributes);
   const sections = keys
     .map(function (key, _) {
-      const metadataId: number = Number(key);
       /**
        * The node top-level attributes refer to the displayable panels.
        * The panel name is obtained by querying the metadata.
        * The inspectable contains the actual attributes belonging to each panel.
        */
+      const metadataId: number = Number(key);
+      const sectionMetadata = metadata.get(metadataId);
+      if (!sectionMetadata) {
+        return;
+      }
+      const sectionAttributes = node.attributes[
+        metadataId
+      ] as InspectableObject;
+
       return createSection(
         mode,
         metadata,
-        metadata.get(metadataId)?.name ?? '',
-        node.attributes[metadataId] as InspectableObject,
+        sectionMetadata.name,
+        sectionAttributes,
       );
     })
     .filter((section) => section !== undefined);

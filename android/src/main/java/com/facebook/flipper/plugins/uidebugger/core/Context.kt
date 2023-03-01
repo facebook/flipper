@@ -12,6 +12,7 @@ import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverManager
+import com.facebook.flipper.plugins.uidebugger.scheduler.SharedThrottle
 import com.facebook.flipper.plugins.uidebugger.traversal.PartialLayoutTraversal
 
 data class Context(
@@ -24,7 +25,7 @@ data class Context(
       PartialLayoutTraversal(descriptorRegister, observerFactory)
 
   val treeObserverManager = TreeObserverManager(this)
-
+  val sharedThrottle: SharedThrottle = SharedThrottle()
   val bitmapPool = BitmapPool()
 }
 

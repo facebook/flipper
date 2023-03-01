@@ -7,10 +7,19 @@
  * @format
  */
 
-import {Id, UINode} from '../types';
-import React, {Ref, RefObject, useEffect, useMemo, useRef} from 'react';
+import {FrameworkEvent, FrameworkEventType, Id, UINode} from '../types';
+import React, {
+  ReactNode,
+  Ref,
+  RefObject,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   Atom,
+  getFlipperLib,
   HighlightManager,
   HighlightProvider,
   styled,
@@ -18,10 +27,11 @@ import {
   useHighlighter,
   usePlugin,
   useValue,
+  Layout,
 } from 'flipper-plugin';
 import {plugin} from '../index';
 import {Glyph} from 'flipper';
-import {head, last} from 'lodash';
+import {groupBy, head, isEqual, last} from 'lodash';
 import {reverse} from 'lodash/fp';
 import {Dropdown, Menu, Typography} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
@@ -42,23 +52,20 @@ export type TreeNode = UINode & {
   indentGuide: NodeIndentGuide | null;
 };
 
-export function Tree2({
-  nodes,
-  rootId,
-  selectedNode,
-  onSelectNode,
-}: {
-  nodes: Map<Id, UINode>;
-  rootId: Id;
-  selectedNode?: Id;
-  onSelectNode: (node?: Id) => void;
-}) {
+export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
   const instance = usePlugin(plugin);
   const focusedNode = useValue(instance.uiState.focusedNode);
   const expandedNodes = useValue(instance.uiState.expandedNodes);
   const searchTerm = useValue(instance.uiState.searchTerm);
+  const selectedNode = useValue(instance.uiState.selectedNode);
   const isContextMenuOpen = useValue(instance.uiState.isContextMenuOpen);
   const hoveredNode = head(useValue(instance.uiState.hoveredNodes));
+
+  const frameworkEvents = useValue(instance.frameworkEvents);
+  const frameworkEventsMonitoring = useValue(
+    instance.uiState.frameworkEventMonitoring,
+  );
+  const highlightedNodes = useValue(instance.uiState.highlightedNodes);
 
   const {treeNodes, refs} = useMemo(() => {
     const treeNodes = toTreeNodes(
@@ -82,56 +89,70 @@ export function Tree2({
     refs,
     selectedNode,
     hoveredNode,
-    onSelectNode,
+    instance.uiActions.onSelectNode,
     instance.uiActions.onExpandNode,
     instance.uiActions.onCollapseNode,
     isUsingKBToScroll,
   );
 
-  useEffect(() => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
     if (selectedNode) {
       const idx = treeNodes.findIndex((node) => node.id === selectedNode);
       if (idx !== -1) {
+        scrollContainerRef.current!!.scrollLeft =
+          Math.max(0, treeNodes[idx].depth - 10) * renderDepthOffset;
+
         refs[idx].current?.scrollIntoView({
           block: 'nearest',
         });
       }
     }
-  }, [refs, selectedNode, treeNodes]);
+    // NOTE: We don't want to add refs or tree nodes to the dependency list since when new data comes in over the wire
+    // otherwise we will keep scrolling back to the selected node overriding the users manual scroll offset.
+    // We only should scroll when selection changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNode, focusedNode]);
   return (
-    <HighlightProvider
-      text={searchTerm}
-      highlightColor={theme.searchHighlightBackground.yellow}>
-      <ContextMenu
-        focusedNode={focusedNode}
-        hoveredNode={hoveredNode}
-        nodes={nodes}
-        onContextMenuOpen={instance.uiActions.onContextMenuOpen}
-        onFocusNode={instance.uiActions.onFocusNode}>
-        <div
-          onMouseLeave={() => {
-            if (isContextMenuOpen === false) {
-              instance.uiState.hoveredNodes.set([]);
-            }
-          }}>
-          {treeNodes.map((treeNode, index) => (
-            <MemoTreeItemContainer
-              innerRef={refs[index]}
-              key={treeNode.id}
-              treeNode={treeNode}
-              selectedNode={selectedNode}
-              hoveredNode={hoveredNode}
-              isUsingKBToScroll={isUsingKBToScroll}
-              isContextMenuOpen={isContextMenuOpen}
-              onSelectNode={onSelectNode}
-              onExpandNode={instance.uiActions.onExpandNode}
-              onCollapseNode={instance.uiActions.onCollapseNode}
-              onHoverNode={instance.uiActions.onHoverNode}
-            />
-          ))}
-        </div>
-      </ContextMenu>
-    </HighlightProvider>
+    <Layout.ScrollContainer ref={scrollContainerRef}>
+      <HighlightProvider
+        text={searchTerm}
+        highlightColor={theme.searchHighlightBackground.yellow}>
+        <ContextMenu
+          focusedNodeId={focusedNode}
+          hoveredNodeId={hoveredNode}
+          nodes={nodes}
+          onContextMenuOpen={instance.uiActions.onContextMenuOpen}
+          onFocusNode={instance.uiActions.onFocusNode}>
+          <div
+            onMouseLeave={() => {
+              if (isContextMenuOpen === false) {
+                instance.uiState.hoveredNodes.set([]);
+              }
+            }}>
+            {treeNodes.map((treeNode, index) => (
+              <MemoTreeItemContainer
+                innerRef={refs[index]}
+                key={treeNode.id}
+                treeNode={treeNode}
+                frameworkEvents={frameworkEvents}
+                frameworkEventsMonitoring={frameworkEventsMonitoring}
+                highlightedNodes={highlightedNodes}
+                selectedNode={selectedNode}
+                hoveredNode={hoveredNode}
+                isUsingKBToScroll={isUsingKBToScroll}
+                isContextMenuOpen={isContextMenuOpen}
+                onSelectNode={instance.uiActions.onSelectNode}
+                onExpandNode={instance.uiActions.onExpandNode}
+                onCollapseNode={instance.uiActions.onCollapseNode}
+                onHoverNode={instance.uiActions.onHoverNode}
+              />
+            ))}
+          </div>
+        </ContextMenu>
+      </HighlightProvider>
+    </Layout.ScrollContainer>
   );
 }
 
@@ -140,13 +161,18 @@ const MemoTreeItemContainer = React.memo(
   (prevProps, nextProps) => {
     const id = nextProps.treeNode.id;
     return (
-      prevProps.treeNode === nextProps.treeNode &&
+      prevProps.treeNode.id === nextProps.treeNode.id &&
+      prevProps.treeNode.isExpanded === nextProps.treeNode.isExpanded &&
       prevProps.isContextMenuOpen === nextProps.isContextMenuOpen &&
-      //make sure that prev or next hover/selected node doesnt concern this tree node
-      prevProps.hoveredNode !== id &&
+      prevProps.frameworkEvents === nextProps.frameworkEvents &&
+      prevProps.highlightedNodes === nextProps.highlightedNodes &&
+      prevProps.frameworkEventsMonitoring ===
+        nextProps.frameworkEventsMonitoring &&
+      prevProps.hoveredNode !== id && //make sure that prev or next hover/selected node doesnt concern this tree node
       nextProps.hoveredNode !== id &&
       prevProps.selectedNode !== id &&
-      nextProps.selectedNode !== id
+      nextProps.selectedNode !== id &&
+      isEqual(prevProps.treeNode.indentGuide, nextProps.treeNode.indentGuide)
     );
   },
 );
@@ -176,7 +202,7 @@ function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
         <div
           style={{
             position: 'absolute',
-            width: 8,
+            width: renderDepthOffset / 3,
             height: HalfTreeItemHeight,
             borderBottom: `2px ${horizontalLineStyle} ${color}`,
             marginLeft: verticalLinePadding,
@@ -189,6 +215,9 @@ function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
 function TreeItemContainer({
   innerRef,
   treeNode,
+  frameworkEvents,
+  frameworkEventsMonitoring,
+  highlightedNodes,
   selectedNode,
   hoveredNode,
   isUsingKBToScroll,
@@ -200,6 +229,9 @@ function TreeItemContainer({
 }: {
   innerRef: Ref<any>;
   treeNode: TreeNode;
+  frameworkEvents: Map<Id, FrameworkEvent[]>;
+  highlightedNodes: Set<Id>;
+  frameworkEventsMonitoring: Map<FrameworkEventType, boolean>;
   selectedNode?: Id;
   hoveredNode?: Id;
   isUsingKBToScroll: RefObject<boolean>;
@@ -214,8 +246,9 @@ function TreeItemContainer({
       {treeNode.indentGuide != null && (
         <IndentGuide indentGuide={treeNode.indentGuide} />
       )}
-      <TreeItemContent
+      <TreeItemRow
         ref={innerRef}
+        isHighlighted={highlightedNodes.has(treeNode.id)}
         isSelected={treeNode.id === selectedNode}
         isHovered={hoveredNode === treeNode.id}
         onMouseEnter={() => {
@@ -244,7 +277,12 @@ function TreeItemContainer({
         {nodeIcon(treeNode)}
         <HighlightedText text={treeNode.name} />
         <InlineAttributes attributes={treeNode.inlineAttributes} />
-      </TreeItemContent>
+        <MonitoredEventSummary
+          node={treeNode}
+          frameworkEvents={frameworkEvents}
+          frameworkEventsMonitoring={frameworkEventsMonitoring}
+        />
+      </TreeItemRow>
     </div>
   );
 }
@@ -256,18 +294,45 @@ const TreeAttributeContainer = styled(Text)({
   fontSize: 12,
 });
 
+function MonitoredEventSummary({
+  node,
+  frameworkEvents,
+  frameworkEventsMonitoring,
+}: {
+  node: UINode;
+  frameworkEvents: Map<Id, FrameworkEvent[]>;
+  frameworkEventsMonitoring: Map<FrameworkEventType, boolean>;
+}) {
+  const events = frameworkEvents.get(node.id);
+  if (events) {
+    return (
+      <>
+        {Object.entries(groupBy(events, (e) => e.type))
+          .filter(([type]) => frameworkEventsMonitoring.get(type))
+          .map(([key, values]) => (
+            <TreeAttributeContainer key={key}>
+              <span style={{color: theme.errorColor}}>
+                {last(key.split(':'))}
+              </span>
+              <span>={values.length}</span>
+            </TreeAttributeContainer>
+          ))}
+      </>
+    );
+  }
+  return null;
+}
+
 function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
   const highlightManager: HighlightManager = useHighlighter();
 
   return (
     <>
       {Object.entries(attributes ?? {}).map(([key, value]) => (
-        <>
-          <TreeAttributeContainer key={key}>
-            <span style={{color: theme.warningColor}}>{key}</span>
-            <span>={highlightManager.render(value)}</span>
-          </TreeAttributeContainer>
-        </>
+        <TreeAttributeContainer key={key}>
+          <span style={{color: theme.warningColor}}>{key}</span>
+          <span>={highlightManager.render(value)}</span>
+        </TreeAttributeContainer>
       ))}
     </>
   );
@@ -276,11 +341,12 @@ function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
 const TreeItemHeight = '26px';
 const HalfTreeItemHeight = `calc(${TreeItemHeight} / 2)`;
 
-const TreeItemContent = styled.li<{
+const TreeItemRow = styled.li<{
   item: TreeNode;
   isHovered: boolean;
   isSelected: boolean;
-}>(({item, isHovered, isSelected}) => ({
+  isHighlighted: boolean;
+}>(({item, isHovered, isSelected, isHighlighted}) => ({
   display: 'flex',
   alignItems: 'baseline',
   height: TreeItemHeight,
@@ -289,7 +355,12 @@ const TreeItemContent = styled.li<{
   borderRadius: '3px',
   borderColor: isHovered ? theme.selectionBackgroundColor : 'transparent',
   borderStyle: 'solid',
-  backgroundColor: isSelected ? theme.selectionBackgroundColor : theme.white,
+
+  backgroundColor: isHighlighted
+    ? 'rgba(255,0,0,.3)'
+    : isSelected
+    ? theme.selectionBackgroundColor
+    : theme.backgroundDefault,
 }));
 
 function ExpandedIconOrSpace(props: {
@@ -326,7 +397,7 @@ function ExpandedIconOrSpace(props: {
 
 function HighlightedText(props: {text: string}) {
   const highlightManager: HighlightManager = useHighlighter();
-  return <span>{highlightManager.render(props.text)}</span>;
+  return <span>{highlightManager.render(props.text)} </span>;
 }
 
 function nodeIcon(node: UINode) {
@@ -346,22 +417,70 @@ const DecorationImage = styled.img({
   width: 12,
 });
 
-const renderDepthOffset = 16;
+const renderDepthOffset = 12;
 
 const ContextMenu: React.FC<{
   nodes: Map<Id, UINode>;
-  hoveredNode?: Id;
-  focusedNode?: Id;
+  hoveredNodeId?: Id;
+  focusedNodeId?: Id;
   onFocusNode: (id?: Id) => void;
   onContextMenuOpen: (open: boolean) => void;
 }> = ({
   nodes,
-  hoveredNode,
+  hoveredNodeId,
   children,
-  focusedNode,
+  focusedNodeId,
   onFocusNode,
   onContextMenuOpen,
 }) => {
+  const copyItems: ReactNode[] = [];
+  const hoveredNode = nodes.get(hoveredNodeId ?? Number.MAX_SAFE_INTEGER);
+
+  if (hoveredNode) {
+    copyItems.push(
+      <UIDebuggerMenuItem
+        key={'Copy Element name'}
+        text={'Copy Element name'}
+        onClick={() => {
+          getFlipperLib().writeTextToClipboard(hoveredNode.name);
+        }}
+      />,
+    );
+
+    copyItems.push(
+      Object.entries(hoveredNode.inlineAttributes).map(([key, value]) => (
+        <UIDebuggerMenuItem
+          key={key}
+          text={`Copy ${key}`}
+          onClick={() => {
+            getFlipperLib().writeTextToClipboard(value);
+          }}
+        />
+      )),
+    );
+  }
+  const focus = hoveredNode != null &&
+    focusedNodeId !== hoveredNodeId &&
+    hoveredNode.bounds.height !== 0 &&
+    hoveredNode.bounds.width !== 0 && (
+      <UIDebuggerMenuItem
+        key="focus"
+        text={`Focus ${hoveredNode.name}`}
+        onClick={() => {
+          onFocusNode(hoveredNodeId);
+        }}
+      />
+    );
+
+  const removeFocus = focusedNodeId && (
+    <UIDebuggerMenuItem
+      key="remove-focus"
+      text="Remove focus"
+      onClick={() => {
+        onFocusNode(undefined);
+      }}
+    />
+  );
   return (
     <Dropdown
       onVisibleChange={(visible) => {
@@ -369,25 +488,10 @@ const ContextMenu: React.FC<{
       }}
       overlay={() => (
         <Menu>
-          {hoveredNode != null && focusedNode !== hoveredNode && (
-            <UIDebuggerMenuItem
-              key="focus"
-              text={`Focus ${nodes.get(hoveredNode)?.name}`}
-              onClick={() => {
-                onFocusNode(hoveredNode);
-              }}
-            />
-          )}
-
-          {focusedNode && (
-            <UIDebuggerMenuItem
-              key="remove-focus"
-              text="Remove focus"
-              onClick={() => {
-                onFocusNode(undefined);
-              }}
-            />
-          )}
+          {focus}
+          {removeFocus}
+          {(focus || removeFocus) && <Menu.Divider />}
+          {copyItems}
         </Menu>
       )}
       trigger={['contextMenu']}>

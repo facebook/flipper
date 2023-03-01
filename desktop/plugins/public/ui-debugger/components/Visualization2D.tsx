@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Bounds, Coordinate, Id, NestedNode, Tag, UINode} from '../types';
 
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
@@ -15,17 +15,16 @@ import {plugin} from '../index';
 import {head, isEqual, throttle} from 'lodash';
 import {Dropdown, Menu, Tooltip} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
+import {useFilteredValue} from '../hooks/usefilteredValue';
 
 export const Visualization2D: React.FC<
   {
-    rootId: Id;
     width: number;
     nodes: Map<Id, UINode>;
-    selectedNode?: Id;
     onSelectNode: (id?: Id) => void;
     modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({rootId, width, nodes, selectedNode, onSelectNode, modifierPressed}) => {
+> = ({width, nodes, onSelectNode, modifierPressed}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
   const instance = usePlugin(plugin);
 
@@ -34,9 +33,10 @@ export const Visualization2D: React.FC<
   const focusedNodeId = useValue(instance.uiState.focusedNode);
 
   const focusState = useMemo(() => {
-    const rootNode = toNestedNode(rootId, nodes);
+    //use the snapshot node as root since we cant realistically visualise any node above this
+    const rootNode = snapshot && toNestedNode(snapshot.nodeId, nodes);
     return rootNode && caclulateFocusState(rootNode, focusedNodeId);
-  }, [focusedNodeId, rootId, nodes]);
+  }, [snapshot, nodes, focusedNodeId]);
 
   useEffect(() => {
     const mouseListener = throttle((ev: MouseEvent) => {
@@ -147,7 +147,6 @@ export const Visualization2D: React.FC<
           )}
           <MemoedVisualizationNode2D
             node={focusState.focusedRoot}
-            selectedNode={selectedNode}
             onSelectNode={onSelectNode}
             modifierPressed={modifierPressed}
           />
@@ -161,29 +160,36 @@ const MemoedVisualizationNode2D = React.memo(
   Visualization2DNode,
   (prev, next) => {
     return (
-      prev.node === next.node &&
-      prev.modifierPressed === next.modifierPressed &&
-      prev.selectedNode === next.selectedNode
+      prev.node === next.node && prev.modifierPressed === next.modifierPressed
     );
   },
 );
 
 function Visualization2DNode({
   node,
-  selectedNode,
   onSelectNode,
   modifierPressed,
 }: {
   node: NestedNode;
   modifierPressed: boolean;
-  selectedNode?: Id;
   onSelectNode: (id?: Id) => void;
 }) {
   const instance = usePlugin(plugin);
 
-  const isSelected = selectedNode === node.id;
-  const {isHovered, isLongHovered} = useHoverStates(node.id);
+  const wasOrIsSelected = useCallback(
+    (curValue?: Id, prevValue?: Id) =>
+      curValue === node.id || prevValue === node.id,
+    [node.id],
+  );
+  const selectedNode = useFilteredValue(
+    instance.uiState.selectedNode,
+    wasOrIsSelected,
+  );
 
+  const isSelected = selectedNode === node.id;
+
+  const {isHovered, isLongHovered} = useHoverStates(node.id);
+  const ref = useRef<HTMLDivElement>(null);
   let nestedChildren: NestedNode[];
 
   //if there is an active child don't draw the other children
@@ -205,10 +211,13 @@ function Visualization2DNode({
       key={child.id}
       node={child}
       onSelectNode={onSelectNode}
-      selectedNode={selectedNode}
       modifierPressed={modifierPressed}
     />
   ));
+
+  const isHighlighted = useValue(instance.uiState.highlightedNodes).has(
+    node.id,
+  );
 
   return (
     <Tooltip
@@ -223,6 +232,7 @@ function Visualization2DNode({
       <div
         role="button"
         tabIndex={0}
+        ref={ref}
         style={{
           position: 'absolute',
           cursor: 'pointer',
@@ -230,8 +240,10 @@ function Visualization2DNode({
           top: toPx(node.bounds.y),
           width: toPx(node.bounds.width),
           height: toPx(node.bounds.height),
-          opacity: isSelected ? 0.5 : 1,
-          backgroundColor: isSelected
+          opacity: isSelected || isHighlighted ? 0.3 : 1,
+          backgroundColor: isHighlighted
+            ? 'red'
+            : isSelected
             ? theme.selectionBackgroundColor
             : 'transparent',
         }}

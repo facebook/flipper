@@ -83,7 +83,7 @@ async function handlePluginDownload(
       `Successfully downloaded and installed plugin "${title}" v${version} from "${downloadUrl}".`,
     );
   } catch (error) {
-    console.error(
+    console.warn(
       `Failed to download plugin "${title}" v${version} from "${downloadUrl}".`,
       error,
     );

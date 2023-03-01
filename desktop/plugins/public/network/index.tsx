@@ -239,11 +239,15 @@ export function plugin(client: PluginClient<Events, Methods>) {
   function init() {
     supportsMocks(client.device)
       .then((result) => {
-        const newRoutes = JSON.parse(
+        const newRouteArray: [any] = JSON.parse(
           localStorage.getItem(
             LOCALSTORAGE_MOCK_ROUTE_LIST_KEY + client.appId,
-          ) || '{}',
+          ) || '[]',
         );
+        const newRoutes: {[id: string]: any} = {};
+        newRouteArray.forEach((value, index) => {
+          newRoutes[index.toString()] = value;
+        });
         batch(() => {
           routes.set(newRoutes);
           isMockResponseSupported.set(result);

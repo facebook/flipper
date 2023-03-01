@@ -177,7 +177,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
             getRenderHostInstance()
               .flipperServer.exec('ios-launch-simulator', device.udid)
               .catch((e) => {
-                console.error('Failed to start simulator: ', e);
+                console.warn('Failed to start simulator: ', e);
                 message.error('Failed to start simulator: ' + e);
               })
               .then(onClose)

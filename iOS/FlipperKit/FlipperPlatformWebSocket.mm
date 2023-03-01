@@ -166,25 +166,26 @@ static constexpr int connectionKeepaliveSeconds = 10;
 }
 
 - (void)disconnect {
-  [_dispatchQueue cancelAllOperations];
-
   if ([_keepAlive isValid]) {
     [_keepAlive invalidate];
   }
   _keepAlive = nil;
 
+  if (_socket) {
+    // Clear the socket delegate before close. Ensures that we won't get
+    // any messages after the disconnect takes place.
+    [_socket setDelegate:nil];
+    [_socket close];
+    _socket = nil;
+  };
+
+  [_dispatchQueue cancelAllOperations];
+  [_dispatchQueue waitUntilAllOperationsAreFinished];
+
   // Manually trigger a 'close' event as SocketRocket close method will
   // not notify the delegate. SocketRocket only triggers the close event
   // when the connection is closed from the server.
   _eventHandler(facebook::flipper::SocketEvent::CLOSE);
-
-  if (_socket) {
-    // Clear the socket delegate before close. Ensures that we won't get
-    // any messages after the disconnect takes place.
-    _socket.delegate = nil;
-    [_socket close];
-    _socket = nil;
-  };
 }
 
 - (void)send:(NSString*)message
@@ -192,10 +193,12 @@ static constexpr int connectionKeepaliveSeconds = 10;
   __weak auto weakSelf = self;
   [_dispatchQueue addOperationWithBlock:^{
     __strong auto strongSelf = weakSelf;
-    NSError* error = nil;
-    [strongSelf->_socket sendString:message error:&error];
-    if (completionHandler) {
-      completionHandler(error);
+    if (strongSelf) {
+      NSError* error = nil;
+      [strongSelf->_socket sendString:message error:&error];
+      if (completionHandler) {
+        completionHandler(error);
+      }
     }
   }];
 }
@@ -210,7 +213,9 @@ static constexpr int connectionKeepaliveSeconds = 10;
   __weak auto weakSelf = self;
   [_dispatchQueue addOperationWithBlock:^{
     __strong auto strongSelf = weakSelf;
-    [strongSelf->_socket sendPing:nil error:nil];
+    if (strongSelf) {
+      [strongSelf->_socket sendPing:nil error:nil];
+    }
   }];
 }
 
@@ -251,7 +256,6 @@ static constexpr int connectionKeepaliveSeconds = 10;
   _keepAlive = nil;
 
   _eventHandler(facebook::flipper::SocketEvent::CLOSE);
-  _socket = nil;
 }
 
 - (void)_webSocketDidReceiveMessage:(id)message {

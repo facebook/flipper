@@ -144,6 +144,7 @@ module.exports = {
           'extending/layout-inspector',
         ],
       },
+
     ],
     'Under the Hood': [
       'internals/index',
