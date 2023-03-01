@@ -10,9 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.model
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 
 @kotlinx.serialization.Serializable
-data class InitEvent(
-    val rootId: Id,
-) {
+data class InitEvent(val rootId: Id, val frameworkEventMetadata: List<FrameworkEventMetadata>) {
   companion object {
     const val name = "init"
   }
@@ -31,7 +29,8 @@ data class SubtreeUpdateEvent(
     val observerType: String,
     val rootId: Id,
     val nodes: List<Node>,
-    val snapshot: String? = null
+    val snapshot: String?,
+    val frameworkEvents: List<FrameworkEvent>?
 ) {
   companion object {
     const val name = "subtreeUpdate"

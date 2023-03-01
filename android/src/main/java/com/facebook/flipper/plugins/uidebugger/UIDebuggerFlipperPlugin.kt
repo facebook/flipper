@@ -7,33 +7,19 @@
 
 package com.facebook.flipper.plugins.uidebugger
 
-import android.app.Application
 import android.util.Log
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.core.FlipperPlugin
 import com.facebook.flipper.plugins.uidebugger.core.*
 import com.facebook.flipper.plugins.uidebugger.descriptors.ApplicationRefDescriptor
-import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.InitEvent
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
-import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import kotlinx.serialization.json.Json
 
 const val LogTag = "ui-debugger"
 
-class UIDebuggerFlipperPlugin(
-    val application: Application,
-    descriptorRegister: DescriptorRegister?,
-    observerFactory: TreeObserverFactory?
-) : FlipperPlugin {
-
-  private val context: Context =
-      Context(
-          ApplicationRef(application),
-          ConnectionRef(null),
-          descriptorRegister = descriptorRegister ?: DescriptorRegister.withDefaults(),
-          observerFactory = observerFactory ?: TreeObserverFactory.withDefaults())
+class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
 
   init {
     Log.i(LogTag, "Initializing ui-debugger")
@@ -53,7 +39,9 @@ class UIDebuggerFlipperPlugin(
         InitEvent.name,
         Json.encodeToString(
             InitEvent.serializer(),
-            InitEvent(ApplicationRefDescriptor.getId(context.applicationRef))))
+            InitEvent(
+                ApplicationRefDescriptor.getId(context.applicationRef),
+                context.frameworkEventMetadata)))
 
     connection.send(
         MetadataUpdateEvent.name,

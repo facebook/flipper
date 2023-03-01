@@ -11,10 +11,10 @@ import com.facebook.flipper.core.FlipperObject
 import com.facebook.flipper.core.FlipperReceiver
 import com.facebook.flipper.core.FlipperResponder
 import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver
-import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 
 /** An interface for extensions to the UIDebugger plugin */
-abstract class Command(val context: Context) {
+abstract class Command(val context: UIDContext) {
   /** The command identifier to respond to */
   abstract fun identifier(): String
   /** Execute the command */
