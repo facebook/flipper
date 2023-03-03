@@ -28,7 +28,7 @@ import com.facebook.flipper.plugins.leakcanary2.LeakCanary2FlipperPlugin
     set the flipper listener in leak canary config
     */
     LeakCanary.config = LeakCanary.config.run {
-        copy(eventListeners = eventListeners + FlipperLeakEventListener)
+        copy(eventListeners = eventListeners + FlipperLeakEventListener())
     }
 
     SoLoader.init(this, false)
