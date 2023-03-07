@@ -230,7 +230,7 @@ export class MarkerTimeline extends Component<Props, State> {
               number={
                 p.markerNames.length > 1 ? p.markerNames.length : undefined
               }>
-              <Time>{p.timestamp}ms</Time>{' '}
+              <Time>{p.timestamp.toFixed(5)}ms</Time>{' '}
               <Code code>{p.markerNames.join(', ')}</Code>
             </Point>
           );
