@@ -86,6 +86,7 @@ export {
 } from './ui/data-inspector/DataDescription';
 export {MarkerTimeline} from './ui/MarkerTimeline';
 export {DataInspector} from './ui/data-inspector/DataInspector';
+export {TimelineDataDescription} from './ui/data-inspector/TimelineDataDescription';
 export {Dialog, DialogResult} from './ui/Dialog';
 export {
   ElementsInspector,
