@@ -112,7 +112,6 @@ const Time = styled.span({
   color: theme.textColorSecondary,
   fontWeight: 300,
   marginRight: 4,
-  marginTop: -2,
 });
 Time.displayName = 'MakerTimeline:Time';
 
