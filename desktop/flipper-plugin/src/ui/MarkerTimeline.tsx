@@ -67,7 +67,6 @@ const Point = styled(Layout.Horizontal)<{
   lineHeight: '16px',
   ':hover': {
     background: theme.selectionBackgroundColor,
-    paddingBottom: 5,
     zIndex: 2,
     '> span': {
       whiteSpace: 'initial',
