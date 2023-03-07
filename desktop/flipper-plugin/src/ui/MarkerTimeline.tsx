@@ -88,6 +88,7 @@ const Point = styled(Layout.Horizontal)<{
     border: theme.dividerColor,
     backgroundColor: props.threadColor,
     marginRight: 6,
+    marginTop: 3,
     zIndex: 3,
     boxShadow: props.selected
       ? `0 0 0 2px ${theme.backgroundTransparentHover}`
