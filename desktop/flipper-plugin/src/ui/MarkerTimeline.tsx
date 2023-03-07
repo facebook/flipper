@@ -66,7 +66,7 @@ const Point = styled(Layout.Horizontal)<{
   alignItems: 'flex-start',
   lineHeight: '16px',
   ':hover': {
-    background: `linear-gradient(to top, ${theme.black} 0, ${theme.white} 10px)`,
+    background: theme.selectionBackgroundColor,
     paddingBottom: 5,
     zIndex: 2,
     '> span': {
