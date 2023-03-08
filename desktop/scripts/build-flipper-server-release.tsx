@@ -42,6 +42,12 @@ enum BuildPlatform {
   MAC_X64 = 'mac-x64',
 }
 
+const LINUX_STARTUP_SCRIPT = `#!/bin/sh
+THIS_DIR="$( cd "$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"
+cd "$THIS_DIR"
+./node ./server "$@"
+`;
+
 const argv = yargs
   .usage('yarn build-flipper-server [args]')
   .version(false)
@@ -466,6 +472,13 @@ async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
   await fs.chmod(outputPath, 0o755);
 }
 
+async function setUpLinuxBundle(outputDir: string) {
+  console.log(`⚙️  Creating Linux startup script in ${outputDir}/flipper`);
+  await fs.writeFile(path.join(outputDir, 'flipper'), LINUX_STARTUP_SCRIPT);
+  // Give the script +x
+  await fs.chmod(path.join(outputDir, 'flipper'), 0o755);
+}
+
 async function setUpMacBundle(
   outputDir: string,
   versionNumber: string,
@@ -525,6 +538,8 @@ async function bundleServerReleaseForPlatform(
   // to be in different places from Linux/Windows bundles.
   if (platform === BuildPlatform.MAC_X64) {
     outputPaths = await setUpMacBundle(outputDir, versionNumber);
+  } else if (platform === BuildPlatform.LINUX) {
+    await setUpLinuxBundle(outputDir);
   }
 
   console.log(`⚙️  Copying from ${dir} to ${outputPaths.resourcesPath}`);
