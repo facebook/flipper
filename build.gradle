@@ -48,8 +48,8 @@ ext {
     minSdkVersion = 15
     targetSdkVersion = 31
     compileSdkVersion = 31
-    buildToolsVersion = '30.0.3'
-    ndkVersion = '23.0.7599858'
+    buildToolsVersion = "30.0.3"
+    ndkVersion = "$NDK_VERSION"
 }
 
 ext.deps = [
