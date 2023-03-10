@@ -16,9 +16,10 @@ import android.util.Log
 import android.view.Choreographer
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
-import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
+import com.facebook.flipper.plugins.uidebugger.model.FrameworkEvent
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
@@ -37,13 +38,14 @@ data class SubtreeUpdate(
     val startTime: Long,
     val traversalCompleteTime: Long,
     val snapshotComplete: Long,
+    val frameworkEvents: List<FrameworkEvent>?,
     val snapshot: BitmapPool.ReusableBitmap?
 )
 
 data class BatchedUpdate(val updates: List<SubtreeUpdate>, val frameTimeMs: Long)
 
 /** Holds the root observer and manages sending updates to desktop */
-class TreeObserverManager(val context: Context) {
+class TreeObserverManager(val context: UIDContext) {
 
   private val rootObserver = ApplicationTreeObserver(context)
   private lateinit var batchedUpdates: Channel<BatchedUpdate>
@@ -104,6 +106,7 @@ class TreeObserverManager(val context: Context) {
     val onWorkerThread = System.currentTimeMillis()
 
     val nodes = batchedUpdate.updates.flatMap { it.deferredNodes.map { it.value() } }
+    val frameworkEvents = batchedUpdate.updates.flatMap { it.frameworkEvents ?: listOf() }
     val snapshotUpdate = batchedUpdate.updates.find { it.snapshot != null }
     val deferredComptationComplete = System.currentTimeMillis()
 
@@ -116,13 +119,20 @@ class TreeObserverManager(val context: Context) {
       snapshotUpdate.snapshot.readyForReuse()
     }
 
+    // it is important this comes after deferred processing since the deferred processing can create
+    // metadata
     sendMetadata()
 
     val serialized =
         Json.encodeToString(
             SubtreeUpdateEvent.serializer(),
             SubtreeUpdateEvent(
-                batchedUpdate.frameTimeMs, "batched", snapshotUpdate?.rootId ?: 1, nodes, snapshot))
+                batchedUpdate.frameTimeMs,
+                "batched",
+                snapshotUpdate?.rootId ?: 1,
+                nodes,
+                snapshot,
+                frameworkEvents))
 
     val serializationEnd = System.currentTimeMillis()
 

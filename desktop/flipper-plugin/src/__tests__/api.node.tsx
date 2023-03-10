@@ -50,6 +50,7 @@ test('Correct top level API exposed', () => {
       "Tab",
       "Tabs",
       "TestUtils",
+      "TimelineDataDescription",
       "Toolbar",
       "Tracked",
       "TrackingScope",

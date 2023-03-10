@@ -220,7 +220,8 @@ export class IOSDeviceManager {
         description: errorMessage,
       });
     } catch (e) {
-      console.error('Failed to determine Xcode version:', e);
+      // This is not an error. It depends on the user's local setup that we cannot influence.
+      console.warn('Failed to determine Xcode version:', e);
     }
   }
 }

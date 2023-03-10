@@ -11,15 +11,15 @@ import android.util.Log
 import android.view.View
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
-import com.facebook.flipper.plugins.uidebugger.core.Context
 import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 
 /**
  * Responsible for observing the activity stack and managing the subscription to the top most
  * content view (decor view)
  */
-class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRef>() {
+class ApplicationTreeObserver(val context: UIDContext) : TreeObserver<ApplicationRef>() {
 
   override val type = "Application"
 

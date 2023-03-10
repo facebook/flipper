@@ -22,6 +22,7 @@ import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin.SharedPreferencesDescriptor;
 import com.facebook.flipper.plugins.uidebugger.UIDebuggerFlipperPlugin;
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext;
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister;
 import com.facebook.flipper.plugins.uidebugger.litho.UIDebuggerLithoSupport;
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory;
@@ -62,12 +63,10 @@ public final class FlipperInitializer {
 
     DescriptorRegister descriptorRegister = DescriptorRegister.Companion.withDefaults();
     TreeObserverFactory treeObserverFactory = TreeObserverFactory.Companion.withDefaults();
-    UIDebuggerLithoSupport.INSTANCE.addDescriptors(descriptorRegister);
-    UIDebuggerLithoSupport.INSTANCE.addObserver(treeObserverFactory);
+    UIDContext uidContext = UIDContext.Companion.create((Application) context);
+    UIDebuggerLithoSupport.INSTANCE.enable(uidContext);
 
-    client.addPlugin(
-        new UIDebuggerFlipperPlugin(
-            (Application) context, descriptorRegister, treeObserverFactory));
+    client.addPlugin(new UIDebuggerFlipperPlugin(uidContext));
     client.start();
 
     final OkHttpClient okHttpClient =

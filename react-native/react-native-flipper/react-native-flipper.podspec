@@ -25,6 +25,10 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,swift}"
   s.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"${PODS_ROOT}/Headers/Public/FlipperKit\"" }
   s.requires_arc = true
-  s.compiler_flags = compiler_flags
+  if ENV['PRODUCTION'] == '1'
+    Pod::UI.puts "#{s.name}: Found PRODUCTION=1, #{s.name} will be disabled for production builds"
+  else
+    s.compiler_flags = compiler_flags
+  end
   s.dependency "React-Core"
 end

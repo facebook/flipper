@@ -342,13 +342,7 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
         }));
     socket_->connect();
 
-    auto state = connected.wait_for(std::chrono::seconds(10));
-    if (state == std::future_status::ready) {
-      return connected.get();
-    }
-
-    disconnect();
-    return false;
+    return connected.get();
   }
 
   virtual void disconnect() override {

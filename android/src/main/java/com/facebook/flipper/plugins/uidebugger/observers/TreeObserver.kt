@@ -10,9 +10,10 @@ package com.facebook.flipper.plugins.uidebugger.observers
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
-import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
+import com.facebook.flipper.plugins.uidebugger.model.FrameworkEvent
 import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 
 /*
@@ -40,9 +41,10 @@ abstract class TreeObserver<T> {
 
   /** Traverses the layout hierarchy while managing any encountered child observers. */
   fun traverseAndSend(
-      context: Context,
+      context: UIDContext,
       root: Any,
-      snapshotBitmap: BitmapPool.ReusableBitmap? = null
+      snapshotBitmap: BitmapPool.ReusableBitmap? = null,
+      frameworkEvents: List<FrameworkEvent>? = null
   ) {
     val startTimestamp = System.currentTimeMillis()
     val (visitedNodes, observableRoots) = context.layoutTraversal.traverse(root)
@@ -97,6 +99,7 @@ abstract class TreeObserver<T> {
             startTimestamp,
             traversalCompleteTime,
             snapshotCompleteTime,
+            frameworkEvents,
             snapshotBitmap))
   }
 

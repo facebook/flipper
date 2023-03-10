@@ -66,8 +66,7 @@ const Point = styled(Layout.Horizontal)<{
   alignItems: 'flex-start',
   lineHeight: '16px',
   ':hover': {
-    background: `linear-gradient(to top, ${theme.black} 0, ${theme.white} 10px)`,
-    paddingBottom: 5,
+    background: theme.selectionBackgroundColor,
     zIndex: 2,
     '> span': {
       whiteSpace: 'initial',
@@ -89,6 +88,7 @@ const Point = styled(Layout.Horizontal)<{
     border: theme.dividerColor,
     backgroundColor: props.threadColor,
     marginRight: 6,
+    marginTop: 3,
     zIndex: 3,
     boxShadow: props.selected
       ? `0 0 0 2px ${theme.backgroundTransparentHover}`
@@ -113,7 +113,6 @@ const Time = styled.span({
   color: theme.textColorSecondary,
   fontWeight: 300,
   marginRight: 4,
-  marginTop: -2,
 });
 Time.displayName = 'MakerTimeline:Time';
 
@@ -231,7 +230,7 @@ export class MarkerTimeline extends Component<Props, State> {
               number={
                 p.markerNames.length > 1 ? p.markerNames.length : undefined
               }>
-              <Time>{p.timestamp}ms</Time>{' '}
+              <Time>{p.timestamp.toFixed(5)}ms</Time>{' '}
               <Code code>{p.markerNames.join(', ')}</Code>
             </Point>
           );
