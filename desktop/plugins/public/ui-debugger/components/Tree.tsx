@@ -31,9 +31,9 @@ import {
 } from 'flipper-plugin';
 import {plugin} from '../index';
 import {Glyph} from 'flipper';
-import {groupBy, head, isEqual, last} from 'lodash';
+import {head, isEqual, last} from 'lodash';
 import {reverse} from 'lodash/fp';
-import {Dropdown, Menu, Typography} from 'antd';
+import {Badge, Dropdown, Menu, Typography} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 
 const {Text} = Typography;
@@ -232,6 +232,11 @@ function TreeItemContainer({
   onCollapseNode: (node: Id) => void;
   onHoverNode: (node: Id) => void;
 }) {
+  let events = frameworkEvents.get(treeNode.id);
+  if (events) {
+    events = events.filter((e) => frameworkEventsMonitoring.get(e.type));
+  }
+
   return (
     <div>
       {treeNode.indentGuide != null && (
@@ -253,7 +258,8 @@ function TreeItemContainer({
         onClick={() => {
           onSelectNode(treeNode.id);
         }}
-        item={treeNode}>
+        item={treeNode}
+        style={{overflow: 'visible'}}>
         <ExpandedIconOrSpace
           expanded={treeNode.isExpanded}
           showIcon={treeNode.children.length > 0}
@@ -266,15 +272,29 @@ function TreeItemContainer({
           }}
         />
         {nodeIcon(treeNode)}
-        <HighlightedText text={treeNode.name} />
-        <InlineAttributes attributes={treeNode.inlineAttributes} />
-        <MonitoredEventSummary
-          node={treeNode}
-          frameworkEvents={frameworkEvents}
-          frameworkEventsMonitoring={frameworkEventsMonitoring}
-        />
+        {events ? (
+          <Badge
+            key={treeNode.id}
+            count={events.length}
+            size="small"
+            color={theme.primaryColor}
+            offset={[10, 5]}>
+            <TreeItemRowContent treeNode={treeNode} />
+          </Badge>
+        ) : (
+          <TreeItemRowContent treeNode={treeNode} />
+        )}
       </TreeItemRow>
     </div>
+  );
+}
+
+function TreeItemRowContent({treeNode}: {treeNode: TreeNode}) {
+  return (
+    <>
+      <HighlightedText text={treeNode.name} />
+      <InlineAttributes attributes={treeNode.inlineAttributes} />
+    </>
   );
 }
 
@@ -284,35 +304,6 @@ const TreeAttributeContainer = styled(Text)({
   marginLeft: 5,
   fontSize: 12,
 });
-
-function MonitoredEventSummary({
-  node,
-  frameworkEvents,
-  frameworkEventsMonitoring,
-}: {
-  node: UINode;
-  frameworkEvents: Map<Id, FrameworkEvent[]>;
-  frameworkEventsMonitoring: Map<FrameworkEventType, boolean>;
-}) {
-  const events = frameworkEvents.get(node.id);
-  if (events) {
-    return (
-      <>
-        {Object.entries(groupBy(events, (e) => e.type))
-          .filter(([type]) => frameworkEventsMonitoring.get(type))
-          .map(([key, values]) => (
-            <TreeAttributeContainer key={key}>
-              <span style={{color: theme.errorColor}}>
-                {last(key.split(':'))}
-              </span>
-              <span>={values.length}</span>
-            </TreeAttributeContainer>
-          ))}
-      </>
-    );
-  }
-  return null;
-}
 
 function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
   const highlightManager: HighlightManager = useHighlighter();
