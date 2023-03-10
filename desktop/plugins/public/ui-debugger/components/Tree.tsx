@@ -180,15 +180,6 @@ const MemoTreeItemContainer = React.memo(
 function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
   const verticalLinePadding = `${renderDepthOffset * indentGuide.depth + 8}px`;
 
-  const verticalLineStyle = `${
-    indentGuide.style === 'ToParent' ? 'dashed' : 'solid'
-  }`;
-  const horizontalLineStyle = `${
-    indentGuide.style === 'ToParent' ? 'dotted' : 'solid'
-  }`;
-
-  const color = indentGuide.style === 'ToParent' ? '#B0B0B0' : '#C0C0C0';
-
   return (
     <div>
       <div
@@ -196,7 +187,7 @@ function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
           position: 'absolute',
           width: verticalLinePadding,
           height: indentGuide.trimBottom ? HalfTreeItemHeight : TreeItemHeight,
-          borderRight: `1px ${verticalLineStyle} ${color}`,
+          borderRight: `1px solid ${theme.primaryColor}`,
         }}></div>
       {indentGuide.addHorizontalMarker && (
         <div
@@ -204,7 +195,7 @@ function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
             position: 'absolute',
             width: renderDepthOffset / 3,
             height: HalfTreeItemHeight,
-            borderBottom: `2px ${horizontalLineStyle} ${color}`,
+            borderBottom: `1px solid ${theme.primaryColor}`,
             marginLeft: verticalLinePadding,
           }}></div>
       )}
