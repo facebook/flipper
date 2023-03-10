@@ -19,7 +19,7 @@ type TimePoint = {
   display: string;
   color: string;
   key: string;
-  properties: {[key: string]: string};
+  properties?: {[key: string]: string};
 };
 
 type Timeline = {
@@ -54,6 +54,10 @@ export class TimelineDataDescription extends Component<Props, State> {
         value.color,
       key: value.key,
     }));
+    const properties = this.props.timeline.time.find(
+      (value) => value.key === this.state.selected,
+    )?.properties;
+
     return (
       <>
         {this.props.canSetCurrent && (
@@ -73,15 +77,7 @@ export class TimelineDataDescription extends Component<Props, State> {
             selected={this.state.selected}
           />
         </div>
-        <div>
-          <DataInspector
-            data={
-              this.props.timeline.time.find(
-                (value) => value.key === this.state.selected,
-              )?.properties ?? {}
-            }
-          />
-        </div>
+        {properties && <DataInspector data={properties} />}
       </>
     );
   }
