@@ -30,7 +30,7 @@ type Timeline = {
 type Props = {
   canSetCurrent?: boolean;
   timeline: Timeline;
-  onClick: (selected: string) => void;
+  onClick?: (selected: string) => void;
 };
 
 type State = {
@@ -59,7 +59,7 @@ export class TimelineDataDescription extends Component<Props, State> {
         {this.props.canSetCurrent && (
           <div>
             <Button
-              onClick={() => this.props.onClick(this.state.selected)}
+              onClick={() => this.props.onClick?.(this.state.selected)}
               disabled={this.state.selected === this.props.timeline.current}>
               Set as current
             </Button>
