@@ -10,7 +10,16 @@
 import React from 'react';
 // eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Glyph} from 'flipper';
-import {Layout, Tab, Tabs, theme, usePlugin, useValue} from 'flipper-plugin';
+import {
+  Layout,
+  Tab,
+  Tabs,
+  theme,
+  usePlugin,
+  useValue,
+  TimelineDataDescription,
+} from 'flipper-plugin';
+
 import {Id, Metadata, MetadataId, UINode} from '../../types';
 
 import {IdentityInspector} from './inspector/IdentityInspector';
@@ -27,11 +36,17 @@ type Props = {
 export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
   const instance = usePlugin(plugin);
   const selectedNodeId = useValue(instance.uiState.selectedNode);
+  const frameworkEvents = useValue(instance.frameworkEvents);
 
-  const selectedNode = nodes.get(selectedNodeId!!);
+  const selectedNode = selectedNodeId ? nodes.get(selectedNodeId) : undefined;
   if (!selectedNode) {
     return <NoData message="Please select a node to view its details" />;
   }
+
+  const events = selectedNodeId
+    ? frameworkEvents?.get(selectedNodeId)
+    : undefined;
+
   return (
     <Layout.Container gap pad>
       <Tabs grow centered>
@@ -78,6 +93,34 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
             metadata={metadata}
           />
         </Tab>
+        {events && (
+          <Tab
+            tab={
+              <Tooltip title="Events">
+                <Layout.Horizontal center>
+                  <Glyph
+                    name="weather-thunder"
+                    size={16}
+                    color={theme.primaryColor}
+                  />
+                </Layout.Horizontal>
+              </Tooltip>
+            }>
+            <TimelineDataDescription
+              timeline={{
+                time: events.map((e) => {
+                  return {
+                    moment: e.timestamp,
+                    display: e.type,
+                    color: theme.primaryColor,
+                    key: e.timestamp.toString(),
+                  };
+                }),
+                current: '',
+              }}
+            />
+          </Tab>
+        )}
       </Tabs>
     </Layout.Container>
   );
