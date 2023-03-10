@@ -120,7 +120,7 @@ export class AndroidDeviceManager {
         } else {
           const isAuthorizationError = message.includes('device unauthorized');
           if (!isAuthorizationError) {
-            console.error('Failed to connect to android device', e);
+            console.warn('Failed to connect to android device', e);
           }
           this.flipperServer.emit('notification', {
             type: 'error',
