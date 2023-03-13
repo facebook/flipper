@@ -3294,16 +3294,16 @@
     fastq "^1.6.0"
 
 "@oclif/command@^1", "@oclif/command@^1.8.14", "@oclif/command@^1.8.15":
-  version "1.8.16"
-  resolved "https://registry.yarnpkg.com/@oclif/command/-/command-1.8.16.tgz#bea46f81b2061b47e1cda318a0b923e62ca4cc0c"
-  integrity sha512-rmVKYEsKzurfRU0xJz+iHelbi1LGlihIWZ7Qvmb/CBz1EkhL7nOkW4SVXmG2dA5Ce0si2gr88i6q4eBOMRNJ1w==
+  version "1.8.22"
+  resolved "https://registry.yarnpkg.com/@oclif/command/-/command-1.8.22.tgz#b7ea268393277606bb5e0e557c39536ff4e883f2"
+  integrity sha512-lystv7IKsWRmCv6K68jSvHrO/DILUPBDb5GZ3absTA5XTnNXTaMrcwVzTcMPfTf+gCrgIaPPD1bmbRStwfQxFw==
   dependencies:
     "@oclif/config" "^1.18.2"
-    "@oclif/errors" "^1.3.5"
+    "@oclif/errors" "^1.3.6"
     "@oclif/help" "^1.0.1"
-    "@oclif/parser" "^3.8.6"
+    "@oclif/parser" "^3.8.10"
     debug "^4.1.1"
-    semver "^7.3.2"
+    semver "^7.3.8"
 
 "@oclif/config@1.18.2":
   version "1.18.2"
@@ -3424,15 +3424,15 @@
   resolved "https://registry.yarnpkg.com/@oclif/linewrap/-/linewrap-1.0.0.tgz#aedcb64b479d4db7be24196384897b5000901d91"
   integrity sha512-Ups2dShK52xXa8w6iBWLgcjPJWjais6KPJQq3gQ/88AY6BXoTX+MIGFPrWQO1KLMiQfoTpcLnUwloN4brrVUHw==
 
-"@oclif/parser@^3.8.0", "@oclif/parser@^3.8.5", "@oclif/parser@^3.8.6", "@oclif/parser@^3.8.9":
-  version "3.8.9"
-  resolved "https://registry.yarnpkg.com/@oclif/parser/-/parser-3.8.9.tgz#9399041ada7e465043f34b24f4d82a8beb68a023"
-  integrity sha512-1j/kThdse7yHQz6+c3v8RA1I3gD6+SGt2O7IAb/MAMoxqyBrFQDabQHH2UU4eVFGMLN7U91AiYJp11zJ9LcQAg==
+"@oclif/parser@^3.8.0", "@oclif/parser@^3.8.10", "@oclif/parser@^3.8.5", "@oclif/parser@^3.8.9":
+  version "3.8.10"
+  resolved "https://registry.yarnpkg.com/@oclif/parser/-/parser-3.8.10.tgz#7b1048566e1d3f45ed09ca92b2e30f09bd9647e1"
+  integrity sha512-J4l/NcnfbIU84+NNdy6bxq9yJt4joFWNvpk59hq+uaQPUNtjmNJDVGuRvf6GUOxHNgRsVK1JRmd/Ez+v7Z9GqQ==
   dependencies:
     "@oclif/errors" "^1.3.6"
     "@oclif/linewrap" "^1.0.0"
     chalk "^4.1.0"
-    tslib "^2.4.1"
+    tslib "^2.5.0"
 
 "@oclif/plugin-help@3.2.18":
   version "3.2.18"
@@ -14536,6 +14536,11 @@ tslib@^2.0.0, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.3.1, tslib@^2.4
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
   integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==
+
+tslib@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.5.0.tgz#42bfed86f5787aeb41d031866c8f402429e0fddf"
+  integrity sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==
 
 tsutils@^3.21.0:
   version "3.21.0"
