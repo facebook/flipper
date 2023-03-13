@@ -111,7 +111,7 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
                 time: events.map((e) => {
                   return {
                     moment: e.timestamp,
-                    display: e.type,
+                    display: e.type.slice(e.type.lastIndexOf(':') + 1),
                     color: theme.primaryColor,
                     key: e.timestamp.toString(),
                   };
