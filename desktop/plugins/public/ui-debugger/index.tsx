@@ -56,7 +56,7 @@ export function plugin(client: PluginClient<Events>) {
   client.onMessage('init', (event) => {
     rootId.set(event.rootId);
     uiState.frameworkEventMonitoring.update((draft) => {
-      event.frameworkEventMetadata.forEach((frameworkEventMeta) => {
+      event.frameworkEventMetadata?.forEach((frameworkEventMeta) => {
         draft.set(frameworkEventMeta.type, false);
       });
     });
