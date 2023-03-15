@@ -63,7 +63,7 @@ export class AndroidLogListener extends DeviceListener {
       .on('end', () => {
         if (!gracefulShutdown) {
           // logs didn't stop gracefully
-          console.error('Unexpected shutdown of adb logcat');
+          console.warn('Unexpected shutdown of adb logcat');
           this._state.set(
             'fatal',
             lastKnownError ?? new Error('Unexpected shutdown of adb logcat'),
