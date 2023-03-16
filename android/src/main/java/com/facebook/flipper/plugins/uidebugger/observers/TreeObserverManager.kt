@@ -35,9 +35,10 @@ data class SubtreeUpdate(
     val observerType: String,
     val rootId: Id,
     val deferredNodes: List<MaybeDeferred<Node>>,
-    val startTime: Long,
-    val traversalCompleteTime: Long,
-    val snapshotComplete: Long,
+    val timestamp: Long,
+    val queuedTimestamp: Long,
+    val traversalMS: Long,
+    val snapshotMS: Long,
     val frameworkEvents: List<FrameworkEvent>?,
     val snapshot: BitmapPool.ReusableBitmap?
 )
@@ -99,16 +100,16 @@ class TreeObserverManager(val context: UIDContext) {
   }
 
   private fun sendBatchedUpdate(batchedUpdate: BatchedUpdate) {
-
     Log.i(
         LogTag,
         "Got update from ${batchedUpdate.updates.size} observers at time ${batchedUpdate.frameTimeMs}")
-    val onWorkerThread = System.currentTimeMillis()
+
+    val workerThreadStartTimestamp = System.currentTimeMillis()
 
     val nodes = batchedUpdate.updates.flatMap { it.deferredNodes.map { it.value() } }
     val frameworkEvents = batchedUpdate.updates.flatMap { it.frameworkEvents ?: listOf() }
     val snapshotUpdate = batchedUpdate.updates.find { it.snapshot != null }
-    val deferredComptationComplete = System.currentTimeMillis()
+    val deferredComputationEndTimestamp = System.currentTimeMillis()
 
     var snapshot: String? = null
     if (snapshotUpdate?.snapshot != null) {
@@ -134,25 +135,26 @@ class TreeObserverManager(val context: UIDContext) {
                 snapshot,
                 frameworkEvents))
 
-    val serializationEnd = System.currentTimeMillis()
+    val serialisationEndTimestamp = System.currentTimeMillis()
 
     context.connectionRef.connection?.send(SubtreeUpdateEvent.name, serialized)
 
-    val socketEnd = System.currentTimeMillis()
+    val socketEndTimestamp = System.currentTimeMillis()
     Log.i(LogTag, "Sent event for batched subtree update  with  nodes with ${nodes.size}")
 
     val perfStats =
         PerfStatsEvent(
             txId = batchedUpdate.frameTimeMs,
             observerType = "batched",
-            start = batchedUpdate.updates.minOf { it.startTime },
-            traversalComplete = batchedUpdate.updates.maxOf { it.traversalCompleteTime },
-            snapshotComplete = batchedUpdate.updates.maxOf { it.snapshotComplete },
-            queuingComplete = onWorkerThread,
-            deferredComputationComplete = deferredComptationComplete,
-            serializationComplete = serializationEnd,
-            socketComplete = socketEnd,
-            nodesCount = nodes.size)
+            nodesCount = nodes.size,
+            start = batchedUpdate.updates.minOf { it.timestamp },
+            traversalMS = batchedUpdate.updates.maxOf { it.traversalMS },
+            snapshotMS = batchedUpdate.updates.maxOf { it.snapshotMS },
+            queuingMS =
+                workerThreadStartTimestamp - batchedUpdate.updates.minOf { it.queuedTimestamp },
+            deferredComputationMS = (deferredComputationEndTimestamp - workerThreadStartTimestamp),
+            serializationMS = (serialisationEndTimestamp - deferredComputationEndTimestamp),
+            socketMS = (socketEndTimestamp - serialisationEndTimestamp))
 
     context.connectionRef.connection?.send(
         PerfStatsEvent.name, Json.encodeToString(PerfStatsEvent.serializer(), perfStats))
@@ -168,7 +170,7 @@ class TreeObserverManager(val context: UIDContext) {
   }
 }
 
-/** Buffers up subtree updates untill the frame is complete, should only be called on main thread */
+/** Buffers up subtree updates until the frame is complete, should only be called on main thread */
 private class SubtreeUpdateBuffer(private val onBatchReady: (BatchedUpdate) -> Unit) {
 
   private val bufferedSubtreeUpdates = mutableListOf<SubtreeUpdate>()
