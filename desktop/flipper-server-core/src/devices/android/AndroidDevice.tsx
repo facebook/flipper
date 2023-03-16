@@ -323,6 +323,7 @@ export default class AndroidDevice
       appIds.map(async (appId): Promise<DeviceDebugData | undefined> => {
         const sonarDirFilePaths = await executeCommandAsApp(
           this.adb,
+          this.flipperServer.config.settings.androidUserId,
           this.info.serial,
           appId,
           `find /data/data/${appId}/files/sonar -type f`,
@@ -370,6 +371,7 @@ export default class AndroidDevice
               path: filePath,
               data: await pull(
                 this.adb,
+                this.flipperServer.config.settings.androidUserId,
                 this.info.serial,
                 appId,
                 filePath,
@@ -380,6 +382,7 @@ export default class AndroidDevice
 
         const sonarDirContentWithStatsCommandPromise = executeCommandAsApp(
           this.adb,
+          this.flipperServer.config.settings.androidUserId,
           this.info.serial,
           appId,
           `ls -al /data/data/${appId}/files/sonar`,

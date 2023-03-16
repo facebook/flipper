@@ -19,6 +19,11 @@ export enum Tristate {
  */
 export type Settings = {
   androidHome: string;
+  /**
+   * If unset, this will be set to '0', as it's the default profile on android devices.
+   * Enterprises using Work Profile might changed it to the Work Profile user id.
+   */
+  androidUserId: string;
   enableAndroid: boolean;
   enableIOS: boolean;
   enablePhysicalIOS: boolean;

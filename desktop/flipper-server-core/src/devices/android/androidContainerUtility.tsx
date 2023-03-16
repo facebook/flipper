@@ -26,24 +26,26 @@ export async function push(
   client: Client,
   deviceId: string,
   app: string,
+  user: string,
   filepath: string,
   contents: string,
 ): Promise<void> {
   validateAppName(app);
   validateFilePath(filepath);
   validateFileContent(contents);
-  return await _push(client, deviceId, app, filepath, contents);
+  return await _push(client, deviceId, app, user, filepath, contents);
 }
 
 export async function pull(
   client: Client,
   deviceId: string,
   app: string,
+  user: string,
   path: string,
 ): Promise<string> {
   validateAppName(app);
   validateFilePath(path);
-  return await _pull(client, deviceId, app, path);
+  return await _pull(client, deviceId, app, user, path);
 }
 
 function validateAppName(app: string): void {
@@ -84,6 +86,7 @@ function _push(
   client: Client,
   deviceId: string,
   app: AppName,
+  user: string,
   filename: FilePath,
   contents: FileContent,
 ): Promise<void> {
@@ -91,7 +94,7 @@ function _push(
   // TODO: this is sensitive to escaping issues, can we leverage client.push instead?
   // https://www.npmjs.com/package/adbkit#pushing-a-file-to-all-connected-devices
   const command = `echo "${contents}" > '${filename}' && chmod 644 '${filename}'`;
-  return executeCommandAsApp(client, deviceId, app, command)
+  return executeCommandAsApp(client, deviceId, app, user, command)
     .then((_) => undefined)
     .catch((error) => {
       if (error instanceof RunAsError) {
@@ -107,16 +110,19 @@ function _pull(
   client: Client,
   deviceId: string,
   app: AppName,
+  user: string,
   path: FilePath,
 ): Promise<string> {
   const command = `cat '${path}'`;
-  return executeCommandAsApp(client, deviceId, app, command).catch((error) => {
-    if (error instanceof RunAsError) {
-      // Fall back to running the command directly. This will work if adb is running as root.
-      return executeCommandWithSu(client, deviceId, app, command, error);
-    }
-    throw error;
-  });
+  return executeCommandAsApp(client, deviceId, app, user, command).catch(
+    (error) => {
+      if (error instanceof RunAsError) {
+        // Fall back to running the command directly. This will work if adb is running as root.
+        return executeCommandWithSu(client, deviceId, app, command, error);
+      }
+      throw error;
+    },
+  );
 }
 
 // Keep this method private since it relies on pre-validated arguments
@@ -124,6 +130,7 @@ export function executeCommandAsApp(
   client: Client,
   deviceId: string,
   app: string,
+  user: string,
   command: string,
 ): Promise<string> {
   return _executeCommandWithRunner(
@@ -131,7 +138,7 @@ export function executeCommandAsApp(
     deviceId,
     app,
     command,
-    `run-as '${app}'`,
+    `run-as '${app}' --user ${user}`,
   );
 }
 

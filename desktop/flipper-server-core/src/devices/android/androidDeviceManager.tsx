@@ -23,7 +23,10 @@ export class AndroidDeviceManager {
     private readonly flipperServer: FlipperServerImpl,
     private readonly adbClient: ADBClient,
   ) {
-    this.certificateProvider = new AndroidCertificateProvider(this.adbClient);
+    this.certificateProvider = new AndroidCertificateProvider(
+      this.flipperServer,
+      this.adbClient,
+    );
   }
 
   private createDevice(

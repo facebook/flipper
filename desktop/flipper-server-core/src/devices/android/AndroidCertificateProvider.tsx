@@ -11,6 +11,7 @@ import CertificateProvider from '../../utils/CertificateProvider';
 import {Client} from 'adbkit';
 import * as androidUtil from './androidContainerUtility';
 import {csrFileName, extractAppNameFromCSR} from '../../utils/certificateUtils';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
 
 const logTag = 'AndroidCertificateProvider';
 
@@ -18,7 +19,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
   name = 'AndroidCertificateProvider';
   medium = 'FS_ACCESS' as const;
 
-  constructor(private adb: Client) {
+  constructor(private flipperServer: FlipperServerImpl, private adb: Client) {
     super();
   }
 
@@ -101,6 +102,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
       this.adb,
       deviceId,
       appName,
+      this.flipperServer.config.settings.androidUserId,
       destination + filename,
       contents,
     );
@@ -116,6 +118,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
       this.adb,
       deviceId,
       processName,
+      this.flipperServer.config.settings.androidUserId,
       directory + csrFileName,
     );
     // Santitize both of the string before comparation

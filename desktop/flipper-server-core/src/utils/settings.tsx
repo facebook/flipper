@@ -51,6 +51,7 @@ export const DEFAULT_ANDROID_SDK_PATH = getDefaultAndroidSdkPath();
 function getDefaultSettings(): Settings {
   return {
     androidHome: getDefaultAndroidSdkPath(),
+    androidUserId: '0',
     enableAndroid: true,
     enableIOS: os.platform() === 'darwin',
     enablePhysicalIOS: os.platform() === 'darwin',
