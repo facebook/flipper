@@ -44,7 +44,7 @@ export type FrameworkEvent = {
 
 export type InitEvent = {
   rootId: Id;
-  frameworkEventMetadata: FrameworkEventMetadata[];
+  frameworkEventMetadata?: FrameworkEventMetadata[];
 };
 
 export type PerfStatsEvent = {
