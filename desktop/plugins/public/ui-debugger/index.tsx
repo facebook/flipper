@@ -27,6 +27,7 @@ import {
 } from './types';
 import {Draft} from 'immer';
 import {QueryClient, setLogger} from 'react-query';
+import {tracker} from './tracker';
 
 type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};
 type LiveClientState = {
@@ -156,6 +157,7 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const setPlayPause = (isPaused: boolean) => {
+    tracker.track('play-pause', {paused: isPaused});
     uiState.isPaused.set(isPaused);
     if (!isPaused) {
       //When going back to play mode then set the atoms to the live state to rerender the latest
