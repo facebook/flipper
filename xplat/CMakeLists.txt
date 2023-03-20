@@ -65,4 +65,4 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
         ${glog_DIR}/glog-0.3.5/src/
     )
 
-target_link_libraries(${PACKAGE_NAME} folly glog double-conversion log event openssl::ssl openssl::crypto)
+target_link_libraries(${PACKAGE_NAME} folly)

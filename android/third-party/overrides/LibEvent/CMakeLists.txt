@@ -212,7 +212,7 @@ if ((${MSVC}) AND ("${EVENT_LIBRARY_TYPE}" STREQUAL "BOTH"))
       "(due to conflicts in library name"
       " between STATIC library and IMPORTED library for SHARED libraries)")
 endif()
-set(EVENT_LIBRARY_STATIC OFF)
+set(EVENT_LIBRARY_STATIC ON)
 set(EVENT_LIBRARY_SHARED OFF)
 if ("${EVENT_LIBRARY_TYPE}" STREQUAL "BOTH")
     set(EVENT_LIBRARY_STATIC ON)
@@ -1515,4 +1515,3 @@ message(STATUS "CMAKE_C_COMPILER:         ${CMAKE_C_COMPILER} (id ${CMAKE_C_COMP
 message(STATUS "CMAKE_AR:                 ${CMAKE_AR}")
 message(STATUS "CMAKE_RANLIB:             ${CMAKE_RANLIB}")
 message(STATUS "")
-
