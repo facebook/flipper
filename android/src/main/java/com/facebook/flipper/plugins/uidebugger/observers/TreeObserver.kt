@@ -46,7 +46,7 @@ abstract class TreeObserver<T> {
       snapshotBitmap: BitmapPool.ReusableBitmap? = null,
       frameworkEvents: List<FrameworkEvent>? = null
   ) {
-    val startTimestamp = System.currentTimeMillis()
+    val traversalStartTimestamp = System.currentTimeMillis()
     val (visitedNodes, observableRoots) = context.layoutTraversal.traverse(root)
 
     // Add any new observers
@@ -79,7 +79,7 @@ abstract class TreeObserver<T> {
     }
     removables.forEach { key -> children.remove(key) }
 
-    val traversalCompleteTime = System.currentTimeMillis()
+    val traversalEndTimestamp = System.currentTimeMillis()
 
     if (snapshotBitmap != null) {
       @Suppress("unchecked_cast")
@@ -89,16 +89,17 @@ abstract class TreeObserver<T> {
       descriptor.getSnapshot(root, snapshotBitmap.bitmap)
     }
 
-    val snapshotCompleteTime = System.currentTimeMillis()
+    val snapshotEndTimestamp = System.currentTimeMillis()
 
     context.treeObserverManager.enqueueUpdate(
         SubtreeUpdate(
             type,
             root.objectIdentity(),
             visitedNodes,
-            startTimestamp,
-            traversalCompleteTime,
-            snapshotCompleteTime,
+            traversalStartTimestamp,
+            snapshotEndTimestamp,
+            (traversalEndTimestamp - traversalStartTimestamp),
+            (snapshotEndTimestamp - traversalEndTimestamp),
             frameworkEvents,
             snapshotBitmap))
   }
