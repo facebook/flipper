@@ -21,12 +21,13 @@ import {
   FrameworkEventType,
   Metadata,
   MetadataId,
-  PerfStatsEvent,
+  PerformanceStatsEvent,
   Snapshot,
   UINode,
 } from './types';
 import {Draft} from 'immer';
 import {QueryClient, setLogger} from 'react-query';
+import {tracker} from './tracker';
 
 type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};
 type LiveClientState = {
@@ -56,7 +57,7 @@ export function plugin(client: PluginClient<Events>) {
   client.onMessage('init', (event) => {
     rootId.set(event.rootId);
     uiState.frameworkEventMonitoring.update((draft) => {
-      event.frameworkEventMetadata.forEach((frameworkEventMeta) => {
+      event.frameworkEventMetadata?.forEach((frameworkEventMeta) => {
         draft.set(frameworkEventMeta.type, false);
       });
     });
@@ -73,11 +74,34 @@ export function plugin(client: PluginClient<Events>) {
     });
   });
 
-  const perfEvents = createDataSource<PerfStatsEvent, 'txId'>([], {
+  const perfEvents = createDataSource<PerformanceStatsEvent, 'txId'>([], {
     key: 'txId',
     limit: 10 * 1024,
   });
+
+  /**
+   * The message handling below is a temporary measure for a couple of weeks until
+   * clients migrate to the newer message/format.
+   */
   client.onMessage('perfStats', (event) => {
+    const stat = {
+      txId: event.txId,
+      observerType: event.observerType,
+      nodesCount: event.nodesCount,
+      start: event.start,
+      traversalMS: event.traversalComplete - event.start,
+      snapshotMS: event.snapshotComplete - event.traversalComplete,
+      queuingMS: event.queuingComplete - event.snapshotComplete,
+      deferredComputationMS:
+        event.deferredComputationComplete - event.queuingComplete,
+      serializationMS:
+        event.serializationComplete - event.deferredComputationComplete,
+      socketMS: event.socketComplete - event.serializationComplete,
+    };
+    client.logger.track('performance', 'subtreeUpdate', stat, 'ui-debugger');
+    perfEvents.append(stat);
+  });
+  client.onMessage('performanceStats', (event) => {
     client.logger.track('performance', 'subtreeUpdate', event, 'ui-debugger');
     perfEvents.append(event);
   });
@@ -133,6 +157,7 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const setPlayPause = (isPaused: boolean) => {
+    tracker.track('play-pause', {paused: isPaused});
     uiState.isPaused.set(isPaused);
     if (!isPaused) {
       //When going back to play mode then set the atoms to the live state to rerender the latest

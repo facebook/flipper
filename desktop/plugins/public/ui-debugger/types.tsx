@@ -12,6 +12,7 @@ export type Events = {
   subtreeUpdate: SubtreeUpdateEvent;
   coordinateUpdate: CoordinateUpdateEvent;
   perfStats: PerfStatsEvent;
+  performanceStats: PerformanceStatsEvent;
   metadataUpdate: UpdateMetadataEvent;
 };
 
@@ -44,9 +45,13 @@ export type FrameworkEvent = {
 
 export type InitEvent = {
   rootId: Id;
-  frameworkEventMetadata: FrameworkEventMetadata[];
+  frameworkEventMetadata?: FrameworkEventMetadata[];
 };
 
+/**
+ * @deprecated This performance event should not be used and soon will
+ * be removed. PerformanceStatsEvent should be used instead.
+ */
 export type PerfStatsEvent = {
   txId: number;
   observerType: string;
@@ -58,6 +63,19 @@ export type PerfStatsEvent = {
   serializationComplete: number;
   socketComplete: number;
   nodesCount: number;
+};
+
+export type PerformanceStatsEvent = {
+  txId: number;
+  observerType: string;
+  nodesCount: number;
+  start: number;
+  traversalMS: number;
+  snapshotMS: number;
+  queuingMS: number;
+  deferredComputationMS: number;
+  serializationMS: number;
+  socketMS: number;
 };
 
 export type UpdateMetadataEvent = {

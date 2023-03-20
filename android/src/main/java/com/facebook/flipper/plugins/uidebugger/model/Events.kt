@@ -42,16 +42,16 @@ data class SubtreeUpdateEvent(
 data class PerfStatsEvent(
     val txId: Long,
     val observerType: String,
+    val nodesCount: Int,
     val start: Long,
-    val traversalComplete: Long,
-    val snapshotComplete: Long,
-    val queuingComplete: Long,
-    val deferredComputationComplete: Long,
-    val serializationComplete: Long,
-    val socketComplete: Long,
-    val nodesCount: Int
+    val traversalMS: Long,
+    val snapshotMS: Long,
+    val queuingMS: Long,
+    val deferredComputationMS: Long,
+    val serializationMS: Long,
+    val socketMS: Long
 ) {
   companion object {
-    const val name = "perfStats"
+    const val name = "performanceStats"
   }
 }
