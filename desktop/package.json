@@ -72,7 +72,7 @@
     "@testing-library/react": "^12.1.4",
     "@types/jest": "^26.0.24",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
-    "@typescript-eslint/parser": "^5.22.0",
+    "@typescript-eslint/parser": "^5.55.0",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
     "electron": "18.2.0",
@@ -169,7 +169,7 @@
     "npm": "use yarn instead",
     "yarn": "^1.16"
   },
-  "version": "0.185.0",
+  "version": "0.186.0",
   "workspaces": {
     "packages": [
       "scripts",
