@@ -32,6 +32,14 @@ type TrackerEvents = {
   };
   'node-selected': NodeEventPayload;
   'node-focused': NodeEventPayload;
+  'context-menu-name-copied': {
+    name: string;
+  };
+  'context-menu-copied': {
+    name: string;
+    key: string;
+    value: string;
+  };
 };
 
 export interface Tracker {
