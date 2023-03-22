@@ -35,6 +35,7 @@ import {head, isEqual, last} from 'lodash';
 import {reverse} from 'lodash/fp';
 import {Badge, Dropdown, Menu, Typography} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
+import {tracker} from '../tracker';
 
 const {Text} = Typography;
 
@@ -425,6 +426,7 @@ const ContextMenu: React.FC<{
         key={'Copy Element name'}
         text={'Copy Element name'}
         onClick={() => {
+          tracker.track('context-menu-name-copied', {name: hoveredNode.name});
           getFlipperLib().writeTextToClipboard(hoveredNode.name);
         }}
       />,
@@ -436,6 +438,11 @@ const ContextMenu: React.FC<{
           key={key}
           text={`Copy ${key}`}
           onClick={() => {
+            tracker.track('context-menu-copied', {
+              name: hoveredNode.name,
+              key,
+              value,
+            });
             getFlipperLib().writeTextToClipboard(value);
           }}
         />
