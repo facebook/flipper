@@ -40,6 +40,15 @@ type TrackerEvents = {
     key: string;
     value: string;
   };
+  'big-grep-searched': {
+    searchTerm: string;
+    tags: Tag[];
+  };
+  'ide-opened': {
+    ide: string;
+    name: string;
+    tags: Tag[];
+  };
 };
 
 export interface Tracker {
