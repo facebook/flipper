@@ -8,12 +8,18 @@
  */
 
 import {getFlipperLib} from 'flipper-plugin';
-import {FrameworkEventType} from './types';
+import {FrameworkEventType, Tag} from './types';
 
 const UI_DEBUGGER_IDENTIFIER = 'ui-debugger';
 
+type NodeEventPayload = {
+  name: string;
+  tags: Tag[];
+};
+
 type TrackerEvents = {
   'more-options-opened': {};
+  'context-menu-opened': {};
   'play-pause-toggled': {
     paused: boolean;
   };
@@ -24,6 +30,8 @@ type TrackerEvents = {
   'search-term-updated': {
     searchTerm: string;
   };
+  'node-selected': NodeEventPayload;
+  'node-focused': NodeEventPayload;
 };
 
 export interface Tracker {
