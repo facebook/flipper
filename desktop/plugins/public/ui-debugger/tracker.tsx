@@ -8,12 +8,46 @@
  */
 
 import {getFlipperLib} from 'flipper-plugin';
+import {FrameworkEventType, Tag} from './types';
 
 const UI_DEBUGGER_IDENTIFIER = 'ui-debugger';
 
+type NodeEventPayload = {
+  name: string;
+  tags: Tag[];
+};
+
 type TrackerEvents = {
-  'play-pause': {
+  'more-options-opened': {};
+  'context-menu-opened': {};
+  'play-pause-toggled': {
     paused: boolean;
+  };
+  'framework-event-monitored': {
+    eventType: FrameworkEventType;
+    monitored: boolean;
+  };
+  'search-term-updated': {
+    searchTerm: string;
+  };
+  'node-selected': NodeEventPayload;
+  'node-focused': NodeEventPayload;
+  'context-menu-name-copied': {
+    name: string;
+  };
+  'context-menu-copied': {
+    name: string;
+    key: string;
+    value: string;
+  };
+  'big-grep-searched': {
+    searchTerm: string;
+    tags: Tag[];
+  };
+  'ide-opened': {
+    ide: string;
+    name: string;
+    tags: Tag[];
   };
 };
 
@@ -25,7 +59,7 @@ export interface Tracker {
 }
 
 class UIDebuggerTracker implements Tracker {
-  track<Event extends 'play-pause'>(
+  track<Event extends keyof TrackerEvents>(
     event: Event,
     payload: TrackerEvents[Event],
   ): void {

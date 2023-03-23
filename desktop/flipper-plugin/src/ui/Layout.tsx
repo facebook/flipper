@@ -72,6 +72,7 @@ export type SplitLayoutProps = {
   gap?: Spacing;
   children: [React.ReactNode, React.ReactNode];
   style?: CSSProperties;
+  className?: string;
 } & SplitHorizontalResizableProps &
   SplitVerticalResizableProps;
 

@@ -28,6 +28,12 @@ import {
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout} from 'flipper-plugin';
 import {FrameworkEventType} from '../types';
+import {tracker} from '../tracker';
+import {debounce} from 'lodash';
+
+const searchTermUpdated = debounce((searchTerm: string) => {
+  tracker.track('search-term-updated', {searchTerm});
+}, 250);
 
 export const Controls: React.FC = () => {
   const instance = usePlugin(plugin);
@@ -42,6 +48,7 @@ export const Controls: React.FC = () => {
     eventType: FrameworkEventType,
     monitored: boolean,
   ) => void = (eventType: FrameworkEventType, monitored: boolean) => {
+    tracker.track('framework-event-monitored', {eventType, monitored});
     instance.uiState.frameworkEventMonitoring.update((draft) =>
       draft.set(eventType, monitored),
     );
@@ -51,14 +58,21 @@ export const Controls: React.FC = () => {
     <Layout.Horizontal pad="small" gap="small">
       <Input
         value={searchTerm}
-        onChange={(e) => instance.uiState.searchTerm.set(e.target.value)}
+        onChange={(e) => {
+          instance.uiState.searchTerm.set(e.target.value);
+          searchTermUpdated(e.target.value);
+        }}
         prefix={<SearchOutlined />}
         placeholder="Search"
       />
       <Button
         type="default"
         shape="circle"
-        onClick={() => instance.setPlayPause(!instance.uiState.isPaused.get())}
+        onClick={() => {
+          const isPaused = !instance.uiState.isPaused.get();
+          tracker.track('play-pause-toggled', {paused: isPaused});
+          instance.setPlayPause(isPaused);
+        }}
         icon={
           <Tooltip
             title={isPaused ? 'Resume live updates' : 'Pause incoming updates'}>
@@ -92,6 +106,7 @@ function MoreOptionsMenu({
     <Menu>
       <Menu.Item
         onClick={() => {
+          tracker.track('more-options-opened', {});
           setShowFrameworkEventsModal(true);
         }}>
         Framework event monitoring

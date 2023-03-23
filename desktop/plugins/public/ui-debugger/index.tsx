@@ -157,7 +157,6 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const setPlayPause = (isPaused: boolean) => {
-    tracker.track('play-pause', {paused: isPaused});
     uiState.isPaused.set(isPaused);
     if (!isPaused) {
       //When going back to play mode then set the atoms to the live state to rerender the latest
@@ -299,12 +298,20 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
   };
   const onSelectNode = (node?: Id) => {
     uiState.selectedNode.set(node);
-    let cur = node;
-    //expand entire ancestory in case it has been manually collapsed
+    if (node) {
+      const selectedNode = nodes.get().get(node);
+      const tags = selectedNode?.tags;
+      if (tags) {
+        tracker.track('node-selected', {name: selectedNode.name, tags});
+      }
+    }
+
+    let current = node;
+    // expand entire ancestory in case it has been manually collapsed
     uiState.expandedNodes.update((expandedNodesDraft) => {
-      while (cur != null) {
-        expandedNodesDraft.add(cur);
-        cur = nodes.get().get(cur)?.parent;
+      while (current != null) {
+        expandedNodesDraft.add(current);
+        current = nodes.get().get(current)?.parent;
       }
     });
   };
@@ -320,11 +327,20 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
   };
 
   const onContextMenuOpen = (open: boolean) => {
+    tracker.track('context-menu-opened', {});
     uiState.isContextMenuOpen.set(open);
   };
 
-  const onFocusNode = (focused?: Id) => {
-    uiState.focusedNode.set(focused);
+  const onFocusNode = (node?: Id) => {
+    if (node) {
+      const focusedNode = nodes.get().get(node);
+      const tags = focusedNode?.tags;
+      if (tags) {
+        tracker.track('node-focused', {name: focusedNode.name, tags});
+      }
+    }
+
+    uiState.focusedNode.set(node);
   };
 
   const setVisualiserWidth = (width: number) => {

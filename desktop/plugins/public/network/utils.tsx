@@ -264,6 +264,15 @@ export function formatStatus(status: number | undefined) {
   return status ? '' + status : '';
 }
 
+export function formatOperationName(requestData: string): string {
+  try {
+    const parsedData = JSON.parse(requestData);
+    return parsedData?.operationName;
+  } catch (_err) {
+    return '';
+  }
+}
+
 export function requestsToText(requests: Request[]): string {
   const request = requests[0];
   if (!request || !request.url) {

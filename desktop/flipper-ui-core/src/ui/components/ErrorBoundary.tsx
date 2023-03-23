@@ -8,7 +8,7 @@
  */
 
 import {CodeBlock} from 'flipper-plugin';
-import {Component} from 'react';
+import {Component, ErrorInfo} from 'react';
 import Heading from './Heading';
 import Button from './Button';
 import View from './View';
@@ -54,8 +54,8 @@ export default class ErrorBoundary extends Component<
     this.state = {error: null};
   }
 
-  componentDidCatch(err: Error) {
-    console.error(err.toString(), 'ErrorBoundary');
+  componentDidCatch(err: Error, errorInfo: ErrorInfo) {
+    console.error(err.toString(), errorInfo.componentStack, 'ErrorBoundary');
     this.setState({error: err});
   }
 
