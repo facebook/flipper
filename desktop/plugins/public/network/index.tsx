@@ -55,6 +55,7 @@ import {
   formatDuration,
   requestsToText,
   decodeBody,
+  formatOperationName,
 } from './utils';
 import RequestDetails from './RequestDetails';
 import {assembleChunksIfResponseIsComplete} from './chunks';
@@ -660,6 +661,13 @@ const baseColumns: DataTableColumn<Request>[] = [
     title: 'Response Time',
     width: 120,
     visible: false,
+  },
+  {
+    key: 'requestData',
+    title: 'GraphQL operation name',
+    width: 120,
+    visible: false,
+    formatters: formatOperationName,
   },
   {
     key: 'domain',
