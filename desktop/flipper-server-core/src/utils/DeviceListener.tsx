@@ -106,14 +106,14 @@ export abstract class DeviceListener {
       } catch (e) {
         if (this.restartCnt <= 0) {
           this._state.set('fatal', e);
-          console.error(
+          console.warn(
             `${this.name}.start -> failure after ${RESTART_CNT} retries`,
             e,
           );
           return;
         }
 
-        console.warn(
+        console.debug(
           `${this.name}.start -> error. Retrying. ${this.restartCnt} retries left.`,
           e,
         );
