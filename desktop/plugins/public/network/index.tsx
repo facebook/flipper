@@ -258,7 +258,11 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
         informClientMockChange(routes.get());
       })
-      .catch((e) => console.error('[network] Failed to init mocks:', e));
+      .catch((e) => {
+        if (client.device.connected.get()) {
+          console.error('[network] Failed to init mocks:', e);
+        }
+      });
 
     // declare new variable to be called inside the interface
     networkRouteManager.set(
