@@ -30,6 +30,6 @@
   "optionalDependencies": {},
   "devDependencies": {
     "@types/node": "^17.0.31",
-    "react-refresh": "^0.11.0"
+    "react-refresh": "^0.14.0"
   }
 }
