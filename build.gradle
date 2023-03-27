@@ -75,7 +75,7 @@ ext.deps = [
         boltsTasks         : 'com.parse.bolts:bolts-tasks:1.4.0',
         // Third-party
         websocket          : 'org.java-websocket:Java-WebSocket:1.5.3',
-        openssl            : 'com.android.ndk.thirdparty:openssl:1.1.1l-beta-1',
+        openssl            : 'com.android.ndk.thirdparty:openssl:1.1.1q-beta-1',
         // Annotations
         kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1",
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
