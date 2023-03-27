@@ -384,11 +384,11 @@ export default class LayoutPlugin extends FlipperPlugin<
     );
 
     notification.open({
-      message: 'A new UI Debugger is available! 🎉',
-      description: `A new plugin for UI debugging is available! 
-      Have you considered making the switch? Find it on your left panel.`,
+      message: 'Layout plugin is being deprecated.',
+      description: `The new replacement plugin, UI Debugger, is available for use now. 
+      Find it on the left panel`,
       duration: 30,
-      type: 'info',
+      type: 'warning',
       btn,
       key,
     });
