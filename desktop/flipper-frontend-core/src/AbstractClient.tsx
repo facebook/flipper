@@ -357,6 +357,9 @@ export default abstract class AbstractClient extends EventEmitter {
 
       const plugin = params ? params.api : undefined;
 
+      const baseErrorMessage = `Unable to send ${params?.method ?? method} to ${
+        params?.api ?? 'FlipperCore'
+      }`;
       console.debug(data, 'message:call');
 
       const mark = this.getPerformanceMark(metadata);
@@ -391,12 +394,12 @@ export default abstract class AbstractClient extends EventEmitter {
             });
           }
         } catch (error) {
-          reject(new Error('Unable to send, connection error: ' + error));
+          reject(new Error(`${baseErrorMessage}, connection error: ${error}`));
         }
       } else {
         reject(
           new Error(
-            `Cannot send ${method}, client is not accepting messages for plugin ${plugin}`,
+            `${baseErrorMessage}, client is not accepting messages for plugin ${plugin}`,
           ),
         );
       }

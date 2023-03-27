@@ -14,7 +14,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:7.4.0'
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.24.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.7.20"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.8.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
     }
 }
@@ -64,7 +64,7 @@ ext.deps = [
         supportConstraintLayout: "androidx.constraintlayout:constraintlayout:2.1.4",
         supportSqlite      : "androidx.sqlite:sqlite-framework:2.2.0",
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.5.1',
-        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.5.0',
+        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.5.1',
         supportTestRunner  : 'androidx.test:runner:1.5.2',
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.1',
@@ -100,7 +100,7 @@ ext.deps = [
         robolectric        : 'org.robolectric:robolectric:4.9',
         junit              : 'junit:junit:4.13.2',
         hamcrest           : 'org.hamcrest:hamcrest-library:2.2',
-        mockito            : 'org.mockito:mockito-core:5.0.0',
+        mockito            : 'org.mockito:mockito-core:5.2.0',
         okhttp3            : 'com.squareup.okhttp3:okhttp:4.9.3',
         leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.3',
         leakcanary2        : 'com.squareup.leakcanary:leakcanary-android:2.8.1',

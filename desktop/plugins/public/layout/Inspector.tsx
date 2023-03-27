@@ -108,7 +108,9 @@ export default class Inspector extends Component<Props, State> {
             label: 'Focus',
             click: (id: ElementID) => {
               if (this.props.client.isConnected) {
-                this.props.client.call('onRequestAXFocus', {id});
+                this.props.client
+                  .call('onRequestAXFocus', {id})
+                  .catch((e) => console.warn('Unable to request AX focus', e));
               }
             },
           },
