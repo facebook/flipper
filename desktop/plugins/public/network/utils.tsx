@@ -7,6 +7,7 @@
  * @format
  */
 
+import {Buffer} from 'buffer';
 import decompress from 'brotli/decompress';
 import pako from 'pako';
 import {Request, Header, ResponseInfo} from './types';
