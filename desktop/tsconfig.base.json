@@ -4,7 +4,7 @@
     "lib": ["ES2019"],
     "esModuleInterop": true,
     "target": "ES2019",
-    "removeComments": true,
+    "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
