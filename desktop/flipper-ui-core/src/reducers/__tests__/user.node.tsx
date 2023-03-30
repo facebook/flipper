@@ -7,11 +7,11 @@
  * @format
  */
 
-import {default as reducer, login, logout} from '../user';
+import {default as reducer, setUserProfile} from '../user';
 
 test('login', () => {
   const userData = {name: 'Jane Doe'};
-  const res = reducer({}, login(userData));
+  const res = reducer({}, setUserProfile(userData));
   expect(res).toEqual(userData);
 });
 
@@ -20,7 +20,7 @@ test('logout', () => {
     {
       name: 'Jane Doe',
     },
-    logout(),
+    setUserProfile(undefined),
   );
   expect(res).toEqual({});
 });
