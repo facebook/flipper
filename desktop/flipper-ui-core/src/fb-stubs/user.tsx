@@ -18,6 +18,10 @@ export function getCachedUser(): User | null {
   return null;
 }
 
+export function getUser(): Promise<User | null> {
+  return fetchUser();
+}
+
 export async function internGraphPOSTAPIRequest(
   _endpoint: string,
   _formFields: {

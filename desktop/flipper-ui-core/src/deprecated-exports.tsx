@@ -20,6 +20,7 @@ export {
   internGraphPOSTAPIRequest,
   graphQLQuery,
   isLoggedIn,
+  getUser,
   fetchUser,
   getCachedUser,
 } from './fb-stubs/user';
