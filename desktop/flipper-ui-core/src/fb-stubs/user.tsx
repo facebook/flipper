@@ -10,8 +10,12 @@
 import {GraphFileUpload, User} from 'flipper-common';
 import {Atom, createState} from 'flipper-plugin';
 
-export async function getUser(): Promise<User | null> {
+export async function fetchUser(): Promise<User | null> {
   throw new Error('Feature not implemented');
+}
+
+export function getCachedUser(): User | null {
+  return null;
 }
 
 export async function internGraphPOSTAPIRequest(

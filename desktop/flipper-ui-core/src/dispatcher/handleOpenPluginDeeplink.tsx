@@ -9,8 +9,12 @@
 
 import React from 'react';
 import {Dialog, getFlipperLib} from 'flipper-plugin';
-import {isTest, UserNotSignedInError} from 'flipper-common';
-import {getUser} from '../fb-stubs/user';
+import {
+  isTest,
+  UserNotSignedInError,
+  UserUnauthorizedError,
+} from 'flipper-common';
+import {fetchUser} from '../fb-stubs/user';
 import {State, Store} from '../reducers/index';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
 import {getAppVersion} from '../utils/info';
@@ -226,7 +230,7 @@ async function verifyLighthouseAndUserLoggedIn(
     });
 
     try {
-      const user = await getUser();
+      const user = await fetchUser();
       spinnerDialog.close();
       // User is logged in
       if (user) {
@@ -237,7 +241,10 @@ async function verifyLighthouseAndUserLoggedIn(
       }
     } catch (e) {
       spinnerDialog.close();
-      if (e instanceof UserNotSignedInError) {
+      if (
+        e instanceof UserNotSignedInError ||
+        e instanceof UserUnauthorizedError
+      ) {
         // connection, but user is not logged in
         return await showPleaseLoginDialog(store, title);
       }

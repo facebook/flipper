@@ -78,6 +78,7 @@ import {css} from '@emotion/css';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {StyleGuide} from './StyleGuide';
 import {useEffect} from 'react';
+import {isLoggedIn} from '../fb-stubs/user';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -588,8 +589,9 @@ function SetupDoctorButton() {
 
 function LoginButton() {
   const dispatch = useDispatch();
+  const loggedIn = useValue(isLoggedIn());
   const user = useStore((state) => state.user);
-  const login = (user?.id ?? null) !== null;
+
   const profileUrl = user?.profile_picture?.uri;
   const [showLogout, setShowLogout] = useState(false);
   const onHandleVisibleChange = useCallback(
@@ -597,7 +599,7 @@ function LoginButton() {
     [],
   );
 
-  return login ? (
+  return loggedIn ? (
     <Popover
       content={
         <Button
