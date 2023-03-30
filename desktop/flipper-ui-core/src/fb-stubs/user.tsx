@@ -96,6 +96,8 @@ export async function getPreferredEditorUriScheme(): Promise<string> {
   return 'vscode';
 }
 
+export async function initialize(): Promise<void> {}
+
 export async function appendAccessTokenToUrl(_url: URL): Promise<string> {
   throw new Error('Implement appendAccessTokenToUrl');
 }
