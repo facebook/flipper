@@ -50,7 +50,6 @@ import WelcomeScreen from './WelcomeScreen';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
-import {logout} from '../reducers/user';
 import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
@@ -79,7 +78,7 @@ import {css} from '@emotion/css';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {StyleGuide} from './StyleGuide';
 import {useEffect} from 'react';
-import {isConnected, isLoggedIn} from '../fb-stubs/user';
+import {isConnected, isLoggedIn, logoutUser} from '../fb-stubs/user';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -620,9 +619,9 @@ function LoginConnectivityButton() {
         <Button
           block
           style={{backgroundColor: theme.backgroundDefault}}
-          onClick={() => {
+          onClick={async () => {
             onHandleVisibleChange(false);
-            dispatch(logout());
+            await logoutUser();
           }}>
           Log Out
         </Button>
