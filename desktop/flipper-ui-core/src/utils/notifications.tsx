@@ -14,6 +14,7 @@ import {setStaticView} from '../reducers/connections';
 import {getStore} from '../store';
 import {Layout} from '../ui';
 import {v4 as uuid} from 'uuid';
+import {NotificationBody} from '../ui/components/NotificationBody';
 
 const {Link} = Typography;
 
@@ -22,9 +23,10 @@ export function showErrorNotification(message: string, description?: string) {
   notification.error({
     key,
     message,
-    description: (
+    description: description ? (
+      <NotificationBody text={description} />
+    ) : (
       <Layout.Container gap>
-        {description ?? <p>{description}</p>}
         <p>
           See{' '}
           <Link

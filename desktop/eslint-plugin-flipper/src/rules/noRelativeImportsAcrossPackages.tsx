@@ -18,7 +18,15 @@ function findRootDir(path: string): string {
   if (cachedRoot) {
     return cachedRoot;
   }
-  if (fs.pathExistsSync(join(path, 'package.json'))) {
+  // Our public packages have the following structure:
+  // - package
+  //   - fb
+  //     - package.json
+  //   - pacakage.json
+  // package.json insode of fb folder is not a real root. It is merely an add-on for the root package.json for internal builds.
+  // We should ignore package.json inside of "fb" folder and allow relative imports from the root inside of the fb folder.
+  const fbFolder = path.endsWith('fb') || path.endsWith('fb/');
+  if (!fbFolder && fs.pathExistsSync(join(path, 'package.json'))) {
     rootDirs.set(path, path);
     return path;
   }
