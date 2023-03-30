@@ -9,7 +9,6 @@
 
 import {Component} from 'react';
 import Text from './Text';
-import {colors} from './colors';
 import ManagedTable from './table/ManagedTable';
 import FlexRow from './FlexRow';
 import Glyph from './Glyph';
@@ -22,6 +21,7 @@ import {
   TableColumns,
   TableBodyColumn,
 } from './table/types';
+import {theme} from 'flipper-plugin';
 
 const Padder = styled.div<{
   padded?: boolean;
@@ -34,9 +34,8 @@ Padder.displayName = 'StackTrace:Padder';
 
 const Container = styled.div<{isCrash?: boolean; padded?: boolean}>(
   ({isCrash, padded}) => ({
-    backgroundColor: isCrash ? colors.redTint : 'transprent',
     border: padded
-      ? `1px solid ${isCrash ? colors.red : colors.light15}`
+      ? `1px solid ${isCrash ? theme.errorColor : theme.dividerColor}`
       : 'none',
     borderRadius: padded ? 5 : 0,
     overflow: 'hidden',
@@ -45,7 +44,7 @@ const Container = styled.div<{isCrash?: boolean; padded?: boolean}>(
 Container.displayName = 'StackTrace:Container';
 
 const Title = styled(FlexRow)<{isCrash?: boolean}>(({isCrash}) => ({
-  color: isCrash ? colors.red : 'inherit',
+  color: isCrash ? theme.errorColor : 'inherit',
   padding: 8,
   alignItems: 'center',
   minHeight: 32,
@@ -53,18 +52,21 @@ const Title = styled(FlexRow)<{isCrash?: boolean}>(({isCrash}) => ({
 Title.displayName = 'StackTrace:Title';
 
 const Reason = styled(Text)<{isCrash?: boolean}>(({isCrash}) => ({
-  color: isCrash ? colors.red : colors.light80,
+  color: isCrash ? theme.errorColor : theme.textColorPrimary,
   fontWeight: 'bold',
   fontSize: 13,
 }));
 Reason.displayName = 'StackTrace:Reason';
 
-const Line = styled(Text)<{isCrash?: boolean; isBold?: boolean}>(
-  ({isCrash, isBold}) => ({
-    color: isCrash ? colors.red : colors.light80,
-    fontWeight: isBold ? 'bold' : 'normal',
-  }),
-);
+const Line = styled(Text)<{
+  isCrash?: boolean;
+  isBold?: boolean;
+  color?: string;
+}>(({isBold, color}) => ({
+  color: color ?? theme.textColorPrimary,
+  fontWeight: isBold ? 'bold' : 'normal',
+  overflow: 'visible',
+}));
 Line.displayName = 'StackTrace:Line';
 
 const Icon = styled(Glyph)({marginRight: 5});
@@ -148,6 +150,18 @@ export default class StackTrace extends Component<{
       return acc;
     }, {});
 
+    const colorForColumn = (column: string): string | undefined => {
+      switch (column) {
+        case 'lineNumber':
+          return theme.semanticColors.numberValue;
+        case 'library':
+          return theme.textColorPrimary;
+        case 'address':
+          return theme.semanticColors.stringValue;
+        case 'caller':
+          return theme.textColorSecondary;
+      }
+    };
     const rows: TableBodyRow[] = children.map((l, i) => ({
       key: String(i),
       columns: (Object.keys(columns) as Array<keyof Child>).reduce<{
@@ -156,7 +170,11 @@ export default class StackTrace extends Component<{
         acc[cv] = {
           align: cv === 'lineNumber' ? 'right' : 'left',
           value: (
-            <Line code isCrash={this.props.isCrash} bold={l.isBold || false}>
+            <Line
+              code
+              isCrash={this.props.isCrash}
+              bold={l.isBold || false}
+              color={colorForColumn(cv)}>
               {String(l[cv])}
             </Line>
           ),
@@ -177,7 +195,7 @@ export default class StackTrace extends Component<{
                   name="stop"
                   variant="filled"
                   size={16}
-                  color={colors.red}
+                  color={theme.errorColor}
                 />
               )}
               <Reason isCrash={this.props.isCrash} code>
