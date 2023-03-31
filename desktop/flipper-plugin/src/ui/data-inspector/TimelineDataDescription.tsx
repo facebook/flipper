@@ -19,7 +19,7 @@ type TimePoint = {
   display: string;
   color: string;
   key: string;
-  properties?: {[key: string]: string};
+  properties?: any;
 };
 
 type Timeline = {
