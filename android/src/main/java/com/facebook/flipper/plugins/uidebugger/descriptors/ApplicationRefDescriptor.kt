@@ -18,7 +18,15 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
 
   override fun onGetActiveChild(node: ApplicationRef): Any? {
     val children = onGetChildren(node)
-    return if (children.isNotEmpty()) children.last() else null
+    if (children.isNotEmpty()) {
+      val last = children.last()
+      if (last.javaClass.simpleName.contains("OverlayHandlerView")) {
+        return children.getOrNull(children.size - 2)
+      }
+      return last
+    }
+
+    return null
   }
 
   override fun onGetBounds(node: ApplicationRef): Bounds = DisplayMetrics.getDisplayBounds()
