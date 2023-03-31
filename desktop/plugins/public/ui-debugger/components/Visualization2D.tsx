@@ -395,18 +395,32 @@ function toNestedNode(
   nodes: Map<Id, UINode>,
 ): NestedNode | undefined {
   function uiNodeToNestedNode(node: UINode): NestedNode {
+    const nonNullChildren = node.children.filter(
+      (childId) => nodes.get(childId) != null,
+    );
+
+    if (nonNullChildren.length !== node.children.length) {
+      console.error(
+        'Visualization2D.toNestedNode -> child is nullish!',
+        node.children,
+        nonNullChildren.map((childId) => {
+          const child = nodes.get(childId);
+          return child && uiNodeToNestedNode(child);
+        }),
+      );
+    }
+
     const activeChildIdx = node.activeChild
-      ? node.children.indexOf(node.activeChild)
+      ? nonNullChildren.indexOf(node.activeChild)
       : undefined;
 
     return {
       id: node.id,
       name: node.name,
       attributes: node.attributes,
-      children: node.children
-        .map((childId) => nodes.get(childId))
-        .filter((child) => child != null)
-        .map((child) => uiNodeToNestedNode(child!!)),
+      children: nonNullChildren.map((childId) =>
+        uiNodeToNestedNode(nodes.get(childId)!),
+      ),
       bounds: node.bounds,
       tags: node.tags,
       activeChildIdx: activeChildIdx,
