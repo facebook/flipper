@@ -72,7 +72,10 @@ export class TimelineDataDescription extends Component<Props, State> {
         <div>
           <MarkerTimeline
             points={points}
-            onClick={(ids) => this.setState({selected: ids[0]})}
+            onClick={(ids) => {
+              this.setState({selected: ids[0]});
+              this.props.onClick?.(ids[0]);
+            }}
             maxGap={50}
             selected={this.state.selected}
           />
