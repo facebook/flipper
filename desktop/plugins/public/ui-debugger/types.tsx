@@ -37,10 +37,25 @@ export type FrameworkEventMetadata = {
   documentation: string;
 };
 
+export type JSON =
+  | string
+  | number
+  | boolean
+  | null
+  | JSON[]
+  | {[key: string]: JSON};
+
+type Stacktrace = {type: 'stacktrace'; stacktrace: string[]};
+type Reason = {type: 'reason'; reason: string};
+type UpstreamEvent = {type: 'upstreamEvent'; eventId: Id};
+type EventAttribution = Stacktrace | Reason | UpstreamEvent;
+
 export type FrameworkEvent = {
   nodeId: Id;
   type: FrameworkEventType;
   timestamp: number;
+  payload?: JSON;
+  attribution?: EventAttribution;
 };
 
 export type InitEvent = {
