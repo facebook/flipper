@@ -49,8 +49,9 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
 
   return (
     <Layout.Container gap pad>
-      <Tabs grow centered>
+      <Tabs grow centered key={selectedNodeId}>
         <Tab
+          key={'identity'}
           tab={
             <Tooltip title="Identity">
               <Layout.Horizontal center>
@@ -62,6 +63,7 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
         </Tab>
 
         <Tab
+          key={'attributes'}
           tab={
             <Tooltip title="Attributes">
               <Layout.Horizontal center>
@@ -76,6 +78,7 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
           />
         </Tab>
         <Tab
+          key={'layout'}
           tab={
             <Tooltip title="Layout">
               <Layout.Horizontal center>
@@ -95,6 +98,7 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
         </Tab>
         {events && (
           <Tab
+            key={'events'}
             tab={
               <Tooltip title="Events">
                 <Layout.Horizontal center>
