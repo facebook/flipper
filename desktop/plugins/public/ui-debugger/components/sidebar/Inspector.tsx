@@ -118,6 +118,7 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
                     display: e.type.slice(e.type.lastIndexOf(':') + 1),
                     color: theme.primaryColor,
                     key: e.timestamp.toString(),
+                    properties: e.payload as any,
                   };
                 }),
                 current: '',
