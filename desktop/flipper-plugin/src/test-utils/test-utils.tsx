@@ -31,6 +31,7 @@ import {
   createState,
   TestUtils,
   _StartPluginOptions,
+  _setFlipperLibImplementation,
 } from 'flipper-plugin-core';
 import {SandyPluginRenderer} from '../plugin/PluginRenderer';
 import {DeviceLogEntry} from 'flipper-common';
@@ -227,6 +228,8 @@ export function startPlugin<Module extends _FlipperPluginModule<any>>(
 
   const serverAddOnControls = createServerAddOnControlsMock();
 
+  _setFlipperLibImplementation(flipperUtils);
+
   const pluginInstance = new _SandyPluginInstance(
     serverAddOnControls,
     flipperUtils,
@@ -313,6 +316,9 @@ export function startDevicePlugin<Module extends _FlipperDevicePluginModule>(
   const flipperLib = TestUtils.createMockFlipperLib(options);
   const testDevice = createMockDevice(options);
   const serverAddOnControls = createServerAddOnControlsMock();
+
+  _setFlipperLibImplementation(flipperLib);
+
   const pluginInstance = new _SandyDevicePluginInstance(
     serverAddOnControls,
     flipperLib,
