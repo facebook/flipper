@@ -17,14 +17,21 @@ import {addNotification} from '../../reducers/notifications';
 import {deconstructPluginKey} from 'flipper-common';
 import {RenderHost} from 'flipper-frontend-core';
 import {setMenuEntries} from '../../reducers/connections';
+import {currentUser, isConnected} from '../../fb-stubs/user';
 
 export function initializeFlipperLibImplementation(
   renderHost: RenderHost,
   store: Store,
   logger: Logger,
 ) {
+  const base = baseFlipperLibImplementation(renderHost, logger);
   _setFlipperLibImplementation({
-    ...baseFlipperLibImplementation(renderHost, logger),
+    ...base,
+    intern: {
+      ...base.intern,
+      currentUser,
+      isConnected,
+    },
     enableMenuEntries(entries) {
       store.dispatch(setMenuEntries(entries));
     },

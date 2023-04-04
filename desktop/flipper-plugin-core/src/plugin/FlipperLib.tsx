@@ -27,8 +27,10 @@ import {
   FSStatsLike,
   FlipperServerCommands,
   ENVIRONMENT_VARIABLES,
+  User,
 } from 'flipper-common';
 import {CreatePasteArgs, CreatePasteResult} from './Paste';
+import {Atom} from '../state/atom';
 
 export type FileEncoding = 'utf-8' | 'base64';
 
@@ -213,6 +215,8 @@ interface InternAPI {
    * @deprecated
    */
   isLoggedIn: FlipperServerCommands['is-logged-in'];
+  currentUser: () => Atom<User | null>;
+  isConnected: () => Atom<boolean>;
 }
 
 export let flipperLibInstance: FlipperLib | undefined;
