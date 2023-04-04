@@ -7,7 +7,7 @@
  * @format
  */
 
-import {isLoggedIn} from '../../fb-stubs/user';
+import {currentUser} from '../../fb-stubs/user';
 import {Layout, useValue} from 'flipper-plugin';
 import React from 'react';
 import config from '../../fb-stubs/config';
@@ -15,7 +15,7 @@ import {Alert} from 'antd';
 import {LoginOutlined} from '@ant-design/icons';
 
 export const RequireLogin: React.FC<{}> = ({children}) => {
-  const loggedIn = useValue(isLoggedIn());
+  const loggedIn = useValue(currentUser());
   if (!config.isFBBuild) {
     return (
       <Layout.Container pad>

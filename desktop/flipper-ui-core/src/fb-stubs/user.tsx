@@ -108,11 +108,11 @@ export async function appendAccessTokenToUrl(_url: URL): Promise<string> {
   throw new Error('Implement appendAccessTokenToUrl');
 }
 
-const isLoggedInAtom = createState(false);
+const currentUserAtom = createState<User | null>(null);
 const isConnectedAtom = createState(true);
 
-export function isLoggedIn(): Atom<boolean> {
-  return isLoggedInAtom;
+export function currentUser(): Atom<User | null> {
+  return currentUserAtom;
 }
 
 export function isConnected(): Atom<boolean> {

@@ -78,7 +78,7 @@ import {css} from '@emotion/css';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {StyleGuide} from './StyleGuide';
 import {useEffect} from 'react';
-import {isConnected, isLoggedIn, logoutUser} from '../fb-stubs/user';
+import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -589,7 +589,7 @@ function SetupDoctorButton() {
 
 function LoginConnectivityButton() {
   const dispatch = useDispatch();
-  const loggedIn = useValue(isLoggedIn());
+  const loggedIn = useValue(currentUser());
   const user = useStore((state) => state.user);
 
   const profileUrl = user?.profile_picture?.uri;

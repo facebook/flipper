@@ -19,7 +19,7 @@ export {
   internGraphGETAPIRequest,
   internGraphPOSTAPIRequest,
   graphQLQuery,
-  isLoggedIn,
+  currentUser as isLoggedIn,
   getUser,
   fetchUser,
   getCachedUser,

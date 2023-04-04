@@ -24,7 +24,7 @@ import isPluginCompatible from '../utils/isPluginCompatible';
 import {selectCompatibleMarketplaceVersions} from './plugins';
 import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {isConnectivityOrAuthError} from 'flipper-common';
-import {isLoggedIn} from '../fb-stubs/user';
+import {currentUser} from '../fb-stubs/user';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 
 // TODO: provide this value from settings
@@ -43,7 +43,7 @@ function isAutoUpdateDisabled(store: Store) {
     (!getFlipperLib().isFB &&
       !store.getState().settingsState.enablePluginMarketplaceAutoUpdate) ||
     // for internal build we disable auto-updates in case user is not logged
-    (getFlipperLib().isFB && !isLoggedIn().get()) ||
+    (getFlipperLib().isFB && !currentUser().get()) ||
     getRenderHostInstance().GK('flipper_disable_plugin_auto_update') ||
     getRenderHostInstance().serverConfig.env.FLIPPER_NO_PLUGIN_AUTO_UPDATE !==
       undefined
@@ -113,7 +113,7 @@ export async function loadPluginsFromMarketplace(
 }
 
 async function refreshMarketplacePlugins(store: Store): Promise<void> {
-  if (getFlipperLib().isFB && !isLoggedIn().get()) {
+  if (getFlipperLib().isFB && !currentUser().get()) {
     // inside FB we cannot refresh when user is not logged
     return;
   }
