@@ -66,8 +66,7 @@ const Point = styled(Layout.Horizontal)<{
   alignItems: 'flex-start',
   lineHeight: '16px',
   ':hover': {
-    background: theme.selectionBackgroundColor,
-    zIndex: 2,
+    backgroundColor: theme.selectionBackgroundColor,
     '> span': {
       whiteSpace: 'initial',
     },
@@ -91,7 +90,7 @@ const Point = styled(Layout.Horizontal)<{
     marginTop: 3,
     zIndex: 3,
     boxShadow: props.selected
-      ? `0 0 0 2px ${theme.backgroundTransparentHover}`
+      ? `0 0 0 4px ${theme.selectionBackgroundColor}`
       : undefined,
   },
   '::after': {
