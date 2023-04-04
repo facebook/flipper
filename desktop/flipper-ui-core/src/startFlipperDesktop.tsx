@@ -11,6 +11,7 @@ import {Provider} from 'react-redux';
 import {createRoot} from 'react-dom/client';
 
 import {init as initLogger} from './fb-stubs/Logger';
+import {initLogTailer} from './consoleLogTailer';
 import {SandyApp} from './sandy-chrome/SandyApp';
 import {Persistor, persistStore} from 'redux-persist';
 import dispatcher from './dispatcher/index';
@@ -139,6 +140,7 @@ class AppFrame extends React.Component<
 function init(flipperServer: FlipperServer) {
   const settings = getRenderHostInstance().serverConfig.settings;
   const store = getStore();
+  initLogTailer();
   const logger = initLogger(store);
 
   setLoggerInstance(logger);
