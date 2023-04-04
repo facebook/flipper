@@ -212,7 +212,6 @@ type TreeSelectNode = {
 function getAllLeaves(treeSelectNode: TreeSelectNode) {
   const result: string[] = [];
   function getAllLeavesRec(node: TreeSelectNode) {
-    console.log(node);
     if (node.children.length > 0) {
       for (const child of node.children) {
         getAllLeavesRec(child);
