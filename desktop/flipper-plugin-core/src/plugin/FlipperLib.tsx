@@ -209,6 +209,9 @@ export interface FlipperLib {
 interface InternAPI {
   graphGet: FlipperServerCommands['intern-graph-get'];
   graphPost: FlipperServerCommands['intern-graph-post'];
+  /**
+   * @deprecated
+   */
   isLoggedIn: FlipperServerCommands['is-logged-in'];
 }
 
