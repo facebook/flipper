@@ -366,25 +366,8 @@ const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
 }));
 
 const longHoverDelay = 200;
-const outerBorderWidth = '10px';
-const outerBorderOffset = `-${outerBorderWidth}`;
 const pxScaleFactorCssVar = '--pxScaleFactor';
 const MouseThrottle = 32;
-
-//this is the thick black border around the whole vizualization, the border goes around the content
-//hence the top,left,right,botton being negative to increase its size
-const OuterBorder = styled.div({
-  boxSizing: 'border-box',
-  position: 'absolute',
-  top: outerBorderOffset,
-  left: outerBorderOffset,
-  right: outerBorderOffset,
-  bottom: outerBorderOffset,
-  borderWidth: outerBorderWidth,
-  borderStyle: 'solid',
-  borderColor: 'black',
-  borderRadius: '10px',
-});
 
 function toPx(n: number) {
   return `calc(${n}px / var(${pxScaleFactorCssVar})`;
