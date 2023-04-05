@@ -355,6 +355,7 @@ const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
   left: 0,
   bottom: 0,
   right: 0,
+  boxSizing: 'border-box',
   borderWidth: props.hovered ? '2px' : '1px',
   borderStyle: 'solid',
   color: 'transparent',

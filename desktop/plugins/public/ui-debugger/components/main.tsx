@@ -15,6 +15,7 @@ import {
   usePlugin,
   useValue,
   _Sidebar as ResizablePanel,
+  theme,
 } from 'flipper-plugin';
 import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, Metadata, MetadataId, UINode} from '../types';
@@ -65,7 +66,7 @@ export function Component() {
                 <ResizablePanel
                   position="right"
                   minWidth={200}
-                  width={visualiserWidth}
+                  width={visualiserWidth + theme.space.large}
                   maxWidth={800}
                   onResize={(width) => {
                     instance.uiActions.setVisualiserWidth(width);
