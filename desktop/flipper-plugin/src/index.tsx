@@ -61,6 +61,8 @@ export {DataTableManager} from './ui/data-table/DataTableManager';
 export {DataList} from './ui/DataList';
 export {Spinner} from './ui/Spinner';
 
+export {DataSourceVirtualizer} from './data-source/DataSourceRendererVirtual';
+
 export {
   Interactive as _Interactive,
   InteractiveProps as _InteractiveProps,
