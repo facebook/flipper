@@ -92,6 +92,7 @@ test('Correct top level API exposed', () => {
       "CreatePasteResult",
       "DataDescriptionType",
       "DataInspectorExpanded",
+      "DataSourceVirtualizer",
       "DataTableColumn",
       "DataTableManager",
       "DataValueExtractor",
