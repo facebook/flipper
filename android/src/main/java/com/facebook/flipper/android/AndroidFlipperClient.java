@@ -26,7 +26,8 @@ public final class AndroidFlipperClient {
   private static final String[] REQUIRED_PERMISSIONS =
       new String[] {"android.permission.INTERNET", "android.permission.ACCESS_WIFI_STATE"};
 
-  public static synchronized FlipperClient getInstance(Context context) {
+  public static synchronized FlipperClient getInstance(
+      Context context, String id, String deviceName, String processName, String packageName) {
     if (!sIsInitialized) {
       if (!(BuildConfig.IS_INTERNAL_BUILD || BuildConfig.LOAD_FLIPPER_EXPLICIT)) {
         Log.e("Flipper", "Attempted to initialize in non-internal build");
@@ -58,14 +59,21 @@ public final class AndroidFlipperClient {
           FlipperProps.getAltSecurePort(),
           getServerHost(app),
           "Android",
-          getFriendlyDeviceName(),
-          getId(),
-          getRunningAppName(app),
-          getPackageName(app),
+          deviceName,
+          id,
+          processName,
+          packageName,
           privateAppDirectory);
       sIsInitialized = true;
     }
     return FlipperClientImpl.getInstance();
+  }
+
+  public static synchronized FlipperClient getInstance(Context context) {
+    final Context app =
+        context.getApplicationContext() == null ? context : context.getApplicationContext();
+    return getInstance(
+        context, getId(), getFriendlyDeviceName(), getRunningAppName(app), getPackageName(app));
   }
 
   @Nullable
