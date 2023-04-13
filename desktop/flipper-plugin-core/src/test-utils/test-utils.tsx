@@ -18,6 +18,7 @@ import {
   FlipperPluginModule,
   SandyPluginDefinition,
 } from '../plugin/SandyPluginDefinition';
+import {createState} from '../state/atom';
 import {stubLogger} from '../utils/Logger';
 
 declare const process: any;
@@ -80,6 +81,8 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
       graphGet: createStubFunction(),
       graphPost: createStubFunction(),
       isLoggedIn: createStubFunction(),
+      currentUser: () => createState(null),
+      isConnected: () => createState(true),
     },
     remoteServerContext: {
       childProcess: {

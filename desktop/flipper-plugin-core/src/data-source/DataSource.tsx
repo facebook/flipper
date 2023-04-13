@@ -83,6 +83,11 @@ type OutputChange =
       // like: clear, filter or sorting change, etc
       type: 'reset';
       newCount: number;
+    }
+  | {
+      type: 'windowChange';
+      newStart: number;
+      newEnd: number;
     };
 
 export type DataSourceOptionKey<K extends PropertyKey> = {
@@ -582,6 +587,11 @@ export class DataSourceView<T, KeyType> {
   public setWindow(start: number, end: number) {
     this.windowStart = start;
     this.windowEnd = end;
+    this.notifyAllListeners({
+      type: 'windowChange',
+      newStart: start,
+      newEnd: end,
+    });
   }
 
   public addListener(listener: (change: OutputChange) => void) {

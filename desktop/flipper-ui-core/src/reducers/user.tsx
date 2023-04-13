@@ -12,14 +12,10 @@ import {User} from 'flipper-common';
 
 export type State = User;
 
-export type Action =
-  | {
-      type: 'LOGIN';
-      payload: User;
-    }
-  | {
-      type: 'LOGOUT';
-    };
+export type Action = {
+  type: 'SET_USER_PROFILE';
+  payload?: User;
+};
 
 const INITIAL_STATE: State = {};
 
@@ -27,23 +23,14 @@ export default function reducer(
   state: State = INITIAL_STATE,
   action: Actions,
 ): State {
-  if (action.type === 'LOGOUT') {
-    return {};
-  } else if (action.type === 'LOGIN') {
-    return {
-      ...state,
-      ...action.payload,
-    };
+  if (action.type === 'SET_USER_PROFILE') {
+    return action.payload ?? {};
   } else {
     return state;
   }
 }
 
-export const login = (payload: User): Action => ({
-  type: 'LOGIN',
+export const setUserProfile = (payload: User | undefined): Action => ({
+  type: 'SET_USER_PROFILE',
   payload,
-});
-
-export const logout = (): Action => ({
-  type: 'LOGOUT',
 });

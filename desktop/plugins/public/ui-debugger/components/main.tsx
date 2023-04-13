@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useState} from 'react';
+import React, {ReactNode, useEffect, useRef, useState} from 'react';
 import {plugin} from '../index';
 import {
   DetailSidebar,
@@ -15,6 +15,7 @@ import {
   usePlugin,
   useValue,
   _Sidebar as ResizablePanel,
+  theme,
 } from 'flipper-plugin';
 import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, Metadata, MetadataId, UINode} from '../types';
@@ -23,7 +24,7 @@ import {Visualization2D} from './Visualization2D';
 import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
-import {Spin} from 'antd';
+import {Button, Spin} from 'antd';
 import {QueryClientProvider} from 'react-query';
 import {Tree2} from './Tree';
 
@@ -40,38 +41,59 @@ export function Component() {
 
   const {ctrlPressed} = useKeyboardModifiers();
 
+  const [bottomPanelComponent, setBottomPanelComponent] = useState<
+    ReactNode | undefined
+  >();
+  const openBottomPanelWithContent = (component: ReactNode) => {
+    setBottomPanelComponent(component);
+  };
+  const dismissBottomPanel = () => {
+    setBottomPanelComponent(undefined);
+  };
+
   if (showPerfStats) return <PerfStats events={instance.perfEvents} />;
 
   if (rootId) {
     return (
       <QueryClientProvider client={instance.queryClient}>
         <Layout.Container grow padh="small" padv="medium">
-          <Controls />
-          <Layout.Horizontal grow pad="small">
-            <Tree2 nodes={nodes} rootId={rootId} />
+          <Layout.Top>
+            <>
+              <Controls />
+              <Layout.Horizontal grow pad="small">
+                <Tree2 nodes={nodes} rootId={rootId} />
 
-            <ResizablePanel
-              position="right"
-              minWidth={200}
-              width={visualiserWidth}
-              maxWidth={800}
-              onResize={(width) => {
-                instance.uiActions.setVisualiserWidth(width);
-              }}
-              gutter>
-              <Layout.ScrollContainer vertical>
-                <Visualization2D
-                  width={visualiserWidth}
-                  nodes={nodes}
-                  onSelectNode={instance.uiActions.onSelectNode}
-                  modifierPressed={ctrlPressed}
-                />
-              </Layout.ScrollContainer>
-            </ResizablePanel>
-            <DetailSidebar width={350}>
-              <Inspector metadata={metadata} nodes={nodes} />
-            </DetailSidebar>
-          </Layout.Horizontal>
+                <ResizablePanel
+                  position="right"
+                  minWidth={200}
+                  width={visualiserWidth + theme.space.large}
+                  maxWidth={800}
+                  onResize={(width) => {
+                    instance.uiActions.setVisualiserWidth(width);
+                  }}
+                  gutter>
+                  <Layout.ScrollContainer vertical>
+                    <Visualization2D
+                      width={visualiserWidth}
+                      nodes={nodes}
+                      onSelectNode={instance.uiActions.onSelectNode}
+                      modifierPressed={ctrlPressed}
+                    />
+                  </Layout.ScrollContainer>
+                </ResizablePanel>
+                <DetailSidebar width={350}>
+                  <Inspector
+                    metadata={metadata}
+                    nodes={nodes}
+                    showExtra={openBottomPanelWithContent}
+                  />
+                </DetailSidebar>
+              </Layout.Horizontal>
+            </>
+            <BottomPanel dismiss={dismissBottomPanel}>
+              {bottomPanelComponent}
+            </BottomPanel>
+          </Layout.Top>
         </Layout.Container>
       </QueryClientProvider>
     );
@@ -91,5 +113,47 @@ export function Centered(props: {children: React.ReactNode}) {
         {props.children}
       </Layout.Container>
     </Layout.Horizontal>
+  );
+}
+
+type BottomPanelProps = {
+  dismiss: () => void;
+  children: React.ReactNode;
+};
+export function BottomPanel({dismiss, children}: BottomPanelProps) {
+  const bottomPanelRef = useRef<any>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        bottomPanelRef.current &&
+        !bottomPanelRef.current.contains(event.target)
+      ) {
+        dismiss();
+      }
+    };
+    // Add event listener when the component is mounted.
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Remove event listener when component is unmounted.
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [bottomPanelRef, dismiss]);
+
+  if (!children) {
+    return <></>;
+  }
+  return (
+    <div ref={bottomPanelRef}>
+      <ResizablePanel position="bottom" minHeight={200} height={400} gutter>
+        <Layout.ScrollContainer>{children}</Layout.ScrollContainer>
+        <div style={{margin: 10}}>
+          <Button type="ghost" style={{float: 'right'}} onClick={dismiss}>
+            Dismiss
+          </Button>
+        </div>
+      </ResizablePanel>
+    </div>
   );
 }

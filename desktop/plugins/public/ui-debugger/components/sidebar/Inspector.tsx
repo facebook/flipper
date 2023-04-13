@@ -7,33 +7,25 @@
  * @format
  */
 
-import React from 'react';
+import React, {ReactNode} from 'react';
 // eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Glyph} from 'flipper';
-import {
-  Layout,
-  Tab,
-  Tabs,
-  theme,
-  usePlugin,
-  useValue,
-  TimelineDataDescription,
-} from 'flipper-plugin';
-
+import {Layout, Tab, Tabs, theme, usePlugin, useValue} from 'flipper-plugin';
 import {Id, Metadata, MetadataId, UINode} from '../../types';
-
 import {IdentityInspector} from './inspector/IdentityInspector';
 import {AttributesInspector} from './inspector/AttributesInspector';
 import {Tooltip} from 'antd';
 import {NoData} from './inspector/NoData';
 import {plugin} from '../../index';
+import {FrameworkEventsInspector} from './inspector/FrameworkEventsInspector';
 
 type Props = {
   nodes: Map<Id, UINode>;
   metadata: Map<MetadataId, Metadata>;
+  showExtra: (element: ReactNode) => void;
 };
 
-export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
+export const Inspector: React.FC<Props> = ({nodes, metadata, showExtra}) => {
   const instance = usePlugin(plugin);
   const selectedNodeId = useValue(instance.uiState.selectedNode);
   const frameworkEvents = useValue(instance.frameworkEvents);
@@ -43,14 +35,15 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
     return <NoData message="Please select a node to view its details" />;
   }
 
-  const events = selectedNodeId
+  const selectedFrameworkEvents = selectedNodeId
     ? frameworkEvents?.get(selectedNodeId)
     : undefined;
 
   return (
     <Layout.Container gap pad>
-      <Tabs grow centered>
+      <Tabs grow centered key={selectedNodeId}>
         <Tab
+          key={'identity'}
           tab={
             <Tooltip title="Identity">
               <Layout.Horizontal center>
@@ -62,6 +55,7 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
         </Tab>
 
         <Tab
+          key={'attributes'}
           tab={
             <Tooltip title="Attributes">
               <Layout.Horizontal center>
@@ -76,6 +70,7 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
           />
         </Tab>
         <Tab
+          key={'layout'}
           tab={
             <Tooltip title="Layout">
               <Layout.Horizontal center>
@@ -93,8 +88,9 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
             metadata={metadata}
           />
         </Tab>
-        {events && (
+        {selectedFrameworkEvents && (
           <Tab
+            key={'events'}
             tab={
               <Tooltip title="Events">
                 <Layout.Horizontal center>
@@ -106,18 +102,10 @@ export const Inspector: React.FC<Props> = ({nodes, metadata}) => {
                 </Layout.Horizontal>
               </Tooltip>
             }>
-            <TimelineDataDescription
-              timeline={{
-                time: events.map((e) => {
-                  return {
-                    moment: e.timestamp,
-                    display: e.type.slice(e.type.lastIndexOf(':') + 1),
-                    color: theme.primaryColor,
-                    key: e.timestamp.toString(),
-                  };
-                }),
-                current: '',
-              }}
+            <FrameworkEventsInspector
+              node={selectedNode}
+              events={selectedFrameworkEvents}
+              showExtra={showExtra}
             />
           </Tab>
         )}

@@ -126,17 +126,19 @@ export default abstract class AbstractClient extends EventEmitter {
 
   // get the supported plugins
   protected async loadPlugins(_phase: 'init' | 'refresh'): Promise<Plugins> {
-    const {plugins} = await timeout(
-      30 * 1000,
-      this.rawCall<{plugins: Plugins}>('getPlugins', false),
-      'Fetch plugin timeout',
-    ).catch((e) => {
-      console.warn('Fetch plugin timeout for ' + this.id);
-      throw e;
-    });
-    this.plugins = new Set(plugins);
-    console.info('AbstractClient.loadPlugins', this.query, plugins);
-    return plugins;
+    let response;
+    try {
+      response = await timeout(
+        30 * 1000,
+        this.rawCall<{plugins: Plugins}>('getPlugins', false),
+        'Fetch plugin timeout. Unresponsive client?',
+      );
+    } catch (e) {
+      console.warn('[conn] Fetch plugin error', e);
+    }
+    this.plugins = new Set(response?.plugins ?? []);
+    console.info('AbstractClient.loadPlugins', this.query, [...this.plugins]);
+    return this.plugins;
   }
 
   protected loadPlugin(

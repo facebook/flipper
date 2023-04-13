@@ -8,7 +8,7 @@
  */
 
 import produce from 'immer';
-import {deconstructPluginKey} from 'flipper-common';
+import {deconstructPluginKey, getLogger} from 'flipper-common';
 
 export const DEFAULT_MAX_QUEUE_SIZE = 10000;
 
@@ -63,6 +63,8 @@ export default function reducer(
         newMessages = newMessages.slice(
           newMessages.length - 1 - Math.ceil(maxQueueSize * 0.9),
         );
+        console.debug(`queue overflow for plugin ${pluginKey}`);
+        getLogger().track('usage', 'queue overflow', undefined, pluginKey);
       }
       return {
         ...state,

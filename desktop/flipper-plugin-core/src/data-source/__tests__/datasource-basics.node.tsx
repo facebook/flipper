@@ -520,6 +520,7 @@ test('it emits the right events - small window', () => {
       ds.update(1, 'x');
     }),
   ).toEqual([
+    {newEnd: 3, newStart: 0, type: 'windowChange'},
     {delta: 1, location: 'in', newCount: 3, type: 'shift', index: 2},
     {index: 1, type: 'update'},
   ]);
@@ -541,6 +542,7 @@ test('it emits the right events - view change', () => {
       // b, [c], x, y
     }),
   ).toEqual([
+    {newEnd: 2, newStart: 1, type: 'windowChange'},
     {newCount: 2, type: 'reset'},
     {index: 0, delta: -1, location: 'before', newCount: 1, type: 'shift'}, // remove a
     {index: 1, delta: 1, location: 'in', newCount: 2, type: 'shift'}, // pre-insert x
@@ -568,6 +570,7 @@ test('it emits the right events - reversed view change', () => {
       // y, [x], c, b, a
     }),
   ).toEqual([
+    {newEnd: 2, newStart: 1, type: 'windowChange'},
     {newCount: 2, type: 'reset'},
     {newCount: 2, type: 'reset'}, // FIXME: ideally dedupe these, but due to scheduling will do little harm
     {index: 1, delta: -1, location: 'in', newCount: 1, type: 'shift'}, // remove a
@@ -604,6 +607,7 @@ test('it emits the right events - reversed view change with filter', () => {
       // [b, a]
     }),
   ).toEqual([
+    {newEnd: 2, newStart: 0, type: 'windowChange'},
     {newCount: 2, type: 'reset'},
     {newCount: 2, type: 'reset'}, // FIXME: ideally dedupe these, but due to scheduling will do little harm
     {newCount: 2, type: 'reset'}, // FIXME: ideally dedupe these, but due to scheduling will do little harm
@@ -634,6 +638,7 @@ test('basic remove', () => {
       'id',
     ),
   ).toEqual([
+    {newEnd: 100, newStart: 0, type: 'windowChange'},
     {
       type: 'shift',
       newCount: 2,
@@ -675,6 +680,7 @@ test('basic shift', () => {
       'id',
     ),
   ).toEqual([
+    {newEnd: 100, newStart: 0, type: 'windowChange'},
     {
       type: 'shift',
       newCount: 1,
@@ -700,6 +706,7 @@ test('sorted shift', () => {
       ds.shift(1); // optimizes to reset
     }),
   ).toEqual([
+    {newEnd: 100, newStart: 0, type: 'windowChange'},
     {newCount: 5, type: 'reset'}, // sort
     {delta: -1, index: 4, location: 'in', newCount: 4, type: 'shift'}, // e
     {delta: -1, index: 0, location: 'in', newCount: 3, type: 'shift'}, // a
@@ -719,6 +726,7 @@ test('filtered shift', () => {
       expect(ds.view.output()).toEqual(['d']);
     }),
   ).toEqual([
+    {newEnd: 100, newStart: 0, type: 'windowChange'},
     {newCount: 3, type: 'reset'}, // filter
     {type: 'shift', location: 'in', newCount: 1, index: 0, delta: -2}, // optimized shift
   ]);
@@ -746,6 +754,7 @@ test('remove after shift works correctly', () => {
       'id',
     ),
   ).toEqual([
+    {newEnd: 100, newStart: 0, type: 'windowChange'},
     {
       type: 'shift',
       newCount: 3,

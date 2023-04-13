@@ -29,7 +29,7 @@ import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 import {StarOutlined} from '@ant-design/icons';
 import {Popover, Rate} from 'antd';
 import {useStore} from '../utils/useStore';
-import {isLoggedIn} from '../fb-stubs/user';
+import {currentUser} from '../fb-stubs/user';
 import {theme, useValue} from 'flipper-plugin';
 import {reportPlatformFailures} from 'flipper-common';
 import {getRenderHostInstance} from 'flipper-frontend-core';
@@ -271,7 +271,7 @@ export function SandyRatingButton() {
   const [isShown, setIsShown] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
   const sessionId = useStore((store) => store.application.sessionId);
-  const loggedIn = useValue(isLoggedIn());
+  const loggedIn = useValue(currentUser());
 
   const triggerPopover = useCallback(() => {
     if (!hasTriggered) {

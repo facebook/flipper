@@ -355,6 +355,7 @@ const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
   left: 0,
   bottom: 0,
   right: 0,
+  boxSizing: 'border-box',
   borderWidth: props.hovered ? '2px' : '1px',
   borderStyle: 'solid',
   color: 'transparent',
@@ -366,25 +367,8 @@ const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
 }));
 
 const longHoverDelay = 200;
-const outerBorderWidth = '10px';
-const outerBorderOffset = `-${outerBorderWidth}`;
 const pxScaleFactorCssVar = '--pxScaleFactor';
 const MouseThrottle = 32;
-
-//this is the thick black border around the whole vizualization, the border goes around the content
-//hence the top,left,right,botton being negative to increase its size
-const OuterBorder = styled.div({
-  boxSizing: 'border-box',
-  position: 'absolute',
-  top: outerBorderOffset,
-  left: outerBorderOffset,
-  right: outerBorderOffset,
-  bottom: outerBorderOffset,
-  borderWidth: outerBorderWidth,
-  borderStyle: 'solid',
-  borderColor: 'black',
-  borderRadius: '10px',
-});
 
 function toPx(n: number) {
   return `calc(${n}px / var(${pxScaleFactorCssVar})`;
@@ -395,18 +379,32 @@ function toNestedNode(
   nodes: Map<Id, UINode>,
 ): NestedNode | undefined {
   function uiNodeToNestedNode(node: UINode): NestedNode {
+    const nonNullChildren = node.children.filter(
+      (childId) => nodes.get(childId) != null,
+    );
+
+    if (nonNullChildren.length !== node.children.length) {
+      console.error(
+        'Visualization2D.toNestedNode -> child is nullish!',
+        node.children,
+        nonNullChildren.map((childId) => {
+          const child = nodes.get(childId);
+          return child && uiNodeToNestedNode(child);
+        }),
+      );
+    }
+
     const activeChildIdx = node.activeChild
-      ? node.children.indexOf(node.activeChild)
+      ? nonNullChildren.indexOf(node.activeChild)
       : undefined;
 
     return {
       id: node.id,
       name: node.name,
       attributes: node.attributes,
-      children: node.children
-        .map((childId) => nodes.get(childId))
-        .filter((child) => child != null)
-        .map((child) => uiNodeToNestedNode(child!!)),
+      children: nonNullChildren.map((childId) =>
+        uiNodeToNestedNode(nodes.get(childId)!),
+      ),
       bounds: node.bounds,
       tags: node.tags,
       activeChildIdx: activeChildIdx,

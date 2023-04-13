@@ -249,8 +249,17 @@ test('log listeners are resumed and suspended automatically - 1', async () => {
     },
   });
 
+  const baseFlipperLib = baseFlipperLibImplementation(
+    getRenderHostInstance(),
+    getLogger(),
+  );
   _setFlipperLibImplementation({
-    ...baseFlipperLibImplementation(getRenderHostInstance(), getLogger()),
+    ...baseFlipperLib,
+    intern: {
+      ...baseFlipperLib.intern,
+      currentUser: jest.fn(),
+      isConnected: jest.fn(),
+    },
     createPaste: jest.fn(),
     enableMenuEntries: jest.fn(),
     selectPlugin: jest.fn(),
@@ -328,8 +337,17 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
 
   const client = new TestClient(device, [Plugin]);
 
+  const baseFlipperLib = baseFlipperLibImplementation(
+    getRenderHostInstance(),
+    getLogger(),
+  );
   _setFlipperLibImplementation({
-    ...baseFlipperLibImplementation(getRenderHostInstance(), getLogger()),
+    ...baseFlipperLib,
+    intern: {
+      ...baseFlipperLib.intern,
+      currentUser: jest.fn(),
+      isConnected: jest.fn(),
+    },
     createPaste: jest.fn(),
     enableMenuEntries: jest.fn(),
     selectPlugin: jest.fn(),

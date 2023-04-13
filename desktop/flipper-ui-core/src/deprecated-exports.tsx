@@ -19,8 +19,10 @@ export {
   internGraphGETAPIRequest,
   internGraphPOSTAPIRequest,
   graphQLQuery,
-  isLoggedIn,
+  currentUser as isLoggedIn,
   getUser,
+  fetchUser,
+  getCachedUser,
 } from './fb-stubs/user';
 export {FlipperPlugin, FlipperDevicePlugin, BaseAction} from './plugin';
 export {PluginClient, Props, KeyboardActions} from './plugin';

@@ -219,7 +219,9 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
           },
           send(event: any, payload: any) {
             const data = {event, payload};
-            client.sendToServerAddOn('message', data);
+            client.sendToServerAddOn('message', data).catch((e) => {
+              console.warn(`Failed to send message to React devtools`, e);
+            });
           },
         };
 

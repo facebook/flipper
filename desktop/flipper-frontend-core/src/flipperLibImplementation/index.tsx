@@ -26,8 +26,12 @@ export function baseFlipperLibImplementation(
   logger: Logger,
 ): Omit<
   FlipperLib,
-  'enableMenuEntries' | 'selectPlugin' | 'showNotification' | 'createPaste'
-> {
+  | 'enableMenuEntries'
+  | 'selectPlugin'
+  | 'showNotification'
+  | 'createPaste'
+  | 'intern'
+> & {intern: Omit<FlipperLib['intern'], 'currentUser' | 'isConnected'>} {
   return {
     isFB: !constants.IS_PUBLIC_BUILD,
     logger,

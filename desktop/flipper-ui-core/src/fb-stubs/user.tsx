@@ -10,8 +10,16 @@
 import {GraphFileUpload, User} from 'flipper-common';
 import {Atom, createState} from 'flipper-plugin';
 
-export async function getUser(): Promise<User | null> {
+export async function fetchUser(): Promise<User | null> {
   throw new Error('Feature not implemented');
+}
+
+export function getCachedUser(): User | null {
+  return null;
+}
+
+export function getUser(): Promise<User | null> {
+  return fetchUser();
 }
 
 export async function internGraphPOSTAPIRequest(
@@ -92,15 +100,19 @@ export async function getPreferredEditorUriScheme(): Promise<string> {
   return 'vscode';
 }
 
+export async function initialize(): Promise<boolean> {
+  return true;
+}
+
 export async function appendAccessTokenToUrl(_url: URL): Promise<string> {
   throw new Error('Implement appendAccessTokenToUrl');
 }
 
-const isLoggedInAtom = createState(false);
+const currentUserAtom = createState<User | null>(null);
 const isConnectedAtom = createState(true);
 
-export function isLoggedIn(): Atom<boolean> {
-  return isLoggedInAtom;
+export function currentUser(): Atom<User | null> {
+  return currentUserAtom;
 }
 
 export function isConnected(): Atom<boolean> {

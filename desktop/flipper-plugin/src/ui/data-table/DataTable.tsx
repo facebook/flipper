@@ -75,6 +75,7 @@ type DataTableBaseProps<T = any> = {
   onSelect?(record: T | undefined, records: T[]): void;
   onRowStyle?(record: T): CSSProperties | undefined;
   tableManagerRef?: RefObject<DataTableManager<T> | undefined>; // Actually we want a MutableRefObject, but that is not what React.createRef() returns, and we don't want to put the burden on the plugin dev to cast it...
+  virtualizerRef?: RefObject<DataSourceVirtualizer | undefined>;
   onCopyRows?(records: T[]): string;
   onContextMenu?: (selection: undefined | T) => React.ReactElement;
   onRenderEmpty?:
@@ -159,7 +160,12 @@ export function DataTable<T extends object>(
 
   // eslint-disable-next-line
   const scope = isUnitTest ? '' : usePluginInstanceMaybe()?.definition.id ?? '';
-  const virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
+  let virtualizerRef = useRef<DataSourceVirtualizer | undefined>();
+  if (props.virtualizerRef) {
+    virtualizerRef = props.virtualizerRef as React.MutableRefObject<
+      DataSourceVirtualizer | undefined
+    >;
+  }
   const [tableState, dispatch] = useReducer(
     dataTableManagerReducer as DataTableReducer<T>,
     undefined,

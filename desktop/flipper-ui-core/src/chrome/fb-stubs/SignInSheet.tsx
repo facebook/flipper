@@ -7,6 +7,10 @@
  * @format
  */
 
+export function isSheetOpen(): boolean {
+  return false;
+}
+
 export async function showLoginDialog(
   _initialToken: string = '',
 ): Promise<boolean> {

@@ -7,15 +7,27 @@
  * @format
  */
 
-import {Logger, _setFlipperLibImplementation} from 'flipper-plugin-core';
+import {
+  createState,
+  Logger,
+  _setFlipperLibImplementation,
+} from 'flipper-plugin-core';
 import {baseFlipperLibImplementation, RenderHost} from 'flipper-frontend-core';
 
 export function initializeFlipperLibImplementation(
   renderHost: RenderHost,
   logger: Logger,
 ) {
+  const base = baseFlipperLibImplementation(renderHost, logger);
   _setFlipperLibImplementation({
-    ...baseFlipperLibImplementation(renderHost, logger),
+    ...base,
+    intern: {
+      ...base.intern,
+      // TODO: Implement me
+      currentUser: () => createState(null),
+      // TODO: Implement me
+      isConnected: () => createState(true),
+    },
     enableMenuEntries() {},
     createPaste() {
       // TODO: Implement me
