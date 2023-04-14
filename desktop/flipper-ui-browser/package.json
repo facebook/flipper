@@ -13,7 +13,7 @@
     "reconnecting-websocket": "^4.4.0"
   },
   "devDependencies": {
-    "eventemitter3": "^4.0.7",
+    "eventemitter3": "^5.0.0",
     "flipper-common": "0.0.0",
     "flipper-frontend-core": "0.0.0",
     "flipper-server-client": "0.0.0",

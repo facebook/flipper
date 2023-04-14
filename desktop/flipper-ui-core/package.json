@@ -19,7 +19,7 @@
     "cbuffer": "^2.2.0",
     "console-feed": "^3.3.0",
     "deep-equal": "^2.0.5",
-    "eventemitter3": "^4.0.7",
+    "eventemitter3": "^5.0.0",
     "flipper-client-sdk": "^0.0.3",
     "flipper-common": "0.0.0",
     "flipper-frontend-core": "0.0.0",
