@@ -59,5 +59,10 @@ function transformLogLevel(level: LoggerTypes, message: string) {
     return 'warn';
   }
 
+  // Axios will create rather unhelpful error messages which lead to unactionable tasks, e.g. T150636191
+  if (level === 'error' && message.endsWith('Network Error')) {
+    return 'warn';
+  }
+
   return level;
 }
