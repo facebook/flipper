@@ -160,7 +160,7 @@ export const Dialog = {
     message: React.ReactNode;
     type: 'info' | 'error' | 'warning' | 'success';
   } & BaseDialogOptions): Promise<void> & {close(): void} {
-    let modalRef: ReturnType<typeof Modal['info']>;
+    let modalRef: ReturnType<(typeof Modal)['info']>;
     return Object.assign(
       new Promise<void>((resolve) => {
         modalRef = Modal[type]({

@@ -12,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.0'
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.24.0'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.25.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.8.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
@@ -109,7 +109,7 @@ ext.deps = [
         testRules          : 'androidx.test:rules:1.5.0',
         // Plugin dependencies
         flipperFrescoPlugin: 'com.facebook.flipper:flipper-fresco-plugin:0.182.0',
-        frescoFlipper      : 'com.facebook.fresco:flipper:2.6.0',
+        frescoFlipper      : 'com.facebook.fresco:flipper:3.0.0',
         frescoStetho       : 'com.facebook.fresco:stetho:2.6.0',
         fresco             : 'com.facebook.fresco:fresco:2.6.0',
 ]

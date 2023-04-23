@@ -49,7 +49,8 @@ data class PerfStatsEvent(
     val queuingMS: Long,
     val deferredComputationMS: Long,
     val serializationMS: Long,
-    val socketMS: Long
+    val socketMS: Long,
+    val payloadSize: Int,
 ) {
   companion object {
     const val name = "performanceStats"

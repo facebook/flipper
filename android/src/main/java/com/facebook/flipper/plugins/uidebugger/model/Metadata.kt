@@ -7,6 +7,8 @@
 
 package com.facebook.flipper.plugins.uidebugger.model
 
+import kotlinx.serialization.json.JsonPrimitive
+
 typealias MetadataId = Int
 
 /**
@@ -22,5 +24,5 @@ data class Metadata(
     val name: String,
     val mutable: kotlin.Boolean,
     val possibleValues: Set<InspectableValue>? = emptySet(),
-    val tags: List<String>? = emptyList()
-) {}
+    val customAttributes: Map<String, JsonPrimitive>? = null
+)

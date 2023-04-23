@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * Registry of attribute metadata. There's two types of attributes:
@@ -34,7 +35,8 @@ object MetadataRegister {
       namespace: String,
       name: String,
       mutable: Boolean = false,
-      possibleValues: Set<InspectableValue>? = emptySet()
+      possibleValues: Set<InspectableValue>? = null,
+      customAttributes: Map<String, JsonPrimitive>? = null
   ): MetadataId {
     val key = key(namespace, name)
     register[key]?.let { m ->
@@ -43,7 +45,8 @@ object MetadataRegister {
 
     synchronized(lock) {
       val identifier = ++generator
-      val metadata = Metadata(identifier, type, namespace, name, mutable, possibleValues)
+      val metadata =
+          Metadata(identifier, type, namespace, name, mutable, possibleValues, customAttributes)
 
       register[key] = metadata
       pendingKeys.add(key)

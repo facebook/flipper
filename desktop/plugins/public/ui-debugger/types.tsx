@@ -85,6 +85,7 @@ export type PerformanceStatsEvent = {
   deferredComputationMS: number;
   serializationMS: number;
   socketMS: number;
+  payloadSize?: number;
 };
 
 export type UpdateMetadataEvent = {

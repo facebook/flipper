@@ -36,13 +36,14 @@ class PartialLayoutTraversal(
     val visited = mutableListOf<MaybeDeferred<Node>>()
     val observableRoots = mutableListOf<Any>()
 
-    val stack = mutableListOf<Any>()
-    stack.add(root)
+    // cur and parent Id
+    val stack = mutableListOf<Pair<Any, Id?>>()
+    stack.add(Pair(root, null))
 
     val shallow = mutableSetOf<Any>()
 
     while (stack.isNotEmpty()) {
-      val node = stack.removeLast()
+      val (node, parentId) = stack.removeLast()
 
       try {
         // If we encounter a node that has it own observer, don't traverse
@@ -53,15 +54,18 @@ class PartialLayoutTraversal(
 
         val descriptor = descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
 
+        val curId = descriptor.getId(node)
         if (shallow.contains(node)) {
           visited.add(
               Immediate(
                   Node(
-                      descriptor.getId(node),
+                      curId,
+                      parentId,
                       descriptor.getQualifiedName(node),
                       descriptor.getName(node),
                       emptyMap(),
                       emptyMap(),
+                      null,
                       descriptor.getBounds(node),
                       emptySet(),
                       emptyList(),
@@ -86,7 +90,7 @@ class PartialLayoutTraversal(
         children.forEach { child ->
           val childDescriptor = descriptorRegister.descriptorForClassUnsafe(child.javaClass)
           childrenIds.add(childDescriptor.getId(child))
-          stack.add(child)
+          stack.add(Pair(child, curId))
           // If there is an active child then don't traverse it
           if (activeChild != null && activeChild != child) {
             shallow.add(child)
@@ -99,11 +103,13 @@ class PartialLayoutTraversal(
         visited.add(
             attributes.map { attrs ->
               Node(
-                  descriptor.getId(node),
+                  curId,
+                  parentId,
                   descriptor.getQualifiedName(node),
                   descriptor.getName(node),
                   attrs,
                   descriptor.getInlineAttributes(node),
+                  descriptor.getHiddenAttributes(node),
                   bounds,
                   tags,
                   childrenIds,

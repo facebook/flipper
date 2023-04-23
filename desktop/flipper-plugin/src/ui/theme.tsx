@@ -70,7 +70,7 @@ export const theme = {
 } as const;
 
 export type Spacing =
-  | keyof typeof theme['space']
+  | keyof (typeof theme)['space']
   | number
   | undefined
   | boolean;

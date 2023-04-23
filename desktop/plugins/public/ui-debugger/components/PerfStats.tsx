@@ -26,6 +26,10 @@ function formatDiff(ms: number): string {
   return `${ms.toFixed(0)}ms`;
 }
 
+function formatSize(bytes: number): string {
+  return `${(bytes / 1000).toFixed()}`;
+}
+
 const columns: DataTableColumn<PerformanceStatsEvent>[] = [
   {
     key: 'txId',
@@ -89,6 +93,16 @@ const columns: DataTableColumn<PerformanceStatsEvent>[] = [
     title: 'Socket send time',
     onRender: (row: PerformanceStatsEvent) => {
       return formatDiff(row.socketMS);
+    },
+  },
+  {
+    key: 'payloadSize',
+    title: 'Payload Size (KB)',
+    onRender: (row: PerformanceStatsEvent) => {
+      if (!row.payloadSize) {
+        return 'NaN';
+      }
+      return formatSize(row.payloadSize);
     },
   },
 ];

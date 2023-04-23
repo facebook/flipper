@@ -142,6 +142,10 @@ class TreeObserverManager(val context: UIDContext) {
     val socketEndTimestamp = System.currentTimeMillis()
     Log.i(LogTag, "Sent event for batched subtree update  with  nodes with ${nodes.size}")
 
+    // Note about payload size:
+    // Payload size is an approximation as it assumes all characters
+    // are ASCII encodable, this should be true for most of the payload content.
+    // So, assume each character will at most occupy one byte.
     val perfStats =
         PerfStatsEvent(
             txId = batchedUpdate.frameTimeMs,
@@ -154,7 +158,8 @@ class TreeObserverManager(val context: UIDContext) {
                 workerThreadStartTimestamp - batchedUpdate.updates.minOf { it.queuedTimestamp },
             deferredComputationMS = (deferredComputationEndTimestamp - workerThreadStartTimestamp),
             serializationMS = (serialisationEndTimestamp - deferredComputationEndTimestamp),
-            socketMS = (socketEndTimestamp - serialisationEndTimestamp))
+            socketMS = (socketEndTimestamp - serialisationEndTimestamp),
+            payloadSize = serialized.length)
 
     context.connectionRef.connection?.send(
         PerfStatsEvent.name, Json.encodeToString(PerfStatsEvent.serializer(), perfStats))
