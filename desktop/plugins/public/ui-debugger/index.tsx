@@ -78,17 +78,26 @@ export function plugin(client: PluginClient<Events>) {
   async function processMetadata(
     incomingMetadata: Record<MetadataId, Metadata>,
   ) {
-    const mappedMeta = await Promise.all(
-      Object.values(incomingMetadata).map((metadata) =>
-        streamInterceptor.transformMetadata(metadata),
-      ),
-    );
+    try {
+      const mappedMeta = await Promise.all(
+        Object.values(incomingMetadata).map((metadata) =>
+          streamInterceptor.transformMetadata(metadata),
+        ),
+      );
 
-    metadata.update((draft) => {
-      for (const metadata of mappedMeta) {
-        draft.set(metadata.id, metadata);
+      metadata.update((draft) => {
+        for (const metadata of mappedMeta) {
+          draft.set(metadata.id, metadata);
+        }
+      });
+      return true;
+    } catch (error) {
+      for (const metadata of Object.values(incomingMetadata)) {
+        pendingData.metadata[metadata.id] = metadata;
       }
-    });
+      handleStreamError('Metadata', error);
+      return false;
+    }
   }
 
   //this holds pending any pending data that needs to be applied in the event of a stream interceptor error
@@ -100,10 +109,17 @@ export function plugin(client: PluginClient<Events>) {
       const retryCallback = async () => {
         uiState.streamState.set({state: 'RetryingAfterError'});
 
-        await processMetadata(pendingData.metadata);
-        if (pendingData.frame != null) {
-          await processSubtreeUpdate(pendingData.frame);
+        if (!(await processMetadata(pendingData.metadata))) {
+          //back into error state, dont proceed
+          return;
         }
+        if (pendingData.frame != null) {
+          if (!(await processSubtreeUpdate(pendingData.frame))) {
+            //back into error state, dont proceed
+            return;
+          }
+        }
+
         uiState.streamState.set({state: 'Ok'});
         pendingData.frame = null;
         pendingData.metadata = {};
@@ -129,14 +145,7 @@ export function plugin(client: PluginClient<Events>) {
       return;
     }
 
-    try {
-      await processMetadata(event.attributeMetadata);
-    } catch (error) {
-      for (const metadata of Object.values(event.attributeMetadata)) {
-        pendingData.metadata[metadata.id] = metadata;
-      }
-      handleStreamError('Metadata', error);
-    }
+    await processMetadata(event.attributeMetadata);
   });
 
   const perfEvents = createDataSource<PerformanceStatsEvent, 'txId'>([], {
@@ -239,9 +248,11 @@ export function plugin(client: PluginClient<Events>) {
       });
 
       applyFrameworkEvents(subtreeUpdate);
+      return true;
     } catch (error) {
       pendingData.frame = subtreeUpdate;
       handleStreamError('Frame', error);
+      return false;
     }
   };
 
