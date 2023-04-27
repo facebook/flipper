@@ -16,16 +16,16 @@ import {
 } from 'flipper-plugin';
 import {
   Events,
+  FrameScanEvent,
   FrameworkEvent,
   FrameworkEventType,
   Id,
   Metadata,
   MetadataId,
   PerformanceStatsEvent,
-  Snapshot,
+  SnapshotInfo,
   StreamInterceptorError,
   StreamState,
-  SubtreeUpdateEvent,
   UINode,
 } from './types';
 import {Draft} from 'immer';
@@ -33,7 +33,6 @@ import {QueryClient, setLogger} from 'react-query';
 import {tracker} from './tracker';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
 
-type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};
 type LiveClientState = {
   snapshotInfo: SnapshotInfo | null;
   nodes: Map<Id, UINode>;
@@ -41,7 +40,7 @@ type LiveClientState = {
 
 type PendingData = {
   metadata: Record<MetadataId, Metadata>;
-  frame: SubtreeUpdateEvent | null;
+  frame: FrameScanEvent | null;
 };
 
 type UIState = {
@@ -114,7 +113,7 @@ export function plugin(client: PluginClient<Events>) {
           return;
         }
         if (pendingData.frame != null) {
-          if (!(await processSubtreeUpdate(pendingData.frame))) {
+          if (!(await processFrame(pendingData.frame))) {
             //back into error state, dont proceed
             return;
           }
@@ -237,29 +236,27 @@ export function plugin(client: PluginClient<Events>) {
   };
 
   const seenNodes = new Set<Id>();
-  const processSubtreeUpdate = async (subtreeUpdate: SubtreeUpdateEvent) => {
+  const processFrame = async (frameScan: FrameScanEvent) => {
     try {
       const processedNodes = await streamInterceptor.transformNodes(
-        new Map(subtreeUpdate.nodes.map((node) => [node.id, {...node}])),
+        new Map(frameScan.nodes.map((node) => [node.id, {...node}])),
       );
-      applyFrameData(processedNodes, {
-        nodeId: subtreeUpdate.rootId,
-        base64Image: subtreeUpdate.snapshot,
-      });
 
-      applyFrameworkEvents(subtreeUpdate);
+      applyFrameData(processedNodes, frameScan.snapshot);
+
+      applyFrameworkEvents(frameScan);
       return true;
     } catch (error) {
-      pendingData.frame = subtreeUpdate;
+      pendingData.frame = frameScan;
       handleStreamError('Frame', error);
       return false;
     }
   };
 
-  function applyFrameworkEvents(subtreeUpdate: SubtreeUpdateEvent) {
+  function applyFrameworkEvents(frameScan: FrameScanEvent) {
     frameworkEvents.update((draft) => {
-      if (subtreeUpdate.frameworkEvents) {
-        subtreeUpdate.frameworkEvents.forEach((frameworkEvent) => {
+      if (frameScan?.frameworkEvents) {
+        frameScan.frameworkEvents.forEach((frameworkEvent) => {
           if (
             uiState.frameworkEventMonitoring.get().get(frameworkEvent.type) ===
               true &&
@@ -279,7 +276,7 @@ export function plugin(client: PluginClient<Events>) {
         });
         setTimeout(() => {
           highlightedNodes.update((laterDraft) => {
-            for (const event of subtreeUpdate.frameworkEvents!!.values()) {
+            for (const event of frameScan.frameworkEvents!!.values()) {
               laterDraft.delete(event.nodeId);
             }
           });
@@ -291,7 +288,7 @@ export function plugin(client: PluginClient<Events>) {
   //todo deal with racecondition, where bloks screen is fetching, takes time then you go back get more recent frame then bloks screen comes and overrites it
   function applyFrameData(
     nodes: Map<Id, UINode>,
-    snapshotInfo: SnapshotInfo | null,
+    snapshotInfo: SnapshotInfo | undefined,
   ) {
     liveClientData = produce(liveClientData, (draft) => {
       if (snapshotInfo) {
@@ -323,7 +320,15 @@ export function plugin(client: PluginClient<Events>) {
       checkFocusedNodeStillActive(uiState, nodesAtom.get());
     }
   }
-  client.onMessage('subtreeUpdate', processSubtreeUpdate);
+  client.onMessage('subtreeUpdate', (subtreeUpdate) => {
+    processFrame({
+      frameTime: subtreeUpdate.txId,
+      nodes: subtreeUpdate.nodes,
+      snapshot: {data: subtreeUpdate.snapshot, nodeId: subtreeUpdate.rootId},
+      frameworkEvents: subtreeUpdate.frameworkEvents,
+    });
+  });
+  client.onMessage('frameScan', processFrame);
 
   const queryClient = new QueryClient({});
 

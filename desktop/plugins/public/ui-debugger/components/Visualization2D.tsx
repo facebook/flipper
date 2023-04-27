@@ -136,7 +136,7 @@ export const Visualization2D: React.FC<
           }}>
           {snapshotNode && (
             <img
-              src={'data:image/png;base64,' + snapshot.base64Image}
+              src={'data:image/png;base64,' + snapshot.data}
               style={{
                 marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
                 marginTop: toPx(-focusState.focusedRootGlobalOffset.y),

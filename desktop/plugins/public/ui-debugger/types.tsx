@@ -22,6 +22,7 @@ export type StreamState =
 export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
+  frameScan: FrameScanEvent;
   perfStats: PerfStatsEvent;
   performanceStats: PerformanceStatsEvent;
   metadataUpdate: UpdateMetadataEvent;
@@ -29,6 +30,17 @@ export type Events = {
 
 export type StreamFlowState = {paused: boolean};
 
+export type FrameScanEvent = {
+  frameTime: number;
+  nodes: UINode[];
+  snapshot?: SnapshotInfo;
+  frameworkEvents?: FrameworkEvent[];
+};
+
+/**
+ * @deprecated This  event should not be used and soon will
+ * be removed. FrameScan should be used instead.
+ */
 export type SubtreeUpdateEvent = {
   txId: number;
   rootId: Id;
@@ -175,6 +187,7 @@ export type Color = {
 };
 
 export type Snapshot = string;
+export type SnapshotInfo = {nodeId: Id; data: Snapshot};
 export type Id = number | string;
 
 export type MetadataId = number;
