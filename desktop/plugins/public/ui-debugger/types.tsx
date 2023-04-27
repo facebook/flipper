@@ -102,6 +102,7 @@ export type UINode = {
   name: string;
   attributes: Record<MetadataId, Inspectable>;
   inlineAttributes: Record<string, string>;
+  hiddenAttributes?: any;
   children: Id[];
   bounds: Bounds;
   tags: Tag[];
