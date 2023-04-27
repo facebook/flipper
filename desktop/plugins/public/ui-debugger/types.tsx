@@ -7,6 +7,18 @@
  * @format
  */
 
+export type StreamState =
+  | {state: 'Ok'}
+  | {state: 'RetryingAfterError'}
+  | {
+      state: 'StreamInterceptorRetryableError';
+      error: StreamInterceptorError;
+      retryCallback: () => Promise<void>;
+    }
+  | {
+      state: 'UnrecoverableError';
+    };
+
 export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
@@ -32,7 +44,11 @@ export type FrameworkEventMetadata = {
   documentation: string;
 };
 
-type JSON = string | number | boolean | null | JSON[] | {[key: string]: JSON};
+type JsonObject = {
+  [key: string]: JSON;
+};
+
+type JSON = string | number | boolean | null | JSON[] | JsonObject;
 
 type Stacktrace = {type: 'stacktrace'; stacktrace: string[]};
 type Reason = {type: 'reason'; reason: string};
@@ -163,7 +179,14 @@ export type Id = number;
 export type MetadataId = number;
 export type TreeState = {expandedNodes: Id[]};
 
-export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho' | 'CK' | 'iOS';
+export type Tag =
+  | 'Native'
+  | 'Declarative'
+  | 'Android'
+  | 'Litho'
+  | 'CK'
+  | 'iOS'
+  | 'BloksBoundTree';
 
 export type Inspectable =
   | InspectableObject

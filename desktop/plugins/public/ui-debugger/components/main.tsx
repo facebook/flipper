@@ -27,13 +27,12 @@ import {Controls} from './Controls';
 import {Button, Spin} from 'antd';
 import {QueryClientProvider} from 'react-query';
 import {Tree2} from './Tree';
+import {StreamInterceptorErrorView} from './StreamInterceptorErrorView';
 
 export function Component() {
   const instance = usePlugin(plugin);
   const rootId = useValue(instance.rootId);
-  const streamInterceptorError = useValue(
-    instance.uiState.streamInterceptorError,
-  );
+  const streamState = useValue(instance.uiState.streamState);
   const visualiserWidth = useValue(instance.uiState.visualiserWidth);
   const nodes: Map<Id, UINode> = useValue(instance.nodes);
   const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
@@ -54,13 +53,28 @@ export function Component() {
     setBottomPanelComponent(undefined);
   };
 
-  if (showPerfStats) return <PerfStats events={instance.perfEvents} />;
-
-  if (streamInterceptorError != null) {
-    return streamInterceptorError;
+  if (streamState.state === 'UnrecoverableError') {
+    return (
+      <StreamInterceptorErrorView
+        title="Oops"
+        message="Something has gone horribly wrong, we are aware of this and are looking into it"
+      />
+    );
   }
 
-  if (rootId == null || nodes.size == 0) {
+  if (streamState.state === 'StreamInterceptorRetryableError') {
+    return (
+      <StreamInterceptorErrorView
+        message={streamState.error.message}
+        title={streamState.error.title}
+        retryCallback={streamState.retryCallback}
+      />
+    );
+  }
+
+  if (showPerfStats) return <PerfStats events={instance.perfEvents} />;
+
+  if (rootId == null || streamState.state === 'RetryingAfterError') {
     return (
       <Centered>
         <Spin data-testid="loading-indicator" />

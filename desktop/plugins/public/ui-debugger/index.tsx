@@ -24,6 +24,7 @@ import {
   PerformanceStatsEvent,
   Snapshot,
   StreamInterceptorError,
+  StreamState,
   SubtreeUpdateEvent,
   UINode,
 } from './types';
@@ -31,8 +32,6 @@ import {Draft} from 'immer';
 import {QueryClient, setLogger} from 'react-query';
 import {tracker} from './tracker';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
-import React from 'react';
-import {StreamInterceptorErrorView} from './components/StreamInterceptorErrorView';
 
 type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};
 type LiveClientState = {
@@ -40,9 +39,14 @@ type LiveClientState = {
   nodes: Map<Id, UINode>;
 };
 
+type PendingData = {
+  metadata: Record<MetadataId, Metadata>;
+  frame: SubtreeUpdateEvent | null;
+};
+
 type UIState = {
   isPaused: Atom<boolean>;
-  streamInterceptorError: Atom<React.ReactNode | undefined>;
+  streamState: Atom<StreamState>;
   searchTerm: Atom<string>;
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
@@ -71,15 +75,68 @@ export function plugin(client: PluginClient<Events>) {
     });
   });
 
-  client.onMessage('metadataUpdate', (event) => {
+  async function processMetadata(
+    incomingMetadata: Record<MetadataId, Metadata>,
+  ) {
+    const mappedMeta = await Promise.all(
+      Object.values(incomingMetadata).map((metadata) =>
+        streamInterceptor.transformMetadata(metadata),
+      ),
+    );
+
+    metadata.update((draft) => {
+      for (const metadata of mappedMeta) {
+        draft.set(metadata.id, metadata);
+      }
+    });
+  }
+
+  //this holds pending any pending data that needs to be applied in the event of a stream interceptor error
+  //while in the error state more metadata or a more recent frame may come in so both cases need to apply the same darta
+  const pendingData: PendingData = {frame: null, metadata: {}};
+
+  function handleStreamError(source: 'Frame' | 'Metadata', error: any) {
+    if (error instanceof StreamInterceptorError) {
+      const retryCallback = async () => {
+        uiState.streamState.set({state: 'RetryingAfterError'});
+
+        await processMetadata(pendingData.metadata);
+        if (pendingData.frame != null) {
+          await processSubtreeUpdate(pendingData.frame);
+        }
+        uiState.streamState.set({state: 'Ok'});
+        pendingData.frame = null;
+        pendingData.metadata = {};
+      };
+
+      uiState.streamState.set({
+        state: 'StreamInterceptorRetryableError',
+        retryCallback: retryCallback,
+        error: error,
+      });
+    } else {
+      console.error(
+        `[ui-debugger] Unexpected Error processing ${source}`,
+        error,
+      );
+
+      uiState.streamState.set({state: 'UnrecoverableError'});
+    }
+  }
+
+  client.onMessage('metadataUpdate', async (event) => {
     if (!event.attributeMetadata) {
       return;
     }
-    metadata.update((draft) => {
-      for (const [_key, value] of Object.entries(event.attributeMetadata)) {
-        draft.set(value.id, value);
+
+    try {
+      await processMetadata(event.attributeMetadata);
+    } catch (error) {
+      for (const metadata of Object.values(event.attributeMetadata)) {
+        pendingData.metadata[metadata.id] = metadata;
       }
-    });
+      handleStreamError('Metadata', error);
+    }
   });
 
   const perfEvents = createDataSource<PerformanceStatsEvent, 'txId'>([], {
@@ -124,7 +181,7 @@ export function plugin(client: PluginClient<Events>) {
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
     isContextMenuOpen: createState<boolean>(false),
 
-    streamInterceptorError: createState<React.ReactNode | undefined>(undefined),
+    streamState: createState<StreamState>({state: 'Ok'}),
     visualiserWidth: createState(Math.min(window.innerWidth / 4.5, 500)),
 
     highlightedNodes,
@@ -171,7 +228,7 @@ export function plugin(client: PluginClient<Events>) {
   };
 
   const seenNodes = new Set<Id>();
-  const subTreeUpdateCallBack = async (subtreeUpdate: SubtreeUpdateEvent) => {
+  const processSubtreeUpdate = async (subtreeUpdate: SubtreeUpdateEvent) => {
     try {
       const processedNodes = await streamInterceptor.transformNodes(
         new Map(subtreeUpdate.nodes.map((node) => [node.id, {...node}])),
@@ -182,36 +239,9 @@ export function plugin(client: PluginClient<Events>) {
       });
 
       applyFrameworkEvents(subtreeUpdate);
-
-      uiState.streamInterceptorError.set(undefined);
     } catch (error) {
-      if (error instanceof StreamInterceptorError) {
-        const retryCallback = () => {
-          uiState.streamInterceptorError.set(undefined);
-          //wipe the internal state so loading indicator appears
-          applyFrameData(new Map(), null);
-          subTreeUpdateCallBack(subtreeUpdate);
-        };
-        uiState.streamInterceptorError.set(
-          <StreamInterceptorErrorView
-            message={error.message}
-            title={error.title}
-            retryCallback={retryCallback}
-          />,
-        );
-      } else {
-        console.error(
-          `[ui-debugger] Unexpected Error processing frame from ${client.appName}`,
-          error,
-        );
-
-        uiState.streamInterceptorError.set(
-          <StreamInterceptorErrorView
-            message="Something has gone horribly wrong, we are aware of this and are looking into it"
-            title="Oops"
-          />,
-        );
-      }
+      pendingData.frame = subtreeUpdate;
+      handleStreamError('Frame', error);
     }
   };
 
@@ -258,7 +288,6 @@ export function plugin(client: PluginClient<Events>) {
       }
 
       draft.nodes = nodes;
-      setParentPointers(rootId.get()!!, undefined, draft.nodes);
     });
 
     uiState.expandedNodes.update((draft) => {
@@ -283,7 +312,7 @@ export function plugin(client: PluginClient<Events>) {
       checkFocusedNodeStillActive(uiState, nodesAtom.get());
     }
   }
-  client.onMessage('subtreeUpdate', subTreeUpdateCallBack);
+  client.onMessage('subtreeUpdate', processSubtreeUpdate);
 
   const queryClient = new QueryClient({});
 
@@ -300,21 +329,6 @@ export function plugin(client: PluginClient<Events>) {
     queryClient,
     device,
   };
-}
-
-function setParentPointers(
-  cur: Id,
-  parent: Id | undefined,
-  nodes: Map<Id, UINode>,
-) {
-  const node = nodes.get(cur);
-  if (node == null) {
-    return;
-  }
-  node.parent = parent;
-  node.children.forEach((child) => {
-    setParentPointers(child, cur, nodes);
-  });
 }
 
 type UIActions = {
