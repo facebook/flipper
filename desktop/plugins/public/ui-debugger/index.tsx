@@ -338,7 +338,7 @@ type UIActions = {
   onSelectNode: (node?: Id) => void;
   onExpandNode: (node: Id) => void;
   onCollapseNode: (node: Id) => void;
-  setVisualiserWidth: (width: Id) => void;
+  setVisualiserWidth: (width: number) => void;
 };
 
 function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {

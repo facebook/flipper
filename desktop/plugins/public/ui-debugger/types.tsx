@@ -174,7 +174,7 @@ export type Color = {
 };
 
 export type Snapshot = string;
-export type Id = number;
+export type Id = number | string;
 
 export type MetadataId = number;
 export type TreeState = {expandedNodes: Id[]};
@@ -186,7 +186,8 @@ export type Tag =
   | 'Litho'
   | 'CK'
   | 'iOS'
-  | 'BloksBoundTree';
+  | 'BloksBoundTree'
+  | 'BloksDerived';
 
 export type Inspectable =
   | InspectableObject
