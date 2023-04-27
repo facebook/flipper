@@ -284,7 +284,9 @@ export type InspectableUnknown = {
 };
 
 export interface StreamInterceptor {
-  transformNodes(nodes: Map<Id, UINode>): Promise<Map<Id, UINode>>;
+  transformNodes(
+    nodes: Map<Id, UINode>,
+  ): Promise<[Map<Id, UINode>, Metadata[]]>;
 
   transformMetadata(metadata: Metadata): Promise<Metadata>;
 }

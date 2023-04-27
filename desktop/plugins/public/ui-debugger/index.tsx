@@ -238,9 +238,16 @@ export function plugin(client: PluginClient<Events>) {
   const seenNodes = new Set<Id>();
   const processFrame = async (frameScan: FrameScanEvent) => {
     try {
-      const processedNodes = await streamInterceptor.transformNodes(
-        new Map(frameScan.nodes.map((node) => [node.id, {...node}])),
-      );
+      const [processedNodes, additionalMetadata] =
+        await streamInterceptor.transformNodes(
+          new Map(frameScan.nodes.map((node) => [node.id, {...node}])),
+        );
+
+      metadata.update((draft) => {
+        for (const metadata of additionalMetadata) {
+          draft.set(metadata.id, metadata);
+        }
+      });
 
       applyFrameData(processedNodes, frameScan.snapshot);
 

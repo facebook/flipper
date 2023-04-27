@@ -18,8 +18,10 @@ class NoOpStreamInterceptor implements StreamInterceptor {
     return null;
   }
 
-  async transformNodes(nodes: Map<Id, UINode>): Promise<Map<Id, UINode>> {
-    return nodes;
+  async transformNodes(
+    nodes: Map<Id, UINode>,
+  ): Promise<[Map<Id, UINode>, Metadata[]]> {
+    return [nodes, []];
   }
 
   async transformMetadata(metadata: Metadata): Promise<Metadata> {
