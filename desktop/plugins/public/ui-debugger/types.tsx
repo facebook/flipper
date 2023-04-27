@@ -114,7 +114,7 @@ export type Metadata = {
   namespace: string;
   name: string;
   mutable: boolean;
-  tags?: string[];
+  customAttributes?: Record<string, string | number>;
 };
 
 export type Bounds = {
