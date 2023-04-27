@@ -138,24 +138,6 @@ export function plugin(client: PluginClient<Events>) {
     expandedNodes: createState<Set<Id>>(new Set()),
   };
 
-  client.onMessage('coordinateUpdate', (event) => {
-    liveClientData = produce(liveClientData, (draft) => {
-      const node = draft.nodes.get(event.nodeId);
-      if (!node) {
-        console.warn(`Coordinate update for non existing node `, event);
-      } else {
-        node.bounds.x = event.coordinate.x;
-        node.bounds.y = event.coordinate.y;
-      }
-    });
-
-    if (uiState.isPaused.get()) {
-      return;
-    }
-
-    nodes.set(liveClientData.nodes);
-  });
-
   const setPlayPause = (isPaused: boolean) => {
     uiState.isPaused.set(isPaused);
     if (!isPaused) {

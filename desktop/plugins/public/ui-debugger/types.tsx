@@ -10,16 +10,9 @@
 export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
-  coordinateUpdate: CoordinateUpdateEvent;
   perfStats: PerfStatsEvent;
   performanceStats: PerformanceStatsEvent;
   metadataUpdate: UpdateMetadataEvent;
-};
-
-export type CoordinateUpdateEvent = {
-  observerType: String;
-  nodeId: Id;
-  coordinate: Coordinate;
 };
 
 export type SubtreeUpdateEvent = {
