@@ -31,6 +31,9 @@ import {Tree2} from './Tree';
 export function Component() {
   const instance = usePlugin(plugin);
   const rootId = useValue(instance.rootId);
+  const streamInterceptorError = useValue(
+    instance.uiState.streamInterceptorError,
+  );
   const visualiserWidth = useValue(instance.uiState.visualiserWidth);
   const nodes: Map<Id, UINode> = useValue(instance.nodes);
   const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
@@ -53,7 +56,17 @@ export function Component() {
 
   if (showPerfStats) return <PerfStats events={instance.perfEvents} />;
 
-  if (rootId) {
+  if (streamInterceptorError != null) {
+    return streamInterceptorError;
+  }
+
+  if (rootId == null || nodes.size == 0) {
+    return (
+      <Centered>
+        <Spin data-testid="loading-indicator" />
+      </Centered>
+    );
+  } else {
     return (
       <QueryClientProvider client={instance.queryClient}>
         <Layout.Container grow padh="small" padv="medium">
@@ -98,12 +111,6 @@ export function Component() {
       </QueryClientProvider>
     );
   }
-
-  return (
-    <Centered>
-      <Spin data-testid="loading-indicator" />
-    </Centered>
-  );
 }
 
 export function Centered(props: {children: React.ReactNode}) {

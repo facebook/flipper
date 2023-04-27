@@ -16,18 +16,23 @@ import {
 } from 'flipper-plugin';
 import {
   Events,
-  Id,
   FrameworkEvent,
   FrameworkEventType,
+  Id,
   Metadata,
   MetadataId,
   PerformanceStatsEvent,
   Snapshot,
+  StreamInterceptorError,
+  SubtreeUpdateEvent,
   UINode,
 } from './types';
 import {Draft} from 'immer';
 import {QueryClient, setLogger} from 'react-query';
 import {tracker} from './tracker';
+import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
+import React from 'react';
+import {StreamInterceptorErrorView} from './components/StreamInterceptorErrorView';
 
 type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};
 type LiveClientState = {
@@ -37,6 +42,7 @@ type LiveClientState = {
 
 type UIState = {
   isPaused: Atom<boolean>;
+  streamInterceptorError: Atom<React.ReactNode | undefined>;
   searchTerm: Atom<string>;
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
@@ -50,7 +56,9 @@ type UIState = {
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
+
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
+  const streamInterceptor = getStreamInterceptor();
 
   const device = client.device.os;
 
@@ -106,7 +114,7 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents.append(event);
   });
 
-  const nodes = createState<Map<Id, UINode>>(new Map());
+  const nodesAtom = createState<Map<Id, UINode>>(new Map());
   const frameworkEvents = createState<Map<Id, FrameworkEvent[]>>(new Map());
 
   const highlightedNodes = createState(new Set<Id>());
@@ -116,6 +124,7 @@ export function plugin(client: PluginClient<Events>) {
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
     isContextMenuOpen: createState<boolean>(false),
 
+    streamInterceptorError: createState<React.ReactNode | undefined>(undefined),
     visualiserWidth: createState(Math.min(window.innerWidth / 4.5, 500)),
 
     highlightedNodes,
@@ -148,9 +157,9 @@ export function plugin(client: PluginClient<Events>) {
           collapseinActiveChildren(node, draft);
         });
       });
-      nodes.set(liveClientData.nodes);
+      nodesAtom.set(liveClientData.nodes);
       snapshot.set(liveClientData.snapshotInfo);
-      checkFocusedNodeStillActive(uiState, nodes.get());
+      checkFocusedNodeStillActive(uiState, nodesAtom.get());
     }
   };
 
@@ -162,7 +171,51 @@ export function plugin(client: PluginClient<Events>) {
   };
 
   const seenNodes = new Set<Id>();
-  client.onMessage('subtreeUpdate', (subtreeUpdate) => {
+  const subTreeUpdateCallBack = async (subtreeUpdate: SubtreeUpdateEvent) => {
+    try {
+      const processedNodes = await streamInterceptor.transformNodes(
+        new Map(subtreeUpdate.nodes.map((node) => [node.id, {...node}])),
+      );
+      applyFrameData(processedNodes, {
+        nodeId: subtreeUpdate.rootId,
+        base64Image: subtreeUpdate.snapshot,
+      });
+
+      applyFrameworkEvents(subtreeUpdate);
+
+      uiState.streamInterceptorError.set(undefined);
+    } catch (error) {
+      if (error instanceof StreamInterceptorError) {
+        const retryCallback = () => {
+          uiState.streamInterceptorError.set(undefined);
+          //wipe the internal state so loading indicator appears
+          applyFrameData(new Map(), null);
+          subTreeUpdateCallBack(subtreeUpdate);
+        };
+        uiState.streamInterceptorError.set(
+          <StreamInterceptorErrorView
+            message={error.message}
+            title={error.title}
+            retryCallback={retryCallback}
+          />,
+        );
+      } else {
+        console.error(
+          `[ui-debugger] Unexpected Error processing frame from ${client.appName}`,
+          error,
+        );
+
+        uiState.streamInterceptorError.set(
+          <StreamInterceptorErrorView
+            message="Something has gone horribly wrong, we are aware of this and are looking into it"
+            title="Oops"
+          />,
+        );
+      }
+    }
+  };
+
+  function applyFrameworkEvents(subtreeUpdate: SubtreeUpdateEvent) {
     frameworkEvents.update((draft) => {
       if (subtreeUpdate.frameworkEvents) {
         subtreeUpdate.frameworkEvents.forEach((frameworkEvent) => {
@@ -192,23 +245,24 @@ export function plugin(client: PluginClient<Events>) {
         }, HighlightTime);
       }
     });
+  }
 
+  //todo deal with racecondition, where bloks screen is fetching, takes time then you go back get more recent frame then bloks screen comes and overrites it
+  function applyFrameData(
+    nodes: Map<Id, UINode>,
+    snapshotInfo: SnapshotInfo | null,
+  ) {
     liveClientData = produce(liveClientData, (draft) => {
-      if (subtreeUpdate.snapshot) {
-        draft.snapshotInfo = {
-          nodeId: subtreeUpdate.rootId,
-          base64Image: subtreeUpdate.snapshot,
-        };
+      if (snapshotInfo) {
+        draft.snapshotInfo = snapshotInfo;
       }
 
-      subtreeUpdate.nodes.forEach((node) => {
-        draft.nodes.set(node.id, {...node});
-      });
+      draft.nodes = nodes;
       setParentPointers(rootId.get()!!, undefined, draft.nodes);
     });
 
     uiState.expandedNodes.update((draft) => {
-      for (const node of subtreeUpdate.nodes) {
+      for (const node of nodes.values()) {
         if (!seenNodes.has(node.id)) {
           draft.add(node.id);
         }
@@ -223,20 +277,21 @@ export function plugin(client: PluginClient<Events>) {
     });
 
     if (!uiState.isPaused.get()) {
-      nodes.set(liveClientData.nodes);
+      nodesAtom.set(liveClientData.nodes);
       snapshot.set(liveClientData.snapshotInfo);
 
-      checkFocusedNodeStillActive(uiState, nodes.get());
+      checkFocusedNodeStillActive(uiState, nodesAtom.get());
     }
-  });
+  }
+  client.onMessage('subtreeUpdate', subTreeUpdateCallBack);
 
   const queryClient = new QueryClient({});
 
   return {
     rootId,
     uiState,
-    uiActions: uiActions(uiState, nodes),
-    nodes,
+    uiActions: uiActions(uiState, nodesAtom),
+    nodes: nodesAtom,
     frameworkEvents,
     snapshot,
     metadata,
@@ -391,6 +446,7 @@ function collapseinActiveChildren(node: UINode, expandedNodes: Draft<Set<Id>>) {
 const HighlightTime = 300;
 
 export {Component} from './components/main';
+export * from './types';
 
 setLogger({
   log: (...args) => {

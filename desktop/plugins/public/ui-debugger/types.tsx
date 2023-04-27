@@ -15,6 +15,8 @@ export type Events = {
   metadataUpdate: UpdateMetadataEvent;
 };
 
+export type StreamFlowState = {paused: boolean};
+
 export type SubtreeUpdateEvent = {
   txId: number;
   rootId: Id;
@@ -242,3 +244,18 @@ export type InspectableUnknown = {
   type: 'unknown';
   value: string;
 };
+
+export interface StreamInterceptor {
+  transformNodes(nodes: Map<Id, UINode>): Promise<Map<Id, UINode>>;
+
+  transformMetadata(metadata: Metadata): Promise<Metadata>;
+}
+
+export class StreamInterceptorError extends Error {
+  title: string;
+
+  constructor(title: string, message: string) {
+    super(message);
+    this.title = title;
+  }
+}
