@@ -392,6 +392,8 @@ function nodeIcon(node: UINode) {
       return <DecorationImage src="icons/ck-mounted-logo.png" />;
     }
     return <DecorationImage src="icons/ck-logo.png" />;
+  } else if (node.tags.includes('BloksBoundTree')) {
+    return <DecorationImage src="facebook/bloks-logo-orange.png" />;
   }
 }
 
