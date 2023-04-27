@@ -63,6 +63,7 @@ export function plugin(client: PluginClient<Events>) {
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
   const streamInterceptor = getStreamInterceptor();
 
+  let lastFrameTime = 0;
   const device = client.device.os;
 
   client.onMessage('init', (event) => {
@@ -249,7 +250,10 @@ export function plugin(client: PluginClient<Events>) {
         }
       });
 
-      applyFrameData(processedNodes, frameScan.snapshot);
+      if (frameScan.frameTime > lastFrameTime) {
+        applyFrameData(processedNodes, frameScan.snapshot);
+        lastFrameTime = frameScan.frameTime;
+      }
 
       applyFrameworkEvents(frameScan);
       return true;
