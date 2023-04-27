@@ -115,8 +115,9 @@ export type NestedNode = {
 
 export type UINode = {
   id: Id;
-  parent?: Id; //this attribute doesn't come from the client and is set by the desktop
-  qualifiedName: string;
+  parent?: Id;
+  qualifiedName: string; //this is the name of the component plus qualification so myles has a chance of finding it. E.g com.facebook.MyView
+  lineNumber?: number;
   name: string;
   attributes: Record<MetadataId, Inspectable>;
   inlineAttributes: Record<string, string>;
