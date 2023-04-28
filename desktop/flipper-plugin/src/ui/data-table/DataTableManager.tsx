@@ -9,7 +9,7 @@
 
 import type {DataTableColumn} from './DataTable';
 import {Percentage} from '../../utils/widthUtils';
-import {MutableRefObject, Reducer} from 'react';
+import {MutableRefObject, Reducer, RefObject} from 'react';
 import {DataSourceVirtualizer} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
 import {theme} from '../theme';
@@ -101,13 +101,13 @@ type DataManagerActions<T> =
     >
   | Action<
       'removeColumnFilter',
-      | {column: keyof T; index: number; value?: never}
-      | {column: keyof T; index?: never; value: string}
+      | {column: keyof T; index: number; label?: never}
+      | {column: keyof T; index?: never; label: string}
     >
   | Action<
       'toggleColumnFilter',
-      | {column: keyof T; index: number; value?: never}
-      | {column: keyof T; index?: never; value: string}
+      | {column: keyof T; index: number; label?: never}
+      | {column: keyof T; index?: never; label: string}
     >
   | Action<'setColumnFilterInverse', {column: keyof T; inversed: boolean}>
   | Action<'setColumnFilterFromSelection', {column: keyof T}>
@@ -288,7 +288,7 @@ export const dataTableManagerReducer = produce<
       const column = draft.columns.find((c) => c.key === action.column)!;
       const index =
         action.index ??
-        column.filters?.findIndex((f) => f.value === action.value!);
+        column.filters?.findIndex((f) => f.label === action.label!);
 
       if (index === undefined || index < 0) {
         break;
@@ -301,7 +301,7 @@ export const dataTableManagerReducer = produce<
       const column = draft.columns.find((c) => c.key === action.column)!;
       const index =
         action.index ??
-        column.filters?.findIndex((f) => f.value === action.value!);
+        column.filters?.findIndex((f) => f.label === action.label!);
 
       if (index === undefined || index < 0) {
         break;
@@ -395,7 +395,7 @@ export type DataTableManager<T> = {
   sortColumn(column: keyof T, direction?: SortDirection): void;
   setSearchValue(value: string, addToHistory?: boolean): void;
   dataView: _DataSourceView<T, T[keyof T]>;
-  state: Readonly<DataManagerState<T>>;
+  stateRef: RefObject<Readonly<DataManagerState<T>>>;
   toggleSearchValue(): void;
   toggleHighlightSearch(): void;
   setSearchHighlightColor(color: string): void;
@@ -407,7 +407,7 @@ export type DataTableManager<T> = {
     value: string,
     disableOthers?: boolean,
   ): void;
-  removeColumnFilter(column: keyof T, value: string): void;
+  removeColumnFilter(column: keyof T, label: string): void;
 };
 
 export function createDataTableManager<T>(
@@ -475,11 +475,11 @@ export function createDataTableManager<T>(
     addColumnFilter(column, value, disableOthers) {
       dispatch({type: 'addColumnFilter', column, value, disableOthers});
     },
-    removeColumnFilter(column, value) {
-      dispatch({type: 'removeColumnFilter', column, value});
+    removeColumnFilter(column, label) {
+      dispatch({type: 'removeColumnFilter', column, label});
     },
     dataView,
-    state: stateRef.current,
+    stateRef,
   };
 }
 
