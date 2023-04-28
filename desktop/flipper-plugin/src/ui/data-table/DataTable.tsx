@@ -121,6 +121,7 @@ export type DataTableColumn<T = any> = {
     predefined?: boolean;
   }[];
   inversed?: boolean;
+  sortable?: boolean;
 };
 
 export interface TableRowRenderContext<T = any> {
