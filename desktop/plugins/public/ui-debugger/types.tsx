@@ -7,21 +7,40 @@
  * @format
  */
 
+export type StreamState =
+  | {state: 'Ok'}
+  | {state: 'RetryingAfterError'}
+  | {
+      state: 'StreamInterceptorRetryableError';
+      error: StreamInterceptorError;
+      retryCallback: () => Promise<void>;
+    }
+  | {
+      state: 'UnrecoverableError';
+    };
+
 export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
-  coordinateUpdate: CoordinateUpdateEvent;
+  frameScan: FrameScanEvent;
   perfStats: PerfStatsEvent;
   performanceStats: PerformanceStatsEvent;
   metadataUpdate: UpdateMetadataEvent;
 };
 
-export type CoordinateUpdateEvent = {
-  observerType: String;
-  nodeId: Id;
-  coordinate: Coordinate;
+export type StreamFlowState = {paused: boolean};
+
+export type FrameScanEvent = {
+  frameTime: number;
+  nodes: UINode[];
+  snapshot?: SnapshotInfo;
+  frameworkEvents?: FrameworkEvent[];
 };
 
+/**
+ * @deprecated This  event should not be used and soon will
+ * be removed. FrameScan should be used instead.
+ */
 export type SubtreeUpdateEvent = {
   txId: number;
   rootId: Id;
@@ -37,7 +56,11 @@ export type FrameworkEventMetadata = {
   documentation: string;
 };
 
-type JSON = string | number | boolean | null | JSON[] | {[key: string]: JSON};
+type JsonObject = {
+  [key: string]: JSON;
+};
+
+type JSON = string | number | boolean | null | JSON[] | JsonObject;
 
 type Stacktrace = {type: 'stacktrace'; stacktrace: string[]};
 type Reason = {type: 'reason'; reason: string};
@@ -104,11 +127,13 @@ export type NestedNode = {
 
 export type UINode = {
   id: Id;
-  parent?: Id; //this attribute doesn't come from the client and is set by the desktop
-  qualifiedName: string;
+  parent?: Id;
+  qualifiedName: string; //this is the name of the component plus qualification so myles has a chance of finding it. E.g com.facebook.MyView
+  lineNumber?: number;
   name: string;
   attributes: Record<MetadataId, Inspectable>;
   inlineAttributes: Record<string, string>;
+  hiddenAttributes?: any;
   children: Id[];
   bounds: Bounds;
   tags: Tag[];
@@ -121,7 +146,7 @@ export type Metadata = {
   namespace: string;
   name: string;
   mutable: boolean;
-  tags?: string[];
+  customAttributes?: Record<string, string | number>;
 };
 
 export type Bounds = {
@@ -162,12 +187,21 @@ export type Color = {
 };
 
 export type Snapshot = string;
-export type Id = number;
+export type SnapshotInfo = {nodeId: Id; data: Snapshot};
+export type Id = number | string;
 
 export type MetadataId = number;
 export type TreeState = {expandedNodes: Id[]};
 
-export type Tag = 'Native' | 'Declarative' | 'Android' | 'Litho' | 'CK' | 'iOS';
+export type Tag =
+  | 'Native'
+  | 'Declarative'
+  | 'Android'
+  | 'Litho'
+  | 'CK'
+  | 'iOS'
+  | 'BloksBoundTree'
+  | 'BloksDerived';
 
 export type Inspectable =
   | InspectableObject
@@ -248,3 +282,20 @@ export type InspectableUnknown = {
   type: 'unknown';
   value: string;
 };
+
+export interface StreamInterceptor {
+  transformNodes(
+    nodes: Map<Id, UINode>,
+  ): Promise<[Map<Id, UINode>, Metadata[]]>;
+
+  transformMetadata(metadata: Metadata): Promise<Metadata>;
+}
+
+export class StreamInterceptorError extends Error {
+  title: string;
+
+  constructor(title: string, message: string) {
+    super(message);
+    this.title = title;
+  }
+}
