@@ -395,6 +395,7 @@ export type DataTableManager<T> = {
   sortColumn(column: keyof T, direction?: SortDirection): void;
   setSearchValue(value: string, addToHistory?: boolean): void;
   dataView: _DataSourceView<T, T[keyof T]>;
+  state: Readonly<DataManagerState<T>>;
   toggleSearchValue(): void;
   toggleHighlightSearch(): void;
   setSearchHighlightColor(color: string): void;
@@ -478,6 +479,7 @@ export function createDataTableManager<T>(
       dispatch({type: 'removeColumnFilter', column, value});
     },
     dataView,
+    state: stateRef.current,
   };
 }
 
