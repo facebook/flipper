@@ -194,7 +194,13 @@ function TableHeadColumn({
   let children = (
     <Layout.Right center>
       <div {...divProps}>
-        <Text type="secondary">
+        <Text
+          type="secondary"
+          style={
+            column.filters?.filter(({enabled}) => enabled).length
+              ? {color: theme.primaryColor, fontWeight: 'bold'}
+              : {}
+          }>
           {column.title === undefined ? (
             toFirstUpper(column.key)
           ) : column.title === '' ? (

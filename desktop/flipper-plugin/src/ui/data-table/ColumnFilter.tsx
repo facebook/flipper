@@ -20,6 +20,7 @@ import {
   Switch,
 } from 'antd';
 import {
+  FilterFilled,
   FilterOutlined,
   MinusCircleOutlined,
   PlusCircleOutlined,
@@ -198,7 +199,7 @@ export function FilterIcon({
   return (
     <Dropdown overlay={menu} trigger={['click']}>
       <FilterButton isActive={isActive}>
-        <FilterOutlined />
+        {isActive ? <FilterFilled /> : <FilterOutlined />}
       </FilterButton>
     </Dropdown>
   );
@@ -207,7 +208,7 @@ export function FilterIcon({
 export const FilterButton = styled.div<{isActive?: boolean}>(({isActive}) => ({
   backgroundColor: theme.backgroundWash,
   visibility: isActive ? 'visible' : 'hidden',
-  color: isActive ? theme.textColorActive : theme.disabledColor,
+  color: isActive ? theme.primaryColor : theme.disabledColor,
   cursor: 'pointer',
   marginRight: 4,
   zIndex: 1,
