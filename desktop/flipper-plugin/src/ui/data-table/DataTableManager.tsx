@@ -380,6 +380,11 @@ export type DataTableManager<T> = {
   toggleSideBySide(): void;
   showSearchDropdown(show: boolean): void;
   setShowNumberedHistory(showNumberedHistory: boolean): void;
+  addColumnFilter(
+    column: keyof T,
+    value: string,
+    disableOthers?: boolean,
+  ): void;
 };
 
 export function createDataTableManager<T>(
@@ -443,6 +448,9 @@ export function createDataTableManager<T>(
     },
     setShowNumberedHistory(showNumberedHistory) {
       dispatch({type: 'setShowNumberedHistory', showNumberedHistory});
+    },
+    addColumnFilter(column, value, disableOthers) {
+      dispatch({type: 'addColumnFilter', column, value, disableOthers});
     },
     dataView,
   };
