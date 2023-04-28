@@ -99,8 +99,16 @@ type DataManagerActions<T> =
       'addColumnFilter',
       {column: keyof T; value: string; disableOthers?: boolean}
     >
-  | Action<'removeColumnFilter', {column: keyof T; index: number}>
-  | Action<'toggleColumnFilter', {column: keyof T; index: number}>
+  | Action<
+      'removeColumnFilter',
+      | {column: keyof T; index: number; value?: never}
+      | {column: keyof T; index?: never; value: string}
+    >
+  | Action<
+      'toggleColumnFilter',
+      | {column: keyof T; index: number; value?: never}
+      | {column: keyof T; index?: never; value: string}
+    >
   | Action<'setColumnFilterInverse', {column: keyof T; inversed: boolean}>
   | Action<'setColumnFilterFromSelection', {column: keyof T}>
   | Action<'appliedInitialScroll'>
@@ -277,15 +285,28 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'removeColumnFilter': {
-      draft.columns
-        .find((c) => c.key === action.column)!
-        .filters?.splice(action.index, 1);
+      const column = draft.columns.find((c) => c.key === action.column)!;
+      const index =
+        action.index ??
+        column.filters?.findIndex((f) => f.value === action.value!);
+
+      if (index === undefined || index < 0) {
+        break;
+      }
+
+      column.filters?.splice(index, 1);
       break;
     }
     case 'toggleColumnFilter': {
-      const f = draft.columns.find((c) => c.key === action.column)!.filters![
-        action.index
-      ];
+      const column = draft.columns.find((c) => c.key === action.column)!;
+      const index =
+        action.index ??
+        column.filters?.findIndex((f) => f.value === action.value!);
+
+      if (index === undefined || index < 0) {
+        break;
+      }
+      const f = column.filters![index];
       f.enabled = !f.enabled;
       break;
     }
@@ -385,6 +406,7 @@ export type DataTableManager<T> = {
     value: string,
     disableOthers?: boolean,
   ): void;
+  removeColumnFilter(column: keyof T, value: string): void;
 };
 
 export function createDataTableManager<T>(
@@ -451,6 +473,9 @@ export function createDataTableManager<T>(
     },
     addColumnFilter(column, value, disableOthers) {
       dispatch({type: 'addColumnFilter', column, value, disableOthers});
+    },
+    removeColumnFilter(column, value) {
+      dispatch({type: 'removeColumnFilter', column, value});
     },
     dataView,
   };
