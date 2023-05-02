@@ -110,6 +110,6 @@ ext.deps = [
         // Plugin dependencies
         flipperFrescoPlugin: 'com.facebook.flipper:flipper-fresco-plugin:0.182.0',
         frescoFlipper      : 'com.facebook.fresco:flipper:3.0.0',
-        frescoStetho       : 'com.facebook.fresco:stetho:2.6.0',
+        frescoStetho       : 'com.facebook.fresco:stetho:3.0.0',
         fresco             : 'com.facebook.fresco:fresco:2.6.0',
 ]
