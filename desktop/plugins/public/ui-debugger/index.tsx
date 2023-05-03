@@ -440,7 +440,7 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
 function checkFocusedNodeStillActive(uiState: UIState, nodes: Map<Id, UINode>) {
   const focusedNodeId = uiState.focusedNode.get();
   const focusedNode = focusedNodeId && nodes.get(focusedNodeId);
-  if (focusedNode && !isFocusedNodeAncestryAllActive(focusedNode, nodes)) {
+  if (!focusedNode || !isFocusedNodeAncestryAllActive(focusedNode, nodes)) {
     uiState.focusedNode.set(undefined);
   }
 }
