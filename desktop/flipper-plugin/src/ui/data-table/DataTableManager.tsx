@@ -9,7 +9,7 @@
 
 import type {DataTableColumn} from './DataTable';
 import {Percentage} from '../../utils/widthUtils';
-import {MutableRefObject, Reducer} from 'react';
+import {MutableRefObject, Reducer, RefObject} from 'react';
 import {DataSourceVirtualizer} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
 import {theme} from '../theme';
@@ -99,8 +99,16 @@ type DataManagerActions<T> =
       'addColumnFilter',
       {column: keyof T; value: string; disableOthers?: boolean}
     >
-  | Action<'removeColumnFilter', {column: keyof T; index: number}>
-  | Action<'toggleColumnFilter', {column: keyof T; index: number}>
+  | Action<
+      'removeColumnFilter',
+      | {column: keyof T; index: number; label?: never}
+      | {column: keyof T; index?: never; label: string}
+    >
+  | Action<
+      'toggleColumnFilter',
+      | {column: keyof T; index: number; label?: never}
+      | {column: keyof T; index?: never; label: string}
+    >
   | Action<'setColumnFilterInverse', {column: keyof T; inversed: boolean}>
   | Action<'setColumnFilterFromSelection', {column: keyof T}>
   | Action<'appliedInitialScroll'>
@@ -277,15 +285,28 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'removeColumnFilter': {
-      draft.columns
-        .find((c) => c.key === action.column)!
-        .filters?.splice(action.index, 1);
+      const column = draft.columns.find((c) => c.key === action.column)!;
+      const index =
+        action.index ??
+        column.filters?.findIndex((f) => f.label === action.label!);
+
+      if (index === undefined || index < 0) {
+        break;
+      }
+
+      column.filters?.splice(index, 1);
       break;
     }
     case 'toggleColumnFilter': {
-      const f = draft.columns.find((c) => c.key === action.column)!.filters![
-        action.index
-      ];
+      const column = draft.columns.find((c) => c.key === action.column)!;
+      const index =
+        action.index ??
+        column.filters?.findIndex((f) => f.label === action.label!);
+
+      if (index === undefined || index < 0) {
+        break;
+      }
+      const f = column.filters![index];
       f.enabled = !f.enabled;
       break;
     }
@@ -374,12 +395,19 @@ export type DataTableManager<T> = {
   sortColumn(column: keyof T, direction?: SortDirection): void;
   setSearchValue(value: string, addToHistory?: boolean): void;
   dataView: _DataSourceView<T, T[keyof T]>;
+  stateRef: RefObject<Readonly<DataManagerState<T>>>;
   toggleSearchValue(): void;
   toggleHighlightSearch(): void;
   setSearchHighlightColor(color: string): void;
   toggleSideBySide(): void;
   showSearchDropdown(show: boolean): void;
   setShowNumberedHistory(showNumberedHistory: boolean): void;
+  addColumnFilter(
+    column: keyof T,
+    value: string,
+    disableOthers?: boolean,
+  ): void;
+  removeColumnFilter(column: keyof T, label: string): void;
 };
 
 export function createDataTableManager<T>(
@@ -444,7 +472,14 @@ export function createDataTableManager<T>(
     setShowNumberedHistory(showNumberedHistory) {
       dispatch({type: 'setShowNumberedHistory', showNumberedHistory});
     },
+    addColumnFilter(column, value, disableOthers) {
+      dispatch({type: 'addColumnFilter', column, value, disableOthers});
+    },
+    removeColumnFilter(column, label) {
+      dispatch({type: 'removeColumnFilter', column, label});
+    },
     dataView,
+    stateRef,
   };
 }
 

@@ -97,14 +97,14 @@ ext.deps = [
         lithoTesting       : "com.facebook.litho:litho-testing:$LITHO_VERSION",
         // Debugging and testing
         guava              : 'com.google.guava:guava:23.0',
-        robolectric        : 'org.robolectric:robolectric:4.9.2',
+        robolectric        : 'org.robolectric:robolectric:4.10',
         junit              : 'junit:junit:4.13.2',
         hamcrest           : 'org.hamcrest:hamcrest-library:2.2',
-        mockito            : 'org.mockito:mockito-core:5.2.0',
-        okhttp3            : 'com.squareup.okhttp3:okhttp:4.9.3',
+        mockito            : 'org.mockito:mockito-core:5.3.1',
+        okhttp3            : 'com.squareup.okhttp3:okhttp:4.11.0',
         leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.3',
         leakcanary2        : 'com.squareup.leakcanary:leakcanary-android:2.8.1',
-        protobuf           : 'com.google.protobuf:protobuf-java:3.21.12',
+        protobuf           : 'com.google.protobuf:protobuf-java:3.22.3',
         testCore           : 'androidx.test:core:1.4.0',
         testRules          : 'androidx.test:rules:1.5.0',
         // Plugin dependencies

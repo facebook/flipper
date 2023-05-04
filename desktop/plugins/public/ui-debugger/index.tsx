@@ -16,27 +16,36 @@ import {
 } from 'flipper-plugin';
 import {
   Events,
-  Id,
+  FrameScanEvent,
   FrameworkEvent,
   FrameworkEventType,
+  Id,
   Metadata,
   MetadataId,
   PerformanceStatsEvent,
-  Snapshot,
+  SnapshotInfo,
+  StreamInterceptorError,
+  StreamState,
   UINode,
 } from './types';
 import {Draft} from 'immer';
 import {QueryClient, setLogger} from 'react-query';
 import {tracker} from './tracker';
+import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
 
-type SnapshotInfo = {nodeId: Id; base64Image: Snapshot};
 type LiveClientState = {
   snapshotInfo: SnapshotInfo | null;
   nodes: Map<Id, UINode>;
 };
 
+type PendingData = {
+  metadata: Record<MetadataId, Metadata>;
+  frame: FrameScanEvent | null;
+};
+
 type UIState = {
   isPaused: Atom<boolean>;
+  streamState: Atom<StreamState>;
   searchTerm: Atom<string>;
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
@@ -50,8 +59,11 @@ type UIState = {
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
-  const metadata = createState<Map<MetadataId, Metadata>>(new Map());
 
+  const metadata = createState<Map<MetadataId, Metadata>>(new Map());
+  const streamInterceptor = getStreamInterceptor();
+
+  let lastFrameTime = 0;
   const device = client.device.os;
 
   client.onMessage('init', (event) => {
@@ -63,15 +75,77 @@ export function plugin(client: PluginClient<Events>) {
     });
   });
 
-  client.onMessage('metadataUpdate', (event) => {
+  async function processMetadata(
+    incomingMetadata: Record<MetadataId, Metadata>,
+  ) {
+    try {
+      const mappedMeta = await Promise.all(
+        Object.values(incomingMetadata).map((metadata) =>
+          streamInterceptor.transformMetadata(metadata),
+        ),
+      );
+
+      metadata.update((draft) => {
+        for (const metadata of mappedMeta) {
+          draft.set(metadata.id, metadata);
+        }
+      });
+      return true;
+    } catch (error) {
+      for (const metadata of Object.values(incomingMetadata)) {
+        pendingData.metadata[metadata.id] = metadata;
+      }
+      handleStreamError('Metadata', error);
+      return false;
+    }
+  }
+
+  //this holds pending any pending data that needs to be applied in the event of a stream interceptor error
+  //while in the error state more metadata or a more recent frame may come in so both cases need to apply the same darta
+  const pendingData: PendingData = {frame: null, metadata: {}};
+
+  function handleStreamError(source: 'Frame' | 'Metadata', error: any) {
+    if (error instanceof StreamInterceptorError) {
+      const retryCallback = async () => {
+        uiState.streamState.set({state: 'RetryingAfterError'});
+
+        if (!(await processMetadata(pendingData.metadata))) {
+          //back into error state, dont proceed
+          return;
+        }
+        if (pendingData.frame != null) {
+          if (!(await processFrame(pendingData.frame))) {
+            //back into error state, dont proceed
+            return;
+          }
+        }
+
+        uiState.streamState.set({state: 'Ok'});
+        pendingData.frame = null;
+        pendingData.metadata = {};
+      };
+
+      uiState.streamState.set({
+        state: 'StreamInterceptorRetryableError',
+        retryCallback: retryCallback,
+        error: error,
+      });
+    } else {
+      console.error(
+        `[ui-debugger] Unexpected Error processing ${source}`,
+        error,
+      );
+
+      uiState.streamState.set({state: 'UnrecoverableError'});
+    }
+  }
+
+  client.onMessage('metadataUpdate', async (event) => {
     if (!event.attributeMetadata) {
       return;
     }
-    metadata.update((draft) => {
-      for (const [_key, value] of Object.entries(event.attributeMetadata)) {
-        draft.set(value.id, value);
-      }
-    });
+
+    await processMetadata(event.attributeMetadata);
   });
 
   const perfEvents = createDataSource<PerformanceStatsEvent, 'txId'>([], {
@@ -106,7 +180,7 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents.append(event);
   });
 
-  const nodes = createState<Map<Id, UINode>>(new Map());
+  const nodesAtom = createState<Map<Id, UINode>>(new Map());
   const frameworkEvents = createState<Map<Id, FrameworkEvent[]>>(new Map());
 
   const highlightedNodes = createState(new Set<Id>());
@@ -116,6 +190,7 @@ export function plugin(client: PluginClient<Events>) {
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
     isContextMenuOpen: createState<boolean>(false),
 
+    streamState: createState<StreamState>({state: 'Ok'}),
     visualiserWidth: createState(Math.min(window.innerWidth / 4.5, 500)),
 
     highlightedNodes,
@@ -138,24 +213,6 @@ export function plugin(client: PluginClient<Events>) {
     expandedNodes: createState<Set<Id>>(new Set()),
   };
 
-  client.onMessage('coordinateUpdate', (event) => {
-    liveClientData = produce(liveClientData, (draft) => {
-      const node = draft.nodes.get(event.nodeId);
-      if (!node) {
-        console.warn(`Coordinate update for non existing node `, event);
-      } else {
-        node.bounds.x = event.coordinate.x;
-        node.bounds.y = event.coordinate.y;
-      }
-    });
-
-    if (uiState.isPaused.get()) {
-      return;
-    }
-
-    nodes.set(liveClientData.nodes);
-  });
-
   const setPlayPause = (isPaused: boolean) => {
     uiState.isPaused.set(isPaused);
     if (!isPaused) {
@@ -166,9 +223,9 @@ export function plugin(client: PluginClient<Events>) {
           collapseinActiveChildren(node, draft);
         });
       });
-      nodes.set(liveClientData.nodes);
+      nodesAtom.set(liveClientData.nodes);
       snapshot.set(liveClientData.snapshotInfo);
-      checkFocusedNodeStillActive(uiState, nodes.get());
+      checkFocusedNodeStillActive(uiState, nodesAtom.get());
     }
   };
 
@@ -180,10 +237,37 @@ export function plugin(client: PluginClient<Events>) {
   };
 
   const seenNodes = new Set<Id>();
-  client.onMessage('subtreeUpdate', (subtreeUpdate) => {
+  const processFrame = async (frameScan: FrameScanEvent) => {
+    try {
+      const [processedNodes, additionalMetadata] =
+        await streamInterceptor.transformNodes(
+          new Map(frameScan.nodes.map((node) => [node.id, {...node}])),
+        );
+
+      metadata.update((draft) => {
+        for (const metadata of additionalMetadata) {
+          draft.set(metadata.id, metadata);
+        }
+      });
+
+      if (frameScan.frameTime > lastFrameTime) {
+        applyFrameData(processedNodes, frameScan.snapshot);
+        lastFrameTime = frameScan.frameTime;
+      }
+
+      applyFrameworkEvents(frameScan);
+      return true;
+    } catch (error) {
+      pendingData.frame = frameScan;
+      handleStreamError('Frame', error);
+      return false;
+    }
+  };
+
+  function applyFrameworkEvents(frameScan: FrameScanEvent) {
     frameworkEvents.update((draft) => {
-      if (subtreeUpdate.frameworkEvents) {
-        subtreeUpdate.frameworkEvents.forEach((frameworkEvent) => {
+      if (frameScan?.frameworkEvents) {
+        frameScan.frameworkEvents.forEach((frameworkEvent) => {
           if (
             uiState.frameworkEventMonitoring.get().get(frameworkEvent.type) ===
               true &&
@@ -203,30 +287,30 @@ export function plugin(client: PluginClient<Events>) {
         });
         setTimeout(() => {
           highlightedNodes.update((laterDraft) => {
-            for (const event of subtreeUpdate.frameworkEvents!!.values()) {
+            for (const event of frameScan.frameworkEvents!!.values()) {
               laterDraft.delete(event.nodeId);
             }
           });
         }, HighlightTime);
       }
     });
+  }
 
+  //todo deal with racecondition, where bloks screen is fetching, takes time then you go back get more recent frame then bloks screen comes and overrites it
+  function applyFrameData(
+    nodes: Map<Id, UINode>,
+    snapshotInfo: SnapshotInfo | undefined,
+  ) {
     liveClientData = produce(liveClientData, (draft) => {
-      if (subtreeUpdate.snapshot) {
-        draft.snapshotInfo = {
-          nodeId: subtreeUpdate.rootId,
-          base64Image: subtreeUpdate.snapshot,
-        };
+      if (snapshotInfo) {
+        draft.snapshotInfo = snapshotInfo;
       }
 
-      subtreeUpdate.nodes.forEach((node) => {
-        draft.nodes.set(node.id, {...node});
-      });
-      setParentPointers(rootId.get()!!, undefined, draft.nodes);
+      draft.nodes = nodes;
     });
 
     uiState.expandedNodes.update((draft) => {
-      for (const node of subtreeUpdate.nodes) {
+      for (const node of nodes.values()) {
         if (!seenNodes.has(node.id)) {
           draft.add(node.id);
         }
@@ -241,20 +325,29 @@ export function plugin(client: PluginClient<Events>) {
     });
 
     if (!uiState.isPaused.get()) {
-      nodes.set(liveClientData.nodes);
+      nodesAtom.set(liveClientData.nodes);
       snapshot.set(liveClientData.snapshotInfo);
 
-      checkFocusedNodeStillActive(uiState, nodes.get());
+      checkFocusedNodeStillActive(uiState, nodesAtom.get());
     }
+  }
+  client.onMessage('subtreeUpdate', (subtreeUpdate) => {
+    processFrame({
+      frameTime: subtreeUpdate.txId,
+      nodes: subtreeUpdate.nodes,
+      snapshot: {data: subtreeUpdate.snapshot, nodeId: subtreeUpdate.rootId},
+      frameworkEvents: subtreeUpdate.frameworkEvents,
+    });
   });
+  client.onMessage('frameScan', processFrame);
 
   const queryClient = new QueryClient({});
 
   return {
     rootId,
     uiState,
-    uiActions: uiActions(uiState, nodes),
-    nodes,
+    uiActions: uiActions(uiState, nodesAtom),
+    nodes: nodesAtom,
     frameworkEvents,
     snapshot,
     metadata,
@@ -265,21 +358,6 @@ export function plugin(client: PluginClient<Events>) {
   };
 }
 
-function setParentPointers(
-  cur: Id,
-  parent: Id | undefined,
-  nodes: Map<Id, UINode>,
-) {
-  const node = nodes.get(cur);
-  if (node == null) {
-    return;
-  }
-  node.parent = parent;
-  node.children.forEach((child) => {
-    setParentPointers(child, cur, nodes);
-  });
-}
-
 type UIActions = {
   onHoverNode: (node: Id) => void;
   onFocusNode: (focused?: Id) => void;
@@ -287,7 +365,7 @@ type UIActions = {
   onSelectNode: (node?: Id) => void;
   onExpandNode: (node: Id) => void;
   onCollapseNode: (node: Id) => void;
-  setVisualiserWidth: (width: Id) => void;
+  setVisualiserWidth: (width: number) => void;
 };
 
 function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
@@ -362,7 +440,7 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
 function checkFocusedNodeStillActive(uiState: UIState, nodes: Map<Id, UINode>) {
   const focusedNodeId = uiState.focusedNode.get();
   const focusedNode = focusedNodeId && nodes.get(focusedNodeId);
-  if (focusedNode && !isFocusedNodeAncestryAllActive(focusedNode, nodes)) {
+  if (!focusedNode || !isFocusedNodeAncestryAllActive(focusedNode, nodes)) {
     uiState.focusedNode.set(undefined);
   }
 }
@@ -409,6 +487,7 @@ function collapseinActiveChildren(node: UINode, expandedNodes: Draft<Set<Id>>) {
 const HighlightTime = 300;
 
 export {Component} from './components/main';
+export * from './types';
 
 setLogger({
   log: (...args) => {
