@@ -24,18 +24,18 @@ data class MetadataUpdateEvent(val attributeMetadata: Map<MetadataId, Metadata> 
 }
 
 @kotlinx.serialization.Serializable
-data class SubtreeUpdateEvent(
-    val txId: Long,
-    val observerType: String,
-    val rootId: Id,
+data class FrameScanEvent(
+    val frameTime: Long,
     val nodes: List<Node>,
-    val snapshot: String?,
+    val snapshot: Snapshot?,
     val frameworkEvents: List<FrameworkEvent>?
 ) {
   companion object {
-    const val name = "subtreeUpdate"
+    const val name = "frameScan"
   }
 }
+
+@kotlinx.serialization.Serializable data class Snapshot(val nodeId: Id, val data: String)
 
 /** Separate optional performance statistics event */
 @kotlinx.serialization.Serializable
