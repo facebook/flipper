@@ -9,6 +9,7 @@
 
 import {promisify} from 'util';
 import fs from 'fs-extra';
+import os from 'os';
 import {
   openssl,
   isInstalled as opensslInstalled,
@@ -18,13 +19,15 @@ import tmp, {FileOptions} from 'tmp';
 import {reportPlatformFailures} from 'flipper-common';
 import {isTest} from 'flipper-common';
 import {flipperDataFolder} from './paths';
+import * as jwt from 'jsonwebtoken';
+import {getFlipperServerConfig} from '../FlipperServerConfig';
 
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,
 ) => Promise<string>;
 
-const getFilePath = (fileName: string): string => {
-  return path.resolve(flipperDataFolder, 'certs', fileName);
+const getFilePath = (filename: string): string => {
+  return path.resolve(flipperDataFolder, 'certs', filename);
 };
 
 // Desktop file paths
@@ -69,16 +72,23 @@ export const ensureOpenSSLIsAvailable = async (): Promise<void> => {
   }
 };
 
+let serverConfig: SecureServerConfig | undefined;
 export const loadSecureServerConfig = async (): Promise<SecureServerConfig> => {
+  if (serverConfig) {
+    return serverConfig;
+  }
+
   await ensureOpenSSLIsAvailable();
   await certificateSetup();
-  return {
+  await generateAuthToken();
+  serverConfig = {
     key: await fs.readFile(serverKey),
     cert: await fs.readFile(serverCert),
     ca: await fs.readFile(caCert),
     requestCert: true,
     rejectUnauthorized: true, // can be false if necessary as we don't strictly need to verify the client
   };
+  return serverConfig;
 };
 
 export const extractAppNameFromCSR = async (csr: string): Promise<string> => {
@@ -253,4 +263,45 @@ const writeToTempFile = async (content: string): Promise<string> => {
   const path = await tmpFile();
   await fs.writeFile(path, content);
   return path;
+};
+
+const getStaticFilePath = (filename: string): string => {
+  return path.resolve(getFlipperServerConfig().paths.staticPath, filename);
+};
+
+const tokenFilename = 'auth.token';
+const getTokenPath = (): string => {
+  const path = getStaticFilePath(tokenFilename);
+  return path;
+};
+
+export const generateAuthToken = async () => {
+  const privateKey = await fs.readFile(serverKey);
+  const token = jwt.sign({unixname: os.userInfo().username}, privateKey, {
+    algorithm: 'RS256',
+    expiresIn: '21 days',
+  });
+
+  await fs.writeFile(getTokenPath(), token);
+
+  return token;
+};
+
+export const getAuthToken = async () => {
+  if (!(await fs.pathExists(getTokenPath()))) {
+    return generateAuthToken();
+  }
+
+  const token = await fs.readFile(getTokenPath());
+  return token.toString();
+};
+
+export const validateAuthToken = (token: string) => {
+  if (!serverConfig) {
+    throw new Error(
+      'Unable to validate auth token as no server configuration is available',
+    );
+  }
+
+  jwt.verify(token, serverConfig.cert);
 };

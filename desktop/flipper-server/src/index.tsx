@@ -21,6 +21,7 @@ import {initCompanionEnv} from 'flipper-server-companion';
 import {startFlipperServer, startServer} from 'flipper-server-core';
 import {isTest} from 'flipper-common';
 import exitHook from 'exit-hook';
+import {getAuthToken} from 'flipper-server-core';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -163,7 +164,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 start()
-  .then(() => {
+  .then(async () => {
     if (!argv.tcp) {
       console.log('Flipper server started and listening');
       return;
@@ -171,7 +172,8 @@ start()
     console.log(
       'Flipper server started and listening at port ' + chalk.green(argv.port),
     );
-    const url = `http://localhost:${argv.port}`;
+    const token = await getAuthToken();
+    const url = `http://localhost:${argv.port}?token=${token}`;
     console.log('Go to: ' + chalk.green(chalk.bold(url)));
     if (argv.open) {
       open(url);
