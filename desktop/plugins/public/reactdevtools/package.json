@@ -21,8 +21,8 @@
   "dependencies": {
     "@rollup/plugin-commonjs": "^21.0.3",
     "@rollup/plugin-node-resolve": "^13.1.3",
-    "react-devtools-core": "^4.27.2",
-    "react-devtools-inline": "^4.27.2",
+    "react-devtools-core": "^4.27.7",
+    "react-devtools-inline": "^4.27.7",
     "rollup": "^2.70.1",
     "ws": "^8.5.0"
   },
