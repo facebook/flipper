@@ -271,8 +271,12 @@ const getStaticFilePath = (filename: string): string => {
 
 const tokenFilename = 'auth.token';
 const getTokenPath = (): string => {
-  const path = getStaticFilePath(tokenFilename);
-  return path;
+  const config = getFlipperServerConfig();
+  if (config.environmentInfo.isHeadlessBuild) {
+    return getStaticFilePath(tokenFilename);
+  }
+
+  return getFilePath(tokenFilename);
 };
 
 export const generateAuthToken = async () => {
