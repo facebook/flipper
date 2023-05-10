@@ -21,7 +21,6 @@ import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, Metadata, MetadataId, UINode} from '../types';
 import {PerfStats} from './PerfStats';
 import {Visualization2D} from './Visualization2D';
-import {useKeyboardModifiers} from '../hooks/useKeyboardModifiers';
 import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
 import {Button, Spin} from 'antd';
@@ -40,8 +39,6 @@ export function Component() {
   const [showPerfStats, setShowPerfStats] = useState(false);
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
-
-  const {ctrlPressed} = useKeyboardModifiers();
 
   const [bottomPanelComponent, setBottomPanelComponent] = useState<
     ReactNode | undefined
@@ -104,7 +101,6 @@ export function Component() {
                       width={visualiserWidth}
                       nodes={nodes}
                       onSelectNode={instance.uiActions.onSelectNode}
-                      modifierPressed={ctrlPressed}
                     />
                   </Layout.ScrollContainer>
                 </ResizablePanel>

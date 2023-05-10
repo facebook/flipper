@@ -22,9 +22,8 @@ export const Visualization2D: React.FC<
     width: number;
     nodes: Map<Id, UINode>;
     onSelectNode: (id?: Id) => void;
-    modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({width, nodes, onSelectNode, modifierPressed}) => {
+> = ({width, nodes, onSelectNode}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
   const instance = usePlugin(plugin);
 
@@ -148,7 +147,6 @@ export const Visualization2D: React.FC<
           <MemoedVisualizationNode2D
             node={focusState.focusedRoot}
             onSelectNode={onSelectNode}
-            modifierPressed={modifierPressed}
           />
         </div>
       </div>
@@ -159,19 +157,15 @@ export const Visualization2D: React.FC<
 const MemoedVisualizationNode2D = React.memo(
   Visualization2DNode,
   (prev, next) => {
-    return (
-      prev.node === next.node && prev.modifierPressed === next.modifierPressed
-    );
+    return prev.node === next.node;
   },
 );
 
 function Visualization2DNode({
   node,
   onSelectNode,
-  modifierPressed,
 }: {
   node: NestedNode;
-  modifierPressed: boolean;
   onSelectNode: (id?: Id) => void;
 }) {
   const instance = usePlugin(plugin);
@@ -200,18 +194,11 @@ function Visualization2DNode({
     nestedChildren = node.children;
   }
 
-  // stop drawing children if hovered with the modifier so you
-  // can see parent views without their children getting in the way
-  if (isHovered && modifierPressed) {
-    nestedChildren = [];
-  }
-
   const children = nestedChildren.map((child) => (
     <MemoedVisualizationNode2D
       key={child.id}
       node={child}
       onSelectNode={onSelectNode}
-      modifierPressed={modifierPressed}
     />
   ));
 
