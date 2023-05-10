@@ -39,6 +39,7 @@ export async function startFlipperServer(
   enableLauncherSettings: boolean,
   keytarModule: KeytarModule,
   type: FlipperServerType,
+  isHeadless: boolean,
 ): Promise<FlipperServerImpl> {
   const execPath = process.execPath;
   const appPath = rootDir;
@@ -53,7 +54,11 @@ export async function startFlipperServer(
     desktopPath = os.homedir();
   }
 
-  const environmentInfo = await getEnvironmentInfo(appPath, isProduction, true);
+  const environmentInfo = await getEnvironmentInfo(
+    appPath,
+    isProduction,
+    isHeadless,
+  );
 
   return new FlipperServerImpl(
     {

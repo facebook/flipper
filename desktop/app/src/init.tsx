@@ -182,6 +182,7 @@ async function getFlipperServer(
         false,
         keytar,
         'embedded',
+        environmentInfo.isHeadlessBuild,
       );
 
       const companionEnv = await initCompanionEnv(server);

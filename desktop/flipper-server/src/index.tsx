@@ -117,6 +117,7 @@ async function start() {
     argv.launcherSettings,
     keytar,
     'external',
+    true,
   );
 
   exitHook(async () => {
