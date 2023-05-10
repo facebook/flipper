@@ -13,6 +13,7 @@ export type CreatePasteArgs = {
   showSuccessNotification?: boolean;
   showErrorNotification?: boolean;
   writeToClipboard?: boolean;
+  language?: string;
 };
 
 export type CreatePasteResult = {
