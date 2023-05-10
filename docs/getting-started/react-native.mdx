@@ -37,6 +37,10 @@ Android:
 1. Bump the `FLIPPER_VERSION` variable in `android/gradle.properties`, for example: `FLIPPER_VERSION=0.190.0`.
 2. Run `./gradlew clean` in the `android` directory.
 
+For react-native-flipper > 0.182.0 also modify the `app/build.gradle` file to lock the fresco version to 0.182.0
+`debugImplementation("com.facebook.flipper:flipper-fresco-plugin:0.182.0")`
+
+
 iOS:
 
 react-native version => 0.69.0
