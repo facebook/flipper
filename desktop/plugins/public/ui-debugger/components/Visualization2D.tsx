@@ -227,12 +227,8 @@ function Visualization2DNode({
           top: toPx(node.bounds.y),
           width: toPx(node.bounds.width),
           height: toPx(node.bounds.height),
-          opacity: isSelected || isHighlighted ? 0.3 : 1,
-          backgroundColor: isHighlighted
-            ? 'red'
-            : isSelected
-            ? theme.selectionBackgroundColor
-            : 'transparent',
+          opacity: isHighlighted ? 0.3 : 1,
+          backgroundColor: isHighlighted ? 'red' : 'transparent',
         }}
         onClick={(e) => {
           e.stopPropagation();
@@ -244,7 +240,10 @@ function Visualization2DNode({
             onSelectNode(hoveredNodes[0]);
           }
         }}>
-        <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
+        <NodeBorder
+          hovered={isHovered}
+          selected={isSelected}
+          tags={node.tags}></NodeBorder>
         {children}
       </div>
     </Tooltip>
@@ -336,21 +335,25 @@ const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
  * node itself so that it has the same size but the border doesnt affect the sizing of its children
  * as border is part of the box model
  */
-const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
+const NodeBorder = styled.div<{
+  tags: Tag[];
+  hovered: boolean;
+  selected: boolean;
+}>((props) => ({
   position: 'absolute',
   top: 0,
   left: 0,
   bottom: 0,
   right: 0,
   boxSizing: 'border-box',
-  borderWidth: props.hovered ? '2px' : '1px',
+  borderWidth: props.selected || props.hovered ? '2px' : '1px',
   borderStyle: 'solid',
   color: 'transparent',
-  borderColor: props.tags.includes('Declarative')
-    ? 'green'
-    : props.tags.includes('Native')
-    ? 'blue'
-    : 'black',
+  borderColor: props.selected
+    ? theme.primaryColor
+    : props.hovered
+    ? theme.selectionBackgroundColor
+    : theme.disabledColor,
 }));
 
 const longHoverDelay = 200;
