@@ -220,6 +220,7 @@ module.exports = {
             leadingUnderscore: 'allow',
           },
         ],
+        '@typescript-eslint/no-non-null-assertion': 'warn',
       },
     },
     {
