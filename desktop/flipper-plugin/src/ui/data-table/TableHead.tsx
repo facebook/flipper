@@ -175,7 +175,7 @@ function TableHeadColumn({
   };
 
   let divProps: HTMLAttributes<HTMLDivElement> = {};
-  if (column.sortable) {
+  if (column.sortable !== false) {
     divProps = {
       onClick: (e) => {
         e.stopPropagation();
@@ -208,7 +208,7 @@ function TableHeadColumn({
           ) : (
             column.title
           )}
-          {column.sortable ? (
+          {column.sortable !== false ? (
             <SortIcons
               direction={sorted}
               onSort={(dir) =>
