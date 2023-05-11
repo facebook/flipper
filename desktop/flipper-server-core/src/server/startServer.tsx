@@ -27,7 +27,7 @@ import {validateAuthToken} from '../utils/certificateUtils';
 
 type Config = {
   port: number;
-  staticDir: string;
+  staticPath: string;
   entry: string;
   tcp: boolean;
 };
@@ -99,7 +99,7 @@ async function startHTTPServer(config: Config): Promise<{
   });
 
   app.get('/', (_req, res) => {
-    fs.readFile(path.join(config.staticDir, config.entry), (_err, content) => {
+    fs.readFile(path.join(config.staticPath, config.entry), (_err, content) => {
       res.end(content);
     });
   });
@@ -108,7 +108,7 @@ async function startHTTPServer(config: Config): Promise<{
     res.end('flipper-ok');
   });
 
-  app.use(express.static(config.staticDir));
+  app.use(express.static(config.staticPath));
 
   return startProxyServer(config, app);
 }
