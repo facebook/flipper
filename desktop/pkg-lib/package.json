@@ -27,7 +27,7 @@
     "@types/node": "^17.0.31",
     "@types/npm-packlist": "^1.1.2",
     "flipper-test-utils": "0.0.0",
-    "mock-fs": "^5.1.2"
+    "mock-fs": "^5.2.0"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",

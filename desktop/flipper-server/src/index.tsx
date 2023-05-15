@@ -18,9 +18,14 @@ import fs from 'fs-extra';
 import yargs from 'yargs';
 import open from 'open';
 import {initCompanionEnv} from 'flipper-server-companion';
-import {startFlipperServer, startServer} from 'flipper-server-core';
+import {
+  getEnvironmentInfo,
+  startFlipperServer,
+  startServer,
+} from 'flipper-server-core';
 import {isTest} from 'flipper-common';
 import exitHook from 'exit-hook';
+import {getAuthToken} from 'flipper-server-core';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -75,19 +80,19 @@ console.log(
   }`,
 );
 
-const rootDir = argv.bundler
+const rootPath = argv.bundler
   ? path.resolve(__dirname, '..', '..')
   : path.resolve(__dirname, '..'); // in pre packaged versions of the server, static is copied inside the package
-const staticDir = path.join(rootDir, 'static');
+const staticPath = path.join(rootPath, 'static');
 
 async function start() {
-  const enhanceLogger = await initializeLogger(staticDir);
+  const enhanceLogger = await initializeLogger(staticPath);
 
   let keytar: any = undefined;
   try {
     if (!isTest()) {
       const keytarPath = path.join(
-        staticDir,
+        staticPath,
         'native-modules',
         `keytar-${process.platform}-${process.arch}.node`,
       );
@@ -103,19 +108,29 @@ async function start() {
   }
 
   const {app, server, socket, readyForIncomingConnections} = await startServer({
-    staticDir,
+    staticPath,
     entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
     port: argv.port,
     tcp: argv.tcp,
   });
 
+  const isProduction =
+    process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
+
+  const environmentInfo = await getEnvironmentInfo(
+    rootPath,
+    isProduction,
+    true,
+  );
+
   const flipperServer = await startFlipperServer(
-    rootDir,
-    staticDir,
+    rootPath,
+    staticPath,
     argv.settingsString,
     argv.launcherSettings,
     keytar,
     'external',
+    environmentInfo,
   );
 
   exitHook(async () => {
@@ -140,7 +155,7 @@ async function start() {
   await flipperServer.connect();
 
   if (argv.bundler) {
-    await attachDevServer(app, server, socket, rootDir);
+    await attachDevServer(app, server, socket, rootPath);
   }
   await readyForIncomingConnections(flipperServer, companionEnv);
 }
@@ -163,7 +178,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 start()
-  .then(() => {
+  .then(async () => {
     if (!argv.tcp) {
       console.log('Flipper server started and listening');
       return;
@@ -171,7 +186,8 @@ start()
     console.log(
       'Flipper server started and listening at port ' + chalk.green(argv.port),
     );
-    const url = `http://localhost:${argv.port}`;
+    const token = await getAuthToken();
+    const url = `http://localhost:${argv.port}?token=${token}`;
     console.log('Go to: ' + chalk.green(chalk.bold(url)));
     if (argv.open) {
       open(url);

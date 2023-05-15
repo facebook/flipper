@@ -102,7 +102,7 @@ async function getFlipperServer(
   const execPath =
     process.execPath || (await electronIpcClient.send('getProcess')).execPath;
   const appPath = await electronIpcClient.send('getPath', 'app');
-  const staticPath = getStaticDir(appPath);
+  const staticPath = getStaticPath(appPath);
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
   const env = process.env;
   const environmentInfo = await getEnvironmentInfo(
@@ -169,7 +169,7 @@ async function getFlipperServer(
       }
 
       const {readyForIncomingConnections} = await startServer({
-        staticDir: staticPath,
+        staticPath,
         entry: 'index.web.dev.html',
         tcp: false,
         port,
@@ -182,6 +182,7 @@ async function getFlipperServer(
         false,
         keytar,
         'embedded',
+        environmentInfo,
       );
 
       const companionEnv = await initCompanionEnv(server);
@@ -234,7 +235,7 @@ start().catch((e) => {
     'Failed to start Flipper desktop: ' + e;
 });
 
-function getStaticDir(appPath: string) {
+function getStaticPath(appPath: string) {
   let _staticPath = path.resolve(__dirname, '..', '..', 'static');
   // fs.existSync used here, as fs-extra doesn't resovle properly in the app.asar
   /* eslint-disable node/no-sync*/

@@ -19,11 +19,12 @@ import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
+import com.facebook.flipper.plugins.uidebugger.model.FrameScanEvent
 import com.facebook.flipper.plugins.uidebugger.model.FrameworkEvent
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
-import com.facebook.flipper.plugins.uidebugger.model.SubtreeUpdateEvent
+import com.facebook.flipper.plugins.uidebugger.model.Snapshot
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.atomic.AtomicInteger
@@ -111,12 +112,12 @@ class TreeObserverManager(val context: UIDContext) {
     val snapshotUpdate = batchedUpdate.updates.find { it.snapshot != null }
     val deferredComputationEndTimestamp = System.currentTimeMillis()
 
-    var snapshot: String? = null
+    var snapshot: Snapshot? = null
     if (snapshotUpdate?.snapshot != null) {
       val stream = ByteArrayOutputStream()
       val base64Stream = Base64OutputStream(stream, Base64.DEFAULT)
       snapshotUpdate.snapshot.bitmap?.compress(Bitmap.CompressFormat.PNG, 100, base64Stream)
-      snapshot = stream.toString()
+      snapshot = Snapshot(snapshotUpdate.rootId, stream.toString())
       snapshotUpdate.snapshot.readyForReuse()
     }
 
@@ -126,18 +127,12 @@ class TreeObserverManager(val context: UIDContext) {
 
     val serialized =
         Json.encodeToString(
-            SubtreeUpdateEvent.serializer(),
-            SubtreeUpdateEvent(
-                batchedUpdate.frameTimeMs,
-                "batched",
-                snapshotUpdate?.rootId ?: 1,
-                nodes,
-                snapshot,
-                frameworkEvents))
+            FrameScanEvent.serializer(),
+            FrameScanEvent(batchedUpdate.frameTimeMs, nodes, snapshot, frameworkEvents))
 
     val serialisationEndTimestamp = System.currentTimeMillis()
 
-    context.connectionRef.connection?.send(SubtreeUpdateEvent.name, serialized)
+    context.connectionRef.connection?.send(FrameScanEvent.name, serialized)
 
     val socketEndTimestamp = System.currentTimeMillis()
     Log.i(LogTag, "Sent event for batched subtree update  with  nodes with ${nodes.size}")

@@ -30,6 +30,7 @@ async function start() {
   const flipperServer = await createFlipperServer(
     location.hostname,
     parseInt(location.port, 10),
+    location.search,
     (state: FlipperServerState) => {
       switch (state) {
         case FlipperServerState.CONNECTING:

@@ -12,12 +12,12 @@ import {
   parseEnvironmentVariables,
   getLogger,
   FlipperServerType,
+  EnvironmentInfo,
 } from 'flipper-common';
 import path from 'path';
 import fs from 'fs-extra';
 import {KeytarModule} from '../utils/keytar';
 import {FlipperServerImpl} from '../FlipperServerImpl';
-import {getEnvironmentInfo} from '../utils/environmentInfo';
 import {getGatekeepers} from '../gk';
 import {loadLauncherSettings} from '../utils/launcherSettings';
 import {loadProcessConfig} from '../utils/processConfig';
@@ -26,24 +26,23 @@ import {loadSettings} from '../utils/settings';
 /**
  * Creates an instance of FlipperServer (FlipperServerImpl). This is the
  * server used by clients to connect to.
- * @param rootDir Application path.
+ * @param rootPath Application path.
  * @param staticPath Static assets path.
  * @param settingsString Optional settings used to override defaults.
  * @param enableLauncherSettings Optional launcher settings used to override defaults.
  * @returns
  */
 export async function startFlipperServer(
-  rootDir: string,
+  rootPath: string,
   staticPath: string,
   settingsString: string,
   enableLauncherSettings: boolean,
   keytarModule: KeytarModule,
   type: FlipperServerType,
+  environmentInfo: EnvironmentInfo,
 ): Promise<FlipperServerImpl> {
   const execPath = process.execPath;
-  const appPath = rootDir;
-  const isProduction =
-    process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
+  const appPath = rootPath;
   const env = process.env;
   let desktopPath = path.resolve(os.homedir(), 'Desktop');
 
@@ -52,14 +51,10 @@ export async function startFlipperServer(
     console.warn('Failed to find desktop path, falling back to homedir');
     desktopPath = os.homedir();
   }
-
-  const environmentInfo = await getEnvironmentInfo(appPath, isProduction, true);
-
   return new FlipperServerImpl(
     {
       environmentInfo,
       env: parseEnvironmentVariables(process.env),
-      // TODO: make username parameterizable
       gatekeepers: getGatekeepers(environmentInfo.os.unixname),
       paths: {
         appPath,
