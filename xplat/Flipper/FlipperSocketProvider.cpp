@@ -12,17 +12,18 @@
 namespace facebook {
 namespace flipper {
 
-std::unique_ptr<FlipperSocketProvider> FlipperSocketProvider::provider_ =
-    nullptr;
-
-std::unique_ptr<FlipperSocketProvider> FlipperSocketProvider::shelvedProvider_ =
-    nullptr;
+std::unique_ptr<FlipperSocketProvider>&
+FlipperSocketProvider::defaultProvider() {
+  static std::unique_ptr<FlipperSocketProvider> provider;
+  return provider;
+}
 
 std::unique_ptr<FlipperSocket> FlipperSocketProvider::socketCreate(
     FlipperConnectionEndpoint endpoint,
     std::unique_ptr<FlipperSocketBasePayload> payload,
     Scheduler* scheduler) {
-  return provider_->create(std::move(endpoint), std::move(payload), scheduler);
+  return defaultProvider()->create(
+      std::move(endpoint), std::move(payload), scheduler);
 }
 
 std::unique_ptr<FlipperSocket> FlipperSocketProvider::socketCreate(
@@ -30,7 +31,7 @@ std::unique_ptr<FlipperSocket> FlipperSocketProvider::socketCreate(
     std::unique_ptr<FlipperSocketBasePayload> payload,
     Scheduler* scheduler,
     ConnectionContextStore* connectionContextStore) {
-  return provider_->create(
+  return defaultProvider()->create(
       std::move(endpoint),
       std::move(payload),
       scheduler,
@@ -39,11 +40,11 @@ std::unique_ptr<FlipperSocket> FlipperSocketProvider::socketCreate(
 
 void FlipperSocketProvider::setDefaultProvider(
     std::unique_ptr<FlipperSocketProvider> provider) {
-  provider_ = std::move(provider);
+  defaultProvider() = std::move(provider);
 }
 
 bool FlipperSocketProvider::hasProvider() {
-  return provider_ != nullptr;
+  return defaultProvider() != nullptr;
 }
 
 } // namespace flipper
