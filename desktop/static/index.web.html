@@ -4,9 +4,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+
   <link rel="icon" href="icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+
   <link id="flipper-theme-import" rel="stylesheet">
+
   <title>Flipper</title>
   <script>
     window.flipperConfig = {
@@ -43,6 +48,7 @@
       left: 0;
       position: absolute;
     }
+
   </style>
 </head>
 
@@ -53,11 +59,7 @@
     </div>
   </div>
 
-
-  <div class="__infinity-dev-box __infinity-dev-box-error" hidden>
-
-  </div>
-
+  <div class="__infinity-dev-box __infinity-dev-box-error" hidden />
   <script>
       (function () {
         // FIXME: needed to make Metro work
@@ -69,10 +71,16 @@
             return;
           }
 
-          const box = document.querySelector('.__infinity-dev-box-error');
-          box.removeAttribute('hidden');
-          box.textContent = text;
-          box.appendChild(closeButton);
+          let box = document.getElementById('loading');
+          if (box) {
+            box.innerText = text;
+          }
+          else {
+            box = document.querySelector('.__infinity-dev-box-error');
+            box.removeAttribute('hidden');
+            box.innerText = text;
+            box.appendChild(closeButton);
+          }
         }
         window.flipperShowError = openError;
         window.flipperHideError = () => {
@@ -106,6 +114,25 @@
 
           document.body.appendChild(script);
         }
+
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker
+            .register('/service-worker.js')
+            .then(() => {
+              console.log('Flipper Service Worker has been registered');
+            })
+            .catch((e) => {
+              console.error('Flipper failed to register Service Worker', e);
+            });
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+          // Prevent Chrome 67 and earlier from automatically showing the prompt.
+          e.preventDefault();
+          // Stash the event so it can be triggered later.
+          global.PWAppInstallationEvent = e;
+        });
+
         init();
       })();
   </script>

@@ -26,6 +26,7 @@ import {
 import {isTest} from 'flipper-common';
 import exitHook from 'exit-hook';
 import {getAuthToken} from 'flipper-server-core';
+import {findInstallation} from './findInstallation';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -158,6 +159,8 @@ async function start() {
     await attachDevServer(app, server, socket, rootPath);
   }
   await readyForIncomingConnections(flipperServer, companionEnv);
+
+  return flipperServer;
 }
 
 process.on('uncaughtException', (error) => {
@@ -178,19 +181,28 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 start()
-  .then(async () => {
+  .then(async (flipperServer) => {
     if (!argv.tcp) {
-      console.log('Flipper server started and listening');
+      console.log('Flipper server started');
       return;
     }
     console.log(
-      'Flipper server started and listening at port ' + chalk.green(argv.port),
+      'Flipper server started and is listening at port ' +
+        chalk.green(argv.port),
     );
     const token = await getAuthToken();
-    const url = `http://localhost:${argv.port}?token=${token}`;
+    const searchParams = new URLSearchParams({token: token ?? ''});
+    const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
     console.log('Go to: ' + chalk.green(chalk.bold(url)));
-    if (argv.open) {
-      open(url);
+    if (!argv.open) {
+      return;
+    }
+
+    if (argv.bundler) {
+      open(url.toString());
+    } else {
+      const path = await findInstallation(flipperServer);
+      open(path ?? url.toString());
     }
   })
   .catch((e) => {
