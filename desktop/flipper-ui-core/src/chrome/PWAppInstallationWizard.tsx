@@ -9,14 +9,41 @@
 
 import React from 'react';
 import {Modal, Button} from 'antd';
-import {Layout, _NuxManagerContext} from 'flipper-plugin';
+import {getFlipperLib, Layout, _NuxManagerContext} from 'flipper-plugin';
+
 type Props = {
   onHide: () => void;
 };
 
+type TrackerEvents = {
+  'pwa-installation-wizard-should-show': {show: boolean; reason: string};
+  'pwa-installation-wizard-shown': {};
+  'pwa-install-outcome': {
+    installed: boolean;
+  };
+  'pwa-install-error': {
+    error: Error;
+  };
+};
+
+class PWAWizardTracker {
+  track<Event extends keyof TrackerEvents>(
+    event: Event,
+    payload: TrackerEvents[Event],
+  ): void {
+    getFlipperLib().logger.track('usage', event, payload);
+  }
+}
+
+const tracker = new PWAWizardTracker();
+
 const lastShownTimestampKey = 'flipper-pwa-wizard-last-shown-timestamp';
 export function shouldShowPWAInstallationWizard(): boolean {
   if (window.matchMedia('(display-mode: standalone)').matches) {
+    tracker.track('pwa-installation-wizard-should-show', {
+      show: false,
+      reason: 'Display mode is standalone, seems is already running as PWA',
+    });
     return false;
   }
 
@@ -36,7 +63,13 @@ export function shouldShowPWAInstallationWizard(): boolean {
     };
     const lastShownTimestamp = Number(lastShownTimestampFromStorage);
 
-    return !withinOneDay(lastShownTimestamp);
+    const notShownWithinOneDay = !withinOneDay(lastShownTimestamp);
+
+    tracker.track('pwa-installation-wizard-should-show', {
+      show: notShownWithinOneDay,
+      reason: 'Last shown timestamp from storage is available',
+    });
+    return notShownWithinOneDay;
   }
 
   const lastShownTimestamp = Date.now();
@@ -47,6 +80,11 @@ export function shouldShowPWAInstallationWizard(): boolean {
     );
   } catch (e) {}
 
+  tracker.track('pwa-installation-wizard-should-show', {
+    show: true,
+    reason: 'Last shown timestamp from storage is not available',
+  });
+
   return true;
 }
 
@@ -56,18 +94,22 @@ async function install(event: any) {
   (event.userChoice as any)
     .then((choiceResult: any) => {
       if (choiceResult.outcome === 'accepted') {
+        tracker.track('pwa-install-outcome', {installed: true});
         console.log('PWA installation, user accepted the prompt.');
       } else {
+        tracker.track('pwa-install-outcome', {installed: false});
         console.log('PWA installation, user dismissed the prompt.');
       }
       (globalThis as any).PWAppInstallationEvent = null;
     })
-    .catch((e: Error) => {
-      console.error('PWA failed to install with error', e);
+    .catch((error: Error) => {
+      tracker.track('pwa-install-error', {error});
+      console.error('PWA failed to install with error', error);
     });
 }
 
 export default function PWAInstallationWizard(props: Props) {
+  tracker.track('pwa-installation-wizard-shown', {});
   const contents = (
     <Layout.Container gap>
       <Layout.Container style={{width: '100%', paddingBottom: 15}}>
