@@ -224,6 +224,9 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
     'icons.json',
     'index.web.dev.html',
     'index.web.html',
+    'manifest.json',
+    'offline.html',
+    'service-worker.js',
     'style.css',
   ];
   if (isFB) {

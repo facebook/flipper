@@ -1,0 +1,18 @@
+{
+    "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+    "name": "Flipper",
+    "description": "Flipper is a platform for debugging iOS, Android and React Native apps",
+    "short_name": "Flipper",
+    "start_url": "index.web.html",
+    "display": "standalone",
+    "background_color": "#fff",
+    "theme_color": "#4267B2",
+    "orientation": "portrait-primary",
+    "icons": [
+      {
+        "src": "/icon.png",
+        "type": "image/png",
+        "sizes": "256x256"
+      }
+    ]
+  }

@@ -24,6 +24,7 @@ import {attachSocketServer} from './attachSocketServer';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {FlipperServerCompanionEnv} from 'flipper-server-companion';
 import {validateAuthToken} from '../utils/certificateUtils';
+import {getLogger} from 'flipper-common';
 
 type Config = {
   port: number;
@@ -50,14 +51,21 @@ const verifyAuthToken = (req: http.IncomingMessage): boolean => {
 
   if (!token) {
     console.warn('[conn] A token is required for authentication');
+    getLogger().track('usage', 'client-authentication-token-not-found');
     return false;
   }
 
   try {
     validateAuthToken(token);
     console.info('[conn] Token was successfully validated');
+    getLogger().track('usage', 'client-authentication-token-validation', {
+      valid: true,
+    });
   } catch (err) {
     console.warn('[conn] An invalid token was supplied for authentication');
+    getLogger().track('usage', 'client-authentication-token-validation', {
+      valid: false,
+    });
     return false;
   }
   return true;

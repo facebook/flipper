@@ -16,7 +16,7 @@ import {
 } from './openssl-wrapper-with-promises';
 import path from 'path';
 import tmp, {FileOptions} from 'tmp';
-import {reportPlatformFailures} from 'flipper-common';
+import {FlipperServerConfig, reportPlatformFailures} from 'flipper-common';
 import {isTest} from 'flipper-common';
 import {flipperDataFolder} from './paths';
 import * as jwt from 'jsonwebtoken';
@@ -265,38 +265,68 @@ const writeToTempFile = async (content: string): Promise<string> => {
   return path;
 };
 
-const getStaticFilePath = (filename: string): string => {
-  return path.resolve(getFlipperServerConfig().paths.staticPath, filename);
-};
-
 const tokenFilename = 'auth.token';
-const getTokenPath = (): string => {
-  const config = getFlipperServerConfig();
+const getTokenPath = (config: FlipperServerConfig): string => {
   if (config.environmentInfo.isHeadlessBuild) {
-    return getStaticFilePath(tokenFilename);
+    return path.resolve(config.paths.staticPath, tokenFilename);
   }
 
   return getFilePath(tokenFilename);
 };
+const manifestFilename = 'manifest.json';
+const getManifestPath = (config: FlipperServerConfig): string => {
+  return path.resolve(config.paths.staticPath, manifestFilename);
+};
+
+const exportTokenToManifest = async (
+  config: FlipperServerConfig,
+  token: string,
+) => {
+  const manifestPath = getManifestPath(config);
+  try {
+    const manifestData = await fs.readFile(manifestPath, {
+      encoding: 'utf-8',
+    });
+    const manifest = JSON.parse(manifestData);
+    manifest.token = token;
+
+    const newManifestData = JSON.stringify(manifest, null, 4);
+
+    await fs.writeFile(manifestPath, newManifestData);
+  } catch (e) {
+    console.error(
+      'Unable to export authentication token to manifest, may be non existent.',
+    );
+  }
+};
 
 export const generateAuthToken = async () => {
+  const config = getFlipperServerConfig();
+
   const privateKey = await fs.readFile(serverKey);
   const token = jwt.sign({unixname: os.userInfo().username}, privateKey, {
     algorithm: 'RS256',
     expiresIn: '21 days',
   });
 
-  await fs.writeFile(getTokenPath(), token);
+  await fs.writeFile(getTokenPath(config), token);
+
+  if (config.environmentInfo.isHeadlessBuild) {
+    await exportTokenToManifest(config, token);
+  }
 
   return token;
 };
 
 export const getAuthToken = async () => {
-  if (!(await fs.pathExists(getTokenPath()))) {
+  const config = getFlipperServerConfig();
+  const tokenPath = getTokenPath(config);
+
+  if (!(await fs.pathExists(tokenPath))) {
     return generateAuthToken();
   }
 
-  const token = await fs.readFile(getTokenPath());
+  const token = await fs.readFile(tokenPath);
   return token.toString();
 };
 

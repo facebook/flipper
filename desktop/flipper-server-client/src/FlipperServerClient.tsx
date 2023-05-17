@@ -30,10 +30,10 @@ export type {FlipperServer, FlipperServerCommands, FlipperServerExecOptions};
 export function createFlipperServer(
   host: string,
   port: number,
-  args: string,
+  args: URLSearchParams,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
-  const socket = new ReconnectingWebSocket(`ws://${host}:${port}${args}`);
+  const socket = new ReconnectingWebSocket(`ws://${host}:${port}?${args}`);
   return createFlipperServerWithSocket(socket as WebSocket, onStateChange);
 }
 
