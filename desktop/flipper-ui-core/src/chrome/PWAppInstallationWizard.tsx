@@ -10,6 +10,7 @@
 import React from 'react';
 import {Modal, Button} from 'antd';
 import {getFlipperLib, Layout, _NuxManagerContext} from 'flipper-plugin';
+import isProduction from '../utils/isProduction';
 
 type Props = {
   onHide: () => void;
@@ -39,6 +40,10 @@ const tracker = new PWAWizardTracker();
 
 const lastShownTimestampKey = 'flipper-pwa-wizard-last-shown-timestamp';
 export function shouldShowPWAInstallationWizard(): boolean {
+  if (!isProduction()) {
+    return false;
+  }
+
   if (window.matchMedia('(display-mode: standalone)').matches) {
     tracker.track('pwa-installation-wizard-should-show', {
       show: false,
