@@ -10,6 +10,7 @@
 import React from 'react';
 import {Modal, Button} from 'antd';
 import {getFlipperLib, Layout, _NuxManagerContext} from 'flipper-plugin';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import isProduction from '../utils/isProduction';
 
 type Props = {
@@ -38,9 +39,13 @@ class PWAWizardTracker {
 
 const tracker = new PWAWizardTracker();
 
+function isElectron() {
+  return !getRenderHostInstance().serverConfig.environmentInfo.isHeadlessBuild;
+}
+
 const lastShownTimestampKey = 'flipper-pwa-wizard-last-shown-timestamp';
 export function shouldShowPWAInstallationWizard(): boolean {
-  if (!isProduction()) {
+  if (!isProduction() || isElectron()) {
     return false;
   }
 
