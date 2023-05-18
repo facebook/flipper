@@ -74,6 +74,9 @@ async function runBuild({
     sourcemap: dev ? 'inline' : 'external',
     minify: !dev,
     plugins: intern ? [resolveFbStubsToFbPlugin] : undefined,
+    loader: {
+      '.ttf': 'dataurl',
+    },
   });
 
   const sourceMapUrl = `${out}.map`;
