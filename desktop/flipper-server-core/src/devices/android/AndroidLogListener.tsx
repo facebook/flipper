@@ -7,8 +7,8 @@
  * @format
  */
 
-import type {Client as ADBClient} from 'adbkit';
-import {Priority} from 'adbkit-logcat';
+import type {DeviceClient as ADBClient} from '@u4/adbkit';
+import {Priority, Reader} from '@u4/adbkit-logcat';
 import {DeviceLogEntry, DeviceLogLevel} from 'flipper-common';
 import {DeviceListener} from '../../utils/DeviceListener';
 
@@ -17,14 +17,13 @@ export class AndroidLogListener extends DeviceListener {
     isDeviceConnected: () => boolean,
     private onNewLogEntry: (logEntry: DeviceLogEntry) => void,
     private readonly adb: ADBClient,
-    private readonly serial: string,
   ) {
     super(isDeviceConnected);
   }
   protected async startListener() {
-    const reader = await this.adb.openLogcat(this.serial, {
+    const reader = (await this.adb.openLogcat({
       clear: true,
-    });
+    })) as Reader;
 
     let gracefulShutdown = false;
     let lastKnownError: Error | undefined;

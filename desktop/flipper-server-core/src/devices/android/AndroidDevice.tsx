@@ -7,8 +7,7 @@
  * @format
  */
 
-import adb, {util, Client as ADBClient, PullTransfer} from 'adbkit';
-import {Reader} from 'adbkit-logcat';
+import adb, {DeviceClient as ADBDeviceClient, PullTransfer} from '@u4/adbkit';
 import {createWriteStream} from 'fs';
 import type {DeviceDebugData, DeviceType} from 'flipper-common';
 import {spawn} from 'child_process';
@@ -27,10 +26,8 @@ export default class AndroidDevice
   extends ServerDevice
   implements DebuggableDevice
 {
-  adb: ADBClient;
-  pidAppMapping: {[key: number]: string} = {};
+  private adbClient: ADBDeviceClient;
   private recordingProcess?: Promise<string>;
-  reader?: Reader;
   readonly logListener: AndroidLogListener;
   readonly crashWatcher: AndroidCrashWatcher;
 
@@ -39,7 +36,7 @@ export default class AndroidDevice
     serial: string,
     deviceType: DeviceType,
     title: string,
-    adb: ADBClient,
+    adb: ADBDeviceClient,
     abiList: Array<string>,
     sdkVersion: string,
     specs: DeviceSpec[] = [],
@@ -58,13 +55,12 @@ export default class AndroidDevice
         screenshotAvailable: false,
       },
     });
-    this.adb = adb;
+    this.adbClient = adb;
 
     this.logListener = new AndroidLogListener(
       () => this.connected,
       (logEntry) => this.addLogEntry(logEntry),
-      this.adb,
-      this.serial,
+      this.adbClient,
     );
     // It is OK not to await the start of the log listener. We just spawn it and handle errors internally.
     this.logListener
@@ -87,9 +83,7 @@ export default class AndroidDevice
 
   reverse(ports: number[]): Promise<void> {
     return Promise.all(
-      ports.map((port) =>
-        this.adb.reverse(this.serial, `tcp:${port}`, `tcp:${port}`),
-      ),
+      ports.map((port) => this.adbClient.reverse(`tcp:${port}`, `tcp:${port}`)),
     ).then(() => {
       return;
     });
@@ -103,13 +97,13 @@ export default class AndroidDevice
 
   async navigateToLocation(location: string) {
     const shellCommand = `am start ${encodeURI(location)}`;
-    this.adb.shell(this.serial, shellCommand);
+    this.adbClient.shell(shellCommand);
   }
 
   async screenshot(): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      this.adb
-        .screencap(this.serial)
+      this.adbClient
+        .screencap()
         .then((stream) => {
           const chunks: Array<Buffer> = [];
           stream
@@ -129,7 +123,7 @@ export default class AndroidDevice
     console.debug('AndroidDevice.setIntoPermissiveMode', this.serial);
     try {
       try {
-        await this.adb.root(this.serial);
+        await this.adbClient.root();
       } catch (e) {
         if (
           !(e instanceof Error) ||
@@ -179,15 +173,15 @@ export default class AndroidDevice
   }
 
   async executeShell(command: string): Promise<string> {
-    return await this.adb
-      .shell(this.serial, command)
+    return await this.adbClient
+      .shell(command)
       .then(adb.util.readAll)
       .then((output: Buffer) => output.toString().trim());
   }
 
   private async executeShellOrDie(command: string | string[]): Promise<void> {
-    const output = await this.adb
-      .shell(this.serial, command)
+    const output = await this.adbClient
+      .shell(command)
       .then(adb.util.readAll)
       .then((output: Buffer) => output.toString().trim());
     if (output) {
@@ -196,16 +190,16 @@ export default class AndroidDevice
   }
 
   private async getSdkVersion(): Promise<number> {
-    return await this.adb
-      .shell(this.serial, 'getprop ro.build.version.sdk')
+    return await this.adbClient
+      .shell('getprop ro.build.version.sdk')
       .then(adb.util.readAll)
       .then((output) => Number(output.toString().trim()));
   }
 
   private async isValidFile(filePath: string): Promise<boolean> {
     const sdkVersion = await this.getSdkVersion();
-    const fileSize = await this.adb
-      .shell(this.serial, `ls -l "${filePath}"`)
+    const fileSize = await this.adbClient
+      .shell(`ls -l "${filePath}"`)
       .then(adb.util.readAll)
       .then((output: Buffer) => output.toString().trim().split(' '))
       .then((x) => x.filter(Boolean))
@@ -222,7 +216,7 @@ export default class AndroidDevice
     let newSize: string | undefined;
     try {
       const sizeString = (
-        await adb.util.readAll(await this.adb.shell(this.serial, 'wm size'))
+        await adb.util.readAll(await this.adbClient.shell('wm size'))
       ).toString();
       const size = sizeString.split(' ').slice(-1).pop()?.split('x');
       if (size && size.length === 2) {
@@ -239,8 +233,8 @@ export default class AndroidDevice
     }
     const sizeArg = newSize ? `--size ${newSize}` : '';
     const cmd = `screenrecord ${sizeArg} "${recordingLocation}"`;
-    this.recordingProcess = this.adb
-      .shell(this.serial, cmd)
+    this.recordingProcess = this.adbClient
+      .shell(cmd)
       .then(adb.util.readAll)
       .then(async (output) => {
         const isValid = await this.isValidFile(recordingLocation);
@@ -254,8 +248,7 @@ export default class AndroidDevice
       .then(
         (_) =>
           new Promise(async (resolve, reject) => {
-            const stream: PullTransfer = await this.adb.pull(
-              this.serial,
+            const stream: PullTransfer = await this.adbClient.pull(
               recordingLocation,
             );
             stream.on('end', resolve as () => void);
@@ -274,14 +267,14 @@ export default class AndroidDevice
     if (!recordingProcess) {
       return Promise.reject(new Error('Recording was not properly started'));
     }
-    await this.adb.shell(this.serial, `pkill -l2 screenrecord`);
+    await this.adbClient.shell(`pkill -l2 screenrecord`);
     const destination = await recordingProcess;
     this.recordingProcess = undefined;
     return destination;
   }
 
   async forwardPort(local: string, remote: string): Promise<boolean> {
-    return this.adb.forward(this.serial, local, remote);
+    return this.adbClient.forward(local, remote);
   }
 
   disconnect() {
@@ -293,7 +286,7 @@ export default class AndroidDevice
 
   async installApp(apkPath: string) {
     console.log(`Installing app with adb ${apkPath}`);
-    await this.adb.install(this.serial, apkPath);
+    await this.adbClient.install(apkPath);
   }
 
   async readFlipperFolderForAllApps(): Promise<DeviceDebugData[]> {
@@ -301,9 +294,9 @@ export default class AndroidDevice
       'AndroidDevice.readFlipperFolderForAllApps',
       this.info.serial,
     );
-    const output = await this.adb
-      .shell(this.info.serial, 'pm list packages -3 -e')
-      .then(util.readAll)
+    const output = await this.adbClient
+      .shell('pm list packages -3 -e')
+      .then(adb.util.readAll)
       .then((buffer) => buffer.toString());
 
     const appIds = output
@@ -322,7 +315,7 @@ export default class AndroidDevice
     const appsCommandsResults = await Promise.all(
       appIds.map(async (appId): Promise<DeviceDebugData | undefined> => {
         const sonarDirFilePaths = await executeCommandAsApp(
-          this.adb,
+          this.adbClient,
           this.info.serial,
           appId,
           `find /data/data/${appId}/files/sonar -type f`,
@@ -369,7 +362,7 @@ export default class AndroidDevice
             return {
               path: filePath,
               data: await pull(
-                this.adb,
+                this.adbClient,
                 this.info.serial,
                 appId,
                 filePath,
@@ -379,7 +372,7 @@ export default class AndroidDevice
         );
 
         const sonarDirContentWithStatsCommandPromise = executeCommandAsApp(
-          this.adb,
+          this.adbClient,
           this.info.serial,
           appId,
           `ls -al /data/data/${appId}/files/sonar`,

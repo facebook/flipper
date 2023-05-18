@@ -9,7 +9,7 @@
 
 import {DeviceType} from 'flipper-common';
 import AndroidDevice from './AndroidDevice';
-import {Client as ADBClient} from 'adbkit';
+import {DeviceClient} from '@u4/adbkit';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 
 export default class KaiOSDevice extends AndroidDevice {
@@ -18,7 +18,7 @@ export default class KaiOSDevice extends AndroidDevice {
     serial: string,
     deviceType: DeviceType,
     title: string,
-    adb: ADBClient,
+    adb: DeviceClient,
     abiList: Array<string>,
     sdkVersion: string,
   ) {

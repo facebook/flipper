@@ -116,7 +116,6 @@
   "productName": "Flipper",
   "resolutions": {
     "@jest-runner/electron/electron": "18.2.0",
-    "adbkit-logcat": "^2.0.1",
     "minimist": "1.2.6",
     "node-forge": "^1.0.6"
   },
