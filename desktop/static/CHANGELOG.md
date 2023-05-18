@@ -1,3 +1,11 @@
+# 0.191.0 (18/5/2023)
+
+ * [D45523026](https://github.com/facebook/flipper/search?q=D45523026&type=Commits) -  UIDebugger, fix focus mode behaviour
+ * [D45317588](https://github.com/facebook/flipper/search?q=D45317588&type=Commits) -  [Internal]
+ * [D45737758](https://github.com/facebook/flipper/search?q=D45737758&type=Commits) -  UIDebugger, improve selected and hover state of the visualiser
+ * [D45861604](https://github.com/facebook/flipper/search?q=D45861604&type=Commits) -  Improve console error logs readability
+
+
 # 0.181.0 (16/2/2023)
 
  * [D43176345](https://github.com/facebook/flipper/search?q=D43176345&type=Commits)
