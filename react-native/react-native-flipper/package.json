@@ -31,7 +31,7 @@
     "metro-config": "^0.76.0",
     "react": "^17.0.2",
     "react-native": "^0.68.2",
-    "react-native-windows": "0.68.2"
+    "react-native-windows": "1.0.0"
   },
   "resolutions": {
     "logkitty": "0.7.1",
