@@ -18,7 +18,7 @@
     "antd": "4.19.2",
     "cbuffer": "^2.2.0",
     "console-feed": "^3.3.0",
-    "deep-equal": "^2.0.5",
+    "deep-equal": "^2.2.1",
     "eventemitter3": "^4.0.7",
     "flipper-client-sdk": "^0.0.3",
     "flipper-common": "0.0.0",
