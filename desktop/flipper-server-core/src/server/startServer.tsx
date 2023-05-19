@@ -254,7 +254,7 @@ function addWebsocket(server: http.Server, config: Config) {
       // no origin header? The request is not originating from a browser, so should be OK to pass through
       // If origin matches our own address, it means we are serving the page.
 
-      return verifyAuthToken(req);
+      return process.env.SKIP_TOKEN_VERIFICATION ? true : verifyAuthToken(req);
     } else {
       // for now we don't allow cross origin request, so that an arbitrary website cannot try to
       // connect a socket to localhost:serverport, and try to use the all powerful Flipper APIs to read
