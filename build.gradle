@@ -46,8 +46,6 @@ subprojects {
 
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 31
-    compileSdkVersion = 31
     targetSdkVersion = 33
     compileSdkVersion = 33
     buildToolsVersion = "33.0.2"
@@ -69,6 +67,7 @@ ext.deps = [
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.5.1',
         supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.5.1',
         supportTestRunner  : 'androidx.test:runner:1.5.2',
+        supportCoreKtx     : 'androidx.core:core-ktx:1.10.1',
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.1',
         // First-party
