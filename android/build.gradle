@@ -48,6 +48,11 @@ android {
         }
     }
 
+    compileOptions {
+        targetCompatibility rootProject.javaTargetVersion
+        sourceCompatibility rootProject.javaTargetVersion
+    }
+
     buildFeatures {
         prefab true
     }
