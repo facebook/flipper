@@ -8,6 +8,7 @@
 apply plugin: 'com.android.library'
 
 android {
+    namespace 'com.facebook.flipper.plugins.leakcanary'
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
