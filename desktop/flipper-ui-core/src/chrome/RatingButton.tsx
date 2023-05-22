@@ -29,8 +29,8 @@ import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 import {StarOutlined} from '@ant-design/icons';
 import {Popover, Rate} from 'antd';
 import {useStore} from '../utils/useStore';
-import {isLoggedIn} from '../fb-stubs/user';
-import {useValue} from 'flipper-plugin';
+import {currentUser} from '../fb-stubs/user';
+import {theme, useValue} from 'flipper-plugin';
 import {reportPlatformFailures} from 'flipper-common';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 
@@ -254,7 +254,7 @@ class FeedbackComponent extends Component<
           paddingTop: 10,
           paddingBottom: 10,
         }}>
-        <Row key="heading" style={{color: 'black', fontSize: 20}}>
+        <Row key="heading" style={{color: theme.primaryColor, fontSize: 20}}>
           {this.state.nextAction === 'finished'
             ? this.props.promptData.postSubmitHeading
             : this.props.promptData.preSubmitHeading}
@@ -271,7 +271,7 @@ export function SandyRatingButton() {
   const [isShown, setIsShown] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
   const sessionId = useStore((store) => store.application.sessionId);
-  const loggedIn = useValue(isLoggedIn());
+  const loggedIn = useValue(currentUser());
 
   const triggerPopover = useCallback(() => {
     if (!hasTriggered) {

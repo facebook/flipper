@@ -22,34 +22,75 @@ class FragmentSupportDescriptor(val register: DescriptorRegister) :
   private var SectionId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
 
+  private var IsInLayout =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isInLayout")
+
+  private var IsAdded =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isAdded")
+  private var IsDetatched =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isDetached")
+  private var IsHidden =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isHidden")
+  private var IsVisible =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isVisible")
+
+  private var IsResumed =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isResumed")
+
+  private var IsMenuVisible =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isMenuVisible")
+
+  private var Arguements =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "arguements")
+
   override fun onGetName(node: androidx.fragment.app.Fragment): String {
     return node.javaClass.simpleName
   }
 
   override fun onGetBounds(node: Fragment): Bounds = Bounds(0, 0, 0, 0)
 
-  override fun onGetChildren(node: androidx.fragment.app.Fragment): List<Any> =
-      node.view?.let { view -> listOf(view) } ?: listOf()
+  override fun onGetChildren(node: androidx.fragment.app.Fragment): List<Any> {
+    val view = node.view
+    return if (view != null && node.isVisible) {
+      listOf(view)
+    } else {
+      listOf()
+    }
+  }
 
-  override fun onGetData(
+  override fun onGetAttributes(
       node: androidx.fragment.app.Fragment,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
+
+    val props = mutableMapOf<Int, Inspectable>()
+
+    props[IsInLayout] = InspectableValue.Boolean(node.isInLayout)
+    props[IsAdded] = InspectableValue.Boolean(node.isAdded)
+    props[IsDetatched] = InspectableValue.Boolean(node.isDetached)
+    props[IsHidden] = InspectableValue.Boolean(node.isHidden)
+    props[IsVisible] = InspectableValue.Boolean(node.isVisible)
+    props[IsResumed] = InspectableValue.Boolean(node.isResumed)
+    props[IsMenuVisible] = InspectableValue.Boolean(node.isMenuVisible)
+
+    val arguements = mutableMapOf<MetadataId, Inspectable>()
     val args = node.arguments
     args?.let { bundle ->
-      val props = mutableMapOf<Int, Inspectable>()
       for (key in bundle.keySet()) {
         val metadata = MetadataRegister.get(NAMESPACE, key)
         val identifier =
             metadata?.id
                 ?: MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, key)
         when (val value = bundle[key]) {
-          is Number -> props[identifier] = InspectableValue.Number(value)
-          is Boolean -> props[identifier] = InspectableValue.Boolean(value)
-          is String -> props[identifier] = InspectableValue.Text(value)
+          is Number -> arguements[identifier] = InspectableValue.Number(value)
+          is Boolean -> arguements[identifier] = InspectableValue.Boolean(value)
+          is String -> arguements[identifier] = InspectableValue.Text(value)
         }
       }
-      attributeSections[SectionId] = InspectableObject(props.toMap())
     }
+    if (arguements.size > 0) {
+      props[Arguements] = InspectableObject(arguements)
+    }
+    attributeSections[SectionId] = InspectableObject(props)
   }
 }

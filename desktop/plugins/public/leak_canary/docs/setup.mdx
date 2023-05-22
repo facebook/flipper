@@ -8,7 +8,7 @@ To setup the <Link to={useBaseUrl("/docs/features/plugins/leak-canary")}>LeakCan
 
 ```groovy
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper-leakcanary2-plugin:0.175.0'
+  debugImplementation 'com.facebook.flipper:flipper-leakcanary2-plugin:0.191.0'
   debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'
 }
 ```
@@ -28,7 +28,7 @@ import com.facebook.flipper.plugins.leakcanary2.LeakCanary2FlipperPlugin
     set the flipper listener in leak canary config
     */
     LeakCanary.config = LeakCanary.config.run {
-        copy(eventListeners = eventListeners + FlipperLeakEventListener)
+        copy(eventListeners = eventListeners + FlipperLeakEventListener())
     }
 
     SoLoader.init(this, false)

@@ -61,6 +61,8 @@ export {DataTableManager} from './ui/data-table/DataTableManager';
 export {DataList} from './ui/DataList';
 export {Spinner} from './ui/Spinner';
 
+export {DataSourceVirtualizer} from './data-source/DataSourceRendererVirtual';
+
 export {
   Interactive as _Interactive,
   InteractiveProps as _InteractiveProps,
@@ -86,6 +88,7 @@ export {
 } from './ui/data-inspector/DataDescription';
 export {MarkerTimeline} from './ui/MarkerTimeline';
 export {DataInspector} from './ui/data-inspector/DataInspector';
+export {TimelineDataDescription} from './ui/data-inspector/TimelineDataDescription';
 export {Dialog, DialogResult} from './ui/Dialog';
 export {
   ElementsInspector,

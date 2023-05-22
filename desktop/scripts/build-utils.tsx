@@ -123,7 +123,7 @@ async function compile(
     },
   );
   if (!dev) {
-    stripSourceMapComment(out);
+    await stripSourceMapComment(out);
   }
 }
 
@@ -233,7 +233,7 @@ export async function compileMain() {
     });
     console.log('✅  Compiled main bundle.');
     if (!dev) {
-      stripSourceMapComment(out);
+      await stripSourceMapComment(out);
     }
   } catch (err) {
     die(err);

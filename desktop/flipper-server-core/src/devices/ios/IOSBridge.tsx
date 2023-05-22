@@ -144,7 +144,7 @@ export class IDBBridge implements IOSBridge {
     return iosUtil
       .targets(this.idbPath, this.enablePhysicalDevices)
       .catch((e) => {
-        console.error('Failed to get active iOS devices:', e.message);
+        console.warn('Failed to get active iOS devices:', e.message);
         return [];
       });
   }

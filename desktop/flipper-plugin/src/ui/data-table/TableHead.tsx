@@ -13,7 +13,7 @@ import {
   Percentage,
   Width,
 } from '../../utils/widthUtils';
-import {memo, useRef} from 'react';
+import {HTMLAttributes, memo, useRef} from 'react';
 import {Interactive, InteractiveProps} from '../Interactive';
 import styled from '@emotion/styled';
 import React from 'react';
@@ -174,26 +174,33 @@ function TableHeadColumn({
     });
   };
 
+  let divProps: HTMLAttributes<HTMLDivElement> = {};
+  if (column.sortable !== false) {
+    divProps = {
+      onClick: (e) => {
+        e.stopPropagation();
+        const newDirection =
+          sorted === undefined ? 'asc' : sorted === 'asc' ? 'desc' : undefined;
+        dispatch({
+          type: 'sortColumn',
+          column: column.key,
+          direction: newDirection,
+        });
+      },
+      role: 'button',
+      tabIndex: 0,
+    };
+  }
   let children = (
     <Layout.Right center>
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          const newDirection =
-            sorted === undefined
-              ? 'asc'
-              : sorted === 'asc'
-              ? 'desc'
-              : undefined;
-          dispatch({
-            type: 'sortColumn',
-            column: column.key,
-            direction: newDirection,
-          });
-        }}
-        role="button"
-        tabIndex={0}>
-        <Text type="secondary">
+      <div {...divProps}>
+        <Text
+          type="secondary"
+          style={
+            column.filters?.filter(({enabled}) => enabled).length
+              ? {color: theme.primaryColor, fontWeight: 'bold'}
+              : {}
+          }>
           {column.title === undefined ? (
             toFirstUpper(column.key)
           ) : column.title === '' ? (
@@ -201,12 +208,18 @@ function TableHeadColumn({
           ) : (
             column.title
           )}
-          <SortIcons
-            direction={sorted}
-            onSort={(dir) =>
-              dispatch({type: 'sortColumn', column: column.key, direction: dir})
-            }
-          />
+          {column.sortable !== false ? (
+            <SortIcons
+              direction={sorted}
+              onSort={(dir) =>
+                dispatch({
+                  type: 'sortColumn',
+                  column: column.key,
+                  direction: dir,
+                })
+              }
+            />
+          ) : null}
         </Text>
       </div>
       <FilterIcon column={column} dispatch={dispatch} />

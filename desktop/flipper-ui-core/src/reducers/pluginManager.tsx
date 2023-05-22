@@ -19,7 +19,6 @@ export type State = {
 export type PluginCommand =
   | LoadPluginAction
   | UninstallPluginAction
-  | UpdatePluginAction
   | SwitchPluginAction;
 
 export type LoadPluginActionPayload = {
@@ -45,11 +44,6 @@ export type UninstallPluginAction = {
 export type UpdatePluginActionPayload = {
   plugin: PluginDefinition;
   enablePlugin: boolean;
-};
-
-export type UpdatePluginAction = {
-  type: 'UPDATE_PLUGIN';
-  payload: UpdatePluginActionPayload;
 };
 
 export type SwitchPluginActionPayload = {
@@ -80,7 +74,6 @@ export default function reducer(
   switch (action.type) {
     case 'LOAD_PLUGIN':
     case 'UNINSTALL_PLUGIN':
-    case 'UPDATE_PLUGIN':
     case 'SWITCH_PLUGIN':
       return produce(state, (draft) => {
         draft.pluginCommandsQueue.push(action);
@@ -108,13 +101,6 @@ export const loadPlugin = (payload: LoadPluginActionPayload): Action => ({
 
 export const pluginCommandsProcessed = (payload: number): Action => ({
   type: 'PLUGIN_COMMANDS_PROCESSED',
-  payload,
-});
-
-export const registerPluginUpdate = (
-  payload: UpdatePluginActionPayload,
-): Action => ({
-  type: 'UPDATE_PLUGIN',
   payload,
 });
 

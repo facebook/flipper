@@ -111,7 +111,7 @@ class TableHeadColumn extends PureComponent<{
   componentDidMount() {
     if (this.props.horizontallyScrollable && this.ref) {
       // measure initial width
-      this.onResize(this.ref.offsetWidth);
+      this.onResize(this.ref.getBoundingClientRect().width);
     }
   }
 
@@ -146,14 +146,16 @@ class TableHeadColumn extends PureComponent<{
         throw new Error('expected there to be parentElement');
       }
 
-      const parentWidth = parentElement.clientWidth;
+      const parentMeasures = parentElement.getBoundingClientRect();
+      const parentWidth = parentMeasures.width;
       const {childNodes} = parentElement;
 
       const lastElem = childNodes[childNodes.length - 1];
-      const right =
-        lastElem instanceof HTMLElement
-          ? lastElem.offsetLeft + lastElem.clientWidth + 1
-          : 0;
+      let right = 0;
+      if (lastElem instanceof HTMLElement) {
+        const lastElemMeasures = lastElem.getBoundingClientRect();
+        right = lastElemMeasures.left + lastElemMeasures.width;
+      }
 
       if (right < parentWidth) {
         normalizedWidth = calculatePercentage(parentWidth, newWidth);

@@ -46,7 +46,7 @@ object TextViewDescriptor : ChainedDescriptor<TextView>() {
 
   override fun onGetName(node: TextView): String = node.javaClass.simpleName
 
-  override fun onGetData(
+  override fun onGetAttributes(
       node: TextView,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {

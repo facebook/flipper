@@ -155,7 +155,7 @@ type ManagedTableState = {
 };
 
 const Container = styled(FlexColumn)<{canOverflow?: boolean}>((props) => ({
-  overflow: props.canOverflow ? 'auto' : 'visible',
+  overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
   height: '100%',
 }));
@@ -715,8 +715,7 @@ export class ManagedTable extends React.Component<
             horizontallyScrollable={horizontallyScrollable}
           />
         )}
-        <Container
-          style={{overflow: this.props.autoHeight ? 'visible' : 'hidden'}}>
+        <Container>
           {this.props.autoHeight ? (
             <ContextMenu
               buildItems={

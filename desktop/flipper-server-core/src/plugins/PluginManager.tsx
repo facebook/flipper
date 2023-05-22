@@ -185,7 +185,7 @@ export class PluginManager {
         return await installPluginFromFile(tmpFile);
       }
     } catch (error) {
-      console.error(
+      console.warn(
         `Failed to download plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}".`,
         error,
       );

@@ -33,6 +33,9 @@ import {showChangelog} from '../chrome/ChangelogSheet';
 import PlatformSelectWizard, {
   hasPlatformWizardBeenDone,
 } from '../chrome/PlatformSelectWizard';
+import PWAInstallationWizard, {
+  shouldShowPWAInstallationWizard,
+} from '../chrome/PWAppInstallationWizard';
 import {getVersionString} from '../utils/versionString';
 import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
@@ -108,6 +111,11 @@ export function SandyApp() {
           }
         />
       ));
+    }
+
+    if (shouldShowPWAInstallationWizard()) {
+      console.info('Attempt to install PWA, launch installation wizard.');
+      Dialog.showModal((onHide) => <PWAInstallationWizard onHide={onHide} />);
     }
 
     showChangelog(true);

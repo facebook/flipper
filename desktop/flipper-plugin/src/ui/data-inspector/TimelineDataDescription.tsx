@@ -19,7 +19,7 @@ type TimePoint = {
   display: string;
   color: string;
   key: string;
-  properties: {[key: string]: string};
+  properties?: any;
 };
 
 type Timeline = {
@@ -30,7 +30,7 @@ type Timeline = {
 type Props = {
   canSetCurrent?: boolean;
   timeline: Timeline;
-  onClick: (selected: string) => void;
+  onClick?: (selected: string) => void;
 };
 
 type State = {
@@ -54,12 +54,16 @@ export class TimelineDataDescription extends Component<Props, State> {
         value.color,
       key: value.key,
     }));
+    const properties = this.props.timeline.time.find(
+      (value) => value.key === this.state.selected,
+    )?.properties;
+
     return (
       <>
         {this.props.canSetCurrent && (
           <div>
             <Button
-              onClick={() => this.props.onClick(this.state.selected)}
+              onClick={() => this.props.onClick?.(this.state.selected)}
               disabled={this.state.selected === this.props.timeline.current}>
               Set as current
             </Button>
@@ -68,20 +72,15 @@ export class TimelineDataDescription extends Component<Props, State> {
         <div>
           <MarkerTimeline
             points={points}
-            onClick={(ids) => this.setState({selected: ids[0]})}
+            onClick={(ids) => {
+              this.setState({selected: ids[0]});
+              this.props.onClick?.(ids[0]);
+            }}
             maxGap={50}
             selected={this.state.selected}
           />
         </div>
-        <div>
-          <DataInspector
-            data={
-              this.props.timeline.time.find(
-                (value) => value.key === this.state.selected,
-              )?.properties ?? {}
-            }
-          />
-        </div>
+        {properties && <DataInspector data={properties} />}
       </>
     );
   }

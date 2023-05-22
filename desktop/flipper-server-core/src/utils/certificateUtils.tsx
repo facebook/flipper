@@ -9,22 +9,25 @@
 
 import {promisify} from 'util';
 import fs from 'fs-extra';
+import os from 'os';
 import {
   openssl,
   isInstalled as opensslInstalled,
 } from './openssl-wrapper-with-promises';
 import path from 'path';
 import tmp, {FileOptions} from 'tmp';
-import {reportPlatformFailures} from 'flipper-common';
+import {FlipperServerConfig, reportPlatformFailures} from 'flipper-common';
 import {isTest} from 'flipper-common';
 import {flipperDataFolder} from './paths';
+import * as jwt from 'jsonwebtoken';
+import {getFlipperServerConfig} from '../FlipperServerConfig';
 
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,
 ) => Promise<string>;
 
-const getFilePath = (fileName: string): string => {
-  return path.resolve(flipperDataFolder, 'certs', fileName);
+const getFilePath = (filename: string): string => {
+  return path.resolve(flipperDataFolder, 'certs', filename);
 };
 
 // Desktop file paths
@@ -69,16 +72,23 @@ export const ensureOpenSSLIsAvailable = async (): Promise<void> => {
   }
 };
 
+let serverConfig: SecureServerConfig | undefined;
 export const loadSecureServerConfig = async (): Promise<SecureServerConfig> => {
+  if (serverConfig) {
+    return serverConfig;
+  }
+
   await ensureOpenSSLIsAvailable();
   await certificateSetup();
-  return {
+  await generateAuthToken();
+  serverConfig = {
     key: await fs.readFile(serverKey),
     cert: await fs.readFile(serverCert),
     ca: await fs.readFile(caCert),
     requestCert: true,
     rejectUnauthorized: true, // can be false if necessary as we don't strictly need to verify the client
   };
+  return serverConfig;
 };
 
 export const extractAppNameFromCSR = async (csr: string): Promise<string> => {
@@ -253,4 +263,79 @@ const writeToTempFile = async (content: string): Promise<string> => {
   const path = await tmpFile();
   await fs.writeFile(path, content);
   return path;
+};
+
+const tokenFilename = 'auth.token';
+const getTokenPath = (config: FlipperServerConfig): string => {
+  if (config.environmentInfo.isHeadlessBuild) {
+    return path.resolve(config.paths.staticPath, tokenFilename);
+  }
+
+  return getFilePath(tokenFilename);
+};
+const manifestFilename = 'manifest.json';
+const getManifestPath = (config: FlipperServerConfig): string => {
+  return path.resolve(config.paths.staticPath, manifestFilename);
+};
+
+const exportTokenToManifest = async (
+  config: FlipperServerConfig,
+  token: string,
+) => {
+  const manifestPath = getManifestPath(config);
+  try {
+    const manifestData = await fs.readFile(manifestPath, {
+      encoding: 'utf-8',
+    });
+    const manifest = JSON.parse(manifestData);
+    manifest.token = token;
+
+    const newManifestData = JSON.stringify(manifest, null, 4);
+
+    await fs.writeFile(manifestPath, newManifestData);
+  } catch (e) {
+    console.error(
+      'Unable to export authentication token to manifest, may be non existent.',
+    );
+  }
+};
+
+export const generateAuthToken = async () => {
+  const config = getFlipperServerConfig();
+
+  const privateKey = await fs.readFile(serverKey);
+  const token = jwt.sign({unixname: os.userInfo().username}, privateKey, {
+    algorithm: 'RS256',
+    expiresIn: '21 days',
+  });
+
+  await fs.writeFile(getTokenPath(config), token);
+
+  if (config.environmentInfo.isHeadlessBuild) {
+    await exportTokenToManifest(config, token);
+  }
+
+  return token;
+};
+
+export const getAuthToken = async () => {
+  const config = getFlipperServerConfig();
+  const tokenPath = getTokenPath(config);
+
+  if (!(await fs.pathExists(tokenPath))) {
+    return generateAuthToken();
+  }
+
+  const token = await fs.readFile(tokenPath);
+  return token.toString();
+};
+
+export const validateAuthToken = (token: string) => {
+  if (!serverConfig) {
+    throw new Error(
+      'Unable to validate auth token as no server configuration is available',
+    );
+  }
+
+  jwt.verify(token, serverConfig.cert);
 };

@@ -7,25 +7,36 @@
  * @format
  */
 
-import {PerfStatsEvent} from '../types';
+import {PerformanceStatsEvent} from '../types';
 import React from 'react';
 import {DataSource, DataTable, DataTableColumn} from 'flipper-plugin';
 
-export function PerfStats(props: {events: DataSource<PerfStatsEvent, number>}) {
+export function PerfStats(props: {
+  events: DataSource<PerformanceStatsEvent, number>;
+}) {
   return (
-    <DataTable<PerfStatsEvent> dataSource={props.events} columns={columns} />
+    <DataTable<PerformanceStatsEvent>
+      dataSource={props.events}
+      columns={columns}
+    />
   );
 }
 
-function formatDiff(start: number, end: number): string {
-  const ms = end - start;
+function formatDiff(ms: number): string {
   return `${ms.toFixed(0)}ms`;
 }
 
-const columns: DataTableColumn<PerfStatsEvent>[] = [
+function formatSize(bytes: number): string {
+  return `${(bytes / 1000).toFixed()}`;
+}
+
+const columns: DataTableColumn<PerformanceStatsEvent>[] = [
   {
     key: 'txId',
     title: 'TXID',
+    onRender: (row: PerformanceStatsEvent) => {
+      return row.txId;
+    },
   },
   {
     key: 'observerType',
@@ -38,53 +49,60 @@ const columns: DataTableColumn<PerfStatsEvent>[] = [
   {
     key: 'start',
     title: 'Start',
-    onRender: (row: PerfStatsEvent) => {
+    onRender: (row: PerformanceStatsEvent) => {
       return new Date(row.start).toISOString();
     },
   },
   {
-    key: 'traversalComplete',
+    key: 'traversalMS',
     title: 'Traversal time (Main thread)',
-    onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.start, row.traversalComplete);
+    onRender: (row: PerformanceStatsEvent) => {
+      return formatDiff(row.traversalMS);
     },
   },
   {
-    key: 'snapshotComplete',
+    key: 'snapshotMS',
     title: 'Snapshot time (Main thread)',
-    onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.traversalComplete, row.snapshotComplete);
+    onRender: (row: PerformanceStatsEvent) => {
+      return formatDiff(row.snapshotMS);
     },
   },
   {
-    key: 'queuingComplete',
+    key: 'queuingMS',
     title: 'Queuing time',
-    onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.snapshotComplete, row.queuingComplete);
+    onRender: (row: PerformanceStatsEvent) => {
+      return formatDiff(row.queuingMS);
     },
   },
   {
-    key: 'deferredComputationComplete',
+    key: 'deferredComputationMS',
     title: 'Deferred processing time',
-    onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.queuingComplete, row.deferredComputationComplete);
+    onRender: (row: PerformanceStatsEvent) => {
+      return formatDiff(row.deferredComputationMS);
     },
   },
   {
-    key: 'serializationComplete',
+    key: 'serializationMS',
     title: 'Serialization time',
-    onRender: (row: PerfStatsEvent) => {
-      return formatDiff(
-        row.deferredComputationComplete,
-        row.serializationComplete,
-      );
+    onRender: (row: PerformanceStatsEvent) => {
+      return formatDiff(row.serializationMS);
     },
   },
   {
-    key: 'socketComplete',
+    key: 'socketMS',
     title: 'Socket send time',
-    onRender: (row: PerfStatsEvent) => {
-      return formatDiff(row.serializationComplete, row.socketComplete);
+    onRender: (row: PerformanceStatsEvent) => {
+      return formatDiff(row.socketMS);
+    },
+  },
+  {
+    key: 'payloadSize',
+    title: 'Payload Size (KB)',
+    onRender: (row: PerformanceStatsEvent) => {
+      if (!row.payloadSize) {
+        return 'NaN';
+      }
+      return formatSize(row.payloadSize);
     },
   },
 ];

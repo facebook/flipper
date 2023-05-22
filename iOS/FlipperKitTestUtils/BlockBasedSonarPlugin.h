@@ -12,7 +12,7 @@
 @protocol FlipperConnection;
 
 typedef void (^ConnectBlock)(id<FlipperConnection>);
-typedef void (^DisconnectBlock)();
+typedef void (^DisconnectBlock)(void);
 
 @interface BlockBasedSonarPlugin : NSObject<FlipperPlugin>
 

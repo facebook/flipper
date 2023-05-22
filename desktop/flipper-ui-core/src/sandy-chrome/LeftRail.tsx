@@ -28,6 +28,7 @@ import {
   MedicineBoxOutlined,
   RocketOutlined,
   BugOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
@@ -49,12 +50,10 @@ import WelcomeScreen from './WelcomeScreen';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
-import {logout} from '../reducers/user';
 import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import {setStaticView} from '../reducers/connections';
-import {getLogger} from 'flipper-common';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
 import {useMemoize} from 'flipper-plugin';
@@ -79,6 +78,7 @@ import {css} from '@emotion/css';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {StyleGuide} from './StyleGuide';
 import {useEffect} from 'react';
+import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -205,7 +205,7 @@ export const LeftRail = withTrackingScope(function LeftRail({
           <LeftSidebarToggleButton />
           <ExportEverythingEverywhereAllAtOnceButton />
           <ExtrasMenu />
-          {config.showLogin && <LoginButton />}
+          {config.showLogin && <LoginConnectivityButton />}
         </Layout.Container>
       </Layout.Bottom>
     </Layout.Container>
@@ -587,10 +587,11 @@ function SetupDoctorButton() {
   );
 }
 
-function LoginButton() {
+function LoginConnectivityButton() {
   const dispatch = useDispatch();
+  const loggedIn = useValue(currentUser());
   const user = useStore((state) => state.user);
-  const login = (user?.id ?? null) !== null;
+
   const profileUrl = user?.profile_picture?.uri;
   const [showLogout, setShowLogout] = useState(false);
   const onHandleVisibleChange = useCallback(
@@ -598,15 +599,29 @@ function LoginButton() {
     [],
   );
 
-  return login ? (
+  const connected = useValue(isConnected());
+
+  if (!connected) {
+    return (
+      <Tooltip
+        placement="left"
+        title="No connection to intern, ensure you are VPN/Lighthouse for plugin updates and other features">
+        <WarningOutlined
+          style={{color: theme.warningColor, fontSize: '20px'}}
+        />
+      </Tooltip>
+    );
+  }
+
+  return loggedIn ? (
     <Popover
       content={
         <Button
           block
           style={{backgroundColor: theme.backgroundDefault}}
-          onClick={() => {
+          onClick={async () => {
             onHandleVisibleChange(false);
-            dispatch(logout());
+            await logoutUser();
           }}>
           Log Out
         </Button>

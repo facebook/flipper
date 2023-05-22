@@ -10,9 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.model
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 
 @kotlinx.serialization.Serializable
-data class InitEvent(
-    val rootId: Id,
-) {
+data class InitEvent(val rootId: Id, val frameworkEventMetadata: List<FrameworkEventMetadata>) {
   companion object {
     const val name = "init"
   }
@@ -26,44 +24,35 @@ data class MetadataUpdateEvent(val attributeMetadata: Map<MetadataId, Metadata> 
 }
 
 @kotlinx.serialization.Serializable
-data class SubtreeUpdateEvent(
-    val txId: Long,
-    val observerType: String,
-    val rootId: Id,
+data class FrameScanEvent(
+    val frameTime: Long,
     val nodes: List<Node>,
-    val snapshot: String? = null
+    val snapshot: Snapshot?,
+    val frameworkEvents: List<FrameworkEvent>?
 ) {
   companion object {
-    const val name = "subtreeUpdate"
+    const val name = "frameScan"
   }
 }
 
-@kotlinx.serialization.Serializable
-data class CoordinateUpdateEvent(
-    val observerType: String,
-    val nodeId: Id,
-    val coordinate: Coordinate
-) {
-  companion object {
-    const val name = "coordinateUpdate"
-  }
-}
+@kotlinx.serialization.Serializable data class Snapshot(val nodeId: Id, val data: String)
 
 /** Separate optional performance statistics event */
 @kotlinx.serialization.Serializable
 data class PerfStatsEvent(
     val txId: Long,
     val observerType: String,
+    val nodesCount: Int,
     val start: Long,
-    val traversalComplete: Long,
-    val snapshotComplete: Long,
-    val queuingComplete: Long,
-    val deferredComputationComplete: Long,
-    val serializationComplete: Long,
-    val socketComplete: Long,
-    val nodesCount: Int
+    val traversalMS: Long,
+    val snapshotMS: Long,
+    val queuingMS: Long,
+    val deferredComputationMS: Long,
+    val serializationMS: Long,
+    val socketMS: Long,
+    val payloadSize: Int,
 ) {
   companion object {
-    const val name = "perfStats"
+    const val name = "performanceStats"
   }
 }

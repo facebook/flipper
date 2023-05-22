@@ -12,6 +12,7 @@ import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
+import kotlinx.serialization.json.JsonObject
 
 /*
  Descriptors are an extension point used during traversal to extract data out of arbitrary
@@ -62,7 +63,7 @@ interface NodeDescriptor<T> {
    * parameter. If a bitmap is provided, it will be used by the canvas to draw on it. Otherwise, a
    * bitmap will be created.
    */
-  fun getSnapshot(node: T, bitmap: Bitmap?): Bitmap?
+  fun getSnapshot(node: T, bitmap: Bitmap?): Bitmap? = null
 
   /**
    * If you have overlapping children this indicates which child is active / on top, we will only
@@ -71,14 +72,22 @@ interface NodeDescriptor<T> {
   fun getActiveChild(node: T): Any?
 
   /**
-   * Get the data to show for this node in the sidebar of the inspector. The object will be shown in
-   * order and with a header matching the given name.
+   * Get the attribute to show for this node in the sidebar of the inspector. The object first level
+   * is a section and subsequent objects within are the first level of that section. Nested objects
+   * will nest in the sidebar
    */
-  fun getData(node: T): MaybeDeferred<Map<MetadataId, InspectableObject>>
+  fun getAttributes(node: T): MaybeDeferred<Map<MetadataId, InspectableObject>>
 
   /**
    * Set of tags to describe this node in an abstract way for the UI Unfortunately this can't be an
    * enum as we have to plugin 3rd party frameworks dynamically
    */
   fun getTags(node: T): Set<String>
+
+  /**
+   * These are shown inline in the tree view on the desktop, will likely be removed in the future
+   */
+  fun getInlineAttributes(node: T): Map<String, String> = mapOf()
+
+  fun getHiddenAttributes(node: T): JsonObject? = null
 }

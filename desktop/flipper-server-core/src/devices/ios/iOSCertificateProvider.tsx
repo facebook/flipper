@@ -79,13 +79,26 @@ export default class iOSCertificateProvider extends CertificateProvider {
     contents: string,
     csr: string,
   ) {
+    console.debug('iOSCertificateProvider.deployOrStageFileForDevice', {
+      destination,
+      filename,
+    });
     const appName = await extractAppNameFromCSR(csr);
     try {
       await fs.writeFile(destination + filename, contents);
     } catch (err) {
       // Writing directly to FS failed. It's probably a physical device.
+      console.debug(
+        'iOSCertificateProvider.deployOrStageFileForDevice -> physical device',
+      );
       const relativePathInsideApp =
         this.getRelativePathInAppContainer(destination);
+
+      console.debug(
+        'iOSCertificateProvider.deployOrStageFileForDevice: realtive path',
+        relativePathInsideApp,
+      );
+
       const udid = await this.getTargetDeviceId(appName, destination, csr);
       await this.pushFileToiOSDevice(
         udid,
@@ -95,6 +108,8 @@ export default class iOSCertificateProvider extends CertificateProvider {
         contents,
       );
     }
+
+    console.debug('iOSCertificateProvider.deployOrStageFileForDevice -> done');
   }
 
   private getRelativePathInAppContainer(absolutePath: string) {

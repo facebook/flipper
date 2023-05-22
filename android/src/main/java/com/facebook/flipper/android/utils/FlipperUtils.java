@@ -16,12 +16,17 @@ public final class FlipperUtils {
 
   private FlipperUtils() {}
 
-  public static boolean shouldEnableFlipper(final Context context) {
+  public static boolean shouldEnableFlipper(
+      final Context context, final boolean allowDebuggingServices) {
     return (BuildConfig.IS_INTERNAL_BUILD || BuildConfig.LOAD_FLIPPER_EXPLICIT)
         && !isEndToEndTest()
-        && isMainProcess(context)
+        && (allowDebuggingServices || isMainProcess(context))
         // Flipper has issue with ASAN build. They cannot be concurrently enabled.
         && !BuildConfig.IS_ASAN_BUILD;
+  }
+
+  public static boolean shouldEnableFlipper(final Context context) {
+    return shouldEnableFlipper(context, false);
   }
 
   private static boolean isEndToEndTest() {

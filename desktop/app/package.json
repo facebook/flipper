@@ -15,12 +15,12 @@
   },
   "dependencies": {
     "flipper-common": "0.0.0",
+    "flipper-frontend-core": "0.0.0",
     "flipper-server-client": "0.0.0",
     "flipper-server-companion": "0.0.0",
     "flipper-server-core": "0.0.0",
-    "flipper-frontend-core": "0.0.0",
     "flipper-ui-core": "0.0.0",
-    "fs-extra": "^10.1.0",
+    "fs-extra": "^11.1.0",
     "invariant": "^2.2.2",
     "metro-runtime": "^0.70.2",
     "pretty-format": "^27.5.0",
@@ -30,6 +30,6 @@
   "optionalDependencies": {},
   "devDependencies": {
     "@types/node": "^17.0.31",
-    "react-refresh": "^0.11.0"
+    "react-refresh": "^0.14.0"
   }
 }

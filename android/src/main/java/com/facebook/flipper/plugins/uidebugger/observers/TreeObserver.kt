@@ -10,9 +10,10 @@ package com.facebook.flipper.plugins.uidebugger.observers
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
-import com.facebook.flipper.plugins.uidebugger.core.Context
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
+import com.facebook.flipper.plugins.uidebugger.model.FrameworkEvent
 import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 
 /*
@@ -39,12 +40,13 @@ abstract class TreeObserver<T> {
   abstract fun unsubscribe()
 
   /** Traverses the layout hierarchy while managing any encountered child observers. */
-  fun processUpdate(
-      context: Context,
+  fun traverseAndSend(
+      context: UIDContext,
       root: Any,
-      snapshotBitmap: BitmapPool.ReusableBitmap? = null
+      snapshotBitmap: BitmapPool.ReusableBitmap? = null,
+      frameworkEvents: List<FrameworkEvent>? = null
   ) {
-    val startTimestamp = System.currentTimeMillis()
+    val traversalStartTimestamp = System.currentTimeMillis()
     val (visitedNodes, observableRoots) = context.layoutTraversal.traverse(root)
 
     // Add any new observers
@@ -77,7 +79,7 @@ abstract class TreeObserver<T> {
     }
     removables.forEach { key -> children.remove(key) }
 
-    val traversalCompleteTime = System.currentTimeMillis()
+    val traversalEndTimestamp = System.currentTimeMillis()
 
     if (snapshotBitmap != null) {
       @Suppress("unchecked_cast")
@@ -87,16 +89,18 @@ abstract class TreeObserver<T> {
       descriptor.getSnapshot(root, snapshotBitmap.bitmap)
     }
 
-    val snapshotCompleteTime = System.currentTimeMillis()
+    val snapshotEndTimestamp = System.currentTimeMillis()
 
     context.treeObserverManager.enqueueUpdate(
         SubtreeUpdate(
             type,
             root.objectIdentity(),
             visitedNodes,
-            startTimestamp,
-            traversalCompleteTime,
-            snapshotCompleteTime,
+            traversalStartTimestamp,
+            snapshotEndTimestamp,
+            (traversalEndTimestamp - traversalStartTimestamp),
+            (snapshotEndTimestamp - traversalEndTimestamp),
+            frameworkEvents,
             snapshotBitmap))
   }
 

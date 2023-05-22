@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Bounds, Coordinate, Id, NestedNode, Tag, UINode} from '../types';
 
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
@@ -15,32 +15,38 @@ import {plugin} from '../index';
 import {head, isEqual, throttle} from 'lodash';
 import {Dropdown, Menu, Tooltip} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
+import {useFilteredValue} from '../hooks/usefilteredValue';
 
 export const Visualization2D: React.FC<
   {
-    rootId: Id;
+    width: number;
     nodes: Map<Id, UINode>;
-    selectedNode?: Id;
     onSelectNode: (id?: Id) => void;
-    modifierPressed: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({rootId, nodes, selectedNode, onSelectNode, modifierPressed}) => {
+> = ({width, nodes, onSelectNode}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
   const instance = usePlugin(plugin);
 
   const snapshot = useValue(instance.snapshot);
+  const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
   const focusedNodeId = useValue(instance.uiState.focusedNode);
 
   const focusState = useMemo(() => {
-    const rootNode = toNestedNode(rootId, nodes);
+    //use the snapshot node as root since we cant realistically visualise any node above this
+    const rootNode = snapshot && toNestedNode(snapshot.nodeId, nodes);
     return rootNode && caclulateFocusState(rootNode, focusedNodeId);
-  }, [focusedNodeId, rootId, nodes]);
+  }, [snapshot, nodes, focusedNodeId]);
 
   useEffect(() => {
     const mouseListener = throttle((ev: MouseEvent) => {
       const domRect = rootNodeRef.current?.getBoundingClientRect();
 
-      if (!focusState || !domRect || instance.uiState.isContextMenuOpen.get()) {
+      if (
+        !focusState ||
+        !domRect ||
+        instance.uiState.isContextMenuOpen.get() ||
+        !snapshotNode
+      ) {
         return;
       }
       const rawMouse = {x: ev.clientX, y: ev.clientY};
@@ -50,6 +56,8 @@ export const Visualization2D: React.FC<
       }
 
       //make the mouse coord relative to the dom rect of the visualizer
+
+      const pxScaleFactor = calcPxScaleFactor(snapshotNode.bounds, width);
 
       const offsetMouse = offsetCoordinate(rawMouse, domRect);
       const scaledMouse = {
@@ -78,22 +86,27 @@ export const Visualization2D: React.FC<
     focusState,
     nodes,
     instance.uiState.isContextMenuOpen,
+    width,
+    snapshotNode,
   ]);
 
-  if (!focusState) {
+  if (!focusState || !snapshotNode) {
     return null;
   }
 
-  const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
+  const pxScaleFactor = calcPxScaleFactor(snapshotNode.bounds, width);
 
   return (
     <ContextMenu nodes={nodes}>
       <div
         //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
-        style={{
-          width: toPx(focusState.actualRoot.bounds.width),
-          height: toPx(focusState.actualRoot.bounds.height),
-        }}>
+        style={
+          {
+            [pxScaleFactorCssVar]: pxScaleFactor,
+            width: toPx(focusState.actualRoot.bounds.width),
+            height: toPx(focusState.actualRoot.bounds.height),
+          } as React.CSSProperties
+        }>
         <div
           ref={rootNodeRef as any}
           onMouseLeave={(e) => {
@@ -122,7 +135,7 @@ export const Visualization2D: React.FC<
           }}>
           {snapshotNode && (
             <img
-              src={'data:image/png;base64,' + snapshot.base64Image}
+              src={'data:image/png;base64,' + snapshot.data}
               style={{
                 marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
                 marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
@@ -133,9 +146,7 @@ export const Visualization2D: React.FC<
           )}
           <MemoedVisualizationNode2D
             node={focusState.focusedRoot}
-            selectedNode={selectedNode}
             onSelectNode={onSelectNode}
-            modifierPressed={modifierPressed}
           />
         </div>
       </div>
@@ -146,44 +157,41 @@ export const Visualization2D: React.FC<
 const MemoedVisualizationNode2D = React.memo(
   Visualization2DNode,
   (prev, next) => {
-    return (
-      prev.node === next.node &&
-      prev.modifierPressed === next.modifierPressed &&
-      prev.selectedNode === next.selectedNode
-    );
+    return prev.node === next.node;
   },
 );
 
 function Visualization2DNode({
   node,
-  selectedNode,
   onSelectNode,
-  modifierPressed,
 }: {
   node: NestedNode;
-  modifierPressed: boolean;
-  selectedNode?: Id;
   onSelectNode: (id?: Id) => void;
 }) {
   const instance = usePlugin(plugin);
 
-  const isSelected = selectedNode === node.id;
-  const {isHovered, isLongHovered} = useHoverStates(node.id);
+  const wasOrIsSelected = useCallback(
+    (curValue?: Id, prevValue?: Id) =>
+      curValue === node.id || prevValue === node.id,
+    [node.id],
+  );
+  const selectedNode = useFilteredValue(
+    instance.uiState.selectedNode,
+    wasOrIsSelected,
+  );
 
+  const isSelected = selectedNode === node.id;
+
+  const {isHovered, isLongHovered} = useHoverStates(node.id);
+  const ref = useRef<HTMLDivElement>(null);
   let nestedChildren: NestedNode[];
 
   //if there is an active child don't draw the other children
   //this means we don't draw overlapping activities / tabs etc
-  if (node.activeChildIdx) {
+  if (node.activeChildIdx && node.activeChildIdx < node.children.length) {
     nestedChildren = [node.children[node.activeChildIdx]];
   } else {
     nestedChildren = node.children;
-  }
-
-  // stop drawing children if hovered with the modifier so you
-  // can see parent views without their children getting in the way
-  if (isHovered && modifierPressed) {
-    nestedChildren = [];
   }
 
   const children = nestedChildren.map((child) => (
@@ -191,10 +199,12 @@ function Visualization2DNode({
       key={child.id}
       node={child}
       onSelectNode={onSelectNode}
-      selectedNode={selectedNode}
-      modifierPressed={modifierPressed}
     />
   ));
+
+  const isHighlighted = useValue(instance.uiState.highlightedNodes).has(
+    node.id,
+  );
 
   return (
     <Tooltip
@@ -209,6 +219,7 @@ function Visualization2DNode({
       <div
         role="button"
         tabIndex={0}
+        ref={ref}
         style={{
           position: 'absolute',
           cursor: 'pointer',
@@ -216,10 +227,8 @@ function Visualization2DNode({
           top: toPx(node.bounds.y),
           width: toPx(node.bounds.width),
           height: toPx(node.bounds.height),
-          opacity: isSelected ? 0.5 : 1,
-          backgroundColor: isSelected
-            ? theme.selectionBackgroundColor
-            : 'transparent',
+          opacity: isHighlighted ? 0.3 : 1,
+          backgroundColor: isHighlighted ? 'red' : 'transparent',
         }}
         onClick={(e) => {
           e.stopPropagation();
@@ -231,7 +240,10 @@ function Visualization2DNode({
             onSelectNode(hoveredNodes[0]);
           }
         }}>
-        <NodeBorder hovered={isHovered} tags={node.tags}></NodeBorder>
+        <NodeBorder
+          hovered={isHovered}
+          selected={isSelected}
+          tags={node.tags}></NodeBorder>
         {children}
       </div>
     </Tooltip>
@@ -292,7 +304,7 @@ const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
       overlay={() => {
         return (
           <Menu>
-            {hoveredNode?.id !== focusedNodeId && (
+            {hoveredNode != null && hoveredNode?.id !== focusedNodeId && (
               <UIDebuggerMenuItem
                 key="focus"
                 text={`Focus ${hoveredNode?.name}`}
@@ -323,46 +335,33 @@ const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
  * node itself so that it has the same size but the border doesnt affect the sizing of its children
  * as border is part of the box model
  */
-const NodeBorder = styled.div<{tags: Tag[]; hovered: boolean}>((props) => ({
+const NodeBorder = styled.div<{
+  tags: Tag[];
+  hovered: boolean;
+  selected: boolean;
+}>((props) => ({
   position: 'absolute',
   top: 0,
   left: 0,
   bottom: 0,
   right: 0,
-  borderWidth: props.hovered ? '2px' : '1px',
+  boxSizing: 'border-box',
+  borderWidth: props.selected || props.hovered ? '2px' : '1px',
   borderStyle: 'solid',
   color: 'transparent',
-  borderColor: props.tags.includes('Declarative')
-    ? 'green'
-    : props.tags.includes('Native')
-    ? 'blue'
-    : 'black',
+  borderColor: props.selected
+    ? theme.primaryColor
+    : props.hovered
+    ? theme.selectionBackgroundColor
+    : theme.disabledColor,
 }));
 
 const longHoverDelay = 200;
-const outerBorderWidth = '10px';
-const outerBorderOffset = `-${outerBorderWidth}`;
-
-//this is the thick black border around the whole vizualization, the border goes around the content
-//hence the top,left,right,botton being negative to increase its size
-const OuterBorder = styled.div({
-  boxSizing: 'border-box',
-  position: 'absolute',
-  top: outerBorderOffset,
-  left: outerBorderOffset,
-  right: outerBorderOffset,
-  bottom: outerBorderOffset,
-  borderWidth: outerBorderWidth,
-  borderStyle: 'solid',
-  borderColor: 'black',
-  borderRadius: '10px',
-});
-
-const pxScaleFactor = 2;
+const pxScaleFactorCssVar = '--pxScaleFactor';
 const MouseThrottle = 32;
 
 function toPx(n: number) {
-  return `${n / pxScaleFactor}px`;
+  return `calc(${n}px / var(${pxScaleFactorCssVar})`;
 }
 
 function toNestedNode(
@@ -370,18 +369,32 @@ function toNestedNode(
   nodes: Map<Id, UINode>,
 ): NestedNode | undefined {
   function uiNodeToNestedNode(node: UINode): NestedNode {
+    const nonNullChildren = node.children.filter(
+      (childId) => nodes.get(childId) != null,
+    );
+
+    if (nonNullChildren.length !== node.children.length) {
+      console.error(
+        'Visualization2D.toNestedNode -> child is nullish!',
+        node.children,
+        nonNullChildren.map((childId) => {
+          const child = nodes.get(childId);
+          return child && uiNodeToNestedNode(child);
+        }),
+      );
+    }
+
     const activeChildIdx = node.activeChild
-      ? node.children.indexOf(node.activeChild)
+      ? nonNullChildren.indexOf(node.activeChild)
       : undefined;
 
     return {
       id: node.id,
       name: node.name,
       attributes: node.attributes,
-      children: node.children
-        .map((childId) => nodes.get(childId))
-        .filter((child) => child != null)
-        .map((child) => uiNodeToNestedNode(child!!)),
+      children: nonNullChildren.map((childId) =>
+        uiNodeToNestedNode(nodes.get(childId)!),
+      ),
       bounds: node.bounds,
       tags: node.tags,
       activeChildIdx: activeChildIdx,
@@ -505,4 +518,8 @@ function offsetCoordinate(
     x: coordinate.x - offset.x,
     y: coordinate.y - offset.y,
   };
+}
+
+function calcPxScaleFactor(snapshotBounds: Bounds, availableWidth: number) {
+  return snapshotBounds.width / availableWidth;
 }

@@ -38,6 +38,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+
+    packagingOptions {
+        pickFirst "**/libcrypto.so"
+        pickFirst "**/libevent-2.1.so"
+        pickFirst "**/libevent_core-2.1.so"
+        pickFirst "**/libevent_extra-2.1.so"
+        pickFirst "**/libflipper.so"
+        pickFirst "**/libssl.so"
+    }
 }
 
 
@@ -57,6 +66,7 @@ dependencies {
     implementation deps.soloader
     implementation deps.okhttp3
     implementation deps.fresco
+    debugImplementation deps.flipperFrescoPlugin
 
     // Integration test
     androidTestImplementation deps.testCore
@@ -69,7 +79,6 @@ dependencies {
     testImplementation deps.junit
 
     debugImplementation project(':android')
-    debugImplementation project(':fresco-plugin')
     debugImplementation project(':network-plugin')
     debugImplementation project(':litho-plugin')
     releaseImplementation project(':noop')

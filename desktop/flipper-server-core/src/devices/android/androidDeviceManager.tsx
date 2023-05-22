@@ -10,7 +10,7 @@
 import AndroidDevice from './AndroidDevice';
 import KaiOSDevice from './KaiOSDevice';
 import child_process from 'child_process';
-import {Client as ADBClient, Device} from 'adbkit';
+import {Client as ADBClient, Device} from '@u4/adbkit';
 import {join} from 'path';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {notNull} from '../../utils/typeUtils';
@@ -26,10 +26,7 @@ export class AndroidDeviceManager {
     this.certificateProvider = new AndroidCertificateProvider(this.adbClient);
   }
 
-  private createDevice(
-    adbClient: ADBClient,
-    device: Device,
-  ): Promise<AndroidDevice | undefined> {
+  private createDevice(device: Device): Promise<AndroidDevice | undefined> {
     return new Promise(async (resolve, reject) => {
       const type =
         device.type !== 'device' || device.id.startsWith('emulator')
@@ -37,7 +34,9 @@ export class AndroidDeviceManager {
           : 'physical';
 
       try {
-        const props = await adbClient.getProperties(device.id);
+        const deviceClient = device.getClient();
+
+        const props = await deviceClient.getProperties();
         try {
           let name = props['ro.product.model'];
           const abiString = props['ro.product.cpu.abilist'] || '';
@@ -56,7 +55,7 @@ export class AndroidDeviceManager {
             device.id,
             type,
             name,
-            adbClient,
+            deviceClient,
             abiList,
             sdkVersion,
           );
@@ -100,12 +99,10 @@ export class AndroidDeviceManager {
           // The default way of capturing screenshots through adb does not seem to work
           // There is a way of getting a screenshot through KaiOS dev tools though
           if (androidLikeDevice instanceof AndroidDevice) {
-            const screenRecordAvailable =
-              await androidLikeDevice.screenRecordAvailable();
             androidLikeDevice.info.features.screenCaptureAvailable =
-              screenRecordAvailable;
+              await androidLikeDevice.screenRecordAvailable();
             androidLikeDevice.info.features.screenshotAvailable =
-              screenRecordAvailable;
+              await androidLikeDevice.screenShotAvailable();
           }
 
           resolve(androidLikeDevice);
@@ -122,7 +119,7 @@ export class AndroidDeviceManager {
         } else {
           const isAuthorizationError = message.includes('device unauthorized');
           if (!isAuthorizationError) {
-            console.error('Failed to connect to android device', e);
+            console.warn('Failed to connect to android device', e);
           }
           this.flipperServer.emit('notification', {
             type: 'error',
@@ -197,7 +194,7 @@ export class AndroidDeviceManager {
         const devices = await this.adbClient.listDevices();
         for (const device of devices) {
           if (device.type !== 'offline') {
-            this.registerDevice(this.adbClient, device);
+            this.registerDevice(device);
           } else {
             this.handleOfflineDevice(device);
           }
@@ -239,7 +236,7 @@ export class AndroidDeviceManager {
               return;
             }
             if (device.type !== 'offline') {
-              this.registerDevice(this.adbClient, device);
+              this.registerDevice(device);
             } else {
               this.handleOfflineDevice(device);
             }
@@ -249,7 +246,7 @@ export class AndroidDeviceManager {
             if (device.type === 'offline') {
               this.flipperServer.unregisterDevice(device.id);
             } else {
-              this.registerDevice(this.adbClient, device);
+              this.registerDevice(device);
             }
           });
 
@@ -275,8 +272,8 @@ export class AndroidDeviceManager {
     );
   }
 
-  private async registerDevice(adbClient: ADBClient, deviceData: Device) {
-    const androidDevice = await this.createDevice(adbClient, deviceData);
+  private async registerDevice(deviceData: Device) {
+    const androidDevice = await this.createDevice(deviceData);
     if (!androidDevice) {
       return;
     }

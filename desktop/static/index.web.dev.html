@@ -4,9 +4,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+
   <link rel="icon" href="icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+
   <link id="flipper-theme-import" rel="stylesheet">
+
   <title>Flipper</title>
   <script>
     window.flipperConfig = {
@@ -34,110 +39,124 @@
       text-align: center;
     }
 
-    .__infinity-dev-box-error {
-      background-color: red;
-      font-family: monospace;
-      font-size: 12px;
-      z-index: 10;
-      bottom: 0;
-      left: 0;
-      position: absolute;
-    }
   </style>
 </head>
 
 <body>
   <div id="root">
     <div id="loading">
-      Loading...
+      Connecting...
     </div>
   </div>
 
-
-  <div class="__infinity-dev-box __infinity-dev-box-error" hidden>
-
-  </div>
-
   <script>
-    (function () {
-      // FIXME: needed to make Metro work
-      window.global = window;
-      let suppressErrors = false;
+      (async function () {
+        // Line below needed to make Metro work. Alternatives could be considered.
+        window.global = window;
+        let suppressErrors = false;
+        let connected = false;
 
-      const socket = new WebSocket(`ws://${location.host}`);
-      window.devSocket = socket;
+        const params = new URL(location.href).searchParams;
+        let token = params.get('token');
+        if (!token) {
+          const manifestResponse = await fetch('manifest.json');
+          const manifest = await manifestResponse.json();
+          token = manifest.token;
+        }
 
-      socket.addEventListener('message', ({ data: dataRaw }) => {
-        const message = JSON.parse(dataRaw.toString())
+        const socket = new WebSocket(`ws://${location.host}?token=${token}`);
+        window.devSocket = socket;
 
-        if (typeof message.event === 'string') {
-          switch (message.event) {
-            case 'hasErrors': {
-              openError(message.payload);
-              suppressErrors = true;
-              break;
-            }
-            case 'plugins-source-updated': {
-              window.postMessage({
-                type: 'plugins-source-updated',
-                data: message.payload
-              })
-              break;
+        socket.addEventListener('message', ({ data: dataRaw }) => {
+          const message = JSON.parse(dataRaw.toString())
+
+          if (typeof message.event === 'string') {
+            switch (message.event) {
+              case 'hasErrors': {
+                openError(message.payload);
+                suppressErrors = true;
+                break;
+              }
+              case 'plugins-source-updated': {
+                window.postMessage({
+                  type: 'plugins-source-updated',
+                  data: message.payload
+                })
+                break;
+              }
             }
           }
+        })
+
+        socket.addEventListener('error', (e) => {
+          if (!connected) {
+            openError('Socket failed to connect. Is the server running? Have you provided a valid authentication token?');
+          }
+          else {
+            openError('Socket failed with error.');
+          }
+
+          suppressErrors = true;
+        });
+
+        socket.addEventListener('open', () => {
+          connected = true;
+        })
+
+        function openError(text) {
+          if (suppressErrors) {
+            return;
+          }
+
+          const box = document.getElementById('loading');
+          box.textContent = text;
         }
-      })
+        window.flipperShowError = openError;
 
-      socket.addEventListener('error', () => {
-        openError('WebSocket -> error');
-        suppressErrors = true;
-      })
-
-
-      function openError(text) {
-        if (suppressErrors) {
-          return;
-        }
-
-        const box = document.querySelector('.__infinity-dev-box-error');
-        box.removeAttribute('hidden');
-        box.textContent = text;
-        box.appendChild(closeButton);
-      }
-      window.flipperShowError = openError;
-      window.flipperHideError = () => {
-        const box = document.querySelector('.__infinity-dev-box-error');
-        box.setAttribute('hidden', true);
-      }
-
-      const closeButton = document.createElement('button');
-      closeButton.addEventListener('click', window.flipperHideError);
-      closeButton.textContent = 'X';
-
-      // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
-      try {
-        if (window.flipperConfig.theme === 'dark') {
-          document.getElementById('flipper-theme-import').href = "themes/dark.css";
-        } else {
+        // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
+        try {
+          if (window.flipperConfig.theme === 'dark') {
+            document.getElementById('flipper-theme-import').href = "themes/dark.css";
+          } else {
+            document.getElementById('flipper-theme-import').href = "themes/light.css";
+          }
+        } catch (e) {
+          console.error("Failed to initialize theme", e);
           document.getElementById('flipper-theme-import').href = "themes/light.css";
         }
-      } catch (e) {
-        console.error("Failed to initialize theme", e);
-        document.getElementById('flipper-theme-import').href = "themes/light.css";
-      }
 
-      function init() {
-        const script = document.createElement('script');
-        script.src = window.flipperConfig.entryPoint;
+        function init() {
+          const script = document.createElement('script');
+          script.src = window.flipperConfig.entryPoint;
 
-        script.onerror = (e) => {
-          openError('Script failure. Check Chrome console for more info.');
-        };
+          script.onerror = (e) => {
+            openError('Failed to load entry point. Check Chrome console for more info.');
+          };
 
-        document.body.appendChild(script);
-      }
-      init();
-    })();
+          document.body.appendChild(script);
+        }
+
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker
+            .register('/service-worker.js')
+            .then(() => {
+              console.log('Flipper Service Worker has been registered');
+            })
+            .catch((e) => {
+              console.error('Flipper failed to register Service Worker', e);
+            });
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+          console.log('Flipper PWA before install prompt with event', e);
+          // Prevent Chrome 67 and earlier from automatically showing the prompt.
+          e.preventDefault();
+          // Stash the event so it can be triggered later.
+          global.PWAppInstallationEvent = e;
+        });
+
+        init();
+      })();
   </script>
 </body>
 

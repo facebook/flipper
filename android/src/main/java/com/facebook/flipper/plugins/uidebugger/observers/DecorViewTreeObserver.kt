@@ -12,25 +12,19 @@ import android.view.View
 import android.view.ViewTreeObserver
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
-import com.facebook.flipper.plugins.uidebugger.core.Context
-import com.facebook.flipper.plugins.uidebugger.scheduler.throttleLatest
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
+import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 import java.lang.ref.WeakReference
-import kotlinx.coroutines.*
 
 typealias DecorView = View
 
 /** Responsible for subscribing to updates to the content view of an activity */
-class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
-
-  private val throttleTimeMs = 500L
+class DecorViewObserver(val context: UIDContext) : TreeObserver<DecorView>() {
 
   private var nodeRef: WeakReference<View>? = null
-  private var listener: ViewTreeObserver.OnPreDrawListener? = null
+  private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
 
   override val type = "DecorView"
-
-  private val waitScope = CoroutineScope(Dispatchers.IO)
-  private val mainScope = CoroutineScope(Dispatchers.Main)
 
   override fun subscribe(node: Any) {
     node as View
@@ -38,38 +32,43 @@ class DecorViewObserver(val context: Context) : TreeObserver<DecorView>() {
 
     Log.i(LogTag, "Subscribing to decor view changes")
 
-    val throttledUpdate =
-        throttleLatest<WeakReference<View>?>(throttleTimeMs, waitScope, mainScope) { weakView ->
-          weakView?.get()?.let { view ->
-            var snapshotBitmap: BitmapPool.ReusableBitmap? = null
-            if (view.width > 0 && view.height > 0) {
-              snapshotBitmap = context.bitmapPool.getBitmap(node.width, node.height)
-            }
-            processUpdate(context, view, snapshotBitmap)
-          }
-        }
+    context.sharedThrottle.registerCallback(this.objectIdentity()) {
+      nodeRef?.get()?.let { traverseAndSendWithSnapshot() }
+    }
 
-    listener =
+    preDrawListener =
         ViewTreeObserver.OnPreDrawListener {
-          throttledUpdate(nodeRef)
+          context.sharedThrottle.trigger()
           true
         }
 
-    node.viewTreeObserver.addOnPreDrawListener(listener)
+    node.viewTreeObserver.addOnPreDrawListener(preDrawListener)
 
     // It can be the case that the DecorView the current observer owns has already
     // drawn. In this case, manually trigger an update.
-    throttledUpdate(nodeRef)
+    traverseAndSendWithSnapshot()
+  }
+
+  private fun traverseAndSendWithSnapshot() {
+    nodeRef?.get()?.let { view ->
+      var snapshotBitmap: BitmapPool.ReusableBitmap? = null
+      if (view.width > 0 && view.height > 0) {
+        snapshotBitmap = context.bitmapPool.getBitmap(view.width, view.height)
+      }
+      traverseAndSend(context, view, snapshotBitmap)
+    }
   }
 
   override fun unsubscribe() {
     Log.i(LogTag, "Unsubscribing from decor view changes")
 
-    listener.let {
+    preDrawListener.let {
       nodeRef?.get()?.viewTreeObserver?.removeOnPreDrawListener(it)
-      listener = null
+      preDrawListener = null
     }
 
+    context.sharedThrottle.deregisterCallback(this.objectIdentity())
+    nodeRef?.clear()
     nodeRef = null
   }
 }
@@ -79,7 +78,7 @@ object DecorViewTreeObserverBuilder : TreeObserverBuilder<DecorView> {
     return node.javaClass.simpleName.contains("DecorView")
   }
 
-  override fun build(context: Context): TreeObserver<DecorView> {
+  override fun build(context: UIDContext): TreeObserver<DecorView> {
     Log.i(LogTag, "Building DecorView observer")
     return DecorViewObserver(context)
   }

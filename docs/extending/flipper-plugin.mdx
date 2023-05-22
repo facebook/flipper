@@ -342,6 +342,8 @@ Opens a different plugin by id, optionally providing a deeplink to bring the tar
 
 Usage: `client.supportsMethod(method: string): Promise<Boolean>`
 
+Method must be called within [onConnect](#onconnect), otherwise will throw error.
+
 Resolves to true if the client supports the specified method. Useful when adding functionality to existing plugins, when connectivity to older clients is still required. Also useful when client plugins are implemented on multiple platforms and don't all have feature parity.
 
 #### `showNotification`
@@ -937,6 +939,8 @@ function HighlightedText(props: {text: string}) {
 ### ElementsInspectorElement
 
 ### ElementsInspectorProps
+
+### TimelineDataDescription
 
 Coming soon
 

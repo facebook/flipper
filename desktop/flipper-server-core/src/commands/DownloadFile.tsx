@@ -11,6 +11,8 @@ import {FlipperServerCommands, FlipperServerEvents, uuid} from 'flipper-common';
 import {pathExists} from 'fs-extra';
 import {promises, createWriteStream, ReadStream} from 'fs';
 import axios from 'axios';
+import http from 'http';
+import https from 'https';
 
 const {unlink} = promises;
 
@@ -42,6 +44,21 @@ export const commandDownloadFileStartFactory =
 
       await unlink(dest);
     }
+
+    console.debug('commandDownloadFileStartFactory -> start', {
+      http: {
+        usedSockets: Object.keys(http.globalAgent.sockets).length,
+        freeSocket: Object.keys(http.globalAgent.freeSockets).length,
+        maxSockets: http.globalAgent.maxSockets,
+        maxTotalSockets: http.globalAgent.maxTotalSockets,
+      },
+      https: {
+        usedSockets: Object.keys(https.globalAgent.sockets).length,
+        freeSocket: Object.keys(https.globalAgent.freeSockets).length,
+        maxSockets: https.globalAgent.maxSockets,
+        maxTotalSockets: https.globalAgent.maxTotalSockets,
+      },
+    });
 
     const downloadId = uuid();
 
@@ -84,6 +101,16 @@ export const commandDownloadFileStartFactory =
         totalSize,
         status: 'success',
       });
+      console.debug('commandDownloadFileStartFactory -> finish', {
+        http: {
+          usedSockets: Object.keys(http.globalAgent.sockets).length,
+          freeSocket: Object.keys(http.globalAgent.freeSockets).length,
+        },
+        https: {
+          usedSockets: Object.keys(https.globalAgent.sockets).length,
+          freeSocket: Object.keys(https.globalAgent.freeSockets).length,
+        },
+      });
     });
 
     writeStream.on('error', (e: Error) => {
@@ -95,6 +122,16 @@ export const commandDownloadFileStartFactory =
         status: 'error',
         message: e.message,
         stack: e.stack,
+      });
+      console.debug('commandDownloadFileStartFactory -> error', {
+        http: {
+          usedSockets: Object.keys(http.globalAgent.sockets).length,
+          freeSocket: Object.keys(http.globalAgent.freeSockets).length,
+        },
+        https: {
+          usedSockets: Object.keys(https.globalAgent.sockets).length,
+          freeSocket: Object.keys(https.globalAgent.freeSockets).length,
+        },
       });
     });
 

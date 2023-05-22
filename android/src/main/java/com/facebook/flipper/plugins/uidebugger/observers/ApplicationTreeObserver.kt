@@ -11,14 +11,15 @@ import android.util.Log
 import android.view.View
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
-import com.facebook.flipper.plugins.uidebugger.core.Context
 import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
+import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 
 /**
  * Responsible for observing the activity stack and managing the subscription to the top most
  * content view (decor view)
  */
-class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRef>() {
+class ApplicationTreeObserver(val context: UIDContext) : TreeObserver<ApplicationRef>() {
 
   override val type = "Application"
 
@@ -35,18 +36,24 @@ class ApplicationTreeObserver(val context: Context) : TreeObserver<ApplicationRe
 
           override fun onRootViewsChanged(rootViews: List<View>) {
             Log.i(LogTag, "Root views updated, num ${rootViews.size}")
-            processUpdate(context, applicationRef)
+            context.sharedThrottle.trigger()
           }
         }
+
+    context.sharedThrottle.registerCallback(this.objectIdentity()) {
+      traverseAndSend(context, applicationRef)
+    }
+
     context.applicationRef.rootsResolver.attachListener(rootViewListener)
     // On subscribe, trigger a traversal on whatever roots we have
-    rootViewListener.onRootViewsChanged(applicationRef.rootViews)
+    rootViewListener.onRootViewsChanged(applicationRef.rootsResolver.rootViews())
 
-    Log.i(LogTag, "${context.applicationRef.rootViews.size} root views")
+    Log.i(LogTag, "${context.applicationRef.rootsResolver.rootViews().size} root views")
     Log.i(LogTag, "${context.applicationRef.activitiesStack.size} activities")
   }
 
   override fun unsubscribe() {
     context.applicationRef.rootsResolver.attachListener(null)
+    context.sharedThrottle.deregisterCallback(this.objectIdentity())
   }
 }

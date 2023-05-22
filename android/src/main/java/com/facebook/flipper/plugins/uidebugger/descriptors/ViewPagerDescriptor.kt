@@ -31,7 +31,7 @@ object ViewPagerDescriptor : ChainedDescriptor<ViewPager>() {
 
   private val CurrentItemIndexAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "currentItemIndex")
-  override fun onGetData(
+  override fun onGetAttributes(
       node: ViewPager,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {

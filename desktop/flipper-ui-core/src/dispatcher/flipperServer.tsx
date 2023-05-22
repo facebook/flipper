@@ -24,6 +24,7 @@ import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
 import {waitFor} from '../utils/waitFor';
+import {NotificationBody} from '../ui/components/NotificationBody';
 
 export function connectFlipperServerToStore(
   server: FlipperServer,
@@ -35,7 +36,7 @@ export function connectFlipperServerToStore(
     console.warn(text);
     notification.open({
       message: title,
-      description: description,
+      description: <NotificationBody text={description} />,
       type: type,
       duration: 0,
       key: text,
@@ -50,7 +51,7 @@ export function connectFlipperServerToStore(
     } else {
       notification.error({
         message: 'Connection error',
-        description: <>{err.message ?? err}</>,
+        description: <NotificationBody text={err.message ?? err} />,
         duration: null,
       });
     }

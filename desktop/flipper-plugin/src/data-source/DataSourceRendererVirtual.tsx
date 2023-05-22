@@ -302,6 +302,16 @@ export const DataSourceRendererVirtual: <T extends object, C>(
           tabIndex={0}>
           {virtualizer.virtualItems.map((virtualRow) => {
             const value = dataView.get(virtualRow.index);
+
+            if (value === undefined) {
+              console.error(
+                `DataSourceRendererVirtual -> unexpected out-of-bound value. Data view has ${dataView.size} items. Requested ${virtualRow.index}. Virtuaslizer has ${virtualizer.virtualItems.length} items.`,
+              );
+              throw new Error(
+                `DataSourceRendererVirtual -> unexpected out-of-bound value. Data view has ${dataView.size} items. Requested ${virtualRow.index}. Virtuaslizer has ${virtualizer.virtualItems.length} items.`,
+              );
+            }
+
             // the position properties always change, so they are not part of the TableRow to avoid invalidating the memoized render always.
             // Also all row containers are renderd as part of same component to have 'less react' framework code in between*/}
             return (

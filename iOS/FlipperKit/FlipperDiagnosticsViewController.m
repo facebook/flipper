@@ -37,6 +37,7 @@ static NSString* const kSKCellIdentifier =
   cell.textLabel.font = [UIFont fontWithName:@"Arial" size:10];
   cell.textLabel.text = [self.elements[row][@"state"]
       stringByAppendingString:self.elements[row][@"name"]];
+
   return cell;
 }
 
@@ -52,12 +53,19 @@ static NSString* const kSKCellIdentifier =
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  self.view.backgroundColor = [UIColor whiteColor];
+
+  self.stateTable = [[UITableView alloc]
+      initWithFrame:CGRectMake(
+                        0, 0, self.view.bounds.size.width, STATE_VIEW_HEIGHT)];
+
   self.scrollView = [[UIScrollView alloc]
       initWithFrame:CGRectMake(
                         0,
                         STATE_VIEW_HEIGHT,
                         self.view.frame.size.width,
                         self.view.frame.size.height - 100 - STATE_VIEW_HEIGHT)];
+
   self.logLabel =
       [[UILabel alloc] initWithFrame:CGRectMake(
                                          0,
@@ -66,11 +74,9 @@ static NSString* const kSKCellIdentifier =
                                          self.scrollView.frame.size.height)];
   self.logLabel.numberOfLines = 0;
   self.logLabel.font = [UIFont systemFontOfSize:10.0f];
+
   [self.scrollView addSubview:self.logLabel];
 
-  self.stateTable = [[UITableView alloc]
-      initWithFrame:CGRectMake(
-                        0, 0, self.view.bounds.size.width, STATE_VIEW_HEIGHT)];
   [self.stateTable registerClass:[UITableViewCell class]
           forCellReuseIdentifier:kSKCellIdentifier];
   self.stateTable.rowHeight = 14;
@@ -104,10 +110,11 @@ static NSString* const kSKCellIdentifier =
   [self.logLabel sizeToFit];
   self.scrollView.contentSize = self.logLabel.frame.size;
 
-  // Scroll to bottom
-  CGPoint bottomOffset = CGPointMake(
-      0,
-      self.scrollView.contentSize.height - self.scrollView.bounds.size.height);
+  CGFloat y = 0;
+  if (self.scrollView.contentSize.height > self.scrollView.bounds.size.height) {
+    y = self.scrollView.contentSize.height - self.scrollView.bounds.size.height;
+  }
+  CGPoint bottomOffset = CGPointMake(0, y);
   [self.scrollView setContentOffset:bottomOffset animated:YES];
 }
 

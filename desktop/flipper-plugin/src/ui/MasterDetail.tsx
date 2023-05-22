@@ -41,12 +41,15 @@ type MasterDetailProps<T> = {
    * 'bottom': show a resizable pane to the bottom
    * 'none': don't show details at all
    */
-  sidebarPosition?: 'bottom' | 'right' | 'main' | 'none';
+  sidebarPosition?: 'bottom' | 'right' | 'main' | 'overlay' | 'none';
   /**
    * Component that accepts a 'record' prop that is used to render details.
    * If none is provided, a standard `DataInspector` component will be used to display the entire record.
    */
-  sidebarComponent?: React.FC<{record: T}>;
+  sidebarComponent?: React.FC<{
+    record: T;
+    tableManagerRef?: React.RefObject<DataTableManager<T> | undefined>;
+  }>;
   /**
    * Default size of the sidebar.
    */
@@ -114,6 +117,7 @@ export function MasterDetail<T extends object>({
     sidebarPosition !== 'none' && selectedRecord && sidebarComponent
       ? createElement(sidebarComponent, {
           record: selectedRecord,
+          tableManagerRef,
         })
       : null;
 
@@ -244,6 +248,13 @@ export function MasterDetail<T extends object>({
           {table}
           {sidebar}
         </Layout.Bottom>
+      );
+    case 'overlay':
+      return (
+        <Layout.Container grow style={{position: 'relative'}}>
+          {table}
+          {sidebar}
+        </Layout.Container>
       );
     case 'none':
       return table;

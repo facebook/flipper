@@ -7,7 +7,7 @@
   "flipperBundlerEntry": "index.tsx",
   "main": "dist/bundle.js",
   "license": "MIT",
-  "title": "UI Debugger (beta)",
+  "title": "UI Debugger",
   "icon": "nav-magnifying-glass",
   "keywords": [
     "flipper-plugin"
@@ -15,8 +15,10 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "react-color": "^2.19.3",
-    "react-complex-tree" : "^1.1.11",
-    "react-hotkeys-hook": "^3.4.7"
+    "react-hotkeys-hook": "^3.4.7",
+    "react-query": "^3.39.1",
+    "ts-retry-promise": "^0.7.0",
+    "memoize-weak": "^1.0.2"
   },
   "bugs": {
     "url": "https://github.com/facebook/flipper/issues"

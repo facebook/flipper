@@ -71,8 +71,7 @@ class FlipperSocketProvider {
   static bool hasProvider();
 
  private:
-  static std::unique_ptr<FlipperSocketProvider> provider_;
-  static std::unique_ptr<FlipperSocketProvider> shelvedProvider_;
+  static std::unique_ptr<FlipperSocketProvider>& defaultProvider();
 };
 
 } // namespace flipper

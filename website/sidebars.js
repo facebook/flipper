@@ -114,6 +114,7 @@ module.exports = {
           'extending/debugging',
           ...fbInternalOnly([
             'fb/adding-analytics-0',
+            'fb/logging',
             'extending/fb/plugin-documentation',
           ]),
           'extending/plugin-distribution',
@@ -143,6 +144,7 @@ module.exports = {
           'extending/layout-inspector',
         ],
       },
+
     ],
     'Under the Hood': [
       'internals/index',

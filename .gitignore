@@ -8,6 +8,8 @@ bundle.map
 *.bundle.map
 .env
 desktop-branch-*/
+auth.token
+manifest.json
 
 # conflicts with FB internal infra
 .watchmanconfig

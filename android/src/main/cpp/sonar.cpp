@@ -44,8 +44,15 @@ void handleException(const std::exception& e) {
   __android_log_write(ANDROID_LOG_ERROR, "FLIPPER", message.c_str());
 }
 
-std::unique_ptr<facebook::flipper::Scheduler> sonarScheduler;
-std::unique_ptr<facebook::flipper::Scheduler> connectionScheduler;
+std::unique_ptr<facebook::flipper::Scheduler>& sonarScheduler() {
+  static std::unique_ptr<facebook::flipper::Scheduler> scheduler;
+  return scheduler;
+}
+
+std::unique_ptr<facebook::flipper::Scheduler>& connectionScheduler() {
+  static std::unique_ptr<facebook::flipper::Scheduler> scheduler;
+  return scheduler;
+}
 
 class JEventBase : public jni::HybridClass<JEventBase> {
  public:
@@ -342,13 +349,7 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
         }));
     socket_->connect();
 
-    auto state = connected.wait_for(std::chrono::seconds(10));
-    if (state == std::future_status::ready) {
-      return connected.get();
-    }
-
-    disconnect();
-    return false;
+    return connected.get();
   }
 
   virtual void disconnect() override {
@@ -949,9 +950,9 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       const std::string app,
       const std::string appId,
       const std::string privateAppDirectory) {
-    sonarScheduler =
+    sonarScheduler() =
         std::make_unique<FollyScheduler>(callbackWorker->eventBase());
-    connectionScheduler =
+    connectionScheduler() =
         std::make_unique<FollyScheduler>(connectionWorker->eventBase());
 
     FlipperClient::init(
@@ -962,8 +963,8 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
           std::move(app),
           std::move(appId),
           std::move(privateAppDirectory)},
-         sonarScheduler.get(),
-         connectionScheduler.get(),
+         sonarScheduler().get(),
+         connectionScheduler().get(),
          insecurePort,
          securePort,
          altInsecurePort,

@@ -184,7 +184,9 @@ export function devicePlugin(client: DevicePluginClient) {
   }
 
   async function clearLogs() {
-    await client.device.clearLogs();
+    if (client.device.connected.get()) {
+      await client.device.clearLogs();
+    }
     rows.clear();
     tableManagerRef.current?.clearSelection();
   }

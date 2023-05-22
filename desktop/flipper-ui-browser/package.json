@@ -21,7 +21,7 @@
     "invariant": "^2.2.4",
     "metro-runtime": "^0.70.2",
     "pretty-format": "^27.5.0",
-    "react-refresh": "^0.10.0"
+    "react-refresh": "^0.14.0"
   },
   "peerDependencies": {},
   "scripts": {

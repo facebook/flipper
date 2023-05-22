@@ -55,6 +55,7 @@ import {
   formatDuration,
   requestsToText,
   decodeBody,
+  formatOperationName,
 } from './utils';
 import RequestDetails from './RequestDetails';
 import {assembleChunksIfResponseIsComplete} from './chunks';
@@ -239,11 +240,15 @@ export function plugin(client: PluginClient<Events, Methods>) {
   function init() {
     supportsMocks(client.device)
       .then((result) => {
-        const newRoutes = JSON.parse(
+        const newRouteArray: [any] = JSON.parse(
           localStorage.getItem(
             LOCALSTORAGE_MOCK_ROUTE_LIST_KEY + client.appId,
-          ) || '{}',
+          ) || '[]',
         );
+        const newRoutes: {[id: string]: any} = {};
+        newRouteArray.forEach((value, index) => {
+          newRoutes[index.toString()] = value;
+        });
         batch(() => {
           routes.set(newRoutes);
           isMockResponseSupported.set(result);
@@ -253,7 +258,11 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
         informClientMockChange(routes.get());
       })
-      .catch((e) => console.error('[network] Failed to init mocks:', e));
+      .catch((e) => {
+        if (client.device.connected.get()) {
+          console.error('[network] Failed to init mocks:', e);
+        }
+      });
 
     // declare new variable to be called inside the interface
     networkRouteManager.set(
@@ -656,6 +665,13 @@ const baseColumns: DataTableColumn<Request>[] = [
     title: 'Response Time',
     width: 120,
     visible: false,
+  },
+  {
+    key: 'requestData',
+    title: 'GraphQL operation name',
+    width: 120,
+    visible: false,
+    formatters: formatOperationName,
   },
   {
     key: 'domain',

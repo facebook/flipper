@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * Registry of attribute metadata. There's two types of attributes:
@@ -20,12 +21,12 @@ object MetadataRegister {
 
   const val TYPE_IDENTITY = "identity"
   const val TYPE_ATTRIBUTE = "attribute"
-  const val TYPE_LAYOUT = "layout"
-  const val TYPE_DOCUMENTATION = "documentation"
+
+  private val lock = "lock"
 
   private var generator: MetadataId = 0
   private val register: MutableMap<String, Metadata> = mutableMapOf()
-  private val pending: MutableSet<String> = mutableSetOf()
+  private val pendingKeys: MutableSet<String> = mutableSetOf()
 
   private fun key(namespace: String, name: String): String = "${namespace}_$name"
 
@@ -34,20 +35,24 @@ object MetadataRegister {
       namespace: String,
       name: String,
       mutable: Boolean = false,
-      possibleValues: Set<InspectableValue>? = emptySet()
+      possibleValues: Set<InspectableValue>? = null,
+      customAttributes: Map<String, JsonPrimitive>? = null
   ): MetadataId {
     val key = key(namespace, name)
     register[key]?.let { m ->
       return m.id
     }
 
-    val identifier = ++generator
-    val metadata = Metadata(identifier, type, namespace, name, mutable, possibleValues)
+    synchronized(lock) {
+      val identifier = ++generator
+      val metadata =
+          Metadata(identifier, type, namespace, name, mutable, possibleValues, customAttributes)
 
-    register[key] = metadata
-    pending.add(key)
+      register[key] = metadata
+      pendingKeys.add(key)
 
-    return identifier
+      return identifier
+    }
   }
 
   fun get(namespace: String, name: String): Metadata? {
@@ -55,24 +60,24 @@ object MetadataRegister {
     return register[key]
   }
 
-  fun getMetadata(): Map<MetadataId, Metadata> {
-    val metadata: MutableMap<MetadataId, Metadata> = mutableMapOf()
-    register.forEach { entry -> metadata[entry.value.id] = entry.value }
+  /** gets all pending metadata to be sent and resets the pending list */
+  fun extractPendingMetadata(): Map<MetadataId, Metadata> {
+    synchronized(lock) {
+      val pendingMetadata: MutableMap<MetadataId, Metadata> = mutableMapOf()
 
-    return metadata
-  }
+      pendingKeys.forEach { key ->
+        register[key]?.let { metadata -> pendingMetadata[metadata.id] = metadata }
+      }
+      pendingKeys.clear()
 
-  fun getPendingMetadata(): Map<MetadataId, Metadata> {
-    val pendingMetadata: MutableMap<MetadataId, Metadata> = mutableMapOf()
-    pending.forEach { key ->
-      register[key]?.let { metadata -> pendingMetadata[metadata.id] = metadata }
+      return pendingMetadata
     }
-
-    return pendingMetadata
   }
 
   fun reset() {
-    pending.clear()
-    register.forEach { entry -> pending.add(entry.key) }
+    synchronized(lock) {
+      pendingKeys.clear()
+      register.forEach { entry -> pendingKeys.add(entry.key) }
+    }
   }
 }

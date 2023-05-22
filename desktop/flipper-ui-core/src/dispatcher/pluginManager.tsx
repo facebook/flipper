@@ -140,9 +140,6 @@ async function processPluginCommandsQueue(
         case 'UNINSTALL_PLUGIN':
           uninstallPlugin(store, command.payload);
           break;
-        case 'UPDATE_PLUGIN':
-          updatePlugin(store, command.payload);
-          break;
         case 'SWITCH_PLUGIN':
           switchPlugin(store, command.payload);
           break;
@@ -371,6 +368,10 @@ function stopPlugin(
       !defaultEnabledBackgroundPlugins.includes(pluginId)) &&
     client?.isBackgroundPlugin(pluginId)
   ) {
+    // Debugging T141716711
+    if (pluginId === 'Msys') {
+      console.log('pluginManager.stopPlugin -> deinit Msys');
+    }
     client.deinitPlugin(pluginId);
   }
   // stop sandy plugins

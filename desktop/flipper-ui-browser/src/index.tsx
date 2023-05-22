@@ -11,7 +11,10 @@ import {getLogger, Logger, setLoggerInstance} from 'flipper-common';
 import {initializeRenderHost} from './initializeRenderHost';
 import {createFlipperServer, FlipperServerState} from 'flipper-server-client';
 
-document.getElementById('root')!.innerText = 'flipper-ui-browser started';
+const loadingContainer = document.getElementById('loading');
+if (loadingContainer) {
+  loadingContainer.innerText = 'Loading...';
+}
 
 async function start() {
   // @ts-ignore
@@ -27,19 +30,30 @@ async function start() {
   const logger = createDelegatedLogger();
   setLoggerInstance(logger);
 
+  const params = new URL(location.href).searchParams;
+  let token = params.get('token');
+  if (!token) {
+    const manifestResponse = await fetch('manifest.json');
+    const manifest = await manifestResponse.json();
+    token = manifest.token;
+  }
+
+  const searchParams = new URLSearchParams({token: token ?? ''});
+
   const flipperServer = await createFlipperServer(
     location.hostname,
     parseInt(location.port, 10),
+    searchParams,
     (state: FlipperServerState) => {
       switch (state) {
         case FlipperServerState.CONNECTING:
-          window.flipperShowError?.('Connecting to flipper-server...');
+          window.flipperShowError?.('Connecting to server...');
           break;
         case FlipperServerState.CONNECTED:
           window?.flipperHideError?.();
           break;
         case FlipperServerState.DISCONNECTED:
-          window?.flipperShowError?.('Lost connection to flipper-server');
+          window?.flipperShowError?.('Lost connection to server');
           break;
       }
     },

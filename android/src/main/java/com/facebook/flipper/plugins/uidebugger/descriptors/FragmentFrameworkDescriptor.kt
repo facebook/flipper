@@ -32,7 +32,7 @@ class FragmentFrameworkDescriptor(val register: DescriptorRegister) :
   override fun onGetChildren(node: android.app.Fragment): List<Any> =
       node.view?.let { view -> listOf(view) } ?: listOf()
 
-  override fun onGetData(
+  override fun onGetAttributes(
       node: android.app.Fragment,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {

@@ -38,8 +38,8 @@ object OffsetChildDescriptor : NodeDescriptor<OffsetChild> {
 
   override fun getActiveChild(node: OffsetChild): Any? = node.descriptor.getActiveChild(node.child)
 
-  override fun getData(node: OffsetChild): MaybeDeferred<Map<MetadataId, InspectableObject>> =
-      node.descriptor.getData(node.child)
+  override fun getAttributes(node: OffsetChild): MaybeDeferred<Map<MetadataId, InspectableObject>> =
+      node.descriptor.getAttributes(node.child)
 
   override fun getTags(node: OffsetChild): Set<String> = node.descriptor.getTags(node.child)
   override fun getSnapshot(node: OffsetChild, bitmap: Bitmap?): Bitmap? =

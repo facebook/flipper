@@ -108,7 +108,9 @@ export default class Inspector extends Component<Props, State> {
             label: 'Focus',
             click: (id: ElementID) => {
               if (this.props.client.isConnected) {
-                this.props.client.call('onRequestAXFocus', {id});
+                this.props.client
+                  .call('onRequestAXFocus', {id})
+                  .catch((e) => console.warn('Unable to request AX focus', e));
               }
             },
           },
@@ -341,20 +343,29 @@ export default class Inspector extends Component<Props, State> {
   }
 
   getElementLeaves(tree: ElementSelectorNode): Array<ElementID> {
-    return tree
-      ? Object.entries(tree).reduce(
-          (
-            currLeafNode: Array<ElementID>,
-            [id, children]: [ElementID, ElementSelectorNode],
-          ): Array<ElementID> =>
-            currLeafNode.concat(
-              Object.keys(children).length > 0
-                ? this.getElementLeaves(children)
-                : [id],
-            ),
-          [],
-        )
-      : [];
+    if (!tree) {
+      return [];
+    }
+    const leavesSet = new Set<ElementID>();
+
+    const treeIteratorStack: [ElementID, ElementSelectorNode][] = [
+      ...Object.entries(tree),
+    ];
+    while (treeIteratorStack.length) {
+      const [id, children] = treeIteratorStack.pop()!;
+
+      if (leavesSet.has(id)) {
+        continue;
+      }
+
+      if (Object.keys(children).length) {
+        treeIteratorStack.push(...Object.entries(children));
+      } else {
+        leavesSet.add(id);
+      }
+    }
+
+    return [...leavesSet];
   }
 
   /// Return path from given tree structure and id if id is not null; otherwise return any path

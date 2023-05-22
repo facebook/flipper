@@ -9,7 +9,7 @@
 
 import {useMemo} from 'react';
 import React from 'react';
-import {Console, Hook} from 'console-feed';
+import {Console} from 'console-feed';
 import type {Methods} from 'console-feed/lib/definitions/Methods';
 import type {Styles} from 'console-feed/lib/definitions/Styles';
 import {createState, useValue} from 'flipper-plugin';
@@ -20,33 +20,40 @@ import {Button, Dropdown, Menu, Checkbox} from 'antd';
 import {DownOutlined} from '@ant-design/icons';
 import {DeleteOutlined} from '@ant-design/icons';
 import CBuffer from 'cbuffer';
+import {addLogTailer} from '../consoleLogTailer';
+import {v4} from 'uuid';
 
 const MAX_DISPLAY_LOG_ITEMS = 1000;
 const MAX_EXPORT_LOG_ITEMS = 5000;
 
 // A list5 of log items meant to be used for exporting (and subsequent debugging) only
-export const exportLogs = new CBuffer<any>(MAX_EXPORT_LOG_ITEMS);
-export const displayLogsAtom = createState<any[]>([]);
+export const exportLogs = new CBuffer<ConsoleFeedLogMessage>(
+  MAX_EXPORT_LOG_ITEMS,
+);
+export const displayLogsAtom = createState<ConsoleFeedLogMessage[]>([]);
 export const errorCounterAtom = createState(0);
 
-export function enableConsoleHook() {
-  Hook(
-    window.console,
-    (log) => {
-      exportLogs.push(log);
+type ConsoleFeedLogMessage = {
+  id: string;
+  method: Methods;
+  data: any[];
+};
 
-      if (log.method === 'debug') {
-        return; // See below, skip debug messages which are generated very aggressively by Flipper
-      }
-      const newLogs = displayLogsAtom.get().slice(-MAX_DISPLAY_LOG_ITEMS);
-      newLogs.push(log);
-      displayLogsAtom.set(newLogs);
-      if (log.method === 'error' || log.method === 'assert') {
-        errorCounterAtom.set(errorCounterAtom.get() + 1);
-      }
-    },
-    false,
-  );
+export function enableConsoleHook() {
+  addLogTailer((level, ...data) => {
+    const logMessage = {method: level, data: data, id: v4()};
+    exportLogs.push(logMessage);
+
+    if (level === 'debug') {
+      return; // See below, skip debug messages which are generated very aggressively by Flipper
+    }
+    const newLogs = displayLogsAtom.get().slice(-MAX_DISPLAY_LOG_ITEMS);
+    newLogs.push(logMessage);
+    displayLogsAtom.set(newLogs);
+    if (level === 'error') {
+      errorCounterAtom.set(errorCounterAtom.get() + 1);
+    }
+  });
 }
 
 function clearLogs() {
@@ -134,18 +141,15 @@ function buildTheme(): Styles {
     LOG_INFO_BACKGROUND: 'transparent',
     LOG_COMMAND_BACKGROUND: 'transparent',
     LOG_RESULT_BACKGROUND: 'transparent',
-    LOG_WARN_BACKGROUND: theme.warningColor,
-    LOG_ERROR_BACKGROUND: theme.errorColor,
     LOG_INFO_COLOR: theme.textColorPrimary,
     LOG_COMMAND_COLOR: theme.textColorSecondary,
     LOG_RESULT_COLOR: theme.textColorSecondary,
-    LOG_WARN_COLOR: 'white',
-    LOG_ERROR_COLOR: 'white',
+    LOG_ERROR_COLOR: theme.textColorPrimary,
     LOG_INFO_BORDER: theme.dividerColor,
     LOG_COMMAND_BORDER: theme.dividerColor,
     LOG_RESULT_BORDER: theme.dividerColor,
-    LOG_WARN_BORDER: theme.dividerColor,
-    LOG_ERROR_BORDER: theme.dividerColor,
+    LOG_WARN_BORDER: theme.warningColor,
+    LOG_ERROR_BORDER: theme.errorColor,
     LOG_BORDER: theme.dividerColor,
   };
 }

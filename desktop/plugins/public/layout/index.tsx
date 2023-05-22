@@ -330,14 +330,42 @@ export default class LayoutPlugin extends FlipperPlugin<
   };
 
   onSuggestUIDebugger = () => {
-    if (
-      !getFlipperLib().GK('flipper_ui_debugger') &&
-      this.device.os !== 'Android'
-    ) {
+    if (!getFlipperLib().GK('flipper_ui_debugger')) {
       return;
     }
 
-    const key = `open-ui-debugger-${Date.now()}`;
+    const lastShownTimestampKey =
+      'layout-plugin-UIDebuggerBannerLastShownTimestamp';
+    let lastShownTimestampFromStorage = undefined;
+    try {
+      lastShownTimestampFromStorage = window.localStorage.getItem(
+        lastShownTimestampKey,
+      );
+    } catch (e) {}
+
+    if (lastShownTimestampFromStorage) {
+      const WithinOneDay = (timestamp: number) => {
+        const Day = 1 * 24 * 60 * 60 * 1000;
+        const DayAgo = Date.now() - Day;
+
+        return timestamp > DayAgo;
+      };
+      const lastShownTimestamp = Number(lastShownTimestampFromStorage);
+      if (WithinOneDay(lastShownTimestamp)) {
+        // The banner was shown less than 24-hours ago, don't show it again.
+        return;
+      }
+    }
+
+    const lastShownTimestamp = Date.now();
+    try {
+      window.localStorage.setItem(
+        lastShownTimestampKey,
+        String(lastShownTimestamp),
+      );
+    } catch (e) {}
+
+    const key = `open-ui-debugger-${lastShownTimestamp}`;
     const btn = (
       <Button
         type="primary"
@@ -356,11 +384,11 @@ export default class LayoutPlugin extends FlipperPlugin<
     );
 
     notification.open({
-      message: 'A new UI Debugger is available! 🎉',
-      description: `A new plugin for UI debugging is available! 
-      Have you considered making the switch? Find it on your left panel.`,
+      message: 'Layout plugin is being deprecated.',
+      description: `The new replacement plugin, UI Debugger, is available for use now. 
+      Find it on the left panel`,
       duration: 30,
-      type: 'info',
+      type: 'warning',
       btn,
       key,
     });

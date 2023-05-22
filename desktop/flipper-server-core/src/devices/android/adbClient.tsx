@@ -9,8 +9,7 @@
 
 import {reportPlatformFailures} from 'flipper-common';
 import {execFile} from 'promisify-child-process';
-import adbConfig from './adbConfig';
-import adbkit, {Client} from 'adbkit';
+import adbkit, {Client as ADBClient} from '@u4/adbkit';
 import path from 'path';
 
 type Config = {
@@ -23,7 +22,7 @@ type Config = {
 
 export async function initializeAdbClient(
   config: Config,
-): Promise<Client | void> {
+): Promise<ADBClient | void> {
   const adbClient = await reportPlatformFailures(
     createClient(config),
     'createADBClient',
@@ -39,10 +38,10 @@ export async function initializeAdbClient(
 /* Adbkit will attempt to start the adb server if it's not already running,
    however, it sometimes fails with ENOENT errors. So instead, we start it
    manually before requesting a client. */
-async function createClient(config: Config): Promise<Client> {
-  return reportPlatformFailures<Client>(
+async function createClient(config: Config): Promise<ADBClient> {
+  return reportPlatformFailures<ADBClient>(
     startAdbServer(config.androidHome).then(() =>
-      adbkit.createClient(adbConfig(config.adbKitSettings)),
+      adbkit.createClient(config.adbKitSettings),
     ),
     'createADBClient.shell',
   );

@@ -16,6 +16,7 @@ import {useStore} from '../utils/useStore';
 import {getAppVersion} from '../utils/info';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
 import {getRenderHostInstance} from 'flipper-frontend-core';
+import {NotificationBody} from '../ui/components/NotificationBody';
 
 export type VersionCheckResult =
   | {
@@ -71,7 +72,7 @@ export default function UpdateIndicator() {
           placement: 'bottomLeft',
           key: 'launchermsg',
           message: 'Launch problem',
-          description: launcherMsg.message,
+          description: <NotificationBody text={launcherMsg.message} />,
           duration: null,
         });
       } else {
@@ -79,7 +80,7 @@ export default function UpdateIndicator() {
           placement: 'bottomLeft',
           key: 'launchermsg',
           message: 'Flipper version warning',
-          description: launcherMsg.message,
+          description: <NotificationBody text={launcherMsg.message} />,
           duration: null,
         });
       }

@@ -83,14 +83,14 @@ async function handlePluginDownload(
       `Successfully downloaded and installed plugin "${title}" v${version} from "${downloadUrl}".`,
     );
   } catch (error) {
-    console.error(
+    console.warn(
       `Failed to download plugin "${title}" v${version} from "${downloadUrl}".`,
       error,
     );
     if (startedByUser) {
       showErrorNotification(
         `Failed to download plugin "${title}" v${version}.`,
-        'Please check that you are on VPN/Lighthouse.',
+        'Please check that you are on VPN/Lighthouse and that you are logged into Flipper.',
       );
     }
     throw error;
