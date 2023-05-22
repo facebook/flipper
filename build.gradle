@@ -49,7 +49,7 @@ ext {
     targetSdkVersion = 31
     compileSdkVersion = 31
     buildToolsVersion = "30.0.3"
-    ndkVersion = "$NDK_VERSION"
+    ndkVersion = "25.1.8937393"
     javaTargetVersion = JavaVersion.VERSION_17
 }
 
