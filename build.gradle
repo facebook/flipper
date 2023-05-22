@@ -48,7 +48,7 @@ ext {
     minSdkVersion = 15
     targetSdkVersion = 31
     compileSdkVersion = 31
-    buildToolsVersion = "30.0.3"
+    buildToolsVersion = "33.0.2"
     ndkVersion = "25.1.8937393"
     javaTargetVersion = JavaVersion.VERSION_17
 }
