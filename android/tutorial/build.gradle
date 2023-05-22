@@ -44,9 +44,9 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION"
-    implementation "androidx.appcompat:appcompat:1.4.1"
-    implementation "androidx.core:core-ktx:1.8.0"
+    implementation deps.kotlinStdLibrary
+    implementation deps.supportAppCompat
+    implementation deps.supportCoreKtx
 
     // Flipper
     // For simplicity, we use Flipper for both debug and release builds here.
