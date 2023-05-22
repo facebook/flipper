@@ -10,6 +10,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
+    namespace 'com.facebook.flipper.sample.tutorial'
 
     defaultConfig {
         applicationId "com.facebook.flipper.sample.tutorial"
