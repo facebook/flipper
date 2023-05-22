@@ -22,8 +22,8 @@ android {
     }
 
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility rootProject.javaTargetVersion
+        sourceCompatibility rootProject.javaTargetVersion
     }
 
     buildTypes {
@@ -31,10 +31,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 
     packagingOptions {
