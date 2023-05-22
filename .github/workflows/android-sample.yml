@@ -11,7 +11,7 @@ jobs:
       - name: set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: Compute build cache
         run: ./scripts/checksum-android.sh checksum-android.txt
       - uses: actions/cache@v2
