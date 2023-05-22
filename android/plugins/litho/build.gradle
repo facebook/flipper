@@ -18,6 +18,11 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
     }
 
+    compileOptions {
+        targetCompatibility rootProject.javaTargetVersion
+        sourceCompatibility rootProject.javaTargetVersion
+    }
+
     dependencies {
         compileOnly deps.lithoAnnotations
         implementation project(':android')
