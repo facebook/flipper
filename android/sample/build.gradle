@@ -8,6 +8,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace 'com.facebook.flipper.sample'
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
     ndkVersion rootProject.ndkVersion
