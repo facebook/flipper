@@ -13,7 +13,7 @@ android {
     buildToolsVersion rootProject.buildToolsVersion
     ndkVersion rootProject.ndkVersion
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 23
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         applicationId 'com.facebook.flipper.sample'
         targetSdkVersion rootProject.targetSdkVersion
