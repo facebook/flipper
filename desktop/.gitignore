@@ -5,6 +5,7 @@ node_modules/
 /static/idb-applications
 /static/themes/
 /static/defaultPlugins/
+/static/manifest.json
 /coverage
 .env
 tsc-error.log
