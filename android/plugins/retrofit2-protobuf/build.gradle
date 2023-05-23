@@ -19,6 +19,11 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
     }
 
+    compileOptions {
+        targetCompatibility rootProject.javaTargetVersion
+        sourceCompatibility rootProject.javaTargetVersion
+    }
+
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION"
         implementation project(':android')

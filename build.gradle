@@ -50,6 +50,7 @@ ext {
     compileSdkVersion = 31
     buildToolsVersion = "30.0.3"
     ndkVersion = "$NDK_VERSION"
+    javaTargetVersion = JavaVersion.VERSION_17
 }
 
 ext.deps = [
