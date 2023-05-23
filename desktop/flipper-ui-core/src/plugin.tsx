@@ -102,7 +102,7 @@ export abstract class FlipperBasePlugin<
   Actions extends BaseAction,
   PersistedState,
 > extends Component<Props<PersistedState>, State> {
-  abstract ['constructor']: any;
+  ['constructor']: any;
   static title: string | null = null;
   static category: string | null = null;
   static id: string = '';
@@ -219,7 +219,6 @@ export class FlipperDevicePlugin<
   A extends BaseAction,
   P,
 > extends FlipperBasePlugin<S, A, P> {
-  ['constructor']: typeof FlipperPlugin;
   device: BaseDevice;
 
   constructor(props: Props<P>) {
@@ -252,10 +251,8 @@ export class FlipperPlugin<
   A extends BaseAction,
   P,
 > extends FlipperBasePlugin<S, A, P> {
-  ['constructor']: typeof FlipperPlugin;
   constructor(props: Props<P>) {
     super(props);
-    // @ts-ignore constructor should be assigned already
     const {id} = this.constructor;
     this.subscriptions = [];
     const realClient = (this.realClient = props.target as Client);

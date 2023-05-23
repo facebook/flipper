@@ -202,7 +202,7 @@ export class SandyPluginInstance extends BasePluginInstance {
         );
       },
       onMessage: (event, cb) => {
-        this.events.on('event-' + event, batched(cb));
+        this.events.on(`event-${event.toString()}`, batched(cb));
       },
       onUnhandledMessage: (cb) => {
         this.events.on('unhandled-event', batched(cb));

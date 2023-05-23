@@ -237,7 +237,7 @@ export class DataSource<T extends any, KeyType = never> {
       if (this._recordsById.has(key)) {
         const existingValue = this._recordsById.get(key);
         console.warn(
-          `Tried to append value with duplicate key: ${key} (key attribute is ${this.keyAttribute}). Old/new values:`,
+          `Tried to append value with duplicate key: ${key} (key attribute is ${this.keyAttribute.toString()}). Old/new values:`,
           existingValue,
           value,
         );
