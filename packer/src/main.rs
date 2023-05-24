@@ -106,6 +106,7 @@ fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
     pb.set_style(
         indicatif::ProgressStyle::default_bar()
             .template("{prefix:.bold}▕{bar:.magenta}▏{msg}")
+            .expect("valid indicatif template")
             .progress_chars("█▓▒░  "),
     );
     pb
