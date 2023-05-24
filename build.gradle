@@ -46,8 +46,8 @@ subprojects {
 
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 31
-    compileSdkVersion = 31
+    targetSdkVersion = 33
+    compileSdkVersion = 33
     buildToolsVersion = "33.0.2"
     ndkVersion = "25.1.8937393"
     javaTargetVersion = JavaVersion.VERSION_17
