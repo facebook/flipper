@@ -7,15 +7,12 @@
  * @format
  */
 
-import {FlipperServerImpl} from 'flipper-server-core';
 import path from 'path';
 import fs from 'fs-extra';
 import os from 'os';
 
-export async function findInstallation(
-  server: FlipperServerImpl,
-): Promise<string | undefined> {
-  if (server.config.environmentInfo.os.platform !== 'darwin') {
+export async function findInstallation(): Promise<string | undefined> {
+  if (os.platform() !== 'darwin') {
     return;
   }
 

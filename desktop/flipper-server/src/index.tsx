@@ -19,6 +19,7 @@ import yargs from 'yargs';
 import open from 'open';
 import {initCompanionEnv} from 'flipper-server-companion';
 import {
+  checkPortInUse,
   getEnvironmentInfo,
   startFlipperServer,
   startServer,
@@ -76,7 +77,7 @@ const argv = yargs
   .parse(process.argv.slice(1));
 
 console.log(
-  `Starting flipper server with ${
+  `[flipper-server] Starting flipper server with ${
     argv.bundler ? 'UI bundle from source' : 'pre-bundled UI'
   }`,
 );
@@ -105,15 +106,8 @@ async function start() {
       keytar = electronRequire(keytarPath);
     }
   } catch (e) {
-    console.error('Failed to load keytar:', e);
+    console.error('[flipper-server] Failed to load keytar:', e);
   }
-
-  const {app, server, socket, readyForIncomingConnections} = await startServer({
-    staticPath,
-    entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
-    port: argv.port,
-    tcp: argv.tcp,
-  });
 
   const isProduction =
     process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
@@ -123,6 +117,18 @@ async function start() {
     isProduction,
     true,
   );
+
+  if (await checkPortInUse(argv.port)) {
+    console.warn(`[flipper-server] Port ${argv.port} is already in use`);
+    return;
+  }
+
+  const {app, server, socket, readyForIncomingConnections} = await startServer({
+    staticPath,
+    entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
+    port: argv.port,
+    tcp: argv.tcp,
+  });
 
   const flipperServer = await startFlipperServer(
     rootPath,
@@ -147,7 +153,7 @@ async function start() {
     flipperServer.on('server-state', ({state}) => {
       if (state === 'error') {
         console.error(
-          '[flipper-server-process-exit] state changed to error, process will exit.',
+          '[flipper-server] state changed to error, process will exit.',
         );
         process.exit(1);
       }
@@ -165,7 +171,7 @@ async function start() {
 
 process.on('uncaughtException', (error) => {
   console.error(
-    '[flipper-server-process-exit] uncaught exception, process will exit.',
+    '[flipper-server] uncaught exception, process will exit.',
     error,
   );
   process.exit(1);
@@ -183,17 +189,23 @@ process.on('unhandledRejection', (reason, promise) => {
 start()
   .then(async (flipperServer) => {
     if (!argv.tcp) {
-      console.log('Flipper server started');
       return;
     }
-    console.log(
-      'Flipper server started and is listening at port ' +
-        chalk.green(argv.port),
-    );
-    const token = await getAuthToken();
+
+    console.log('[flipper-server] listening at port ' + chalk.green(argv.port));
+
+    let token: string | undefined;
+    if (flipperServer) {
+      token = await getAuthToken();
+    } else {
+      const tokenPath = path.resolve(staticPath, 'auth.token');
+      token = await fs.readFile(tokenPath, 'utf-8');
+    }
+
     const searchParams = new URLSearchParams({token: token ?? ''});
     const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
-    console.log('Go to: ' + chalk.green(chalk.bold(url)));
+
+    console.log('[flipper-server] Go to: ' + chalk.green(chalk.bold(url)));
     if (!argv.open) {
       return;
     }
@@ -201,7 +213,7 @@ start()
     if (argv.bundler) {
       open(url.toString());
     } else {
-      const path = await findInstallation(flipperServer);
+      const path = await findInstallation();
       open(path ?? url.toString());
     }
   })
