@@ -28,6 +28,12 @@ import {isTest} from 'flipper-common';
 import exitHook from 'exit-hook';
 import {getAuthToken} from 'flipper-server-core';
 import {findInstallation} from './findInstallation';
+import ReconnectingWebSocket from 'reconnecting-websocket';
+import {
+  createFlipperServerWithSocket,
+  FlipperServerState,
+} from 'flipper-server-client';
+import WS from 'ws';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -71,6 +77,11 @@ const argv = yargs
       type: 'boolean',
       default: true,
     },
+    replace: {
+      describe: 'Replaces any running instance, if any.',
+      type: 'boolean',
+      default: true,
+    },
   })
   .version('DEV')
   .help()
@@ -86,6 +97,41 @@ const rootPath = argv.bundler
   ? path.resolve(__dirname, '..', '..')
   : path.resolve(__dirname, '..'); // in pre packaged versions of the server, static is copied inside the package
 const staticPath = path.join(rootPath, 'static');
+
+async function connectToRunningServer(url: URL) {
+  console.info(`[flipper-server] Obtain connection to existing server.`);
+  console.info(`[flipper-server] URL: ${url}`);
+  const options = {
+    WebSocket: class WSWithUnixDomainSocketSupport extends WS {
+      constructor(url: string, protocols: string | string[]) {
+        // Flipper exports could be large, and we snd them over the wire
+        // Setting this limit fairly high (1GB) to allow any reasonable Flipper export to be loaded
+        super(url, protocols, {maxPayload: 1024 * 1024 * 1024});
+      }
+    },
+  };
+  const socket = new ReconnectingWebSocket(url.toString(), [], options);
+  const server = await createFlipperServerWithSocket(
+    socket as WebSocket,
+    (_state: FlipperServerState) => {},
+  );
+  return server;
+}
+
+async function shutdown() {
+  console.info('[flipper-server] Attempt to shutdown.');
+
+  const tokenPath = path.resolve(staticPath, 'auth.token');
+  const token = await fs.readFile(tokenPath, 'utf-8');
+
+  const searchParams = new URLSearchParams({token: token ?? ''});
+  const url = new URL(`ws://localhost:${argv.port}?${searchParams}`);
+  const server = await connectToRunningServer(url);
+  await server.exec('shutdown').catch(() => {
+    /** shutdown will ultimately make this request fail, ignore error. */
+    console.info('[flipper-server] Shutdown may have succeeded');
+  });
+}
 
 async function start() {
   const enhanceLogger = await initializeLogger(staticPath);
@@ -119,8 +165,14 @@ async function start() {
   );
 
   if (await checkPortInUse(argv.port)) {
-    console.warn(`[flipper-server] Port ${argv.port} is already in use`);
-    return;
+    console.warn(`[flipper-server] Port ${argv.port} is already in use.`);
+    if (!argv.replace) {
+      console.info(
+        `[flipper-server] Not replacing existing instance, exiting.`,
+      );
+      return;
+    }
+    await shutdown();
   }
 
   const {app, server, socket, readyForIncomingConnections} = await startServer({
