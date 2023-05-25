@@ -225,7 +225,6 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
     'icons.json',
     'index.web.dev.html',
     'index.web.html',
-    'manifest.json',
     'offline.html',
     'service-worker.js',
     'style.css',
@@ -239,6 +238,13 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
       fs.copy(path.join(staticDir, e), path.join(outDir, 'static', e)),
     ),
   );
+
+  // Manifest needs to be copied over to static folder with the correct name.
+  await fs.copy(
+    path.join(staticDir, 'manifest.template.json'),
+    path.join(outDir, 'static', 'manifest.json'),
+  );
+
   console.log('✅  Copied static resources.');
 }
 
