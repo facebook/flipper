@@ -126,9 +126,16 @@ export function decodeBody(
 
       // Brotli encoding (https://github.com/facebook/flipper/issues/2578)
       case 'br': {
-        return new TextDecoder().decode(
-          decompress(Buffer.from(Base64.toUint8Array(data))),
-        );
+        const inflated = decompress(Buffer.from(Base64.toUint8Array(data)));
+
+        // on iOS, the stream send to flipper is already inflated, so the content-encoding will not
+        // match the actual data anymore, so a 0-length result without an error is expected.
+        // In that case, we intentionally fall-through
+        if (inflated.length === 0 && data.length > 0) {
+          break;
+        }
+
+        return new TextDecoder().decode(inflated);
       }
     }
     // If this is not a gzipped or brotli-encoded request, assume we are interested in a proper utf-8 string.
