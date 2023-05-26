@@ -10,6 +10,7 @@
 import {getLogger} from 'flipper-common';
 
 type TrackerEvents = {
+  'server-started': {port: number; tcp: boolean};
   'server-auth-token-verification': {
     successful: boolean;
     present: boolean;

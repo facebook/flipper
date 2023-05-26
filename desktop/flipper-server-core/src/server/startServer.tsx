@@ -224,8 +224,10 @@ async function startProxyServer(
       return new Promise((resolve) => {
         proxyServer?.listen(config.port);
         server.listen(socketPath, undefined, () => resolve());
-
-        // TODO: track server has started at this stage.
+        tracker.track('server-started', {
+          port: config.port,
+          tcp: config.tcp,
+        });
       });
     };
     resolve({app, server, socket, readyForIncomingConnections});
