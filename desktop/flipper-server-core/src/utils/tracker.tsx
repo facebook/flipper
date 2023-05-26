@@ -16,6 +16,7 @@ type TrackerEvents = {
     error?: string;
   };
   'server-socket-already-in-use': {};
+  'server-proxy-error': {error: string};
 };
 
 class ServerCoreTracker {

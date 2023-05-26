@@ -212,8 +212,7 @@ async function startProxyServer(
       res.writeHead(502, 'Failed to proxy request');
     }
     res.end('Failed to proxy request: ' + err);
-    // TODO: should exit as proxying requests will continue to fail.
-    // TODO: track these instances.
+    tracker.track('server-proxy-error', {error: err.message});
   });
 
   return new Promise((resolve) => {
