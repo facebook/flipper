@@ -41,6 +41,17 @@ server-mac-x64:
       - Flipper.app/Contents/Resources
       - Flipper.app/Contents/Info.plist
 
+server-mac-aarch64:
+  mode: exact
+  basedir: flipper-server-mac-aarch64
+  files:
+    frameworks:
+      - Flipper.app/Contents/MacOS/
+      - Flipper.app/Contents/PkgInfo
+    core:
+      - Flipper.app/Contents/Resources
+      - Flipper.app/Contents/Info.plist
+
 server-linux:
   mode: glob
   basedir: flipper-server-linux

@@ -106,6 +106,7 @@ fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
     pb.set_style(
         indicatif::ProgressStyle::default_bar()
             .template("{prefix:.bold}▕{bar:.magenta}▏{msg}")
+            .expect("valid indicatif template")
             .progress_chars("█▓▒░  "),
     );
     pb
@@ -404,7 +405,7 @@ mod test {
     fn test_included_packlist_parses() {
         let res: PackList =
             serde_yaml::from_str(DEFAULT_PACKLIST).expect("Default packlist doesn't deserialize");
-        assert_eq!(res.0.len(), 5);
+        assert_eq!(res.0.len(), 6);
     }
 
     #[test]

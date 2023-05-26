@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "lib": ["ES2019"],
+    "lib": ["DOM", "ES2019"],
     "types": ["../types/flipperGlobals", "../types/metro-resolver", "../types/metro"]
   },
   "include": ["./src/*"],
@@ -16,6 +16,9 @@
     },
     {
       "path": "../flipper-server-companion"
+    },
+    {
+      "path": "../flipper-server-client"
     },
     {
       "path": "../pkg-lib"

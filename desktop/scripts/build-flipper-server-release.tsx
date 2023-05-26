@@ -40,6 +40,7 @@ enum BuildPlatform {
   LINUX = 'linux',
   WINDOWS = 'windows',
   MAC_X64 = 'mac-x64',
+  MAC_AARCH64 = 'mac-aarch64',
 }
 
 const LINUX_STARTUP_SCRIPT = `#!/bin/sh
@@ -224,7 +225,6 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
     'icons.json',
     'index.web.dev.html',
     'index.web.html',
-    'manifest.json',
     'offline.html',
     'service-worker.js',
     'style.css',
@@ -238,6 +238,13 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
       fs.copy(path.join(staticDir, e), path.join(outDir, 'static', e)),
     ),
   );
+
+  // Manifest needs to be copied over to static folder with the correct name.
+  await fs.copy(
+    path.join(staticDir, 'manifest.template.json'),
+    path.join(outDir, 'static', 'manifest.json'),
+  );
+
   console.log('✅  Copied static resources.');
 }
 
@@ -251,6 +258,7 @@ async function linkLocalDeps(buildFolder: string) {
     'flipper-common': `file:${rootDir}/flipper-common`,
     'flipper-frontend-core': `file:${rootDir}/flipper-frontend-core`,
     'flipper-plugin-core': `file:${rootDir}/flipper-plugin-core`,
+    'flipper-server-client': `file:${rootDir}/flipper-server-client`,
     'flipper-server-companion': `file:${rootDir}/flipper-server-companion`,
     'flipper-server-core': `file:${rootDir}/flipper-server-core`,
     'flipper-pkg-lib': `file:${rootDir}/pkg-lib`,
@@ -433,21 +441,23 @@ async function buildServerRelease() {
   if (argv.linux) {
     platforms.push(BuildPlatform.LINUX);
   }
-  // TODO: In the future, also cover aarch64 here.
   if (argv.mac) {
     platforms.push(BuildPlatform.MAC_X64);
+    platforms.push(BuildPlatform.MAC_AARCH64);
   }
   if (argv.win) {
     platforms.push(BuildPlatform.WINDOWS);
   }
 
-  platforms.forEach(
-    bundleServerReleaseForPlatform.bind(null, dir, versionNumber),
-  );
+  for (const platform of platforms) {
+    await bundleServerReleaseForPlatform(dir, versionNumber, platform);
+  }
 }
 
-function nodeArchFromBuildPlatform(_platform: BuildPlatform): string {
-  // TODO: Change this as we support aarch64.
+function nodeArchFromBuildPlatform(platform: BuildPlatform): string {
+  if (platform === BuildPlatform.MAC_AARCH64) {
+    return 'arm64';
+  }
   return 'x64';
 }
 
@@ -456,6 +466,7 @@ function nodePlatformFromBuildPlatform(platform: BuildPlatform): string {
     case BuildPlatform.LINUX:
       return 'linux';
     case BuildPlatform.MAC_X64:
+    case BuildPlatform.MAC_AARCH64:
       return 'macos';
     case BuildPlatform.WINDOWS:
       return 'win32';
@@ -465,11 +476,13 @@ function nodePlatformFromBuildPlatform(platform: BuildPlatform): string {
 }
 
 async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
+  console.log(`⚙️  Downloading node version for ${platform} using pkg-fetch`);
   const path = await pkgFetch({
     arch: nodeArchFromBuildPlatform(platform),
     platform: nodePlatformFromBuildPlatform(platform),
     nodeRange: SUPPORTED_NODE_PLATFORM,
   });
+  console.log(`⚙️  Copying node binary from ${path} to ${outputPath}`);
   await fs.copyFile(path, outputPath);
   // Set +x on the binary as copyFile doesn't maintain the bit.
   await fs.chmod(outputPath, 0o755);
@@ -539,7 +552,10 @@ async function bundleServerReleaseForPlatform(
 
   // On the mac, we need to set up a resource bundle which expects paths
   // to be in different places from Linux/Windows bundles.
-  if (platform === BuildPlatform.MAC_X64) {
+  if (
+    platform === BuildPlatform.MAC_X64 ||
+    platform === BuildPlatform.MAC_AARCH64
+  ) {
     outputPaths = await setUpMacBundle(outputDir, versionNumber);
   } else if (platform === BuildPlatform.LINUX) {
     await setUpLinuxBundle(outputDir);

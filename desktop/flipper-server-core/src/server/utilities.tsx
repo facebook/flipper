@@ -13,6 +13,34 @@ import net from 'net';
 import fs from 'fs-extra';
 
 /**
+ * Checks if a port is in use.
+ * @param port The port to check.
+ * @returns True if the port is in use. Otherwise, false.
+ */
+export async function checkPortInUse(port: number): Promise<boolean> {
+  interface HttpError extends Error {
+    code?: string;
+  }
+
+  return new Promise((resolve, reject) => {
+    const tester = net
+      .createServer()
+      .once('error', function (err: HttpError) {
+        if (err.code != 'EADDRINUSE') return reject(err);
+        resolve(true);
+      })
+      .once('listening', function () {
+        tester
+          .once('close', function () {
+            resolve(false);
+          })
+          .close();
+      })
+      .listen(port);
+  });
+}
+
+/**
  * Checks if a socket is in used for given path.
  * If the path doesn't exist then is not in use. If it does,
  * create a socket client and attempt to connect to it.
