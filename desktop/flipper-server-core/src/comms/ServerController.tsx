@@ -49,6 +49,7 @@ import {
 } from '../utils/certificateUtils';
 import DesktopCertificateProvider from '../devices/desktop/DesktopCertificateProvider';
 import WWWCertificateProvider from '../fb-stubs/WWWCertificateProvider';
+import {tracker} from '../utils/tracker';
 
 type ClientTimestampTracker = {
   insecureStart?: number;
@@ -186,6 +187,15 @@ export class ServerController
       `[conn] Connection established: ${app} on ${device_id}. Medium ${medium}. CSR: ${csr_path}`,
       cloneClientQuerySafeForLogging(clientQuery),
     );
+
+    tracker.track('app-connection-created', {
+      app,
+      os,
+      device,
+      device_id,
+      medium,
+    });
+
     return this.addConnection(
       clientConnection,
       {
@@ -203,6 +213,7 @@ export class ServerController
   }
 
   onConnectionClosed(clientId: string) {
+    // TODO: track connections closed.
     this.removeConnection(clientId);
   }
 
@@ -211,6 +222,7 @@ export class ServerController
   }
 
   onSecureConnectionAttempt(clientQuery: SecureClientQuery): void {
+    // TODO: track secure connection attempt.
     const strippedClientQuery = (({device_id, ...o}) => o)(clientQuery);
     let id = buildClientId({device_id: 'unknown', ...strippedClientQuery});
     const tracker = this.timestamps.get(id);
@@ -246,8 +258,9 @@ export class ServerController
 
     this.connectionTracker.logConnectionAttempt(clientQuery);
 
-    if (this.timeHandlers.get(clientQueryToKey(clientQuery))) {
-      clearTimeout(this.timeHandlers.get(clientQueryToKey(clientQuery))!);
+    const timeout = this.timeHandlers.get(clientQueryToKey(clientQuery));
+    if (timeout) {
+      clearTimeout(timeout);
     }
 
     const transformedMedium = transformCertificateExchangeMediumToType(
@@ -267,6 +280,7 @@ export class ServerController
   }
 
   onConnectionAttempt(clientQuery: ClientQuery): void {
+    // TODO: track plain connection attempt.
     const strippedClientQuery = (({device_id, ...o}) => o)(clientQuery);
     const id = buildClientId({device_id: 'unknown', ...strippedClientQuery});
     this.timestamps.set(id, {
@@ -289,6 +303,7 @@ export class ServerController
     appDirectory: string,
     medium: CertificateExchangeMedium,
   ): Promise<{deviceId: string}> {
+    // TODO: track CSR processing.
     let certificateProvider: CertificateProvider;
     switch (clientQuery.os) {
       case 'Android': {

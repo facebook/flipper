@@ -18,6 +18,13 @@ type TrackerEvents = {
   };
   'server-socket-already-in-use': {};
   'server-proxy-error': {error: string};
+  'app-connection-created': {
+    app: string;
+    os: string;
+    device: string;
+    device_id: string;
+    medium: number | undefined;
+  };
 };
 
 class ServerCoreTracker {
