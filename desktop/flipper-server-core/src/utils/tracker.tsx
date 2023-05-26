@@ -14,7 +14,7 @@ type AppConnectionPayload = {
   os: string;
   device: string;
   device_id: string;
-  medium: number | undefined;
+  medium?: number | undefined;
 };
 
 type TrackerEvents = {
@@ -28,6 +28,7 @@ type TrackerEvents = {
   'server-proxy-error': {error: string};
   'app-connection-created': AppConnectionPayload;
   'app-connection-secure-attempt': AppConnectionPayload;
+  'app-connection-insecure-attempt': AppConnectionPayload;
 };
 
 class ServerCoreTracker {

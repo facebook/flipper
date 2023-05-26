@@ -277,13 +277,15 @@ export class ServerController
   }
 
   onConnectionAttempt(clientQuery: ClientQuery): void {
-    // TODO: track plain connection attempt.
     const strippedClientQuery = (({device_id, ...o}) => o)(clientQuery);
     const id = buildClientId({device_id: 'unknown', ...strippedClientQuery});
     this.timestamps.set(id, {
       insecureStart: Date.now(),
     });
     this.logger.track('usage', 'untrusted-request-handler-called', clientQuery);
+
+    tracker.track('app-connection-insecure-attempt', clientQuery);
+
     this.connectionTracker.logConnectionAttempt(clientQuery);
 
     const client: UninitializedClient = {
