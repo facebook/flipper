@@ -584,6 +584,10 @@ export class DataSourceView<T, KeyType> {
     }
   }
 
+  getViewIndex(entry: T): number {
+    return this.output(0, Infinity).indexOf(entry);
+  }
+
   public setWindow(start: number, end: number) {
     this.windowStart = start;
     this.windowEnd = end;
