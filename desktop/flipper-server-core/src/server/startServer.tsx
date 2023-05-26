@@ -176,7 +176,7 @@ async function startProxyServer(
     console.warn(
       `Cannot start flipper-server because socket ${socketPath} is in use.`,
     );
-    // TODO: track socket is in use.
+    tracker.track('server-socket-already-in-use', {});
   } else {
     console.info(`Cleaning up stale socket ${socketPath}`);
     await fs.rm(socketPath, {force: true});

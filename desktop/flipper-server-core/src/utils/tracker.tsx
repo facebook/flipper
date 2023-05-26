@@ -15,6 +15,7 @@ type TrackerEvents = {
     present: boolean;
     error?: string;
   };
+  'server-socket-already-in-use': {};
 };
 
 class ServerCoreTracker {
