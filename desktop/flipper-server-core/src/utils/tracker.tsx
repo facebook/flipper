@@ -17,6 +17,11 @@ type AppConnectionPayload = {
   medium?: number | undefined;
 };
 
+type AppConnectionCertificateExchangePayload = AppConnectionPayload & {
+  successful: boolean;
+  error?: string;
+};
+
 type TrackerEvents = {
   'server-started': {port: number; tcp: boolean};
   'server-auth-token-verification': {
@@ -29,6 +34,7 @@ type TrackerEvents = {
   'app-connection-created': AppConnectionPayload;
   'app-connection-secure-attempt': AppConnectionPayload;
   'app-connection-insecure-attempt': AppConnectionPayload;
+  'app-connection-certificate-exchange': AppConnectionCertificateExchangePayload;
 };
 
 class ServerCoreTracker {

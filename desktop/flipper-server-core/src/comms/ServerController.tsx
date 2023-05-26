@@ -282,7 +282,6 @@ export class ServerController
     this.timestamps.set(id, {
       insecureStart: Date.now(),
     });
-    this.logger.track('usage', 'untrusted-request-handler-called', clientQuery);
 
     tracker.track('app-connection-insecure-attempt', clientQuery);
 
@@ -302,7 +301,6 @@ export class ServerController
     appDirectory: string,
     medium: CertificateExchangeMedium,
   ): Promise<{deviceId: string}> {
-    // TODO: track CSR processing.
     let certificateProvider: CertificateProvider;
     switch (clientQuery.os) {
       case 'Android': {
@@ -375,9 +373,20 @@ export class ServerController
             }, 30 * 1000),
           );
 
+          tracker.track('app-connection-certificate-exchange', {
+            ...clientQuery,
+            successful: true,
+            device_id: response.deviceId,
+          });
+
           resolve(response);
         })
-        .catch((error) => {
+        .catch((error: Error) => {
+          tracker.track('app-connection-certificate-exchange', {
+            ...clientQuery,
+            successful: false,
+            error: error.message,
+          });
           reject(error);
         });
     });
