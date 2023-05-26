@@ -24,7 +24,7 @@ import {attachSocketServer} from './attachSocketServer';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {FlipperServerCompanionEnv} from 'flipper-server-companion';
 import {validateAuthToken} from '../utils/certificateUtils';
-import {getLogger} from 'flipper-common';
+import {tracker} from '../utils/tracker';
 
 type Config = {
   port: number;
@@ -51,20 +51,27 @@ const verifyAuthToken = (req: http.IncomingMessage): boolean => {
 
   if (!token) {
     console.warn('[conn] A token is required for authentication');
-    getLogger().track('usage', 'client-authentication-token-not-found');
+    tracker.track('server-auth-token-verification', {
+      successful: false,
+      present: false,
+      error: 'No token was supplied',
+    });
     return false;
   }
 
   try {
     validateAuthToken(token);
     console.info('[conn] Token was successfully validated');
-    getLogger().track('usage', 'client-authentication-token-validation', {
-      valid: true,
+    tracker.track('server-auth-token-verification', {
+      successful: true,
+      present: true,
     });
   } catch (err) {
     console.warn('[conn] An invalid token was supplied for authentication');
-    getLogger().track('usage', 'client-authentication-token-validation', {
-      valid: false,
+    tracker.track('server-auth-token-verification', {
+      successful: false,
+      present: true,
+      error: err.toString(),
     });
     return false;
   }
@@ -169,6 +176,7 @@ async function startProxyServer(
     console.warn(
       `Cannot start flipper-server because socket ${socketPath} is in use.`,
     );
+    // TODO: track socket is in use.
   } else {
     console.info(`Cleaning up stale socket ${socketPath}`);
     await fs.rm(socketPath, {force: true});
@@ -204,6 +212,8 @@ async function startProxyServer(
       res.writeHead(502, 'Failed to proxy request');
     }
     res.end('Failed to proxy request: ' + err);
+    // TODO: should exit as proxying requests will continue to fail.
+    // TODO: track these instances.
   });
 
   return new Promise((resolve) => {
@@ -215,6 +225,8 @@ async function startProxyServer(
       return new Promise((resolve) => {
         proxyServer?.listen(config.port);
         server.listen(socketPath, undefined, () => resolve());
+
+        // TODO: track server has started at this stage.
       });
     };
     resolve({app, server, socket, readyForIncomingConnections});
