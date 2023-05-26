@@ -9,6 +9,14 @@
 
 import {getLogger} from 'flipper-common';
 
+type AppConnectionPayload = {
+  app: string;
+  os: string;
+  device: string;
+  device_id: string;
+  medium: number | undefined;
+};
+
 type TrackerEvents = {
   'server-started': {port: number; tcp: boolean};
   'server-auth-token-verification': {
@@ -18,13 +26,8 @@ type TrackerEvents = {
   };
   'server-socket-already-in-use': {};
   'server-proxy-error': {error: string};
-  'app-connection-created': {
-    app: string;
-    os: string;
-    device: string;
-    device_id: string;
-    medium: number | undefined;
-  };
+  'app-connection-created': AppConnectionPayload;
+  'app-connection-secure-attempt': AppConnectionPayload;
 };
 
 class ServerCoreTracker {

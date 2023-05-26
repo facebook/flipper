@@ -213,7 +213,6 @@ export class ServerController
   }
 
   onConnectionClosed(clientId: string) {
-    // TODO: track connections closed.
     this.removeConnection(clientId);
   }
 
@@ -222,22 +221,20 @@ export class ServerController
   }
 
   onSecureConnectionAttempt(clientQuery: SecureClientQuery): void {
-    // TODO: track secure connection attempt.
     const strippedClientQuery = (({device_id, ...o}) => o)(clientQuery);
     let id = buildClientId({device_id: 'unknown', ...strippedClientQuery});
-    const tracker = this.timestamps.get(id);
-    if (tracker) {
+    const timestamp = this.timestamps.get(id);
+    if (timestamp) {
       this.timestamps.delete(id);
     }
     id = buildClientId(clientQuery);
     this.timestamps.set(id, {
       secureStart: Date.now(),
-      ...tracker,
+      ...timestamp,
     });
 
-    this.logger.track(
-      'usage',
-      'trusted-request-handler-called',
+    tracker.track(
+      'app-connection-secure-attempt',
       (({csr, ...o}) => o)(clientQuery),
     );
 
