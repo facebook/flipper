@@ -364,6 +364,7 @@ const environmentVariables = {
   HOME: 1,
   METRO_PORT_ENV_VAR: 1,
   FLIPPER_PLUGIN_AUTO_UPDATE_POLLING_INTERVAL: 1,
+  SKIP_TOKEN_VERIFICATION: 1,
 } as const;
 export type ENVIRONMENT_VARIABLES = keyof typeof environmentVariables;
 

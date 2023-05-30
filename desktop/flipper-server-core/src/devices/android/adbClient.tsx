@@ -11,6 +11,7 @@ import {reportPlatformFailures} from 'flipper-common';
 import {execFile} from 'promisify-child-process';
 import adbkit, {Client as ADBClient} from '@u4/adbkit';
 import path from 'path';
+import adbConfig from './adbConfig';
 
 type Config = {
   androidHome: string;
@@ -41,7 +42,7 @@ export async function initializeAdbClient(
 async function createClient(config: Config): Promise<ADBClient> {
   return reportPlatformFailures<ADBClient>(
     startAdbServer(config.androidHome).then(() =>
-      adbkit.createClient(config.adbKitSettings),
+      adbkit.createClient(adbConfig(config.adbKitSettings)),
     ),
     'createADBClient.shell',
   );
@@ -51,12 +52,20 @@ async function startAdbServer(androidHome: string) {
   const adbPath = path.resolve(androidHome, 'platform-tools', 'adb');
   const args = ['start-server'];
 
-  return execFile(adbPath, args).catch((error) => {
-    if (error.code == 'ENOENT') {
-      console.info('falling back to the alternative adb path');
-      return execFile(path.resolve(androidHome, 'adb'), args);
-    }
+  return execFile(adbPath, args)
+    .catch((error) => {
+      if (error.code == 'ENOENT') {
+        console.info('falling back to the alternative adb path');
+        return execFile(path.resolve(androidHome, 'adb'), args);
+      }
+      throw error;
+    })
+    .catch((error) => {
+      if (error.code == 'ENOENT') {
+        console.info('falling back to the adb path of last resort');
+        return execFile(androidHome, args);
+      }
 
-    throw error;
-  });
+      throw error;
+    });
 }
