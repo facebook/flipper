@@ -36,7 +36,7 @@
     "react-async": "^10.0.0",
     "react-debounce-render": "^7.0.1",
     "react-dom": "^0.0.0-experimental-14c2be8da-20220304",
-    "react-element-to-jsx-string": "^14.3.4",
+    "react-element-to-jsx-string": "^15.0.0",
     "react-is": "^18.2.0",
     "react-markdown": "^6.0.3",
     "react-player": "^2.11.0",
