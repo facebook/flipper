@@ -182,6 +182,8 @@ async function start() {
     tcp: argv.tcp,
   });
 
+  // maybe at this point we could open up, http server is running.
+
   const flipperServer = await startFlipperServer(
     rootPath,
     staticPath,

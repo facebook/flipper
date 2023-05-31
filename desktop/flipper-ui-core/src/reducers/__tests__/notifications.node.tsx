@@ -142,11 +142,11 @@ test('addNotification removes duplicates', () => {
     }),
   );
   expect(res).toMatchInlineSnapshot(`
-    Object {
-      "activeNotifications": Array [
-        Object {
+    {
+      "activeNotifications": [
+        {
           "client": null,
-          "notification": Object {
+          "notification": {
             "id": "otherId",
             "message": "message",
             "severity": "warning",
@@ -155,10 +155,10 @@ test('addNotification removes duplicates', () => {
           "pluginId": "test",
         },
       ],
-      "blocklistedCategories": Array [],
-      "blocklistedPlugins": Array [],
+      "blocklistedCategories": [],
+      "blocklistedPlugins": [],
       "clearedNotifications": Set {},
-      "invalidatedNotifications": Array [],
+      "invalidatedNotifications": [],
     }
   `);
 });
@@ -195,11 +195,11 @@ test('reduce removeNotification', () => {
     }),
   );
   expect(res).toMatchInlineSnapshot(`
-    Object {
-      "activeNotifications": Array [
-        Object {
+    {
+      "activeNotifications": [
+        {
           "client": null,
-          "notification": Object {
+          "notification": {
             "id": "otherId",
             "message": "message",
             "severity": "warning",
@@ -207,9 +207,9 @@ test('reduce removeNotification', () => {
           },
           "pluginId": "test",
         },
-        Object {
+        {
           "client": null,
-          "notification": Object {
+          "notification": {
             "id": "id",
             "message": "slightly different message",
             "severity": "warning",
@@ -218,10 +218,10 @@ test('reduce removeNotification', () => {
           "pluginId": "test",
         },
       ],
-      "blocklistedCategories": Array [],
-      "blocklistedPlugins": Array [],
+      "blocklistedCategories": [],
+      "blocklistedPlugins": [],
       "clearedNotifications": Set {},
-      "invalidatedNotifications": Array [],
+      "invalidatedNotifications": [],
     }
   `);
 });
@@ -248,11 +248,11 @@ test('notifications from plugins arrive in the notifications reducer', async () 
   sendMessage('testMessage', {});
   client.flushMessageBuffer();
   expect(store.getState().notifications).toMatchInlineSnapshot(`
-    Object {
-      "activeNotifications": Array [
-        Object {
+    {
+      "activeNotifications": [
+        {
           "client": "TestApp#Android#MockAndroidDevice#serial",
-          "notification": Object {
+          "notification": {
             "action": "dosomething",
             "id": "test",
             "message": "test message",
@@ -262,10 +262,10 @@ test('notifications from plugins arrive in the notifications reducer', async () 
           "pluginId": "TestPlugin",
         },
       ],
-      "blocklistedCategories": Array [],
-      "blocklistedPlugins": Array [],
+      "blocklistedCategories": [],
+      "blocklistedPlugins": [],
       "clearedNotifications": Set {},
-      "invalidatedNotifications": Array [],
+      "invalidatedNotifications": [],
     }
   `);
 });
@@ -290,11 +290,11 @@ test('notifications from a device plugin arrive in the notifications reducer', a
   const {store} = await createMockFlipperWithPlugin(TestPlugin);
   trigger();
   expect(store.getState().notifications).toMatchInlineSnapshot(`
-    Object {
-      "activeNotifications": Array [
-        Object {
+    {
+      "activeNotifications": [
+        {
           "client": "serial",
-          "notification": Object {
+          "notification": {
             "action": "dosomething",
             "id": "test",
             "message": "test message",
@@ -304,10 +304,10 @@ test('notifications from a device plugin arrive in the notifications reducer', a
           "pluginId": "TestPlugin",
         },
       ],
-      "blocklistedCategories": Array [],
-      "blocklistedPlugins": Array [],
+      "blocklistedCategories": [],
+      "blocklistedPlugins": [],
       "clearedNotifications": Set {},
-      "invalidatedNotifications": Array [],
+      "invalidatedNotifications": [],
     }
   `);
 });
@@ -334,25 +334,25 @@ test('errors end up as notifications if crash reporter is active', async () => {
   sendError('gone wrong');
   client.flushMessageBuffer();
   expect(store.getState().notifications).toMatchInlineSnapshot(`
-    Object {
-      "activeNotifications": Array [
-        Object {
+    {
+      "activeNotifications": [
+        {
           "client": "serial",
-          "notification": Object {
+          "notification": {
             "action": "0",
-            "category": "\\"gone wrong\\"",
+            "category": ""gone wrong"",
             "id": "0",
             "message": "Callstack: No callstack available",
             "severity": "error",
-            "title": "CRASH: Plugin ErrorReason: \\"gone wrong\\"",
+            "title": "CRASH: Plugin ErrorReason: "gone wrong"",
           },
           "pluginId": "CrashReporter",
         },
       ],
-      "blocklistedCategories": Array [],
-      "blocklistedPlugins": Array [],
+      "blocklistedCategories": [],
+      "blocklistedPlugins": [],
       "clearedNotifications": Set {},
-      "invalidatedNotifications": Array [],
+      "invalidatedNotifications": [],
     }
   `);
 });
@@ -386,12 +386,12 @@ test('errors end NOT up as notifications if crash reporter is active but suppres
   sendError('gone wrong');
   client.flushMessageBuffer();
   expect(store.getState().notifications).toMatchInlineSnapshot(`
-    Object {
-      "activeNotifications": Array [],
-      "blocklistedCategories": Array [],
-      "blocklistedPlugins": Array [],
+    {
+      "activeNotifications": [],
+      "blocklistedCategories": [],
+      "blocklistedPlugins": [],
       "clearedNotifications": Set {},
-      "invalidatedNotifications": Array [],
+      "invalidatedNotifications": [],
     }
   `);
 });

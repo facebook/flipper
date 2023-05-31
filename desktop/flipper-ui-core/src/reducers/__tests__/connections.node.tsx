@@ -134,7 +134,7 @@ test('can handle plugins that throw at start', async () => {
   expect(client.connected.get()).toBe(true);
 
   expect((console.error as any).mock.calls[0]).toMatchInlineSnapshot(`
-    Array [
+    [
       "Failed to start plugin 'TestPlugin': ",
       [Error: Broken plugin],
     ]
@@ -144,7 +144,7 @@ test('can handle plugins that throw at start', async () => {
   const client2 = await createClient(device2, client.query.app);
 
   expect((console.error as any).mock.calls[1]).toMatchInlineSnapshot(`
-    Array [
+    [
       "Failed to start plugin 'TestPlugin': ",
       [Error: Broken plugin],
     ]
@@ -172,7 +172,7 @@ test('can handle device plugins that throw at start', async () => {
   );
 
   expect(mockedConsole.errorCalls[0]).toMatchInlineSnapshot(`
-    Array [
+    [
       "Failed to start device plugin 'TestPlugin': ",
       [Error: Broken device plugin],
     ]
@@ -188,7 +188,7 @@ test('can handle device plugins that throw at start', async () => {
   expect(store.getState().connections.devices.length).toBe(2);
   expect(device2.connected.get()).toBe(true);
   expect(mockedConsole.errorCalls[1]).toMatchInlineSnapshot(`
-    Array [
+    [
       "Failed to start device plugin 'TestPlugin': ",
       [Error: Broken device plugin],
     ]

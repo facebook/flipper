@@ -72,31 +72,31 @@ test('converts package.json and adds dependencies', async () => {
   expect(error).toBeUndefined();
   expect(convertedPackageJsonString).toMatchInlineSnapshot(`
     "{
-      \\"$schema\\": \\"https://fbflipper.com/schemas/plugin-package/v2.json\\",
-      \\"name\\": \\"flipper-plugin-fresco\\",
-      \\"id\\": \\"Fresco\\",
-      \\"version\\": \\"1.0.0\\",
-      \\"main\\": \\"dist/bundle.js\\",
-      \\"flipperBundlerEntry\\": \\"index.tsx\\",
-      \\"license\\": \\"MIT\\",
-      \\"keywords\\": [
-        \\"flipper-plugin\\",
-        \\"images\\"
+      "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+      "name": "flipper-plugin-fresco",
+      "id": "Fresco",
+      "version": "1.0.0",
+      "main": "dist/bundle.js",
+      "flipperBundlerEntry": "index.tsx",
+      "license": "MIT",
+      "keywords": [
+        "flipper-plugin",
+        "images"
       ],
-      \\"peerDependencies\\": {
-        \\"flipper\\": \\"latest\\"
+      "peerDependencies": {
+        "flipper": "latest"
       },
-      \\"devDependencies\\": {
-        \\"flipper\\": \\"latest\\",
-        \\"flipper-pkg\\": \\"latest\\"
+      "devDependencies": {
+        "flipper": "latest",
+        "flipper-pkg": "latest"
       },
-      \\"scripts\\": {
-        \\"prepack\\": \\"yarn reset && yarn build && flipper-pkg lint && flipper-pkg bundle\\"
+      "scripts": {
+        "prepack": "yarn reset && yarn build && flipper-pkg lint && flipper-pkg bundle"
       },
-      \\"title\\": \\"Images\\",
-      \\"icon\\": \\"profile\\",
-      \\"bugs\\": {
-        \\"email\\": \\"example@test.com\\"
+      "title": "Images",
+      "icon": "profile",
+      "bugs": {
+        "email": "example@test.com"
       }
     }"
   `);
@@ -107,27 +107,27 @@ test('converts package.json without changing dependencies', async () => {
   expect(error).toBeUndefined();
   expect(convertedPackageJsonString).toMatchInlineSnapshot(`
     "{
-      \\"$schema\\": \\"https://fbflipper.com/schemas/plugin-package/v2.json\\",
-      \\"name\\": \\"flipper-plugin-fresco\\",
-      \\"id\\": \\"Fresco\\",
-      \\"version\\": \\"1.0.0\\",
-      \\"main\\": \\"dist/bundle.js\\",
-      \\"flipperBundlerEntry\\": \\"index.tsx\\",
-      \\"license\\": \\"MIT\\",
-      \\"keywords\\": [
-        \\"flipper-plugin\\",
-        \\"images\\"
+      "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+      "name": "flipper-plugin-fresco",
+      "id": "Fresco",
+      "version": "1.0.0",
+      "main": "dist/bundle.js",
+      "flipperBundlerEntry": "index.tsx",
+      "license": "MIT",
+      "keywords": [
+        "flipper-plugin",
+        "images"
       ],
-      \\"dependencies\\": {
-        \\"flipper\\": \\"latest\\"
+      "dependencies": {
+        "flipper": "latest"
       },
-      \\"scripts\\": {
-        \\"prepack\\": \\"yarn reset && yarn build && flipper-pkg lint && flipper-pkg bundle\\"
+      "scripts": {
+        "prepack": "yarn reset && yarn build && flipper-pkg lint && flipper-pkg bundle"
       },
-      \\"title\\": \\"Images\\",
-      \\"icon\\": \\"profile\\",
-      \\"bugs\\": {
-        \\"email\\": \\"example@test.com\\"
+      "title": "Images",
+      "icon": "profile",
+      "bugs": {
+        "email": "example@test.com"
       }
     }"
   `);

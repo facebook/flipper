@@ -66,7 +66,7 @@ test('it can store values', async () => {
 
   expect((await res.findByTestId('value')).textContent).toEqual('2');
   expect(storage).toMatchInlineSnapshot(`
-    Object {
+    {
       "[useLocalStorage][Flipper]x": "2",
     }
   `);
@@ -83,7 +83,7 @@ test('it can read default from storage', async () => {
 
   expect((await res.findByTestId('value')).textContent).toEqual('4');
   expect(storage).toMatchInlineSnapshot(`
-    Object {
+    {
       "[useLocalStorage][Flipper]x": "4",
     }
   `);

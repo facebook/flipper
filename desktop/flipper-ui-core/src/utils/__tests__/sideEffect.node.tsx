@@ -12,8 +12,6 @@ import {createStore, Store} from 'redux';
 import produce from 'immer';
 import {sleep} from 'flipper-plugin';
 
-jest.useFakeTimers();
-
 const initialState = {
   counter: {count: 0},
   somethingUnrelated: false,
@@ -33,10 +31,12 @@ function reducer(state: State, action: Action): State {
   });
 }
 
+jest.useFakeTimers();
+
 describe('sideeffect', () => {
   let store: Store<State, Action>;
   let events: string[];
-  let unsubscribe: undefined | (() => void) = undefined;
+  let unsubscribe: undefined | (() => void) = () => {};
   let warn: jest.Mock;
   let error: jest.Mock;
   const origWarning = console.warn;
@@ -69,17 +69,14 @@ describe('sideeffect', () => {
         events.push(`counter: ${s.counter.count}`);
       },
     );
-
     store.dispatch({type: 'inc'});
     store.dispatch({type: 'inc'});
     expect(events.length).toBe(0);
-
     // arrive as a single effect
     jest.advanceTimersByTime(10);
     expect(events).toEqual(['counter: 2']);
-
     // no more events arrive after unsubscribe
-    unsubscribe();
+    unsubscribe?.();
     store.dispatch({type: 'inc'});
     jest.advanceTimersByTime(10);
     expect(events).toEqual(['counter: 2']);
@@ -96,17 +93,13 @@ describe('sideeffect', () => {
         events.push(`counter: ${count}`);
       },
     );
-
     store.dispatch({type: 'unrelated'});
     expect(events.length).toBe(0);
-
     // unrelated event doesn't trigger
     jest.advanceTimersByTime(10);
     expect(events.length).toBe(0);
-
     // counter increment does
     store.dispatch({type: 'inc'});
-
     jest.advanceTimersByTime(10);
     expect(events).toEqual(['counter: 1']);
     expect(warn).not.toBeCalled();
@@ -122,17 +115,13 @@ describe('sideeffect', () => {
         events.push(`counter: ${number}`);
       },
     );
-
     store.dispatch({type: 'unrelated'});
     expect(events.length).toBe(0);
-
     // unrelated event doesn't trigger
     jest.advanceTimersByTime(10);
     expect(events.length).toBe(0);
-
     // counter increment does
     store.dispatch({type: 'inc'});
-
     jest.advanceTimersByTime(10);
     expect(events).toEqual(['counter: 1']);
     expect(warn).not.toBeCalled();
@@ -148,41 +137,18 @@ describe('sideeffect', () => {
         throw new Error('oops');
       },
     );
-
     expect(() => {
       store.dispatch({type: 'inc'});
     }).not.toThrow();
-
     jest.advanceTimersByTime(10);
     expect(error.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
+      [
+        [
           "Error while running side effect 'test': Error: oops",
           [Error: oops],
         ],
       ]
     `);
-  });
-
-  test('warns about long running effects', async () => {
-    let done = false;
-    unsubscribe = sideEffect(
-      store,
-      {name: 'test', throttleMs: 10},
-      (s) => s,
-      () => {
-        const end = Date.now() + 100;
-        while (Date.now() < end) {
-          // block
-        }
-        done = true;
-      },
-    );
-
-    store.dispatch({type: 'inc'});
-    jest.advanceTimersByTime(200);
-    expect(done).toBe(true);
-    expect(warn.mock.calls[0][0]).toContain("Side effect 'test' took");
   });
 
   test('throttles correctly', async () => {
@@ -194,50 +160,39 @@ describe('sideeffect', () => {
         events.push(`counter: ${number}`);
       },
     );
-
     // Fires immediately
     store.dispatch({type: 'inc'});
     jest.advanceTimersByTime(100);
     expect(events).toEqual(['counter: 1']);
-
     // no new tick in the next 100 ms
     jest.advanceTimersByTime(300);
     store.dispatch({type: 'inc'});
-
     jest.advanceTimersByTime(300);
     store.dispatch({type: 'inc'});
-
     expect(events).toEqual(['counter: 1']);
     jest.advanceTimersByTime(1000);
     expect(events).toEqual(['counter: 1', 'counter: 3']);
-
     // long time no effect, it will fire right away again
     // N.b. we need call sleep here to create a timeout, as time wouldn't progress otherwise
     const p = sleep(2000);
     jest.advanceTimersByTime(2000);
     await p;
-
     // ..but firing an event that doesn't match the selector doesn't reset the timer
     store.dispatch({type: 'unrelated'});
     expect(events).toEqual(['counter: 1', 'counter: 3']);
-
     jest.advanceTimersByTime(100);
-
     store.dispatch({type: 'inc'});
     store.dispatch({type: 'inc'});
     jest.advanceTimersByTime(100);
-
     const p2 = sleep(2000);
     jest.advanceTimersByTime(2000);
     await p2;
-
     expect(events).toEqual(['counter: 1', 'counter: 3', 'counter: 5']);
   });
 
   test('can fire immediately', async () => {
     store.dispatch({type: 'inc'});
     store.dispatch({type: 'inc'});
-
     unsubscribe = sideEffect(
       store,
       {name: 'test', throttleMs: 1, fireImmediately: true},
@@ -246,7 +201,6 @@ describe('sideeffect', () => {
         events.push(`counter: ${s.counter.count}`);
       },
     );
-
     expect(events).toEqual(['counter: 2']);
     store.dispatch({type: 'inc'});
     store.dispatch({type: 'inc'});

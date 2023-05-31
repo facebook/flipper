@@ -75,13 +75,13 @@ test('Can handle custom headers', async () => {
 
   // verify internal storage
   expect(instance.columns.get().slice(-2)).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "key": "request_header_test-header",
         "title": "test-header (request)",
         "width": 200,
       },
-      Object {
+      {
         "key": "response_header_second-test-header",
         "title": "second-test-header (response)",
         "width": 200,
@@ -138,13 +138,13 @@ test('Can handle custom headers', async () => {
 
     // verify internal storage
     expect(instance2.columns.get().slice(-2)).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "key": "request_header_test-header",
           "title": "test-header (request)",
           "width": 200,
         },
-        Object {
+        {
           "key": "response_header_second-test-header",
           "title": "second-test-header (response)",
           "width": 200,

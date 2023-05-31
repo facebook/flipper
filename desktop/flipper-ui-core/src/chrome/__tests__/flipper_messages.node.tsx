@@ -58,17 +58,17 @@ test('It can store rows', () => {
 
   expect(getFlipperDebugMessages().map(fixRowTimestamps))
     .toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "app": "Flipper",
         "direction": "toFlipper:message",
         "time": 1899-12-31T00:00:00.000Z,
       },
-      Object {
+      {
         "app": "FB4A",
         "device": "Android Phone",
         "direction": "toClient:call",
-        "payload": Object {
+        "payload": {
           "hello": "world",
         },
         "time": 1899-12-31T00:00:00.000Z,

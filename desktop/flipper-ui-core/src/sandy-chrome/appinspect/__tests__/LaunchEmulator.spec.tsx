@@ -125,7 +125,7 @@ test('Can render and launch android apps', async () => {
   await sleep(1); // give exec time to resolve
 
   expect(await renderer.findAllByText(/emulator/)).toMatchInlineSnapshot(`
-    Array [
+    [
       <span>
         emulator1
       </span>,
@@ -140,11 +140,11 @@ test('Can render and launch android apps', async () => {
   await sleep(1000);
   expect(onClose).toBeCalled();
   expect(exec.mock.calls).toMatchInlineSnapshot(`
-    Array [
-      Array [
+    [
+      [
         "android-get-emulators",
       ],
-      Array [
+      [
         "android-launch-emulator",
         "emulator2",
         false,

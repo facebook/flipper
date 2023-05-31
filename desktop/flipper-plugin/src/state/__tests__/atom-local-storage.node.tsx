@@ -42,8 +42,8 @@ test('it can start a plugin and lifecycle events', () => {
   expect(instance.x.get()).toEqual({x: 2});
   expect(instance.y.get()).toEqual(true);
   expect(getStorageSnapshot()).toMatchInlineSnapshot(`
-    Object {
-      "flipper:TestPlugin:atom:x": "{ \\"x\\": 2 }",
+    {
+      "flipper:TestPlugin:atom:x": "{ "x": 2 }",
     }
   `);
 
@@ -52,8 +52,8 @@ test('it can start a plugin and lifecycle events', () => {
   });
   instance.y.set(false);
   expect(getStorageSnapshot()).toMatchInlineSnapshot(`
-    Object {
-      "flipper:TestPlugin:atom:x": "{\\"x\\":3}",
+    {
+      "flipper:TestPlugin:atom:x": "{"x":3}",
       "flipper:TestPlugin:atom:y": "false",
     }
   `);

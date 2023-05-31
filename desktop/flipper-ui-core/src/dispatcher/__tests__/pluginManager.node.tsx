@@ -14,7 +14,6 @@ import {
   uninstallPlugin,
 } from '../../reducers/pluginManager';
 import {requirePlugin} from '../plugins';
-import {mocked} from 'ts-jest/utils';
 import {TestUtils} from 'flipper-plugin';
 import * as TestPlugin from '../../__tests__/test-utils/TestPlugin';
 import {_SandyPluginDefinition as SandyPluginDefinition} from 'flipper-plugin';
@@ -63,7 +62,7 @@ const devicePluginDefinition = new SandyPluginDefinition(devicePluginDetails, {
   },
 });
 
-const mockedRequirePlugin = mocked(requirePlugin);
+const mockedRequirePlugin = jest.mocked(requirePlugin);
 
 let mockFlipper: MockFlipper;
 let mockClient: Client;

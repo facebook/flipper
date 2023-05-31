@@ -79,7 +79,7 @@ describe('info', () => {
     );
     const inspectorPluginSelectionInfo = getInfo();
     expect(networkPluginSelectionInfo.selection).toMatchInlineSnapshot(`
-      Object {
+      {
         "app": "TestApp",
         "archived": false,
         "device": "MockAndroidDevice",
@@ -94,7 +94,7 @@ describe('info', () => {
       }
     `);
     expect(inspectorPluginSelectionInfo.selection).toMatchInlineSnapshot(`
-      Object {
+      {
         "app": "TestApp",
         "archived": false,
         "device": "MockAndroidDevice",

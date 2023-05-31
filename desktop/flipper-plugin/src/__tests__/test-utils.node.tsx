@@ -180,8 +180,8 @@ test('a plugin can receive messages', async () => {
   sendEvent('inc', {delta: 2});
   expect(instance.state.get().count).toBe(2);
   expect(exportState()).toMatchInlineSnapshot(`
-    Object {
-      "counter": Object {
+    {
+      "counter": {
         "count": 2,
       },
     }
@@ -268,7 +268,7 @@ test('plugins cannot use a persist key twice', async () => {
       },
     });
   }).toThrowErrorMatchingInlineSnapshot(
-    `"Some other state is already persisting with key \\"test\\""`,
+    `"Some other state is already persisting with key "test""`,
   );
 });
 
@@ -352,8 +352,8 @@ test('plugins can handle import errors', async () => {
     ).instance;
     // @ts-ignore
     expect(console.error.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
+      [
+        [
           "An error occurred when importing data for plugin 'TestPlugin': 'Error: Oops",
           [Error: Oops],
         ],

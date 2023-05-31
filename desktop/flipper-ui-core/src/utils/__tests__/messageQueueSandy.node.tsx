@@ -118,13 +118,11 @@ test('queue - events are processed immediately if plugin is selected', async () 
   sendMessage('noop', {});
   client.flushMessageBuffer();
   expect(getTestPluginState(client)).toMatchInlineSnapshot(`
-          Object {
-            "count": 5,
-          }
-        `);
-  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
-    `Object {}`,
-  );
+    {
+      "count": 5,
+    }
+  `);
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`{}`);
 });
 
 test('queue - events are NOT processed immediately if plugin is NOT selected (but enabled)', async () => {
@@ -139,42 +137,42 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
   expect(getTestPluginState(client).count).toBe(0);
   // the first message is already visible cause of the leading debounce
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
-        Object {
-          "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {},
-            },
-          ],
-        }
-      `);
+    {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": [
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {},
+        },
+      ],
+    }
+  `);
   client.flushMessageBuffer();
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
-        Object {
-          "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {},
-            },
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {
-                "delta": 2,
-              },
-            },
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {
-                "delta": 3,
-              },
-            },
-          ],
-        }
-      `);
+    {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": [
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {},
+        },
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {
+            "delta": 2,
+          },
+        },
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {
+            "delta": 3,
+          },
+        },
+      ],
+    }
+  `);
 
   // process the message
   const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
@@ -204,7 +202,7 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
   selectDeviceLogs(store);
   sendMessage('inc', {delta: 4});
   client.flushMessageBuffer();
-  expect(client.messageBuffer).toMatchInlineSnapshot(`Object {}`);
+  expect(client.messageBuffer).toMatchInlineSnapshot(`{}`);
   expect(store.getState().pluginMessageQueue).toEqual({});
 
   // star again, plugin still not selected, message is queued
@@ -243,8 +241,8 @@ test('queue - events ARE processed immediately if plugin is NOT selected / enabl
     }),
   );
   expect(store.getState().connections.enabledPlugins).toMatchInlineSnapshot(`
-    Object {
-      "TestApp": Array [],
+    {
+      "TestApp": [],
     }
   `);
 
@@ -258,9 +256,7 @@ test('queue - events ARE processed immediately if plugin is NOT selected / enabl
   // the first message is already visible cause of the leading debounce
   expect(pluginState().count).toBe(1);
   // message queue was never involved due to the bypass...
-  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
-    `Object {}`,
-  );
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`{}`);
   // flush will make the others visible
   client.flushMessageBuffer();
   expect(pluginState().count).toBe(6);
@@ -280,18 +276,18 @@ test('queue - events are queued for plugins that are favorite when app is not se
   sendMessage('inc', {delta: 2});
   expect(getTestPluginState(client)).toEqual({count: 0});
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
-          Object {
-            "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
-              Object {
-                "api": "TestPlugin",
-                "method": "inc",
-                "params": Object {
-                  "delta": 2,
-                },
-              },
-            ],
-          }
-        `);
+    {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": [
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {
+            "delta": 2,
+          },
+        },
+      ],
+    }
+  `);
 });
 
 test('queue - events are queued for plugins that are favorite when app is selected on different device', async () => {
@@ -313,21 +309,21 @@ test('queue - events are queued for plugins that are favorite when app is select
   client2.flushMessageBuffer();
   expect(getTestPluginState(client)).toEqual({count: 0});
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
-    Object {
-      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
-        Object {
+    {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": [
+        {
           "api": "TestPlugin",
           "method": "inc",
-          "params": Object {
+          "params": {
             "delta": 2,
           },
         },
       ],
-      "TestApp#Android#MockAndroidDevice#serial2#TestPlugin": Array [
-        Object {
+      "TestApp#Android#MockAndroidDevice#serial2#TestPlugin": [
+        {
           "api": "TestPlugin",
           "method": "inc",
-          "params": Object {
+          "params": {
             "delta": 3,
           },
         },
@@ -527,43 +523,43 @@ test('client - incoming messages are buffered and flushed together', async () =>
   expect(getTestPluginState(client).count).toBe(0);
   // the first message is already visible cause of the leading debounce
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
-        Object {
-          "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {},
-            },
-          ],
-        }
-      `);
+    {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": [
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {},
+        },
+      ],
+    }
+  `);
   expect(client.messageBuffer).toMatchInlineSnapshot(`
-    Object {
-      "TestApp#Android#MockAndroidDevice#serial#StubPlugin": Object {
-        "messages": Array [
-          Object {
+    {
+      "TestApp#Android#MockAndroidDevice#serial#StubPlugin": {
+        "messages": [
+          {
             "api": "StubPlugin",
             "method": "log",
-            "params": Object {
+            "params": {
               "line": "suff",
             },
           },
         ],
         "plugin": "[SandyPluginInstance]",
       },
-      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
-        "messages": Array [
-          Object {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": {
+        "messages": [
+          {
             "api": "TestPlugin",
             "method": "inc",
-            "params": Object {
+            "params": {
               "delta": 2,
             },
           },
-          Object {
+          {
             "api": "TestPlugin",
             "method": "inc",
-            "params": Object {
+            "params": {
               "delta": 3,
             },
           },
@@ -578,42 +574,42 @@ test('client - incoming messages are buffered and flushed together', async () =>
 
   await sleep(500);
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
-        Object {
-          "TestApp#Android#MockAndroidDevice#serial#StubPlugin": Array [
-            Object {
-              "api": "StubPlugin",
-              "method": "log",
-              "params": Object {
-                "line": "suff",
-              },
-            },
-          ],
-          "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {},
-            },
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {
-                "delta": 2,
-              },
-            },
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {
-                "delta": 3,
-              },
-            },
-          ],
-        }
-      `);
-  expect(client.messageBuffer).toMatchInlineSnapshot(`Object {}`);
+    {
+      "TestApp#Android#MockAndroidDevice#serial#StubPlugin": [
+        {
+          "api": "StubPlugin",
+          "method": "log",
+          "params": {
+            "line": "suff",
+          },
+        },
+      ],
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": [
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {},
+        },
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {
+            "delta": 2,
+          },
+        },
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {
+            "delta": 3,
+          },
+        },
+      ],
+    }
+  `);
+  expect(client.messageBuffer).toMatchInlineSnapshot(`{}`);
   expect(StubPlugin.persistedStateReducer.mock.calls).toMatchInlineSnapshot(
-    `Array []`,
+    `[]`,
   );
 
   // tigger processing the queue
@@ -625,43 +621,43 @@ test('client - incoming messages are buffered and flushed together', async () =>
   );
 
   expect(StubPlugin.persistedStateReducer.mock.calls).toMatchInlineSnapshot(`
-        Array [
-          Array [
-            undefined,
-            "log",
-            Object {
-              "line": "suff",
-            },
-          ],
-        ]
-      `);
+    [
+      [
+        undefined,
+        "log",
+        {
+          "line": "suff",
+        },
+      ],
+    ]
+  `);
 
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
-        Object {
-          "TestApp#Android#MockAndroidDevice#serial#StubPlugin": Array [],
-          "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {},
-            },
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {
-                "delta": 2,
-              },
-            },
-            Object {
-              "api": "TestPlugin",
-              "method": "inc",
-              "params": Object {
-                "delta": 3,
-              },
-            },
-          ],
-        }
-      `);
+    {
+      "TestApp#Android#MockAndroidDevice#serial#StubPlugin": [],
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": [
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {},
+        },
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {
+            "delta": 2,
+          },
+        },
+        {
+          "api": "TestPlugin",
+          "method": "inc",
+          "params": {
+            "delta": 3,
+          },
+        },
+      ],
+    }
+  `);
 });
 
 test('queue - messages that have not yet flushed be lost when disabling the plugin', async () => {
@@ -673,13 +669,13 @@ test('queue - messages that have not yet flushed be lost when disabling the plug
   sendMessage('inc', {delta: 2});
 
   expect(client.messageBuffer).toMatchInlineSnapshot(`
-    Object {
-      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
-        "messages": Array [
-          Object {
+    {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": {
+        "messages": [
+          {
             "api": "TestPlugin",
             "method": "inc",
-            "params": Object {
+            "params": {
               "delta": 2,
             },
           },
@@ -689,12 +685,12 @@ test('queue - messages that have not yet flushed be lost when disabling the plug
     }
   `);
   expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
-    Object {
-      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
-        Object {
+    {
+      "TestApp#Android#MockAndroidDevice#serial#TestPlugin": [
+        {
           "api": "TestPlugin",
           "method": "inc",
-          "params": Object {},
+          "params": {},
         },
       ],
     }
@@ -702,10 +698,8 @@ test('queue - messages that have not yet flushed be lost when disabling the plug
 
   // disable
   await switchTestPlugin(store, client);
-  expect(client.messageBuffer).toMatchInlineSnapshot(`Object {}`);
-  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
-    `Object {}`,
-  );
+  expect(client.messageBuffer).toMatchInlineSnapshot(`{}`);
+  expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`{}`);
 
   // re-enable, no messages arrive
   await switchTestPlugin(store, client);

@@ -50,8 +50,8 @@ test('test shared data structure', () => {
     expect(res.x).not.toBe(res.y);
     // @ts-ignore
     expect(console.warn.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
+      [
+        [
           "Duplicate value, object lives at path '.y', but also at path '.x': '[object Object]'. This might not behave correct after import and lead to unnecessary big exports.",
         ],
       ]
@@ -231,11 +231,11 @@ test.unix(
   () => {
     const date = new Date(2021, 1, 29, 10, 31, 7, 205);
     expect(makeShallowSerializable(date)).toMatchInlineSnapshot(`
-    Object {
-      "__flipper_object_type__": "Date",
-      "data": 1614555067205,
-    }
-  `);
+      {
+        "__flipper_object_type__": "Date",
+        "data": 1614555067205,
+      }
+    `);
     expect(deserializeShallowObject(makeShallowSerializable(date))).toEqual(
       date,
     );

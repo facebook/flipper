@@ -64,5 +64,5 @@ test('can create a Fake flipper with legacy wrapper', async () => {
     await getAllClients(state.connections)[0]
       .sandyPluginStates.get(TestPlugin.id)!
       .exportState(testIdler, testOnStatusMessage),
-  ).toMatchInlineSnapshot(`"{\\"count\\":1}"`);
+  ).toMatchInlineSnapshot(`"{"count":1}"`);
 });

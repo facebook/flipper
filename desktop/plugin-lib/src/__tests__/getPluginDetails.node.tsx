@@ -12,7 +12,6 @@ import path from 'path';
 import {getInstalledPluginDetails} from '../getPluginDetails';
 import {pluginInstallationDir} from '../pluginPaths';
 import {normalizePath} from 'flipper-test-utils';
-import {mocked} from 'ts-jest/utils';
 
 jest.mock('fs-extra');
 
@@ -37,7 +36,7 @@ test('getPluginDetailsV1', async () => {
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
-    Object {
+    {
       "bugs": undefined,
       "category": undefined,
       "deprecated": undefined,
@@ -80,7 +79,7 @@ test('getPluginDetailsV2', async () => {
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
-    Object {
+    {
       "bugs": undefined,
       "category": undefined,
       "deprecated": undefined,
@@ -127,7 +126,7 @@ test('id used as title if the latter omited', async () => {
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
-    Object {
+    {
       "bugs": undefined,
       "category": undefined,
       "deprecated": undefined,
@@ -173,7 +172,7 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
-    Object {
+    {
       "bugs": undefined,
       "category": undefined,
       "deprecated": undefined,
@@ -222,7 +221,7 @@ test('flipper-plugin-version is parsed', async () => {
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
-    Object {
+    {
       "bugs": undefined,
       "category": undefined,
       "deprecated": undefined,
@@ -275,7 +274,7 @@ test('plugin type and supported devices parsed', async () => {
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
-    Object {
+    {
       "bugs": undefined,
       "category": undefined,
       "deprecated": undefined,
@@ -299,19 +298,19 @@ test('plugin type and supported devices parsed', async () => {
       "source": "src/index.tsx",
       "specVersion": 2,
       "supportedApps": undefined,
-      "supportedDevices": Array [
-        Object {
+      "supportedDevices": [
+        {
           "archived": false,
           "os": "Android",
         },
-        Object {
+        {
           "os": "Android",
-          "specs": Array [
+          "specs": [
             "KaiOS",
           ],
           "type": "physical",
         },
-        Object {
+        {
           "os": "iOS",
           "type": "emulator",
         },
@@ -344,7 +343,7 @@ test('plugin type and supported apps parsed', async () => {
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
-    Object {
+    {
       "bugs": undefined,
       "category": undefined,
       "deprecated": undefined,
@@ -367,18 +366,18 @@ test('plugin type and supported apps parsed', async () => {
       "serverAddOnSource": undefined,
       "source": "src/index.tsx",
       "specVersion": 2,
-      "supportedApps": Array [
-        Object {
+      "supportedApps": [
+        {
           "appID": "Messenger",
           "os": "Android",
           "type": "emulator",
         },
-        Object {
+        {
           "appID": "Instagram",
           "os": "Android",
           "type": "physical",
         },
-        Object {
+        {
           "appID": "Facebook",
           "os": "iOS",
           "type": "emulator",
@@ -417,7 +416,7 @@ test('can merge two package.json files', async () => {
       email: 'flippersupport@example.localhost',
     },
   };
-  const mockedFs = mocked(fs);
+  const mockedFs = jest.mocked(fs);
   mockedFs.readJson.mockImplementation((file) => {
     if (file === path.join(pluginPath, 'package.json')) {
       return pluginBase;
@@ -430,8 +429,8 @@ test('can merge two package.json files', async () => {
   details.dir = normalizePath(details.dir);
   details.entry = normalizePath(details.entry);
   expect(details).toMatchInlineSnapshot(`
-    Object {
-      "bugs": Object {
+    {
+      "bugs": {
         "email": "flippersupport@example.localhost",
         "url": "https://fb.com/groups/flippersupport",
       },
@@ -450,7 +449,7 @@ test('can merge two package.json files', async () => {
       "main": "dist/bundle.js",
       "name": "flipper-plugin-test",
       "pluginType": "device",
-      "publishedDocs": Object {
+      "publishedDocs": {
         "overview": true,
         "setup": true,
       },
@@ -460,19 +459,19 @@ test('can merge two package.json files', async () => {
       "source": "src/index.tsx",
       "specVersion": 2,
       "supportedApps": undefined,
-      "supportedDevices": Array [
-        Object {
+      "supportedDevices": [
+        {
           "archived": false,
           "os": "Android",
         },
-        Object {
+        {
           "os": "Android",
-          "specs": Array [
+          "specs": [
             "KaiOS",
           ],
           "type": "physical",
         },
-        Object {
+        {
           "os": "iOS",
           "type": "emulator",
         },

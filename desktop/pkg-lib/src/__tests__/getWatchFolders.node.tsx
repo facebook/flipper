@@ -104,7 +104,7 @@ describe('getWatchFolders', () => {
         path.join(rootDir, 'local_module_2'),
       );
       expect(resolvedFolders.map(normalizePath)).toMatchInlineSnapshot(`
-        Array [
+        [
           "/test/root/local_module_2",
           "/test/root/node_modules",
           "/test/root/plugins/fb/fb_plugin_module_1",

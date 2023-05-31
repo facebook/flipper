@@ -18,11 +18,10 @@ process.env.FLIPPER_TEST_RUNNER = 'true';
 const {transform} = require('../babel-transformer/lib/transform-jest');
 
 module.exports = {
-  process(src, filename, config, options) {
+  process(src, filename, options) {
     return transform({
       src,
       filename,
-      config,
       options: {...options, isTestRunner: true},
     });
   },

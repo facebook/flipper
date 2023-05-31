@@ -37,16 +37,16 @@ test('general plugin logic testing', async () => {
   await sleep(1000);
   expect(onSend).toBeCalledWith('getAllSharedPreferences', {});
   expect(instance.sharedPreferences.get()).toMatchInlineSnapshot(`
-    Object {
-      "other_sample": Object {
-        "changesList": Array [],
-        "preferences": Object {
+    {
+      "other_sample": {
+        "changesList": [],
+        "preferences": {
           "SomeKey": 1337,
         },
       },
-      "sample": Object {
-        "changesList": Array [],
-        "preferences": Object {
+      "sample": {
+        "changesList": [],
+        "preferences": {
           "Hello": "world",
         },
       },
@@ -77,16 +77,16 @@ test('general plugin logic testing', async () => {
     5555,
   );
   expect(instance.sharedPreferences.get()).toMatchInlineSnapshot(`
-    Object {
-      "other_sample": Object {
-        "changesList": Array [],
-        "preferences": Object {
+    {
+      "other_sample": {
+        "changesList": [],
+        "preferences": {
           "SomeKey": 5555,
         },
       },
-      "sample": Object {
-        "changesList": Array [
-          Object {
+      "sample": {
+        "changesList": [
+          {
             "deleted": false,
             "name": "SomeKey",
             "preferences": "sample",
@@ -94,7 +94,7 @@ test('general plugin logic testing', async () => {
             "value": 5555,
           },
         ],
-        "preferences": Object {
+        "preferences": {
           "Hello": "world",
           "SomeKey": 5555,
         },
@@ -120,20 +120,20 @@ test('general plugin logic testing', async () => {
     instance.sharedPreferences.get().sample.preferences.SomeKey,
   ).toBeUndefined();
   expect(instance.sharedPreferences.get()).toMatchInlineSnapshot(`
-    Object {
-      "other_sample": Object {
-        "changesList": Array [],
-        "preferences": Object {},
+    {
+      "other_sample": {
+        "changesList": [],
+        "preferences": {},
       },
-      "sample": Object {
-        "changesList": Array [
-          Object {
+      "sample": {
+        "changesList": [
+          {
             "deleted": true,
             "name": "SomeKey",
             "preferences": "sample",
             "time": 2,
           },
-          Object {
+          {
             "deleted": false,
             "name": "SomeKey",
             "preferences": "sample",
@@ -141,7 +141,7 @@ test('general plugin logic testing', async () => {
             "value": 5555,
           },
         ],
-        "preferences": Object {
+        "preferences": {
           "Hello": "world",
         },
       },

@@ -1,19 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`acknowledgeProblems 1`] = `
-Object {
-  "acknowledgedProblems": Array [
+{
+  "acknowledgedProblems": [
     "ios.sdk",
     "common.openssl",
   ],
-  "healthcheckReport": Object {
-    "categories": Object {
-      "android": Object {
-        "checks": Object {
-          "android.sdk": Object {
+  "healthcheckReport": {
+    "categories": {
+      "android": {
+        "checks": {
+          "android.sdk": {
             "key": "android.sdk",
             "label": "SDK Installed",
-            "result": Object {
+            "result": {
               "isAcknowledged": true,
               "status": "SUCCESS",
             },
@@ -21,17 +21,17 @@ Object {
         },
         "key": "android",
         "label": "Android",
-        "result": Object {
+        "result": {
           "isAcknowledged": true,
           "status": "SUCCESS",
         },
       },
-      "common": Object {
-        "checks": Object {
-          "common.openssl": Object {
+      "common": {
+        "checks": {
+          "common.openssl": {
             "key": "common.openssl",
             "label": "OpenSSL Istalled",
-            "result": Object {
+            "result": {
               "isAcknowledged": true,
               "status": "FAILED",
             },
@@ -39,17 +39,17 @@ Object {
         },
         "key": "common",
         "label": "Common",
-        "result": Object {
+        "result": {
           "isAcknowledged": true,
           "status": "FAILED",
         },
       },
-      "ios": Object {
-        "checks": Object {
-          "ios.sdk": Object {
+      "ios": {
+        "checks": {
+          "ios.sdk": {
             "key": "ios.sdk",
             "label": "SDK Installed",
-            "result": Object {
+            "result": {
               "isAcknowledged": true,
               "status": "FAILED",
             },
@@ -57,13 +57,13 @@ Object {
         },
         "key": "ios",
         "label": "iOS",
-        "result": Object {
+        "result": {
           "isAcknowledged": true,
           "status": "FAILED",
         },
       },
     },
-    "result": Object {
+    "result": {
       "isAcknowledged": true,
       "status": "FAILED",
     },
@@ -72,16 +72,16 @@ Object {
 `;
 
 exports[`finish 1`] = `
-Object {
-  "acknowledgedProblems": Array [],
-  "healthcheckReport": Object {
-    "categories": Object {
-      "android": Object {
-        "checks": Object {
-          "android.sdk": Object {
+{
+  "acknowledgedProblems": [],
+  "healthcheckReport": {
+    "categories": {
+      "android": {
+        "checks": {
+          "android.sdk": {
             "key": "android.sdk",
             "label": "SDK Installed",
-            "result": Object {
+            "result": {
               "isAcknowledged": false,
               "message": "Updated Test Message",
               "status": "SUCCESS",
@@ -90,17 +90,17 @@ Object {
         },
         "key": "android",
         "label": "Android",
-        "result": Object {
+        "result": {
           "isAcknowledged": false,
           "status": "SUCCESS",
         },
       },
-      "common": Object {
-        "checks": Object {
-          "common.openssl": Object {
+      "common": {
+        "checks": {
+          "common.openssl": {
             "key": "common.openssl",
             "label": "OpenSSL Istalled",
-            "result": Object {
+            "result": {
               "isAcknowledged": false,
               "message": "Updated Test Message",
               "status": "SUCCESS",
@@ -109,17 +109,17 @@ Object {
         },
         "key": "common",
         "label": "Common",
-        "result": Object {
+        "result": {
           "isAcknowledged": false,
           "status": "SUCCESS",
         },
       },
-      "ios": Object {
-        "checks": Object {
-          "ios.sdk": Object {
+      "ios": {
+        "checks": {
+          "ios.sdk": {
             "key": "ios.sdk",
             "label": "SDK Installed",
-            "result": Object {
+            "result": {
               "isAcknowledged": false,
               "message": "Updated Test Message",
               "status": "SUCCESS",
@@ -128,13 +128,13 @@ Object {
         },
         "key": "ios",
         "label": "iOS",
-        "result": Object {
+        "result": {
           "isAcknowledged": false,
           "status": "SUCCESS",
         },
       },
     },
-    "result": Object {
+    "result": {
       "status": "SUCCESS",
     },
   },
@@ -142,60 +142,60 @@ Object {
 `;
 
 exports[`startHealthCheck 1`] = `
-Object {
-  "acknowledgedProblems": Array [],
-  "healthcheckReport": Object {
-    "categories": Object {
-      "android": Object {
-        "checks": Object {
-          "android.sdk": Object {
+{
+  "acknowledgedProblems": [],
+  "healthcheckReport": {
+    "categories": {
+      "android": {
+        "checks": {
+          "android.sdk": {
             "key": "android.sdk",
             "label": "SDK Installed",
-            "result": Object {
+            "result": {
               "status": "IN_PROGRESS",
             },
           },
         },
         "key": "android",
         "label": "Android",
-        "result": Object {
+        "result": {
           "status": "IN_PROGRESS",
         },
       },
-      "common": Object {
-        "checks": Object {
-          "common.openssl": Object {
+      "common": {
+        "checks": {
+          "common.openssl": {
             "key": "common.openssl",
             "label": "OpenSSL Istalled",
-            "result": Object {
+            "result": {
               "status": "IN_PROGRESS",
             },
           },
         },
         "key": "common",
         "label": "Common",
-        "result": Object {
+        "result": {
           "status": "IN_PROGRESS",
         },
       },
-      "ios": Object {
-        "checks": Object {
-          "ios.sdk": Object {
+      "ios": {
+        "checks": {
+          "ios.sdk": {
             "key": "ios.sdk",
             "label": "SDK Installed",
-            "result": Object {
+            "result": {
               "status": "IN_PROGRESS",
             },
           },
         },
         "key": "ios",
         "label": "iOS",
-        "result": Object {
+        "result": {
           "status": "IN_PROGRESS",
         },
       },
     },
-    "result": Object {
+    "result": {
       "status": "IN_PROGRESS",
     },
   },
@@ -203,16 +203,16 @@ Object {
 `;
 
 exports[`statuses updated after healthchecks finished 1`] = `
-Object {
-  "acknowledgedProblems": Array [],
-  "healthcheckReport": Object {
-    "categories": Object {
-      "android": Object {
-        "checks": Object {
-          "android.sdk": Object {
+{
+  "acknowledgedProblems": [],
+  "healthcheckReport": {
+    "categories": {
+      "android": {
+        "checks": {
+          "android.sdk": {
             "key": "android.sdk",
             "label": "SDK Installed",
-            "result": Object {
+            "result": {
               "isAcknowledged": false,
               "message": "Updated Test Message",
               "status": "FAILED",
@@ -221,17 +221,17 @@ Object {
         },
         "key": "android",
         "label": "Android",
-        "result": Object {
+        "result": {
           "isAcknowledged": false,
           "status": "FAILED",
         },
       },
-      "common": Object {
-        "checks": Object {
-          "common.openssl": Object {
+      "common": {
+        "checks": {
+          "common.openssl": {
             "key": "common.openssl",
             "label": "OpenSSL Istalled",
-            "result": Object {
+            "result": {
               "isAcknowledged": false,
               "message": "Updated Test Message",
               "status": "SUCCESS",
@@ -240,16 +240,16 @@ Object {
         },
         "key": "common",
         "label": "Common",
-        "result": Object {
+        "result": {
           "status": "SUCCESS",
         },
       },
-      "ios": Object {
-        "checks": Object {
-          "ios.sdk": Object {
+      "ios": {
+        "checks": {
+          "ios.sdk": {
             "key": "ios.sdk",
             "label": "SDK Installed",
-            "result": Object {
+            "result": {
               "isAcknowledged": false,
               "message": "Updated Test Message",
               "status": "SUCCESS",
@@ -258,12 +258,12 @@ Object {
         },
         "key": "ios",
         "label": "iOS",
-        "result": Object {
+        "result": {
           "status": "SUCCESS",
         },
       },
     },
-    "result": Object {
+    "result": {
       "isAcknowledged": false,
       "status": "FAILED",
     },
@@ -272,16 +272,16 @@ Object {
 `;
 
 exports[`updateHealthcheckResult 1`] = `
-Object {
-  "acknowledgedProblems": Array [],
-  "healthcheckReport": Object {
-    "categories": Object {
-      "android": Object {
-        "checks": Object {
-          "android.sdk": Object {
+{
+  "acknowledgedProblems": [],
+  "healthcheckReport": {
+    "categories": {
+      "android": {
+        "checks": {
+          "android.sdk": {
             "key": "android.sdk",
             "label": "SDK Installed",
-            "result": Object {
+            "result": {
               "isAcknowledged": false,
               "message": "Updated Test Message",
               "status": "SUCCESS",
@@ -290,44 +290,44 @@ Object {
         },
         "key": "android",
         "label": "Android",
-        "result": Object {
+        "result": {
           "status": "IN_PROGRESS",
         },
       },
-      "common": Object {
-        "checks": Object {
-          "common.openssl": Object {
+      "common": {
+        "checks": {
+          "common.openssl": {
             "key": "common.openssl",
             "label": "OpenSSL Istalled",
-            "result": Object {
+            "result": {
               "status": "IN_PROGRESS",
             },
           },
         },
         "key": "common",
         "label": "Common",
-        "result": Object {
+        "result": {
           "status": "IN_PROGRESS",
         },
       },
-      "ios": Object {
-        "checks": Object {
-          "ios.sdk": Object {
+      "ios": {
+        "checks": {
+          "ios.sdk": {
             "key": "ios.sdk",
             "label": "SDK Installed",
-            "result": Object {
+            "result": {
               "status": "IN_PROGRESS",
             },
           },
         },
         "key": "ios",
         "label": "iOS",
-        "result": Object {
+        "result": {
           "status": "IN_PROGRESS",
         },
       },
     },
-    "result": Object {
+    "result": {
       "status": "IN_PROGRESS",
     },
   },

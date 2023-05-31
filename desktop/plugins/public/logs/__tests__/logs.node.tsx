@@ -50,8 +50,8 @@ test('it will merge equal rows', () => {
   sendLogEntry(entry3);
 
   expect(instance.rows.records()).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "app": "X",
         "count": 1,
         "date": 2021-01-28T17:15:12.859Z,
@@ -61,7 +61,7 @@ test('it will merge equal rows', () => {
         "tid": 1,
         "type": "error",
       },
-      Object {
+      {
         "app": "Y",
         "count": 2,
         "date": 2021-01-28T17:15:17.859Z,
@@ -71,7 +71,7 @@ test('it will merge equal rows', () => {
         "tid": 3,
         "type": "warn",
       },
-      Object {
+      {
         "app": "X",
         "count": 1,
         "date": 2021-01-28T17:15:12.859Z,
@@ -130,9 +130,9 @@ test('export / import plugin does work', async () => {
 
   const data = await exportStateAsync();
   expect(data).toMatchInlineSnapshot(`
-    Object {
-      "logs": Array [
-        Object {
+    {
+      "logs": [
+        {
           "app": "X",
           "count": 1,
           "date": 2021-01-28T17:15:12.859Z,
@@ -142,7 +142,7 @@ test('export / import plugin does work', async () => {
           "tid": 1,
           "type": "error",
         },
-        Object {
+        {
           "app": "Y",
           "count": 1,
           "date": 2021-01-28T17:15:17.859Z,

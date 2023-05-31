@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`handles single point 1`] = `
-Array [
-  Object {
+[
+  {
     "color": "var(--flipper-background-default)",
     "isCut": false,
-    "markerKeys": Array [
+    "markerKeys": [
       "1",
     ],
-    "markerNames": Array [
+    "markerNames": [
       "single point",
     ],
     "positionY": 0,
@@ -17,4 +17,4 @@ Array [
 ]
 `;
 
-exports[`no points 1`] = `Array []`;
+exports[`no points 1`] = `[]`;

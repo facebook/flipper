@@ -66,11 +66,11 @@ test('$schema field is required', async () => {
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
-      ". should have required property \\"$schema\\" pointing to a supported schema URI, e.g.:
+    [
+      ". should have required property "$schema" pointing to a supported schema URI, e.g.:
     {
-     \\"$schema\\": \\"https://fbflipper.com/schemas/plugin-package/v2.json\\",
-     \\"name\\": \\"flipper-plugin-example\\",
+     "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+     "name": "flipper-plugin-example",
      ...
     }",
     ]
@@ -85,7 +85,7 @@ test('supported schema is required', async () => {
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
+    [
       ".$schema should point to a supported schema. Currently supported schemas:
     - https://fbflipper.com/schemas/plugin-package/v2.json",
     ]
@@ -100,7 +100,7 @@ test('name is required', async () => {
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
+    [
       ". should have required property 'name'",
     ]
   `);
@@ -113,8 +113,8 @@ test('name must start with "flipper-plugin-"', async () => {
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
-      "/name should start with \\"flipper-plugin-\\", e.g. \\"flipper-plugin-example\\"",
+    [
+      "/name should start with "flipper-plugin-", e.g. "flipper-plugin-example"",
     ]
   `);
 });
@@ -126,8 +126,8 @@ test('keywords must contain "flipper-plugin"', async () => {
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
-      "/keywords should contain keyword \\"flipper-plugin\\"",
+    [
+      "/keywords should contain keyword "flipper-plugin"",
     ]
   `);
 });
@@ -144,7 +144,7 @@ test('flippeBundlerEntry must point to an existing file', async () => {
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
+    [
       "/flipperBundlerEntry should point to a valid file",
     ]
   `);
@@ -159,9 +159,9 @@ test('multiple validation errors reported', async () => {
   fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
+    [
       ". should have required property 'flipperBundlerEntry'",
-      "/keywords should contain keyword \\"flipper-plugin\\"",
+      "/keywords should contain keyword "flipper-plugin"",
     ]
   `);
 });
