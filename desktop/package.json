@@ -69,7 +69,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
     "@jest-runner/electron": "^3.0.1",
-    "@testing-library/react": "^12.1.4",
+    "@testing-library/react": "^14.0.0",
     "@types/jest": "^26.0.24",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.55.0",
