@@ -9,6 +9,9 @@
 
 const dotenv = require('dotenv').config();
 import path from 'path';
+import https from 'https';
+import os from 'os';
+import tar from 'tar';
 import {
   buildBrowserBundle,
   buildFolder,
@@ -35,6 +38,9 @@ import {need as pkgFetch} from 'pkg-fetch';
 
 // This needs to be tested individually. As of 2022Q2, node17 is not supported.
 const SUPPORTED_NODE_PLATFORM = 'node16';
+// Node version below is only used for macOS AARCH64 builds as we download
+// the binary directly from Node distribution site instead of relying on pkg-fetch.
+const NODE_VERSION = 'v16.15.0';
 
 enum BuildPlatform {
   LINUX = 'linux',
@@ -461,6 +467,69 @@ function nodeArchFromBuildPlatform(platform: BuildPlatform): string {
   return 'x64';
 }
 
+/**
+ * Downloads a file located at the given URL and saves it to the destination path..
+ * @param url - URL of the file to download.
+ * @param dest - Destination path for the downloaded file.
+ * @returns - A promise that resolves when the file is downloaded.
+ * If the file can't be downloaded, it rejects with an error.
+ */
+async function download(url: string, dest: string): Promise<void> {
+  // First, check if the file already exists and remove it.
+  try {
+    await fs.access(dest, fs.constants.F_OK);
+    await fs.unlink(dest);
+  } catch (err) {}
+
+  return new Promise<void>((resolve, reject) => {
+    // Then, download the file and save it to the destination path.
+    const file: fs.WriteStream = fs.createWriteStream(dest);
+    https
+      .get(url, (response) => {
+        response.pipe(file);
+        file.on('finish', () => {
+          file.close();
+          console.log(`✅  Download successful ${url}.`);
+          resolve();
+        });
+      })
+      .on('error', (error: Error) => {
+        fs.unlink(dest);
+        reject(error);
+      });
+  });
+}
+
+/**
+ * Unpacks a tarball and extracts the contents to a directory.
+ * @param source - Source tarball.
+ * @param dest - Destination directory for the extracted contents.
+ */
+async function unpack(source: string, destination: string) {
+  console.log(`⚙️  Extracting ${source}.`);
+
+  try {
+    await fs.access(destination, fs.constants.F_OK);
+    await fs.rm(destination, {recursive: true, force: true});
+  } catch (err) {}
+
+  await fs.mkdir(destination);
+
+  try {
+    await tar.x({
+      file: source,
+      strip: 1,
+      cwd: destination,
+    });
+
+    console.log(`✅  Extraction completed.`);
+  } catch (error) {
+    console.error(
+      `⚙️  Error found whilst trying to extract '${source}'. Found: ${error}`,
+    );
+  }
+}
+
 function nodePlatformFromBuildPlatform(platform: BuildPlatform): string {
   switch (platform) {
     case BuildPlatform.LINUX:
@@ -476,14 +545,59 @@ function nodePlatformFromBuildPlatform(platform: BuildPlatform): string {
 }
 
 async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
-  console.log(`⚙️  Downloading node version for ${platform} using pkg-fetch`);
-  const path = await pkgFetch({
-    arch: nodeArchFromBuildPlatform(platform),
-    platform: nodePlatformFromBuildPlatform(platform),
-    nodeRange: SUPPORTED_NODE_PLATFORM,
-  });
-  console.log(`⚙️  Copying node binary from ${path} to ${outputPath}`);
-  await fs.copyFile(path, outputPath);
+  /**
+   * Below is a temporary patch that doesn't use pkg-fetch to
+   * download a node binary for macOS arm64.
+   * This will be removed once there's a properly
+   * signed binary for macOS arm64 architecture.
+   */
+  if (platform === BuildPlatform.MAC_AARCH64) {
+    const temporaryDirectory = os.tmpdir();
+    const name = `node-${NODE_VERSION}-darwin-arm64`;
+    const downloadOutputPath = path.resolve(
+      temporaryDirectory,
+      `${name}.tar.gz`,
+    );
+    const unpackedOutputPath = path.resolve(temporaryDirectory, name);
+    let nodePath = path.resolve(unpackedOutputPath, 'bin', 'node');
+    console.log(
+      `⚙️  Downloading node version for ${platform} using temporary patch.`,
+    );
+
+    // Check local cache.
+    let cached = false;
+    try {
+      const cachePath = path.join(homedir(), '.node', name);
+      await fs.access(cachePath, fs.constants.F_OK);
+      console.log(`⚙️  Cached artifact found, skip download.`);
+      nodePath = path.resolve(cachePath, 'bin', 'node');
+      cached = true;
+    } catch (err) {}
+    if (!cached) {
+      // Download node tarball from the distribution site.
+      await download(
+        `https://nodejs.org/dist/${NODE_VERSION}/${name}.tar.gz`,
+        downloadOutputPath,
+      );
+      // Finally, unpack the tarball to a local folder i.e. outputPath.
+      await unpack(downloadOutputPath, unpackedOutputPath);
+      console.log(`✅  Node successfully downloaded and unpacked.`);
+    }
+
+    console.log(`⚙️  Copying node binary from ${nodePath} to ${outputPath}`);
+    await fs.copyFile(nodePath, outputPath);
+  } else {
+    console.log(`⚙️  Downloading node version for ${platform} using pkg-fetch`);
+    const nodePath = await pkgFetch({
+      arch: nodeArchFromBuildPlatform(platform),
+      platform: nodePlatformFromBuildPlatform(platform),
+      nodeRange: SUPPORTED_NODE_PLATFORM,
+    });
+
+    console.log(`⚙️  Copying node binary from ${nodePath} to ${outputPath}`);
+    await fs.copyFile(nodePath, outputPath);
+  }
+
   // Set +x on the binary as copyFile doesn't maintain the bit.
   await fs.chmod(outputPath, 0o755);
 }
