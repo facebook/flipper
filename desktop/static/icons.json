@@ -667,5 +667,8 @@
   ],
   "app-bloks": [
     16
+  ],
+  "settings-internal": [
+    16
   ]
 }
