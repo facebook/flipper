@@ -97,7 +97,7 @@
     "jest-environment-jsdom-sixteen": "^2.0.0",
     "jest-fetch-mock": "^3.0.3",
     "less": "^4.1.2",
-    "patch-package": "^6.4.7",
+    "patch-package": "^7.0.0",
     "prettier": "^2.8.7",
     "pretty-format": "^27.5.0",
     "rimraf": "^3.0.2",
