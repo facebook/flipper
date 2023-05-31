@@ -15,7 +15,7 @@ export default (settings?: {host?: string; port?: number}) => {
     5037,
   ) as number;
 
-  let host = 'localhost';
+  let host = '127.0.0.1';
 
   const socket = (process.env.ADB_SERVER_SOCKET || '').trim();
   if (socket && socket.length > 0) {
