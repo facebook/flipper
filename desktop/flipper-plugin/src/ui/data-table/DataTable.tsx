@@ -119,6 +119,7 @@ export type DataTableColumn<T = any> = {
     value: string;
     enabled: boolean;
     predefined?: boolean;
+    strict?: boolean;
   }[];
   inversed?: boolean;
   sortable?: boolean;

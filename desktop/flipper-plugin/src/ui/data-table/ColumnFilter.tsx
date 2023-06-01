@@ -50,6 +50,7 @@ export function FilterIcon({
       type: 'addColumnFilter',
       column: column.key,
       value: input,
+      options: {},
     });
     setInput('');
   };

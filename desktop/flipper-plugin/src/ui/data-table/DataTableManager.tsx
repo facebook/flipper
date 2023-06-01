@@ -56,6 +56,16 @@ type PersistedState = {
   highlightSearchSetting: SearchHighlightSetting;
 };
 
+type AddColumnFilterOptions = {
+  /**
+   * The filter is strict by default
+   * All entries that are missing this value(undefined) will be filtered out.
+   * By disabling this option you make filter include rows that don't have this value ie undefined
+   */
+  strict?: boolean;
+  disableOthers?: boolean;
+};
+
 type Action<Name extends string, Args = {}> = {type: Name} & Args;
 
 type DataManagerActions<T> =
@@ -97,7 +107,7 @@ type DataManagerActions<T> =
   /** Changing column filters */
   | Action<
       'addColumnFilter',
-      {column: keyof T; value: string; disableOthers?: boolean}
+      {column: keyof T; value: string; options: AddColumnFilterOptions}
     >
   | Action<
       'removeColumnFilter',
@@ -280,7 +290,7 @@ export const dataTableManagerReducer = produce<
         draft.columns,
         action.column,
         action.value,
-        action.disableOthers,
+        action.options,
       );
       break;
     }
@@ -325,7 +335,9 @@ export const dataTableManagerReducer = produce<
           draft.columns,
           action.column,
           getValueAtPath(item, String(action.column)),
-          index === 0, // remove existing filters before adding the first
+          {
+            disableOthers: index === 0, // remove existing filters before adding the first
+          },
         );
       });
       break;
@@ -405,7 +417,7 @@ export type DataTableManager<T> = {
   addColumnFilter(
     column: keyof T,
     value: string,
-    disableOthers?: boolean,
+    options?: AddColumnFilterOptions,
   ): void;
   removeColumnFilter(column: keyof T, label: string): void;
 };
@@ -472,8 +484,8 @@ export function createDataTableManager<T>(
     setShowNumberedHistory(showNumberedHistory) {
       dispatch({type: 'setShowNumberedHistory', showNumberedHistory});
     },
-    addColumnFilter(column, value, disableOthers) {
-      dispatch({type: 'addColumnFilter', column, value, disableOthers});
+    addColumnFilter(column, value, options = {}) {
+      dispatch({type: 'addColumnFilter', column, value, options});
     },
     removeColumnFilter(column, label) {
       dispatch({type: 'removeColumnFilter', column, label});
@@ -543,8 +555,9 @@ function addColumnFilter<T>(
   columns: DataTableColumn<T>[],
   columnId: keyof T,
   value: string,
-  disableOthers: boolean = false,
+  options: AddColumnFilterOptions = {},
 ): void {
+  options = Object.assign({disableOthers: false, strict: true}, options);
   const column = columns.find((c) => c.key === columnId)!;
   const filterValue = String(value).toLowerCase();
   const existing = column.filters!.find((c) => c.value === filterValue);
@@ -555,9 +568,10 @@ function addColumnFilter<T>(
       label: String(value),
       value: filterValue,
       enabled: true,
+      strict: options.strict,
     });
   }
-  if (disableOthers) {
+  if (options.disableOthers) {
     column.filters!.forEach((c) => {
       if (c.value !== filterValue) {
         c.enabled = false;
@@ -699,13 +713,16 @@ export function computeDataTableFilter(
 
   return function dataTableFilter(item: any) {
     for (const column of filteringColumns) {
-      const rowMatchesFilter = column.filters!.some(
-        (f) =>
-          f.enabled &&
-          String(getValueAtPath(item, column.key))
-            .toLowerCase()
-            .includes(f.value),
-      );
+      const rowMatchesFilter = column.filters!.some((f) => {
+        if (!f.enabled) {
+          return false;
+        }
+
+        const value = getValueAtPath(item, column.key);
+        const isMatching = String(value).toLowerCase().includes(f.value);
+
+        return f.strict ? isMatching : isMatching || value === undefined;
+      });
       if (column.inversed && rowMatchesFilter) {
         return false;
       }
