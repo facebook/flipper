@@ -47,7 +47,11 @@ export function createFlipperServerWithSocket(
     let initialConnectionTimeout: ReturnType<typeof setTimeout> | undefined =
       setTimeout(() => {
         reject(
-          new Error('Failed to connect to flipper-server in a timely manner'),
+          new Error(
+            `Failed to connect to the server in a timely manner.
+             It may be unresponsive. Run the following from the terminal 
+             'lsof -nP -iTCP -sTCP:LISTEN | grep 52342' and kill the listed process, if any.`,
+          ),
         );
       }, CONNECTION_TIMEOUT);
 

@@ -231,8 +231,8 @@ async function start() {
 
 start().catch((e) => {
   console.error('Failed to start Flipper desktop', e);
-  document.getElementById('root')!.textContent =
-    'Failed to start Flipper desktop: ' + e;
+  document.getElementById('loading')!.textContent =
+    'Failed to start Flipper. ' + e;
 });
 
 function getStaticPath(appPath: string) {
