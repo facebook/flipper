@@ -17,6 +17,7 @@ import {initializeLogger} from './logger';
 import fs from 'fs-extra';
 import yargs from 'yargs';
 import open from 'open';
+import os from 'os';
 import {initCompanionEnv} from 'flipper-server-companion';
 import {
   checkPortInUse,
@@ -92,6 +93,16 @@ console.log(
     argv.bundler ? 'UI bundle from source' : 'pre-bundled UI'
   }`,
 );
+
+/**
+ * When running as a standlone app not run from the terminal, the process itself
+ * doesn't inherit the user's terminal PATH environment variable.
+ * The PATH, when NOT launched from terminal is `/usr/bin:/bin:/usr/sbin:/sbin`
+ * which is missing `/usr/local/bin`.
+ */
+if (os.platform() !== 'win32') {
+  process.env.PATH = '/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin';
+}
 
 const rootPath = argv.bundler
   ? path.resolve(__dirname, '..', '..')
