@@ -23,6 +23,7 @@ import {
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import iOSCertificateProvider from './iOSCertificateProvider';
+import exitHook from 'exit-hook';
 
 export class IOSDeviceManager {
   private portForwarders: Array<ChildProcess> = [];
@@ -73,6 +74,11 @@ export class IOSDeviceManager {
         console.log(`[conn] Port forwarding app exited gracefully`);
       }
     });
+
+    exitHook(() => {
+      child.kill('SIGKILL');
+    });
+
     return child;
   }
 
