@@ -9,6 +9,7 @@ exports[`can create a Fake flipper with legacy wrapper 1`] = `
         "app": "TestApp",
         "device": "MockAndroidDevice",
         "device_id": "serial",
+        "medium": "NONE",
         "os": "Android",
         "sdk_version": 4,
       },

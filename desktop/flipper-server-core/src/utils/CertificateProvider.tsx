@@ -7,6 +7,7 @@
  * @format
  */
 
+import {CertificateExchangeMedium} from 'flipper-common';
 import {
   deviceCAcertFile,
   deviceClientCertFile,
@@ -15,8 +16,6 @@ import {
   generateClientCertificate,
   getCACertificate,
 } from './certificateUtils';
-
-export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 
 export default abstract class CertificateProvider {
   abstract medium: CertificateExchangeMedium;

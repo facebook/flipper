@@ -7,9 +7,7 @@
  * @format
  */
 
-import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {ClientConnection} from './ClientConnection';
-import {transformCertificateExchangeMediumToType} from './Utilities';
 import {
   ClientDescription,
   ClientQuery,
@@ -30,8 +28,7 @@ export type ClientCsrQuery = {
  * SecureClientQuery combines a ClientQuery with
  * ClientCsrQuery. It also adds medium information.
  */
-export type SecureClientQuery = ClientQuery &
-  ClientCsrQuery & {medium: 1 /*FS*/ | 2 /*WWW*/ | 3 /*NONE*/ | undefined};
+export type SecureClientQuery = ClientQuery & ClientCsrQuery;
 
 /**
  * Defines an interface for events triggered by a running server interacting
@@ -75,7 +72,6 @@ export interface ServerEventsListener {
     unsanitizedCSR: string,
     clientQuery: ClientQuery,
     appDirectory: string,
-    medium: CertificateExchangeMedium,
   ): Promise<{deviceId: string}>;
   /**
    * A secure connection has been established with a validated client.
@@ -161,7 +157,7 @@ abstract class ServerAdapter {
     if (message.method === 'signCertificate') {
       console.debug('CSR received from device', 'server');
 
-      const {csr, destination, medium} = message;
+      const {csr, destination} = message;
 
       console.info(
         `[conn] Starting certificate exchange: ${clientQuery.app} on ${clientQuery.device}`,
@@ -171,7 +167,6 @@ abstract class ServerAdapter {
           csr,
           clientQuery,
           destination,
-          transformCertificateExchangeMediumToType(medium),
         );
 
         console.info(

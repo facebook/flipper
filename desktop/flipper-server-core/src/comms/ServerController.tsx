@@ -7,7 +7,6 @@
  * @format
  */
 
-import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {
   ClientDescription,
   ClientQuery,
@@ -27,7 +26,6 @@ import {
   appNameWithUpdateHint,
   assertNotNull,
   cloneClientQuerySafeForLogging,
-  transformCertificateExchangeMediumToType,
 } from './Utilities';
 import ServerAdapter, {
   SecureClientQuery,
@@ -182,7 +180,7 @@ export class ServerController
       medium,
       rsocket,
     } = clientQuery;
-    const transformedMedium = transformCertificateExchangeMediumToType(medium);
+
     console.info(
       `[conn] Connection established: ${app} on ${device_id}. Medium ${medium}. CSR: ${csr_path}`,
       cloneClientQuerySafeForLogging(clientQuery),
@@ -204,7 +202,7 @@ export class ServerController
         device,
         device_id,
         sdk_version,
-        medium: transformedMedium,
+        medium,
         rsocket,
       },
       {csr, csr_path},
@@ -233,10 +231,13 @@ export class ServerController
       ...timestamp,
     });
 
-    tracker.track(
-      'app-connection-secure-attempt',
-      (({csr, ...o}) => o)(clientQuery),
-    );
+    tracker.track('app-connection-secure-attempt', {
+      app: clientQuery.app,
+      os: clientQuery.os,
+      device: clientQuery.device,
+      device_id: clientQuery.device_id,
+      medium: clientQuery.medium,
+    });
 
     const {os, app, device_id} = clientQuery;
     // without these checks, the user might see a connection timeout error instead, which would be much harder to track down
@@ -260,16 +261,13 @@ export class ServerController
       clearTimeout(timeout);
     }
 
-    const transformedMedium = transformCertificateExchangeMediumToType(
-      clientQuery.medium,
-    );
-    if (transformedMedium === 'WWW' || transformedMedium === 'NONE') {
+    if (clientQuery.medium === 'WWW' || clientQuery.medium === 'NONE') {
       this.flipperServer.registerDevice(
         new DummyDevice(
           this.flipperServer,
           clientQuery.device_id,
           clientQuery.app +
-            (transformedMedium === 'WWW' ? ' Server Exchanged' : ''),
+            (clientQuery.medium === 'WWW' ? ' Server Exchanged' : ''),
           clientQuery.os,
         ),
       );
@@ -299,7 +297,6 @@ export class ServerController
     unsanitizedCSR: string,
     clientQuery: ClientQuery,
     appDirectory: string,
-    medium: CertificateExchangeMedium,
   ): Promise<{deviceId: string}> {
     let certificateProvider: CertificateProvider;
     switch (clientQuery.os) {
@@ -318,7 +315,7 @@ export class ServerController
         );
         certificateProvider = this.flipperServer.ios.certificateProvider;
 
-        if (medium === 'WWW') {
+        if (clientQuery.medium === 'WWW') {
           certificateProvider = new WWWCertificateProvider(
             this.flipperServer.keytarManager,
           );
@@ -339,7 +336,7 @@ export class ServerController
       }
     }
 
-    certificateProvider.verifyMedium(medium);
+    certificateProvider.verifyMedium(clientQuery.medium);
 
     return new Promise((resolve, reject) => {
       reportPlatformFailures(
@@ -367,7 +364,7 @@ export class ServerController
             setTimeout(() => {
               this.emit('client-unresponsive-error', {
                 client,
-                medium,
+                medium: clientQuery.medium,
                 deviceID: response.deviceId,
               });
             }, 30 * 1000),
@@ -428,7 +425,7 @@ export class ServerController
    */
   async addConnection(
     connection: ClientConnection,
-    query: ClientQuery & {medium: CertificateExchangeMedium},
+    query: ClientQuery,
     csrQuery: ClientCsrQuery,
     silentReplace?: boolean,
   ): Promise<ClientDescription> {

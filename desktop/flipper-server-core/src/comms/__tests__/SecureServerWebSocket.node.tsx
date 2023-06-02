@@ -18,6 +18,7 @@ import WebSocket from 'ws';
 
 import SecureServerWebSocket from '../SecureServerWebSocket';
 import {SecureClientQuery} from '../ServerAdapter';
+import {transformCertificateExchangeMediumToType} from '../Utilities';
 import WebSocketClientConnection from '../WebSocketClientConnection';
 import {createMockSEListener, WSMessageAccumulator} from './utils';
 
@@ -80,7 +81,7 @@ describe('SecureServerWebSocket', () => {
       sdk_version: sdkVersion,
       csr,
       csr_path: csrPath,
-      medium,
+      medium: transformCertificateExchangeMediumToType(medium),
     };
     expect(mockSEListener.onSecureConnectionAttempt).toBeCalledWith(
       expectedClientQuery,

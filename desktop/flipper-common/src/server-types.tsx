@@ -30,6 +30,7 @@ import {LoggerInfo} from './utils/Logger';
 // Since flipper-plugin however is currently shared among server, client and defines a lot of base types, leaving it here for now.
 
 export type FlipperServerType = 'embedded' | 'external';
+export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 
 export type FlipperServerState =
   | 'pending'
@@ -87,6 +88,7 @@ export type ClientQuery = {
   readonly device: string;
   readonly device_id: string;
   readonly sdk_version?: number;
+  medium: CertificateExchangeMedium;
   rsocket?: boolean;
 };
 

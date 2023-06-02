@@ -99,7 +99,7 @@ class ServerWebSocket extends ServerAdapter {
         });
 
         try {
-          this.onConnection(ws, request);
+          this.onConnection(ws, request); // insecure connection, with medium.
         } catch (error) {
           // TODO: Investigate if we need to close the socket in the `error` listener
           // DRI: @aigoncharov

@@ -7,9 +7,13 @@
  * @format
  */
 
-import {ClientQuery, DeviceOS, ResponseMessage} from 'flipper-common';
+import {
+  CertificateExchangeMedium,
+  ClientQuery,
+  DeviceOS,
+  ResponseMessage,
+} from 'flipper-common';
 import {ParsedUrlQuery} from 'querystring';
-import {CertificateExchangeMedium} from '../utils/CertificateProvider';
 import {SecureClientQuery} from './ServerAdapter';
 
 /**
@@ -126,11 +130,23 @@ export function parseClientQuery(
     return;
   }
 
+  let medium: number | undefined;
+  if (typeof query.medium === 'string') {
+    medium = parseInt(query.medium, 10);
+  } else if (typeof query.medium === 'number') {
+    medium = query.medium;
+  }
+
+  if (medium !== undefined && (medium < 1 || medium > 3)) {
+    throw new Error('Unsupported exchange medium: ' + medium);
+  }
+
   const clientQuery: ClientQuery = {
     device_id,
     device,
     app,
     os,
+    medium: transformCertificateExchangeMediumToType(medium),
   };
 
   if (typeof query.sdk_version === 'string') {
@@ -178,11 +194,19 @@ export function parseSecureClientQuery(
   let medium: number | undefined;
   if (typeof query.medium === 'string') {
     medium = parseInt(query.medium, 10);
+  } else if (typeof query.medium === 'number') {
+    medium = query.medium;
   }
+
   if (medium !== undefined && (medium < 1 || medium > 3)) {
     throw new Error('Unsupported exchange medium: ' + medium);
   }
-  return {...clientQuery, csr, csr_path, medium: medium as any};
+  return {
+    ...clientQuery,
+    csr,
+    csr_path,
+    medium: transformCertificateExchangeMediumToType(medium),
+  };
 }
 
 export function cloneClientQuerySafeForLogging(clientQuery: SecureClientQuery) {

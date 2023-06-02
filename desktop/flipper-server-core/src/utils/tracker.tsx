@@ -7,14 +7,14 @@
  * @format
  */
 
-import {getLogger} from 'flipper-common';
+import {getLogger, CertificateExchangeMedium} from 'flipper-common';
 
 type AppConnectionPayload = {
   app: string;
   os: string;
   device: string;
   device_id: string;
-  medium?: number | undefined;
+  medium?: CertificateExchangeMedium;
 };
 
 type AppConnectionCertificateExchangePayload = AppConnectionPayload & {

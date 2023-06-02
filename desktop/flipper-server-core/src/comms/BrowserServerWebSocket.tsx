@@ -144,7 +144,7 @@ class BrowserServerWebSocket extends SecureServerWebSocket {
     if (!parsedBaseQuery) {
       return;
     }
-    return {...parsedBaseQuery, medium: 3};
+    return {...parsedBaseQuery, medium: 'NONE'};
   }
 
   protected verifyClient(): ws.VerifyClientCallbackSync {

@@ -11,7 +11,6 @@ import './utils/macCa';
 import './utils/fetch-polyfill';
 import EventEmitter from 'events';
 import {ServerController} from './comms/ServerController';
-import {CertificateExchangeMedium} from './utils/CertificateProvider';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
 import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
@@ -26,6 +25,7 @@ import {
   Logger,
   FlipperServerExecOptions,
   DeviceDebugData,
+  CertificateExchangeMedium,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';

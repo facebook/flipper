@@ -45,7 +45,7 @@ describe('ServerWebSocket', () => {
 
     expect(mockSEListener.onConnectionAttempt).toBeCalledTimes(0);
     wsClient = new WebSocket(
-      `ws://localhost:${port}?device_id=${deviceId}&device=${device}&app=${app}&os=${os}&sdk_version=${sdkVersion}`,
+      `ws://localhost:${port}?device_id=${deviceId}&device=${device}&app=${app}&os=${os}&sdk_version=${sdkVersion}&medium=2`,
     );
     const receivedMessages = new WSMessageAccumulator();
     await new Promise<void>((resolve, reject) => {
@@ -60,6 +60,7 @@ describe('ServerWebSocket', () => {
       os,
       app,
       sdk_version: sdkVersion,
+      medium: 'WWW',
     };
     expect(mockSEListener.onConnectionAttempt).toBeCalledWith(
       expectedClientQuery,

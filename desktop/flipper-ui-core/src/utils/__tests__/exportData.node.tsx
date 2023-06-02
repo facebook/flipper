@@ -105,7 +105,13 @@ function generateClientFromClientWithSalt(
   const identifier = generateClientIdentifierWithSalt(client.id, salt);
   return {
     id: identifier,
-    query: {app, os, device, device_id: salt + '-' + device_id},
+    query: {
+      app,
+      os,
+      device,
+      device_id: salt + '-' + device_id,
+      medium: client.query.medium,
+    },
   };
 }
 
@@ -114,7 +120,7 @@ function generateClientFromDevice(device: Device, app: string): ClientExport {
   const identifier = generateClientIdentifier(device, app);
   return {
     id: identifier,
-    query: {app, os, device: deviceType, device_id: serial},
+    query: {app, os, device: deviceType, device_id: serial, medium: 'NONE'},
   };
 }
 
@@ -149,6 +155,7 @@ test('test generateClientFromClientWithSalt helper function', () => {
       os: 'iOS',
       device: 'emulator',
       device_id: 'salt-serial',
+      medium: 'NONE',
     },
   });
   expect(client).toEqual({
@@ -158,6 +165,7 @@ test('test generateClientFromClientWithSalt helper function', () => {
       os: 'iOS',
       device: 'emulator',
       device_id: 'serial',
+      medium: 'NONE',
     },
   });
 });
@@ -178,6 +186,7 @@ test('test generateClientFromDevice helper function', () => {
       os: 'iOS',
       device: 'emulator',
       device_id: 'serial',
+      medium: 'NONE',
     },
   });
 });
@@ -727,6 +736,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -742,6 +752,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -757,6 +768,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -816,6 +828,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -831,6 +844,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -873,6 +887,7 @@ test('test determinePluginsToProcess for multiple clients on same device', async
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -888,6 +903,7 @@ test('test determinePluginsToProcess for multiple clients on same device', async
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -935,6 +951,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -950,6 +967,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -965,6 +983,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial2',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -980,6 +999,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial2',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -1051,6 +1071,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial',
+      medium: 'NONE',
     },
     null,
     logger,
@@ -1066,6 +1087,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial-archived',
+      medium: 'NONE',
     },
     null,
     logger,

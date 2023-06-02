@@ -81,7 +81,7 @@ describe('BrowserServerWebSocket', () => {
       os,
       app,
       sdk_version: sdkVersion,
-      medium: 3,
+      medium: 'NONE',
     };
     expect(mockSEListener.onConnectionAttempt).toBeCalledWith(
       expectedClientQuery,
@@ -183,7 +183,7 @@ describe('BrowserServerWebSocket', () => {
       os: 'MacOS',
       app: device,
       sdk_version: 4,
-      medium: 3,
+      medium: 'NONE',
     };
     expect(mockSEListener.onConnectionAttempt).toBeCalledWith(
       expectedClientQuery,
