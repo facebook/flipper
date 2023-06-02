@@ -8,7 +8,7 @@
  */
 
 import CertificateProvider from '../../utils/CertificateProvider';
-import {Client} from '@u4/adbkit';
+import {Client} from 'adbkit';
 import * as androidUtil from './androidContainerUtility';
 import {csrFileName, extractAppNameFromCSR} from '../../utils/certificateUtils';
 
@@ -98,7 +98,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     const appName = await extractAppNameFromCSR(csr);
     const deviceId = await this.getTargetDeviceId(appName, destination, csr);
     await androidUtil.push(
-      this.adb.getDevice(deviceId),
+      this.adb,
       deviceId,
       appName,
       destination + filename,
@@ -113,7 +113,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     csr: string,
   ): Promise<{isMatch: boolean; foundCsr: string}> {
     const deviceCsr = await androidUtil.pull(
-      this.adb.getDevice(deviceId),
+      this.adb,
       deviceId,
       processName,
       directory + csrFileName,
