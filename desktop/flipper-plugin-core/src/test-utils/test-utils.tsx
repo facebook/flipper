@@ -76,6 +76,7 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
         platform: 'linux',
       },
       env: {},
+      isHeadlessBuild: true,
     },
     intern: {
       graphGet: createStubFunction(),

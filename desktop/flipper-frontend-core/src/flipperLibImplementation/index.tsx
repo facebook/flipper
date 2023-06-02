@@ -50,6 +50,7 @@ export function baseFlipperLibImplementation(
     environmentInfo: {
       os: renderHost.serverConfig.environmentInfo.os,
       env: renderHost.serverConfig.env,
+      isHeadlessBuild: renderHost.serverConfig.environmentInfo.isHeadlessBuild,
     },
     intern: {
       graphGet: (...args) =>

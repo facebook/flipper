@@ -202,6 +202,7 @@ export interface FlipperLib {
   };
   environmentInfo: {
     os: EnvironmentInfo['os'];
+    isHeadlessBuild: EnvironmentInfo['isHeadlessBuild'];
     env: Partial<Record<ENVIRONMENT_VARIABLES, string>>;
   };
   remoteServerContext: RemoteServerContext;
