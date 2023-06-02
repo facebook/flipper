@@ -242,12 +242,14 @@ async function startProxyServer(
  * @returns Returns the created WS.
  */
 function addWebsocket(server: http.Server, config: Config) {
+  const localhost = 'localhost';
   const localhostIPV4 = `localhost:${config.port}`;
   const localhostIPV6 = `[::1]:${config.port}`;
   const localhostIPV6NoBrackets = `::1:${config.port}`;
   const localhostIPV4Electron = 'localhost:3000';
 
   const possibleHosts = [
+    localhost,
     localhostIPV4,
     localhostIPV6,
     localhostIPV6NoBrackets,
@@ -264,12 +266,14 @@ function addWebsocket(server: http.Server, config: Config) {
       req.headers.host &&
       possibleHosts.includes(req.headers.host)
     ) {
-      // no origin header? The request is not originating from a browser, so should be OK to pass through
+      // No origin header? The request is not originating from a browser, so should be OK to pass through
       // If origin matches our own address, it means we are serving the page.
+
+      // Need the token or know that is UDS.
 
       return process.env.SKIP_TOKEN_VERIFICATION ? true : verifyAuthToken(req);
     } else {
-      // for now we don't allow cross origin request, so that an arbitrary website cannot try to
+      // For now we don't allow cross origin request, so that an arbitrary website cannot try to
       // connect a socket to localhost:serverport, and try to use the all powerful Flipper APIs to read
       // for example files.
       // Potentially in the future we do want to allow this, e.g. if we want to connect to a local flipper-server
