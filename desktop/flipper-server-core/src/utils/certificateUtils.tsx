@@ -37,6 +37,7 @@ export const serverKey = getFilePath('server.key');
 export const serverCsr = getFilePath('server.csr');
 export const serverSrl = getFilePath('server.srl');
 export const serverCert = getFilePath('server.crt');
+export const serverAuthToken = getFilePath('auth.token');
 
 // Device file paths
 export const csrFileName = 'app.csr';
@@ -267,10 +268,6 @@ const writeToTempFile = async (content: string): Promise<string> => {
 
 const tokenFilename = 'auth.token';
 const getTokenPath = (config: FlipperServerConfig): string => {
-  if (config.environmentInfo.isHeadlessBuild) {
-    return path.resolve(config.paths.staticPath, tokenFilename);
-  }
-
   return getFilePath(tokenFilename);
 };
 const manifestFilename = 'manifest.json';
@@ -309,7 +306,7 @@ export const generateAuthToken = async () => {
     expiresIn: '21 days',
   });
 
-  await fs.writeFile(getTokenPath(config), token);
+  await fs.writeFile(serverAuthToken, token);
 
   if (config.environmentInfo.isHeadlessBuild) {
     await exportTokenToManifest(config, token);
@@ -319,14 +316,11 @@ export const generateAuthToken = async () => {
 };
 
 export const getAuthToken = async () => {
-  const config = getFlipperServerConfig();
-  const tokenPath = getTokenPath(config);
-
-  if (!(await fs.pathExists(tokenPath))) {
+  if (!(await fs.pathExists(serverAuthToken))) {
     return generateAuthToken();
   }
 
-  const token = await fs.readFile(tokenPath);
+  const token = await fs.readFile(serverAuthToken);
   return token.toString();
 };
 
