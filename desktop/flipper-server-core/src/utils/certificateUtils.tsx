@@ -266,10 +266,6 @@ const writeToTempFile = async (content: string): Promise<string> => {
   return path;
 };
 
-const tokenFilename = 'auth.token';
-const getTokenPath = (config: FlipperServerConfig): string => {
-  return getFilePath(tokenFilename);
-};
 const manifestFilename = 'manifest.json';
 const getManifestPath = (config: FlipperServerConfig): string => {
   return path.resolve(config.paths.staticPath, manifestFilename);
@@ -315,13 +311,17 @@ export const generateAuthToken = async () => {
   return token;
 };
 
-export const getAuthToken = async () => {
-  if (!(await fs.pathExists(serverAuthToken))) {
+export const getAuthToken = async (): Promise<string> => {
+  if (!(await hasAuthToken())) {
     return generateAuthToken();
   }
 
   const token = await fs.readFile(serverAuthToken);
   return token.toString();
+};
+
+export const hasAuthToken = async (): Promise<boolean> => {
+  return fs.pathExists(serverAuthToken);
 };
 
 export const validateAuthToken = (token: string) => {
