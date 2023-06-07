@@ -16,12 +16,9 @@ export function initializeRenderHost(
 ) {
   globalThis.FlipperRenderHostInstance = {
     readTextFromClipboard() {
-      // TODO:
       return undefined;
     },
-    writeTextToClipboard(_text: string) {
-      // TODO:
-    },
+    writeTextToClipboard(_text: string) {},
     async importFile() {
       throw new Error('Not implemented');
     },
@@ -46,9 +43,7 @@ export function initializeRenderHost(
     shouldUseDarkColors() {
       return false;
     },
-    restartFlipper() {
-      // TODO:
-    },
+    restartFlipper() {},
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;

@@ -95,7 +95,7 @@ type ChildProcessEvents = {
  * Utilities provided by the render host, e.g. Electron, the Browser, etc
  */
 export interface RenderHost {
-  readTextFromClipboard(): string | undefined;
+  readTextFromClipboard(): Promise<string> | undefined;
   writeTextToClipboard(text: string): void;
   /**
    * @deprecated

@@ -63,7 +63,7 @@ export async function initializeElectron(
     processId: electronProcess.pid,
     isProduction,
     readTextFromClipboard() {
-      return clipboard.readText();
+      return Promise.resolve(clipboard.readText());
     },
     writeTextToClipboard(text: string) {
       clipboard.writeText(text);

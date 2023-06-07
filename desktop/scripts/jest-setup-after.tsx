@@ -197,7 +197,7 @@ function createStubRenderHost(): RenderHost {
 
   return {
     readTextFromClipboard() {
-      return '';
+      return Promise.resolve('');
     },
     writeTextToClipboard() {},
     async importFile() {

@@ -35,12 +35,11 @@ export function initializeRenderHost(
   flipperServerConfig: FlipperServerConfig,
 ) {
   FlipperRenderHostInstance = {
-    readTextFromClipboard() {
-      // TODO:
-      return undefined;
+    async readTextFromClipboard() {
+      return await navigator.clipboard.readText();
     },
-    writeTextToClipboard(_text: string) {
-      // TODO:
+    writeTextToClipboard(text: string) {
+      return navigator.clipboard.writeText(text);
     },
     async importFile() {
       throw new Error('Not implemented');
@@ -71,7 +70,7 @@ export function initializeRenderHost(
       );
     },
     restartFlipper() {
-      window.flipperShowError!(
+      window.flipperShowError?.(
         'Flipper settings have changed, please restart flipper server for the changes to take effect',
       );
     },
