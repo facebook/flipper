@@ -104,17 +104,12 @@ export class IOSDeviceManager {
   }
 
   private processDevices(bridge: IOSBridge, activeDevices: IOSDeviceParams[]) {
-    console.debug('[conn] processDevices', activeDevices);
     const currentDeviceIDs = new Set(
       this.flipperServer
         .getDevices()
         .filter((device) => device.info.os === 'iOS')
         .filter((device) => device.info.deviceType !== 'dummy')
         .map((device) => device.serial),
-    );
-    console.debug(
-      '[conn] processDevices -> currentDeviceIDs',
-      currentDeviceIDs,
     );
 
     for (const activeDevice of activeDevices) {
