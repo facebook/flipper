@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Bounds, Coordinate, Id, NestedNode, Tag, UINode} from '../types';
 
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
@@ -15,7 +15,6 @@ import {plugin} from '../index';
 import {head, isEqual, throttle} from 'lodash';
 import {Dropdown, Menu, Tooltip} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
-import {useFilteredValue} from '../hooks/usefilteredValue';
 
 export const Visualization2D: React.FC<
   {
@@ -31,6 +30,8 @@ export const Visualization2D: React.FC<
   const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
   const focusedNodeId = useValue(instance.uiState.focusedNode);
 
+  const selectedNodeId = useValue(instance.uiState.selectedNode);
+  const hoveredNodeId = head(useValue(instance.uiState.hoveredNodes));
   const focusState = useMemo(() => {
     //use the snapshot node as root since we cant realistically visualise any node above this
     const rootNode = snapshot && toNestedNode(snapshot.nodeId, nodes);
@@ -107,6 +108,16 @@ export const Visualization2D: React.FC<
             height: toPx(focusState.actualRoot.bounds.height),
           } as React.CSSProperties
         }>
+        {hoveredNodeId && (
+          <OverlayBorder type="hovered" nodeId={hoveredNodeId} nodes={nodes} />
+        )}
+        {selectedNodeId && (
+          <OverlayBorder
+            type="selected"
+            nodeId={selectedNodeId}
+            nodes={nodes}
+          />
+        )}
         <div
           ref={rootNodeRef as any}
           onMouseLeave={(e) => {
@@ -170,19 +181,7 @@ function Visualization2DNode({
 }) {
   const instance = usePlugin(plugin);
 
-  const wasOrIsSelected = useCallback(
-    (curValue?: Id, prevValue?: Id) =>
-      curValue === node.id || prevValue === node.id,
-    [node.id],
-  );
-  const selectedNode = useFilteredValue(
-    instance.uiState.selectedNode,
-    wasOrIsSelected,
-  );
-
-  const isSelected = selectedNode === node.id;
-
-  const {isHovered, isLongHovered} = useHoverStates(node.id);
+  const {isLongHovered} = useHoverStates(node.id);
   const ref = useRef<HTMLDivElement>(null);
   let nestedChildren: NestedNode[];
 
@@ -234,20 +233,60 @@ function Visualization2DNode({
           e.stopPropagation();
 
           const hoveredNodes = instance.uiState.hoveredNodes.get();
-          if (hoveredNodes[0] === selectedNode) {
-            onSelectNode(undefined);
-          } else {
-            onSelectNode(hoveredNodes[0]);
-          }
+
+          onSelectNode(hoveredNodes[0]);
         }}>
-        <NodeBorder
-          hovered={isHovered}
-          selected={isSelected}
-          tags={node.tags}></NodeBorder>
+        <NodeBorder />
+
         {children}
       </div>
     </Tooltip>
   );
+}
+
+const OverlayBorder = styled.div<{
+  type: 'selected' | 'hovered';
+  nodeId: Id;
+  nodes: Map<Id, UINode>;
+}>(({type, nodeId, nodes}) => {
+  const offset = getTotalOffset(nodeId, nodes);
+  const node = nodes.get(nodeId);
+  return {
+    zIndex: 100,
+    pointerEvents: 'none',
+    cursor: 'pointer',
+    position: 'absolute',
+    top: toPx(offset.y),
+    left: toPx(offset.x),
+    width: toPx(node?.bounds?.width ?? 0),
+    height: toPx(node?.bounds?.height ?? 0),
+    boxSizing: 'border-box',
+    borderWidth: 2,
+    borderStyle: 'solid',
+    color: 'transparent',
+    borderColor:
+      type === 'selected' ? theme.primaryColor : theme.selectionBackgroundColor,
+  };
+});
+
+/**
+ * computes the x,y offset of a given node from the root of the visualization
+ * in node coordinates
+ */
+function getTotalOffset(id: Id, nodes: Map<Id, UINode>): Coordinate {
+  const offset = {x: 0, y: 0};
+  let curId: Id | undefined = id;
+
+  while (curId != null) {
+    const cur = nodes.get(curId);
+    if (cur != null) {
+      offset.x += cur.bounds.x;
+      offset.y += cur.bounds.y;
+    }
+    curId = cur?.parent;
+  }
+
+  return offset;
 }
 
 function useHoverStates(nodeId: Id) {
@@ -309,7 +348,7 @@ const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
                 key="focus"
                 text={`Focus ${hoveredNode?.name}`}
                 onClick={() => {
-                  instance.uiState.focusedNode.set(hoveredNode?.id);
+                  instance.uiActions.onFocusNode(hoveredNode?.id);
                 }}
               />
             )}
@@ -335,33 +374,25 @@ const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
  * node itself so that it has the same size but the border doesnt affect the sizing of its children
  * as border is part of the box model
  */
-const NodeBorder = styled.div<{
-  tags: Tag[];
-  hovered: boolean;
-  selected: boolean;
-}>((props) => ({
+const NodeBorder = styled.div({
   position: 'absolute',
   top: 0,
   left: 0,
   bottom: 0,
   right: 0,
   boxSizing: 'border-box',
-  borderWidth: props.selected || props.hovered ? '2px' : '1px',
+  borderWidth: '1px',
   borderStyle: 'solid',
   color: 'transparent',
-  borderColor: props.selected
-    ? theme.primaryColor
-    : props.hovered
-    ? theme.selectionBackgroundColor
-    : theme.disabledColor,
-}));
+  borderColor: theme.disabledColor,
+});
 
 const longHoverDelay = 200;
 const pxScaleFactorCssVar = '--pxScaleFactor';
 const MouseThrottle = 32;
 
 function toPx(n: number) {
-  return `calc(${n}px / var(${pxScaleFactorCssVar})`;
+  return `calc(${n}px / var(${pxScaleFactorCssVar}))`;
 }
 
 function toNestedNode(

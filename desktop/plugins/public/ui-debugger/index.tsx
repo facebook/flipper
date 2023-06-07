@@ -375,7 +375,12 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
     });
   };
   const onSelectNode = (node?: Id) => {
-    uiState.selectedNode.set(node);
+    if (uiState.selectedNode.get() === node) {
+      uiState.selectedNode.set(undefined);
+    } else {
+      uiState.selectedNode.set(node);
+    }
+
     if (node) {
       const selectedNode = nodes.get().get(node);
       const tags = selectedNode?.tags;
@@ -410,12 +415,14 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
   };
 
   const onFocusNode = (node?: Id) => {
-    if (node) {
+    if (node != null) {
       const focusedNode = nodes.get().get(node);
       const tags = focusedNode?.tags;
       if (tags) {
         tracker.track('node-focused', {name: focusedNode.name, tags});
       }
+
+      uiState.selectedNode.set(undefined);
     }
 
     uiState.focusedNode.set(node);
