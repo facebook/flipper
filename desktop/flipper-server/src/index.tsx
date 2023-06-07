@@ -22,6 +22,7 @@ import {initCompanionEnv} from 'flipper-server-companion';
 import {
   checkPortInUse,
   getEnvironmentInfo,
+  hasAuthToken,
   startFlipperServer,
   startServer,
 } from 'flipper-server-core';
@@ -132,16 +133,19 @@ async function connectToRunningServer(url: URL) {
 async function shutdown() {
   console.info('[flipper-server] Attempt to shutdown.');
 
-  const tokenPath = path.resolve(staticPath, 'auth.token');
-  const token = await fs.readFile(tokenPath, 'utf-8');
+  let token: string | undefined;
+  if (await hasAuthToken()) {
+    token = await getAuthToken();
+  }
 
-  const searchParams = new URLSearchParams({token: token ?? ''});
+  const searchParams = new URLSearchParams(token ? {token} : {});
   const url = new URL(`ws://localhost:${argv.port}?${searchParams}`);
   const server = await connectToRunningServer(url);
   await server.exec('shutdown').catch(() => {
     /** shutdown will ultimately make this request fail, ignore error. */
     console.info('[flipper-server] Shutdown may have succeeded');
   });
+  server.close();
 }
 
 async function start() {
