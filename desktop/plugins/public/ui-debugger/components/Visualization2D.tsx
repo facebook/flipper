@@ -7,14 +7,15 @@
  * @format
  */
 
-import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {Bounds, Coordinate, Id, NestedNode, Tag, UINode} from '../types';
+import React, {useEffect, useMemo, useRef} from 'react';
+import {Bounds, Coordinate, Id, NestedNode, UINode} from '../types';
 
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
 import {plugin} from '../index';
 import {head, isEqual, throttle} from 'lodash';
 import {Dropdown, Menu, Tooltip} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
+import {useDelay} from '../hooks/useDelay';
 
 export const Visualization2D: React.FC<
   {
@@ -100,6 +101,13 @@ export const Visualization2D: React.FC<
   return (
     <ContextMenu nodes={nodes}>
       <div
+        onMouseLeave={(e) => {
+          e.stopPropagation();
+          //the context menu triggers this callback but we dont want to remove hover effect
+          if (!instance.uiState.isContextMenuOpen.get()) {
+            instance.uiState.hoveredNodes.set([]);
+          }
+        }}
         //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
         style={
           {
@@ -109,7 +117,11 @@ export const Visualization2D: React.FC<
           } as React.CSSProperties
         }>
         {hoveredNodeId && (
-          <OverlayBorder type="hovered" nodeId={hoveredNodeId} nodes={nodes} />
+          <HoveredOverlay
+            key={hoveredNodeId}
+            nodeId={hoveredNodeId}
+            nodes={nodes}
+          />
         )}
         {selectedNodeId && (
           <OverlayBorder
@@ -120,13 +132,6 @@ export const Visualization2D: React.FC<
         )}
         <div
           ref={rootNodeRef as any}
-          onMouseLeave={(e) => {
-            e.stopPropagation();
-            //the context menu triggers this callback but we dont want to remove hover effect
-            if (!instance.uiState.isContextMenuOpen.get()) {
-              instance.uiState.hoveredNodes.set([]);
-            }
-          }}
           style={{
             /**
              * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
@@ -181,7 +186,6 @@ function Visualization2DNode({
 }) {
   const instance = usePlugin(plugin);
 
-  const {isLongHovered} = useHoverStates(node.id);
   const ref = useRef<HTMLDivElement>(null);
   let nestedChildren: NestedNode[];
 
@@ -206,40 +210,51 @@ function Visualization2DNode({
   );
 
   return (
+    <div
+      role="button"
+      tabIndex={0}
+      ref={ref}
+      style={{
+        position: 'absolute',
+        cursor: 'pointer',
+        left: toPx(node.bounds.x),
+        top: toPx(node.bounds.y),
+        width: toPx(node.bounds.width),
+        height: toPx(node.bounds.height),
+        opacity: isHighlighted ? 0.3 : 1,
+        backgroundColor: isHighlighted ? 'red' : 'transparent',
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+
+        const hoveredNodes = instance.uiState.hoveredNodes.get();
+
+        onSelectNode(hoveredNodes[0]);
+      }}>
+      <NodeBorder />
+
+      {children}
+    </div>
+  );
+}
+
+function HoveredOverlay({nodeId, nodes}: {nodeId: Id; nodes: Map<Id, UINode>}) {
+  const node = nodes.get(nodeId);
+
+  const isVisible = useDelay(longHoverDelay);
+
+  return (
     <Tooltip
-      visible={isLongHovered}
+      visible={isVisible}
+      key={nodeId}
       placement="top"
       zIndex={100}
       trigger={[]}
-      title={node.name}
+      title={node?.name}
       align={{
         offset: [0, 7],
       }}>
-      <div
-        role="button"
-        tabIndex={0}
-        ref={ref}
-        style={{
-          position: 'absolute',
-          cursor: 'pointer',
-          left: toPx(node.bounds.x),
-          top: toPx(node.bounds.y),
-          width: toPx(node.bounds.width),
-          height: toPx(node.bounds.height),
-          opacity: isHighlighted ? 0.3 : 1,
-          backgroundColor: isHighlighted ? 'red' : 'transparent',
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-
-          const hoveredNodes = instance.uiState.hoveredNodes.get();
-
-          onSelectNode(hoveredNodes[0]);
-        }}>
-        <NodeBorder />
-
-        {children}
-      </div>
+      <OverlayBorder nodeId={nodeId} nodes={nodes} type="hovered" />
     </Tooltip>
   );
 }
@@ -265,7 +280,7 @@ const OverlayBorder = styled.div<{
     borderStyle: 'solid',
     color: 'transparent',
     borderColor:
-      type === 'selected' ? theme.primaryColor : theme.selectionBackgroundColor,
+      type === 'selected' ? theme.primaryColor : theme.textColorPlaceholder,
   };
 });
 
@@ -287,43 +302,6 @@ function getTotalOffset(id: Id, nodes: Map<Id, UINode>): Coordinate {
   }
 
   return offset;
-}
-
-function useHoverStates(nodeId: Id) {
-  const instance = usePlugin(plugin);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isLongHovered, setIsLongHovered] = useState(false);
-  useEffect(() => {
-    const listener = (newValue?: Id[], prevValue?: Id[]) => {
-      //only change state if the prev or next hover state affect us, this avoids rerendering the whole tree for a hover
-      //change
-      if (head(prevValue) === nodeId || head(newValue) === nodeId) {
-        const hovered = head(newValue) === nodeId;
-        setIsHovered(hovered);
-
-        if (hovered === true) {
-          setTimeout(() => {
-            const isStillHovered =
-              head(instance.uiState.hoveredNodes.get()) === nodeId;
-            if (isStillHovered) {
-              setIsLongHovered(true);
-            }
-          }, longHoverDelay);
-        } else {
-          setIsLongHovered(false);
-        }
-      }
-    };
-    instance.uiState.hoveredNodes.subscribe(listener);
-    return () => {
-      instance.uiState.hoveredNodes.unsubscribe(listener);
-    };
-  }, [instance.uiState.hoveredNodes, nodeId]);
-
-  return {
-    isHovered,
-    isLongHovered,
-  };
 }
 
 const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
@@ -387,7 +365,7 @@ const NodeBorder = styled.div({
   borderColor: theme.disabledColor,
 });
 
-const longHoverDelay = 200;
+const longHoverDelay = 500;
 const pxScaleFactorCssVar = '--pxScaleFactor';
 const MouseThrottle = 32;
 
