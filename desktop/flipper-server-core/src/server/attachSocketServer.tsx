@@ -25,6 +25,7 @@ import {
   FlipperServerCompanionEnv,
 } from 'flipper-server-companion';
 import {URLSearchParams} from 'url';
+import {getFlipperServerConfig} from '../FlipperServerConfig';
 
 const safe = (f: () => void) => {
   try {
@@ -36,9 +37,12 @@ const safe = (f: () => void) => {
   }
 };
 
+let numberOfConnectedClients = 0;
+let disconnectTimeout: NodeJS.Timeout | undefined;
+
 /**
  * Attach and handle incoming messages from clients.
- * @param flipperServer A FlipperServer instance.
+ * @param server A FlipperServer instance.
  * @param socket A ws socket on which to listen for events.
  */
 export function attachSocketServer(
@@ -53,6 +57,8 @@ export function attachSocketServer(
       '';
 
     console.log('Client connected', clientAddress);
+    numberOfConnectedClients++;
+
     let connected = true;
 
     let flipperServerCompanion: FlipperServerCompanion | undefined;
@@ -225,6 +231,22 @@ export function attachSocketServer(
         console.error(`Client disconnected ${clientAddress} with error`, error);
       } else {
         console.log(`Client disconnected ${clientAddress}`);
+      }
+
+      numberOfConnectedClients--;
+      if (getFlipperServerConfig().environmentInfo.isHeadlessBuild) {
+        if (disconnectTimeout) {
+          clearTimeout(disconnectTimeout);
+        }
+        /**
+         * If, after 15 min, there are no more connected clients, we exit the process.
+         */
+        disconnectTimeout = setTimeout(() => {
+          if (numberOfConnectedClients === 0) {
+            console.info('Shutdown as no clients are currently connected');
+            process.exit(0);
+          }
+        }, 15 * 60 * 1000);
       }
 
       connected = false;
