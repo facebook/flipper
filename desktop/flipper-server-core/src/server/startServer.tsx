@@ -223,10 +223,12 @@ async function startProxyServer(
       attachSocketServer(socket, serverImpl, companionEnv);
       return new Promise((resolve) => {
         proxyServer?.listen(config.port);
-        server.listen(socketPath, undefined, () => resolve());
-        tracker.track('server-started', {
-          port: config.port,
-          tcp: config.tcp,
+        server.listen(socketPath, undefined, () => {
+          tracker.track('server-started', {
+            port: config.port,
+            tcp: config.tcp,
+          });
+          resolve();
         });
       });
     };
