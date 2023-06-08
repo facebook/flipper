@@ -234,8 +234,6 @@ async function start() {
     await attachDevServer(app, server, socket, rootPath);
   }
   await readyForIncomingConnections(flipperServer, companionEnv);
-
-  return flipperServer;
 }
 
 process.on('uncaughtException', (error) => {
@@ -256,7 +254,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 start()
-  .then(async (flipperServer) => {
+  .then(async () => {
     if (!argv.tcp) {
       return;
     }
@@ -264,11 +262,8 @@ start()
     console.log('[flipper-server] listening at port ' + chalk.green(argv.port));
 
     let token: string | undefined;
-    if (flipperServer) {
+    if (await hasAuthToken()) {
       token = await getAuthToken();
-    } else {
-      const tokenPath = path.resolve(staticPath, 'auth.token');
-      token = await fs.readFile(tokenPath, 'utf-8');
     }
 
     const searchParams = new URLSearchParams({token: token ?? ''});
