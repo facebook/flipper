@@ -28,6 +28,7 @@ import {
   ClientQuery,
   ClientResponseType,
 } from 'flipper-common';
+import {transformCertificateExchangeMediumToType} from './Utilities';
 
 /**
  * RSocket based server. RSocket uses its own protocol for communication between
@@ -104,9 +105,13 @@ class ServerRSocket extends ServerAdapter {
       return {};
     }
 
-    const clientQuery: SecureClientQuery = JSON.parse(payload.data);
-    clientQuery.rsocket = true;
-    // TODO: Add a migration guide
+    const query = JSON.parse(payload.data);
+    const clientQuery: SecureClientQuery = {
+      ...query,
+      medium: transformCertificateExchangeMediumToType(query.medium),
+      rsocket: true,
+    };
+
     this.listener.onDeprecationNotice(
       `[conn] RSockets are being deprecated at Flipper. Please, use the latest Flipper client in your app to migrate to WebSockets. App: ${clientQuery.app}. Device: ${clientQuery.device}.`,
     );
@@ -214,7 +219,12 @@ class ServerRSocket extends ServerAdapter {
       return {};
     }
 
-    const clientQuery: ClientQuery = JSON.parse(payload.data);
+    const query = JSON.parse(payload.data);
+    const clientQuery: ClientQuery = {
+      ...query,
+      medium: transformCertificateExchangeMediumToType(query.medium),
+      rsocket: true,
+    };
     this.listener.onConnectionAttempt(clientQuery);
 
     return {
