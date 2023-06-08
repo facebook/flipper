@@ -234,6 +234,34 @@ async function start() {
     await attachDevServer(app, server, socket, rootPath);
   }
   await readyForIncomingConnections(flipperServer, companionEnv);
+
+  console.log('[flipper-server] listening at port ' + chalk.green(argv.port));
+}
+
+async function launch() {
+  if (!argv.tcp) {
+    return;
+  }
+
+  let token: string | undefined;
+  if (await hasAuthToken()) {
+    token = await getAuthToken();
+  }
+
+  const searchParams = new URLSearchParams({token: token ?? ''});
+  const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
+
+  console.log('Go to: ' + chalk.green(chalk.bold(url)));
+  if (!argv.open) {
+    return;
+  }
+
+  if (argv.bundler) {
+    open(url.toString());
+  } else {
+    const path = await findInstallation();
+    open(path ?? url.toString());
+  }
 }
 
 process.on('uncaughtException', (error) => {
@@ -254,33 +282,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 start()
-  .then(async () => {
-    if (!argv.tcp) {
-      return;
-    }
-
-    console.log('[flipper-server] listening at port ' + chalk.green(argv.port));
-
-    let token: string | undefined;
-    if (await hasAuthToken()) {
-      token = await getAuthToken();
-    }
-
-    const searchParams = new URLSearchParams({token: token ?? ''});
-    const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
-
-    console.log('[flipper-server] Go to: ' + chalk.green(chalk.bold(url)));
-    if (!argv.open) {
-      return;
-    }
-
-    if (argv.bundler) {
-      open(url.toString());
-    } else {
-      const path = await findInstallation();
-      open(path ?? url.toString());
-    }
-  })
+  .then(launch)
   .catch((e) => {
     console.error(chalk.red('Server startup error: '), e);
     process.exit(1);
