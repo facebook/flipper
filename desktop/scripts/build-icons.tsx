@@ -13,6 +13,8 @@ import fetch from '@adobe/node-fetch-retry';
 // eslint-disable-next-line node/no-extraneous-import
 import type {Icon} from 'flipper-ui-core';
 
+const AVAILABLE_SIZES: Icon['size'][] = [8, 10, 12, 16, 18, 20, 24, 28, 32];
+
 export type Icons = {
   [key: string]: Icon['size'][];
 };
@@ -50,30 +52,51 @@ export async function downloadIcons(buildFolder: string) {
 
   await Promise.all(
     iconURLs.map(async (icon) => {
-      const url = getPublicIconUrl(icon);
-      const res = await fetch(url);
-      if (res.status !== 200) {
-        console.warn(
-          // eslint-disable-next-line prettier/prettier
-          `Could not download the icon ${icon} from ${url}: got status ${res.status}`,
-        );
-        return;
+      const sizeIndex = AVAILABLE_SIZES.indexOf(icon.size);
+      if (sizeIndex === -1) {
+        throw new Error('Size unavailable: ' + icon.size);
       }
-      return new Promise((resolve, reject) => {
-        const fileStream = fs.createWriteStream(
-          path.join(buildFolder, buildLocalIconPath(icon)),
-        );
-        res.body.pipe(fileStream);
-        res.body.on('error', reject);
-        fileStream.on('finish', resolve);
-      });
+      const sizesToTry = AVAILABLE_SIZES.slice(sizeIndex);
+
+      while (sizesToTry.length) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const size = sizesToTry.shift()!;
+
+        const url = getPublicIconUrl({...icon, size});
+        const res = await fetch(url);
+        if (res.status !== 200) {
+          // console.log(
+          //   // eslint-disable-next-line prettier/prettier
+          //   `Could not download the icon ${
+          //     icon.name
+          //   } at size ${size} from ${url}: got status ${
+          //     res.status
+          //   }. Will fallback to one of the sizes: ${sizesToTry.join(' or ')}`,
+          // );
+          // not available at this size, pick the next
+          continue;
+        }
+        return new Promise((resolve, reject) => {
+          const fileStream = fs.createWriteStream(
+            path.join(buildFolder, buildLocalIconPath(icon)),
+          );
+          res.body.pipe(fileStream);
+          res.body.on('error', reject);
+          fileStream.on('finish', resolve);
+        });
+      }
+      console.error(
+        `Could not download the icon ${JSON.stringify(
+          icon,
+        )} from ${getPublicIconUrl(icon)}, didn't find any matching size`,
+      );
     }),
   );
 }
 
 // should match flipper-ui-core/src/utils/icons.tsx
 export function getPublicIconUrl({name, variant, size, density}: Icon) {
-  return `https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/${name}_${variant}_${size}_primary-icon.png`;
+  return `https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/${name}_${variant}_${size}.png`;
 }
 
 // should match app/src/utils/icons.tsx
