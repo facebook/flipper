@@ -59,7 +59,7 @@ function normalizeIcon(icon: Icon): Icon {
 }
 
 export function getPublicIconUrl({name, variant, size, density}: Icon) {
-  return `https://facebook.com/assets/?name=${name}&variant=${variant}&size=${size}&set=facebook_icons&density=${density}x`;
+  return `https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/${name}_${variant}_${size}.png`;
 }
 
 export function getIconURL(icon: Icon) {

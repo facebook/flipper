@@ -43,7 +43,7 @@ test('filled icons get correct URL', async () => {
   } as const;
   const iconUrl = getPublicIconUrl(icon);
   expect(iconUrl).toBe(
-    'https://facebook.com/assets/?name=star&variant=filled&size=12&set=facebook_icons&density=2x',
+    'https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/star_filled_12.png', // TODO: support density?
   );
   const staticPath = getRenderHostInstance().serverConfig.paths.staticPath;
   const localUrl = getLocalIconUrl(icon, iconUrl, staticPath, false);
