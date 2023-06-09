@@ -9,9 +9,11 @@ package com.facebook.flipper.sample;
 
 import android.app.Application;
 import android.content.Context;
+
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
 import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin;
+import com.facebook.flipper.plugins.datastoreviewer.DataStoreFlipperPlugin;
 import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
@@ -26,10 +28,14 @@ import com.facebook.flipper.plugins.uidebugger.core.UIDContext;
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister;
 import com.facebook.flipper.plugins.uidebugger.litho.UIDebuggerLithoSupport;
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory;
+import com.facebook.flipper.sample.datastore.DataStoreHelperKt;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.editor.flipper.LithoFlipperDescriptors;
+
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 
 public final class FlipperInitializer {
@@ -61,12 +67,18 @@ public final class FlipperInitializer {
     client.addPlugin(new DatabasesFlipperPlugin(context));
     client.addPlugin(NavigationFlipperPlugin.getInstance());
 
-    DescriptorRegister descriptorRegister = DescriptorRegister.Companion.withDefaults();
-    TreeObserverFactory treeObserverFactory = TreeObserverFactory.Companion.withDefaults();
     UIDContext uidContext = UIDContext.Companion.create((Application) context);
+  
     UIDebuggerLithoSupport.INSTANCE.enable(uidContext);
-
     client.addPlugin(new UIDebuggerFlipperPlugin(uidContext));
+
+    client.addPlugin(new DataStoreFlipperPlugin(
+        Map.of(
+            DataStoreHelperKt.KEY_DATASTORE_1, DataStoreHelperKt.getDatastore1(context),
+            DataStoreHelperKt.KEY_DATASTORE_2, DataStoreHelperKt.getDatastore2(context)
+        )
+    ));
+
     client.start();
 
     final OkHttpClient okHttpClient =

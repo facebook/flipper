@@ -5,7 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.19"
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.google.protobuf'
 
 android {
     namespace 'com.facebook.flipper.sample'
@@ -51,10 +62,13 @@ android {
     }
 }
 
-
 dependencies {
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION"
+
     // Android Support Library
     implementation deps.supportAppCompat
+    implementation deps.supportRecyclerView
 
     // Litho
     implementation deps.lithoCore
@@ -68,6 +82,9 @@ dependencies {
     implementation deps.soloader
     implementation deps.okhttp3
     implementation deps.fresco
+    implementation deps.protobuf
+    implementation deps.datastorePreferences
+
     debugImplementation deps.flipperFrescoPlugin
 
     // Integration test
@@ -83,5 +100,21 @@ dependencies {
     debugImplementation project(':android')
     debugImplementation project(':network-plugin')
     debugImplementation project(':litho-plugin')
+    debugImplementation project(':datastore-viewer')
     releaseImplementation project(':noop')
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.18.0"
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
 }

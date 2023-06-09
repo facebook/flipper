@@ -61,7 +61,7 @@ ext.deps = [
         supportAnnotations : "androidx.annotation:annotation:$ANDROIDX_VERSION",
         supportAppCompat   : "androidx.appcompat:appcompat:$ANDROIDX_VERSION",
         supportCoreUi      : "androidx.legacy:legacy-support-core-ui:$ANDROIDX_VERSION",
-        supportRecyclerView: "androidx.recyclerview:recyclerview:$ANDROIDX_VERSION",
+        supportRecyclerView: "androidx.recyclerview:recyclerview:1.2.1",
         supportConstraintLayout: "androidx.constraintlayout:constraintlayout:2.1.4",
         supportSqlite      : "androidx.sqlite:sqlite-framework:2.2.0",
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.5.1',
@@ -114,4 +114,7 @@ ext.deps = [
         frescoFlipper      : 'com.facebook.fresco:flipper:3.0.0',
         frescoStetho       : 'com.facebook.fresco:stetho:2.6.0',
         fresco             : 'com.facebook.fresco:fresco:2.6.0',
+        // Datastore Viewer
+        datastorePreferences: "androidx.datastore:datastore-preferences:1.0.0",
+        datastorePreferencesCore: "androidx.datastore:datastore-preferences-core:1.0.0",
 ]

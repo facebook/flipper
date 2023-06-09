@@ -1,0 +1,23 @@
+{
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-datastore",
+  "id": "DataStore",
+  "version": "0.0.0",
+  "title": "DataStore Viewer",
+  "icon": "apps",
+  "main": "dist/bundle.js",
+  "flipperBundlerEntry": "index.tsx",
+  "license": "MIT",
+  "keywords": [
+    "flipper-plugin"
+  ],
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "peerDependencies": {
+    "flipper-plugin": "*"
+  },
+  "bugs": {
+    "url": "https://github.com/facebook/flipper/issues"
+  }
+}

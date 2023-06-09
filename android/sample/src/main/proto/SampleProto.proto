@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+syntax = "proto3";
+
+option java_package = "com.facebook.flipper.sample";
+option java_multiple_files = true;
+
+message SampleProto {
+  bool sample_boolean = 1;
+  int32 sample_integer = 2;
+  int64 sample_long = 3;
+  float sample_float = 4;
+  double sample_double = 5;
+  string sample_string = 6;
+  bytes sample_bytes = 7;
+  enum SampleEnum {
+    EAST = 0;
+    WEST = 1;
+    SOUTH = 2;
+    NORTH = 3;
+  }
+  SampleEnum sample_enum = 8;
+}
