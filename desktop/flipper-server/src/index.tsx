@@ -149,7 +149,15 @@ async function shutdown() {
 }
 
 async function start() {
+  console.info('[flipper-server][bootstrap] Booting up');
+  const t0 = performance.now();
+
   const enhanceLogger = await initializeLogger(staticPath);
+
+  const t1 = performance.now();
+  console.info(
+    `[flipper-server][bootstrap] Logger initialised (${t1 - t0} ms)`,
+  );
 
   let keytar: any = undefined;
   try {
@@ -170,6 +178,9 @@ async function start() {
     console.error('[flipper-server] Failed to load keytar:', e);
   }
 
+  const t2 = performance.now();
+  console.info(`[flipper-server][bootstrap] Keytar loaded (${t2 - t1} ms)`);
+
   const isProduction =
     process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
 
@@ -180,15 +191,20 @@ async function start() {
   );
 
   if (await checkPortInUse(argv.port)) {
-    console.warn(`[flipper-server] Port ${argv.port} is already in use.`);
+    console.warn(`[flipper-server] Port ${argv.port} is already in use`);
     if (!argv.replace) {
-      console.info(
-        `[flipper-server] Not replacing existing instance, exiting.`,
-      );
+      console.info(`[flipper-server] Not replacing existing instance, exiting`);
       return;
     }
     await shutdown();
   }
+
+  const t3 = performance.now();
+  console.info(
+    `[flipper-server][bootstrap] Check for running instances completed (${
+      t3 - t2
+    } ms)`,
+  );
 
   const {app, server, socket, readyForIncomingConnections} = await startServer({
     staticPath,
@@ -197,7 +213,11 @@ async function start() {
     tcp: argv.tcp,
   });
 
-  // maybe at this point we could open up, http server is running.
+  const t4 = performance.now();
+
+  console.info(
+    `[flipper-server][bootstrap] HTTP server started (${t4 - t3} ms)`,
+  );
 
   const flipperServer = await startFlipperServer(
     rootPath,
@@ -209,6 +229,11 @@ async function start() {
     environmentInfo,
   );
 
+  const t5 = performance.now();
+  console.info(
+    `[flipper-server][bootstrap] FlipperServer created (${t5 - t4} ms)`,
+  );
+
   exitHook(async () => {
     await flipperServer.close();
   });
@@ -218,6 +243,15 @@ async function start() {
   });
 
   const companionEnv = await initCompanionEnv(flipperServer);
+
+  const t6 = performance.now();
+
+  console.info(
+    `[flipper-server][bootstrap] Companion environment initialised (${
+      t6 - t5
+    } ms)`,
+  );
+
   if (argv.failFast) {
     flipperServer.on('server-state', ({state}) => {
       if (state === 'error') {
@@ -230,12 +264,27 @@ async function start() {
   }
   await flipperServer.connect();
 
+  const t7 = performance.now();
+  console.info(
+    `[flipper-server][bootstrap] Ready for app connections (${t7 - t6} ms)`,
+  );
+
   if (argv.bundler) {
     await attachDevServer(app, server, socket, rootPath);
   }
-  await readyForIncomingConnections(flipperServer, companionEnv);
 
-  console.log('[flipper-server] listening at port ' + chalk.green(argv.port));
+  const t8 = performance.now();
+  console.info(
+    `[flipper-server][bootstrap] Development server attached (${t8 - t7} ms)`,
+  );
+  readyForIncomingConnections(flipperServer, companionEnv);
+
+  const t9 = performance.now();
+  console.info(
+    `[flipper-server][bootstrap] Listening at port ${chalk.green(argv.port)} (${
+      t9 - t8
+    } ms)`,
+  );
 }
 
 async function launch() {
