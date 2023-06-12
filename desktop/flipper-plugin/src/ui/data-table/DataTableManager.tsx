@@ -63,6 +63,11 @@ type AddColumnFilterOptions = {
    * By disabling this option you make filter include rows that don't have this value ie undefined
    */
   strict?: boolean;
+  /**
+   * By default, the filter is matched as a substring: rowValue.toLowerCase().includes(filter).
+   * With this flag the filter is going to be matched by exact equality: rowValue === filter
+   */
+  exact?: boolean;
   disableOthers?: boolean;
 };
 
@@ -559,7 +564,9 @@ function addColumnFilter<T>(
 ): void {
   options = Object.assign({disableOthers: false, strict: true}, options);
   const column = columns.find((c) => c.key === columnId)!;
-  const filterValue = String(value).toLowerCase();
+  const filterValue = options.exact
+    ? String(value)
+    : String(value).toLowerCase();
   const existing = column.filters!.find((c) => c.value === filterValue);
   if (existing) {
     existing.enabled = true;
@@ -569,6 +576,7 @@ function addColumnFilter<T>(
       value: filterValue,
       enabled: true,
       strict: options.strict,
+      exact: options.exact,
     });
   }
   if (options.disableOthers) {
@@ -719,7 +727,9 @@ export function computeDataTableFilter(
         }
 
         const value = getValueAtPath(item, column.key);
-        const isMatching = String(value).toLowerCase().includes(f.value);
+        const isMatching = f.exact
+          ? String(value) === f.value
+          : String(value).toLowerCase().includes(f.value);
 
         return f.strict ? isMatching : isMatching || value === undefined;
       });
