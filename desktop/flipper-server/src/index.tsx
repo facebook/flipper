@@ -325,11 +325,19 @@ async function launch() {
     return;
   }
 
+  const openInBrowser = () => {
+    open(url.toString(), {app: {name: open.apps.chrome}});
+  };
+
   if (argv.bundler) {
-    open(url.toString());
+    openInBrowser();
   } else {
     const path = await findInstallation();
-    open(path ?? url.toString());
+    if (path) {
+      open(path);
+    } else {
+      openInBrowser();
+    }
   }
 }
 
