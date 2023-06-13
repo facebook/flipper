@@ -25,6 +25,7 @@ import {
   hasAuthToken,
   startFlipperServer,
   startServer,
+  tracker,
 } from 'flipper-server-core';
 import {isTest} from 'flipper-common';
 import exitHook from 'exit-hook';
@@ -155,8 +156,9 @@ async function start() {
   const enhanceLogger = await initializeLogger(staticPath);
 
   const t1 = performance.now();
+  const loggerInitializedMS = t1 - t0;
   console.info(
-    `[flipper-server][bootstrap] Logger initialised (${t1 - t0} ms)`,
+    `[flipper-server][bootstrap] Logger initialised (${loggerInitializedMS} ms)`,
   );
 
   let keytar: any = undefined;
@@ -179,7 +181,10 @@ async function start() {
   }
 
   const t2 = performance.now();
-  console.info(`[flipper-server][bootstrap] Keytar loaded (${t2 - t1} ms)`);
+  const keytarLoadedMS = t2 - t1;
+  console.info(
+    `[flipper-server][bootstrap] Keytar loaded (${keytarLoadedMS} ms)`,
+  );
 
   const isProduction =
     process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
@@ -200,10 +205,9 @@ async function start() {
   }
 
   const t3 = performance.now();
+  const runningInstanceShutdownMS = t3 - t2;
   console.info(
-    `[flipper-server][bootstrap] Check for running instances completed (${
-      t3 - t2
-    } ms)`,
+    `[flipper-server][bootstrap] Check for running instances completed (${runningInstanceShutdownMS} ms)`,
   );
 
   const {app, server, socket, readyForIncomingConnections} = await startServer({
@@ -214,9 +218,10 @@ async function start() {
   });
 
   const t4 = performance.now();
+  const httpServerStartedMS = t4 - t3;
 
   console.info(
-    `[flipper-server][bootstrap] HTTP server started (${t4 - t3} ms)`,
+    `[flipper-server][bootstrap] HTTP server started (${httpServerStartedMS} ms)`,
   );
 
   const flipperServer = await startFlipperServer(
@@ -230,8 +235,9 @@ async function start() {
   );
 
   const t5 = performance.now();
+  const serverCreatedMS = t5 - t4;
   console.info(
-    `[flipper-server][bootstrap] FlipperServer created (${t5 - t4} ms)`,
+    `[flipper-server][bootstrap] FlipperServer created (${serverCreatedMS} ms)`,
   );
 
   exitHook(async () => {
@@ -245,11 +251,10 @@ async function start() {
   const companionEnv = await initCompanionEnv(flipperServer);
 
   const t6 = performance.now();
+  const companionEnvironmentInitializedMS = t6 - t5;
 
   console.info(
-    `[flipper-server][bootstrap] Companion environment initialised (${
-      t6 - t5
-    } ms)`,
+    `[flipper-server][bootstrap] Companion environment initialised (${companionEnvironmentInitializedMS} ms)`,
   );
 
   if (argv.failFast) {
@@ -265,8 +270,9 @@ async function start() {
   await flipperServer.connect();
 
   const t7 = performance.now();
+  const appServerStartedMS = t7 - t6;
   console.info(
-    `[flipper-server][bootstrap] Ready for app connections (${t7 - t6} ms)`,
+    `[flipper-server][bootstrap] Ready for app connections (${appServerStartedMS} ms)`,
   );
 
   if (argv.bundler) {
@@ -274,17 +280,31 @@ async function start() {
   }
 
   const t8 = performance.now();
+  const developmentServerAttachedMS = t8 - t7;
   console.info(
-    `[flipper-server][bootstrap] Development server attached (${t8 - t7} ms)`,
+    `[flipper-server][bootstrap] Development server attached (${developmentServerAttachedMS} ms)`,
   );
   readyForIncomingConnections(flipperServer, companionEnv);
 
   const t9 = performance.now();
+  const serverStartedMS = t9 - t8;
   console.info(
-    `[flipper-server][bootstrap] Listening at port ${chalk.green(argv.port)} (${
-      t9 - t8
-    } ms)`,
+    `[flipper-server][bootstrap] Listening at port ${chalk.green(
+      argv.port,
+    )} (${serverStartedMS} ms)`,
   );
+
+  tracker.track('server-bootstrap-performance', {
+    loggerInitializedMS,
+    keytarLoadedMS,
+    runningInstanceShutdownMS,
+    httpServerStartedMS,
+    serverCreatedMS,
+    companionEnvironmentInitializedMS,
+    appServerStartedMS,
+    developmentServerAttachedMS,
+    serverStartedMS,
+  });
 }
 
 async function launch() {

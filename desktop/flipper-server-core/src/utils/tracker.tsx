@@ -22,7 +22,20 @@ type AppConnectionCertificateExchangePayload = AppConnectionPayload & {
   error?: string;
 };
 
+type ServerBootstrapPerformancePayload = {
+  loggerInitializedMS: number;
+  keytarLoadedMS: number;
+  runningInstanceShutdownMS: number;
+  httpServerStartedMS: number;
+  serverCreatedMS: number;
+  companionEnvironmentInitializedMS: number;
+  appServerStartedMS: number;
+  developmentServerAttachedMS: number;
+  serverStartedMS: number;
+};
+
 type TrackerEvents = {
+  'server-bootstrap-performance': ServerBootstrapPerformancePayload;
   'server-started': {port: number; tcp: boolean};
   'server-auth-token-verification': {
     successful: boolean;
