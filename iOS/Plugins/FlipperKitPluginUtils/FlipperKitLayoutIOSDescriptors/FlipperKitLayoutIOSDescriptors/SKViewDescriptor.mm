@@ -14,29 +14,13 @@
 #import <FlipperKitLayoutHelpers/SKHiddenWindow.h>
 #import <FlipperKitLayoutHelpers/SKNamed.h>
 #import <FlipperKitLayoutHelpers/SKObject.h>
-#import <FlipperKitLayoutHelpers/SKYogaKitHelper.h>
 #import <FlipperKitLayoutHelpers/UIColor+SKSonarValueCoder.h>
-#import <YogaKit/UIView+Yoga.h>
 
 @implementation SKViewDescriptor
 
-static NSDictionary* YGDirectionEnumMap = nil;
-static NSDictionary* YGFlexDirectionEnumMap = nil;
-static NSDictionary* YGJustifyEnumMap = nil;
-static NSDictionary* YGAlignEnumMap = nil;
-static NSDictionary* YGPositionTypeEnumMap = nil;
-static NSDictionary* YGWrapEnumMap = nil;
-static NSDictionary* YGOverflowEnumMap = nil;
-static NSDictionary* YGDisplayEnumMap = nil;
-static NSDictionary* YGUnitEnumMap = nil;
-
 - (instancetype)initWithDescriptorMapper:
     (id<SKDescriptorMapperProtocol>)mapper {
-  if (self = [super initWithDescriptorMapper:mapper]) {
-    initEnumDictionaries();
-  }
-
-  return self;
+  return [super initWithDescriptorMapper:mapper];
 }
 
 - (NSString*)identifierForNode:(UIView*)node {
@@ -125,102 +109,6 @@ static NSDictionary* YGUnitEnumMap = nil;
                        @"shouldGroupAccessibilityChildren" : SKMutableObject(
                            @(node.shouldGroupAccessibilityChildren)),
                      }],
-          !node.isYogaEnabled
-              ? nil
-              : [SKNamed
-                    newWithName:@"YGLayout"
-                      withValue:@{
-                        @"direction" : SKMutableObject(
-                            YGDirectionEnumMap[@(node.yoga.direction)]),
-                        @"justifyContent" : SKMutableObject(
-                            YGJustifyEnumMap[@(node.yoga.justifyContent)]),
-                        @"aligns" : @{
-                          @"alignContent" : SKMutableObject(
-                              YGAlignEnumMap[@(node.yoga.alignContent)]),
-                          @"alignItems" : SKMutableObject(
-                              YGAlignEnumMap[@(node.yoga.alignItems)]),
-                          @"alignSelf" : SKMutableObject(
-                              YGAlignEnumMap[@(node.yoga.alignSelf)]),
-                        },
-                        @"position" : @{
-                          @"type" : SKMutableObject(
-                              YGPositionTypeEnumMap[@(node.yoga.position)]),
-                          @"left" : SKYGValueObject(node.yoga.left),
-                          @"top" : SKYGValueObject(node.yoga.top),
-                          @"right" : SKYGValueObject(node.yoga.right),
-                          @"bottom" : SKYGValueObject(node.yoga.bottom),
-                          @"start" : SKYGValueObject(node.yoga.start),
-                          @"end" : SKYGValueObject(node.yoga.end),
-                        },
-                        @"overflow" : SKMutableObject(
-                            YGOverflowEnumMap[@(node.yoga.overflow)]),
-                        @"display" : SKMutableObject(
-                            YGDisplayEnumMap[@(node.yoga.display)]),
-                        @"flex" : @{
-                          @"flexDirection" :
-                              SKMutableObject(YGFlexDirectionEnumMap[
-                                  @(node.yoga.flexDirection)]),
-                          @"flexWrap" : SKMutableObject(
-                              YGWrapEnumMap[@(node.yoga.flexWrap)]),
-                          @"flexGrow" : SKMutableObject(@(node.yoga.flexGrow)),
-                          @"flexShrink" :
-                              SKMutableObject(@(node.yoga.flexShrink)),
-                          @"flexBasis" : SKYGValueObject(node.yoga.flexBasis),
-                        },
-                        @"margin" : @{
-                          @"left" : SKYGValueObject(node.yoga.marginLeft),
-                          @"top" : SKYGValueObject(node.yoga.marginTop),
-                          @"right" : SKYGValueObject(node.yoga.marginRight),
-                          @"bottom" : SKYGValueObject(node.yoga.marginBottom),
-                          @"start" : SKYGValueObject(node.yoga.marginStart),
-                          @"end" : SKYGValueObject(node.yoga.marginEnd),
-                          @"horizontal" :
-                              SKYGValueObject(node.yoga.marginHorizontal),
-                          @"vertical" :
-                              SKYGValueObject(node.yoga.marginVertical),
-                          @"all" : SKYGValueObject(node.yoga.margin),
-                        },
-                        @"padding" : @{
-                          @"left" : SKYGValueObject(node.yoga.paddingLeft),
-                          @"top" : SKYGValueObject(node.yoga.paddingTop),
-                          @"right" : SKYGValueObject(node.yoga.paddingRight),
-                          @"bottom" : SKYGValueObject(node.yoga.paddingBottom),
-                          @"start" : SKYGValueObject(node.yoga.paddingStart),
-                          @"end" : SKYGValueObject(node.yoga.paddingEnd),
-                          @"horizontal" :
-                              SKYGValueObject(node.yoga.paddingHorizontal),
-                          @"vertical" :
-                              SKYGValueObject(node.yoga.paddingVertical),
-                          @"all" : SKYGValueObject(node.yoga.padding),
-                        },
-                        @"border" : @{
-                          @"leftWidth" :
-                              SKMutableObject(@(node.yoga.borderLeftWidth)),
-                          @"topWidth" :
-                              SKMutableObject(@(node.yoga.borderTopWidth)),
-                          @"rightWidth" :
-                              SKMutableObject(@(node.yoga.borderRightWidth)),
-                          @"bottomWidth" :
-                              SKMutableObject(@(node.yoga.borderBottomWidth)),
-                          @"startWidth" :
-                              SKMutableObject(@(node.yoga.borderStartWidth)),
-                          @"endWidth" :
-                              SKMutableObject(@(node.yoga.borderEndWidth)),
-                          @"all" : SKMutableObject(@(node.yoga.borderWidth)),
-                        },
-                        @"dimensions" : @{
-                          @"width" : SKYGValueObject(node.yoga.width),
-                          @"height" : SKYGValueObject(node.yoga.height),
-                          @"minWidth" : SKYGValueObject(node.yoga.minWidth),
-                          @"minHeight" : SKYGValueObject(node.yoga.minHeight),
-                          @"maxWidth" : SKYGValueObject(node.yoga.maxWidth),
-                          @"maxHeight" : SKYGValueObject(node.yoga.maxHeight),
-                        },
-                        @"aspectRatio" :
-                            SKMutableObject(@(node.yoga.aspectRatio)),
-                        @"resolvedDirection" : SKObject(
-                            YGDirectionEnumMap[@(node.yoga.resolvedDirection)]),
-                      }],
           nil];
 }
 
@@ -289,109 +177,6 @@ static NSDictionary* YGUnitEnumMap = nil;
     },
     @"CALayer.masksToBounds": ^(NSNumber *value) {
       node.layer.masksToBounds = [value boolValue];
-    },
-    // YGLayout
-    @"YGLayout.direction": APPLY_ENUM_TO_YOGA_PROPERTY(direction, YGDirection),
-    @"YGLayout.justifyContent": APPLY_ENUM_TO_YOGA_PROPERTY(justifyContent, YGJustify),
-    @"YGLayout.aligns.alignContent": APPLY_ENUM_TO_YOGA_PROPERTY(alignContent, YGAlign),
-    @"YGLayout.aligns.alignItems": APPLY_ENUM_TO_YOGA_PROPERTY(alignItems, YGAlign),
-    @"YGLayout.aligns.alignSelf": APPLY_ENUM_TO_YOGA_PROPERTY(alignSelf, YGAlign),
-    @"YGLayout.position.type": APPLY_ENUM_TO_YOGA_PROPERTY(position, YGPositionType),
-    @"YGLayout.position.left.value": APPLY_VALUE_TO_YGVALUE(left),
-    @"YGLayout.position.left.unit": APPLY_UNIT_TO_YGVALUE(left, YGUnit),
-    @"YGLayout.position.top.value": APPLY_VALUE_TO_YGVALUE(top),
-    @"YGLayout.position.top.unit": APPLY_UNIT_TO_YGVALUE(top, YGUnit),
-    @"YGLayout.position.right.value": APPLY_VALUE_TO_YGVALUE(right),
-    @"YGLayout.position.right.unit": APPLY_UNIT_TO_YGVALUE(right, YGUnit),
-    @"YGLayout.position.bottom.value": APPLY_VALUE_TO_YGVALUE(bottom),
-    @"YGLayout.position.bottom.unit": APPLY_UNIT_TO_YGVALUE(bottom, YGUnit),
-    @"YGLayout.position.start.value": APPLY_VALUE_TO_YGVALUE(start),
-    @"YGLayout.position.start.unit": APPLY_UNIT_TO_YGVALUE(start, YGUnit),
-    @"YGLayout.position.end.value": APPLY_VALUE_TO_YGVALUE(end),
-    @"YGLayout.position.end.unit": APPLY_UNIT_TO_YGVALUE(end, YGUnit),
-    @"YGLayout.overflow": APPLY_ENUM_TO_YOGA_PROPERTY(overflow, YGOverflow),
-    @"YGLayout.display": APPLY_ENUM_TO_YOGA_PROPERTY(display, YGDisplay),
-    @"YGLayout.flex.flexDirection": APPLY_ENUM_TO_YOGA_PROPERTY(flexDirection, YGFlexDirection),
-    @"YGLayout.flex.flexWrap": APPLY_ENUM_TO_YOGA_PROPERTY(flexWrap, YGWrap),
-    @"YGLayout.flex.flexGrow": ^(NSNumber *value) {
-      node.yoga.flexGrow = [value floatValue];
-    },
-    @"YGLayout.flex.flexShrink": ^(NSNumber *value) {
-      node.yoga.flexShrink = [value floatValue];
-    },
-    @"YGLayout.flex.flexBasis.value": APPLY_VALUE_TO_YGVALUE(flexBasis),
-    @"YGLayout.flex.flexBasis.unit": APPLY_UNIT_TO_YGVALUE(flexBasis, YGUnit),
-    @"YGLayout.margin.left.value": APPLY_VALUE_TO_YGVALUE(marginLeft),
-    @"YGLayout.margin.left.unit": APPLY_UNIT_TO_YGVALUE(marginLeft, YGUnit),
-    @"YGLayout.margin.top.value": APPLY_VALUE_TO_YGVALUE(marginTop),
-    @"YGLayout.margin.top.unit": APPLY_UNIT_TO_YGVALUE(marginTop, YGUnit),
-    @"YGLayout.margin.right.value": APPLY_VALUE_TO_YGVALUE(marginRight),
-    @"YGLayout.margin.right.unit": APPLY_UNIT_TO_YGVALUE(marginRight, YGUnit),
-    @"YGLayout.margin.bottom.value": APPLY_VALUE_TO_YGVALUE(marginBottom),
-    @"YGLayout.margin.bottom.unit": APPLY_UNIT_TO_YGVALUE(marginBottom, YGUnit),
-    @"YGLayout.margin.start.value": APPLY_VALUE_TO_YGVALUE(marginStart),
-    @"YGLayout.margin.start.unit": APPLY_UNIT_TO_YGVALUE(marginStart, YGUnit),
-    @"YGLayout.margin.end.value": APPLY_VALUE_TO_YGVALUE(marginEnd),
-    @"YGLayout.margin.end.unit": APPLY_UNIT_TO_YGVALUE(marginEnd, YGUnit),
-    @"YGLayout.margin.horizontal.value": APPLY_VALUE_TO_YGVALUE(marginHorizontal),
-    @"YGLayout.margin.horizontal.unit": APPLY_UNIT_TO_YGVALUE(marginHorizontal, YGUnit),
-    @"YGLayout.margin.vertical.value": APPLY_VALUE_TO_YGVALUE(marginVertical),
-    @"YGLayout.margin.vertical.unit": APPLY_UNIT_TO_YGVALUE(marginVertical, YGUnit),
-    @"YGLayout.margin.all.value": APPLY_VALUE_TO_YGVALUE(margin),
-    @"YGLayout.margin.all.unit": APPLY_UNIT_TO_YGVALUE(margin, YGUnit),
-    @"YGLayout.padding.left.value": APPLY_VALUE_TO_YGVALUE(paddingLeft),
-    @"YGLayout.padding.left.unit": APPLY_UNIT_TO_YGVALUE(paddingLeft, YGUnit),
-    @"YGLayout.padding.top.value": APPLY_VALUE_TO_YGVALUE(paddingTop),
-    @"YGLayout.padding.top.unit": APPLY_UNIT_TO_YGVALUE(paddingTop, YGUnit),
-    @"YGLayout.padding.right.value": APPLY_VALUE_TO_YGVALUE(paddingRight),
-    @"YGLayout.padding.right.unit": APPLY_UNIT_TO_YGVALUE(paddingRight, YGUnit),
-    @"YGLayout.padding.bottom.value": APPLY_VALUE_TO_YGVALUE(paddingBottom),
-    @"YGLayout.padding.bottom.unit": APPLY_UNIT_TO_YGVALUE(paddingBottom, YGUnit),
-    @"YGLayout.padding.start.value": APPLY_VALUE_TO_YGVALUE(paddingStart),
-    @"YGLayout.padding.start.unit": APPLY_UNIT_TO_YGVALUE(paddingStart, YGUnit),
-    @"YGLayout.padding.end.value": APPLY_VALUE_TO_YGVALUE(paddingEnd),
-    @"YGLayout.padding.end.unit": APPLY_UNIT_TO_YGVALUE(paddingEnd, YGUnit),
-    @"YGLayout.padding.horizontal.value": APPLY_VALUE_TO_YGVALUE(paddingHorizontal),
-    @"YGLayout.padding.horizontal.unit": APPLY_UNIT_TO_YGVALUE(paddingHorizontal, YGUnit),
-    @"YGLayout.padding.vertical.value": APPLY_VALUE_TO_YGVALUE(paddingVertical),
-    @"YGLayout.padding.vertical.unit": APPLY_UNIT_TO_YGVALUE(paddingVertical, YGUnit),
-    @"YGLayout.padding.all.value": APPLY_VALUE_TO_YGVALUE(padding),
-    @"YGLayout.padding.all.unit": APPLY_UNIT_TO_YGVALUE(padding, YGUnit),
-    @"YGLayout.border.leftWidth": ^(NSNumber *value) {
-      node.yoga.borderLeftWidth = [value floatValue];
-    },
-    @"YGLayout.border.topWidth": ^(NSNumber *value) {
-      node.yoga.borderTopWidth = [value floatValue];
-    },
-    @"YGLayout.border.rightWidth": ^(NSNumber *value) {
-      node.yoga.borderRightWidth = [value floatValue];
-    },
-    @"YGLayout.border.bottomWidth": ^(NSNumber *value) {
-      node.yoga.borderBottomWidth = [value floatValue];
-    },
-    @"YGLayout.border.startWidth": ^(NSNumber *value) {
-      node.yoga.borderStartWidth = [value floatValue];
-    },
-    @"YGLayout.border.endWidth": ^(NSNumber *value) {
-      node.yoga.borderEndWidth = [value floatValue];
-    },
-    @"YGLayout.border.all": ^(NSNumber *value) {
-      node.yoga.borderWidth = [value floatValue];
-    },
-    @"YGLayout.dimensions.width.value": APPLY_VALUE_TO_YGVALUE(width),
-    @"YGLayout.dimensions.width.unit": APPLY_UNIT_TO_YGVALUE(width, YGUnit),
-    @"YGLayout.dimensions.height.value": APPLY_VALUE_TO_YGVALUE(height),
-    @"YGLayout.dimensions.height.unit": APPLY_UNIT_TO_YGVALUE(height, YGUnit),
-    @"YGLayout.dimensions.minWidth.value": APPLY_VALUE_TO_YGVALUE(minWidth),
-    @"YGLayout.dimensions.minWidth.unit": APPLY_UNIT_TO_YGVALUE(minWidth, YGUnit),
-    @"YGLayout.dimensions.minHeight.value": APPLY_VALUE_TO_YGVALUE(minHeight),
-    @"YGLayout.dimensions.minHeight.unit": APPLY_UNIT_TO_YGVALUE(minHeight, YGUnit),
-    @"YGLayout.dimensions.maxWidth.value": APPLY_VALUE_TO_YGVALUE(maxWidth),
-    @"YGLayout.dimensions.maxWidth.unit": APPLY_UNIT_TO_YGVALUE(maxWidth, YGUnit),
-    @"YGLayout.dimensions.maxHeight.value": APPLY_VALUE_TO_YGVALUE(maxHeight),
-    @"YGLayout.dimensions.maxHeight.unit": APPLY_UNIT_TO_YGVALUE(maxHeight, YGUnit),
-    @"YGLayout.aspectRatio": ^(NSNumber *value) {
-      node.yoga.aspectRatio = [value floatValue];
     },
     // Accessibility
     @"Accessibility.isAccessibilityElement": ^(NSNumber *value) {
@@ -542,79 +327,6 @@ return dataMutations;
   if (finish) {
     [touch finish];
   }
-}
-
-static void initEnumDictionaries() {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    YGDirectionEnumMap = @{
-      @(YGDirectionInherit) : @"inherit",
-      @(YGDirectionLTR) : @"LTR",
-      @(YGDirectionRTL) : @"RTL",
-    };
-
-    YGFlexDirectionEnumMap = @{
-      @(YGFlexDirectionColumn) : @"column",
-      @(YGFlexDirectionColumnReverse) : @"column-reverse",
-      @(YGFlexDirectionRow) : @"row",
-      @(YGFlexDirectionRowReverse) : @"row-reverse",
-    };
-
-    YGJustifyEnumMap = @{
-      @(YGJustifyFlexStart) : @"flex-start",
-      @(YGJustifyCenter) : @"center",
-      @(YGJustifyFlexEnd) : @"flex-end",
-      @(YGJustifySpaceBetween) : @"space-between",
-      @(YGJustifySpaceAround) : @"space-around",
-    };
-
-    YGAlignEnumMap = @{
-      @(YGAlignAuto) : @"auto",
-      @(YGAlignFlexStart) : @"flex-start",
-      @(YGAlignCenter) : @"end",
-      @(YGAlignFlexEnd) : @"flex-end",
-      @(YGAlignStretch) : @"stretch",
-      @(YGAlignBaseline) : @"baseline",
-      @(YGAlignSpaceBetween) : @"space-between",
-      @(YGAlignSpaceAround) : @"space-around",
-    };
-
-    YGPositionTypeEnumMap = @{
-      @(YGPositionTypeRelative) : @"relative",
-      @(YGPositionTypeAbsolute) : @"absolute",
-    };
-
-    YGWrapEnumMap = @{
-      @(YGWrapNoWrap) : @"no-wrap",
-      @(YGWrapWrap) : @"wrap",
-      @(YGWrapWrapReverse) : @"wrap-reverse",
-    };
-
-    YGOverflowEnumMap = @{
-      @(YGOverflowVisible) : @"visible",
-      @(YGOverflowHidden) : @"hidden",
-      @(YGOverflowScroll) : @"scroll",
-    };
-
-    YGDisplayEnumMap = @{
-      @(YGDisplayFlex) : @"flex",
-      @(YGDisplayNone) : @"none",
-    };
-
-    YGUnitEnumMap = @{
-      @(YGUnitUndefined) : @"undefined",
-      @(YGUnitPoint) : @"point",
-      @(YGUnitPercent) : @"percent",
-      @(YGUnitAuto) : @"auto",
-    };
-  });
-}
-
-static NSDictionary* SKYGValueObject(YGValue value) {
-  return @{
-    @"value" : SKMutableObject(@(value.value)),
-    @"unit" : SKMutableObject(YGUnitEnumMap[@(value.unit)]),
-  };
 }
 
 /*

@@ -4,7 +4,6 @@
 # LICENSE file in the root directory of this source tree.
 
 folly_compiler_flags = '-DDEBUG=1 -DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_HAVE_BACKTRACE=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
-yogakit_version = '~> 1.18'
 flipperkit_version = '0.195.0'
 Pod::Spec.new do |spec|
   spec.name = 'FlipperKit'
@@ -119,8 +118,7 @@ Pod::Spec.new do |spec|
     ss.private_header_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutHelpers/FlipperKitLayoutHelpers/SKObject.h',
                               'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutHelpers/FlipperKitLayoutHelpers/UIColor+SKSonarValueCoder.h',
                               'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutHelpers/FlipperKitLayoutHelpers/utils/SKObjectHash.h',
-                              'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutHelpers/FlipperKitLayoutHelpers/utils/SKSwizzle.h',
-                              'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutHelpers/FlipperKitLayoutHelpers/utils/SKYogaKitHelper.h'
+                              'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutHelpers/FlipperKitLayoutHelpers/utils/SKSwizzle.h'
   end
 
   spec.subspec 'FlipperKitLayoutIOSDescriptors' do |ss|
@@ -128,7 +126,6 @@ Pod::Spec.new do |spec|
     ss.dependency 'FlipperKit/Core'
     ss.dependency 'FlipperKit/FlipperKitHighlightOverlay'
     ss.dependency 'FlipperKit/FlipperKitLayoutHelpers'
-    ss.dependency 'YogaKit', yogakit_version
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitLayoutIOSDescriptors/**/*.{h,mm,m}'
   end
@@ -140,7 +137,6 @@ Pod::Spec.new do |spec|
     ss.dependency             'FlipperKit/FlipperKitHighlightOverlay'
     ss.dependency             'FlipperKit/FlipperKitLayoutHelpers'
     ss.dependency             'FlipperKit/FlipperKitLayoutIOSDescriptors'
-    ss.dependency             'YogaKit', yogakit_version
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files  = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKDescriptorMapper.h'
