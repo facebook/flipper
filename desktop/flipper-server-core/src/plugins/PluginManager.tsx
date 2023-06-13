@@ -27,6 +27,7 @@ import {
   getInstalledPluginDetails,
   getInstalledPlugins,
   getPluginVersionInstallationDir,
+  getPluginDirNameFromPackageName,
   installPluginFromFile,
   removePlugins,
   getUpdatablePlugins,
@@ -129,7 +130,10 @@ export class PluginManager {
       `Downloading plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}".`,
     );
     const tmpDir = await getTempDirName();
-    const tmpFile = path.join(tmpDir, `${name}-${version}.tgz`);
+    const tmpFile = path.join(
+      tmpDir,
+      `${getPluginDirNameFromPackageName(name)}-${version}.tgz`,
+    );
     try {
       const cancelationSource = axios.CancelToken.source();
       if (await fs.pathExists(installationDir)) {
