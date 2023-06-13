@@ -38,5 +38,8 @@ export function initializeFlipperLibImplementation(
       // TODO: Write to stdout/stderr?
       throw new Error('Not supported in headless context');
     },
+    settings() {
+      return {isDarkMode: false};
+    },
   });
 }

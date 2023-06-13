@@ -59,5 +59,16 @@ export function initializeFlipperLibImplementation(
       );
     },
     DetailsSidebarImplementation: DetailSidebarImpl,
+    settings() {
+      const darkModeState = store.getState().settingsState.darkMode;
+      let isDarkMode = darkModeState === 'dark';
+      if (
+        darkModeState === 'system' &&
+        window.matchMedia('(prefers-color-scheme:dark)').matches
+      ) {
+        isDarkMode = true;
+      }
+      return {isDarkMode};
+    },
   });
 }

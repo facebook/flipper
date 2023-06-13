@@ -31,7 +31,10 @@ export function baseFlipperLibImplementation(
   | 'showNotification'
   | 'createPaste'
   | 'intern'
-> & {intern: Omit<FlipperLib['intern'], 'currentUser' | 'isConnected'>} {
+  | 'settings'
+> & {
+  intern: Omit<FlipperLib['intern'], 'currentUser' | 'isConnected'>;
+} {
   return {
     isFB: !constants.IS_PUBLIC_BUILD,
     logger,

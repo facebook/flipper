@@ -106,6 +106,7 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
       },
       downloadFile: createStubFunction(),
     },
+    settings: createStubFunction(),
   };
 }
 

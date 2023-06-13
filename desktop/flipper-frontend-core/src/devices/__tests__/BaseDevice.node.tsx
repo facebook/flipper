@@ -264,6 +264,7 @@ test('log listeners are resumed and suspended automatically - 1', async () => {
     enableMenuEntries: jest.fn(),
     selectPlugin: jest.fn(),
     showNotification: jest.fn(),
+    settings: jest.fn(),
   });
 
   device.loadDevicePlugins(
@@ -352,6 +353,7 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
     enableMenuEntries: jest.fn(),
     selectPlugin: jest.fn(),
     showNotification: jest.fn(),
+    settings: jest.fn(),
   });
 
   device.loadDevicePlugins(

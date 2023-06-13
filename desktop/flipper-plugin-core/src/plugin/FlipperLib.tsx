@@ -207,6 +207,9 @@ export interface FlipperLib {
   };
   remoteServerContext: RemoteServerContext;
   intern: InternAPI;
+  settings: () => {
+    isDarkMode: boolean;
+  };
 }
 
 interface InternAPI {
