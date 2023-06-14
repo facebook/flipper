@@ -246,7 +246,7 @@ export function attachSocketServer(
             console.info('Shutdown as no clients are currently connected');
             process.exit(0);
           }
-        }, 15 * 60 * 1000);
+        }, 30 * 1000);
       }
 
       connected = false;
