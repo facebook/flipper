@@ -106,6 +106,7 @@ export function Component() {
                 </ResizablePanel>
                 <DetailSidebar width={350}>
                   <Inspector
+                    os={instance.os}
                     metadata={metadata}
                     nodes={nodes}
                     showExtra={openBottomPanelWithContent}

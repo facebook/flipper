@@ -64,7 +64,7 @@ export function plugin(client: PluginClient<Events>) {
   const streamInterceptor = getStreamInterceptor();
 
   let lastFrameTime = 0;
-  const device = client.device.os;
+  const os = client.device.os;
 
   client.onMessage('init', (event) => {
     rootId.set(event.rootId);
@@ -354,7 +354,7 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents,
     setPlayPause,
     queryClient,
-    device,
+    os,
   };
 }
 
