@@ -73,22 +73,18 @@
 <body>
   <div id="container">
     <div>
-      <b>Oops! It seems Flipper is not running in the background</b>
+      <b>Flipper is not running in the background</b>
 
-      <p>Flipper can be started by clicking the button below.</p>
+      <p>It can be started by clicking the button below.</p>
       <form action="flipper-launcher://start-server">
         <input type="submit" value="Start" />
       </form>
 
       <p>
         Flipper will automatically reload once the connection is re-established.
-        Click the button below to try reloading manually.
       </p>
-
-      <button type="button">⤾ Reload</button>
-
-      <p>Also, you can manually start Flipper.
-        From the terminal, please run:</p>
+      <p>If is taking a bit longer than it should, you can manually start Flipper.</p>
+      <p>From the terminal, please run:</p>
 
       <div class="console">
         <header>
@@ -103,10 +99,6 @@
   </div>
 
   <script>
-    document.querySelector('button').addEventListener('click', () => {
-      window.location.reload();
-    });
-
     // Listen to changes in the network state, reload when online.
     // This handles the case when the device is completely offline
     // i.e. no network connection.
