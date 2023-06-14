@@ -1,3 +1,8 @@
+# 0.197.0 (14/6/2023)
+
+ * [D46720650](https://github.com/facebook/flipper/search?q=D46720650&type=Commits) -  Improved offline page (reload button removal)
+
+
 # 0.191.0 (18/5/2023)
 
  * [D45523026](https://github.com/facebook/flipper/search?q=D45523026&type=Commits) -  UIDebugger, fix focus mode behaviour
