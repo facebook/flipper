@@ -81,8 +81,10 @@
         }
 
         const box = document.querySelector('.__infinity-dev-box-error');
-        box.removeAttribute('hidden');
-        box.textContent = text;
+        if (box) {
+          box.removeAttribute('hidden');
+          box.textContent = text;
+        }
       }
 
       // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)

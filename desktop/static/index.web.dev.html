@@ -109,7 +109,9 @@
           }
 
           const box = document.getElementById('loading');
-          box.textContent = text;
+          if (box) {
+            box.textContent = text;
+          }
         }
         window.flipperShowError = openError;
 
