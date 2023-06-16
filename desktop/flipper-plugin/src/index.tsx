@@ -101,6 +101,7 @@ export {
   ElementSearchResultSet,
   ElementID,
 } from './ui/elements-inspector/ElementsInspector';
+export {suggestNewPlugin} from './ui/SuggestNewPlugin';
 export {useMemoize} from './utils/useMemoize';
 
 export {createTablePlugin} from './utils/createTablePlugin';

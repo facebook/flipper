@@ -67,6 +67,7 @@ test('Correct top level API exposed', () => {
       "safeStringify",
       "sleep",
       "styled",
+      "suggestNewPlugin",
       "textContent",
       "theme",
       "timeout",
