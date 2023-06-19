@@ -98,6 +98,14 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
     overscan: 20,
   });
 
+  useEffect(() => {
+    const matchingIndexes = findSearchMatchingIndexes(treeNodes, searchTerm);
+
+    if (matchingIndexes.length > 0) {
+      rowVirtualizer.scrollToIndex(matchingIndexes[0], {align: 'start'});
+    }
+  }, [rowVirtualizer, searchTerm, treeNodes]);
+
   useKeyboardShortcuts(
     treeNodes,
     rowVirtualizer,
@@ -798,4 +806,24 @@ function extendKBControlLease(
    */
   isUsingKBToScrollUntil.current =
     new Date().getTime() + KBScrollOverrideTimeMS;
+}
+
+//due to virtualisation the out of the box dom based scrolling doesnt work
+function findSearchMatchingIndexes(
+  treeNodes: TreeNode[],
+  searchTerm: string,
+): number[] {
+  if (!searchTerm) {
+    return [];
+  }
+  return treeNodes
+    .map((value, index) => [value, index] as [TreeNode, number])
+    .filter(
+      ([value, _]) =>
+        value.name.toLowerCase().includes(searchTerm) ||
+        Object.values(value.inlineAttributes).find((inlineAttr) =>
+          inlineAttr.toLocaleLowerCase().includes(searchTerm),
+        ),
+    )
+    .map(([_, index]) => index);
 }
