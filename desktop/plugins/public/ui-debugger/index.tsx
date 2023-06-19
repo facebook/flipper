@@ -429,7 +429,6 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
   };
 
   const setVisualiserWidth = (width: number) => {
-    console.log('w', width);
     uiState.visualiserWidth.set(width);
   };
 

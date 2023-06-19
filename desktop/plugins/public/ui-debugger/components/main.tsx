@@ -96,13 +96,11 @@ export function Component() {
                     instance.uiActions.setVisualiserWidth(width);
                   }}
                   gutter>
-                  <Layout.ScrollContainer vertical>
-                    <Visualization2D
-                      width={visualiserWidth}
-                      nodes={nodes}
-                      onSelectNode={instance.uiActions.onSelectNode}
-                    />
-                  </Layout.ScrollContainer>
+                  <Visualization2D
+                    width={visualiserWidth}
+                    nodes={nodes}
+                    onSelectNode={instance.uiActions.onSelectNode}
+                  />
                 </ResizablePanel>
                 <DetailSidebar width={350}>
                   <Inspector
