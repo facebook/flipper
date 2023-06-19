@@ -387,16 +387,16 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
       if (tags) {
         tracker.track('node-selected', {name: selectedNode.name, tags});
       }
-    }
 
-    let current = node;
-    // expand entire ancestory in case it has been manually collapsed
-    uiState.expandedNodes.update((expandedNodesDraft) => {
-      while (current != null) {
-        expandedNodesDraft.add(current);
-        current = nodes.get().get(current)?.parent;
-      }
-    });
+      let current = selectedNode?.parent;
+      // expand entire ancestory in case it has been manually collapsed
+      uiState.expandedNodes.update((expandedNodesDraft) => {
+        while (current != null) {
+          expandedNodesDraft.add(current);
+          current = nodes.get().get(current)?.parent;
+        }
+      });
+    }
   };
 
   const onCollapseNode = (node: Id) => {
