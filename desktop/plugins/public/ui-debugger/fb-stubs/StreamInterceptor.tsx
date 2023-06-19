@@ -7,9 +7,10 @@
  * @format
  */
 
+import {DeviceOS} from 'flipper-plugin';
 import {Id, Metadata, StreamInterceptor, UINode} from '../types';
 
-export function getStreamInterceptor(): StreamInterceptor {
+export function getStreamInterceptor(_: DeviceOS): StreamInterceptor {
   return new NoOpStreamInterceptor();
 }
 

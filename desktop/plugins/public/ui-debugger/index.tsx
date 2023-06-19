@@ -61,7 +61,7 @@ export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
 
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
-  const streamInterceptor = getStreamInterceptor();
+  const streamInterceptor = getStreamInterceptor(client.device.os);
 
   let lastFrameTime = 0;
   const os = client.device.os;
