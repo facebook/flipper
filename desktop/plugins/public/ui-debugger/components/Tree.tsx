@@ -27,15 +27,16 @@ import {
   useHighlighter,
   usePlugin,
   useValue,
-  Layout,
 } from 'flipper-plugin';
 import {plugin} from '../index';
 import {Glyph} from 'flipper';
-import {head, isEqual, last} from 'lodash';
+import {head, last} from 'lodash';
 import {reverse} from 'lodash/fp';
 import {Badge, Dropdown, Menu, Typography} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 import {tracker} from '../tracker';
+
+import {useVirtualizer} from '@tanstack/react-virtual';
 
 const {Text} = Typography;
 
@@ -85,6 +86,16 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
 
   const isUsingKBToScroll = useRef(false);
 
+  const grandParentRef = useRef<HTMLDivElement>(null);
+  const parentRef = React.useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useVirtualizer({
+    count: treeNodes.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 26,
+    overscan: 20,
+  });
+
   useKeyboardShortcuts(
     treeNodes,
     refs,
@@ -96,18 +107,47 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
     isUsingKBToScroll,
   );
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    //the grand parent gets its size correclty via flex box, we use its initial
+    //position to size the scroll parent ref for react virtual, It uses vh which accounts for window size changes
+    //However  if we dynamically add content above or below we may need to revisit this approach
+    const boundingClientRect = grandParentRef?.current?.getBoundingClientRect();
+
+    parentRef.current!!.style.height = `calc(100vh - ${
+      boundingClientRect!!.top
+    }px - ${window.innerHeight - boundingClientRect!!.bottom}px )`;
+  }, []);
+
+  useLayoutEffect(() => {
+    //scroll width is the width of the element including overflow, we grab the scroll width
+    //of the parent scroll container and set each divs actual width to this to make sure the
+    //size is correct for the selection and hover states
+
+    const range = rowVirtualizer.range;
+    const end = Math.min(
+      refs.length,
+      range.endIndex + 1, //need to add 1 extra otherwise last one doesnt get the treatment
+    );
+
+    const width = parentRef.current?.scrollWidth ?? 0;
+
+    for (let i = range.startIndex; i < end; i++) {
+      //set the width explicitly of all tree items to parent scroll width
+      const ref = refs[i];
+      if (ref.current) {
+        ref.current.style.width = `${width}px`;
+      }
+    }
+  });
 
   useLayoutEffect(() => {
     if (selectedNode) {
       const idx = treeNodes.findIndex((node) => node.id === selectedNode);
       if (idx !== -1) {
-        scrollContainerRef.current!!.scrollLeft =
+        parentRef.current!!.scrollLeft =
           Math.max(0, treeNodes[idx].depth - 10) * renderDepthOffset;
 
-        refs[idx].current?.scrollIntoView({
-          block: 'nearest',
-        });
+        rowVirtualizer.scrollToIndex(idx, {align: 'auto'});
       }
     }
     // NOTE: We don't want to add refs or tree nodes to the dependency list since when new data comes in over the wire
@@ -115,68 +155,69 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
     // We only should scroll when selection changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNode, focusedNode]);
+
   return (
-    <Layout.ScrollContainer ref={scrollContainerRef}>
-      <HighlightProvider
-        text={searchTerm}
-        highlightColor={theme.searchHighlightBackground.yellow}>
-        <ContextMenu
-          focusedNodeId={focusedNode}
-          hoveredNodeId={hoveredNode}
-          nodes={nodes}
-          onContextMenuOpen={instance.uiActions.onContextMenuOpen}
-          onFocusNode={instance.uiActions.onFocusNode}>
+    <HighlightProvider
+      text={searchTerm}
+      highlightColor={theme.searchHighlightBackground.yellow}>
+      <ContextMenu
+        focusedNodeId={focusedNode}
+        hoveredNodeId={hoveredNode}
+        nodes={nodes}
+        onContextMenuOpen={instance.uiActions.onContextMenuOpen}
+        onFocusNode={instance.uiActions.onFocusNode}>
+        <div
+          //We use this normal divs flexbox sizing to measure how much vertical space we need for the child div
+          ref={grandParentRef}
+          style={{
+            height: '100%',
+            width: '100%',
+          }}>
           <div
-            onMouseLeave={() => {
-              if (isContextMenuOpen === false) {
-                instance.uiState.hoveredNodes.set([]);
-              }
+            //this is scrollable div is expected by react virtual, see their docs
+            ref={parentRef}
+            style={{
+              height: 0, //this get replaced by an effect
+              overflow: 'auto',
             }}>
-            {treeNodes.map((treeNode, index) => (
-              <MemoTreeItemContainer
-                innerRef={refs[index]}
-                key={treeNode.id}
-                treeNode={treeNode}
-                frameworkEvents={frameworkEvents}
-                frameworkEventsMonitoring={frameworkEventsMonitoring}
-                highlightedNodes={highlightedNodes}
-                selectedNode={selectedNode}
-                hoveredNode={hoveredNode}
-                isUsingKBToScroll={isUsingKBToScroll}
-                isContextMenuOpen={isContextMenuOpen}
-                onSelectNode={instance.uiActions.onSelectNode}
-                onExpandNode={instance.uiActions.onExpandNode}
-                onCollapseNode={instance.uiActions.onCollapseNode}
-                onHoverNode={instance.uiActions.onHoverNode}
-              />
-            ))}
+            <div
+              //this is is the actual scrollable content, its height is faked by react virtual
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
+              }}
+              onMouseLeave={() => {
+                if (isContextMenuOpen === false) {
+                  instance.uiState.hoveredNodes.set([]);
+                }
+              }}>
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+                <TreeItemContainer
+                  transform={`translateY(${virtualRow.start}px)`}
+                  innerRef={refs[virtualRow.index]}
+                  key={virtualRow.index}
+                  treeNode={treeNodes[virtualRow.index]}
+                  frameworkEvents={frameworkEvents}
+                  frameworkEventsMonitoring={frameworkEventsMonitoring}
+                  highlightedNodes={highlightedNodes}
+                  selectedNode={selectedNode}
+                  hoveredNode={hoveredNode}
+                  isUsingKBToScroll={isUsingKBToScroll}
+                  isContextMenuOpen={isContextMenuOpen}
+                  onSelectNode={instance.uiActions.onSelectNode}
+                  onExpandNode={instance.uiActions.onExpandNode}
+                  onCollapseNode={instance.uiActions.onCollapseNode}
+                  onHoverNode={instance.uiActions.onHoverNode}
+                />
+              ))}
+            </div>
           </div>
-        </ContextMenu>
-      </HighlightProvider>
-    </Layout.ScrollContainer>
+        </div>
+      </ContextMenu>
+    </HighlightProvider>
   );
 }
-
-const MemoTreeItemContainer = React.memo(
-  TreeItemContainer,
-  (prevProps, nextProps) => {
-    const id = nextProps.treeNode.id;
-    return (
-      prevProps.treeNode.id === nextProps.treeNode.id &&
-      prevProps.treeNode.isExpanded === nextProps.treeNode.isExpanded &&
-      prevProps.isContextMenuOpen === nextProps.isContextMenuOpen &&
-      prevProps.frameworkEvents === nextProps.frameworkEvents &&
-      prevProps.highlightedNodes === nextProps.highlightedNodes &&
-      prevProps.frameworkEventsMonitoring ===
-        nextProps.frameworkEventsMonitoring &&
-      prevProps.hoveredNode !== id && //make sure that prev or next hover/selected node doesnt concern this tree node
-      nextProps.hoveredNode !== id &&
-      prevProps.selectedNode !== id &&
-      nextProps.selectedNode !== id &&
-      isEqual(prevProps.treeNode.indentGuide, nextProps.treeNode.indentGuide)
-    );
-  },
-);
 
 function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
   const verticalLinePadding = `${renderDepthOffset * indentGuide.depth + 8}px`;
@@ -205,6 +246,7 @@ function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
 }
 
 function TreeItemContainer({
+  transform,
   innerRef,
   treeNode,
   frameworkEvents,
@@ -219,6 +261,7 @@ function TreeItemContainer({
   onCollapseNode,
   onHoverNode,
 }: {
+  transform: string;
   innerRef: Ref<any>;
   treeNode: TreeNode;
   frameworkEvents: Map<Id, FrameworkEvent[]>;
@@ -239,12 +282,20 @@ function TreeItemContainer({
   }
 
   return (
-    <div>
+    <div
+      ref={innerRef}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        height: TreeItemHeight,
+        transform: transform,
+        //Due to absolute positioning width is set outside of react via a useLayoutEffect in parent
+      }}>
       {treeNode.indentGuide != null && (
         <IndentGuide indentGuide={treeNode.indentGuide} />
       )}
       <TreeItemRow
-        ref={innerRef}
         isHighlighted={highlightedNodes.has(treeNode.id)}
         isSelected={treeNode.id === selectedNode}
         isHovered={hoveredNode === treeNode.id}
@@ -489,7 +540,7 @@ const ContextMenu: React.FC<{
         </Menu>
       )}
       trigger={['contextMenu']}>
-      <div>{children}</div>
+      {children}
     </Dropdown>
   );
 };
