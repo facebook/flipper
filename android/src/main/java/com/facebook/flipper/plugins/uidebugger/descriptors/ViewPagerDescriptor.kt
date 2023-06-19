@@ -18,6 +18,7 @@ object ViewPagerDescriptor : ChainedDescriptor<ViewPager>() {
   private const val NAMESPACE = "ViewPager"
   private var SectionId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
+
   override fun onGetName(node: ViewPager): String = node.javaClass.simpleName
 
   override fun onGetActiveChild(node: ViewPager): Any? {
@@ -31,6 +32,7 @@ object ViewPagerDescriptor : ChainedDescriptor<ViewPager>() {
 
   private val CurrentItemIndexAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "currentItemIndex")
+
   override fun onGetAttributes(
       node: ViewPager,
       attributeSections: MutableMap<MetadataId, InspectableObject>

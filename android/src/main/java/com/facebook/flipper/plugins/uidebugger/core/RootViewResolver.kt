@@ -34,7 +34,9 @@ class RootViewResolver {
 
   interface Listener {
     fun onRootViewAdded(rootView: View)
+
     fun onRootViewRemoved(rootView: View)
+
     fun onRootViewsChanged(rootViews: List<View>)
   }
 
@@ -105,6 +107,7 @@ class RootViewResolver {
 
   class ObservableViewArrayList : ArrayList<View>() {
     private var listener: Listener? = null
+
     fun setListener(listener: Listener?) {
       this.listener = listener
     }

@@ -28,6 +28,7 @@ class UIDebuggerFlipperPluginTest {
     Mockito.`when`(app.applicationContext).thenReturn(app)
     Mockito.`when`(app.packageName).thenReturn("com.facebook.flipper")
   }
+
   @Throws(Exception::class)
   @Test
   fun emptyTest() {

@@ -38,6 +38,7 @@ data class Color(val r: Int, val g: Int, val b: Int, val a: Int) {
       val blue: Int = (color shr 0) and 0xFF
       return Color(red, green, blue, alpha)
     }
+
     fun fromColor(color: android.graphics.Color): Color {
       return fromColor(color.toArgb())
     }

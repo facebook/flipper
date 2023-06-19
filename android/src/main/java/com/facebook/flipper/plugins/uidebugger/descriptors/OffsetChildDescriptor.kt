@@ -42,6 +42,7 @@ object OffsetChildDescriptor : NodeDescriptor<OffsetChild> {
       node.descriptor.getAttributes(node.child)
 
   override fun getTags(node: OffsetChild): Set<String> = node.descriptor.getTags(node.child)
+
   override fun getSnapshot(node: OffsetChild, bitmap: Bitmap?): Bitmap? =
       node.descriptor.getSnapshot(node.child, bitmap)
 }

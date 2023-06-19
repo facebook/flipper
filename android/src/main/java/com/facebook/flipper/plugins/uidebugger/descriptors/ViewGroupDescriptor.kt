@@ -28,6 +28,7 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
   private const val NAMESPACE = "ViewGroup"
   private var SectionId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
+
   override fun onGetName(node: ViewGroup): String {
     return node.javaClass.simpleName
   }

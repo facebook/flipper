@@ -17,6 +17,7 @@ class BitmapPool(private val config: Bitmap.Config = Bitmap.Config.RGB_565) {
 
   interface ReusableBitmap {
     val bitmap: Bitmap?
+
     fun readyForReuse()
   }
 

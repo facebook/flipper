@@ -41,6 +41,7 @@ open class EnumMapping<T>(private val mapping: Map<String, T>) {
   fun toInspectable(value: T): InspectableValue.Enum {
     return InspectableValue.Enum(getStringRepresentation(value))
   }
+
   companion object {
     const val NoMapping = "__UNKNOWN_ENUM_VALUE__"
   }

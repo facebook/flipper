@@ -11,6 +11,7 @@ import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 
 interface TreeObserverBuilder<T> {
   fun canBuildFor(node: Any): Boolean
+
   fun build(context: UIDContext): TreeObserver<T>
 }
 

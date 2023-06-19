@@ -19,7 +19,9 @@ import java.lang.reflect.Method
 object ActivityTracker : Application.ActivityLifecycleCallbacks {
   interface ActivityStackChangedListener {
     fun onActivityAdded(activity: Activity, stack: List<Activity>)
+
     fun onActivityStackChanged(stack: List<Activity>)
+
     fun onActivityDestroyed(activity: Activity, stack: List<Activity>)
   }
 
