@@ -1,3 +1,9 @@
+# 0.200.0 (19/6/2023)
+
+ * [D46724776](https://github.com/facebook/flipper/search?q=D46724776&type=Commits) -  UIDebugger virtualized UI to improve rendering performance
+ * [D46760448](https://github.com/facebook/flipper/search?q=D46760448&type=Commits) -  UIDebugger, pressing left arrow jumps to parent after collapse. Pressing right arrow enters after expand. Similar to file browsers in IDES
+
+
 # 0.197.0 (14/6/2023)
 
  * [D46720650](https://github.com/facebook/flipper/search?q=D46720650&type=Commits) -  Improved offline page (reload button removal)
