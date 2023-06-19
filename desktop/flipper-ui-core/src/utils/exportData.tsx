@@ -707,7 +707,7 @@ export async function exportEverythingEverywhereAllAtOnce(
   const exportedFilePath = await getRenderHostInstance().exportFileBinary?.(
     archiveData,
     {
-      defaultPath: 'flipper_EEAaO_export',
+      defaultPath: 'flipper_EEAaO_export.zip',
     },
   );
 

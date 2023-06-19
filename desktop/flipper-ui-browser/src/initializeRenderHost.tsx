@@ -14,6 +14,7 @@ import {
   wrapRequire,
 } from 'flipper-common';
 import type {RenderHost} from 'flipper-ui-core';
+import FileSaver from 'file-saver';
 
 declare module globalThis {
   let require: any;
@@ -44,11 +45,22 @@ export function initializeRenderHost(
     async importFile() {
       throw new Error('Not implemented');
     },
-    async exportFile() {
-      throw new Error('Not implemented');
+    async exportFile(data: string, {defaultPath}: {defaultPath?: string}) {
+      const file = new File([data], defaultPath ?? 'unknown', {
+        type: 'text/plain;charset=utf-8',
+      });
+      FileSaver.saveAs(file);
+      return defaultPath;
     },
-    async exportFileBinary() {
-      throw new Error('Not implemented');
+    async exportFileBinary(
+      data: Uint8Array,
+      {defaultPath}: {defaultPath?: string},
+    ) {
+      const file = new File([data], defaultPath ?? 'unknown', {
+        type: 'application/octet-stream',
+      });
+      FileSaver.saveAs(file);
+      return defaultPath;
     },
     openLink(url: string) {
       window.open(url, '_blank');
