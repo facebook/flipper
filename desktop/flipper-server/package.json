@@ -12,7 +12,7 @@
     "chalk": "^4",
     "exit-hook": "^2.1.1",
     "express": "^4.17.3",
-    "file-stream-rotator": "^0.6.1",
+    "file-stream-rotator": "^1.0.0",
     "flipper-common": "0.0.0",
     "flipper-pkg-lib": "0.0.0",
     "flipper-server-companion": "0.0.0",
