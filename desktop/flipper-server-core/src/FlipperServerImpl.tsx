@@ -26,6 +26,7 @@ import {
   FlipperServerExecOptions,
   DeviceDebugData,
   CertificateExchangeMedium,
+  Settings,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
@@ -56,6 +57,7 @@ import {mkdirp} from 'fs-extra';
 import {flipperDataFolder, flipperSettingsFolder} from './utils/paths';
 import {DebuggableDevice} from './devices/DebuggableDevice';
 import {jfUpload} from './fb-stubs/jf';
+import path from 'path';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
@@ -66,6 +68,25 @@ function isHandledStartupError(e: Error) {
   }
 
   return false;
+}
+
+function setProcessState(settings: Settings) {
+  const androidHome = settings.androidHome;
+  const idbPath = settings.idbPath;
+
+  if (!process.env.ANDROID_HOME && !process.env.ANDROID_SDK_ROOT) {
+    process.env.ANDROID_HOME = androidHome;
+    process.env.ANDROID_SDK_ROOT = androidHome;
+  }
+
+  // emulator/emulator is more reliable than tools/emulator, so prefer it if
+  // it exists
+  process.env.PATH =
+    ['emulator', 'tools', 'platform-tools']
+      .map((directory) => path.resolve(androidHome, directory))
+      .join(':') +
+    `:${idbPath}` +
+    `:${process.env.PATH}`;
 }
 
 /**
@@ -99,6 +120,8 @@ export class FlipperServerImpl implements FlipperServer {
     console.log(
       'Loaded flipper config, paths: ' + JSON.stringify(config.paths, null, 2),
     );
+
+    setProcessState(config.settings);
     const server = (this.server = new ServerController(this));
     this.keytarManager = new KeytarManager(keytarModule);
     // given flipper-dump, it might make more sense to have the plugin command

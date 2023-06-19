@@ -39,7 +39,6 @@ import {
   Logger,
   parseEnvironmentVariables,
   setLoggerInstance,
-  Settings,
   wrapRequire,
 } from 'flipper-common';
 import constants from './fb-stubs/constants';
@@ -53,7 +52,6 @@ import {initCompanionEnv} from 'flipper-server-companion';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import WS from 'ws';
 import {Module} from 'module';
-import os from 'os';
 
 Module.prototype.require = wrapRequire(Module.prototype.require);
 enableMapSet();
@@ -242,8 +240,6 @@ async function start() {
     electronIpcClient,
   );
 
-  setProcessState(flipperServerConfig.settings);
-
   // By turning this in a require, we force the JS that the body of this module (init) has completed (initializeElectron),
   // before starting the rest of the Flipper process.
   // This prevent issues where the render host is referred at module initialisation level,
@@ -331,23 +327,4 @@ function createDelegatedLogger(): Logger {
       getLogger().info(...args);
     },
   };
-}
-
-function setProcessState(settings: Settings) {
-  const androidHome = settings.androidHome;
-  const idbPath = settings.idbPath;
-
-  if (!process.env.ANDROID_HOME && !process.env.ANDROID_SDK_ROOT) {
-    process.env.ANDROID_HOME = androidHome;
-    process.env.ANDROID_SDK_ROOT = androidHome;
-  }
-
-  // emulator/emulator is more reliable than tools/emulator, so prefer it if
-  // it exists
-  process.env.PATH =
-    ['emulator', 'tools', 'platform-tools']
-      .map((directory) => path.resolve(androidHome, directory))
-      .join(':') +
-    `:${idbPath}` +
-    `:${process.env.PATH}`;
 }
