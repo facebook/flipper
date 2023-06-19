@@ -16,7 +16,9 @@ export type StreamState =
       retryCallback: () => Promise<void>;
     }
   | {
-      state: 'UnrecoverableError';
+      state: 'FatalError';
+      error: Error;
+      clearCallBack: () => Promise<void>;
     };
 
 export type Events = {

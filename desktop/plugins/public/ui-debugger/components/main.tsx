@@ -50,11 +50,16 @@ export function Component() {
     setBottomPanelComponent(undefined);
   };
 
-  if (streamState.state === 'UnrecoverableError') {
+  if (streamState.state === 'FatalError') {
     return (
       <StreamInterceptorErrorView
-        title="Oops"
-        message="Something has gone horribly wrong, we are aware of this and are looking into it"
+        title="Fatal Error"
+        message={`Something has gone horribly wrong, we are aware of this and are looking into it, details ${streamState.error.name} ${streamState.error.message}`}
+        button={
+          <Button onClick={streamState.clearCallBack} type="primary">
+            Reset
+          </Button>
+        }
       />
     );
   }
@@ -64,7 +69,11 @@ export function Component() {
       <StreamInterceptorErrorView
         message={streamState.error.message}
         title={streamState.error.title}
-        retryCallback={streamState.retryCallback}
+        button={
+          <Button onClick={streamState.retryCallback} type="primary">
+            Retry
+          </Button>
+        }
       />
     );
   }

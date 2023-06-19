@@ -136,7 +136,16 @@ export function plugin(client: PluginClient<Events>) {
         error,
       );
 
-      uiState.streamState.set({state: 'UnrecoverableError'});
+      uiState.streamState.set({
+        state: 'FatalError',
+        error: error,
+        clearCallBack: async () => {
+          uiState.streamState.set({state: 'Ok'});
+          nodesAtom.set(new Map());
+          frameworkEvents.set(new Map());
+          snapshot.set(null);
+        },
+      });
     }
   }
 
