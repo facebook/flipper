@@ -82,6 +82,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   void startSync();
   bool connectAndExchangeCertificate();
   bool connectSecurely();
+  void handleSocketEvent(const SocketEvent event);
   bool isCertificateExchangeNeeded();
   void requestSignedCertificate();
   void processSignedCertificateResponse(

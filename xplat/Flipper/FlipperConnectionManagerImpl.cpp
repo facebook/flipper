@@ -53,30 +53,7 @@ class ConnectionEvents {
       if (impl == nullptr) {
         return;
       }
-      switch (event) {
-        case SocketEvent::OPEN:
-          impl->isConnected_ = true;
-          if (impl->connectionIsTrusted_) {
-            impl->callbacks_->onConnected();
-          }
-          break;
-        case SocketEvent::SSL_ERROR:
-          // SSL errors are not handled as a connection event
-          // on this handler.
-          break;
-        case SocketEvent::CLOSE:
-        case SocketEvent::ERROR:
-          if (!impl->isConnected_) {
-            return;
-          }
-          impl->isConnected_ = false;
-          if (impl->connectionIsTrusted_) {
-            impl->connectionIsTrusted_ = false;
-            impl->callbacks_->onDisconnected();
-          }
-          impl->reconnect();
-          break;
-      }
+      impl->handleSocketEvent(event);
     }
   }
 
@@ -114,7 +91,34 @@ void FlipperConnectionManagerImpl::setCertificateProvider(
 std::shared_ptr<FlipperCertificateProvider>
 FlipperConnectionManagerImpl::getCertificateProvider() {
   return certProvider_;
-};
+}
+
+void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
+  switch (event) {
+    case SocketEvent::OPEN:
+      isConnected_ = true;
+      if (connectionIsTrusted_) {
+        callbacks_->onConnected();
+      }
+      break;
+    case SocketEvent::SSL_ERROR:
+      // SSL errors are not handled as a connection event
+      // on this handler.
+      break;
+    case SocketEvent::CLOSE:
+    case SocketEvent::ERROR:
+      if (!isConnected_) {
+        return;
+      }
+      isConnected_ = false;
+      if (connectionIsTrusted_) {
+        connectionIsTrusted_ = false;
+        callbacks_->onDisconnected();
+      }
+      reconnect();
+      break;
+  }
+}
 
 void FlipperConnectionManagerImpl::start() {
   if (!FlipperSocketProvider::hasProvider()) {
