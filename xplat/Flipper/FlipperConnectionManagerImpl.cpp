@@ -209,19 +209,20 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
   payload->sdk_version = sdkVersion;
   payload->medium = medium;
 
-  auto newClient = FlipperSocketProvider::socketCreate(
+  client_ = FlipperSocketProvider::socketCreate(
       endpoint, std::move(payload), flipperScheduler_);
-  newClient->setEventHandler(ConnectionEvents(implWrapper_));
+  client_->setEventHandler(ConnectionEvents(implWrapper_));
 
   auto connectingInsecurely = flipperState_->start("Connect insecurely");
   connectionIsTrusted_ = false;
 
-  if (!newClient->connect(this)) {
+  // Connect is just handled here, move this elsewhere.
+  if (!client_->connect(this)) {
     connectingInsecurely->fail("Failed to connect");
+    client_ = nullptr;
     return false;
   }
 
-  client_ = std::move(newClient);
   connectingInsecurely->complete();
 
   auto resettingState = flipperState_->start("Reset state");
@@ -258,10 +259,10 @@ bool FlipperConnectionManagerImpl::connectSecurely() {
   payload->csr = contextStore_->getCertificateSigningRequest().c_str();
   payload->csr_path = contextStore_->getCertificateDirectoryPath().c_str();
 
-  auto newClient = FlipperSocketProvider::socketCreate(
+  client_ = FlipperSocketProvider::socketCreate(
       endpoint, std::move(payload), connectionScheduler_, contextStore_.get());
-  newClient->setEventHandler(ConnectionEvents(implWrapper_));
-  newClient->setMessageHandler([this](const std::string& msg) {
+  client_->setEventHandler(ConnectionEvents(implWrapper_));
+  client_->setMessageHandler([this](const std::string& msg) {
     std::unique_ptr<FireAndForgetBasedFlipperResponder> responder;
     auto message = folly::parseJson(msg);
     auto idItr = message.find("id");
@@ -278,12 +279,13 @@ bool FlipperConnectionManagerImpl::connectSecurely() {
   auto connectingSecurely = flipperState_->start("Connect securely");
   connectionIsTrusted_ = true;
 
-  if (!newClient->connect(this)) {
+  // Connect is just handled here, move this elsewhere.
+  if (!client_->connect(this)) {
     connectingSecurely->fail("Failed to connect");
+    client_ = nullptr;
     return false;
   }
 
-  client_ = std::move(newClient);
   connectingSecurely->complete();
   failedConnectionAttempts_ = 0;
   return true;
