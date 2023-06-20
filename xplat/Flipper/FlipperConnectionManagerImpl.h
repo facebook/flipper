@@ -36,7 +36,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
 
   void stop() override;
 
-  bool isOpen() const override;
+  bool isConnected() const override;
 
   void setCallbacks(Callbacks* callbacks) override;
 
@@ -54,7 +54,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   std::shared_ptr<FlipperCertificateProvider> getCertificateProvider() override;
 
  private:
-  bool isOpen_ = false;
+  bool isConnected_ = false;
   bool isStarted_ = false;
   std::shared_ptr<FlipperCertificateProvider> certProvider_ = nullptr;
   Callbacks* callbacks_;

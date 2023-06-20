@@ -55,7 +55,7 @@ class ConnectionEvents {
       }
       switch (event) {
         case SocketEvent::OPEN:
-          impl->isOpen_ = true;
+          impl->isConnected_ = true;
           if (impl->connectionIsTrusted_) {
             impl->callbacks_->onConnected();
           }
@@ -66,9 +66,10 @@ class ConnectionEvents {
           break;
         case SocketEvent::CLOSE:
         case SocketEvent::ERROR:
-          if (!impl->isOpen_)
+          if (!impl->isConnected_) {
             return;
-          impl->isOpen_ = false;
+          }
+          impl->isConnected_ = false;
           if (impl->connectionIsTrusted_) {
             impl->connectionIsTrusted_ = false;
             impl->callbacks_->onDisconnected();
@@ -144,7 +145,7 @@ void FlipperConnectionManagerImpl::startSync() {
     log(WRONG_THREAD_EXIT_MSG);
     return;
   }
-  if (isOpen()) {
+  if (isConnected()) {
     log("Already connected");
     return;
   }
@@ -317,8 +318,8 @@ void FlipperConnectionManagerImpl::stop() {
   join.wait();
 }
 
-bool FlipperConnectionManagerImpl::isOpen() const {
-  return isOpen_ && connectionIsTrusted_;
+bool FlipperConnectionManagerImpl::isConnected() const {
+  return isConnected_ && connectionIsTrusted_;
 }
 
 void FlipperConnectionManagerImpl::setCallbacks(Callbacks* callbacks) {

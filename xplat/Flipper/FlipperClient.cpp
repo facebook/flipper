@@ -160,6 +160,13 @@ void FlipperClient::onDisconnected() {
   });
 }
 
+bool FlipperClient::isConnected() {
+  if (socket_ != nullptr) {
+    return socket_->isConnected();
+  }
+  return false;
+}
+
 void FlipperClient::onMessageReceived(
     const dynamic& message,
     std::unique_ptr<FlipperResponder> uniqueResponder) {
