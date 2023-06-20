@@ -182,6 +182,10 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 #endif
 }
 
+- (BOOL)isConnected {
+  return _cppClient->isConnected();
+}
+
 - (NSString*)getState {
   return @(_cppClient->getState().c_str());
 }
