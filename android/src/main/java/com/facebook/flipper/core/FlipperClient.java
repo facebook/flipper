@@ -24,6 +24,8 @@ public interface FlipperClient {
 
   void stop();
 
+  boolean isConnected();
+
   void subscribeForUpdates(FlipperStateUpdateListener stateListener);
 
   void unsubscribe();

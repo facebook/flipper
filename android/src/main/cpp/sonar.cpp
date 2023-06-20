@@ -768,6 +768,7 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
         makeNativeMethod("getInstance", JFlipperClient::getInstance),
         makeNativeMethod("start", JFlipperClient::start),
         makeNativeMethod("stop", JFlipperClient::stop),
+        makeNativeMethod("isConnected", JFlipperClient::isConnected),
         makeNativeMethod("addPluginNative", JFlipperClient::addPlugin),
         makeNativeMethod("removePluginNative", JFlipperClient::removePlugin),
         makeNativeMethod(
@@ -811,6 +812,19 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
         handleException(*e);
       }
     }
+  }
+
+  bool isConnected() {
+    try {
+      return FlipperClient::instance()->isConnected();
+    } catch (const std::exception& e) {
+      handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
+    }
+    return false;
   }
 
   void addPlugin(jni::alias_ref<JFlipperPlugin> plugin) {
