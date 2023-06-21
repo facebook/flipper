@@ -1,3 +1,9 @@
+# 0.201.0 (21/6/2023)
+
+ * [D46840341](https://github.com/facebook/flipper/search?q=D46840341&type=Commits) -  add export file implementation for browsers
+ * [D46841095](https://github.com/facebook/flipper/search?q=D46841095&type=Commits) -  new FlipperClient isConnected API
+
+
 # 0.200.0 (19/6/2023)
 
  * [D46724776](https://github.com/facebook/flipper/search?q=D46724776&type=Commits) -  UIDebugger virtualized UI to improve rendering performance
