@@ -38,6 +38,16 @@ class ConnectionContextStore {
    */
   folly::Optional<FlipperCertificateExchangeMedium> getLastKnownMedium();
   void storeConnectionConfig(folly::dynamic& config);
+  /**
+   * Reset state just removes all certificate exchange related files stored on
+   * the client. These are:
+   * - Certificate Sign Request (CSR)
+   * - CA Certificate
+   * - Server Certificate
+   * - Client Certificate
+   * - Client Key
+   * - Configuration file (includes device identifier)
+   */
   bool resetState();
 
   /** Convert and save to disk the existing certificate to PKCS #12 format.
