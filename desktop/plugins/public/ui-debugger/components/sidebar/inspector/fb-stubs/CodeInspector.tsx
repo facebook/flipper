@@ -11,6 +11,7 @@ import React from 'react';
 import {Tag} from '../../../../types';
 
 type CodeInspectorProps = {
+  name: string;
   tags: Tag[];
   qualifiedName: string;
   lineNumber?: number;

@@ -42,6 +42,7 @@ export const IdentityInspector: React.FC<Props> = ({node}) => {
       </Row>
 
       <CodeInspector
+        name={node.name}
         qualifiedName={node.qualifiedName}
         tags={node.tags}
         androidId={node.inlineAttributes['id']}
