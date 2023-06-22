@@ -225,11 +225,8 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
 
   connectingInsecurely->complete();
 
-  auto resettingState = flipperState_->start("Reset state");
-  contextStore_->resetState();
-  resettingState->complete();
-
   requestSignedCertificate();
+
   return true;
 }
 
@@ -464,6 +461,10 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
 }
 
 void FlipperConnectionManagerImpl::requestSignedCertificate() {
+  auto resettingState = flipperState_->start("Reset connection store state");
+  contextStore_->resetState();
+  resettingState->complete();
+
   auto generatingCSR = flipperState_->start("Generate CSR");
   std::string csr = contextStore_->getCertificateSigningRequest();
   generatingCSR->complete();
