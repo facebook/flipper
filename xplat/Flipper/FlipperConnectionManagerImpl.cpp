@@ -213,17 +213,22 @@ bool FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
       endpoint, std::move(payload), flipperScheduler_);
   client_->setEventHandler(ConnectionEvents(implWrapper_));
 
-  auto connectingInsecurely = flipperState_->start("Connect insecurely");
   connectionIsTrusted_ = false;
+
+  auto step =
+      flipperState_->start("Attempt to connect for certificate exchange");
+
+  step->complete();
+
+  // NON-TLS:
+  // On failure: clear the client.
+  // On success: proceed to request the client certificate.
 
   // Connect is just handled here, move this elsewhere.
   if (!client_->connect(this)) {
-    connectingInsecurely->fail("Failed to connect");
     client_ = nullptr;
     return false;
   }
-
-  connectingInsecurely->complete();
 
   requestSignedCertificate();
 
@@ -273,17 +278,23 @@ bool FlipperConnectionManagerImpl::connectSecurely() {
     this->onMessageReceived(folly::parseJson(msg), std::move(responder));
   });
 
-  auto connectingSecurely = flipperState_->start("Connect securely");
   connectionIsTrusted_ = true;
+
+  auto step = flipperState_->start(
+      "Attempt to connect with existing client certificate");
+
+  step->complete();
+
+  // TLS:
+  // On failure: clear the client.
+  // On success: clear number of failed attempts.
 
   // Connect is just handled here, move this elsewhere.
   if (!client_->connect(this)) {
-    connectingSecurely->fail("Failed to connect");
     client_ = nullptr;
     return false;
   }
 
-  connectingSecurely->complete();
   failedConnectionAttempts_ = 0;
   return true;
 }
