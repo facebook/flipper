@@ -30,11 +30,7 @@ import {
   PluginDownloadStatus,
   startPluginDownload,
 } from '../../reducers/pluginDownloads';
-import {
-  loadPlugin,
-  switchPlugin,
-  uninstallPlugin,
-} from '../../reducers/pluginManager';
+import {switchPlugin, uninstallPlugin} from '../../reducers/pluginManager';
 import {reportUsage} from 'flipper-common';
 import ConnectivityStatus from './fb-stubs/ConnectivityStatus';
 import {useSelector} from 'react-redux';
@@ -142,6 +138,68 @@ export const PluginList = memo(function PluginList({
     },
     [disabledPlugins, dispatch],
   );
+  const allEnabledPlugins = React.useMemo(() => {
+    const plugins: React.ReactElement[] = [];
+
+    devicePlugins.forEach((plugin) =>
+      plugins.push(
+        <PluginEntry
+          key={plugin.id}
+          plugin={plugin.details}
+          scrollTo={
+            plugin.id === connections.selectedPlugin &&
+            connections.selectedDevice === activeDevice
+          }
+          onClick={handleAppPluginClick}
+          tooltip={getPluginTooltip(plugin.details)}
+          actions={
+            isArchived ? null : (
+              <ActionButton
+                id={plugin.id}
+                onClick={handleEnablePlugin}
+                title="Disable plugin"
+                icon={<MinusOutlined size={16} style={{marginRight: 0}} />}
+              />
+            )
+          }
+        />,
+      ),
+    );
+
+    enabledPlugins.forEach((plugin) =>
+      plugins.push(
+        <PluginEntry
+          key={plugin.id}
+          plugin={plugin.details}
+          scrollTo={plugin.id === connections.selectedPlugin}
+          onClick={handleAppPluginClick}
+          tooltip={getPluginTooltip(plugin.details)}
+          actions={
+            isConnected ? (
+              <ActionButton
+                id={plugin.id}
+                onClick={handleEnablePlugin}
+                title="Disable plugin"
+                icon={<MinusOutlined size={16} style={{marginRight: 0}} />}
+              />
+            ) : null
+          }
+        />,
+      ),
+    );
+
+    return plugins;
+  }, [
+    devicePlugins,
+    enabledPlugins,
+    connections.selectedPlugin,
+    connections.selectedDevice,
+    activeDevice,
+    handleAppPluginClick,
+    isArchived,
+    handleEnablePlugin,
+    isConnected,
+  ]);
   return (
     <Layout.Container>
       <SidebarTitle actions={<ConnectivityStatus />}>Plugins</SidebarTitle>
@@ -149,7 +207,7 @@ export const PluginList = memo(function PluginList({
         <PluginMenu
           inlineIndent={8}
           onClick={() => {}}
-          defaultOpenKeys={['device', 'enabled', 'metro']}
+          defaultOpenKeys={['enabled', 'metro']}
           selectedKeys={
             connections.selectedPlugin
               ? [
@@ -159,31 +217,8 @@ export const PluginList = memo(function PluginList({
               : []
           }
           mode="inline">
-          <PluginGroup key="device" title="Device">
-            {devicePlugins.map((plugin) => (
-              <PluginEntry
-                key={plugin.id}
-                plugin={plugin.details}
-                scrollTo={
-                  plugin.id === connections.selectedPlugin &&
-                  connections.selectedDevice === activeDevice
-                }
-                onClick={handleAppPluginClick}
-                tooltip={getPluginTooltip(plugin.details)}
-                actions={
-                  isArchived ? null : (
-                    <ActionButton
-                      id={plugin.id}
-                      onClick={handleEnablePlugin}
-                      title="Disable plugin"
-                      icon={
-                        <MinusOutlined size={16} style={{marginRight: 0}} />
-                      }
-                    />
-                  )
-                }
-              />
-            ))}
+          <PluginGroup key="enabled" title="Enabled">
+            {allEnabledPlugins}
           </PluginGroup>
 
           {!isArchived && metroConnected && (
@@ -205,29 +240,6 @@ export const PluginList = memo(function PluginList({
               ))}
             </PluginGroup>
           )}
-          <PluginGroup key="enabled" title="Enabled">
-            {enabledPlugins.map((plugin) => (
-              <PluginEntry
-                key={plugin.id}
-                plugin={plugin.details}
-                scrollTo={plugin.id === connections.selectedPlugin}
-                onClick={handleAppPluginClick}
-                tooltip={getPluginTooltip(plugin.details)}
-                actions={
-                  isConnected ? (
-                    <ActionButton
-                      id={plugin.id}
-                      onClick={handleEnablePlugin}
-                      title="Disable plugin"
-                      icon={
-                        <MinusOutlined size={16} style={{marginRight: 0}} />
-                      }
-                    />
-                  ) : null
-                }
-              />
-            ))}
-          </PluginGroup>
           {isConnected && (
             <PluginGroup
               key="disabled"
