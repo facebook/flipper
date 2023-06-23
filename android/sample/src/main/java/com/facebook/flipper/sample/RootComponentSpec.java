@@ -116,8 +116,15 @@ public class RootComponentSpec {
                     .clickHandler(RootComponent.openIncrementActivity(c)))
             .child(
                 Text.create(c)
-                    .text("Crash this app")
+                    .text("Navigate to Jetpack Compose activity")
                     .key("12")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openJetpackComposeActivity(c)))
+            .child(
+                Text.create(c)
+                    .text("Crash this app")
+                    .key("13")
                     .marginDip(YogaEdge.ALL, 10)
                     .textSizeSp(20)
                     .clickHandler(RootComponent.triggerCrash(c)))
@@ -201,6 +208,12 @@ public class RootComponentSpec {
   @OnEvent(ClickEvent.class)
   static void openIncrementActivity(final ComponentContext c) {
     final Intent intent = new Intent(c.getAndroidContext(), ButtonsActivity.class);
+    c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void openJetpackComposeActivity(final ComponentContext c) {
+    final Intent intent = new Intent(c.getAndroidContext(), JetpackComposeActivity.class);
     c.getAndroidContext().startActivity(intent);
   }
 }

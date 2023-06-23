@@ -16,6 +16,7 @@ import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
+import com.facebook.flipper.plugins.jetpackcompose.UIDebuggerComposeSupport;
 import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
@@ -65,6 +66,7 @@ public final class FlipperInitializer {
     TreeObserverFactory treeObserverFactory = TreeObserverFactory.Companion.withDefaults();
     UIDContext uidContext = UIDContext.Companion.create((Application) context);
     UIDebuggerLithoSupport.INSTANCE.enable(uidContext);
+    UIDebuggerComposeSupport.INSTANCE.enable(uidContext);
 
     client.addPlugin(new UIDebuggerFlipperPlugin(uidContext));
     client.start();
