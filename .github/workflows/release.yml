@@ -31,12 +31,12 @@ jobs:
           version_assertion_command: 'grep -q "\"version\": \"$version\"" desktop/package.json'
       - name: Create release
         if: ${{ steps.tag-version-commit.outputs.tag != '' }}
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v0.1.15
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag-version-commit.outputs.tag }}
-          release_name: ${{ steps.tag-version-commit.outputs.tag }}
+          name: ${{ steps.tag-version-commit.outputs.tag }}
           body: |
             See https://github.com/facebook/flipper/blob/main/desktop/static/CHANGELOG.md
             for full notes.
