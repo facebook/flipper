@@ -9,7 +9,7 @@ jobs:
       doctor-directory: ./desktop/doctor
     steps:
     - uses: actions/checkout@v3.5.3
-    - uses: actions/setup-node@v2.5.2
+    - uses: actions/setup-node@v3.6.0
       with:
         node-version: '18.x'
     - name: install
