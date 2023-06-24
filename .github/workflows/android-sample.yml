@@ -1,5 +1,5 @@
 name: Build Android Sample App
-
+# This action runs on 'git push' and PRs
 on: [push, pull_request]
 
 jobs:
@@ -7,14 +7,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: set up JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3.11.0
         with:
+          distribution: 'temurin'
           java-version: 17
       - name: Compute build cache
         run: ./scripts/checksum-android.sh checksum-android.txt
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3.3.1
         with:
           path: |
             ~/.gradle/caches/modules-*
@@ -30,7 +31,7 @@ jobs:
       - name: Build remaining artifacts with Gradle
         run: ./gradlew assembleDebug
       - name: upload artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: sample-app.apk
           path: android/sample/build/outputs/apk/debug/sample-debug.apk
