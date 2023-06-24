@@ -1,18 +1,15 @@
 name: Doctor Node CI
-
+# This action runs on 'git push' and PRs
 on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: 'ubuntu-latest'
-
     env:
       doctor-directory: ./desktop/doctor
-
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v3.5.3
+    - uses: actions/setup-node@v2.5.2
       with:
         node-version: '18.x'
     - name: install
