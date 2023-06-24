@@ -1,4 +1,5 @@
 name: Docs
+# This action runs on push to 'main'
 on:
   push:
     branches:
@@ -9,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.1
+        uses: actions/checkout@v3.5.3
         with:
           persist-credentials: false
 
@@ -19,8 +20,8 @@ jobs:
           yarn  build
         working-directory: website/
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@4.1.3
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.4.2
         with:
           branch: gh-pages
           folder: website/build
