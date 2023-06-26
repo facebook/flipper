@@ -1,5 +1,5 @@
 name: Packer
-
+# This action runs on 'git push' and PRs
 on: [push, pull_request]
 
 jobs:
@@ -7,11 +7,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Setup toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: 1.48.0
+        uses: dtolnay/rust-toolchain@stable
+        # The selection of Rust toolchain is made based on the particular '@rev'
+        # of this Action being requested. For example "dtolnay/rust-toolchain@nightly"
+        # pulls in the nightly Rust toolchain, while "dtolnay/rust-toolchain@1.42.0"
+        # pulls in '1.42.0'.
       - name: Test
         run: cd packer && cargo test
       - name: Format
