@@ -113,6 +113,10 @@ export type PerformanceStatsEvent = {
   payloadSize?: number;
 };
 
+export type DynamicPerformanceStatsEvent = PerformanceStatsEvent & {
+  [key: string]: any;
+};
+
 export type UpdateMetadataEvent = {
   attributeMetadata: Record<MetadataId, Metadata>;
 };

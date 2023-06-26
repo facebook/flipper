@@ -7,17 +7,41 @@
  * @format
  */
 
-import {PerformanceStatsEvent} from '../types';
-import React from 'react';
+import {PerformanceStatsEvent, DynamicPerformanceStatsEvent} from '../types';
+import React, {useMemo} from 'react';
 import {DataSource, DataTable, DataTableColumn} from 'flipper-plugin';
 
 export function PerfStats(props: {
-  events: DataSource<PerformanceStatsEvent, number>;
+  events: DataSource<DynamicPerformanceStatsEvent, number>;
 }) {
+  const allColumns = useMemo(() => {
+    if (props.events.size > 0) {
+      const row = props.events.get(0);
+
+      const unknownKeys = Object.keys(row).filter(
+        (property) => !knownKeys.has(property),
+      );
+
+      const unknownColumns = unknownKeys.map((unknwonKey) => ({
+        key: unknwonKey,
+        title: formatKey(unknwonKey),
+        onRender: (row: DynamicPerformanceStatsEvent) => {
+          if (unknwonKey.endsWith('MS')) {
+            return formatDiff(row[unknwonKey]);
+          }
+          return row[unknwonKey];
+        },
+      }));
+
+      return columns.concat(...unknownColumns);
+    }
+    return columns;
+  }, [props.events]);
+
   return (
     <DataTable<PerformanceStatsEvent>
       dataSource={props.events}
-      columns={columns}
+      columns={allColumns}
     />
   );
 }
@@ -30,12 +54,17 @@ function formatSize(bytes: number): string {
   return `${(bytes / 1000).toFixed()}`;
 }
 
-const columns: DataTableColumn<PerformanceStatsEvent>[] = [
+function formatKey(key: string): string {
+  const pascalCase = key.replace(/([a-z])([A-Z])/g, '$1 $2');
+  return pascalCase.charAt(0).toUpperCase() + pascalCase.slice(1);
+}
+
+const columns: DataTableColumn<DynamicPerformanceStatsEvent>[] = [
   {
     key: 'txId',
     title: 'TXID',
     onRender: (row: PerformanceStatsEvent) => {
-      return row.txId;
+      return row.txId.toFixed(0);
     },
   },
   {
@@ -106,3 +135,4 @@ const columns: DataTableColumn<PerformanceStatsEvent>[] = [
     },
   },
 ];
+const knownKeys = new Set(columns.map((column) => column.key));
