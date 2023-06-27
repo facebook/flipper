@@ -179,11 +179,6 @@ export default (store: Store, logger: Logger) => {
 
     Object.entries(state.connections.enabledPlugins).forEach(
       ([app, plugins]) => {
-        // TODO: remove "starred-plugns" event in favor of "enabled-plugins" after some transition period
-        logger.track('usage', 'starred-plugins', {
-          app,
-          starredPlugins: plugins,
-        });
         logger.track('usage', 'enabled-plugins', {
           app,
           enabledPugins: plugins,
