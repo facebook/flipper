@@ -98,7 +98,7 @@ export default (store: Store, logger: Logger) => {
       renderHost.serverConfig.environmentInfo.processId === oldExitData.pid;
     const timeSinceLastStartup =
       Date.now() - parseInt(oldExitData.lastSeen, 10);
-    // console.log(isReload ? 'reload' : 'restart', oldExitData);
+
     logger.track('usage', isReload ? 'reload' : 'restart', {
       ...oldExitData,
       pid: undefined,
