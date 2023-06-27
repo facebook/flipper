@@ -88,6 +88,10 @@ async function start(deviceQuery: string, appName: string, pluginId: string) {
     const environmentInfo = await getEnvironmentInfo(staticPath, false, true);
     // TODO: initialise FB user manager to be able to do certificate exchange
 
+    const [launcherSettings, settings] = await Promise.all([
+      loadLauncherSettings(argv.launcherSettings),
+      loadSettings(argv.settingsString),
+    ]);
     const server = new FlipperServerImpl(
       {
         environmentInfo,
@@ -101,9 +105,9 @@ async function start(deviceQuery: string, appName: string, pluginId: string) {
           execPath: process.execPath,
           desktopPath: `/dev/null`,
         },
-        launcherSettings: await loadLauncherSettings(argv.launcherSettings),
+        launcherSettings,
         processConfig: loadProcessConfig(process.env),
-        settings: await loadSettings(argv.settingsString),
+        settings,
         validWebSocketOrigins: [],
       },
       logger,

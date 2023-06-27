@@ -29,8 +29,10 @@ export async function initializeElectron(
   flipperServerConfig: FlipperServerConfig,
   electronIpcClient: ElectronIpcClientRenderer,
 ) {
-  const electronProcess = await electronIpcClient.send('getProcess');
-  const electronTheme = await electronIpcClient.send('getNativeTheme');
+  const [electronProcess, electronTheme] = await Promise.all([
+    electronIpcClient.send('getProcess'),
+    electronIpcClient.send('getNativeTheme')
+  ]);
 
   const execPath = process.execPath || electronProcess.execPath;
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
