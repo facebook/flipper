@@ -78,7 +78,14 @@ export function Component() {
     );
   }
 
-  if (showPerfStats) return <PerfStats events={instance.perfEvents} />;
+  if (showPerfStats)
+    return (
+      <PerfStats
+        uiState={instance.uiState}
+        rootId={rootId}
+        events={instance.perfEvents}
+      />
+    );
 
   if (rootId == null || streamState.state === 'RetryingAfterError') {
     return (

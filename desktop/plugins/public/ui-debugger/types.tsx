@@ -7,6 +7,22 @@
  * @format
  */
 
+import {Atom} from 'flipper-plugin';
+
+export type UIState = {
+  isPaused: Atom<boolean>;
+  streamState: Atom<StreamState>;
+  searchTerm: Atom<string>;
+  isContextMenuOpen: Atom<boolean>;
+  hoveredNodes: Atom<Id[]>;
+  selectedNode: Atom<Id | undefined>;
+  highlightedNodes: Atom<Set<Id>>;
+  focusedNode: Atom<Id | undefined>;
+  expandedNodes: Atom<Set<Id>>;
+  visualiserWidth: Atom<number>;
+  frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
+};
+
 export type StreamState =
   | {state: 'Ok'}
   | {state: 'RetryingAfterError'}

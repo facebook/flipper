@@ -27,6 +27,7 @@ import {
   StreamInterceptorError,
   StreamState,
   UINode,
+  UIState,
 } from './types';
 import {Draft} from 'immer';
 import {QueryClient, setLogger} from 'react-query';
@@ -41,20 +42,6 @@ type LiveClientState = {
 type PendingData = {
   metadata: Record<MetadataId, Metadata>;
   frame: FrameScanEvent | null;
-};
-
-type UIState = {
-  isPaused: Atom<boolean>;
-  streamState: Atom<StreamState>;
-  searchTerm: Atom<string>;
-  isContextMenuOpen: Atom<boolean>;
-  hoveredNodes: Atom<Id[]>;
-  selectedNode: Atom<Id | undefined>;
-  highlightedNodes: Atom<Set<Id>>;
-  focusedNode: Atom<Id | undefined>;
-  expandedNodes: Atom<Set<Id>>;
-  visualiserWidth: Atom<number>;
-  frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
 };
 
 export function plugin(client: PluginClient<Events>) {

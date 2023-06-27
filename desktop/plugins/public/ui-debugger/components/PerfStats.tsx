@@ -7,13 +7,32 @@
  * @format
  */
 
-import {PerformanceStatsEvent, DynamicPerformanceStatsEvent} from '../types';
+import {
+  PerformanceStatsEvent,
+  DynamicPerformanceStatsEvent,
+  UIState,
+  Id,
+} from '../types';
 import React, {useMemo} from 'react';
-import {DataSource, DataTable, DataTableColumn} from 'flipper-plugin';
+import {
+  DataInspector,
+  DataSource,
+  DataTable,
+  DataTableColumn,
+  DetailSidebar,
+  Layout,
+} from 'flipper-plugin';
 
 export function PerfStats(props: {
+  uiState: UIState;
+  rootId?: Id;
   events: DataSource<DynamicPerformanceStatsEvent, number>;
 }) {
+  const uiStateValues = Object.entries(props.uiState).map(([key, value]) => [
+    key,
+    value.get(),
+  ]);
+
   const allColumns = useMemo(() => {
     if (props.events.size > 0) {
       const row = props.events.get(0);
@@ -39,10 +58,19 @@ export function PerfStats(props: {
   }, [props.events]);
 
   return (
-    <DataTable<PerformanceStatsEvent>
-      dataSource={props.events}
-      columns={allColumns}
-    />
+    <Layout.Container grow>
+      <DataTable<PerformanceStatsEvent>
+        dataSource={props.events}
+        columns={allColumns}
+      />
+      <DetailSidebar width={250}>
+        <DataInspector
+          data={{
+            ...Object.fromEntries(uiStateValues),
+            rootId: props.rootId,
+          }}></DataInspector>
+      </DetailSidebar>
+    </Layout.Container>
   );
 }
 
