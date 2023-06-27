@@ -10,6 +10,7 @@
 import {Atom} from 'flipper-plugin';
 
 export type UIState = {
+  isConnected: Atom<boolean>;
   isPaused: Atom<boolean>;
   streamState: Atom<StreamState>;
   searchTerm: Atom<string>;

@@ -54,12 +54,23 @@ export function plugin(client: PluginClient<Events>) {
   const os = client.device.os;
 
   client.onMessage('init', (event) => {
+    console.log('[ui-debugger] init');
     rootId.set(event.rootId);
     uiState.frameworkEventMonitoring.update((draft) => {
       event.frameworkEventMetadata?.forEach((frameworkEventMeta) => {
         draft.set(frameworkEventMeta.type, false);
       });
     });
+  });
+
+  client.onConnect(() => {
+    uiState.isConnected.set(true);
+    console.log('[ui-debugger] connected');
+  });
+
+  client.onDisconnect(() => {
+    uiState.isConnected.set(false);
+    console.log('[ui-debugger] disconnected');
   });
 
   async function processMetadata(
@@ -183,6 +194,8 @@ export function plugin(client: PluginClient<Events>) {
   const snapshot = createState<SnapshotInfo | null>(null);
 
   const uiState: UIState = {
+    isConnected: createState(false),
+
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
     isContextMenuOpen: createState<boolean>(false),
 
