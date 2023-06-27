@@ -106,7 +106,7 @@ ext.deps = [
         okhttp3            : 'com.squareup.okhttp3:okhttp:4.11.0',
         leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.3',
         leakcanary2        : 'com.squareup.leakcanary:leakcanary-android:2.8.1',
-        protobuf           : 'com.google.protobuf:protobuf-java:3.23.2',
+        protobuf           : 'com.google.protobuf:protobuf-java:3.23.3',
         testCore           : 'androidx.test:core:1.4.0',
         testRules          : 'androidx.test:rules:1.5.0',
         // Plugin dependencies
