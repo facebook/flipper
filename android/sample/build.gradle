@@ -87,6 +87,9 @@ dependencies {
     implementation deps.soloader
     implementation deps.okhttp3
     implementation deps.fresco
+    implementation deps.frescoUiCommon
+    implementation deps.frescoVito
+    implementation deps.frescoVitoLitho
     debugImplementation deps.flipperFrescoPlugin
 
     // Integration test
