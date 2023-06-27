@@ -82,10 +82,15 @@ export const loadSecureServerConfig = async (): Promise<SecureServerConfig> => {
   await ensureOpenSSLIsAvailable();
   await certificateSetup();
   await generateAuthToken();
+  const [key, cert, ca] = await Promise.all([
+    fs.readFile(serverKey),
+    fs.readFile(serverCert),
+    fs.readFile(caCert),
+  ]);
   serverConfig = {
-    key: await fs.readFile(serverKey),
-    cert: await fs.readFile(serverCert),
-    ca: await fs.readFile(caCert),
+    key,
+    cert,
+    ca,
     requestCert: true,
     rejectUnauthorized: true, // can be false if necessary as we don't strictly need to verify the client
   };

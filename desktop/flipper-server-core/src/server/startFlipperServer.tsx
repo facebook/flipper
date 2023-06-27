@@ -51,6 +51,11 @@ export async function startFlipperServer(
     console.warn('Failed to find desktop path, falling back to homedir');
     desktopPath = os.homedir();
   }
+
+  const [launcherSettings, settings] = await Promise.all([
+    loadLauncherSettings(enableLauncherSettings),
+    loadSettings(settingsString),
+  ])
   return new FlipperServerImpl(
     {
       environmentInfo,
@@ -64,9 +69,9 @@ export async function startFlipperServer(
         tempPath: os.tmpdir(),
         desktopPath: desktopPath,
       },
-      launcherSettings: await loadLauncherSettings(enableLauncherSettings),
+      launcherSettings,
       processConfig: loadProcessConfig(env),
-      settings: await loadSettings(settingsString),
+      settings,
       validWebSocketOrigins: ['localhost:', 'http://localhost:'],
       type,
     },
