@@ -14,6 +14,7 @@ import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin
 import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.sample.tutorial.plugin.SeaMammalFlipperPlugin
+import com.facebook.fresco.vito.init.FrescoVito
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.editor.flipper.LithoFlipperDescriptors
 import com.facebook.soloader.SoLoader
@@ -24,6 +25,7 @@ class TutorialApplication : Application() {
 
     SoLoader.init(this, false)
     Fresco.initialize(this)
+    FrescoVito.initialize()
 
     // Normally, you would want to make these dependent on BuildConfig.DEBUG.
     ComponentsConfiguration.isDebugModeEnabled = true

@@ -67,6 +67,10 @@ dependencies {
     implementation deps.lithoSectionsDebug
     implementation deps.lithoSectionsWidget
     implementation deps.fresco
+    implementation deps.frescoUiCommon
+    implementation deps.frescoVito
+    implementation deps.frescoVitoCore
+    implementation deps.frescoVitoLitho
     kapt deps.lithoProcessor
     kapt deps.lithoSectionsProcessor
 }

@@ -14,6 +14,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.sample.network.NetworkClient;
+import com.facebook.fresco.vito.init.FrescoVito;
 import com.facebook.soloader.SoLoader;
 
 public class FlipperSampleApplication extends Application {
@@ -22,6 +23,7 @@ public class FlipperSampleApplication extends Application {
     super.onCreate();
     SoLoader.init(this, false);
     Fresco.initialize(this);
+    FrescoVito.initialize();
 
     final FlipperClient client = AndroidFlipperClient.getInstance(this);
     assert client != null;
