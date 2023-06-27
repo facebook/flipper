@@ -1,0 +1,5 @@
+This is a check-in of https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-main/compose/ui/ui-inspection/src/main/java/androidx/compose/ui/inspection
+
+The classes are currently not exported but we rely on them for debug information.
+
+Tree: 59746be8ea17d5753471bd285b3fbc9cf8ea7c31
