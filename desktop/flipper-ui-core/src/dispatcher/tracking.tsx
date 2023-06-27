@@ -71,7 +71,6 @@ export function emitBytesReceived(plugin: string, bytes: number) {
     bytesReceivedEmitter.emit('bytesReceived', plugin, bytes);
   }
 }
-
 export default (store: Store, logger: Logger) => {
   const renderHost = getRenderHostInstance();
   sideEffect(
@@ -142,12 +141,14 @@ export default (store: Store, logger: Logger) => {
     );
   }
 
-  renderHost.onIpcEvent('trackUsage', (...args: any[]) => {
+  const trackUsage = (...args: any[]) => {
     let state: State;
     try {
       state = store.getState();
     } catch (e) {
-      // if trackUsage is called (indirectly) through a reducer, this will utterly die Flipper. Let's prevent that and log an error instead
+      // If trackUsage is called (indirectly) through a reducer,
+      // this will utterly kill Flipper.
+      // Let's prevent that and log an error instead.
       console.error(
         'trackUsage triggered indirectly as side effect of a reducer',
         e,
@@ -241,7 +242,11 @@ export default (store: Store, logger: Logger) => {
     largeFrameDrops = 0;
 
     logger.track('usage', 'ping', info);
-  });
+  };
+
+  renderHost.onIpcEvent('trackUsage', trackUsage);
+
+  setInterval(trackUsage, 60 * 1000);
 };
 
 export function computeUsageSummary(

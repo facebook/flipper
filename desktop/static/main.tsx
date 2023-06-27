@@ -118,13 +118,6 @@ let deeplinkURL: string | undefined = argv.url;
 let filePath: string | undefined = argv.file;
 let didMount = false;
 
-// tracking
-setInterval(() => {
-  if (win) {
-    win.webContents.send('trackUsage');
-  }
-}, 60 * 1000);
-
 // check if we already have an instance of this app open
 const gotTheLock = app.requestSingleInstanceLock();
 
