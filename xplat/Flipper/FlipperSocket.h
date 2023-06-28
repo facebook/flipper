@@ -37,7 +37,7 @@ class FlipperSocket {
     used or error.
     @param manager An instance of FlipperConnectionManager.
   */
-  virtual bool connect(FlipperConnectionManager* manager) = 0;
+  virtual void connect(FlipperConnectionManager* manager) = 0;
   /**
     Disconnect from the endpoint.
   */

@@ -62,9 +62,9 @@ WebSocketClient::~WebSocketClient() {
   disconnect();
 }
 
-bool WebSocketClient::connect(FlipperConnectionManager* manager) {
+void WebSocketClient::connect(FlipperConnectionManager*) {
   if (status_ != Status::Unconnected) {
-    return false;
+    return;
   }
 
   status_ = Status::Connecting;
@@ -89,7 +89,8 @@ bool WebSocketClient::connect(FlipperConnectionManager* manager) {
 
   if (ec) {
     status_ = Status::Failed;
-    return false;
+    eventHandler_(SocketEvent::ERROR);
+    return;
   }
 
   handle_ = connection_->get_handle();
@@ -119,18 +120,7 @@ bool WebSocketClient::connect(FlipperConnectionManager* manager) {
       &socket_,
       websocketpp::lib::placeholders::_1));
 
-  auto connected = connected_.get_future();
-
   socket_.connect(connection_);
-
-  auto state = connected.wait_for(std::chrono::seconds(10));
-  if (state == std::future_status::ready) {
-    return connected.get();
-  }
-
-  disconnect();
-
-  return false;
 }
 
 void WebSocketClient::disconnect() {
@@ -147,8 +137,6 @@ void WebSocketClient::disconnect() {
     thread_->join();
   }
   thread_ = nullptr;
-  scheduler_->schedule(
-      [eventHandler = eventHandler_]() { eventHandler(SocketEvent::CLOSE); });
 }
 
 void WebSocketClient::send(
@@ -204,8 +192,7 @@ void WebSocketClient::onOpen(SocketClient* c, websocketpp::connection_hdl hdl) {
   }
 
   status_ = Status::Initializing;
-  scheduler_->schedule(
-      [eventHandler = eventHandler_]() { eventHandler(SocketEvent::OPEN); });
+  eventHandler_(SocketEvent::OPEN);
 }
 
 void WebSocketClient::onMessage(
@@ -229,16 +216,14 @@ void WebSocketClient::onFail(SocketClient* c, websocketpp::connection_hdl hdl) {
     connected_.set_value(false);
   }
   status_ = Status::Failed;
-  scheduler_->schedule(
-      [eventHandler = eventHandler_]() { eventHandler(SocketEvent::ERROR); });
+  eventHandler_(SocketEvent::ERROR);
 }
 
 void WebSocketClient::onClose(
     SocketClient* c,
     websocketpp::connection_hdl hdl) {
   status_ = Status::Closed;
-  scheduler_->schedule(
-      [eventHandler = eventHandler_]() { eventHandler(SocketEvent::CLOSE); });
+  eventHandler_(SocketEvent::CLOSE);
 }
 
 } // namespace flipper

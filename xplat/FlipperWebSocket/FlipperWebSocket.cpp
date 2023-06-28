@@ -60,8 +60,8 @@ void FlipperWebSocket::setMessageHandler(SocketMessageHandler messageHandler) {
   socket_->setMessageHandler(messageHandler);
 }
 
-bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
-  return socket_->connect(manager);
+void FlipperWebSocket::connect(FlipperConnectionManager* manager) {
+  socket_->connect(manager);
 }
 
 void FlipperWebSocket::disconnect() {

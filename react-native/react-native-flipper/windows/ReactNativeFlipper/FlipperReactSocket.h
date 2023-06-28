@@ -37,7 +37,7 @@ class FlipperReactSocket : public FlipperSocket {
   virtual void setEventHandler(SocketEventHandler eventHandler) override;
   virtual void setMessageHandler(SocketMessageHandler messageHandler) override;
 
-  virtual bool connect(FlipperConnectionManager* manager) override;
+  virtual void connect(FlipperConnectionManager* manager) override;
   virtual void disconnect() override;
 
   virtual void send(const folly::dynamic& message, SocketSendHandler completion)

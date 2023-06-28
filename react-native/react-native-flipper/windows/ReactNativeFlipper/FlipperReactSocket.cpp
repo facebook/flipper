@@ -55,8 +55,8 @@ void FlipperReactSocket::setMessageHandler(
   socket_->setMessageHandler(messageHandler);
 }
 
-bool FlipperReactSocket::connect(FlipperConnectionManager* manager) {
-  return socket_->connect(manager);
+void FlipperReactSocket::connect(FlipperConnectionManager* manager) {
+  socket_->connect(manager);
 }
 
 void FlipperReactSocket::disconnect() {

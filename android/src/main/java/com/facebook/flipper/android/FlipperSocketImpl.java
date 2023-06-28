@@ -117,7 +117,7 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
       this.connect();
     } catch (Exception e) {
-      Log.e("Flipper", "Failed to initialize the socket before connect. " + e.getMessage());
+      Log.e("flipper", "Failed to initialize the socket before connect. Error: " + e.getMessage());
       this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.ERROR);
     }
   }
@@ -139,6 +139,13 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
   @Override
   public void onClose(int code, String reason, boolean remote) {
+    /**
+     * If the socket is not yet open, don't report the close event. Usually, onError is invoked
+     * instead which is the one that needs reporting.
+     */
+    if (!this.isOpen()) {
+      return;
+    }
     this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.CLOSE);
   }
 
@@ -162,7 +169,6 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
   @Override
   public void flipperDisconnect() {
-    this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.CLOSE);
     this.mEventHandler =
         new FlipperSocketEventHandler() {
           @Override
