@@ -4,7 +4,7 @@ flipperkit_version = '0.202.0'
 use_frameworks!
 
 target 'Tutorial' do
-  platform :ios, '10.0'
+  platform :ios, '11.0'
 
   pod 'FlipperKit', '~>' + flipperkit_version
   # Layout and network plugins are not yet supported for swift projects

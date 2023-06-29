@@ -68,7 +68,7 @@ PODS:
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
   - RenderCore (0.31)
-  - SocketRocket (0.6.0)
+  - SocketRocket (0.6.1)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -109,9 +109,9 @@ SPEC CHECKSUMS:
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RenderCore: 090beb17b5bff80b86929a7ceb49df789923d23a
-  SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
+  SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
 
-PODFILE CHECKSUM: 56cead5fb78b13d37cf53ec82af754613862122f
+PODFILE CHECKSUM: 9e05a8202a727b5dbb5ec9f1b24b697fe353178f
 
 COCOAPODS: 1.12.1
