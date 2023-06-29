@@ -107,13 +107,11 @@ void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
         }
         break;
       case SocketEvent::SSL_ERROR:
-        log("[conn] handleSocketEvent(SSL_ERROR)");
         failedConnectionAttempts_++;
         reconnect();
         break;
       case SocketEvent::CLOSE:
       case SocketEvent::ERROR:
-        log("[conn] handleSocketEvent(CLOSE_ERROR)");
         if (!isConnected_) {
           reconnect();
           return;
@@ -182,7 +180,6 @@ void FlipperConnectionManagerImpl::startSync() {
 }
 
 void FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
-  log("[conn] connectAndExchangeCertificate()");
   auto port = insecurePort;
   auto endpoint = FlipperConnectionEndpoint(deviceData_.host, port, false);
 
@@ -265,7 +262,6 @@ void FlipperConnectionManagerImpl::reconnect() {
     log("Not started");
     return;
   }
-  log("[conn] reconnect()");
   scheduler_->scheduleAfter(
       [this]() { startSync(); }, RECONNECT_INTERVAL_SECONDS * 1000.0f);
 }
