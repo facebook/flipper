@@ -1,0 +1,13 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'PortForwardingMacApp' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  #use_frameworks!
+  platform :osx, '11'
+
+  # Pods for PortForwardingMacApp
+  pod 'Flipper-PeerTalk', '~>0.0'
+  pod 'CocoaAsyncSocket', '~>7.6'
+
+end

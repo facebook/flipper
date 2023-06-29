@@ -1,0 +1,20 @@
+PODS:
+  - CocoaAsyncSocket (7.6.5)
+  - Flipper-PeerTalk (0.0.4)
+
+DEPENDENCIES:
+  - CocoaAsyncSocket (~> 7.6)
+  - Flipper-PeerTalk (~> 0.0)
+
+SPEC REPOS:
+  trunk:
+    - CocoaAsyncSocket
+    - Flipper-PeerTalk
+
+SPEC CHECKSUMS:
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
+  Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
+
+PODFILE CHECKSUM: 861e0c9ba6cbdc85168a923850426dcf49e444fa
+
+COCOAPODS: 1.11.2
