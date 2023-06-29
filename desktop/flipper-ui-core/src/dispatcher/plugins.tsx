@@ -8,17 +8,17 @@
  */
 
 import type {Store} from '../reducers/index';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import ReactDOMClient from 'react-dom/client';
+import ReactIs from 'react-is';
 import {
   InstalledPluginDetails,
   Logger,
   MarketplacePluginDetails,
 } from 'flipper-common';
 import {PluginDefinition} from '../plugin';
-import React from 'react';
 import * as ReactJsxRuntime from 'react/jsx-runtime';
-import ReactDOM from 'react-dom';
-import ReactDOMClient from 'react-dom/client';
-import ReactIs from 'react-is';
 import {
   registerPlugins,
   addGatekeepedPlugins,

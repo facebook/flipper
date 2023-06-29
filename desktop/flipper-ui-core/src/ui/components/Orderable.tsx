@@ -9,8 +9,7 @@
 
 import {Rect} from '../../utils/geometry';
 import styled from '@emotion/styled';
-import {Component} from 'react';
-import React from 'react';
+import React, {Component} from 'react';
 
 export type OrderableOrder = Array<string>;
 

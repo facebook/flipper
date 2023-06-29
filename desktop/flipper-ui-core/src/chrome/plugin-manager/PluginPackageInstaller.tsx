@@ -7,6 +7,7 @@
  * @format
  */
 
+import React, {useState} from 'react';
 import {
   Button,
   FlexRow,
@@ -16,7 +17,6 @@ import {
   LoadingIndicator,
 } from '../../ui';
 import styled from '@emotion/styled';
-import React, {useState} from 'react';
 import {Toolbar, FileSelector} from 'flipper-plugin';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 

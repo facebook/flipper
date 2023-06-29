@@ -7,8 +7,8 @@
  * @format
  */
 
-import {Markdown} from '../ui';
 import React, {Component} from 'react';
+import {Markdown} from '../ui';
 import {reportUsage} from 'flipper-common';
 import {Modal} from 'antd';
 import {Dialog, theme} from 'flipper-plugin';

@@ -7,10 +7,10 @@
  * @format
  */
 
+import React, {useEffect, useState} from 'react';
 import {notification, Typography} from 'antd';
 import isProduction from '../utils/isProduction';
 import {reportPlatformFailures, ReleaseChannel} from 'flipper-common';
-import React, {useEffect, useState} from 'react';
 import fbConfig from '../fb-stubs/config';
 import {useStore} from '../utils/useStore';
 import {getAppVersion} from '../utils/info';

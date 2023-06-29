@@ -7,8 +7,8 @@
  * @format
  */
 
-import {Button as AntButton, message} from 'antd';
 import React, {useState, useCallback} from 'react';
+import {Button as AntButton, message} from 'antd';
 import {capture, getCaptureLocation, getFileName} from '../utils/screenshot';
 import {CameraOutlined, VideoCameraOutlined} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';

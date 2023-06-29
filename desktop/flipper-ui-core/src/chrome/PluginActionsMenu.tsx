@@ -7,6 +7,7 @@
  * @format
  */
 
+import React, {useEffect} from 'react';
 import Icon, {MacCommandOutlined} from '@ant-design/icons';
 import {css} from '@emotion/css';
 import {Button, Menu, MenuItemProps, Row, Tooltip} from 'antd';
@@ -16,7 +17,6 @@ import {
   TrackingScope,
   useTrackedCallback,
 } from 'flipper-plugin';
-import React, {useEffect} from 'react';
 import {getActivePlugin} from '../selectors/connections';
 import {registerShortcut} from '../utils/registerShortcut';
 import {useStore} from '../utils/useStore';

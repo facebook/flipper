@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createPortal} from 'react-dom';
 import {ElementsInspectorElement} from 'flipper-plugin';
 import styled from '@emotion/styled';
 
@@ -39,7 +39,7 @@ export function VisualizerPortal(props: {
         }
       : null;
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <Visualizer
       screenDimensions={props.screenDimensions}
       element={position}

@@ -7,6 +7,7 @@
  * @format
  */
 
+import React, {useCallback, useState} from 'react';
 import {
   DataInspector,
   DataTable,
@@ -24,7 +25,6 @@ import {
   PauseCircleOutlined,
   PlayCircleOutlined,
 } from '@ant-design/icons';
-import React, {useCallback, useState} from 'react';
 
 export type MessageInfo = {
   time?: Date;

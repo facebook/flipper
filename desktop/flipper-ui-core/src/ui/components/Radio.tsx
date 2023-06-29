@@ -7,9 +7,8 @@
  * @format
  */
 
-import {PureComponent} from 'react';
+import React, {PureComponent} from 'react';
 import styled from '@emotion/styled';
-import React from 'react';
 
 type RadioProps = {
   /** Whether the radio button is checked. */

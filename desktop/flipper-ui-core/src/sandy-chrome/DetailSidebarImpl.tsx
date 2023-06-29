@@ -8,7 +8,7 @@
  */
 
 import React, {useEffect, useState} from 'react';
-import ReactDOM from 'react-dom';
+import {createPortal} from 'react-dom';
 import {toggleRightSidebarAvailable} from '../reducers/application';
 import {useDispatch, useStore} from '../utils/useStore';
 import {ContentContainer} from '../sandy-chrome/ContentContainer';
@@ -68,7 +68,7 @@ export function DetailSidebarImpl({
     (children &&
       rightSidebarVisible &&
       domNode &&
-      ReactDOM.createPortal(
+      createPortal(
         <_Sidebar
           minWidth={minWidth}
           width={width || 300}

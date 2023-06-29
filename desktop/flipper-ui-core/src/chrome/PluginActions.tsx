@@ -7,6 +7,7 @@
  * @format
  */
 
+import React, {useMemo, useCallback} from 'react';
 import {
   DownloadOutlined,
   LoadingOutlined,
@@ -14,8 +15,6 @@ import {
 } from '@ant-design/icons';
 import {Alert, Button} from 'antd';
 import {DownloadablePluginDetails} from 'flipper-common';
-import React, {useMemo} from 'react';
-import {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {PluginDefinition} from '../plugin';
 import {startPluginDownload} from '../reducers/pluginDownloads';

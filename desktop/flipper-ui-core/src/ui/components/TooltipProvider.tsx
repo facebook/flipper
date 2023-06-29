@@ -7,11 +7,10 @@
  * @format
  */
 
+import React, {memo, createContext, useMemo, useState, useRef} from 'react';
 import styled from '@emotion/styled';
 import {colors} from './colors';
-import {memo, createContext, useMemo, useState, useRef} from 'react';
 import {Property} from 'csstype';
-import React from 'react';
 
 const defaultOptions = {
   backgroundColor: colors.blueGray,

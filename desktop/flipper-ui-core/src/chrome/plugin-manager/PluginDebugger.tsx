@@ -7,11 +7,11 @@
  * @format
  */
 
+import React, {Component} from 'react';
 import {PluginDetails} from 'flipper-common';
 import {Layout} from 'flipper-plugin';
 import Client from '../../Client';
 import {TableBodyRow} from '../../ui/components/table/types';
-import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Text, ManagedTable, styled, colors} from '../../ui';
 import StatusIndicator from '../../ui/components/StatusIndicator';

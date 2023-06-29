@@ -7,7 +7,14 @@
  * @format
  */
 
-import React, {cloneElement, useState, useCallback, useMemo} from 'react';
+import React, {
+  cloneElement,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
+
 import {
   Button,
   Divider,
@@ -77,7 +84,6 @@ import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {StyleGuide} from './StyleGuide';
-import {useEffect} from 'react';
 import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({

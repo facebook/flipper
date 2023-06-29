@@ -7,9 +7,9 @@
  * @format
  */
 
+import React from 'react';
 import {Notification} from 'flipper-plugin';
 import {Actions} from './';
-import React from 'react';
 import {getStringFromErrorLike} from 'flipper-common';
 
 export const GLOBAL_NOTIFICATION_PLUGIN_ID = 'Flipper';

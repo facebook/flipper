@@ -7,9 +7,9 @@
  * @format
  */
 
+import React, {useContext, useCallback, useRef, useEffect} from 'react';
 import {TooltipOptions, TooltipContext} from './TooltipProvider';
 import styled from '@emotion/styled';
-import React, {useContext, useCallback, useRef, useEffect} from 'react';
 
 const TooltipContainer = styled.div({
   display: 'contents',
