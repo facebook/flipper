@@ -1,7 +1,7 @@
 # Uncomment the next line to define a global platform for your project
 source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
-platform :ios, '10.0'
+platform :ios, '11.0'
 swift_version = "4.1"
 target 'FlipperKit' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
@@ -15,6 +15,6 @@ target 'FlipperKit' do
   pod 'glog', '~>0.3'
   pod 'Flipper-Folly', '~>2.2'
   pod 'CocoaAsyncSocket', '~>7.6'
-  pod 'SocketRocket', '~> 0.6.0'
+  pod 'SocketRocket', '~> 0.7.0'
 
 end

@@ -40,7 +40,7 @@ class FlipperReactSocketClient : public FlipperReactBaseSocket {
 
   virtual ~FlipperReactSocketClient();
 
-  virtual bool connect(FlipperConnectionManager* manager) override;
+  virtual void connect(FlipperConnectionManager* manager) override;
   virtual void disconnect() override;
 
   virtual void send(const folly::dynamic& message, SocketSendHandler completion)
@@ -61,7 +61,6 @@ class FlipperReactSocketClient : public FlipperReactBaseSocket {
           args);
 
  private:
-  std::promise<bool> connected_;
   winrt::Windows::Networking::Sockets::MessageWebSocket socket_;
   winrt::event_token messageReceivedEventToken_;
   winrt::event_token closedEventToken_;

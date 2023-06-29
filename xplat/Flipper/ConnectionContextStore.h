@@ -57,11 +57,18 @@ class ConnectionContextStore {
    */
   std::pair<std::string, std::string> getCertificate();
 
+  /** Is there a CSR present.
+   */
+  bool hasCertificateSigningRequest() const;
+  /** Is there a client certificate present.
+   */
+  bool hasClientCertificate() const;
+
  private:
   DeviceData deviceData_;
-  std::string csr = "";
+  std::string csr_ = "";
 
-  std::string absoluteFilePath(const char* filename);
+  std::string absoluteFilePath(const char* filename) const;
 };
 
 } // namespace flipper

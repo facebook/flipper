@@ -181,11 +181,6 @@ static constexpr int connectionKeepaliveSeconds = 10;
 
   [_dispatchQueue cancelAllOperations];
   [_dispatchQueue waitUntilAllOperationsAreFinished];
-
-  // Manually trigger a 'close' event as SocketRocket close method will
-  // not notify the delegate. SocketRocket only triggers the close event
-  // when the connection is closed from the server.
-  _eventHandler(facebook::flipper::SocketEvent::CLOSE);
 }
 
 - (void)send:(NSString*)message

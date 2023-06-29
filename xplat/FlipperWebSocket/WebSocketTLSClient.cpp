@@ -65,9 +65,9 @@ WebSocketTLSClient::~WebSocketTLSClient() {
   disconnect();
 }
 
-bool WebSocketTLSClient::connect(FlipperConnectionManager* manager) {
+void WebSocketTLSClient::connect(FlipperConnectionManager*) {
   if (status_ != Status::Unconnected) {
-    return false;
+    return;
   }
 
   status_ = Status::Connecting;
@@ -98,7 +98,8 @@ bool WebSocketTLSClient::connect(FlipperConnectionManager* manager) {
 
   if (ec) {
     status_ = Status::Failed;
-    return false;
+    eventHandler_(SocketEvent::ERROR);
+    return;
   }
 
   handle_ = connection_->get_handle();
@@ -128,18 +129,7 @@ bool WebSocketTLSClient::connect(FlipperConnectionManager* manager) {
       &socket_,
       websocketpp::lib::placeholders::_1));
 
-  auto connected = connected_.get_future();
-
   socket_.connect(connection_);
-
-  auto state = connected.wait_for(std::chrono::seconds(10));
-  if (state == std::future_status::ready) {
-    return connected.get();
-  }
-
-  disconnect();
-
-  return false;
 }
 
 void WebSocketTLSClient::disconnect() {
@@ -157,8 +147,6 @@ void WebSocketTLSClient::disconnect() {
   }
 
   thread_ = nullptr;
-  scheduler_->schedule(
-      [eventHandler = eventHandler_]() { eventHandler(SocketEvent::CLOSE); });
 }
 
 void WebSocketTLSClient::send(
@@ -211,13 +199,8 @@ void WebSocketTLSClient::sendExpectResponse(
 void WebSocketTLSClient::onOpen(
     SocketTLSClient* c,
     websocketpp::connection_hdl hdl) {
-  if (status_ == Status::Connecting) {
-    connected_.set_value(true);
-  }
-
   status_ = Status::Initializing;
-  scheduler_->schedule(
-      [eventHandler = eventHandler_]() { eventHandler(SocketEvent::OPEN); });
+  eventHandler_(SocketEvent::OPEN);
 }
 
 void WebSocketTLSClient::onMessage(
@@ -242,36 +225,19 @@ void WebSocketTLSClient::onFail(
       (reason.find("TLS handshake failed") != std::string::npos ||
        reason.find("Generic TLS related error") != std::string::npos);
 
-  if (status_ == Status::Connecting) {
-    if (sslError) {
-      try {
-        connected_.set_exception(
-            std::make_exception_ptr(SSLException("SSL handshake failed")));
-      } catch (...) {
-        // set_exception() may throw an exception
-        // In that case, just set the value to false.
-        connected_.set_value(false);
-      }
-    } else {
-      connected_.set_value(false);
-    }
-  }
   status_ = Status::Failed;
-  scheduler_->schedule([eventHandler = eventHandler_, sslError]() {
-    if (sslError) {
-      eventHandler(SocketEvent::SSL_ERROR);
-    } else {
-      eventHandler(SocketEvent::ERROR);
-    }
-  });
+  if (sslError) {
+    eventHandler_(SocketEvent::SSL_ERROR);
+  } else {
+    eventHandler_(SocketEvent::ERROR);
+  }
 }
 
 void WebSocketTLSClient::onClose(
     SocketTLSClient* c,
     websocketpp::connection_hdl hdl) {
   status_ = Status::Closed;
-  scheduler_->schedule(
-      [eventHandler = eventHandler_]() { eventHandler(SocketEvent::CLOSE); });
+  eventHandler_(SocketEvent::CLOSE);
 }
 
 SocketTLSContext WebSocketTLSClient::onTLSInit(

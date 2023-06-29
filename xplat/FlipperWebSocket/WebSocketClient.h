@@ -47,7 +47,7 @@ class WebSocketClient : public BaseClient {
 
   virtual ~WebSocketClient();
 
-  virtual bool connect(FlipperConnectionManager* manager) override;
+  virtual void connect(FlipperConnectionManager* manager) override;
   virtual void disconnect() override;
 
   virtual void send(const folly::dynamic& message, SocketSendHandler completion)

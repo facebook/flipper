@@ -276,9 +276,9 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
     messageHandler_ = std::move(messageHandler);
   }
 
-  virtual bool connect(FlipperConnectionManager* manager) override {
+  virtual void connect(FlipperConnectionManager* manager) override {
     if (socket_ != nullptr) {
-      return true;
+      return;
     }
 
     std::string connectionURL = endpoint_.secure ? "wss://" : "ws://";
@@ -297,38 +297,9 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
 
     auto secure = endpoint_.secure;
 
-    std::promise<bool> promise;
-    auto connected = promise.get_future();
-
-    connecting_ = true;
-
     socket_ = make_global(JFlipperSocketImpl::create(connectionURL));
     socket_->setEventHandler(JFlipperSocketEventHandlerImpl::newObjectCxxArgs(
-        [this, &promise, eventHandler = eventHandler_](SocketEvent event) {
-          /**
-             Only fulfill the promise the first time the event handler is used.
-             If the open event is received, then set the promise value to true.
-             For any other event, consider a failure and set to false.
-           */
-          if (this->connecting_) {
-            this->connecting_ = false;
-            if (event == SocketEvent::OPEN) {
-              promise.set_value(true);
-            } else if (event == SocketEvent::SSL_ERROR) {
-              try {
-                promise.set_exception(
-                    std::make_exception_ptr(folly::AsyncSocketException(
-                        folly::AsyncSocketException::SSL_ERROR,
-                        "SSL handshake failed")));
-              } catch (...) {
-                // set_exception() may throw an exception
-                // In that case, just set the value to false.
-                promise.set_value(false);
-              }
-            } else {
-              promise.set_value(false);
-            }
-          }
+        [eventHandler = eventHandler_](SocketEvent event) {
           eventHandler(event);
         },
         [messageHandler = messageHandler_](const std::string& message) {
@@ -348,8 +319,6 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
           return JFlipperObject::create(std::move(object_));
         }));
     socket_->connect();
-
-    return connected.get();
   }
 
   virtual void disconnect() override {
@@ -409,7 +378,6 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
   facebook::flipper::SocketMessageHandler messageHandler_;
 
   jni::global_ref<JFlipperSocketImpl> socket_;
-  bool connecting_;
 };
 
 class JFlipperSocketProvider : public facebook::flipper::FlipperSocketProvider {
