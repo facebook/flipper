@@ -7,6 +7,7 @@
  * @format
  */
 
+import React, {useState, useEffect} from 'react';
 import {
   FlexColumn,
   styled,
@@ -16,7 +17,6 @@ import {
   colors,
   Glyph,
 } from '../../ui';
-import React, {useState, useEffect} from 'react';
 import {getFlipperLib, theme} from 'flipper-plugin';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 

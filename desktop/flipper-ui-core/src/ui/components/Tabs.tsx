@@ -7,6 +7,7 @@
  * @format
  */
 
+import React, {useContext} from 'react';
 import FlexColumn from './FlexColumn';
 import styled from '@emotion/styled';
 import Orderable from './Orderable';
@@ -14,7 +15,6 @@ import FlexRow from './FlexRow';
 import {colors} from './colors';
 import Tab, {Props as TabProps} from './Tab';
 import {Property} from 'csstype';
-import React, {useContext} from 'react';
 import {TabsContext} from './TabsContainer';
 import {theme, _wrapInteractionHandler} from 'flipper-plugin';
 

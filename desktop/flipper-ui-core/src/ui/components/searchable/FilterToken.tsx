@@ -8,10 +8,9 @@
  */
 
 import {Filter} from '../filter/types';
-import {PureComponent} from 'react';
+import React, {PureComponent} from 'react';
 import Text from '../Text';
 import styled from '@emotion/styled';
-import React from 'react';
 import {Property} from 'csstype';
 import {theme} from 'flipper-plugin';
 import {ContextMenuItem, createContextMenu} from '../ContextMenu';

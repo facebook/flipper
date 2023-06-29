@@ -7,8 +7,8 @@
  * @format
  */
 
-import {Layout} from '../ui';
 import React from 'react';
+import {Layout} from '../ui';
 import {Tab, Tabs} from 'flipper-plugin';
 import {ConsoleLogs} from './ConsoleLogs';
 import {FlipperMessages} from './FlipperMessages';

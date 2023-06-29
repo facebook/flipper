@@ -7,9 +7,9 @@
  * @format
  */
 
+import React from 'react';
 import {Button, Typography} from 'antd';
 import {Layout, Spinner} from 'flipper-plugin';
-import React from 'react';
 
 const {Text} = Typography;
 

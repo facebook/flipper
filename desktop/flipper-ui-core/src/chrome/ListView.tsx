@@ -7,6 +7,7 @@
  * @format
  */
 
+import React, {Component} from 'react';
 import {
   Text,
   FlexColumn,
@@ -20,7 +21,6 @@ import {
   Tooltip,
   Glyph,
 } from '../ui';
-import React, {Component} from 'react';
 import {theme} from 'flipper-plugin';
 
 export type SelectionType = 'multiple' | 'single';

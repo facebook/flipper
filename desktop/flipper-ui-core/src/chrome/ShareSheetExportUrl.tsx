@@ -7,8 +7,8 @@
  * @format
  */
 
-import {FlexColumn, styled, Text, FlexRow, Spacer, Input} from '../ui';
 import React, {Component} from 'react';
+import {FlexColumn, styled, Text, FlexRow, Spacer, Input} from '../ui';
 import {ReactReduxContext, ReactReduxContextValue} from 'react-redux';
 import {Logger} from 'flipper-common';
 import {IdlerImpl} from '../utils/Idler';

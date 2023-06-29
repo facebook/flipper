@@ -7,8 +7,8 @@
  * @format
  */
 
-import {connect} from 'react-redux';
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
 import ListView from './ListView';
 import {FlexColumn, styled} from '../ui';

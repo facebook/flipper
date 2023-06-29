@@ -7,8 +7,7 @@
  * @format
  */
 
-import {useMemo} from 'react';
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Console} from 'console-feed';
 import type {Methods} from 'console-feed/lib/definitions/Methods';
 import type {Styles} from 'console-feed/lib/definitions/Styles';

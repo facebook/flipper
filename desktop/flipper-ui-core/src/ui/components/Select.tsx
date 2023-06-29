@@ -7,10 +7,9 @@
  * @format
  */
 
-import {Component, CSSProperties} from 'react';
+import React, {Component, CSSProperties} from 'react';
 import Text from './Text';
 import styled from '@emotion/styled';
-import React from 'react';
 import {theme} from 'flipper-plugin';
 
 const Label = styled.label({

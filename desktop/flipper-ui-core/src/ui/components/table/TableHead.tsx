@@ -15,14 +15,13 @@ import {
   TableOnSort,
   TableRowSortOrder,
 } from './types';
+import React, {PureComponent} from 'react';
 import {normalizeColumnWidth, isPercentage} from './utils';
-import {PureComponent} from 'react';
 import ContextMenu, {ContextMenuItem} from '../ContextMenu';
 import {theme, _Interactive, _InteractiveProps} from 'flipper-plugin';
 import styled from '@emotion/styled';
 import {colors} from '../colors';
 import FlexRow from '../FlexRow';
-import React from 'react';
 
 const TableHeaderArrow = styled.span({
   float: 'right',

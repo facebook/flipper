@@ -8,12 +8,11 @@
  */
 
 import {CodeBlock} from 'flipper-plugin';
-import {Component, ErrorInfo} from 'react';
+import React, {Component, ErrorInfo} from 'react';
 import Heading from './Heading';
 import Button from './Button';
 import View from './View';
 import styled from '@emotion/styled';
-import React from 'react';
 
 const ErrorBoundaryContainer = styled(View)({
   overflow: 'auto',

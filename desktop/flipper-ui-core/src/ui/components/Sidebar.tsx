@@ -7,12 +7,11 @@
  * @format
  */
 
+import React, {Component} from 'react';
 import {theme, _Interactive, _InteractiveProps} from 'flipper-plugin';
 import FlexColumn from './FlexColumn';
-import {Component} from 'react';
 import styled from '@emotion/styled';
 import {Property} from 'csstype';
-import React from 'react';
 
 const SidebarInteractiveContainer = styled(_Interactive)<_InteractiveProps>({
   flex: 'none',

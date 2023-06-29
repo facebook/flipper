@@ -9,7 +9,7 @@
 
 import {Filter} from '../filter/types';
 import {TableColumns} from '../table/types';
-import {PureComponent} from 'react';
+import React, {PureComponent} from 'react';
 import Input from '../Input';
 import Text from '../Text';
 import FlexBox from '../FlexBox';
@@ -18,7 +18,6 @@ import FilterToken from './FilterToken';
 import styled from '@emotion/styled';
 import {debounce} from 'lodash';
 import ToggleButton from '../ToggleSwitch';
-import React from 'react';
 import {Layout, theme, Toolbar} from 'flipper-plugin';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 

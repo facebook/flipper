@@ -7,14 +7,13 @@
  * @format
  */
 
+import React, {Component} from 'react';
 import {ElementsInspectorElement} from 'flipper-plugin';
 import {PluginClient} from '../../../plugin';
 import Client from '../../../Client';
 import {Logger} from 'flipper-common';
 import Panel from '../Panel';
 import {DataInspector} from 'flipper-plugin';
-import {Component} from 'react';
-import React from 'react';
 
 import deepEqual from 'deep-equal';
 

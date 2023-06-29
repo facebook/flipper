@@ -7,9 +7,9 @@
  * @format
  */
 
+import React, {useCallback, useState, useEffect} from 'react';
 import {Layout, theme} from 'flipper-plugin';
 import {LoadingIndicator, TableRows, ManagedTable, Glyph} from '../../ui';
-import React, {useCallback, useState, useEffect} from 'react';
 import {
   reportPlatformFailures,
   reportUsage,
