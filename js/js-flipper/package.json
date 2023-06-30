@@ -49,7 +49,7 @@
     "@typescript-eslint/parser": "5.59.6",
     "ansi-to-html": "^0.7.2",
     "cross-env": "^7.0.3",
-    "eslint": "8.40.0",
+    "eslint": "8.43.0",
     "eslint-config-fbjs": "^4.0.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^3.5.5",
