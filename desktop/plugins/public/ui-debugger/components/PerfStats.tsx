@@ -12,6 +12,7 @@ import {
   DynamicPerformanceStatsEvent,
   UIState,
   Id,
+  UINode,
 } from '../types';
 import React, {useMemo} from 'react';
 import {
@@ -25,6 +26,7 @@ import {
 
 export function PerfStats(props: {
   uiState: UIState;
+  nodes: Map<Id, UINode>;
   rootId?: Id;
   events: DataSource<DynamicPerformanceStatsEvent, number>;
 }) {
@@ -68,6 +70,8 @@ export function PerfStats(props: {
           data={{
             ...Object.fromEntries(uiStateValues),
             rootId: props.rootId,
+            nodesCount: props.nodes.size,
+            rootNode: props.nodes.get(props.rootId ?? 'noroot'),
           }}></DataInspector>
       </DetailSidebar>
     </Layout.Container>
