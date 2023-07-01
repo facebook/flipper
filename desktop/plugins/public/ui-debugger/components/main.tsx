@@ -50,6 +50,16 @@ export function Component() {
     setBottomPanelComponent(undefined);
   };
 
+  if (showPerfStats)
+    return (
+      <PerfStats
+        uiState={instance.uiState}
+        rootId={rootId}
+        nodes={nodes}
+        events={instance.perfEvents}
+      />
+    );
+
   if (streamState.state === 'FatalError') {
     return (
       <StreamInterceptorErrorView
@@ -77,15 +87,6 @@ export function Component() {
       />
     );
   }
-
-  if (showPerfStats)
-    return (
-      <PerfStats
-        uiState={instance.uiState}
-        rootId={rootId}
-        events={instance.perfEvents}
-      />
-    );
 
   if (rootId == null || streamState.state === 'RetryingAfterError') {
     return (
