@@ -178,17 +178,13 @@ void FlipperReactSocketClient::connect(FlipperConnectionManager* manager) {
   try {
     status_ = Status::Initializing;
 
-    Windows::Foundation::IAsyncAction ^ connectAction;
-    connectAction =
-        this->socket_.ConnectAsync(winrt::Windows::Foundation::Uri(uri));
-    connectAction->Completed = ref new AsyncActionCompletedHandler(
-        [eventHandler = eventHandler_](
-            Windows::Foundation::IAsyncAction ^ asyncAction,
-            Windows::Foundation::AsyncStatus asyncStatus) {
-          if (asyncStatus == Windows::Foundation::AsyncStatus::Completed) {
-            eventHandler(SocketEvent::OPEN);
+    this->socket_.ConnectAsync(winrt::Windows::Foundation::Uri(uri))
+        .Completed([&](auto&& asyncInfo, auto&& asyncStatus) {
+          if (asyncStatus ==
+              winrt::Windows::Foundation::AsyncStatus::Completed) {
+            eventHandler_(SocketEvent::OPEN);
           } else {
-            eventHandler(SocketEvent::ERROR);
+            eventHandler_(SocketEvent::ERROR);
           }
         });
 
@@ -198,7 +194,7 @@ void FlipperReactSocketClient::connect(FlipperConnectionManager* manager) {
             ex.to_abi())};
     socket_ = nullptr;
     status_ = Status::Unconnected;
-    eventHandler(SocketEvent::ERROR);
+    eventHandler_(SocketEvent::ERROR);
   }
 }
 
@@ -273,10 +269,11 @@ void FlipperReactSocketClient::OnWebSocketMessageReceived(
     const std::string payload = winrt::to_string(message);
 
     if (overrideHandler_ != nullptr) {
+      auto messageHandler = *overrideHandler_;
       messageHandler(payload, false);
       overrideHandler_ = nullptr;
     } else if (messageHandler_) {
-      messageHandler(payload);
+      messageHandler_(payload);
     }
   } catch (winrt::hresult_error const& ex) {
     // winrt::Windows::Web::WebErrorStatus webErrorStatus{
@@ -291,7 +288,7 @@ void FlipperReactSocketClient::OnWebSocketClosed(
     return;
   }
   status_ = Status::Closed;
-  eventHandler(SocketEvent::CLOSE);
+  eventHandler_(SocketEvent::CLOSE);
 }
 
 } // namespace flipper
