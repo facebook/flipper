@@ -92,6 +92,7 @@ void FlipperWebSocket::connect(FlipperConnectionManager* manager) {
         return std::string("");
       }
       strncpy(password, pkcs12.second.c_str(), length);
+      password[length - 1] = '\0';
       return pkcs12.first;
     };
   }
