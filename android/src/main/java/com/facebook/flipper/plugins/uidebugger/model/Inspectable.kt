@@ -35,11 +35,11 @@ sealed class InspectableValue : Inspectable() {
 
   @kotlinx.serialization.Serializable
   @SerialName("text")
-  class Text(val value: String) : InspectableValue()
+  data class Text(val value: String) : InspectableValue()
 
   @kotlinx.serialization.Serializable
   @SerialName("boolean")
-  class Boolean(val value: kotlin.Boolean) : InspectableValue()
+  data class Boolean(val value: kotlin.Boolean) : InspectableValue()
 
   @SerialName("number")
   @kotlinx.serialization.Serializable
