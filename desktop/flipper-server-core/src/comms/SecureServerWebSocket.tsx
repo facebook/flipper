@@ -8,7 +8,7 @@
  */
 
 import ServerWebSocket, {ConnectionCtx} from './ServerWebSocket';
-import {SecureClientQuery} from './ServerAdapter';
+import {SecureClientQuery} from './ServerWebSocketBase';
 import {ParsedUrlQuery} from 'querystring';
 import {ClientDescription} from 'flipper-common';
 import {

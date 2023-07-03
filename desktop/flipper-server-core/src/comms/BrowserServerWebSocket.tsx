@@ -16,7 +16,7 @@ import {assertNotNull, parseClientQuery} from './Utilities';
 import SecureServerWebSocket, {
   SecureConnectionCtx,
 } from './SecureServerWebSocket';
-import {SecureClientQuery} from './ServerAdapter';
+import {SecureClientQuery} from './ServerWebSocketBase';
 import {ClientDescription, DeviceOS} from 'flipper-common';
 import {URL} from 'url';
 import {isFBBuild} from '../fb-stubs/constants';

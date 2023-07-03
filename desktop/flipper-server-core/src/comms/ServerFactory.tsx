@@ -8,7 +8,7 @@
  */
 
 import {SecureServerConfig} from '../utils/certificateUtils';
-import ServerAdapter, {ServerEventsListener} from './ServerAdapter';
+import ServerWebSocketBase, {ServerEventsListener} from './ServerWebSocketBase';
 import ServerRSocket from './ServerRSocket';
 import SecureServerWebSocket from './SecureServerWebSocket';
 import BrowserServerWebSocket from './BrowserServerWebSocket';
@@ -31,8 +31,8 @@ export async function createServer(
   listener: ServerEventsListener,
   sslConfig?: SecureServerConfig,
   transportType: TransportType = TransportType.RSocket,
-): Promise<ServerAdapter> {
-  let server: ServerAdapter;
+): Promise<ServerWebSocketBase> {
+  let server: ServerWebSocketBase;
   if (transportType === TransportType.RSocket) {
     server = new ServerRSocket(listener);
   } else if (sslConfig) {
@@ -56,7 +56,7 @@ export async function createServer(
 export async function createBrowserServer(
   port: number,
   listener: ServerEventsListener,
-): Promise<ServerAdapter> {
+): Promise<ServerWebSocketBase> {
   const server = new BrowserServerWebSocket(listener);
   await server.start(port);
   return server;

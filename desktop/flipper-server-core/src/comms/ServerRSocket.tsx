@@ -8,10 +8,10 @@
  */
 
 import {SecureServerConfig} from '../utils/certificateUtils';
-import ServerAdapter, {
+import ServerWebSocketBase, {
   SecureClientQuery,
   ServerEventsListener,
-} from './ServerAdapter';
+} from './ServerWebSocketBase';
 import tls from 'tls';
 import net, {AddressInfo, Socket} from 'net';
 import {RSocketServer} from 'rsocket-core';
@@ -34,7 +34,7 @@ import {transformCertificateExchangeMediumToType} from './Utilities';
  * RSocket based server. RSocket uses its own protocol for communication between
  * client and server.
  */
-class ServerRSocket extends ServerAdapter {
+class ServerRSocket extends ServerWebSocketBase {
   rawServer_: RSocketServer<any, any> | null | undefined;
   constructor(listener: ServerEventsListener) {
     super(listener);

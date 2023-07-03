@@ -18,7 +18,7 @@ import WebSocket from 'ws';
 import {BrowserClientConnection} from '../BrowserClientConnection';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import BrowserServerWebSocket from '../BrowserServerWebSocket';
-import {SecureClientQuery} from '../ServerAdapter';
+import {SecureClientQuery} from '../ServerWebSocketBase';
 import {createMockSEListener, WSMessageAccumulator} from './utils';
 
 jest.mock('../../FlipperServerConfig');

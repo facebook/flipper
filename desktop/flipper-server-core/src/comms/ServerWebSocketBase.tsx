@@ -111,7 +111,7 @@ export interface ServerEventsListener {
  * Defines the base class to be used by any server implementation e.g.
  * RSocket, WebSocket, etc.
  */
-abstract class ServerAdapter {
+abstract class ServerWebSocketBase {
   constructor(protected listener: ServerEventsListener) {}
 
   /**
@@ -185,4 +185,4 @@ abstract class ServerAdapter {
   }
 }
 
-export default ServerAdapter;
+export default ServerWebSocketBase;

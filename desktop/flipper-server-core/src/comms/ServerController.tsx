@@ -27,10 +27,10 @@ import {
   assertNotNull,
   cloneClientQuerySafeForLogging,
 } from './Utilities';
-import ServerAdapter, {
+import ServerWebSocketBase, {
   SecureClientQuery,
   ServerEventsListener,
-} from './ServerAdapter';
+} from './ServerWebSocketBase';
 import {
   createBrowserServer,
   createServer,
@@ -79,11 +79,11 @@ export class ServerController
   connections: Map<string, ClientInfo> = new Map();
   timestamps: Map<string, ClientTimestampTracker> = new Map();
 
-  secureServer: ServerAdapter | null = null;
-  insecureServer: ServerAdapter | null = null;
-  altSecureServer: ServerAdapter | null = null;
-  altInsecureServer: ServerAdapter | null = null;
-  browserServer: ServerAdapter | null = null;
+  secureServer: ServerWebSocketBase | null = null;
+  insecureServer: ServerWebSocketBase | null = null;
+  altSecureServer: ServerWebSocketBase | null = null;
+  altInsecureServer: ServerWebSocketBase | null = null;
+  browserServer: ServerWebSocketBase | null = null;
 
   connectionTracker: ConnectionTracker;
 

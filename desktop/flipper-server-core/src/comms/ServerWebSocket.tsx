@@ -8,7 +8,7 @@
  */
 
 import {IncomingMessage} from 'http';
-import ServerAdapter from './ServerAdapter';
+import ServerWebSocketBase from './ServerWebSocketBase';
 import WebSocket, {
   AddressInfo,
   Server as WSServer,
@@ -35,15 +35,15 @@ export interface ConnectionCtx {
   request: IncomingMessage;
 }
 
-// based on https://github.com/websockets/ws/blob/master/lib/websocket-server.js#L40,
-// exposed to share with socket.io defaults
+// Based on https://github.com/websockets/ws/blob/master/lib/websocket-server.js#L40,
+// exposed to share with socket.io defaults.
 export const WEBSOCKET_MAX_MESSAGE_SIZE = 100 * 1024 * 1024;
 
 /**
  * It serves as a base class for WebSocket based servers. It delegates the 'connection'
  * event to subclasses as a customisation point.
  */
-class ServerWebSocket extends ServerAdapter {
+class ServerWebSocket extends ServerWebSocketBase {
   protected wsServer?: WSServer;
   private httpServer?: Server;
 
@@ -77,12 +77,14 @@ class ServerWebSocket extends ServerAdapter {
           'server',
         );
 
-        // Unsubscribe connection error listener. We'll attach a permanent error listener later
+        // Unsubscribe connection error listener.
+        // We'll attach a permanent error listener later.
         wsServer.off('error', onConnectionError);
 
         this.listener.onListening(port);
         this.wsServer = wsServer;
         this.httpServer = server;
+
         resolve((server.address() as AddressInfo).port);
       });
     });
@@ -99,7 +101,7 @@ class ServerWebSocket extends ServerAdapter {
         });
 
         try {
-          this.onConnection(ws, request); // insecure connection, with medium.
+          this.onConnection(ws, request);
         } catch (error) {
           // TODO: Investigate if we need to close the socket in the `error` listener
           // DRI: @aigoncharov
@@ -166,7 +168,8 @@ class ServerWebSocket extends ServerAdapter {
    */
   onConnection(ws: WebSocket, request: IncomingMessage): void {
     const ctx: ConnectionCtx = {ws, request};
-    this.handleClientQuery(ctx);
+
+    this.extractClientQuery(ctx);
     this.handleConnectionAttempt(ctx);
 
     ws.on('message', async (message: WebSocket.RawData) => {
@@ -180,15 +183,24 @@ class ServerWebSocket extends ServerAdapter {
         // all other plugins might still be working correctly. So let's just report it.
         // This avoids ping-ponging connections if an individual plugin sends garbage (e.g. T129428800)
         // or throws an error when handling messages
-        console.error('Failed to handle message', messageString, error);
+        console.error('[conn] Failed to handle message', messageString, error);
       }
     });
   }
 
-  protected handleClientQuery(ctx: ConnectionCtx): void {
+  /**
+   * Extract and create a ClientQuery from the request URL. This method will throw if:
+   * @param ctx The connection context.
+   * @returns It doesn't return anything, if the client query
+   * is extracted, this one is set into the connection context.
+   */
+  protected extractClientQuery(ctx: ConnectionCtx): void {
     const {request} = ctx;
+    if (!request.url) {
+      return;
+    }
 
-    const query = querystring.decode(request.url!.split('?')[1]);
+    const query = querystring.decode(request.url.split('?')[1]);
     const clientQuery = this.parseClientQuery(query);
 
     if (!clientQuery) {
@@ -218,7 +230,6 @@ class ServerWebSocket extends ServerAdapter {
     const parsedMessage = parseMessageToJson(message);
     if (!parsedMessage) {
       console.error('[conn] Failed to parse message', message);
-      // TODO: Create custom DeserializationError
       throw new Error(`[conn] Failed to parse message`);
     }
     return parsedMessage;
@@ -227,7 +238,7 @@ class ServerWebSocket extends ServerAdapter {
   protected async handleMessage(
     ctx: ConnectionCtx,
     parsedMessage: object,
-    // Not used in this method, but left as a reference for overriding classes
+    // Not used in this method, but left as a reference for overriding classes.
     _rawMessage: string,
   ) {
     const {clientQuery, ws} = ctx;

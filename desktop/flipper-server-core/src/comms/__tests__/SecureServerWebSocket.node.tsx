@@ -17,7 +17,7 @@ import {toBase64} from 'js-base64';
 import WebSocket from 'ws';
 
 import SecureServerWebSocket from '../SecureServerWebSocket';
-import {SecureClientQuery} from '../ServerAdapter';
+import {SecureClientQuery} from '../ServerWebSocketBase';
 import {transformCertificateExchangeMediumToType} from '../Utilities';
 import WebSocketClientConnection from '../WebSocketClientConnection';
 import {createMockSEListener, WSMessageAccumulator} from './utils';

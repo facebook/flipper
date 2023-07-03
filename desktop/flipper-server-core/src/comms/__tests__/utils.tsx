@@ -8,7 +8,7 @@
  */
 
 import {ClientQuery, ClientDescription} from 'flipper-common';
-import {ServerEventsListener} from '../ServerAdapter';
+import {ServerEventsListener} from '../ServerWebSocketBase';
 
 export class WSMessageAccumulator {
   private messages: unknown[] = [];
