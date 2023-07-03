@@ -14,7 +14,7 @@ import http, {ServerResponse} from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import {ServerOptions, VerifyClientCallbackSync, WebSocketServer} from 'ws';
-import {WEBSOCKET_MAX_MESSAGE_SIZE} from '../comms/ServerWebSocket';
+import {WEBSOCKET_MAX_MESSAGE_SIZE} from '../app-connectivity/ServerWebSocket';
 import {parse} from 'url';
 import {makeSocketPath, checkSocketInUse} from './utilities';
 

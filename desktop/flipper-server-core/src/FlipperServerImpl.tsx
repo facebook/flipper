@@ -10,7 +10,7 @@
 import './utils/macCa';
 import './utils/fetch-polyfill';
 import EventEmitter from 'events';
-import {ServerController} from './comms/ServerController';
+import {ServerController} from './app-connectivity/ServerController';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
 import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
@@ -52,7 +52,7 @@ import {promises} from 'fs';
 import rm from 'rimraf';
 import assert from 'assert';
 import {initializeAdbClient} from './devices/android/adbClient';
-import {assertNotNull} from './comms/Utilities';
+import {assertNotNull} from './app-connectivity/Utilities';
 import {mkdirp} from 'fs-extra';
 import {flipperDataFolder, flipperSettingsFolder} from './utils/paths';
 import {DebuggableDevice} from './devices/DebuggableDevice';

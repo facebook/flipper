@@ -13,7 +13,7 @@ import {
   FlipperServerForServerAddOn,
   ServerAddOnStartDetails,
 } from 'flipper-common';
-import {assertNotNull} from '../comms/Utilities';
+import {assertNotNull} from '../app-connectivity/Utilities';
 import {StateMachine} from '../utils/StateMachine';
 import {ServerAddOn} from './ServerAddOn';
 
