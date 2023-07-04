@@ -57,11 +57,6 @@ type ClientInfo = {
   client: ClientDescription;
 };
 
-type ClientCsrQuery = {
-  csr?: string | undefined;
-  csr_path?: string | undefined;
-};
-
 /**
  * Responsible of creating and managing the actual underlying servers:
  * - Insecure (used for certificate exchange)
@@ -202,8 +197,9 @@ export class ServerController
         sdk_version,
         medium,
         rsocket,
+        csr,
+        csr_path,
       },
-      {csr, csr_path},
       downgrade,
     );
   }
@@ -423,15 +419,14 @@ export class ServerController
    */
   async addConnection(
     connection: ClientConnection,
-    query: ClientQuery,
-    csrQuery: ClientCsrQuery,
+    query: SecureClientQuery,
     silentReplace?: boolean,
   ): Promise<ClientDescription> {
     invariant(query, 'expected query');
 
     // try to get id by comparing giving `csr` to file from `csr_path`
     // otherwise, use given device_id
-    const {csr_path, csr} = csrQuery;
+    const {csr_path, csr} = query;
 
     // For Android, device id might change
     if (csr_path && csr && query.os === 'Android') {
