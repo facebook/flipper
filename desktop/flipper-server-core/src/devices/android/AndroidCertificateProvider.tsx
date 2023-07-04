@@ -7,10 +7,13 @@
  * @format
  */
 
-import CertificateProvider from '../../utils/CertificateProvider';
+import CertificateProvider from '../../app-connectivity/certificate-exchange/CertificateProvider';
 import {Client} from 'adbkit';
 import * as androidUtil from './androidContainerUtility';
-import {csrFileName, extractAppNameFromCSR} from '../../utils/certificateUtils';
+import {
+  csrFileName,
+  extractAppNameFromCSR,
+} from '../../app-connectivity/certificate-exchange/certificate-utils';
 
 const logTag = 'AndroidCertificateProvider';
 

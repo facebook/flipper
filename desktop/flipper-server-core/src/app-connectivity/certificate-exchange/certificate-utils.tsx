@@ -18,9 +18,9 @@ import path from 'path';
 import tmp, {FileOptions} from 'tmp';
 import {FlipperServerConfig, reportPlatformFailures} from 'flipper-common';
 import {isTest} from 'flipper-common';
-import {flipperDataFolder} from './paths';
+import {flipperDataFolder} from '../../utils/paths';
 import * as jwt from 'jsonwebtoken';
-import {getFlipperServerConfig} from '../FlipperServerConfig';
+import {getFlipperServerConfig} from '../../FlipperServerConfig';
 
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,

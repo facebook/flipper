@@ -23,4 +23,7 @@ export {isFBBuild} from './fb-stubs/constants';
 
 export {WEBSOCKET_MAX_MESSAGE_SIZE} from './app-connectivity/ServerWebSocket';
 
-export {getAuthToken, hasAuthToken} from './utils/certificateUtils';
+export {
+  getAuthToken,
+  hasAuthToken,
+} from './app-connectivity/certificate-exchange/certificate-utils';

@@ -15,7 +15,7 @@ import {
   extractAppNameFromCSR,
   generateClientCertificate,
   getCACertificate,
-} from './certificateUtils';
+} from './certificate-utils';
 
 export default abstract class CertificateProvider {
   abstract medium: CertificateExchangeMedium;

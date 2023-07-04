@@ -7,7 +7,7 @@
  * @format
  */
 
-import {SecureServerConfig} from '../utils/certificateUtils';
+import {SecureServerConfig} from './certificate-exchange/certificate-utils';
 import ServerWebSocketBase, {ServerEventsListener} from './ServerWebSocketBase';
 import ServerRSocket from './ServerRSocket';
 import SecureServerWebSocket from './SecureServerWebSocket';

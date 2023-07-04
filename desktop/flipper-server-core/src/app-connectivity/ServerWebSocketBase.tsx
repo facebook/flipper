@@ -13,7 +13,7 @@ import {
   ClientQuery,
   SignCertificateMessage,
 } from 'flipper-common';
-import {SecureServerConfig} from '../utils/certificateUtils';
+import {SecureServerConfig} from './certificate-exchange/certificate-utils';
 
 /**
  * ClientCsrQuery defines a client query with CSR

@@ -23,7 +23,7 @@ import exitHook from 'exit-hook';
 import {attachSocketServer} from './attachSocketServer';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {FlipperServerCompanionEnv} from 'flipper-server-companion';
-import {validateAuthToken} from '../utils/certificateUtils';
+import {validateAuthToken} from '../app-connectivity/certificate-exchange/certificate-utils';
 import {tracker} from '../utils/tracker';
 
 type Config = {

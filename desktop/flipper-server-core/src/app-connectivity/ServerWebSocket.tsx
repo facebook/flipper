@@ -24,7 +24,7 @@ import {
   parseMessageToJson,
   verifyClientQueryComesFromCertExchangeSupportedOS,
 } from './Utilities';
-import {SecureServerConfig} from '../utils/certificateUtils';
+import {SecureServerConfig} from './certificate-exchange/certificate-utils';
 import {Server} from 'net';
 import {serializeError} from 'serialize-error';
 import {WSCloseCode} from '../utils/WSCloseCode';

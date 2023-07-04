@@ -17,7 +17,7 @@ import {
   reportPlatformFailures,
   FlipperServerEvents,
 } from 'flipper-common';
-import CertificateProvider from '../utils/CertificateProvider';
+import CertificateProvider from './certificate-exchange/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
@@ -44,7 +44,7 @@ import {
 import {
   extractAppNameFromCSR,
   loadSecureServerConfig,
-} from '../utils/certificateUtils';
+} from './certificate-exchange/certificate-utils';
 import DesktopCertificateProvider from '../devices/desktop/DesktopCertificateProvider';
 import WWWCertificateProvider from '../fb-stubs/WWWCertificateProvider';
 import {tracker} from '../utils/tracker';

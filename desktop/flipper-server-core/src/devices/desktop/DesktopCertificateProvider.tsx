@@ -7,7 +7,7 @@
  * @format
  */
 
-import CertificateProvider from '../../utils/CertificateProvider';
+import CertificateProvider from '../../app-connectivity/certificate-exchange/CertificateProvider';
 import fs from 'fs-extra';
 
 export default class DesktopCertificateProvider extends CertificateProvider {

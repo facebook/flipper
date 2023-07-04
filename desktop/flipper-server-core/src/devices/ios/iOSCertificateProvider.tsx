@@ -7,12 +7,15 @@
  * @format
  */
 
-import CertificateProvider from '../../utils/CertificateProvider';
+import CertificateProvider from '../../app-connectivity/certificate-exchange/CertificateProvider';
 import iosUtil, {IdbConfig} from './iOSContainerUtility';
 import fs from 'fs-extra';
 import {promisify} from 'util';
 import tmp, {DirOptions} from 'tmp';
-import {csrFileName, extractAppNameFromCSR} from '../../utils/certificateUtils';
+import {
+  csrFileName,
+  extractAppNameFromCSR,
+} from '../../app-connectivity/certificate-exchange/certificate-utils';
 import path from 'path';
 
 const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
