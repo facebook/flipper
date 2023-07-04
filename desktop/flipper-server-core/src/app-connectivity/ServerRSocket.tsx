@@ -7,11 +7,7 @@
  * @format
  */
 
-import {SecureServerConfig} from './certificate-exchange/certificate-utils';
-import ServerWebSocketBase, {
-  SecureClientQuery,
-  ServerEventsListener,
-} from './ServerWebSocketBase';
+import ServerWebSocketBase, {ServerEventsListener} from './ServerWebSocketBase';
 import tls from 'tls';
 import net, {AddressInfo, Socket} from 'net';
 import {RSocketServer} from 'rsocket-core';
@@ -27,8 +23,10 @@ import {
   ClientDescription,
   ClientQuery,
   ClientResponseType,
+  SecureClientQuery,
 } from 'flipper-common';
 import {transformCertificateExchangeMediumToType} from './Utilities';
+import {SecureServerConfig} from './certificate-exchange/certificate-utils';
 
 /**
  * RSocket based server. RSocket uses its own protocol for communication between

@@ -92,6 +92,13 @@ export type ClientQuery = {
   rsocket?: boolean;
 };
 
+export type ClientCsrQuery = {
+  csr?: string | undefined;
+  csr_path?: string | undefined;
+};
+
+export type SecureClientQuery = ClientQuery & ClientCsrQuery;
+
 export type ClientDescription = {
   readonly id: string;
   readonly query: ClientQuery;

@@ -11,24 +11,10 @@ import {ClientConnection} from './ClientConnection';
 import {
   ClientDescription,
   ClientQuery,
+  SecureClientQuery,
   SignCertificateMessage,
 } from 'flipper-common';
 import {SecureServerConfig} from './certificate-exchange/certificate-utils';
-
-/**
- * ClientCsrQuery defines a client query with CSR
- * information.
- */
-export type ClientCsrQuery = {
-  csr?: string | undefined;
-  csr_path?: string | undefined;
-};
-
-/**
- * SecureClientQuery combines a ClientQuery with
- * ClientCsrQuery. It also adds medium information.
- */
-export type SecureClientQuery = ClientQuery & ClientCsrQuery;
 
 /**
  * Defines an interface for events triggered by a running server interacting

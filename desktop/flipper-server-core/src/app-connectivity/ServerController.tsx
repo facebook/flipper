@@ -10,6 +10,7 @@
 import {
   ClientDescription,
   ClientQuery,
+  SecureClientQuery,
   isTest,
   buildClientId,
   Logger,
@@ -27,10 +28,7 @@ import {
   assertNotNull,
   cloneClientQuerySafeForLogging,
 } from './Utilities';
-import ServerWebSocketBase, {
-  SecureClientQuery,
-  ServerEventsListener,
-} from './ServerWebSocketBase';
+import ServerWebSocketBase, {ServerEventsListener} from './ServerWebSocketBase';
 import {
   createBrowserServer,
   createServer,

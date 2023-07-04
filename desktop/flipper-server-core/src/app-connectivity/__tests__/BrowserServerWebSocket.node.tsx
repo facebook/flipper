@@ -12,13 +12,13 @@ import {
   ExecuteMessage,
   GetPluginsMessage,
   ResponseMessage,
+  SecureClientQuery,
 } from 'flipper-common';
 import WebSocket from 'ws';
 
 import {BrowserClientConnection} from '../BrowserClientConnection';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import BrowserServerWebSocket from '../BrowserServerWebSocket';
-import {SecureClientQuery} from '../ServerWebSocketBase';
 import {createMockSEListener, WSMessageAccumulator} from './utils';
 
 jest.mock('../../FlipperServerConfig');

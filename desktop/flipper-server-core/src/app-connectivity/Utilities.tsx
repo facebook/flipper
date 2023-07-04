@@ -10,11 +10,11 @@
 import {
   CertificateExchangeMedium,
   ClientQuery,
+  SecureClientQuery,
   DeviceOS,
   ResponseMessage,
 } from 'flipper-common';
 import {ParsedUrlQuery} from 'querystring';
-import {SecureClientQuery} from './ServerWebSocketBase';
 
 /**
  * Transforms the certificate exchange medium type as number to the
