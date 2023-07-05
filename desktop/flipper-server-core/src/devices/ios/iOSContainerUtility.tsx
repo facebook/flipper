@@ -25,8 +25,8 @@ export type IdbConfig = {
 };
 
 // Use debug to get helpful logs when idb fails
-const idbLogLevel = 'DEBUG';
-const operationPrefix = 'iosContainerUtility';
+const IDB_LOG_LEVEL = 'DEBUG';
+const LOG_TAG = 'iOSContainerUtility';
 
 const mutex = new Mutex();
 
@@ -48,54 +48,94 @@ export type DeviceTarget = {
   name: string;
 };
 
-function isAvailable(idbPath: string): Promise<boolean> {
+async function isAvailable(idbPath: string): Promise<boolean> {
   if (!idbPath) {
-    return Promise.resolve(false);
+    return false;
   }
-  return promises
-    .access(idbPath, constants.X_OK)
-    .then((_) => true)
-    .catch((_) => false);
+  try {
+    await promises.access(idbPath, constants.X_OK);
+  } catch (e) {
+    return false;
+  }
+  return true;
 }
 
-function safeExec(
+async function safeExec(
   command: string,
 ): Promise<{stdout: string; stderr: string} | Output> {
-  return mutex
-    .acquire()
-    .then((release) => unsafeExec(command).finally(release));
+  const release = await mutex.acquire();
+  return await unsafeExec(command).finally(release);
 }
 
-export async function queryTargetsWithoutXcodeDependency(
+async function queryTargetsWithXcode(): Promise<Array<DeviceTarget>> {
+  const cmd = 'xcrun xctrace list devices';
+  try {
+    const {stdout} = await safeExec(cmd);
+    if (!stdout) {
+      throw new Error('No output from command');
+    }
+
+    return stdout
+      .toString()
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
+      .filter(notNull)
+      .filter(([_match, _name, _udid, isSim]) => !isSim)
+      .map<DeviceTarget>(([_match, name, udid]) => {
+        return {udid, type: 'physical', name};
+      });
+  } catch (e) {
+    console.warn(`Failed to query devices using '${cmd}'`, e);
+    return [];
+  }
+}
+
+async function queryTargetsWithIdb(
+  idbPath: string,
+): Promise<Array<DeviceTarget>> {
+  const cmd = `${idbPath} list-targets --json`;
+  try {
+    const {stdout} = await safeExec(cmd);
+    if (!stdout) {
+      throw new Error('No output from command');
+    }
+    return parseIdbTargets(stdout.toString());
+  } catch (e) {
+    console.warn(`Failed to execute '${cmd}' for targets.`, e);
+    return [];
+  }
+}
+
+async function queryTargetsWithIdbCompanion(
   idbCompanionPath: string,
   isPhysicalDeviceEnabled: boolean,
-  isAvailableFunc: (idbPath: string) => Promise<boolean>,
-  safeExecFunc: (
-    command: string,
-  ) => Promise<{stdout: string; stderr: string} | Output>,
 ): Promise<Array<DeviceTarget>> {
-  if (await isAvailableFunc(idbCompanionPath)) {
-    return safeExecFunc(`${idbCompanionPath} --list 1 --only device`)
-      .then(({stdout}) => parseIdbTargets(stdout!.toString()))
-      .then((devices) => {
-        if (devices.length > 0 && !isPhysicalDeviceEnabled) {
-          // TODO: Show a notification to enable the toggle or integrate Doctor to better suggest this advice.
-          console.warn(
-            'You are trying to connect Physical Device. Please enable the toggle "Enable physical iOS device" from the setting screen.',
-          );
-        }
-        return devices;
-      })
-      .catch((e: Error) => {
+  if (await isAvailable(idbCompanionPath)) {
+    const cmd = `${idbCompanionPath} --list 1 --only device`;
+    try {
+      const {stdout} = await safeExec(cmd);
+      if (!stdout) {
+        throw new Error('No output from command');
+      }
+
+      const devices = parseIdbTargets(stdout.toString());
+      if (devices.length > 0 && !isPhysicalDeviceEnabled) {
         console.warn(
-          'Failed to query idb_companion --list 1 --only device for physical targets:',
-          e,
+          `You are trying to connect Physical Device.
+          Please enable the toggle "Enable physical iOS device" from the setting screen.`,
         );
-        return [];
-      });
+      }
+      return devices;
+    } catch (e) {
+      console.warn(`Failed to execute '${cmd}' for targets:`, e);
+      return [];
+    }
   } else {
     console.warn(
-      `Unable to locate idb_companion in ${idbCompanionPath}. Try running sudo yum install -y fb-idb`,
+      `Unable to locate idb_companion in '${idbCompanionPath}'.
+      Try running sudo yum install -y fb-idb`,
     );
     return [];
   }
@@ -125,8 +165,6 @@ function parseIdbTargets(lines: string): Array<DeviceTarget> {
     .map((line) => parseIdbTarget(line))
     .filter((target): target is DeviceTarget => !!target);
 
-  // For some reason, idb can return duplicates
-  // TODO: Raise the issue with idb
   const dedupedIdbTargets: Record<string, DeviceTarget> = {};
   for (const idbTarget of parsedIdbTargets) {
     dedupedIdbTargets[idbTarget.udid] =
@@ -135,38 +173,20 @@ function parseIdbTargets(lines: string): Array<DeviceTarget> {
   return Object.values(dedupedIdbTargets);
 }
 
-export async function idbListTargets(
+async function idbDescribeTarget(
   idbPath: string,
-  safeExecFunc: (
-    command: string,
-  ) => Promise<{stdout: string; stderr: string} | Output> = safeExec,
-): Promise<Array<DeviceTarget>> {
-  return safeExecFunc(`${idbPath} list-targets --json`)
-    .then(({stdout}) =>
-      // See above.
-      parseIdbTargets(stdout!.toString()),
-    )
-    .catch((e: Error) => {
-      console.warn('Failed to query idb for targets:', e);
-      return [];
-    });
-}
-
-export async function idbDescribeTarget(
-  idbPath: string,
-  safeExecFunc: (
-    command: string,
-  ) => Promise<{stdout: string; stderr: string} | Output> = safeExec,
 ): Promise<DeviceTarget | undefined> {
-  return safeExecFunc(`${idbPath} describe --json`)
-    .then(({stdout}) =>
-      // See above.
-      parseIdbTarget(stdout!.toString()),
-    )
-    .catch((e: Error) => {
-      console.warn('Failed to query idb to describe a target:', e);
-      return undefined;
-    });
+  const cmd = `${idbPath} describe --json`;
+  try {
+    const {stdout} = await safeExec(cmd);
+    if (!stdout) {
+      throw new Error('No output from command');
+    }
+    return parseIdbTarget(stdout.toString());
+  } catch (e) {
+    console.warn(`Failed to execute '${cmd}' to describe a target.`, e);
+    return undefined;
+  }
 }
 
 async function targets(
@@ -177,8 +197,9 @@ async function targets(
     return [];
   }
 
-  // If companion is started by some external process and its address provided to Flipper via IDB_COMPANION environment variable,
-  // use that companion and do not query other devices
+  // If companion is started by some external process and its path
+  // is provided to Flipper via IDB_COMPANION environment variable,
+  // use that instead and do not query other devices.
   // See stack of D36315576 for details
   if (process.env.IDB_COMPANION) {
     const target = await idbDescribeTarget(idbPath);
@@ -190,15 +211,13 @@ async function targets(
     if (!isPhysicalDeviceEnabled) {
       // TODO: Show a notification to enable the toggle or integrate Doctor to better suggest this advice.
       console.warn(
-        'You are trying to connect Physical Device. Please enable the toggle "Enable physical iOS device" from the setting screen.',
+        'You are trying to connect a physical device. Please enable the toggle "Enable physical iOS device" from the setting screen.',
       );
     }
     const idbCompanionPath = path.dirname(idbPath) + '/idb_companion';
-    return queryTargetsWithoutXcodeDependency(
+    return queryTargetsWithIdbCompanion(
       idbCompanionPath,
       isPhysicalDeviceEnabled,
-      isAvailable,
-      safeExec,
     );
   }
 
@@ -207,28 +226,10 @@ async function targets(
   // But idb is MUCH more CPU efficient than xcrun, so
   // when installed, use it. This still holds true
   // with the move from instruments to xcrun.
-  // TODO: Move idb availability check up.
   if (await memoize(isAvailable)(idbPath)) {
-    return await idbListTargets(idbPath);
+    return await queryTargetsWithIdb(idbPath);
   } else {
-    return safeExec('xcrun xctrace list devices')
-      .then(({stdout}) =>
-        stdout!
-          .toString()
-          .split('\n')
-          .map((line) => line.trim())
-          .filter(Boolean)
-          .map((line) => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
-          .filter(notNull)
-          .filter(([_match, _name, _udid, isSim]) => !isSim)
-          .map<DeviceTarget>(([_match, name, udid]) => {
-            return {udid, type: 'physical', name};
-          }),
-      )
-      .catch((e) => {
-        console.warn('Failed to query for devices using xctrace:', e);
-        return [];
-      });
+    return queryTargetsWithXcode();
   }
 }
 
@@ -241,16 +242,18 @@ async function push(
 ): Promise<void> {
   await memoize(checkIdbIsInstalled)(idbPath);
 
-  return reportPlatformFailures(
-    safeExec(
-      `${idbPath} file push --log ${idbLogLevel} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`,
-    )
-      .then(() => {
-        return;
-      })
-      .catch((e) => handleMissingIdb(e, idbPath)),
-    `${operationPrefix}:push`,
-  );
+  const push_ = async () => {
+    try {
+      await safeExec(
+        `${idbPath} file push --log ${IDB_LOG_LEVEL} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`,
+      );
+    } catch (e) {
+      handleMissingIdb(e, idbPath);
+      throw e;
+    }
+  };
+
+  return reportPlatformFailures(push_(), `${LOG_TAG}:push`);
 }
 
 async function pull(
@@ -262,30 +265,33 @@ async function pull(
 ): Promise<void> {
   await memoize(checkIdbIsInstalled)(idbPath);
 
-  return reportPlatformFailures(
-    safeExec(
-      `${idbPath} file pull --log ${idbLogLevel} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`,
-    )
-      .then(() => {
-        return;
-      })
-      .catch((e) => handleMissingIdb(e, idbPath))
-      .catch((e) => handleMissingPermissions(e)),
-    `${operationPrefix}:pull`,
-  );
+  const pull_ = async () => {
+    try {
+      await safeExec(
+        `${idbPath} file pull --log ${IDB_LOG_LEVEL} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`,
+      );
+    } catch (e) {
+      handleMissingIdb(e, idbPath);
+      handleMissingPermissions(e);
+      throw e;
+    }
+  };
+
+  return reportPlatformFailures(pull_(), `${LOG_TAG}:pull`);
 }
 
-export async function checkIdbIsInstalled(idbPath: string): Promise<void> {
+async function checkIdbIsInstalled(idbPath: string): Promise<void> {
   const isInstalled = await isAvailable(idbPath);
   if (!isInstalled) {
     throw new Error(
-      `idb is required to use iOS devices. Install it with instructions from https://github.com/facebook/idb and set the installation path in Flipper settings.`,
+      `idb is required to use iOS devices. Install it with instructions
+      from https://github.com/facebook/idb and set the installation path in Flipper settings.`,
     );
   }
 }
 
-// The fb-internal idb binary is a shim that downloads the proper one on first run. It requires sudo to do so.
-// If we detect this, Tell the user how to fix it.
+// The fb-internal idb binary is a shim that downloads the proper one on first run.
+// It requires sudo to do so. If we detect this, tell the user how to fix it.
 function handleMissingIdb(e: Error, idbPath: string): void {
   if (
     e.message &&
@@ -296,7 +302,6 @@ function handleMissingIdb(e: Error, idbPath: string): void {
       `idb doesn't appear to be installed. Run "${idbPath} list-targets" to fix this.`,
     );
   }
-  throw e;
 }
 
 function handleMissingPermissions(e: Error): void {
@@ -309,22 +314,21 @@ function handleMissingPermissions(e: Error): void {
     console.warn(e);
     throw new Error(
       'Cannot connect to iOS application. idb_certificate_pull_failed' +
-        'Idb lacks permissions to exchange certificates. Did you install a source build ([FB] or enable certificate exchange)? See console logs for more details.',
+        'idb lacks permissions to exchange certificates. Did you install a source build ([FB] or enable certificate exchange)? See console logs for more details.',
     );
   }
-  throw e;
 }
 
 async function isXcodeDetected(): Promise<boolean> {
-  return exec('xcode-select -p')
-    .then(({stdout}) => {
-      return fs.pathExists(stdout.trim());
-    })
-    .catch((_) => false);
+  try {
+    const {stdout} = await exec('xcode-select -p');
+    return fs.pathExists(stdout.trim());
+  } catch (e) {
+    return false;
+  }
 }
 
 export default {
-  isAvailable,
   targets,
   push,
   pull,
