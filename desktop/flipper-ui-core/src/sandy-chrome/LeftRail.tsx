@@ -29,6 +29,7 @@ import {
   RocketOutlined,
   BugOutlined,
   WarningOutlined,
+  ApiOutlined,
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
@@ -184,6 +185,12 @@ export const LeftRail = withTrackingScope(function LeftRail({
             toplevelSelection={toplevelSelection}
             setToplevelSelection={setToplevelSelection}
           />
+          {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
+            <ConnectionTroubleshootButton
+              toplevelSelection={toplevelSelection}
+              setToplevelSelection={setToplevelSelection}
+            />
+          )}
           <LeftRailDivider />
           <DebugLogsButton
             toplevelSelection={toplevelSelection}
@@ -410,6 +417,22 @@ function DebugLogsButton({
       count={errorCount}
       onClick={() => {
         setToplevelSelection('flipperlogs');
+      }}
+    />
+  );
+}
+
+function ConnectionTroubleshootButton({
+  toplevelSelection,
+  setToplevelSelection,
+}: ToplevelProps) {
+  return (
+    <LeftRailButton
+      icon={<ApiOutlined />}
+      title="Connection Troubleshoot"
+      selected={toplevelSelection === 'connectivity'}
+      onClick={() => {
+        setToplevelSelection('connectivity');
       }}
     />
   );

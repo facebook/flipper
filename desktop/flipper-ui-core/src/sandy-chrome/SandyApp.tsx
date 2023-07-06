@@ -44,11 +44,13 @@ import {isFBEmployee} from '../utils/fbEmployee';
 import {notification} from 'antd';
 import isProduction from '../utils/isProduction';
 import {getRenderHostInstance} from 'flipper-frontend-core';
+import {ConnectionTroubleshootTools} from '../chrome/ConnectionTroubleshootTools';
 
 export type ToplevelNavItem =
   | 'appinspect'
   | 'flipperlogs'
   | 'notification'
+  | 'connectivity'
   | undefined;
 export type ToplevelProps = {
   toplevelSelection: ToplevelNavItem;
@@ -64,7 +66,7 @@ export function SandyApp() {
   const staticView = useStore((state) => state.connections.staticView);
 
   /**
-   * top level navigation uses two pieces of state, selection stored here, and selection that is based on what is stored in the reducer (which might be influenced by redux action dispatches to different means).
+   * Top level navigation uses two pieces of state, selection stored here, and selection that is based on what is stored in the reducer (which might be influenced by redux action dispatches to different means).
    * The logic here is to sync both, but without modifying the navigation related reducers to not break classic Flipper.
    * It is possible to simplify this in the future.
    */
@@ -87,6 +89,9 @@ export function SandyApp() {
       switch (newSelection) {
         case 'flipperlogs':
           dispatch(setStaticView(FlipperDevTools));
+          break;
+        case 'connectivity':
+          dispatch(setStaticView(ConnectionTroubleshootTools));
           break;
         default:
       }
