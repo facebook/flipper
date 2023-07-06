@@ -167,14 +167,10 @@ function init(flipperServer: FlipperServer) {
 
   connectFlipperServerToStore(flipperServer, store, logger);
 
-  // TODO T116224873: Return the following code back instead of ReactDOM.react when the following issue is fixed: https://github.com/react-component/trigger/issues/288
-  // const root = createRoot(document.getElementById('root')!);
-  // root.render(<AppFrame logger={logger} persistor={persistor} />);
-
-  ReactDOM.render(
-    <AppFrame logger={logger} persistor={persistor} />,
-    document.getElementById('root')!,
-  );
+  const root = document.getElementById('root');
+  if (root) {
+    createRoot(root).render(<AppFrame logger={logger} persistor={persistor} />);
+  }
 
   enableConsoleHook();
 
