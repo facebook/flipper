@@ -41,8 +41,7 @@
     "ws": "8.2.0",
     "trim": "1.0.1",
     "immer": "^9.0.6",
-    "shelljs": "^0.8.5",
-    "ansi-html": "0.0.8"
+    "shelljs": "^0.8.5"
   },
   "license": "MIT"
 }

@@ -38,7 +38,6 @@
     "minimist": "1.2.3",
     "kind-of": "6.0.3",
     "node-fetch": "^2.6.7",
-    "xmldom": "github:xmldom/xmldom#0.7.0",
     "browserslist": "^4.16.5",
     "ws": "7.4.6"
   }
