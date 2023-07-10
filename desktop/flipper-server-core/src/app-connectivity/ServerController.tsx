@@ -85,6 +85,8 @@ export class ServerController
     super();
     this.flipperServer = flipperServer;
     this.connectionTracker = new ConnectionTracker(this.logger);
+
+    recorder.enable(flipperServer);
   }
 
   onClientMessage(clientId: string, payload: string): void {
