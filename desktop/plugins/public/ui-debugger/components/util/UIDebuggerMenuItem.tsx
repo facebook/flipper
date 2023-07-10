@@ -8,7 +8,7 @@
  */
 
 import {Menu} from 'antd';
-import {usePlugin, useValue} from 'flipper-plugin';
+import {usePlugin, useValue, Layout} from 'flipper-plugin';
 import {plugin} from '../../index';
 import React from 'react';
 
@@ -20,8 +20,9 @@ import React from 'react';
  */
 export const UIDebuggerMenuItem: React.FC<{
   text: string;
+  icon?: React.ReactNode;
   onClick: () => void;
-}> = ({text, onClick}) => {
+}> = ({text, onClick, icon}) => {
   const instance = usePlugin(plugin);
 
   const isMenuOpen = useValue(instance.uiState.isContextMenuOpen);
@@ -39,7 +40,10 @@ export const UIDebuggerMenuItem: React.FC<{
         onClick();
         instance.uiState.isContextMenuOpen.set(false);
       }}>
-      {text}
+      <Layout.Horizontal center gap="small">
+        {icon}
+        {text}
+      </Layout.Horizontal>
     </Menu.Item>
   );
 };

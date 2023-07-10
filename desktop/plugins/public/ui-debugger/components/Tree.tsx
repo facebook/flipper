@@ -41,6 +41,12 @@ import {
   BigGrepContextMenuItems,
   IDEContextMenuItems,
 } from './fb-stubs/IDEContextMenu';
+import {
+  CopyOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+  SnippetsOutlined,
+} from '@ant-design/icons';
 
 const {Text} = Typography;
 
@@ -492,8 +498,9 @@ const ContextMenu: React.FC<{
   if (hoveredNode) {
     copyItems.push(
       <UIDebuggerMenuItem
-        key={'Copy Element name'}
-        text={'Copy Element name'}
+        key="Copy Element name"
+        text="Copy Element name"
+        icon={<CopyOutlined />}
         onClick={() => {
           tracker.track('context-menu-name-copied', {name: hoveredNode.name});
           getFlipperLib().writeTextToClipboard(hoveredNode.name);
@@ -506,6 +513,7 @@ const ContextMenu: React.FC<{
         <UIDebuggerMenuItem
           key={key}
           text={`Copy ${key}`}
+          icon={<SnippetsOutlined />}
           onClick={() => {
             tracker.track('context-menu-copied', {
               name: hoveredNode.name,
@@ -526,7 +534,8 @@ const ContextMenu: React.FC<{
     hoveredNode.bounds.width !== 0 && (
       <UIDebuggerMenuItem
         key="focus"
-        text={`Focus ${hoveredNode.name}`}
+        text={`Focus element`}
+        icon={<FullscreenExitOutlined />}
         onClick={() => {
           onFocusNode(hoveredNodeId);
         }}
@@ -537,6 +546,7 @@ const ContextMenu: React.FC<{
     <UIDebuggerMenuItem
       key="remove-focus"
       text="Remove focus"
+      icon={<FullscreenOutlined />}
       onClick={() => {
         onFocusNode(undefined);
       }}
