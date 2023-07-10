@@ -444,6 +444,7 @@ export class ServerController
       assertNotNull(this.flipperServer.android);
       (clientQuery as any).device_id =
         await this.flipperServer.android.certificateProvider.getTargetDeviceId(
+          clientQuery,
           bundleId,
           csr_path,
           csr,

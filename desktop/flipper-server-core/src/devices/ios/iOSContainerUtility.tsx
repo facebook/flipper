@@ -68,7 +68,9 @@ async function safeExec(
   return await unsafeExec(command).finally(release);
 }
 
-async function queryTargetsWithXcode(): Promise<Array<DeviceTarget>> {
+async function queryTargetsWithXcode(
+  context: any,
+): Promise<Array<DeviceTarget>> {
   const cmd = 'xcrun xctrace list devices';
   const description = 'Query available devices with Xcode';
   const troubleshoot = `Xcode command line tools are not installed.
@@ -77,7 +79,13 @@ async function queryTargetsWithXcode(): Promise<Array<DeviceTarget>> {
   try {
     const {stdout} = await safeExec(cmd);
     if (!stdout) {
-      recorder.event('cmd', {cmd, description, success: false, troubleshoot});
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: false,
+        troubleshoot,
+        context,
+      });
       throw new Error('No output from command');
     }
     recorder.event('cmd', {
@@ -85,6 +93,7 @@ async function queryTargetsWithXcode(): Promise<Array<DeviceTarget>> {
       description,
       success: true,
       stdout: stdout.toString(),
+      context,
     });
     return stdout
       .toString()
@@ -104,6 +113,7 @@ async function queryTargetsWithXcode(): Promise<Array<DeviceTarget>> {
       success: false,
       troubleshoot,
       stderr: e.toString(),
+      context,
     });
     return [];
   }
@@ -111,16 +121,24 @@ async function queryTargetsWithXcode(): Promise<Array<DeviceTarget>> {
 
 async function queryTargetsWithIdb(
   idbPath: string,
+  context: any,
 ): Promise<Array<DeviceTarget>> {
   const cmd = `${idbPath} list-targets --json`;
-  const description = 'Query available devices with idb';
+  const description = `Query available devices with idb. idb is aware of the companions that you have
+    manually connected, as well as other iOS targets that do not yet have companions.`;
   const troubleshoot = `Either idb is not installed or needs to be reset.
     Run 'idb kill' from terminal.`;
 
   try {
     const {stdout} = await safeExec(cmd);
     if (!stdout) {
-      recorder.event('cmd', {cmd, description, success: false, troubleshoot});
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: false,
+        troubleshoot,
+        context,
+      });
       throw new Error('No output from command');
     }
 
@@ -129,6 +147,7 @@ async function queryTargetsWithIdb(
       description,
       success: true,
       stdout: stdout.toString(),
+      context,
     });
 
     return parseIdbTargets(stdout.toString());
@@ -139,6 +158,7 @@ async function queryTargetsWithIdb(
       success: false,
       troubleshoot,
       stderr: e.toString(),
+      context,
     });
     return [];
   }
@@ -147,15 +167,35 @@ async function queryTargetsWithIdb(
 async function queryTargetsWithIdbCompanion(
   idbCompanionPath: string,
   isPhysicalDeviceEnabled: boolean,
+  context: any,
 ): Promise<Array<DeviceTarget>> {
+  const cmd = `${idbCompanionPath} --list 1 --only device`;
+  const description = `Query available devices with idb companion. Lists all available devices and simulators
+    in the current context. If Xcode is not correctly installed, only devices will be listed.`;
+  const troubleshoot = `Unable to locate idb_companion in '${idbCompanionPath}'.
+    Try running sudo yum install -y fb-idb`;
+
   if (await isAvailable(idbCompanionPath)) {
-    const cmd = `${idbCompanionPath} --list 1 --only device`;
-    recorder.rawLog(`Query devices with idb companion '${cmd}'`);
     try {
       const {stdout} = await safeExec(cmd);
       if (!stdout) {
+        recorder.event('cmd', {
+          cmd,
+          description,
+          success: false,
+          troubleshoot,
+          context,
+        });
         throw new Error('No output from command');
       }
+
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: true,
+        stdout: stdout.toString(),
+        context,
+      });
 
       const devices = parseIdbTargets(stdout.toString());
       if (devices.length > 0 && !isPhysicalDeviceEnabled) {
@@ -166,14 +206,24 @@ async function queryTargetsWithIdbCompanion(
       }
       return devices;
     } catch (e) {
-      recorder.rawError(`Failed to query devices using '${cmd}'`, e);
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: false,
+        troubleshoot,
+        stderr: e.toString(),
+        context,
+      });
       return [];
     }
   } else {
-    recorder.rawError(
-      `Unable to locate idb_companion in '${idbCompanionPath}'.
-      Try running sudo yum install -y fb-idb`,
-    );
+    recorder.event('cmd', {
+      cmd,
+      description,
+      success: false,
+      troubleshoot,
+      context,
+    });
     return [];
   }
 }
@@ -212,17 +262,53 @@ function parseIdbTargets(lines: string): Array<DeviceTarget> {
 
 async function idbDescribeTarget(
   idbPath: string,
+  context: any,
 ): Promise<DeviceTarget | undefined> {
   const cmd = `${idbPath} describe --json`;
-  recorder.rawLog(`Describe target '${cmd}'`);
+  const description = `Returns metadata about the specified target, including:
+    UDID,
+    Name,
+    Screen dimensions and density,
+    State (booted/...),
+    Type (simulator/device),
+    iOS version,
+    Architecture,
+    Information about its companion,
+  `;
+  const troubleshoot = `Either idb is not installed or needs to be reset.
+    Run 'idb kill' from terminal.`;
+
   try {
     const {stdout} = await safeExec(cmd);
     if (!stdout) {
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: false,
+        troubleshoot,
+        context,
+      });
       throw new Error('No output from command');
     }
+
+    recorder.event('cmd', {
+      cmd,
+      description,
+      success: true,
+      stdout: stdout.toString(),
+      context,
+    });
+
     return parseIdbTarget(stdout.toString());
   } catch (e) {
-    recorder.rawError(`Failed to execute '${cmd}' to describe a target.`, e);
+    recorder.event('cmd', {
+      cmd,
+      description,
+      success: false,
+      troubleshoot,
+      stderr: e.toString(),
+      context,
+    });
     return undefined;
   }
 }
@@ -230,6 +316,7 @@ async function idbDescribeTarget(
 async function targets(
   idbPath: string,
   isPhysicalDeviceEnabled: boolean,
+  context?: any,
 ): Promise<Array<DeviceTarget>> {
   if (process.platform !== 'darwin') {
     return [];
@@ -240,7 +327,7 @@ async function targets(
   // use that instead and do not query other devices.
   // See stack of D36315576 for details
   if (process.env.IDB_COMPANION) {
-    const target = await idbDescribeTarget(idbPath);
+    const target = await idbDescribeTarget(idbPath, context);
     return target ? [target] : [];
   }
 
@@ -255,6 +342,7 @@ async function targets(
     return queryTargetsWithIdbCompanion(
       idbCompanionPath,
       isPhysicalDeviceEnabled,
+      context,
     );
   }
 
@@ -264,9 +352,9 @@ async function targets(
   // when installed, use it. This still holds true
   // with the move from instruments to xcrun.
   if (await memoize(isAvailable)(idbPath)) {
-    return await queryTargetsWithIdb(idbPath);
+    return await queryTargetsWithIdb(idbPath, context);
   } else {
-    return queryTargetsWithXcode();
+    return queryTargetsWithXcode(context);
   }
 }
 
@@ -276,17 +364,34 @@ async function push(
   bundleId: string,
   dst: string,
   idbPath: string,
+  context?: any,
 ): Promise<void> {
   await memoize(checkIdbIsInstalled)(idbPath);
 
   const push_ = async () => {
     const cmd = `${idbPath} file push --log ${IDB_LOG_LEVEL} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`;
+    const description = `idb push file to device`;
+    const troubleshoot = `Either idb is not installed or needs to be reset.
+    Run 'idb kill' from terminal.`;
+
     try {
-      recorder.rawLog(`Push file to device '${cmd}'`);
       await safeExec(cmd);
-      recorder.rawLog(`Successfully pushed file to device`);
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: true,
+        troubleshoot,
+        context,
+      });
     } catch (e) {
-      recorder.rawError(`Failed to push file to device`, e);
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: false,
+        stdout: e.toString(),
+        troubleshoot,
+        context,
+      });
       handleMissingIdb(e, idbPath);
       throw e;
     }
@@ -301,17 +406,34 @@ async function pull(
   bundleId: string,
   dst: string,
   idbPath: string,
+  context?: any,
 ): Promise<void> {
   await memoize(checkIdbIsInstalled)(idbPath);
 
   const pull_ = async () => {
     const cmd = `${idbPath} file pull --log ${IDB_LOG_LEVEL} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`;
+    const description = `idb pull file from device`;
+    const troubleshoot = `Either idb is not installed or needs to be reset.
+    Run 'idb kill' from terminal.`;
+
     try {
-      recorder.rawLog(`Pull file from device '${cmd}'`);
       await safeExec(cmd);
-      recorder.rawLog(`Successfully pulled file from device`);
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: true,
+        troubleshoot,
+        context,
+      });
     } catch (e) {
-      recorder.rawError(`Failed to pull file from device`, e);
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: false,
+        stdout: e.toString(),
+        troubleshoot,
+        context,
+      });
       handleMissingIdb(e, idbPath);
       handleMissingPermissions(e);
       throw e;

@@ -17,6 +17,7 @@ import {
   extractBundleIdFromCSR,
 } from '../../app-connectivity/certificate-exchange/certificate-utils';
 import path from 'path';
+import {ClientQuery} from 'flipper-common';
 
 const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
 
@@ -31,6 +32,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
   }
 
   async getTargetDeviceId(
+    clientQuery: ClientQuery,
     appName: string,
     appDirectory: string,
     csr: string,
@@ -45,6 +47,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
     const targets = await iosUtil.targets(
       this.idbConfig.idbPath,
       this.idbConfig.enablePhysicalIOS,
+      clientQuery,
     );
     if (targets.length === 0) {
       throw new Error('No iOS devices found');
@@ -52,6 +55,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
     const deviceMatchList = targets.map(async (target) => {
       try {
         const isMatch = await this.iOSDeviceHasMatchingCSR(
+          clientQuery,
           appDirectory,
           target.udid,
           appName,
@@ -79,6 +83,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
   }
 
   protected async deployOrStageFileForDevice(
+    clientQuery: ClientQuery,
     destination: string,
     filename: string,
     contents: string,
@@ -100,8 +105,14 @@ export default class iOSCertificateProvider extends CertificateProvider {
 
       console.debug(`[conn] Relative path '${relativePathInsideApp}'`);
 
-      const udid = await this.getTargetDeviceId(bundleId, destination, csr);
+      const udid = await this.getTargetDeviceId(
+        clientQuery,
+        bundleId,
+        destination,
+        csr,
+      );
       await this.pushFileToiOSDevice(
+        clientQuery,
         udid,
         bundleId,
         relativePathInsideApp,
@@ -122,6 +133,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
   }
 
   private async pushFileToiOSDevice(
+    clientQuery: ClientQuery,
     udid: string,
     bundleId: string,
     destination: string,
@@ -138,10 +150,12 @@ export default class iOSCertificateProvider extends CertificateProvider {
       bundleId,
       destination,
       this.idbConfig.idbPath,
+      clientQuery,
     );
   }
 
   private async iOSDeviceHasMatchingCSR(
+    clientQuery: ClientQuery,
     directory: string,
     deviceId: string,
     bundleId: string,
@@ -153,7 +167,14 @@ export default class iOSCertificateProvider extends CertificateProvider {
     const dst = await tmpDir({unsafeCleanup: true});
 
     try {
-      await iosUtil.pull(deviceId, src, bundleId, dst, this.idbConfig.idbPath);
+      await iosUtil.pull(
+        deviceId,
+        src,
+        bundleId,
+        dst,
+        this.idbConfig.idbPath,
+        clientQuery,
+      );
     } catch (e) {
       console.warn(
         `[conn] Original idb pull failed. Most likely it is a physical device
@@ -167,6 +188,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
         bundleId,
         path.join(dst, csrFileName),
         this.idbConfig.idbPath,
+        clientQuery,
       );
       console.info(
         '[conn] Subsequent idb pull succeeded. Nevermind previous wranings.',

@@ -48,6 +48,7 @@ export default abstract class CertificateProvider {
 
     recorder.log(clientQuery, 'Deploy CA certificate to application sandbox');
     await this.deployOrStageFileForDevice(
+      clientQuery,
       appDirectory,
       deviceCAcertFile,
       caCert,
@@ -62,6 +63,7 @@ export default abstract class CertificateProvider {
       'Deploy client certificate to application sandbox',
     );
     await this.deployOrStageFileForDevice(
+      clientQuery,
       appDirectory,
       deviceClientCertFile,
       clientCert,
@@ -75,7 +77,12 @@ export default abstract class CertificateProvider {
       clientQuery,
       'Get target device from CSR and application name',
     );
-    const deviceId = await this.getTargetDeviceId(bundleId, appDirectory, csr);
+    const deviceId = await this.getTargetDeviceId(
+      clientQuery,
+      bundleId,
+      appDirectory,
+      csr,
+    );
 
     recorder.log(
       clientQuery,
@@ -87,12 +94,14 @@ export default abstract class CertificateProvider {
   }
 
   abstract getTargetDeviceId(
+    clientQuery: ClientQuery,
     bundleId: string,
     appDirectory: string,
     csr: string,
   ): Promise<string>;
 
   protected abstract deployOrStageFileForDevice(
+    clientQuery: ClientQuery,
     destination: string,
     filename: string,
     contents: string,

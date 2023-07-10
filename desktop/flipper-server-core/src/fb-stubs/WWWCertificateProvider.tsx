@@ -13,6 +13,7 @@ import CertificateProvider from '../app-connectivity/certificate-exchange/Certif
 export default class WWWCertificateProvider extends CertificateProvider {
   name = 'WWWCertificateProvider';
   medium = 'WWW' as const;
+
   constructor(private keytarManager: KeytarManager) {
     super();
   }

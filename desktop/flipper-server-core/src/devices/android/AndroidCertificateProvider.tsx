@@ -14,6 +14,7 @@ import {
   csrFileName,
   extractBundleIdFromCSR,
 } from '../../app-connectivity/certificate-exchange/certificate-utils';
+import {ClientQuery} from 'flipper-common';
 
 const logTag = 'AndroidCertificateProvider';
 
@@ -26,6 +27,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
   }
 
   async getTargetDeviceId(
+    clientQuery: ClientQuery,
     appName: string,
     appDirectory: string,
     csr: string,
@@ -93,13 +95,19 @@ export default class AndroidCertificateProvider extends CertificateProvider {
   }
 
   protected async deployOrStageFileForDevice(
+    clientQuery: ClientQuery,
     destination: string,
     filename: string,
     contents: string,
     csr: string,
   ) {
     const appName = await extractBundleIdFromCSR(csr);
-    const deviceId = await this.getTargetDeviceId(appName, destination, csr);
+    const deviceId = await this.getTargetDeviceId(
+      clientQuery,
+      appName,
+      destination,
+      csr,
+    );
     await androidUtil.push(
       this.adb,
       deviceId,
