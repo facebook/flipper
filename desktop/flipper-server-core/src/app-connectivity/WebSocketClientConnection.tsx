@@ -41,9 +41,11 @@ export default class WebSocketClientConnection implements ClientConnection {
     const callbacks = this.pendingRequests.get(id);
 
     if (!callbacks) {
-      console.debug(`[conn] Pending request ${id} is not found. Ignore.`);
+      console.debug(`[ws] Pending request ${id} is not found. Ignore.`);
       // It must be a response for a message from the older connection. Ignore.
-      // TODO: When we decide to bump sdk_version, make `id` a string equal to `connectionId:messageId`. Ignore messages only from other conections. Raise an error for missing mesages from this connection.
+      // TODO: When we decide to bump sdk_version, make `id` a string equal to `connectionId:messageId`.
+      // Ignore messages only from other conections.
+      // Raise an error for missing mesages from this connection.
       return;
     }
 

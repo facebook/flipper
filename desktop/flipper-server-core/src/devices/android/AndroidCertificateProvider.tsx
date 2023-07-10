@@ -12,7 +12,7 @@ import {Client} from 'adbkit';
 import * as androidUtil from './androidContainerUtility';
 import {
   csrFileName,
-  extractAppNameFromCSR,
+  extractBundleIdFromCSR,
 } from '../../app-connectivity/certificate-exchange/certificate-utils';
 
 const logTag = 'AndroidCertificateProvider';
@@ -98,7 +98,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     contents: string,
     csr: string,
   ) {
-    const appName = await extractAppNameFromCSR(csr);
+    const appName = await extractBundleIdFromCSR(csr);
     const deviceId = await this.getTargetDeviceId(appName, destination, csr);
     await androidUtil.push(
       this.adb,

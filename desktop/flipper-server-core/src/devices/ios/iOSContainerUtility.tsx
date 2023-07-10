@@ -17,6 +17,7 @@ import {promisify} from 'util';
 import child_process from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
+import {recorder} from '../../recorder';
 const exec = promisify(child_process.exec);
 
 export type IdbConfig = {
@@ -69,12 +70,22 @@ async function safeExec(
 
 async function queryTargetsWithXcode(): Promise<Array<DeviceTarget>> {
   const cmd = 'xcrun xctrace list devices';
+  const description = 'Query available devices with Xcode';
+  const troubleshoot = `Xcode command line tools are not installed.
+    Run 'xcode-select --install' from terminal.`;
+
   try {
     const {stdout} = await safeExec(cmd);
     if (!stdout) {
+      recorder.event('cmd', {cmd, description, success: false, troubleshoot});
       throw new Error('No output from command');
     }
-
+    recorder.event('cmd', {
+      cmd,
+      description,
+      success: true,
+      stdout: stdout.toString(),
+    });
     return stdout
       .toString()
       .split('\n')
@@ -87,7 +98,13 @@ async function queryTargetsWithXcode(): Promise<Array<DeviceTarget>> {
         return {udid, type: 'physical', name};
       });
   } catch (e) {
-    console.warn(`Failed to query devices using '${cmd}'`, e);
+    recorder.event('cmd', {
+      cmd,
+      description,
+      success: false,
+      troubleshoot,
+      stderr: e.toString(),
+    });
     return [];
   }
 }
@@ -96,14 +113,33 @@ async function queryTargetsWithIdb(
   idbPath: string,
 ): Promise<Array<DeviceTarget>> {
   const cmd = `${idbPath} list-targets --json`;
+  const description = 'Query available devices with idb';
+  const troubleshoot = `Either idb is not installed or needs to be reset.
+    Run 'idb kill' from terminal.`;
+
   try {
     const {stdout} = await safeExec(cmd);
     if (!stdout) {
+      recorder.event('cmd', {cmd, description, success: false, troubleshoot});
       throw new Error('No output from command');
     }
+
+    recorder.event('cmd', {
+      cmd,
+      description,
+      success: true,
+      stdout: stdout.toString(),
+    });
+
     return parseIdbTargets(stdout.toString());
   } catch (e) {
-    console.warn(`Failed to execute '${cmd}' for targets.`, e);
+    recorder.event('cmd', {
+      cmd,
+      description,
+      success: false,
+      troubleshoot,
+      stderr: e.toString(),
+    });
     return [];
   }
 }
@@ -114,6 +150,7 @@ async function queryTargetsWithIdbCompanion(
 ): Promise<Array<DeviceTarget>> {
   if (await isAvailable(idbCompanionPath)) {
     const cmd = `${idbCompanionPath} --list 1 --only device`;
+    recorder.rawLog(`Query devices with idb companion '${cmd}'`);
     try {
       const {stdout} = await safeExec(cmd);
       if (!stdout) {
@@ -122,18 +159,18 @@ async function queryTargetsWithIdbCompanion(
 
       const devices = parseIdbTargets(stdout.toString());
       if (devices.length > 0 && !isPhysicalDeviceEnabled) {
-        console.warn(
+        recorder.rawError(
           `You are trying to connect Physical Device.
           Please enable the toggle "Enable physical iOS device" from the setting screen.`,
         );
       }
       return devices;
     } catch (e) {
-      console.warn(`Failed to execute '${cmd}' for targets:`, e);
+      recorder.rawError(`Failed to query devices using '${cmd}'`, e);
       return [];
     }
   } else {
-    console.warn(
+    recorder.rawError(
       `Unable to locate idb_companion in '${idbCompanionPath}'.
       Try running sudo yum install -y fb-idb`,
     );
@@ -177,6 +214,7 @@ async function idbDescribeTarget(
   idbPath: string,
 ): Promise<DeviceTarget | undefined> {
   const cmd = `${idbPath} describe --json`;
+  recorder.rawLog(`Describe target '${cmd}'`);
   try {
     const {stdout} = await safeExec(cmd);
     if (!stdout) {
@@ -184,7 +222,7 @@ async function idbDescribeTarget(
     }
     return parseIdbTarget(stdout.toString());
   } catch (e) {
-    console.warn(`Failed to execute '${cmd}' to describe a target.`, e);
+    recorder.rawError(`Failed to execute '${cmd}' to describe a target.`, e);
     return undefined;
   }
 }
@@ -209,8 +247,7 @@ async function targets(
   const isXcodeInstalled = await isXcodeDetected();
   if (!isXcodeInstalled) {
     if (!isPhysicalDeviceEnabled) {
-      // TODO: Show a notification to enable the toggle or integrate Doctor to better suggest this advice.
-      console.warn(
+      recorder.rawError(
         'You are trying to connect a physical device. Please enable the toggle "Enable physical iOS device" from the setting screen.',
       );
     }
@@ -243,11 +280,13 @@ async function push(
   await memoize(checkIdbIsInstalled)(idbPath);
 
   const push_ = async () => {
+    const cmd = `${idbPath} file push --log ${IDB_LOG_LEVEL} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`;
     try {
-      await safeExec(
-        `${idbPath} file push --log ${IDB_LOG_LEVEL} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`,
-      );
+      recorder.rawLog(`Push file to device '${cmd}'`);
+      await safeExec(cmd);
+      recorder.rawLog(`Successfully pushed file to device`);
     } catch (e) {
+      recorder.rawError(`Failed to push file to device`, e);
       handleMissingIdb(e, idbPath);
       throw e;
     }
@@ -266,11 +305,13 @@ async function pull(
   await memoize(checkIdbIsInstalled)(idbPath);
 
   const pull_ = async () => {
+    const cmd = `${idbPath} file pull --log ${IDB_LOG_LEVEL} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`;
     try {
-      await safeExec(
-        `${idbPath} file pull --log ${IDB_LOG_LEVEL} --udid ${udid} --bundle-id ${bundleId} '${src}' '${dst}'`,
-      );
+      recorder.rawLog(`Pull file from device '${cmd}'`);
+      await safeExec(cmd);
+      recorder.rawLog(`Successfully pulled file from device`);
     } catch (e) {
+      recorder.rawError(`Failed to pull file from device`, e);
       handleMissingIdb(e, idbPath);
       handleMissingPermissions(e);
       throw e;

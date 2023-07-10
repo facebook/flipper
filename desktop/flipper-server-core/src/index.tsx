@@ -9,7 +9,7 @@
 
 export {FlipperServerImpl} from './FlipperServerImpl';
 export {loadSettings} from './utils/settings';
-export * from './utils/tracker';
+export * from './tracker';
 export {loadLauncherSettings} from './utils/launcherSettings';
 export {loadProcessConfig} from './utils/processConfig';
 export {getEnvironmentInfo} from './utils/environmentInfo';

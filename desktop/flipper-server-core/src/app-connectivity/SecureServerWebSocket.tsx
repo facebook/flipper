@@ -18,6 +18,7 @@ import {
 import WebSocketClientConnection from './WebSocketClientConnection';
 import {serializeError} from 'serialize-error';
 import {WSCloseCode} from '../utils/WSCloseCode';
+import {recorder} from '../recorder';
 
 export interface SecureConnectionCtx extends ConnectionCtx {
   clientQuery?: SecureClientQuery;
@@ -39,15 +40,15 @@ class SecureServerWebSocket extends ServerWebSocket {
     const {clientQuery, ws} = ctx;
     assertNotNull(clientQuery);
 
-    console.info(
-      `[conn] Secure websocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}. Medium ${clientQuery.medium}. CSR: ${clientQuery.csr_path}`,
+    recorder.log(
+      clientQuery,
+      `Secure websocket connection attempt: ${clientQuery.app} on ${clientQuery.device}.`,
     );
+
     this.listener.onSecureConnectionAttempt(clientQuery);
 
     const clientConnection = new WebSocketClientConnection(ws);
 
-    // TODO: Could we just await it here? How much time could it be, potentially?
-    // DRI: @aigoncharov
     const clientPromise: Promise<ClientDescription> = this.listener
       .onConnectionCreated(clientQuery, clientConnection)
       .then((client) => {
@@ -96,7 +97,6 @@ class SecureServerWebSocket extends ServerWebSocket {
     }
 
     // Received an "execute" message
-
     if (client) {
       this.listener.onClientMessage(client.id, rawMessage);
     } else {

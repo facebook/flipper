@@ -92,7 +92,7 @@ export const loadSecureServerConfig = async (): Promise<SecureServerConfig> => {
   return serverConfig;
 };
 
-export const extractAppNameFromCSR = async (csr: string): Promise<string> => {
+export const extractBundleIdFromCSR = async (csr: string): Promise<string> => {
   const path = await writeToTempFile(csr);
   const subject = await openssl('req', {
     in: path,

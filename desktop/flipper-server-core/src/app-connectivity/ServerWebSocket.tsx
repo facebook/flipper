@@ -28,6 +28,7 @@ import {SecureServerConfig} from './certificate-exchange/certificate-utils';
 import {Server} from 'net';
 import {serializeError} from 'serialize-error';
 import {WSCloseCode} from '../utils/WSCloseCode';
+import {recorder} from '../recorder';
 
 export interface ConnectionCtx {
   clientQuery?: ClientQuery;
@@ -73,7 +74,9 @@ class ServerWebSocket extends ServerWebSocketBase {
       wsServer.once('error', onConnectionError);
       server.listen(port, () => {
         console.debug(
-          `${sslConfig ? 'Secure' : 'Insecure'} server started on port ${port}`,
+          `[ws] ${
+            sslConfig ? 'Secure' : 'Insecure'
+          } server started on port ${port}`,
           'server',
         );
 
@@ -96,7 +99,7 @@ class ServerWebSocket extends ServerWebSocketBase {
       'connection',
       (ws: WebSocket, request: IncomingMessage) => {
         ws.on('error', (error) => {
-          console.error('[conn] WS connection error:', error);
+          console.error('[ws] Connection error:', error);
           this.listener.onError(error);
         });
 
@@ -123,7 +126,7 @@ class ServerWebSocket extends ServerWebSocketBase {
       },
     );
     this.wsServer.on('error', (error) => {
-      console.error('[conn] WS server error:', error);
+      console.error('[ws] Server error:', error);
       this.listener.onError(error);
     });
 
@@ -136,7 +139,7 @@ class ServerWebSocket extends ServerWebSocketBase {
     }
 
     await new Promise<void>((resolve, reject) => {
-      console.info('[conn] Stopping WS server');
+      console.info('[ws] Stopping server');
       assertNotNull(this.wsServer);
       this.wsServer.close((err) => {
         if (err) {
@@ -147,7 +150,7 @@ class ServerWebSocket extends ServerWebSocketBase {
       });
     });
     await new Promise<void>((resolve, reject) => {
-      console.info('[conn] Stopping HTTP server');
+      console.info('[ws] Stopping HTTP server');
       assertNotNull(this.httpServer);
       this.httpServer.close((err) => {
         if (err) {
@@ -175,7 +178,10 @@ class ServerWebSocket extends ServerWebSocketBase {
     ws.on('message', async (message: WebSocket.RawData) => {
       const messageString = message.toString();
       try {
-        const parsedMessage = this.handleMessageDeserialization(messageString);
+        const parsedMessage = this.handleMessageDeserialization(
+          ctx,
+          messageString,
+        );
         // Successful deserialization is a proof that the message is a string
         this.handleMessage(ctx, parsedMessage, messageString);
       } catch (error) {
@@ -183,7 +189,7 @@ class ServerWebSocket extends ServerWebSocketBase {
         // all other plugins might still be working correctly. So let's just report it.
         // This avoids ping-ponging connections if an individual plugin sends garbage (e.g. T129428800)
         // or throws an error when handling messages
-        console.error('[conn] Failed to handle message', messageString, error);
+        console.error('[ws] Failed to handle message', messageString, error);
       }
     });
   }
@@ -205,11 +211,11 @@ class ServerWebSocket extends ServerWebSocketBase {
 
     if (!clientQuery) {
       console.warn(
-        '[conn] Unable to extract the client query from the request URL.',
+        '[ws] Unable to extract the client query from the request URL.',
         request.url,
       );
       throw new UnableToExtractClientQueryError(
-        '[conn] Unable to extract the client query from the request URL.',
+        'Unable to extract the client query from the request URL.',
       );
     }
 
@@ -220,17 +226,24 @@ class ServerWebSocket extends ServerWebSocketBase {
     const {clientQuery} = ctx;
     assertNotNull(clientQuery);
 
-    console.info(
-      `[conn] Insecure websocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}.`,
+    recorder.log(
+      clientQuery,
+      `Insecure websocket connection attempt: ${clientQuery.app} on ${clientQuery.device_id}.`,
     );
     this.listener.onConnectionAttempt(clientQuery);
   }
 
-  protected handleMessageDeserialization(message: unknown): object {
+  protected handleMessageDeserialization(
+    ctx: ConnectionCtx,
+    message: unknown,
+  ): object {
+    const {clientQuery} = ctx;
+    assertNotNull(clientQuery);
+
     const parsedMessage = parseMessageToJson(message);
     if (!parsedMessage) {
-      console.error('[conn] Failed to parse message', message);
-      throw new Error(`[conn] Failed to parse message`);
+      recorder.error(clientQuery, 'Failed to parse message', message);
+      throw new Error(`Failed to parse message`);
     }
     return parsedMessage;
   }

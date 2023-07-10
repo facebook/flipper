@@ -71,7 +71,7 @@ export function isWsResponseMessage(
   return typeof (message as ResponseMessage).id === 'number';
 }
 
-const certExchangeSupportedOSes = new Set<DeviceOS>([
+const supportedOSForCertificateExchange = new Set<DeviceOS>([
   'Android',
   'iOS',
   'MacOS',
@@ -85,7 +85,7 @@ const certExchangeSupportedOSes = new Set<DeviceOS>([
 export function verifyClientQueryComesFromCertExchangeSupportedOS(
   query: ClientQuery | undefined,
 ): ClientQuery | undefined {
-  if (!query || !certExchangeSupportedOSes.has(query.os)) {
+  if (!query || !supportedOSForCertificateExchange.has(query.os)) {
     return;
   }
   return query;
@@ -141,21 +141,21 @@ export function parseClientQuery(
     throw new Error('Unsupported exchange medium: ' + medium);
   }
 
+  let sdk_version: number | undefined;
+  if (typeof query.sdk_version === 'string') {
+    sdk_version = parseInt(query.sdk_version, 10);
+  } else if (typeof query.sdk_version === 'number') {
+    sdk_version = query.sdk_version;
+  }
+
   const clientQuery: ClientQuery = {
     device_id,
     device,
     app,
     os,
     medium: transformCertificateExchangeMediumToType(medium),
+    sdk_version,
   };
-
-  if (typeof query.sdk_version === 'string') {
-    const sdk_version = parseInt(query.sdk_version, 10);
-    if (sdk_version) {
-      // TODO: allocate new object, kept now as is to keep changes minimal
-      (clientQuery as any).sdk_version = sdk_version;
-    }
-  }
 
   return clientQuery;
 }
@@ -213,7 +213,6 @@ export function cloneClientQuerySafeForLogging(clientQuery: SecureClientQuery) {
   return {...clientQuery, csr: !clientQuery.csr ? clientQuery.csr : '<hidden>'};
 }
 
-// TODO: Merge with the same fn in desktop/app/src/utils
 export function assertNotNull<T extends any>(
   value: T,
   message: string = 'Unexpected null/undefined value found',

@@ -24,7 +24,7 @@ import {attachSocketServer} from './attachSocketServer';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {FlipperServerCompanionEnv} from 'flipper-server-companion';
 import {validateAuthToken} from '../app-connectivity/certificate-exchange/certificate-utils';
-import {tracker} from '../utils/tracker';
+import {tracker} from '../tracker';
 
 type Config = {
   port: number;

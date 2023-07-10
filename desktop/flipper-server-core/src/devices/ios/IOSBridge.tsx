@@ -197,16 +197,14 @@ export class SimctlBridge implements IOSBridge {
   async getInstalledApps(
     _serial: string,
   ): Promise<IOSInstalledAppDescriptor[]> {
-    // TODO: Implement me
     throw new Error(
-      'SimctlBridge does not support getInstalledApps. Install IDB (https://fbidb.io/).',
+      'SimctlBridge does not support getInstalledApps. Install idb (https://fbidb.io/).',
     );
   }
 
   async ls(_serial: string, _appBundleId: string): Promise<string[]> {
-    // TODO: Implement me
     throw new Error(
-      'SimctlBridge does not support ls.  Install IDB (https://fbidb.io/).',
+      'SimctlBridge does not support ls. Install idb (https://fbidb.io/).',
     );
   }
 
@@ -354,7 +352,7 @@ function makeTempScreenshotFilePath() {
 }
 
 async function unzip(filePath: string, destination: string): Promise<void> {
-  //todo this probably shouldn't involve shelling out...
+  // TODO: probably shouldn't involve shelling out.
   await exec(`unzip -qq  -o ${filePath} -d ${destination}`);
   if (!(await fs.pathExists(path.join(destination, 'Payload')))) {
     throw new Error(
@@ -381,12 +379,11 @@ export async function makeIOSBridge(
   enablePhysicalDevices: boolean,
   isAvailableFn: (idbPath: string) => Promise<boolean> = isAvailable,
 ): Promise<IOSBridge> {
-  // prefer idb
   if (await isAvailableFn(idbPath)) {
     return new IDBBridge(idbPath, enablePhysicalDevices);
   }
 
-  // no idb, if it's a simulator and xcode is available, we can use xcrun
+  // If Xcode is available then xcrun instead of idb is used.
   if (isXcodeDetected) {
     return new SimctlBridge();
   }

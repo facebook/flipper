@@ -7,12 +7,13 @@
  * @format
  */
 
-import {CertificateExchangeMedium} from 'flipper-common';
+import {CertificateExchangeMedium, ClientQuery} from 'flipper-common';
+import {recorder} from '../../recorder';
 import {
   deviceCAcertFile,
   deviceClientCertFile,
   ensureOpenSSLIsAvailable,
-  extractAppNameFromCSR,
+  extractBundleIdFromCSR,
   generateClientCertificate,
   getCACertificate,
 } from './certificate-utils';
@@ -28,48 +29,37 @@ export default abstract class CertificateProvider {
   }
 
   async processCertificateSigningRequest(
+    clientQuery: ClientQuery,
     unsanitizedCsr: string,
-    os: string,
     appDirectory: string,
   ): Promise<{deviceId: string}> {
-    console.debug(
-      `${this.constructor.name}.processCertificateSigningRequest`,
-      unsanitizedCsr,
-      os,
-      appDirectory,
-    );
     const csr = this.santitizeString(unsanitizedCsr);
     if (csr === '') {
-      return Promise.reject(new Error(`Received empty CSR from ${os} device`));
+      const msg = `Received empty CSR from ${clientQuery.os} device`;
+      recorder.error(clientQuery, msg);
+      return Promise.reject(new Error(msg));
     }
-    console.debug(
-      `${this.constructor.name}.processCertificateSigningRequest -> ensureOpenSSLIsAvailable`,
-      os,
-      appDirectory,
-    );
+
+    recorder.log(clientQuery, 'Ensure OpenSSL is available');
     await ensureOpenSSLIsAvailable();
+
+    recorder.log(clientQuery, 'Obtain CA certificate');
     const caCert = await getCACertificate();
-    console.debug(
-      `${this.constructor.name}.processCertificateSigningRequest -> deploy caCert`,
-      os,
-      appDirectory,
-    );
+
+    recorder.log(clientQuery, 'Deploy CA certificate to application sandbox');
     await this.deployOrStageFileForDevice(
       appDirectory,
       deviceCAcertFile,
       caCert,
       csr,
     );
-    console.debug(
-      `${this.constructor.name}.processCertificateSigningRequest -> generateClientCertificate`,
-      os,
-      appDirectory,
-    );
+
+    recorder.log(clientQuery, 'Generate client certificate');
     const clientCert = await generateClientCertificate(csr);
-    console.debug(
-      `${this.constructor.name}.processCertificateSigningRequest -> deploy clientCert`,
-      os,
-      appDirectory,
+
+    recorder.log(
+      clientQuery,
+      'Deploy client certificate to application sandbox',
     );
     await this.deployOrStageFileForDevice(
       appDirectory,
@@ -77,20 +67,19 @@ export default abstract class CertificateProvider {
       clientCert,
       csr,
     );
-    const appName = await extractAppNameFromCSR(csr);
-    console.debug(
-      `${this.constructor.name}.processCertificateSigningRequest -> getTargetDeviceId`,
-      os,
-      appDirectory,
-      appName,
+
+    recorder.log(clientQuery, 'Extract application name from CSR');
+    const bundleId = await extractBundleIdFromCSR(csr);
+
+    recorder.log(
+      clientQuery,
+      'Get target device from CSR and application name',
     );
-    const deviceId = await this.getTargetDeviceId(appName, appDirectory, csr);
-    console.debug(
-      `${this.constructor.name}.processCertificateSigningRequest -> done`,
-      os,
-      appDirectory,
-      appName,
-      deviceId,
+    const deviceId = await this.getTargetDeviceId(bundleId, appDirectory, csr);
+
+    recorder.log(
+      clientQuery,
+      `Finished processing CSR, device identifier is '${deviceId}'`,
     );
     return {
       deviceId,
@@ -98,9 +87,9 @@ export default abstract class CertificateProvider {
   }
 
   abstract getTargetDeviceId(
-    _appName: string,
-    _appDirectory: string,
-    _csr: string,
+    bundleId: string,
+    appDirectory: string,
+    csr: string,
   ): Promise<string>;
 
   protected abstract deployOrStageFileForDevice(

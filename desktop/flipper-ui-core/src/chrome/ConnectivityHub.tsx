@@ -10,6 +10,6 @@
 import {Layout} from '../ui';
 import React from 'react';
 
-export function ConnectionTroubleshootTools() {
+export function ConnectivityHub() {
   return <Layout.Container grow>Connection Troubleshoot</Layout.Container>;
 }

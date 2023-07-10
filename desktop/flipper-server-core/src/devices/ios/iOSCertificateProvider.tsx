@@ -14,7 +14,7 @@ import {promisify} from 'util';
 import tmp, {DirOptions} from 'tmp';
 import {
   csrFileName,
-  extractAppNameFromCSR,
+  extractBundleIdFromCSR,
 } from '../../app-connectivity/certificate-exchange/certificate-utils';
 import path from 'path';
 
@@ -37,9 +37,11 @@ export default class iOSCertificateProvider extends CertificateProvider {
   ): Promise<string> {
     const matches = /\/Devices\/([^/]+)\//.exec(appDirectory);
     if (matches && matches.length == 2) {
-      // It's a simulator, the deviceId is in the filepath.
+      // It's a simulator, the device identifier is in the filepath.
       return matches[1];
     }
+
+    // Get all available targets
     const targets = await iosUtil.targets(
       this.idbConfig.idbPath,
       this.idbConfig.enablePhysicalIOS,
@@ -58,7 +60,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
         return {id: target.udid, isMatch};
       } catch (e) {
         console.info(
-          `Unable to check for matching CSR in ${target.udid}:${appName}`,
+          `[conn] Unable to check for matching CSR in ${target.udid}:${appName}`,
           logTag,
           e,
         );
@@ -71,7 +73,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
       throw new Error(`No matching device found for app: ${appName}`);
     }
     if (matchingIds.length > 1) {
-      console.warn(`Multiple devices found for app: ${appName}`);
+      console.warn(`[conn] Multiple devices found for app: ${appName}`);
     }
     return matchingIds[0];
   }
@@ -82,37 +84,33 @@ export default class iOSCertificateProvider extends CertificateProvider {
     contents: string,
     csr: string,
   ) {
-    console.debug('iOSCertificateProvider.deployOrStageFileForDevice', {
+    console.debug('[conn] Deploying file to device ', {
       destination,
       filename,
     });
-    const appName = await extractAppNameFromCSR(csr);
+    const bundleId = await extractBundleIdFromCSR(csr);
     try {
       await fs.writeFile(destination + filename, contents);
     } catch (err) {
-      // Writing directly to FS failed. It's probably a physical device.
       console.debug(
-        'iOSCertificateProvider.deployOrStageFileForDevice -> physical device',
+        '[conn] Deploying file using idb as physical device is inferred',
       );
       const relativePathInsideApp =
         this.getRelativePathInAppContainer(destination);
 
-      console.debug(
-        'iOSCertificateProvider.deployOrStageFileForDevice: realtive path',
-        relativePathInsideApp,
-      );
+      console.debug(`[conn] Relative path '${relativePathInsideApp}'`);
 
-      const udid = await this.getTargetDeviceId(appName, destination, csr);
+      const udid = await this.getTargetDeviceId(bundleId, destination, csr);
       await this.pushFileToiOSDevice(
         udid,
-        appName,
+        bundleId,
         relativePathInsideApp,
         filename,
         contents,
       );
     }
 
-    console.debug('iOSCertificateProvider.deployOrStageFileForDevice -> done');
+    console.debug('[conn] Deploying file to device complete');
   }
 
   private getRelativePathInAppContainer(absolutePath: string) {
@@ -131,12 +129,12 @@ export default class iOSCertificateProvider extends CertificateProvider {
     contents: string,
   ): Promise<void> {
     const dir = await tmpDir({unsafeCleanup: true});
-    const filePath = path.resolve(dir, filename);
-    await fs.writeFile(filePath, contents);
+    const src = path.resolve(dir, filename);
+    await fs.writeFile(src, contents);
 
     await iosUtil.push(
       udid,
-      filePath,
+      src,
       bundleId,
       destination,
       this.idbConfig.idbPath,
@@ -149,69 +147,46 @@ export default class iOSCertificateProvider extends CertificateProvider {
     bundleId: string,
     csr: string,
   ): Promise<boolean> {
-    const originalFile = this.getRelativePathInAppContainer(
+    const src = this.getRelativePathInAppContainer(
       path.resolve(directory, csrFileName),
     );
-    const dir = await tmpDir({unsafeCleanup: true});
+    const dst = await tmpDir({unsafeCleanup: true});
 
-    // Workaround for idb weirdness
-    // Originally started at D27590885
-    // Re-appared at https://github.com/facebook/flipper/issues/3009
-    //
-    // People reported various workarounds. None of them worked consistently for everyone.
-    // Usually, the workarounds included re-building idb from source or re-installing it.
-    //
-    // The only more or less reasonable explanation I was able to find is that the final behavior depends on whether the idb_companion is local or not.
-    //
-    // This is how idb_companion sets its locality
-    // https://github.com/facebook/idb/blob/main/idb_companion/Server/FBIDBServiceHandler.mm#L1507
-    // idb sends a connection request and provides a file path to a temporary file. idb_companion checks if it can access that file.
-    //
-    // So when it is "local", the pulled filed is written directly to the destination path
-    // https://github.com/facebook/idb/blob/main/idb/grpc/client.py#L698
-    // So it is expected that the destination path ends with a file to write to.
-    // However, if the companion is remote,  then we seem to get here https://github.com/facebook/idb/blob/71791652efa2d5e6f692cb8985ff0d26b69bf08f/idb/common/tar.py#L232
-    // Where we create a tree of directories and write the file stream there.
-    //
-    // So the only explanation I could come up with is that somehow, by re-installing idb and playing with the env, people could affect the locality of the idb_companion.
-    //
-    // The ultimate workaround is to try pulling the cert file without the cert name attached first, if it fails, try to append it.
     try {
-      await iosUtil.pull(
-        deviceId,
-        originalFile,
-        bundleId,
-        dir,
-        this.idbConfig.idbPath,
-      );
+      await iosUtil.pull(deviceId, src, bundleId, dst, this.idbConfig.idbPath);
     } catch (e) {
       console.warn(
-        'Original idb pull failed. Most likely it is a physical device that requires us to handle the dest path dirrently. Forcing a re-try with the updated dest path. See D32106952 for details. Original error:',
+        `[conn] Original idb pull failed. Most likely it is a physical device
+        that requires us to handle the dest path dirrently.
+        Forcing a re-try with the updated dest path. See D32106952 for details.`,
         e,
       );
       await iosUtil.pull(
         deviceId,
-        originalFile,
+        src,
         bundleId,
-        path.join(dir, csrFileName),
+        path.join(dst, csrFileName),
         this.idbConfig.idbPath,
       );
       console.info(
-        'Subsequent idb pull succeeded. Nevermind previous wranings.',
+        '[conn] Subsequent idb pull succeeded. Nevermind previous wranings.',
       );
     }
 
-    const items = await fs.readdir(dir);
+    const items = await fs.readdir(dst);
     if (items.length > 1) {
-      throw new Error('Conflict in temp dir');
+      throw new Error('Conflict in temporary dir');
     }
     if (items.length === 0) {
-      throw new Error('Failed to pull CSR from device');
+      throw new Error('No CSR found on device');
     }
-    const fileName = items[0];
-    const copiedFile = path.resolve(dir, fileName);
-    console.debug('Trying to read CSR from', copiedFile);
-    const data = await fs.readFile(copiedFile);
+
+    const filename = items[0];
+    const pulledFile = path.resolve(dst, filename);
+
+    console.debug(`[conn] Read CSR from '${pulledFile}'`);
+
+    const data = await fs.readFile(pulledFile);
     const csrFromDevice = this.santitizeString(data.toString());
     return csrFromDevice === this.santitizeString(csr);
   }

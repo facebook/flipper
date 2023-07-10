@@ -44,7 +44,7 @@ import {isFBEmployee} from '../utils/fbEmployee';
 import {notification} from 'antd';
 import isProduction from '../utils/isProduction';
 import {getRenderHostInstance} from 'flipper-frontend-core';
-import {ConnectionTroubleshootTools} from '../chrome/ConnectionTroubleshootTools';
+import {ConnectivityHub} from '../chrome/ConnectivityHub';
 
 export type ToplevelNavItem =
   | 'appinspect'
@@ -91,7 +91,7 @@ export function SandyApp() {
           dispatch(setStaticView(FlipperDevTools));
           break;
         case 'connectivity':
-          dispatch(setStaticView(ConnectionTroubleshootTools));
+          dispatch(setStaticView(ConnectivityHub));
           break;
         default:
       }

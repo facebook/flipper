@@ -117,7 +117,7 @@ export class IOSDeviceManager {
       if (currentDeviceIDs.has(udid)) {
         currentDeviceIDs.delete(udid);
       } else {
-        console.info(`[conn] detected new iOS device ${udid}`, activeDevice);
+        console.info(`[conn] Detected new iOS device ${udid}`, activeDevice);
         const iOSDevice = new IOSDevice(
           this.flipperServer,
           bridge,

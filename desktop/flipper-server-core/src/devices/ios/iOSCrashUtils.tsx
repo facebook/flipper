@@ -72,7 +72,8 @@ export function shouldShowiOSCrashNotification(
 ): boolean {
   const appPath = legacy ? parsePathLegacy(content) : parsePathModern(content);
   if (!appPath || !appPath.includes(serial)) {
-    // Do not show notifications for the app which are not running on this device
+    // Do not show notifications for the app which
+    // are not running on this device.
     return false;
   }
   return true;

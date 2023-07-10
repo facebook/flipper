@@ -23,11 +23,7 @@ import {ClientConnection, ConnectionStatus} from './ClientConnection';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import DummyDevice from '../devices/DummyDevice';
-import {
-  appNameWithUpdateHint,
-  assertNotNull,
-  cloneClientQuerySafeForLogging,
-} from './Utilities';
+import {appNameWithUpdateHint, assertNotNull} from './Utilities';
 import ServerWebSocketBase, {ServerEventsListener} from './ServerWebSocketBase';
 import {
   createBrowserServer,
@@ -40,12 +36,13 @@ import {
   getFlipperServerConfig,
 } from '../FlipperServerConfig';
 import {
-  extractAppNameFromCSR,
+  extractBundleIdFromCSR,
   loadSecureServerConfig,
 } from './certificate-exchange/certificate-utils';
 import DesktopCertificateProvider from '../devices/desktop/DesktopCertificateProvider';
 import WWWCertificateProvider from '../fb-stubs/WWWCertificateProvider';
-import {tracker} from '../utils/tracker';
+import {tracker} from '../tracker';
+import {recorder} from '../recorder';
 
 type ClientTimestampTracker = {
   insecureStart?: number;
@@ -114,10 +111,10 @@ export class ServerController
 
     const options = await loadSecureServerConfig();
 
-    console.info('[conn] secure server listening at port: ', secure);
+    console.info('[ws] secure server listening at port: ', secure);
     this.secureServer = await createServer(secure, this, options);
     const {secure: altSecure} = getServerPortsConfig().altServerPorts;
-    console.info('[conn] secure server (ws) listening at port: ', altSecure);
+    console.info('[ws] secure server listening at port: ', altSecure);
     this.altSecureServer = await createServer(
       altSecure,
       this,
@@ -125,13 +122,10 @@ export class ServerController
       TransportType.WebSocket,
     );
 
-    console.info('[conn] insecure server listening at port: ', insecure);
+    console.info('[ws] insecure server listening at port: ', insecure);
     this.insecureServer = await createServer(insecure, this);
     const {insecure: altInsecure} = getServerPortsConfig().altServerPorts;
-    console.info(
-      '[conn] insecure server (ws) listening at port: ',
-      altInsecure,
-    );
+    console.info('[ws] insecure server listening at port: ', altInsecure);
     this.altInsecureServer = await createServer(
       altInsecure,
       this,
@@ -140,7 +134,7 @@ export class ServerController
     );
 
     const browserPort = getServerPortsConfig().browserPort;
-    console.info('[conn] Browser server (ws) listening at port: ', browserPort);
+    console.info('[ws] Browser server listening at port: ', browserPort);
     this.browserServer = await createBrowserServer(browserPort, this);
   }
 
@@ -174,11 +168,7 @@ export class ServerController
       rsocket,
     } = clientQuery;
 
-    console.info(
-      `[conn] Connection established: ${app} on ${device_id}. Medium ${medium}. CSR: ${csr_path}`,
-      cloneClientQuerySafeForLogging(clientQuery),
-    );
-
+    recorder.log(clientQuery, 'Connection established');
     tracker.track('app-connection-created', {
       app,
       os,
@@ -233,17 +223,25 @@ export class ServerController
       medium: clientQuery.medium,
     });
 
-    const {os, app, device_id} = clientQuery;
-    // without these checks, the user might see a connection timeout error instead, which would be much harder to track down
-    if (os === 'iOS' && !getFlipperServerConfig().settings.enableIOS) {
-      console.error(
-        `Refusing connection from ${app} on ${device_id}, since iOS support is disabled in settings`,
+    // Without these checks, the user might see a connection timeout error instead,
+    // which would be much harder to track down
+    if (
+      clientQuery.os === 'iOS' &&
+      !getFlipperServerConfig().settings.enableIOS
+    ) {
+      recorder.error(
+        clientQuery,
+        `Refusing connection since iOS support is disabled in settings`,
       );
       return;
     }
-    if (os === 'Android' && !getFlipperServerConfig().settings.enableAndroid) {
-      console.error(
-        `Refusing connection from ${app} on ${device_id}, since Android support is disabled in settings`,
+    if (
+      clientQuery.os === 'Android' &&
+      !getFlipperServerConfig().settings.enableAndroid
+    ) {
+      recorder.error(
+        clientQuery,
+        `Refusing connection since Android support is disabled in settings`,
       );
       return;
     }
@@ -268,14 +266,24 @@ export class ServerController
     }
   }
 
+  /**
+   * A connection has been established between a running app and Flipper Desktop.
+   * The connection sole purpose is to perform the certificate exchange.
+   * @param clientQuery Client query defines the arguments passed down from the app
+   * to Flipper Desktop.
+   */
   onConnectionAttempt(clientQuery: ClientQuery): void {
+    // Remove the device id from the query, if found.
+    // Instead, set the device id as 'unknown'.
     const strippedClientQuery = (({device_id, ...o}) => o)(clientQuery);
     const id = buildClientId({device_id: 'unknown', ...strippedClientQuery});
+
     this.timestamps.set(id, {
       insecureStart: Date.now(),
     });
 
     tracker.track('app-connection-insecure-attempt', clientQuery);
+    recorder.log(clientQuery, 'Insecure connection attempt');
 
     this.connectionTracker.logConnectionAttempt(clientQuery);
 
@@ -325,23 +333,30 @@ export class ServerController
       }
       default: {
         throw new Error(
-          `ServerController.onProcessCSR -> os ${clientQuery.os} does not support certificate exchange.`,
+          `OS '${clientQuery.os}' does not support certificate exchange.`,
         );
       }
     }
 
     certificateProvider.verifyMedium(clientQuery.medium);
 
+    recorder.log(clientQuery, 'Certificate Signing Request being processed');
+
     return new Promise((resolve, reject) => {
       reportPlatformFailures(
         certificateProvider.processCertificateSigningRequest(
+          clientQuery,
           unsanitizedCSR,
-          clientQuery.os,
           appDirectory,
         ),
         'processCertificateSigningRequest',
       )
         .then((response) => {
+          recorder.log(
+            clientQuery,
+            'Certificate Signing Request successfully processed',
+          );
+
           const client: UninitializedClient = {
             os: clientQuery.os,
             deviceName: clientQuery.device,
@@ -392,12 +407,7 @@ export class ServerController
   }
 
   onClientSetupError(clientQuery: ClientQuery, e: any) {
-    console.warn(
-      `[conn] Failed to exchange certificate with ${clientQuery.app} on ${
-        clientQuery.device || clientQuery.device_id
-      }`,
-      e,
-    );
+    recorder.error(clientQuery, 'Failed to exchange certificate', e);
     const client: UninitializedClient = {
       os: clientQuery.os,
       deviceName: clientQuery.device,
@@ -405,58 +415,56 @@ export class ServerController
     };
     this.emit('client-setup-error', {
       client,
-      error: `[conn] Failed to exchange certificate with ${
-        clientQuery.app
-      } on ${clientQuery.device || clientQuery.device_id}: ${e}`,
+      error: `Failed to exchange certificate with ${clientQuery.app} on ${
+        clientQuery.device || clientQuery.device_id
+      }: ${e}`,
     });
   }
 
   /**
    * Creates a Client and sets the underlying connection.
    * @param connection A client connection to communicate between server and client.
-   * @param query The client query created from the initial handshake.
+   * @param clientQuery The client query created from the initial handshake.
    * @param csrQuery The CSR query which contains CSR related information.
    */
   async addConnection(
     connection: ClientConnection,
-    query: SecureClientQuery,
+    clientQuery: SecureClientQuery,
     silentReplace?: boolean,
   ): Promise<ClientDescription> {
-    invariant(query, 'expected query');
+    invariant(clientQuery, 'expected query');
 
     // try to get id by comparing giving `csr` to file from `csr_path`
-    // otherwise, use given device_id
-    const {csr_path, csr} = query;
+    // otherwise, use given device_id.
+    const {csr_path, csr} = clientQuery;
 
     // For Android, device id might change
-    if (csr_path && csr && query.os === 'Android') {
-      const app_name = await extractAppNameFromCSR(csr);
+    if (csr_path && csr && clientQuery.os === 'Android') {
+      const bundleId = await extractBundleIdFromCSR(csr);
       assertNotNull(this.flipperServer.android);
-      // TODO: allocate new object, kept now as is to keep changes minimal
-      (query as any).device_id =
+      (clientQuery as any).device_id =
         await this.flipperServer.android.certificateProvider.getTargetDeviceId(
-          app_name,
+          bundleId,
           csr_path,
           csr,
         );
-      console.info(
-        `[conn] Detected ${app_name} on ${query.device_id} in certificate`,
-        query,
+      recorder.log(
+        clientQuery,
+        `Detected ${bundleId} on ${clientQuery.device_id} in certificate`,
       );
     }
 
-    // TODO: allocate new object, kept now as is to keep changes minimal
-    (query as any).app = appNameWithUpdateHint(query);
+    (clientQuery as any).app = appNameWithUpdateHint(clientQuery);
 
-    const id = buildClientId(query);
-    console.info(
-      `[conn] Matching device for ${query.app} on ${query.device_id}...`,
-      query,
+    const id = buildClientId(clientQuery);
+    recorder.log(
+      clientQuery,
+      `Matching device for ${clientQuery.app} on ${clientQuery.device_id}`,
     );
 
     const client: ClientDescription = {
       id,
-      query,
+      query: clientQuery,
     };
 
     const info = {
@@ -464,9 +472,9 @@ export class ServerController
       connection: connection,
     };
 
-    console.info(
-      `[conn] Initializing client ${query.app} on ${query.device_id}...`,
-      query,
+    recorder.log(
+      clientQuery,
+      `Initializing client ${clientQuery.app} on ${clientQuery.device_id}`,
     );
 
     connection.subscribeToEvents((status: ConnectionStatus) => {
@@ -478,7 +486,7 @@ export class ServerController
       }
     });
 
-    console.debug(`[conn] Device client initialized: ${id}.`, 'server', query);
+    recorder.log(clientQuery, `Device client initialized: ${id}`);
 
     /* If a device gets disconnected without being cleaned up properly,
      * Flipper won't be aware until it attempts to reconnect.
@@ -508,12 +516,15 @@ export class ServerController
       const start = tracker.insecureStart
         ? tracker.insecureStart
         : tracker.secureStart;
-      const elapsed = Math.round(end - start!);
-      this.logger.track('performance', 'client-connection-tracker', {
-        'time-to-connection': elapsed,
-        ...query,
-      });
-      this.timestamps.delete(id);
+
+      if (start) {
+        const elapsed = Math.round(end - start);
+        this.logger.track('performance', 'client-connection-tracker', {
+          'time-to-connection': elapsed,
+          ...clientQuery,
+        });
+        this.timestamps.delete(id);
+      }
     }
 
     return client;
@@ -534,9 +545,9 @@ export class ServerController
   removeConnection(id: string) {
     const info = this.connections.get(id);
     if (info) {
-      console.info(
-        `[conn] Disconnected: ${info.client.query.app} on ${info.client.query.device_id}.`,
+      recorder.log(
         info.client.query,
+        `Disconnected: ${info.client.query.app} on ${info.client.query.device_id}.`,
       );
       this.flipperServer.emit('client-disconnected', {id});
       this.connections.delete(id);
@@ -566,21 +577,21 @@ class ConnectionTracker {
     this.logger = logger;
   }
 
-  logConnectionAttempt(client: ClientQuery) {
-    const key = `${client.os}-${client.device}-${client.app}`;
+  logConnectionAttempt(clientQuery: ClientQuery) {
+    const key = `${clientQuery.os}-${clientQuery.device}-${clientQuery.app}`;
     const time = Date.now();
+
     let entry = this.connectionAttempts.get(key) || [];
     entry.push(time);
     entry = entry.filter((t) => t >= time - this.timeWindowMillis);
 
     this.connectionAttempts.set(key, entry);
     if (entry.length >= this.connectionProblemThreshold) {
-      console.warn(
-        `[conn] Connection loop detected with ${key}. Connected ${
+      recorder.error(
+        clientQuery,
+        `Connection loop detected with ${key}. Connected ${
           this.connectionProblemThreshold
         } times within ${this.timeWindowMillis / 1000}s.`,
-        'server',
-        client,
       );
     }
   }
