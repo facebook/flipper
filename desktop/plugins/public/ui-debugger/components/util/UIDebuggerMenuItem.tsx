@@ -21,7 +21,7 @@ import React from 'react';
 export const UIDebuggerMenuItem: React.FC<{
   text: string;
   icon?: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
 }> = ({text, onClick, icon}) => {
   const instance = usePlugin(plugin);
 
@@ -36,8 +36,9 @@ export const UIDebuggerMenuItem: React.FC<{
   }
   return (
     <Menu.Item
+      disabled={onClick == null}
       onClick={() => {
-        onClick();
+        onClick?.();
         instance.uiState.isContextMenuOpen.set(false);
       }}>
       <Layout.Horizontal center gap="small">
