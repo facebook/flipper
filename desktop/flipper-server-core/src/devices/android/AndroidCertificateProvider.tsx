@@ -32,24 +32,12 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     appDirectory: string,
     csr: string,
   ): Promise<string> {
-    console.debug(
-      'AndroidCertificateProvider.getTargetDeviceId',
-      appName,
-      appDirectory,
-      csr,
-    );
     const devicesInAdb = await this.adb.listDevices();
     if (devicesInAdb.length === 0) {
       throw new Error('No Android devices found');
     }
     const deviceMatchList = devicesInAdb.map(async (device) => {
       try {
-        console.debug(
-          'AndroidCertificateProvider.getTargetDeviceId -> matching device',
-          device.id,
-          appName,
-          appDirectory,
-        );
         const result = await this.androidDeviceHasMatchingCSR(
           appDirectory,
           device.id,
@@ -59,7 +47,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
         return {id: device.id, ...result, error: null};
       } catch (e) {
         console.warn(
-          `Unable to check for matching CSR in ${device.id}:${appName}`,
+          `[conn] Unable to check for matching CSR in ${device.id}:${appName}`,
           logTag,
           e,
         );
@@ -68,6 +56,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     });
     const devices = await Promise.all(deviceMatchList);
     const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
+
     if (matchingIds.length == 0) {
       const erroredDevice = devices.find((d) => d.error);
       if (erroredDevice) {
@@ -76,20 +65,15 @@ export default class AndroidCertificateProvider extends CertificateProvider {
       const foundCsrs = devices
         .filter((d) => d.foundCsr !== null)
         .map((d) => (d.foundCsr ? encodeURI(d.foundCsr) : 'null'));
-      console.warn(`Looking for CSR (url encoded):
-
-            ${encodeURI(this.santitizeString(csr))}
-
-            Found these:
-
-            ${foundCsrs.join('\n\n')}`);
+      console.warn(
+        `[conn] Looking for CSR (url encoded):${encodeURI(
+          this.santitizeString(csr),
+        )} Found these:${foundCsrs.join('\n\n')}`,
+      );
       throw new Error(`No matching device found for app: ${appName}`);
     }
     if (matchingIds.length > 1) {
-      console.warn(
-        new Error('[conn] More than one matching device found for CSR'),
-        csr,
-      );
+      console.warn(`[conn] Multiple devices found for app: ${appName}`);
     }
     return matchingIds[0];
   }
@@ -135,14 +119,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
       deviceCsr.toString(),
       csr,
     ].map((s) => this.santitizeString(s));
-    console.debug(
-      'AndroidCertificateProvider.androidDeviceHasMatchingCSR',
-      directory,
-      deviceId,
-      processName,
-      sanitizedDeviceCsr,
-      sanitizedClientCsr,
-    );
+
     const isMatch = sanitizedDeviceCsr === sanitizedClientCsr;
     return {isMatch: isMatch, foundCsr: sanitizedDeviceCsr};
   }
