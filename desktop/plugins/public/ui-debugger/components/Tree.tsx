@@ -37,6 +37,10 @@ import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 import {tracker} from '../tracker';
 
 import {useVirtualizer, Virtualizer} from '@tanstack/react-virtual';
+import {
+  BigGrepContextMenuItems,
+  IDEContextMenuItems,
+} from './fb-stubs/IDEContextMenu';
 
 const {Text} = Typography;
 
@@ -513,6 +517,8 @@ const ContextMenu: React.FC<{
         />
       )),
     );
+
+    copyItems.push(<BigGrepContextMenuItems node={hoveredNode} />);
   }
   const focus = hoveredNode != null &&
     focusedNodeId !== hoveredNodeId &&
@@ -545,8 +551,9 @@ const ContextMenu: React.FC<{
         <Menu>
           {focus}
           {removeFocus}
-          {(focus || removeFocus) && <Menu.Divider />}
+          {(focus || removeFocus) && <Menu.Divider key="divider-focus" />}
           {copyItems}
+          {hoveredNode && <IDEContextMenuItems node={hoveredNode} />}
         </Menu>
       )}
       trigger={['contextMenu']}>
