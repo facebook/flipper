@@ -372,7 +372,7 @@ export function plugin(client: PluginClient<Events>) {
 }
 
 type UIActions = {
-  onHoverNode: (node: Id) => void;
+  onHoverNode: (node?: Id) => void;
   onFocusNode: (focused?: Id) => void;
   onContextMenuOpen: (open: boolean) => void;
   onSelectNode: (node?: Id) => void;
@@ -418,8 +418,12 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
     });
   };
 
-  const onHoverNode = (node: Id) => {
-    uiState.hoveredNodes.set([node]);
+  const onHoverNode = (node?: Id) => {
+    if (node != null) {
+      uiState.hoveredNodes.set([node]);
+    } else {
+      uiState.hoveredNodes.set([]);
+    }
   };
 
   const onContextMenuOpen = (open: boolean) => {

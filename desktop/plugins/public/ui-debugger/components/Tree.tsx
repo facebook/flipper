@@ -122,6 +122,7 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
     selectedNode,
     hoveredNode,
     instance.uiActions.onSelectNode,
+    instance.uiActions.onHoverNode,
     instance.uiActions.onExpandNode,
     instance.uiActions.onCollapseNode,
     isUsingKBToScrollUtill,
@@ -163,7 +164,11 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
   useLayoutEffect(() => {
     if (selectedNode) {
       const idx = treeNodes.findIndex((node) => node.id === selectedNode);
-      if (idx !== -1) {
+
+      const kbIsNoLongerReservingScroll =
+        new Date().getTime() > (isUsingKBToScrollUtill.current ?? 0);
+
+      if (idx !== -1 && kbIsNoLongerReservingScroll) {
         parentRef.current!!.scrollLeft =
           Math.max(0, treeNodes[idx].depth - 10) * renderDepthOffset;
 
@@ -680,6 +685,7 @@ function useKeyboardShortcuts(
   selectedNode: Id | undefined,
   hoveredNodeId: Id | undefined,
   onSelectNode: (id?: Id) => void,
+  onHoverNode: (id?: Id) => void,
   onExpandNode: (id: Id) => void,
   onCollapseNode: (id: Id) => void,
   isUsingKBToScrollUntill: React.MutableRefObject<number>,
@@ -692,7 +698,6 @@ function useKeyboardShortcuts(
       switch (event.key) {
         case 'Enter': {
           if (hoveredNodeId != null) {
-            extendKBControlLease(isUsingKBToScrollUntill);
             onSelectNode(hoveredNodeId);
           }
 
@@ -703,11 +708,14 @@ function useKeyboardShortcuts(
           event.preventDefault();
           if (hoveredNode) {
             if (hoveredNode.isExpanded) {
-              moveHoveredNodeUpOrDown(
+              moveSelectedNodeUpOrDown(
                 'ArrowDown',
                 treeNodes,
                 rowVirtualizer,
-                instance.uiState.hoveredNodes,
+                hoveredNodeId,
+                selectedNode,
+                onSelectNode,
+                onHoverNode,
                 isUsingKBToScrollUntill,
               );
             } else {
@@ -724,11 +732,12 @@ function useKeyboardShortcuts(
               const parentIdx = treeNodes.findIndex(
                 (treeNode) => treeNode.id === hoveredNode.parent,
               );
-              moveHoveredNodeViaKeyBoard(
+              moveSelectedNodeViaKeyBoard(
                 parentIdx,
                 treeNodes,
                 rowVirtualizer,
-                instance.uiState.hoveredNodes,
+                onSelectNode,
+                onHoverNode,
                 isUsingKBToScrollUntill,
               );
             }
@@ -740,11 +749,14 @@ function useKeyboardShortcuts(
         case 'ArrowDown':
           event.preventDefault();
 
-          moveHoveredNodeUpOrDown(
+          moveSelectedNodeUpOrDown(
             event.key,
             treeNodes,
             rowVirtualizer,
-            instance.uiState.hoveredNodes,
+            hoveredNodeId,
+            selectedNode,
+            onSelectNode,
+            onHoverNode,
             isUsingKBToScrollUntill,
           );
 
@@ -765,47 +777,54 @@ function useKeyboardShortcuts(
     instance.uiState.hoveredNodes,
     hoveredNodeId,
     rowVirtualizer,
+    onHoverNode,
   ]);
 }
 
 export type UpOrDown = 'ArrowDown' | 'ArrowUp';
 
-function moveHoveredNodeUpOrDown(
+function moveSelectedNodeUpOrDown(
   direction: UpOrDown,
   treeNodes: TreeNode[],
   rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
-  hoveredNodes: Atom<Id[]>,
+  hoveredNode: Id | undefined,
+  selectedNode: Id | undefined,
+  onSelectNode: (id?: Id) => void,
+  onHoverNode: (id?: Id) => void,
   isUsingKBToScrollUntill: React.MutableRefObject<MillisSinceEpoch>,
 ) {
-  const curIdx = treeNodes.findIndex(
-    (item) => item.id === head(hoveredNodes.get()),
-  );
+  const nodeToUse = selectedNode != null ? selectedNode : hoveredNode;
+  const curIdx = treeNodes.findIndex((item) => item.id === nodeToUse);
   if (curIdx != -1) {
     const increment = direction === 'ArrowDown' ? 1 : -1;
     const newIdx = curIdx + increment;
 
-    moveHoveredNodeViaKeyBoard(
+    moveSelectedNodeViaKeyBoard(
       newIdx,
       treeNodes,
       rowVirtualizer,
-      hoveredNodes,
+      onSelectNode,
+      onHoverNode,
       isUsingKBToScrollUntill,
     );
   }
 }
 
-function moveHoveredNodeViaKeyBoard(
+function moveSelectedNodeViaKeyBoard(
   newIdx: number,
   treeNodes: TreeNode[],
   rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
-  hoveredNodes: Atom<Id[]>,
+  onSelectNode: (id?: Id) => void,
+  onHoverNode: (id?: Id) => void,
   isUsingKBToScrollUntil: React.MutableRefObject<number>,
 ) {
   if (newIdx >= 0 && newIdx < treeNodes.length) {
     const newNode = treeNodes[newIdx];
-    hoveredNodes.set([newNode.id]);
 
     extendKBControlLease(isUsingKBToScrollUntil);
+    onSelectNode(newNode.id);
+    onHoverNode(newNode.id);
+
     rowVirtualizer.scrollToIndex(newIdx, {align: 'auto'});
   }
 }
