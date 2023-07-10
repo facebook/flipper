@@ -45,7 +45,7 @@ import {getRenderHostInstance} from 'flipper-frontend-core';
 import {startGlobalErrorHandling} from './utils/globalErrorHandling';
 import {loadTheme} from './utils/loadTheme';
 import {connectFlipperServerToStore} from './dispatcher/flipperServer';
-import ReactDOM from 'react-dom';
+import {enableConnectivityHub} from './chrome/ConnectivityHub';
 
 class AppFrame extends React.Component<
   {logger: Logger; persistor: Persistor},
@@ -140,7 +140,9 @@ class AppFrame extends React.Component<
 function init(flipperServer: FlipperServer) {
   const settings = getRenderHostInstance().serverConfig.settings;
   const store = getStore();
+
   initLogTailer();
+
   const logger = initLogger(store);
 
   setLoggerInstance(logger);
@@ -173,6 +175,7 @@ function init(flipperServer: FlipperServer) {
   }
 
   enableConsoleHook();
+  enableConnectivityHub(flipperServer);
 
   const launcherMessage =
     getRenderHostInstance().serverConfig.processConfig.launcherMsg;
