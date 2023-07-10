@@ -76,6 +76,24 @@ export type DeviceLogLevel =
   | 'error'
   | 'fatal';
 
+export type ConnectionRecordEntry = {
+  time: Date;
+  type: 'cmd' | 'info' | 'error';
+  device: string;
+  app: string;
+  message: string;
+  medium: CertificateExchangeMedium;
+};
+
+export type CommandRecordEntry = ConnectionRecordEntry & {
+  cmd: string;
+  description: string;
+  success: boolean;
+  stdout?: string;
+  stderr?: string;
+  troubleshoot?: string;
+};
+
 export type UninitializedClient = {
   os: string;
   deviceName: string;
@@ -141,6 +159,8 @@ export type FlipperServerEvents = {
     id: string;
     message: string;
   };
+  'connectivity-troubleshoot-cmd': CommandRecordEntry;
+  'connectivity-troubleshoot-log': ConnectionRecordEntry;
   'plugins-server-add-on-message': ExecuteMessage;
   'download-file-update': DownloadFileUpdate;
   'server-log': LoggerInfo;
