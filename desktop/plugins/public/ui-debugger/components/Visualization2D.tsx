@@ -283,7 +283,7 @@ const OverlayBorder = styled.div<{
     width: toPx(node?.bounds?.width ?? 0),
     height: toPx(node?.bounds?.height ?? 0),
     boxSizing: 'border-box',
-    borderWidth: 2,
+    borderWidth: type === 'selected' ? 3 : 2,
     borderStyle: 'solid',
     color: 'transparent',
     borderColor:
