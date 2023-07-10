@@ -18,6 +18,7 @@ import {
 } from '../../app-connectivity/certificate-exchange/certificate-utils';
 import path from 'path';
 import {ClientQuery} from 'flipper-common';
+import {recorder} from '../../recorder';
 
 const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
 
@@ -43,13 +44,14 @@ export default class iOSCertificateProvider extends CertificateProvider {
       return matches[1];
     }
 
-    // Get all available targets
+    recorder.log(clientQuery, 'Query available devices');
     const targets = await iosUtil.targets(
       this.idbConfig.idbPath,
       this.idbConfig.enablePhysicalIOS,
       clientQuery,
     );
     if (targets.length === 0) {
+      recorder.error(clientQuery, 'No devices found');
       throw new Error('No iOS devices found');
     }
     const deviceMatchList = targets.map(async (target) => {
@@ -63,7 +65,11 @@ export default class iOSCertificateProvider extends CertificateProvider {
         );
         return {id: target.udid, isMatch};
       } catch (e) {
-        console.info(
+        recorder.error(
+          clientQuery,
+          'Unable to find a matching device for the incoming request',
+        );
+        console.warn(
           `[conn] Unable to check for matching CSR in ${target.udid}:${appName}`,
           logTag,
           e,
@@ -89,21 +95,17 @@ export default class iOSCertificateProvider extends CertificateProvider {
     contents: string,
     csr: string,
   ) {
-    console.debug('[conn] Deploying file to device ', {
-      destination,
-      filename,
-    });
+    recorder.log(
+      clientQuery,
+      `Deploying file '${filename}' to device at '${destination}'`,
+    );
+
     const bundleId = await extractBundleIdFromCSR(csr);
     try {
       await fs.writeFile(destination + filename, contents);
     } catch (err) {
-      console.debug(
-        '[conn] Deploying file using idb as physical device is inferred',
-      );
       const relativePathInsideApp =
         this.getRelativePathInAppContainer(destination);
-
-      console.debug(`[conn] Relative path '${relativePathInsideApp}'`);
 
       const udid = await this.getTargetDeviceId(
         clientQuery,
@@ -120,8 +122,6 @@ export default class iOSCertificateProvider extends CertificateProvider {
         contents,
       );
     }
-
-    console.debug('[conn] Deploying file to device complete');
   }
 
   private getRelativePathInAppContainer(absolutePath: string) {
@@ -176,8 +176,9 @@ export default class iOSCertificateProvider extends CertificateProvider {
         clientQuery,
       );
     } catch (e) {
-      console.warn(
-        `[conn] Original idb pull failed. Most likely it is a physical device
+      recorder.log(
+        clientQuery,
+        `Original idb pull failed. Most likely it is a physical device
         that requires us to handle the dest path dirrently.
         Forcing a re-try with the updated dest path. See D32106952 for details.`,
         e,
@@ -190,26 +191,28 @@ export default class iOSCertificateProvider extends CertificateProvider {
         this.idbConfig.idbPath,
         clientQuery,
       );
-      console.info(
-        '[conn] Subsequent idb pull succeeded. Nevermind previous wranings.',
+      recorder.log(
+        clientQuery,
+        'Subsequent idb pull succeeded. Nevermind previous warnings.',
       );
     }
 
     const items = await fs.readdir(dst);
     if (items.length > 1) {
-      throw new Error('Conflict in temporary dir');
+      throw new Error('Conflict in temporary directory');
     }
     if (items.length === 0) {
       throw new Error('No CSR found on device');
     }
 
     const filename = items[0];
-    const pulledFile = path.resolve(dst, filename);
+    const filepath = path.resolve(dst, filename);
 
-    console.debug(`[conn] Read CSR from '${pulledFile}'`);
+    recorder.log(clientQuery, `Read CSR from: '${filepath}'`);
 
-    const data = await fs.readFile(pulledFile);
+    const data = await fs.readFile(filepath);
     const csrFromDevice = this.santitizeString(data.toString());
+
     return csrFromDevice === this.santitizeString(csr);
   }
 }

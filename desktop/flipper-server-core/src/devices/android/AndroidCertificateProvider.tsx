@@ -15,6 +15,7 @@ import {
   extractBundleIdFromCSR,
 } from '../../app-connectivity/certificate-exchange/certificate-utils';
 import {ClientQuery} from 'flipper-common';
+import {recorder} from '../../recorder';
 
 const logTag = 'AndroidCertificateProvider';
 
@@ -32,8 +33,10 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     appDirectory: string,
     csr: string,
   ): Promise<string> {
+    recorder.log(clientQuery, 'Query available devices via adb');
     const devicesInAdb = await this.adb.listDevices();
     if (devicesInAdb.length === 0) {
+      recorder.error(clientQuery, 'No devices found via adb');
       throw new Error('No Android devices found');
     }
     const deviceMatchList = devicesInAdb.map(async (device) => {
@@ -58,6 +61,11 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
 
     if (matchingIds.length == 0) {
+      recorder.error(
+        clientQuery,
+        'Unable to find a matching device for the incoming request',
+      );
+
       const erroredDevice = devices.find((d) => d.error);
       if (erroredDevice) {
         throw erroredDevice.error;
@@ -70,6 +78,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
           this.santitizeString(csr),
         )} Found these:${foundCsrs.join('\n\n')}`,
       );
+
       throw new Error(`No matching device found for app: ${appName}`);
     }
     if (matchingIds.length > 1) {
@@ -85,6 +94,11 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     contents: string,
     csr: string,
   ) {
+    recorder.log(
+      clientQuery,
+      `Deploying file '${filename}' to device at '${destination}'`,
+    );
+
     const appName = await extractBundleIdFromCSR(csr);
     const deviceId = await this.getTargetDeviceId(
       clientQuery,
