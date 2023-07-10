@@ -27,6 +27,7 @@ import {Button, Spin} from 'antd';
 import {QueryClientProvider} from 'react-query';
 import {Tree2} from './Tree';
 import {StreamInterceptorErrorView} from './StreamInterceptorErrorView';
+import {queryClient} from '../reactQuery';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -96,7 +97,7 @@ export function Component() {
     );
   } else {
     return (
-      <QueryClientProvider client={instance.queryClient}>
+      <QueryClientProvider client={queryClient}>
         <Layout.Container grow padh="small" padv="medium">
           <Layout.Top>
             <>

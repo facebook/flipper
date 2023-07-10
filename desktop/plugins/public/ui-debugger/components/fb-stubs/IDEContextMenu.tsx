@@ -11,6 +11,8 @@ import React from 'react';
 
 import {UINode} from '../../types';
 
+export async function prefetchSourceFileLocation(_: UINode) {}
+
 export function IDEContextMenuItems(_: {node: UINode}) {
   return <></>;
 }

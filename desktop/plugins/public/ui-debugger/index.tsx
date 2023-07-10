@@ -30,9 +30,9 @@ import {
   UIState,
 } from './types';
 import {Draft} from 'immer';
-import {QueryClient, setLogger} from 'react-query';
 import {tracker} from './tracker';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
+import {prefetchSourceFileLocation} from './components/fb-stubs/IDEContextMenu';
 
 type LiveClientState = {
   snapshotInfo: SnapshotInfo | null;
@@ -265,6 +265,7 @@ export function plugin(client: PluginClient<Events>) {
       }
 
       applyFrameworkEvents(frameScan);
+
       return true;
     } catch (error) {
       pendingData.frame = frameScan;
@@ -339,6 +340,12 @@ export function plugin(client: PluginClient<Events>) {
 
       checkFocusedNodeStillActive(uiState, nodesAtom.get());
     }
+    setTimeout(() => {
+      //let react render, this can happen async
+      for (const node of nodes.values()) {
+        prefetchSourceFileLocation(node);
+      }
+    }, 0);
   }
   client.onMessage('subtreeUpdate', (subtreeUpdate) => {
     processFrame({
@@ -350,8 +357,6 @@ export function plugin(client: PluginClient<Events>) {
   });
   client.onMessage('frameScan', processFrame);
 
-  const queryClient = new QueryClient({});
-
   return {
     rootId,
     uiState,
@@ -362,7 +367,6 @@ export function plugin(client: PluginClient<Events>) {
     metadata,
     perfEvents,
     setPlayPause,
-    queryClient,
     os,
   };
 }
@@ -503,16 +507,3 @@ const HighlightTime = 300;
 
 export {Component} from './components/main';
 export * from './types';
-
-setLogger({
-  log: (...args) => {
-    console.log(...args);
-  },
-  warn: (...args) => {
-    console.warn(...args);
-  },
-  error: (...args) => {
-    //downgrade react query network errors to warning so they dont get sent to scribe
-    console.warn(...args);
-  },
-});
