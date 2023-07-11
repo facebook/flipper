@@ -85,20 +85,20 @@ export default class AndroidDevice
       );
   }
 
-  reverse(ports: number[]): Promise<void> {
-    return Promise.all(
+  async reverse(ports: number[]): Promise<void> {
+    await Promise.all(
       ports.map((port) =>
         this.adb.reverse(this.serial, `tcp:${port}`, `tcp:${port}`),
       ),
-    ).then(() => {
-      return;
-    });
+    );
   }
 
-  clearLogs(): Promise<void> {
-    return this.executeShellOrDie(['logcat', '-c']).catch((e) => {
+  async clearLogs(): Promise<void> {
+    try {
+      return await this.executeShellOrDie(['logcat', '-c']);
+    } catch (e) {
       console.warn('Failed to clear logs:', e);
-    });
+    }
   }
 
   async navigateToLocation(location: string) {
