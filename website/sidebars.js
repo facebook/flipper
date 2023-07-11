@@ -183,6 +183,7 @@ module.exports = {
             },
             'fb/bundling',
             'fb/Navigation-Plugin-Development-Guide',
+            'fb/jest-e2e-integration',
             {
               'Releases': [
                 'fb/Flipper-Release-Cycle',
