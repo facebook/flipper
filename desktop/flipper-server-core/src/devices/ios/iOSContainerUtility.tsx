@@ -92,7 +92,6 @@ async function queryTargetsWithXcode(
       cmd,
       description,
       success: true,
-      stdout: stdout.toString(),
       context,
     });
     return stdout
@@ -146,7 +145,6 @@ async function queryTargetsWithIdb(
       cmd,
       description,
       success: true,
-      stdout: stdout.toString(),
       context,
     });
 
@@ -193,7 +191,6 @@ async function queryTargetsWithIdbCompanion(
         cmd,
         description,
         success: true,
-        stdout: stdout.toString(),
         context,
       });
 
