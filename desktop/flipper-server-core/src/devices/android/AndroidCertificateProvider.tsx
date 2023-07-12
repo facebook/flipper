@@ -17,8 +17,6 @@ import {
 import {ClientQuery} from 'flipper-common';
 import {recorder} from '../../recorder';
 
-const logTag = 'AndroidCertificateProvider';
-
 export default class AndroidCertificateProvider extends CertificateProvider {
   name = 'AndroidCertificateProvider';
   medium = 'FS_ACCESS' as const;
@@ -34,31 +32,32 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     csr: string,
   ): Promise<string> {
     recorder.log(clientQuery, 'Query available devices via adb');
-    const devicesInAdb = await this.adb.listDevices();
-    if (devicesInAdb.length === 0) {
+    const devices = await this.adb.listDevices();
+    if (devices.length === 0) {
       recorder.error(clientQuery, 'No devices found via adb');
       throw new Error('No Android devices found');
     }
-    const deviceMatchList = devicesInAdb.map(async (device) => {
+
+    const deviceMatches = devices.map(async (device) => {
       try {
         const result = await this.androidDeviceHasMatchingCSR(
           appDirectory,
           device.id,
           appName,
           csr,
+          clientQuery,
         );
         return {id: device.id, ...result, error: null};
       } catch (e) {
         console.warn(
           `[conn] Unable to check for matching CSR in ${device.id}:${appName}`,
-          logTag,
           e,
         );
         return {id: device.id, isMatch: false, foundCsr: null, error: e};
       }
     });
-    const devices = await Promise.all(deviceMatchList);
-    const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
+    const matches = await Promise.all(deviceMatches);
+    const matchingIds = matches.filter((m) => m.isMatch).map((m) => m.id);
 
     if (matchingIds.length == 0) {
       recorder.error(
@@ -66,11 +65,11 @@ export default class AndroidCertificateProvider extends CertificateProvider {
         'Unable to find a matching device for the incoming request',
       );
 
-      const erroredDevice = devices.find((d) => d.error);
+      const erroredDevice = matches.find((d) => d.error);
       if (erroredDevice) {
         throw erroredDevice.error;
       }
-      const foundCsrs = devices
+      const foundCsrs = matches
         .filter((d) => d.foundCsr !== null)
         .map((d) => (d.foundCsr ? encodeURI(d.foundCsr) : 'null'));
       console.warn(
@@ -112,6 +111,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
       appName,
       destination + filename,
       contents,
+      clientQuery,
     );
   }
 
@@ -120,12 +120,14 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     deviceId: string,
     processName: string,
     csr: string,
+    clientQuery: ClientQuery,
   ): Promise<{isMatch: boolean; foundCsr: string}> {
     const deviceCsr = await androidUtil.pull(
       this.adb,
       deviceId,
       processName,
       directory + csrFileName,
+      clientQuery,
     );
     // Santitize both of the string before comparation
     // The csr string extraction on client side return string in both way

@@ -7,8 +7,9 @@
  * @format
  */
 
-import {UnsupportedError} from 'flipper-common';
+import {ClientQuery, UnsupportedError} from 'flipper-common';
 import adbkit, {Client} from 'adbkit';
+import {recorder} from '../../recorder';
 
 const allowedAppNameRegex = /^[\w.-]+$/;
 const appNotApplicationRegex = /not an application/;
@@ -23,27 +24,29 @@ export type FilePath = string;
 export type FileContent = string;
 
 export async function push(
-  client: Client,
+  adbClient: Client,
   deviceId: string,
   app: string,
   filepath: string,
   contents: string,
+  clientQuery?: ClientQuery,
 ): Promise<void> {
   validateAppName(app);
   validateFilePath(filepath);
   validateFileContent(contents);
-  return await _push(client, deviceId, app, filepath, contents);
+  return await _push(adbClient, deviceId, app, filepath, contents, clientQuery);
 }
 
 export async function pull(
-  client: Client,
+  adbClient: Client,
   deviceId: string,
   app: string,
   path: string,
+  clientQuery?: ClientQuery,
 ): Promise<string> {
   validateAppName(app);
   validateFilePath(path);
-  return await _pull(client, deviceId, app, path);
+  return await _pull(adbClient, deviceId, app, path, clientQuery);
 }
 
 function validateAppName(app: string): void {
@@ -80,54 +83,129 @@ class RunAsError extends Error {
   }
 }
 
-function _push(
-  client: Client,
+async function _push(
+  adbClient: Client,
   deviceId: string,
   app: AppName,
   filename: FilePath,
   contents: FileContent,
+  clientQuery?: ClientQuery,
 ): Promise<void> {
   console.debug(`Deploying ${filename} to ${deviceId}:${app}`, logTag);
-  // TODO: this is sensitive to escaping issues, can we leverage client.push instead?
-  // https://www.npmjs.com/package/adbkit#pushing-a-file-to-all-connected-devices
-  const command = `echo "${contents}" > '${filename}' && chmod 644 '${filename}'`;
-  return executeCommandAsApp(client, deviceId, app, command)
-    .then((_) => undefined)
-    .catch((error) => {
-      if (error instanceof RunAsError) {
-        // Fall back to running the command directly. This will work if adb is running as root.
-        executeCommandWithSu(client, deviceId, app, command, error);
-        return undefined;
-      }
-      throw error;
+
+  const cmd = `echo "${contents}" > '${filename}' && chmod 644 '${filename}'`;
+  const description = 'Push file to device using adb shell (echo / chmod)';
+  const troubleshoot = 'adb may be unresponsive, try `adb kill-server`';
+
+  const reportSuccess = () => {
+    recorder.event('cmd', {
+      cmd,
+      description,
+      troubleshoot,
+      success: true,
+      context: clientQuery,
     });
+  };
+  const reportFailure = (error: Error) => {
+    recorder.event('cmd', {
+      cmd,
+      description,
+      troubleshoot,
+      stdout: error.message,
+      success: false,
+      context: clientQuery,
+    });
+  };
+
+  try {
+    await executeCommandAsApp(adbClient, deviceId, app, cmd);
+    reportSuccess();
+  } catch (error) {
+    if (error instanceof RunAsError) {
+      // Fall back to running the command directly.
+      // This will work if adb is running as root.
+      try {
+        await executeCommandWithSu(adbClient, deviceId, app, cmd, error);
+        reportSuccess();
+        return;
+      } catch (suError) {
+        reportFailure(suError);
+        throw suError;
+      }
+    }
+    reportFailure(error);
+    throw error;
+  }
 }
 
-function _pull(
-  client: Client,
+async function _pull(
+  adbClient: Client,
   deviceId: string,
   app: AppName,
   path: FilePath,
+  clientQuery?: ClientQuery,
 ): Promise<string> {
-  const command = `cat '${path}'`;
-  return executeCommandAsApp(client, deviceId, app, command).catch((error) => {
+  const cmd = `cat '${path}'`;
+  const description = 'Pull file from device using adb shell (cat)';
+  const troubleshoot = 'adb may be unresponsive, try `adb kill-server`';
+
+  const reportSuccess = () => {
+    recorder.event('cmd', {
+      cmd,
+      description,
+      troubleshoot,
+      success: true,
+      context: clientQuery,
+    });
+  };
+  const reportFailure = (error: Error) => {
+    recorder.event('cmd', {
+      cmd,
+      description,
+      troubleshoot,
+      stdout: error.message,
+      success: false,
+      context: clientQuery,
+    });
+  };
+
+  try {
+    const content = await executeCommandAsApp(adbClient, deviceId, app, cmd);
+    reportSuccess();
+    return content;
+  } catch (error) {
     if (error instanceof RunAsError) {
-      // Fall back to running the command directly. This will work if adb is running as root.
-      return executeCommandWithSu(client, deviceId, app, command, error);
+      // Fall back to running the command directly.
+      // This will work if adb is running as root.
+      try {
+        const content = await executeCommandWithSu(
+          adbClient,
+          deviceId,
+          app,
+          cmd,
+          error,
+        );
+        reportSuccess();
+        return content;
+      } catch (suError) {
+        reportFailure(suError);
+        throw suError;
+      }
     }
+    reportFailure(error);
     throw error;
-  });
+  }
 }
 
 // Keep this method private since it relies on pre-validated arguments
 export function executeCommandAsApp(
-  client: Client,
+  adbClient: Client,
   deviceId: string,
   app: string,
   command: string,
 ): Promise<string> {
   return _executeCommandWithRunner(
-    client,
+    adbClient,
     deviceId,
     app,
     command,
@@ -136,28 +214,27 @@ export function executeCommandAsApp(
 }
 
 async function executeCommandWithSu(
-  client: Client,
+  adbClient: Client,
   deviceId: string,
   app: string,
   command: string,
   originalErrorToThrow: RunAsError,
 ): Promise<string> {
   try {
-    return _executeCommandWithRunner(client, deviceId, app, command, 'su');
+    return _executeCommandWithRunner(adbClient, deviceId, app, command, 'su');
   } catch (e) {
-    console.debug(e);
     throw originalErrorToThrow;
   }
 }
 
 function _executeCommandWithRunner(
-  client: Client,
+  adbClient: Client,
   deviceId: string,
   app: string,
   command: string,
   runner: string,
 ): Promise<string> {
-  return client
+  return adbClient
     .shell(deviceId, `echo '${command}' | ${runner}`)
     .then(adbkit.util.readAll)
     .then((buffer) => buffer.toString())
