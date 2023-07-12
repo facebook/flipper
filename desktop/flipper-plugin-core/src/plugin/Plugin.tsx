@@ -59,34 +59,44 @@ export interface PluginClient<
    * the onConnect event is fired whenever the plugin is connected to it's counter part on the device.
    * For most plugins this event is fired if the user selects the plugin,
    * for background plugins when the initial connection is made.
+   *
+   * @returns an unsubscribe callback
    */
-  onConnect(cb: () => void): void;
+  onConnect(cb: () => void): () => void;
 
   /**
    * The counterpart of the `onConnect` handler.
    * Will also be fired before the plugin is cleaned up if the connection is currently active:
    * - when the client disconnects
    * - when the plugin is disabled
+   *
+   * @returns an unsubscribe callback
    */
-  onDisconnect(cb: () => void): void;
+  onDisconnect(cb: () => void): () => void;
 
   /**
    * Subscribe to a specific event arriving from the device.
    *
    * Messages can only arrive if the plugin is enabled and connected.
    * For background plugins messages will be batched and arrive the next time the plugin is connected.
+   *
+   * @returns an unsubscribe callback
    */
   onMessage<Event extends keyof Events>(
     event: Event,
     callback: (params: Events[Event]) => void,
-  ): void;
+  ): () => void;
 
   /**
    * Subscribe to all messages arriving from the devices not handled by another listener.
    *
    * This handler is untyped, and onMessage should be favored over using onUnhandledMessage if the event name is known upfront.
+   *
+   * @returns an unsubscribe callback
    */
-  onUnhandledMessage(callback: (event: string, params: any) => void): void;
+  onUnhandledMessage(
+    callback: (event: string, params: any) => void,
+  ): () => void;
 
   /**
    * Send a message to the connected client
@@ -192,10 +202,18 @@ export class SandyPluginInstance extends BasePluginInstance {
         return self.connected.get();
       },
       onConnect: (cb) => {
-        this.events.on('connect', batched(cb));
+        const cbWrapped = batched(cb);
+        this.events.on('connect', cbWrapped);
+        return () => {
+          this.events.off('connect', cbWrapped);
+        };
       },
       onDisconnect: (cb) => {
-        this.events.on('disconnect', batched(cb));
+        const cbWrapped = batched(cb);
+        this.events.on('disconnect', cbWrapped);
+        return () => {
+          this.events.off('disconnect', cbWrapped);
+        };
       },
       send: async (method, params) => {
         this.assertConnected();
@@ -207,10 +225,19 @@ export class SandyPluginInstance extends BasePluginInstance {
         );
       },
       onMessage: (event, cb) => {
-        this.events.on(`event-${event.toString()}`, batched(cb));
+        const cbWrapped = batched(cb);
+        const eventName = `event-${event.toString()}`;
+        this.events.on(eventName, cbWrapped);
+        return () => {
+          this.events.off(eventName, cbWrapped);
+        };
       },
       onUnhandledMessage: (cb) => {
-        this.events.on('unhandled-event', batched(cb));
+        const cbWrapped = batched(cb);
+        this.events.on('unhandled-event', cbWrapped);
+        return () => {
+          this.events.off('unhandled-event', cbWrapped);
+        };
       },
       supportsMethod: async (method) => {
         return await realClient.supportsMethod(

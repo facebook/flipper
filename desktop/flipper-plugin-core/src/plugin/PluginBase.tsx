@@ -46,18 +46,24 @@ export interface BasePluginClient<
 
   /**
    * the onActivate event is fired whenever the plugin is actived in the UI
+   *
+   * @returns an unsubscribe callback
    */
-  onActivate(cb: () => void): void;
+  onActivate(cb: () => void): () => void;
 
   /**
    * The counterpart of the `onActivate` handler.
+   *
+   * @returns an unsubscribe callback
    */
-  onDeactivate(cb: () => void): void;
+  onDeactivate(cb: () => void): () => void;
 
   /**
    * Triggered when this plugin is opened through a deeplink
+   *
+   * @returns an unsubscribe callback
    */
-  onDeepLink(cb: (deepLink: unknown) => void): void;
+  onDeepLink(cb: (deepLink: unknown) => void): () => void;
 
   /**
    * Triggered when the current plugin is being exported and should create a snapshot of the state exported.
@@ -78,8 +84,10 @@ export interface BasePluginClient<
    * The `onReady` event is triggered immediately after a plugin has been initialized and any pending state was restored.
    * This event fires after `onImport` / the interpretation of any `persist` flags and indicates that the initialization process has finished.
    * This event does not signal that the plugin is loaded in the UI yet (see `onActivated`) and does fire before deeplinks (see `onDeepLink`) are handled.
+   *
+   * @returns an unsubscribe callback
    */
-  onReady(handler: () => void): void;
+  onReady(handler: () => void): () => void;
 
   /**
    * Register menu entries in the Flipper toolbar
@@ -141,14 +149,18 @@ export interface BasePluginClient<
    * You should send messages to the server add-on only after it connects.
    * Do not forget to stop all communication when the add-on stops.
    * See `onServerAddStop`.
+   *
+   * @returns an unsubscribe callback
    */
-  onServerAddOnStart(callback: () => void): void;
+  onServerAddOnStart(callback: () => void): () => void;
 
   /**
    * Triggered when a server add-on stops.
    * You should stop all communication with the server add-on when the add-on stops.
+   *
+   * @returns an unsubscribe callback
    */
-  onServerAddOnStop(callback: () => void): void;
+  onServerAddOnStop(callback: () => void): () => void;
 
   /**
    * Subscribe to a specific event arriving from the server add-on.
@@ -333,13 +345,25 @@ export abstract class BasePluginInstance {
       pluginKey: this.pluginKey,
       device: this.device,
       onActivate: (cb) => {
-        this.events.on('activate', batched(cb));
+        const cbWrapped = batched(cb);
+        this.events.on('activate', cbWrapped);
+        return () => {
+          this.events.off('activate', cbWrapped);
+        };
       },
       onDeactivate: (cb) => {
+        const cbWrapped = batched(cb);
         this.events.on('deactivate', batched(cb));
+        return () => {
+          this.events.off('deactivate', cbWrapped);
+        };
       },
       onDeepLink: (cb) => {
-        this.events.on('deeplink', batched(cb));
+        const cbWrapped = batched(cb);
+        this.events.on('deeplink', cbWrapped);
+        return () => {
+          this.events.off('deeplink', cbWrapped);
+        };
       },
       onDestroy: (cb) => {
         this.events.on('destroy', batched(cb));
@@ -357,7 +381,11 @@ export abstract class BasePluginInstance {
         this.importHandler = cb;
       },
       onReady: (cb) => {
-        this.events.on('ready', batched(cb));
+        const cbWrapped = batched(cb);
+        this.events.on('ready', cbWrapped);
+        return () => {
+          this.events.off('ready', cbWrapped);
+        };
       },
       addMenuEntry: (...entries) => {
         for (const entry of entries) {
@@ -401,16 +429,24 @@ export abstract class BasePluginInstance {
       },
       logger: this.flipperLib.logger,
       onServerAddOnStart: (cb) => {
-        this.events.on('serverAddOnStart', batched(cb));
+        const cbWrapped = batched(cb);
+        this.events.on('serverAddOnStart', cbWrapped);
         if (this.serverAddOnStarted) {
-          batched(cb)();
+          cbWrapped();
         }
+        return () => {
+          this.events.off('serverAddOnStart', cbWrapped);
+        };
       },
       onServerAddOnStop: (cb) => {
-        this.events.on('serverAddOnStop', batched(cb));
+        const cbWrapped = batched(cb);
+        this.events.on('serverAddOnStop', cbWrapped);
         if (this.serverAddOnStopped) {
-          batched(cb)();
+          cbWrapped();
         }
+        return () => {
+          this.events.off('serverAddOnStop', cbWrapped);
+        };
       },
       sendToServerAddOn: (method, params) =>
         this.serverAddOnControls.sendMessage(
