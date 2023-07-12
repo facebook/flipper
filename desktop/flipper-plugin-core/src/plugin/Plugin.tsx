@@ -50,6 +50,8 @@ export interface PluginClient<
    */
   readonly appName: string;
 
+  readonly isActivated: () => boolean;
+
   readonly isConnected: boolean;
   readonly connected: ReadOnlyAtom<boolean>;
 
@@ -176,6 +178,9 @@ export class SandyPluginInstance extends BasePluginInstance {
     const self = this;
     this.client = {
       ...this.createBasePluginClient(),
+      isActivated() {
+        return self.activated;
+      },
       get appId() {
         return realClient.id;
       },
