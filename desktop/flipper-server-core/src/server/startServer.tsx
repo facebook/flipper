@@ -206,13 +206,17 @@ async function startProxyServer(
     fs.rmSync(socketPath, {force: true});
   });
 
-  proxyServer?.on('error', (err, _req, res) => {
+  proxyServer?.on('error', (err, _req, _res) => {
     console.warn('Error in proxy server:', err);
-    if (res instanceof ServerResponse) {
-      res.writeHead(502, 'Failed to proxy request');
-    }
-    res.end('Failed to proxy request: ' + err);
     tracker.track('server-proxy-error', {error: err.message});
+
+    // As it stands, if the proxy fails, which is the one
+    // listening on the supplied TCP port, then we should exit.
+    // Otherwise we risk staying in an invalid state, unable
+    // to recover, and thus preventing us to serve incoming requests.
+    // Bear in mind that exiting the process will trigger the exit hook
+    // defined above which will clean and close the sockets.
+    process.exit(0);
   });
 
   return new Promise((resolve) => {
