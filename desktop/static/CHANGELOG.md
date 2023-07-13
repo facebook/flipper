@@ -1,3 +1,10 @@
+# 0.205.0 (13/7/2023)
+
+ * [D47212492](https://github.com/facebook/flipper/search?q=D47212492&type=Commits) -  [UIDebugger] Using keyboard arrow control changes the selected and hovered state together for faster / easier navigation
+ * [D47223504](https://github.com/facebook/flipper/search?q=D47223504&type=Commits) -  [UIDebugger] Make selection more prominent in the visualiser
+ * [D47367536](https://github.com/facebook/flipper/search?q=D47367536&type=Commits) -  MobileBuilds prevent downloads from hanging indefinitely
+
+
 # 0.201.0 (21/6/2023)
 
  * [D46840341](https://github.com/facebook/flipper/search?q=D46840341&type=Commits) -  add export file implementation for browsers
