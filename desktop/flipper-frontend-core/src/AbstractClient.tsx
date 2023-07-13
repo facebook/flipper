@@ -230,9 +230,6 @@ export default abstract class AbstractClient extends EventEmitter {
     // diff the background plugin list, disconnect old, connect new ones
     oldBackgroundPlugins.forEach((plugin) => {
       if (!this.backgroundPlugins.has(plugin)) {
-        if (plugin === 'Msys') {
-          console.log('AbstyractClient.refreshPlugins -> deinit Msys');
-        }
         this.deinitPlugin(plugin);
       }
     });

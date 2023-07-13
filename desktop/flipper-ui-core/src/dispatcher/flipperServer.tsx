@@ -324,7 +324,9 @@ export async function handleClientConnected(
     query,
     {
       send(data: any) {
-        server.exec('client-request', id, data);
+        server.exec('client-request', id, data).catch((e) => {
+          console.warn(e);
+        });
       },
       async sendExpectResponse(data: any) {
         return await server.exec('client-request-response', id, data);
