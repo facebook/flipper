@@ -45,6 +45,7 @@ import constants from './fb-stubs/constants';
 import {initializeElectron} from './electron/initializeElectron';
 import path from 'path';
 import fs from 'fs-extra';
+import os from 'os';
 import {ElectronIpcClientRenderer} from './electronIpc';
 import {checkSocketInUse, makeSocketPath} from 'flipper-server-core';
 import {KeytarModule} from 'flipper-server-core/src/utils/keytar';
@@ -217,7 +218,9 @@ async function getFlipperServer(
     await server.connect();
     await readyForIncomingConnections(server, companionEnv);
 
-    return getExternalServer(UDSconnectionURL);
+    return getExternalServer(
+      os.platform() === 'win32' ? TCPconnectionURL : UDSconnectionURL,
+    );
   }
   return getEmbeddedServer();
 }
