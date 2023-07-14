@@ -218,30 +218,38 @@ export default abstract class AbstractClient extends EventEmitter {
 
   // get the plugins, and update the UI
   async refreshPlugins() {
-    const oldBackgroundPlugins = this.backgroundPlugins;
-    await this.loadPlugins('refresh');
-    await Promise.all(
-      [...this.plugins].map(async (pluginId) =>
-        this.startPluginIfNeeded(await this.getPlugin(pluginId)),
-      ),
-    );
-    const newBackgroundPlugins = await this.getBackgroundPlugins();
-    this.backgroundPlugins = new Set(newBackgroundPlugins);
-    // diff the background plugin list, disconnect old, connect new ones
-    oldBackgroundPlugins.forEach((plugin) => {
-      if (!this.backgroundPlugins.has(plugin)) {
-        this.deinitPlugin(plugin);
+    try {
+      const oldBackgroundPlugins = this.backgroundPlugins;
+      await this.loadPlugins('refresh');
+      await Promise.all(
+        [...this.plugins].map(async (pluginId) =>
+          this.startPluginIfNeeded(await this.getPlugin(pluginId)),
+        ),
+      );
+      const newBackgroundPlugins = await this.getBackgroundPlugins();
+      this.backgroundPlugins = new Set(newBackgroundPlugins);
+      // diff the background plugin list, disconnect old, connect new ones
+      oldBackgroundPlugins.forEach((plugin) => {
+        if (!this.backgroundPlugins.has(plugin)) {
+          this.deinitPlugin(plugin);
+        }
+      });
+      newBackgroundPlugins.forEach((plugin) => {
+        if (
+          !oldBackgroundPlugins.has(plugin) &&
+          this.shouldConnectAsBackgroundPlugin(plugin)
+        ) {
+          this.initPlugin(plugin);
+        }
+      });
+      this.emit('plugins-change');
+    } catch (e) {
+      if (this.connected) {
+        throw e;
+      } else {
+        console.warn(e);
       }
-    });
-    newBackgroundPlugins.forEach((plugin) => {
-      if (
-        !oldBackgroundPlugins.has(plugin) &&
-        this.shouldConnectAsBackgroundPlugin(plugin)
-      ) {
-        this.initPlugin(plugin);
-      }
-    });
-    this.emit('plugins-change');
+    }
   }
 
   onMessage(msg: string) {
