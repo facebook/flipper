@@ -588,6 +588,7 @@ Valid `options` are:
 * `key` - if a key is set, the given field of the records is assumed to be unique, and its value can be used to perform lookups and upserts.
 * `limit` - the maximum number of records that this DataSource will store. If the limit is exceeded, the oldest records will automatically be dropped to make place for the new ones. Defaults to 100.000 records.
 * `persist` - see the `createState` `persist` option: If set, this data source will automatically be part of Flipper imports / exports; it's recommended to set this option.
+* `indices` - If set, secondary indices will be maintained for this table that allows fast lookups. Indices is an array of keys with 1 or more items. See `getAllRecordsByIndex` for more details.
 
 All records stored in a data source should be treated as being immutable. To update a record, replace it with a new value using the `update` or `upsert` operations.
 
@@ -685,6 +686,41 @@ Usage: `clear()`. Removes all records from this data source.
 ##### getAdditionalView
 
 Usage: `getAdditionalView(viewId: string)`. Gets an additional `DataSourceView` of the `DataSource` by passing in an identifier `viewId`. If there already exists a `DataSourceView` with the `viewId`, we simply return that view instead.
+
+#### getAllRecordsByIndex
+
+Usage: `getAllRecordsByIndex({ indexedAttribute: value, indexAttribute2: value2, .... })`
+
+This method allows fast lookups for objects that match specific attributes exactly. 
+Returns all items matching the specified index query.
+Note that the results are unordered, unless
+records have not been updated using upsert / update, in that case
+insertion order is maintained.
+If no index has been specified for this exact keyset in the indexQuery (see options.indices), this method will throw.
+
+Example:
+
+```javascript
+const ds = createDataSource([eatCookie, drinkCoffee, submitBug], {
+  key: 'id',
+  indices: [
+    ['title']
+    ['id', 'title'],
+    ['title', 'done'],
+  ],
+});
+
+// Find first element with title === cookie (or undefined)
+const todo = ds.getFirstRecordByIndex({
+    title: 'cookie',
+})
+
+// Find all elements where title === cookie, and done === false
+const todos = ds.getAllRecordsByIndex({
+  title: 'cookie',
+  done: false,
+})
+```
 
 #### DataSourceView
 
