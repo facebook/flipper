@@ -97,27 +97,44 @@ export type DataSourceOptionKey<K extends PropertyKey> = {
    */
   key?: K;
 };
-export type DataSourceOptions = {
+export type DataSourceOptions<T> = {
   /**
    * The maximum amount of records that this DataSource will store.
    * If the limit is exceeded, the oldest records will automatically be dropped to make place for the new ones
    */
   limit?: number;
+  /**
+   * Secondary indices, that can be used to perform O(1) lookups on specific keys later on.
+   * A combination of keys is allowed.
+   *
+   * For example:
+   * indices: [["title"], ["id", "title"]]
+   *
+   * Enables:
+   * dataSource.getAllRecordsByIndex({
+   *   id: 123,
+   *   title: "Test"
+   * })
+   */
+  indices?: IndexDefinition<T>[];
 };
+
+type IndexDefinition<T> = Array<keyof T>;
+type IndexQuery<T> = Partial<T>;
 
 export function createDataSource<T, Key extends keyof T>(
   initialSet: readonly T[],
-  options: DataSourceOptions & DataSourceOptionKey<Key>,
+  options: DataSourceOptions<T> & DataSourceOptionKey<Key>,
 ): DataSource<T, T[Key] extends string | number ? T[Key] : never>;
 export function createDataSource<T>(
   initialSet?: readonly T[],
-  options?: DataSourceOptions,
+  options?: DataSourceOptions<T>,
 ): DataSource<T, never>;
 export function createDataSource<T, Key extends keyof T>(
   initialSet: readonly T[] = [],
-  options?: DataSourceOptions & DataSourceOptionKey<Key>,
+  options?: DataSourceOptions<T> & DataSourceOptionKey<Key>,
 ): DataSource<T, Key> {
-  const ds = new DataSource<T, Key>(options?.key);
+  const ds = new DataSource<T, Key>(options?.key, options?.indices);
   if (options?.limit !== undefined) {
     ds.limit = options.limit;
   }
@@ -129,6 +146,14 @@ export class DataSource<T extends any, KeyType = never> {
   private nextId = 0;
   private _records: Entry<T>[] = [];
   private _recordsById: Map<KeyType, T> = new Map();
+
+  // secondary indices are used to allow fast lookups for items that match certain columns exactly
+  private _secondaryIndices: Map<
+    string /* normalized string */,
+    IndexDefinition<T> /* sorted keys */
+  >;
+  private _recordsBySecondaryIndex: Map<string, Map<string, T[]>> = new Map();
+
   /**
    * @readonly
    */
@@ -155,8 +180,25 @@ export class DataSource<T extends any, KeyType = never> {
     [viewId: string]: DataSourceView<T, KeyType>;
   };
 
-  constructor(keyAttribute: keyof T | undefined) {
+  constructor(
+    keyAttribute: keyof T | undefined,
+    secondaryIndices: IndexDefinition<T>[] = [],
+  ) {
     this.keyAttribute = keyAttribute;
+    this._secondaryIndices = new Map(
+      secondaryIndices.map((index) => {
+        const sortedKeys = index.slice().sort();
+        const key = sortedKeys.join(':');
+        // immediately reserve a map per index
+        this._recordsBySecondaryIndex.set(key, new Map());
+        return [key, sortedKeys];
+      }),
+    );
+    if (this._secondaryIndices.size !== secondaryIndices.length) {
+      throw new Error(
+        `Duplicate index definition in ${JSON.stringify(secondaryIndices)}`,
+      );
+    }
     this.view = new DataSourceView<T, KeyType>(this, DEFAULT_VIEW_ID);
     this.additionalViews = {};
   }
@@ -246,6 +288,7 @@ export class DataSource<T extends any, KeyType = never> {
       this._recordsById.set(key, value);
       this.storeIndexOfKey(key, this._records.length);
     }
+    this.storeSecondaryIndices(value);
     const visibleMap: {[viewId: string]: boolean} = {[DEFAULT_VIEW_ID]: false};
     const approxIndexMap: {[viewId: string]: number} = {[DEFAULT_VIEW_ID]: -1};
     Object.keys(this.additionalViews).forEach((viewId) => {
@@ -309,6 +352,8 @@ export class DataSource<T extends any, KeyType = never> {
       this._recordsById.set(key, value);
       this.storeIndexOfKey(key, index);
     }
+    this.removeSecondaryIndices(oldValue);
+    this.storeSecondaryIndices(value);
     this.emitDataEvent({
       type: 'update',
       entry,
@@ -343,6 +388,7 @@ export class DataSource<T extends any, KeyType = never> {
         });
       }
     }
+    this.removeSecondaryIndices(entry.value);
     this.emitDataEvent({
       type: 'remove',
       index,
@@ -387,6 +433,7 @@ export class DataSource<T extends any, KeyType = never> {
         this.idToIndex.delete(key);
       });
     }
+    removed.forEach((entry) => this.removeSecondaryIndices(entry.value));
 
     if (
       this.view.isSorted &&
@@ -411,10 +458,13 @@ export class DataSource<T extends any, KeyType = never> {
    * The clear operation removes any records stored, but will keep the current view preferences such as sorting and filtering
    */
   public clear() {
-    this._records = [];
-    this._recordsById = new Map();
+    this._records.splice(0);
+    this._recordsById.clear();
+    for (const m of this._recordsBySecondaryIndex.values()) {
+      m.clear();
+    }
     this.shiftOffset = 0;
-    this.idToIndex = new Map();
+    this.idToIndex.clear();
     this.rebuild();
   }
 
@@ -500,6 +550,91 @@ export class DataSource<T extends any, KeyType = never> {
     Object.entries(this.additionalViews).forEach(([, dataView]) => {
       dataView.processEvent(event);
     });
+  }
+
+  private storeSecondaryIndices(value: T) {
+    for (const [indexKey, sortedIndex] of this._secondaryIndices.entries()) {
+      const indexValue = this.getSecondaryIndexValueFromRecord(
+        value,
+        sortedIndex,
+      );
+      // maps are already set up in constructor
+      const m = this._recordsBySecondaryIndex.get(indexKey)!;
+      const a = m.get(indexValue);
+      if (!a) {
+        // not seen this index value yet
+        m.set(indexValue, [value]);
+      } else {
+        a.push(value);
+      }
+    }
+  }
+
+  private removeSecondaryIndices(value: T) {
+    for (const [indexKey, sortedIndex] of this._secondaryIndices.entries()) {
+      const indexValue = this.getSecondaryIndexValueFromRecord(
+        value,
+        sortedIndex,
+      );
+      // maps are already set up in constructor
+      const m = this._recordsBySecondaryIndex.get(indexKey)!;
+      // code belows assumes that we have an entry for this secondary
+      const a = m.get(indexValue)!;
+      a.splice(a.indexOf(value), 1);
+    }
+  }
+
+  /**
+   * Returns all items matching the specified index query.
+   *
+   * Note that the results are unordered, unless
+   * records have not been updated using upsert / update, in that case
+   * insertion order is maintained.
+   *
+   * Example:
+   * `ds.getAllRecordsByIndex({title: 'subit a bug', done: false})`
+   *
+   * If no index has been specified for this exact keyset in the indexQuery (see options.indices), this method will throw
+   *
+   * @param indexQuery
+   * @returns
+   */
+  public getAllRecordsByIndex(indexQuery: IndexQuery<T>): readonly T[] {
+    // normalise indexKey, incl sorting
+    const sortedKeys: (keyof T)[] = Object.keys(indexQuery).sort() as any;
+    const indexKey = sortedKeys.join(':');
+    const recordsByIndex = this._recordsBySecondaryIndex.get(indexKey);
+    if (!recordsByIndex) {
+      throw new Error(
+        `No index has been defined for the keys ${JSON.stringify(
+          Object.keys(indexQuery),
+        )}`,
+      );
+    }
+    const indexValue = JSON.stringify(
+      // query object needs reordering and normalised to produce correct indexValue
+      Object.fromEntries(sortedKeys.map((k) => [k, String(indexQuery[k])])),
+    );
+    return recordsByIndex.get(indexValue) ?? [];
+  }
+
+  /**
+   * Like getAllRecords, but returns the first match only.
+   * @param indexQuery
+   * @returns
+   */
+  public getFirstRecordByIndex(indexQuery: IndexQuery<T>): T | undefined {
+    return this.getAllRecordsByIndex(indexQuery)[0];
+  }
+
+  private getSecondaryIndexValueFromRecord(
+    record: T,
+    // assumes keys is already ordered
+    keys: IndexDefinition<T>,
+  ): any {
+    return JSON.stringify(
+      Object.fromEntries(keys.map((k) => [k, String(record[k])])),
+    );
   }
 
   /**

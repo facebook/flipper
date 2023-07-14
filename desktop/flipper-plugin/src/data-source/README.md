@@ -29,6 +29,7 @@ This library builds a map-reduce inspired data processing pipeline that stores d
 * Virtualization (windowing) is built in.
 * Dynamic row wrapping is supported when rendering tables.
 * Any stable JS function can be used for sorting and filtering, without impacting performance significantly.
+* Support for secondary indices to support close to O(1) lookups for known values.
 
 This library is designed with the following constraints in mind:
 
