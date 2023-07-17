@@ -221,6 +221,7 @@ export type Tag =
   | 'Declarative'
   | 'Android'
   | 'Litho'
+  | 'LithoMountable'
   | 'CK'
   | 'iOS'
   | 'BloksBoundTree'

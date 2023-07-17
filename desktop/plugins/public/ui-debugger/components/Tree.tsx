@@ -461,7 +461,9 @@ function HighlightedText(props: {text: string}) {
 }
 
 function nodeIcon(node: UINode) {
-  if (node.tags.includes('Litho')) {
+  if (node.tags.includes('LithoMountable')) {
+    return <DecorationImage src="icons/litho-logo-blue.png" />;
+  } else if (node.tags.includes('Litho')) {
     return <DecorationImage src="icons/litho-logo.png" />;
   } else if (node.tags.includes('CK')) {
     if (node.tags.includes('iOS')) {
