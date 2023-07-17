@@ -210,8 +210,10 @@ export class FlipperServerImpl implements FlipperServer {
   }
 
   private async createFolders() {
-    await mkdirp(flipperDataFolder);
-    await mkdirp(flipperSettingsFolder);
+    await Promise.all([
+      mkdirp(flipperDataFolder),
+      mkdirp(flipperSettingsFolder),
+    ]);
   }
 
   async startDeviceListeners() {

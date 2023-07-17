@@ -167,6 +167,12 @@ async function getFlipperServer(
     await shutdown(UDSconnectionURL);
   }
 
+  const [homePath, tempPath, desktopPath] = await Promise.all([
+    electronIpcClient.send('getPath', 'home'),
+    electronIpcClient.send('getPath', 'temp'),
+    electronIpcClient.send('getPath', 'desktop'),
+  ]);
+
   const getEmbeddedServer = async () => {
     const server = new FlipperServerImpl(
       {
@@ -175,11 +181,11 @@ async function getFlipperServer(
         gatekeepers: gatekeepers,
         paths: {
           appPath,
-          homePath: await electronIpcClient.send('getPath', 'home'),
+          homePath,
           execPath,
           staticPath,
-          tempPath: await electronIpcClient.send('getPath', 'temp'),
-          desktopPath: await electronIpcClient.send('getPath', 'desktop'),
+          tempPath,
+          desktopPath,
         },
         launcherSettings: await loadLauncherSettings(),
         processConfig: loadProcessConfig(env),

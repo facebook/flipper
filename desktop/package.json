@@ -165,7 +165,7 @@
     "watch": "cross-env TZ=Pacific/Pohnpei node --expose-gc --stack-trace-limit=40 ./node_modules/.bin/jest --watch"
   },
   "engines": {
-    "node": ">=16",
+    "node": ">=18",
     "npm": "use yarn instead",
     "yarn": "^1.16"
   },

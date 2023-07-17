@@ -456,9 +456,11 @@ async function buildServerRelease() {
     platforms.push(BuildPlatform.WINDOWS);
   }
 
-  for (const platform of platforms) {
-    await bundleServerReleaseForPlatform(dir, versionNumber, platform);
-  }
+  await Promise.all(
+    platforms.map((platform) =>
+      bundleServerReleaseForPlatform(dir, versionNumber, platform),
+    ),
+  );
 }
 
 function nodeArchFromBuildPlatform(platform: BuildPlatform): string {

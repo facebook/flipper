@@ -69,9 +69,12 @@ async function getWorkspacesByRoot(
 }
 
 export async function getWorkspaces(): Promise<Workspaces> {
-  const rootWorkspaces = await getWorkspacesByRoot(rootDir);
-  const publicPluginsWorkspaces = await getWorkspacesByRoot(publicPluginsDir);
-  const fbPluginsWorkspaces = await getWorkspacesByRoot(fbPluginsDir);
+  const [rootWorkspaces, publicPluginsWorkspaces, fbPluginsWorkspaces] =
+    await Promise.all([
+      getWorkspacesByRoot(rootDir),
+      getWorkspacesByRoot(publicPluginsDir),
+      getWorkspacesByRoot(fbPluginsDir),
+    ]);
   const mergedWorkspaces: Workspaces = {
     rootPackage: rootWorkspaces!.rootPackage,
     packages: [
