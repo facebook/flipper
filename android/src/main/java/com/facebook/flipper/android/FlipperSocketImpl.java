@@ -67,6 +67,22 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
     this.mEventHandler = eventHandler;
   }
 
+  private void clearEventHandler() {
+    this.mEventHandler =
+        new FlipperSocketEventHandler() {
+          @Override
+          public void onConnectionEvent(SocketEvent event) {}
+
+          @Override
+          public void onMessageReceived(String message) {}
+
+          @Override
+          public FlipperObject onAuthenticationChallengeReceived() {
+            return null;
+          }
+        };
+  }
+
   @Override
   public void flipperConnect() {
     if ((this.isOpen())) {
@@ -139,14 +155,10 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
   @Override
   public void onClose(int code, String reason, boolean remote) {
-    /**
-     * If the socket is not yet open, don't report the close event. Usually, onError is invoked
-     * instead which is the one that needs reporting.
-     */
-    if (!this.isOpen()) {
-      return;
-    }
     this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.CLOSE);
+    // Clear the existing event handler as to ensure no other events are processed after the close
+    // is handled.
+    this.clearEventHandler();
   }
 
   /**
@@ -158,6 +170,7 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
    */
   @Override
   public void onError(Exception ex) {
+
     // Check the exception for OpenSSL error and change the event type.
     // Required for Flipper as the current implementation treats these errors differently.
     if (ex instanceof javax.net.ssl.SSLHandshakeException) {
@@ -165,23 +178,14 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
     } else {
       this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.ERROR);
     }
+    // Clear the existing event handler as to ensure no other events are processed after the close
+    // is handled.
+    this.clearEventHandler();
   }
 
   @Override
   public void flipperDisconnect() {
-    this.mEventHandler =
-        new FlipperSocketEventHandler() {
-          @Override
-          public void onConnectionEvent(SocketEvent event) {}
-
-          @Override
-          public void onMessageReceived(String message) {}
-
-          @Override
-          public FlipperObject onAuthenticationChallengeReceived() {
-            return null;
-          }
-        };
+    this.clearEventHandler();
     super.close();
   }
 
