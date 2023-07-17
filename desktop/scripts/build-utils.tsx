@@ -168,8 +168,7 @@ export async function moveSourceMaps(
     // If we don't move them out of the build folders, they'll get included in the ASAR
     // which we don't want.
     console.log(`⏭  Removing source maps.`);
-    await fs.remove(mainBundleMap);
-    await fs.remove(rendererBundleMap);
+    await Promise.all([fs.remove(mainBundleMap), fs.remove(rendererBundleMap)]);
   }
 }
 
