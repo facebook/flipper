@@ -664,6 +664,7 @@ export class DataSourceView<T, KeyType> {
   private sortBy: undefined | ((a: T) => Primitive) = undefined;
   private reverse: boolean = false;
   private filter?: (value: T) => boolean = undefined;
+  private filterExceptions?: Set<KeyType> = undefined;
 
   /**
    * @readonly
@@ -760,8 +761,20 @@ export class DataSourceView<T, KeyType> {
   public setFilter(filter: undefined | ((value: T) => boolean)) {
     if (this.filter !== filter) {
       this.filter = filter;
+      // Filter exceptions are relevant for one filter only
+      this.filterExceptions = undefined;
       this.rebuild();
     }
+  }
+
+  /**
+   * Granular control over filters to add one-off exceptions to them.
+   * They allow us to add singular items to table views.
+   * Extremely useful for Bloks Debugger where we have to jump between multiple types of rows that could be filtered out
+   */
+  public setFilterExpections(ids: KeyType[]) {
+    this.filterExceptions = new Set(ids);
+    this.rebuild();
   }
 
   public toggleReversed() {
@@ -782,6 +795,7 @@ export class DataSourceView<T, KeyType> {
     this.sortBy = undefined;
     this.reverse = false;
     this.filter = undefined;
+    this.filterExceptions = undefined;
     this.windowStart = 0;
     this.windowEnd = 0;
     this.rebuild();
@@ -891,6 +905,7 @@ export class DataSourceView<T, KeyType> {
       case 'append': {
         const {entry} = event;
         entry.visible[this.viewId] = filter ? filter(entry.value) : true;
+        this.applyFilterExceptions(entry);
         if (!entry.visible[this.viewId]) {
           // not in filter? skip this entry
           return;
@@ -908,6 +923,7 @@ export class DataSourceView<T, KeyType> {
       case 'update': {
         const {entry} = event;
         entry.visible[this.viewId] = filter ? filter(entry.value) : true;
+        this.applyFilterExceptions(entry);
         // short circuit; no view active so update straight away
         if (!filter && !sortBy) {
           output[event.index].approxIndex[this.viewId] = event.index;
@@ -1015,6 +1031,7 @@ export class DataSourceView<T, KeyType> {
     let output = filter
       ? records.filter((entry) => {
           entry.visible[this.viewId] = filter(entry.value);
+          this.applyFilterExceptions(entry);
           return entry.visible[this.viewId];
         })
       : records.slice();
@@ -1081,5 +1098,17 @@ export class DataSourceView<T, KeyType> {
     entry.approxIndex[this.viewId] = insertionIndex;
     this._output.splice(insertionIndex, 0, entry);
     this.notifyItemShift(insertionIndex, 1);
+  }
+
+  private applyFilterExceptions(entry: Entry<T>) {
+    if (
+      this.datasource.keyAttribute &&
+      this.filter &&
+      this.filterExceptions &&
+      !entry.visible[this.viewId]
+    ) {
+      const keyValue = entry.value[this.datasource.keyAttribute] as KeyType;
+      entry.visible[this.viewId] = this.filterExceptions.has(keyValue);
+    }
   }
 }

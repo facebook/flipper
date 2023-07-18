@@ -356,6 +356,21 @@ test('filter', () => {
   expect(rawOutput(ds)).toEqual([newCookie, newCoffee, submitBug, a, b]);
 });
 
+test('filter + filterExceptions', () => {
+  const ds = createDataSource<Todo, 'id'>([eatCookie, drinkCoffee, submitBug], {
+    key: 'id',
+  });
+
+  ds.view.setFilter((t) => t.title.indexOf('c') === -1);
+
+  expect(rawOutput(ds)).toEqual([submitBug]);
+
+  // add exception
+  ds.view.setFilterExpections([drinkCoffee.id]);
+
+  expect(rawOutput(ds)).toEqual([drinkCoffee, submitBug]);
+});
+
 test('reverse without sorting', () => {
   const ds = createDataSource<Todo>([eatCookie, drinkCoffee]);
   ds.view.setWindow(0, 100);
@@ -452,8 +467,12 @@ test('reset', () => {
     key: 'id',
   });
   ds.view.setSortBy('title');
-  ds.view.setFilter((v) => v.id !== 'cookie');
-  expect(rawOutput(ds)).toEqual([drinkCoffee, submitBug]);
+  ds.view.setFilter((v) => v.id === 'cookie');
+  expect(rawOutput(ds)).toEqual([eatCookie]);
+  expect([...ds.keys()]).toEqual(['bug', 'coffee', 'cookie']);
+
+  ds.view.setFilterExpections([drinkCoffee.id]);
+  expect(rawOutput(ds)).toEqual([drinkCoffee, eatCookie]);
   expect([...ds.keys()]).toEqual(['bug', 'coffee', 'cookie']);
 
   ds.view.reset();
