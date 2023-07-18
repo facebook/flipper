@@ -9,12 +9,7 @@
 
 import React, {cloneElement, useState, useCallback} from 'react';
 import {Button, Divider, Badge, Tooltip, Menu, Modal} from 'antd';
-import {
-  MobileFilled,
-  SettingOutlined,
-  BugOutlined,
-  ApiOutlined,
-} from '@ant-design/icons';
+import {MobileFilled, SettingOutlined, BugOutlined} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
 import {
   theme,
@@ -145,12 +140,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
               setToplevelSelection('appinspect');
             }}
           />
-          {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
-            <ConnectionTroubleshootButton
-              toplevelSelection={toplevelSelection}
-              setToplevelSelection={setToplevelSelection}
-            />
-          )}
           <LeftRailDivider />
         </Layout.Container>
         <Layout.Container center gap={10} padh={6}>
@@ -283,22 +272,6 @@ function ExtrasMenu() {
         }
       />
     </>
-  );
-}
-
-function ConnectionTroubleshootButton({
-  toplevelSelection,
-  setToplevelSelection,
-}: ToplevelProps) {
-  return (
-    <LeftRailButton
-      icon={<ApiOutlined />}
-      title="Connection Troubleshoot"
-      selected={toplevelSelection === 'connectivity'}
-      onClick={() => {
-        setToplevelSelection('connectivity');
-      }}
-    />
   );
 }
 

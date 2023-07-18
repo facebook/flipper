@@ -16,6 +16,7 @@ import {
   useValue,
   withTrackingScope,
 } from 'flipper-plugin';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 import React, {cloneElement, useCallback, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
@@ -23,6 +24,7 @@ import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
 import {Avatar, Badge, Button, Popover, Tooltip} from 'antd';
 import {
+  ApiOutlined,
   AppstoreAddOutlined,
   BellOutlined,
   CameraOutlined,
@@ -72,6 +74,12 @@ export const Navbar = withTrackingScope(function Navbar({
         <NavbarButton label="Screenshot" icon={CameraOutlined} />
         <NavbarButton label="Record" icon={VideoCameraOutlined} />
         <LaunchEmulatorButton />
+        {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
+          <ConnectionTroubleshootButton
+            toplevelSelection={toplevelSelection}
+            setToplevelSelection={setToplevelSelection}
+          />
+        )}
         {!isProduction() && (
           <div>
             <FpsGraph />
@@ -104,6 +112,22 @@ export const Navbar = withTrackingScope(function Navbar({
     </Layout.Horizontal>
   );
 });
+
+function ConnectionTroubleshootButton({
+  toplevelSelection,
+  setToplevelSelection,
+}: ToplevelProps) {
+  return (
+    <NavbarButton
+      icon={ApiOutlined}
+      label="Connection Troubleshoot"
+      toggled={toplevelSelection === 'connectivity'}
+      onClick={() => {
+        setToplevelSelection('connectivity');
+      }}
+    />
+  );
+}
 
 function NotificationButton({
   toplevelSelection,
