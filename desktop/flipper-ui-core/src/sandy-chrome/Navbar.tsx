@@ -93,7 +93,7 @@ export const Navbar = withTrackingScope(function Navbar({
         justifyContent: 'space-between',
         background: theme.backgroundDefault,
       }}>
-      <Layout.Horizontal style={{gap: 4}}>
+      <Layout.Horizontal style={{gap: 6}}>
         <LeftSidebarToggleButton />
         <NavbarButton
           icon={MobileOutlined}
@@ -103,7 +103,6 @@ export const Navbar = withTrackingScope(function Navbar({
             setToplevelSelection('appinspect');
           }}
         />
-
         <button>device picker</button>
         <NavbarButton label="Screenshot" icon={CameraOutlined} />
         <NavbarButton label="Record" icon={VideoCameraOutlined} />
@@ -121,7 +120,7 @@ export const Navbar = withTrackingScope(function Navbar({
           </div>
         )}
       </Layout.Horizontal>
-      <Layout.Horizontal style={{gap: 4, alignItems: 'center'}}>
+      <Layout.Horizontal style={{gap: 6, alignItems: 'center'}}>
         <NavbarButton
           label="Add Plugins"
           icon={AppstoreAddOutlined}
@@ -455,6 +454,7 @@ function NavbarButton({
         flexDirection: 'column',
         alignItems: 'center',
         height: 'auto',
+        padding: theme.space.tiny,
       }}
       disabled={disabled}>
       <Icon
@@ -631,7 +631,6 @@ const submenu = css`
   height: 56px;
 
   .ant-menu-submenu-title {
-    width: 61px !important;
     height: 56px !important;
     padding: 0;
     margin: 0;
