@@ -35,7 +35,7 @@ import {
   ApiOutlined,
   AppstoreAddOutlined,
   BellOutlined,
-  BugOutlined,
+  ExportOutlined,
   FileExclamationOutlined,
   LayoutOutlined,
   LoginOutlined,
@@ -175,7 +175,7 @@ function ExportEverythingEverywhereAllAtOnceButton() {
       />
       <NUX title="Press this button if you have issues with Flipper. It will collect Flipper debug data that you can send to the Flipper team to get help.">
         <NavbarButton
-          icon={BugOutlined}
+          icon={ExportOutlined}
           label="Rage"
           onClick={() => {
             exportEverythingEverywhereAllAtOnceTracked();
