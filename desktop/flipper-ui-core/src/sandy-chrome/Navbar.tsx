@@ -80,6 +80,7 @@ import {
   NavbarScreenRecordButton,
   NavbarScreenshotButton,
 } from '../chrome/ScreenCaptureButtons';
+import {StatusMessage} from './appinspect/AppInspect';
 
 export const Navbar = withTrackingScope(function Navbar({
   toplevelSelection,
@@ -106,7 +107,8 @@ export const Navbar = withTrackingScope(function Navbar({
             setToplevelSelection('appinspect');
           }}
         />
-        <DevicePicker />
+        <AppSelector />
+        <StatusMessage />
         <NavbarScreenshotButton />
         <NavbarScreenRecordButton />
         <LaunchEmulatorButton />
@@ -493,10 +495,6 @@ export function NavbarButton({
   } else {
     return button;
   }
-}
-
-function DevicePicker() {
-  return <AppSelector />;
 }
 
 function LoginConnectivityButton() {

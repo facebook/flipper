@@ -44,7 +44,6 @@ export function AppInspect() {
   const activeDevice = useSelector(getActiveDevice);
   const isDeviceConnected = useValue(activeDevice?.connected, false);
   const isAppConnected = useValue(client?.connected, false);
-  const hasSelectableDevices = useSelector(connections.hasSelectableDevices);
 
   return (
     <LeftSidebar>
@@ -54,13 +53,6 @@ export function AppInspect() {
             App Inspect
           </SidebarTitle>
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
-            {renderStatusMessage(
-              isDeviceConnected,
-              activeDevice,
-              client,
-              isAppConnected,
-              hasSelectableDevices,
-            )}
             {isDeviceConnected && isAppConnected && <BookmarkSection />}
             {isDeviceConnected && activeDevice && (
               <Toolbar gap>
@@ -90,6 +82,25 @@ const Toolbar = styled(Layout.Horizontal)({
     border: 'none',
   },
 });
+
+export function StatusMessage() {
+  const client = useSelector(getActiveClient);
+  const activeDevice = useSelector(getActiveDevice);
+  const isDeviceConnected = useValue(activeDevice?.connected, false);
+  const isAppConnected = useValue(client?.connected, false);
+  const hasSelectableDevices = useSelector(connections.hasSelectableDevices);
+  return (
+    <>
+      {renderStatusMessage(
+        isDeviceConnected,
+        activeDevice,
+        client,
+        isAppConnected,
+        hasSelectableDevices,
+      )}
+    </>
+  );
+}
 
 function renderStatusMessage(
   isDeviceConnected: boolean,
