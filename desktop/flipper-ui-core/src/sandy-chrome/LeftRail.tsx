@@ -8,27 +8,16 @@
  */
 
 import React, {cloneElement, useState, useCallback, useMemo} from 'react';
-import {
-  Button,
-  Divider,
-  Badge,
-  Tooltip,
-  Avatar,
-  Popover,
-  Menu,
-  Modal,
-} from 'antd';
+import {Button, Divider, Badge, Tooltip, Menu, Modal} from 'antd';
 import {
   MobileFilled,
   AppstoreOutlined,
   BellOutlined,
   FileExclamationOutlined,
-  LoginOutlined,
   SettingOutlined,
   MedicineBoxOutlined,
   RocketOutlined,
   BugOutlined,
-  WarningOutlined,
   ApiOutlined,
 } from '@ant-design/icons';
 import {SidebarLeft, SidebarRight} from './SandyIcons';
@@ -63,7 +52,6 @@ import NetworkGraph from '../chrome/NetworkGraph';
 import FpsGraph from '../chrome/FpsGraph';
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
-import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
 import constants from '../fb-stubs/constants';
 import {
   canFileExport,
@@ -79,7 +67,6 @@ import {css} from '@emotion/css';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {StyleGuide} from './StyleGuide';
 import {useEffect} from 'react';
-import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -217,7 +204,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
           <LeftSidebarToggleButton />
           <ExportEverythingEverywhereAllAtOnceButton />
           <ExtrasMenu />
-          {config.showLogin && <LoginConnectivityButton />}
         </Layout.Container>
       </Layout.Bottom>
     </Layout.Container>
@@ -611,65 +597,6 @@ function SetupDoctorButton() {
         onClick={() => setVisible(true)}
       />
       <SetupDoctorScreen visible={visible} onClose={onClose} />
-    </>
-  );
-}
-
-function LoginConnectivityButton() {
-  const dispatch = useDispatch();
-  const loggedIn = useValue(currentUser());
-  const user = useStore((state) => state.user);
-
-  const profileUrl = user?.profile_picture?.uri;
-  const [showLogout, setShowLogout] = useState(false);
-  const onHandleVisibleChange = useCallback(
-    (visible) => setShowLogout(visible),
-    [],
-  );
-
-  const connected = useValue(isConnected());
-
-  if (!connected) {
-    return (
-      <Tooltip
-        placement="left"
-        title="No connection to intern, ensure you are VPN/Lighthouse for plugin updates and other features">
-        <WarningOutlined
-          style={{color: theme.warningColor, fontSize: '20px'}}
-        />
-      </Tooltip>
-    );
-  }
-
-  return loggedIn ? (
-    <Popover
-      content={
-        <Button
-          block
-          style={{backgroundColor: theme.backgroundDefault}}
-          onClick={async () => {
-            onHandleVisibleChange(false);
-            await logoutUser();
-          }}>
-          Log Out
-        </Button>
-      }
-      trigger="click"
-      placement="right"
-      visible={showLogout}
-      overlayStyle={{padding: 0}}
-      onVisibleChange={onHandleVisibleChange}>
-      <Layout.Container padv={theme.inlinePaddingV}>
-        <Avatar size="small" src={profileUrl} />
-      </Layout.Container>
-    </Popover>
-  ) : (
-    <>
-      <LeftRailButton
-        icon={<LoginOutlined />}
-        title="Log In"
-        onClick={() => showLoginDialog()}
-      />
     </>
   );
 }
