@@ -21,7 +21,6 @@ import {theme} from 'flipper-plugin';
 import {Logger} from 'flipper-common';
 
 import {Navbar} from './Navbar';
-import {LeftRail} from './LeftRail';
 import {useStore, useDispatch} from '../utils/useStore';
 import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {setStaticView} from '../reducers/connections';
@@ -173,9 +172,12 @@ export function SandyApp() {
             toplevelSelection={toplevelSelection}
             setToplevelSelection={setToplevelSelection}
           />
-          <Layout.Left>
+          <Layout.Left
+            style={{
+              paddingLeft: theme.space.large,
+              paddingRight: theme.space.large,
+            }}>
             <Layout.Horizontal>
-              <LeftRail />
               <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
                 {leftMenuContent && (
                   <TrackingScope scope={toplevelSelection!}>

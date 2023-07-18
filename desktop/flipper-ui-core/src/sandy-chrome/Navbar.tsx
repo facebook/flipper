@@ -30,21 +30,20 @@ import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
 import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
-import {Avatar, Badge, Button, Modal, Popover, Tooltip} from 'antd';
+import {Avatar, Badge, Button, Menu, Modal, Popover, Tooltip} from 'antd';
 import {
   ApiOutlined,
   AppstoreAddOutlined,
   BellOutlined,
   BugOutlined,
   CameraOutlined,
-  EllipsisOutlined,
   FileExclamationOutlined,
   LayoutOutlined,
   LoginOutlined,
   MedicineBoxOutlined,
   MobileOutlined,
-  QuestionCircleOutlined,
   RocketOutlined,
+  SettingOutlined,
   VideoCameraOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
@@ -62,10 +61,22 @@ import NetworkGraph from '../chrome/NetworkGraph';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {filterNotifications} from './notification/notificationUtils';
 import {
+  canFileExport,
+  canOpenDialog,
   exportEverythingEverywhereAllAtOnce,
   ExportEverythingEverywhereAllAtOnceStatus,
+  showOpenDialog,
+  startFileExport,
+  startLinkExport,
 } from '../utils/exportData';
+import UpdateIndicator from '../chrome/UpdateIndicator';
 import {css} from '@emotion/css';
+import constants from '../fb-stubs/constants';
+import {setStaticView} from '../reducers/connections';
+import {StyleGuide} from './StyleGuide';
+import {openDeeplinkDialog} from '../deeplink';
+import SettingsSheet from '../chrome/SettingsSheet';
+import WelcomeScreen from './WelcomeScreen';
 
 export const Navbar = withTrackingScope(function Navbar({
   toplevelSelection,
@@ -126,12 +137,12 @@ export const Navbar = withTrackingScope(function Navbar({
           toplevelSelection={toplevelSelection}
           setToplevelSelection={setToplevelSelection}
         />
+        <ExtrasMenu />
         <SetupDoctorButton />
         <ExportEverythingEverywhereAllAtOnceButton />
-        <NavbarButton label="Help" icon={QuestionCircleOutlined} />
-        <NavbarButton label="More" icon={EllipsisOutlined} />
         <RightSidebarToggleButton />
         {config.showLogin && <LoginConnectivityButton />}
+        <UpdateIndicator />
       </Layout.Horizontal>
     </Layout.Horizontal>
   );
@@ -606,4 +617,132 @@ export function LeftRailButton({
   }
 
   return res;
+}
+
+const menu = css`
+  border: none;
+  height: 56px;
+
+  .ant-menu-submenu-title {
+    hieght: 56px;
+  }
+`;
+const submenu = css`
+  height: 56px;
+
+  .ant-menu-submenu-title {
+    width: 61px !important;
+    height: 56px !important;
+    padding: 0;
+    margin: 0;
+  }
+  .ant-menu-submenu-arrow {
+    display: none;
+  }
+`;
+
+function ExtrasMenu() {
+  const store = useStore();
+
+  const startFileExportTracked = useTrackedCallback(
+    'File export',
+    () => startFileExport(store.dispatch),
+    [store.dispatch],
+  );
+  const startLinkExportTracked = useTrackedCallback(
+    'Link export',
+    () => startLinkExport(store.dispatch),
+    [store.dispatch],
+  );
+  const startImportTracked = useTrackedCallback(
+    'File import',
+    () => showOpenDialog(store),
+    [store],
+  );
+
+  const [showSettings, setShowSettings] = useState(false);
+  const onSettingsClose = useCallback(() => setShowSettings(false), []);
+
+  const settings = useStore((state) => state.settingsState);
+  const {showWelcomeAtStartup} = settings;
+  const [welcomeVisible, setWelcomeVisible] = useState(showWelcomeAtStartup);
+
+  return (
+    <>
+      <NUX
+        title="Find import, export, deeplink, feedback, settings, and help (welcome) here"
+        placement="right">
+        <Menu
+          mode="vertical"
+          className={menu}
+          selectable={false}
+          style={{backgroundColor: theme.backgroundDefault}}>
+          <Menu.SubMenu
+            popupOffset={[-50, 50]}
+            key="extras"
+            title={<NavbarButton icon={SettingOutlined} label="More" />}
+            className={submenu}>
+            {canOpenDialog() ? (
+              <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
+                Import Flipper file
+              </Menu.Item>
+            ) : null}
+            {canFileExport() ? (
+              <Menu.Item key="exportFile" onClick={startFileExportTracked}>
+                Export Flipper file
+              </Menu.Item>
+            ) : null}
+            {constants.ENABLE_SHAREABLE_LINK ? (
+              <Menu.Item
+                key="exportShareableLink"
+                onClick={startLinkExportTracked}>
+                Export shareable link
+              </Menu.Item>
+            ) : null}
+            <Menu.Divider />
+            <Menu.SubMenu title="Plugin developers">
+              <Menu.Item
+                key="styleguide"
+                onClick={() => {
+                  store.dispatch(setStaticView(StyleGuide));
+                }}>
+                Flipper Style Guide
+              </Menu.Item>
+              <Menu.Item
+                key="triggerDeeplink"
+                onClick={() => openDeeplinkDialog(store)}>
+                Trigger deeplink
+              </Menu.Item>
+            </Menu.SubMenu>
+            <Menu.Divider />
+            <Menu.Item key="settings" onClick={() => setShowSettings(true)}>
+              Settings
+            </Menu.Item>
+            <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
+              Help
+            </Menu.Item>
+          </Menu.SubMenu>
+        </Menu>
+      </NUX>
+      {showSettings && (
+        <SettingsSheet
+          platform={
+            getRenderHostInstance().serverConfig.environmentInfo.os.platform
+          }
+          onHide={onSettingsClose}
+        />
+      )}
+      <WelcomeScreen
+        visible={welcomeVisible}
+        onClose={() => setWelcomeVisible(false)}
+        showAtStartup={showWelcomeAtStartup}
+        onCheck={(value) =>
+          store.dispatch({
+            type: 'UPDATE_SETTINGS',
+            payload: {...settings, showWelcomeAtStartup: value},
+          })
+        }
+      />
+    </>
+  );
 }
