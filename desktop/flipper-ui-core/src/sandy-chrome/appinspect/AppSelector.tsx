@@ -32,6 +32,7 @@ import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {TroubleshootingGuide} from './fb-stubs/TroubleshootingGuide';
 import {getSelectableDevices} from '../../selectors/connections';
 import {getRenderHostInstance} from 'flipper-frontend-core';
+import {NoDevices} from './NoDevices';
 
 const {Text} = Typography;
 
@@ -82,6 +83,9 @@ export function AppSelector() {
     onSelectApp,
   );
   const client = clients.get(selectedAppId!);
+  const gkSelfSufficiency = getRenderHostInstance().GK(
+    'flipper_self_sufficiency',
+  );
 
   return (
     <>
@@ -133,10 +137,14 @@ export function AppSelector() {
           </Text>
         </Layout.Horizontal>
       )}
-      <TroubleshootingGuide
-        showGuide={getRenderHostInstance().GK('flipper_self_sufficiency')}
-        devicesDetected={entries.length}
-      />
+      {
+        /* Return the public component NoDevices if showGuide is false (This means that the user is not in the GK Allowlist) and no devices are detected */
+        !gkSelfSufficiency && entries.length == 0 ? (
+          <NoDevices />
+        ) : !gkSelfSufficiency && entries.length > 0 ? null : (
+          <TroubleshootingGuide />
+        )
+      }
     </>
   );
 }
