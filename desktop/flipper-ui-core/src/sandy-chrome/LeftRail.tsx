@@ -20,12 +20,9 @@ import {
   BugOutlined,
   ApiOutlined,
 } from '@ant-design/icons';
-import {SidebarLeft, SidebarRight} from './SandyIcons';
+import {SidebarRight} from './SandyIcons';
 import {useDispatch, useStore} from '../utils/useStore';
-import {
-  toggleLeftSidebarVisible,
-  toggleRightSidebarVisible,
-} from '../reducers/application';
+import {toggleRightSidebarVisible} from '../reducers/application';
 import {
   theme,
   Layout,
@@ -201,7 +198,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
           <LaunchEmulatorButton />
           <SetupDoctorButton />
           <RightSidebarToggleButton />
-          <LeftSidebarToggleButton />
           <ExportEverythingEverywhereAllAtOnceButton />
           <ExtrasMenu />
         </Layout.Container>
@@ -329,25 +325,6 @@ function ExtrasMenu() {
         }
       />
     </>
-  );
-}
-
-function LeftSidebarToggleButton() {
-  const dispatch = useDispatch();
-  const mainMenuVisible = useStore(
-    (state) => state.application.leftSidebarVisible,
-  );
-
-  return (
-    <LeftRailButton
-      icon={<SidebarLeft />}
-      small
-      title="Left Sidebar Toggle"
-      toggled={mainMenuVisible}
-      onClick={() => {
-        dispatch(toggleLeftSidebarVisible());
-      }}
-    />
   );
 }
 

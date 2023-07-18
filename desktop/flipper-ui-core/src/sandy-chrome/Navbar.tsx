@@ -9,7 +9,7 @@
 
 import {Layout, styled, theme, useValue} from 'flipper-plugin';
 import React, {cloneElement, useCallback, useState} from 'react';
-import {useStore} from '../utils/useStore';
+import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
 import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
@@ -27,10 +27,12 @@ import {
   VideoCameraOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
+import {toggleLeftSidebarVisible} from '../reducers/application';
 
 export function Navbar() {
   return (
     <Layout.Horizontal
+      borderBottom
       style={{
         width: '100%',
         height: 68,
@@ -38,10 +40,9 @@ export function Navbar() {
         alignItems: 'center',
         justifyContent: 'space-between',
         background: theme.backgroundDefault,
-        borderBottom: `solid 1px ${theme.dividerColor}`,
       }}>
       <Layout.Horizontal style={{gap: 4}}>
-        <NavbarButton label="Toggle Sidebar" icon={LayoutOutlined} />
+        <LeftSidebarToggleButton />
         <button>device picker</button>
         <NavbarButton label="Screenshot" icon={CameraOutlined} />
         <NavbarButton label="Record" icon={VideoCameraOutlined} />
@@ -59,27 +60,52 @@ export function Navbar() {
   );
 }
 
+function LeftSidebarToggleButton() {
+  const dispatch = useDispatch();
+  const mainMenuVisible = useStore(
+    (state) => state.application.leftSidebarVisible,
+  );
+
+  return (
+    <NavbarButton
+      label="Toggle Sidebar"
+      icon={LayoutOutlined}
+      toggled={!mainMenuVisible}
+      onClick={() => {
+        dispatch(toggleLeftSidebarVisible());
+      }}
+    />
+  );
+}
+
 function NavbarButton({
   icon: Icon,
   label,
-  selected,
+  toggled = false,
+  onClick,
 }: {
   icon: typeof LoginOutlined;
   label: string;
   selected?: boolean;
+  // TODO remove optional
+  onClick?: () => void;
+  toggled?: boolean;
 }) {
+  const color = toggled ? theme.primaryColor : theme.textColorActive;
   return (
     <Button
-      ghost={!selected}
+      aria-pressed={toggled}
+      ghost
+      onClick={onClick}
       style={{
-        color: theme.textColorPrimary,
+        color,
         boxShadow: 'none',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         height: 'auto',
       }}>
-      <Icon style={{color: theme.textColorPrimary, fontSize: 24}} />
+      <Icon style={{color, fontSize: 24}} />
       <span
         style={{
           margin: 0,
