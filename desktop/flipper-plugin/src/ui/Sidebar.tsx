@@ -20,6 +20,7 @@ import {Layout} from './Layout';
 const SidebarInteractiveContainer = styled(Interactive)<InteractiveProps>({
   display: 'flex',
   flex: '0 1 1',
+  background: theme.backgroundDefault,
 });
 SidebarInteractiveContainer.displayName = 'Sidebar:SidebarInteractiveContainer';
 

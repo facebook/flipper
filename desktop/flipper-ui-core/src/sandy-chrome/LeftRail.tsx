@@ -163,7 +163,12 @@ export const LeftRail = withTrackingScope(function LeftRail({
   setToplevelSelection,
 }: ToplevelProps) {
   return (
-    <Layout.Container borderRight padv={12} width={48}>
+    <Layout.Container
+      borderRight
+      borderTop
+      padv={12}
+      width={48}
+      style={{background: theme.backgroundDefault}}>
       <Layout.Bottom style={{overflow: 'visible'}}>
         <Layout.Container center gap={10} padh={6}>
           <LeftRailButton
