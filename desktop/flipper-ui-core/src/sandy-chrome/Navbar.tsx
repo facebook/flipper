@@ -32,15 +32,12 @@ import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
 import {Avatar, Badge, Button, Menu, Modal, Popover, Tooltip} from 'antd';
 import {
-  ApiOutlined,
   AppstoreAddOutlined,
   BellOutlined,
   BugOutlined,
   ExportOutlined,
-  FileExclamationOutlined,
   LayoutOutlined,
   LoginOutlined,
-  MedicineBoxOutlined,
   MobileOutlined,
   RocketOutlined,
   SettingOutlined,
@@ -50,7 +47,7 @@ import {
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
 } from '../reducers/application';
-import {ToplevelProps} from './SandyApp';
+import {ToplevelNavItem, ToplevelProps} from './SandyApp';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
@@ -113,12 +110,6 @@ export const Navbar = withTrackingScope(function Navbar({
         <NavbarScreenshotButton />
         <NavbarScreenRecordButton />
         <LaunchVirtualDeviceButton />
-        {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
-          <ConnectionTroubleshootButton
-            toplevelSelection={toplevelSelection}
-            setToplevelSelection={setToplevelSelection}
-          />
-        )}
         {!isProduction() && (
           <div>
             <FpsGraph />
@@ -134,17 +125,12 @@ export const Navbar = withTrackingScope(function Navbar({
             Dialog.showModal((onHide) => <PluginManager onHide={onHide} />);
           }}
         />
-        <DebugLogsButton
-          toplevelSelection={toplevelSelection}
-          setToplevelSelection={setToplevelSelection}
-        />
         <NotificationButton
           toplevelSelection={toplevelSelection}
           setToplevelSelection={setToplevelSelection}
         />
-        <TroubleshootMenu />
+        <TroubleshootMenu setToplevelSelection={setToplevelSelection} />
         <ExtrasMenu />
-        <SetupDoctorButton />
         <ExportEverythingEverywhereAllAtOnceButton />
         <RightSidebarToggleButton />
         {config.showLogin && <LoginConnectivityButton />}
@@ -288,22 +274,6 @@ function ExportEverythingEverywhereAllAtOnceStatusModal({
   );
 }
 
-function ConnectionTroubleshootButton({
-  toplevelSelection,
-  setToplevelSelection,
-}: ToplevelProps) {
-  return (
-    <NavbarButton
-      icon={ApiOutlined}
-      label="Troubleshoot"
-      toggled={toplevelSelection === 'connectivity'}
-      onClick={() => {
-        setToplevelSelection('connectivity');
-      }}
-    />
-  );
-}
-
 function NotificationButton({
   toplevelSelection,
   setToplevelSelection,
@@ -377,44 +347,6 @@ function LaunchVirtualDeviceButton() {
         showEmulatorLauncher(store);
       }}
     />
-  );
-}
-
-function DebugLogsButton({
-  toplevelSelection,
-  setToplevelSelection,
-}: ToplevelProps) {
-  const errorCount = useValue(errorCounterAtom);
-  return (
-    <NavbarButton
-      icon={FileExclamationOutlined}
-      label="Flipper Logs"
-      toggled={toplevelSelection === 'flipperlogs'}
-      count={errorCount}
-      onClick={() => {
-        setToplevelSelection('flipperlogs');
-      }}
-    />
-  );
-}
-
-function SetupDoctorButton() {
-  const [visible, setVisible] = useState(false);
-  const result = useStore(
-    (state) => state.healthchecks.healthcheckReport.result,
-  );
-  const hasNewProblem = useMemo(() => checkHasNewProblem(result), [result]);
-  const onClose = useCallback(() => setVisible(false), []);
-  return (
-    <>
-      <NavbarButton
-        icon={MedicineBoxOutlined}
-        label="Setup Doctor"
-        count={hasNewProblem ? true : undefined}
-        onClick={() => setVisible(true)}
-      />
-      <SetupDoctorScreen visible={visible} onClose={onClose} />
-    </>
   );
 }
 
@@ -647,24 +579,64 @@ const submenu = css`
   }
 `;
 
-function TroubleshootMenu() {
+function TroubleshootMenu({
+  setToplevelSelection,
+}: {
+  setToplevelSelection: (x: ToplevelNavItem) => void;
+}) {
+  const [isDoctorVisible, setIsDoctorVisible] = useState(false);
+  const result = useStore(
+    (state) => state.healthchecks.healthcheckReport.result,
+  );
+  const hasNewProblem = useMemo(() => checkHasNewProblem(result), [result]);
+  const flipperErrorLogCount = useValue(errorCounterAtom);
+
+  const count = flipperErrorLogCount || hasNewProblem || 0;
+
+  const badgeProps: Parameters<typeof Badge>[0] =
+    count === true ? {dot: true, offset: [-8, 8]} : {count, offset: [-6, 5]};
+
   return (
-    <Menu
-      mode="vertical"
-      className={menu}
-      selectable={false}
-      style={{backgroundColor: theme.backgroundDefault}}>
-      <Menu.SubMenu
-        popupOffset={[-90, 50]}
-        key="extras"
-        title={<NavbarButton icon={BugOutlined} label="Troubleshoot" />}
-        className={submenu}>
-        <Menu.Item>TODO troubleshooting guide</Menu.Item>
-        <Menu.Item>TODO troubleshoot</Menu.Item>
-        <Menu.Item>TODO flipper logs</Menu.Item>
-        <Menu.Item>TODO setup doctor</Menu.Item>
-      </Menu.SubMenu>
-    </Menu>
+    <>
+      {/* using Badge **here** as NavbarButton badge is being cut off by Menu component */}
+      <Badge {...badgeProps}>
+        <Menu
+          mode="vertical"
+          className={menu}
+          selectable={false}
+          style={{backgroundColor: theme.backgroundDefault}}>
+          <Menu.SubMenu
+            popupOffset={[-90, 50]}
+            key="troubleshooting"
+            title={<NavbarButton icon={BugOutlined} label="Troubleshoot" />}
+            className={submenu}>
+            {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
+              <Menu.Item
+                key="connectivity"
+                onClick={() => setToplevelSelection('connectivity')}>
+                Troubleshoot connectivity
+              </Menu.Item>
+            )}
+            <Menu.Item
+              key="flipperlogs"
+              onClick={() => setToplevelSelection('flipperlogs')}>
+              <Badge offset={[12, 0]} count={flipperErrorLogCount}>
+                Flipper Logs
+              </Badge>
+            </Menu.Item>
+            <Menu.Item
+              key="setupdoctor"
+              onClick={() => setIsDoctorVisible(true)}>
+              <Badge dot={hasNewProblem}>Setup Doctor</Badge>
+            </Menu.Item>
+          </Menu.SubMenu>
+        </Menu>
+      </Badge>
+      <SetupDoctorScreen
+        visible={isDoctorVisible}
+        onClose={() => setIsDoctorVisible(false)}
+      />
+    </>
   );
 }
 
