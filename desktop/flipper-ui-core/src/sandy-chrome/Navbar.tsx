@@ -10,23 +10,32 @@
 import {
   Dialog,
   Layout,
+  NUX,
   styled,
   theme,
   useMemoize,
+  useTrackedCallback,
   useValue,
   withTrackingScope,
 } from 'flipper-plugin';
 import {getRenderHostInstance} from 'flipper-frontend-core';
-import React, {cloneElement, useCallback, useMemo, useState} from 'react';
+import React, {
+  cloneElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
 import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
-import {Avatar, Badge, Button, Popover, Tooltip} from 'antd';
+import {Avatar, Badge, Button, Modal, Popover, Tooltip} from 'antd';
 import {
   ApiOutlined,
   AppstoreAddOutlined,
   BellOutlined,
+  BugOutlined,
   CameraOutlined,
   EllipsisOutlined,
   FileExclamationOutlined,
@@ -52,6 +61,10 @@ import FpsGraph from '../chrome/FpsGraph';
 import NetworkGraph from '../chrome/NetworkGraph';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {filterNotifications} from './notification/notificationUtils';
+import {
+  exportEverythingEverywhereAllAtOnce,
+  ExportEverythingEverywhereAllAtOnceStatus,
+} from '../utils/exportData';
 import {css} from '@emotion/css';
 
 export const Navbar = withTrackingScope(function Navbar({
@@ -114,6 +127,7 @@ export const Navbar = withTrackingScope(function Navbar({
           setToplevelSelection={setToplevelSelection}
         />
         <SetupDoctorButton />
+        <ExportEverythingEverywhereAllAtOnceButton />
         <NavbarButton label="Help" icon={QuestionCircleOutlined} />
         <NavbarButton label="More" icon={EllipsisOutlined} />
         <RightSidebarToggleButton />
@@ -123,6 +137,140 @@ export const Navbar = withTrackingScope(function Navbar({
   );
 });
 
+function ExportEverythingEverywhereAllAtOnceButton() {
+  const store = useStore();
+  const [status, setStatus] = useState<
+    ExportEverythingEverywhereAllAtOnceStatus | undefined
+  >();
+
+  const exportEverythingEverywhereAllAtOnceTracked = useTrackedCallback(
+    'Debug data export',
+    () =>
+      exportEverythingEverywhereAllAtOnce(
+        store,
+        (...args) => setStatus(args),
+        config.isFBBuild,
+      ),
+    [store, setStatus],
+  );
+
+  return (
+    <>
+      <ExportEverythingEverywhereAllAtOnceStatusModal
+        status={status}
+        setStatus={setStatus}
+      />
+      <NUX title="Press this button if you have issues with Flipper. It will collect Flipper debug data that you can send to the Flipper team to get help.">
+        <NavbarButton
+          icon={BugOutlined}
+          label="Rage"
+          onClick={() => {
+            exportEverythingEverywhereAllAtOnceTracked();
+          }}
+        />
+      </NUX>
+    </>
+  );
+}
+function ExportEverythingEverywhereAllAtOnceStatusModal({
+  status,
+  setStatus,
+}: {
+  status: ExportEverythingEverywhereAllAtOnceStatus | undefined;
+  setStatus: (
+    newStatus: ExportEverythingEverywhereAllAtOnceStatus | undefined,
+  ) => void;
+}) {
+  const [statusMessage, setStatusMessage] = useState<JSX.Element | undefined>();
+
+  useEffect(() => {
+    switch (status?.[0]) {
+      case 'logs': {
+        setStatusMessage(<p>Exporting Flipper logs...</p>);
+        return;
+      }
+      case 'files': {
+        let sheepCount = 0;
+        const setFileExportMessage = () => {
+          setStatusMessage(
+            <>
+              <p>Exporting Flipper debug files from all devices...</p>
+              <p>It could take a long time!</p>
+              <p>Let's count sheep while we wait: {sheepCount++}.</p>
+              <p>We'll skip it automatically if it exceeds 3 minutes.</p>
+            </>,
+          );
+        };
+
+        setFileExportMessage();
+
+        const interval = setInterval(setFileExportMessage, 3000);
+        return () => clearInterval(interval);
+      }
+      case 'state': {
+        let dinosaursCount = 0;
+        const setStateExportMessage = () => {
+          setStatusMessage(
+            <>
+              <p>Exporting Flipper state...</p>
+              <p>It also could take a long time!</p>
+              <p>This time we could count dinosaurs: {dinosaursCount++}.</p>
+              <p>We'll skip it automatically if it exceeds 2 minutes.</p>
+            </>,
+          );
+        };
+
+        setStateExportMessage();
+
+        const interval = setInterval(setStateExportMessage, 2000);
+        return () => clearInterval(interval);
+      }
+      case 'archive': {
+        setStatusMessage(<p>Creating an archive...</p>);
+        return;
+      }
+      case 'upload': {
+        setStatusMessage(<p>Uploading the archive...</p>);
+        return;
+      }
+      case 'support': {
+        setStatusMessage(<p>Creating a support request...</p>);
+        return;
+      }
+      case 'error': {
+        setStatusMessage(
+          <>
+            <p>Oops! Something went wrong.</p>
+            <p>{status[1]}</p>
+          </>,
+        );
+        return;
+      }
+      case 'done': {
+        setStatusMessage(<p>Done!</p>);
+        return;
+      }
+      case 'cancelled': {
+        setStatusMessage(<p>Cancelled! Why? 😱🤯👏</p>);
+        return;
+      }
+    }
+  }, [status]);
+
+  return (
+    <Modal
+      visible={!!status}
+      centered
+      onCancel={() => {
+        setStatus(undefined);
+      }}
+      title="Exporting everything everywhere all at once"
+      footer={null}>
+      {statusMessage}
+    </Modal>
+  );
+}
+
 function ConnectionTroubleshootButton({
   toplevelSelection,
   setToplevelSelection,
@@ -130,7 +278,7 @@ function ConnectionTroubleshootButton({
   return (
     <NavbarButton
       icon={ApiOutlined}
-      label="Connection Troubleshoot"
+      label="Troubleshoot"
       toggled={toplevelSelection === 'connectivity'}
       onClick={() => {
         setToplevelSelection('connectivity');

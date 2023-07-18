@@ -8,8 +8,8 @@
  */
 
 import React, {cloneElement, useState, useCallback} from 'react';
-import {Button, Divider, Badge, Tooltip, Menu, Modal} from 'antd';
-import {SettingOutlined, BugOutlined} from '@ant-design/icons';
+import {Button, Divider, Badge, Tooltip, Menu} from 'antd';
+import {SettingOutlined} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
 import {
   theme,
@@ -20,7 +20,6 @@ import {
 } from 'flipper-plugin';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
-import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {setStaticView} from '../reducers/connections';
 import {SandyRatingButton} from '../chrome/RatingButton';
@@ -29,17 +28,14 @@ import constants from '../fb-stubs/constants';
 import {
   canFileExport,
   canOpenDialog,
-  exportEverythingEverywhereAllAtOnce,
   showOpenDialog,
   startFileExport,
   startLinkExport,
-  ExportEverythingEverywhereAllAtOnceStatus,
 } from '../utils/exportData';
 import {openDeeplinkDialog} from '../deeplink';
 import {css} from '@emotion/css';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {StyleGuide} from './StyleGuide';
-import {useEffect} from 'react';
 
 const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
   width: kind === 'small' ? 32 : 36,
@@ -129,7 +125,6 @@ export const LeftRail = withTrackingScope(function LeftRail() {
       <Layout.Container center gap={10} padh={6}>
         <UpdateIndicator />
         <SandyRatingButton />
-        <ExportEverythingEverywhereAllAtOnceButton />
         <ExtrasMenu />
       </Layout.Container>
     </Layout.Container>
@@ -254,142 +249,6 @@ function ExtrasMenu() {
           })
         }
       />
-    </>
-  );
-}
-
-function ExportEverythingEverywhereAllAtOnceStatusModal({
-  status,
-  setStatus,
-}: {
-  status: ExportEverythingEverywhereAllAtOnceStatus | undefined;
-  setStatus: (
-    newStatus: ExportEverythingEverywhereAllAtOnceStatus | undefined,
-  ) => void;
-}) {
-  const [statusMessage, setStatusMessage] = useState<JSX.Element | undefined>();
-
-  useEffect(() => {
-    switch (status?.[0]) {
-      case 'logs': {
-        setStatusMessage(<p>Exporting Flipper logs...</p>);
-        return;
-      }
-      case 'files': {
-        let sheepCount = 0;
-        const setFileExportMessage = () => {
-          setStatusMessage(
-            <>
-              <p>Exporting Flipper debug files from all devices...</p>
-              <p>It could take a long time!</p>
-              <p>Let's count sheep while we wait: {sheepCount++}.</p>
-              <p>We'll skip it automatically if it exceeds 3 minutes.</p>
-            </>,
-          );
-        };
-
-        setFileExportMessage();
-
-        const interval = setInterval(setFileExportMessage, 3000);
-        return () => clearInterval(interval);
-      }
-      case 'state': {
-        let dinosaursCount = 0;
-        const setStateExportMessage = () => {
-          setStatusMessage(
-            <>
-              <p>Exporting Flipper state...</p>
-              <p>It also could take a long time!</p>
-              <p>This time we could count dinosaurs: {dinosaursCount++}.</p>
-              <p>We'll skip it automatically if it exceeds 2 minutes.</p>
-            </>,
-          );
-        };
-
-        setStateExportMessage();
-
-        const interval = setInterval(setStateExportMessage, 2000);
-        return () => clearInterval(interval);
-      }
-      case 'archive': {
-        setStatusMessage(<p>Creating an archive...</p>);
-        return;
-      }
-      case 'upload': {
-        setStatusMessage(<p>Uploading the archive...</p>);
-        return;
-      }
-      case 'support': {
-        setStatusMessage(<p>Creating a support request...</p>);
-        return;
-      }
-      case 'error': {
-        setStatusMessage(
-          <>
-            <p>Oops! Something went wrong.</p>
-            <p>{status[1]}</p>
-          </>,
-        );
-        return;
-      }
-      case 'done': {
-        setStatusMessage(<p>Done!</p>);
-        return;
-      }
-      case 'cancelled': {
-        setStatusMessage(<p>Cancelled! Why? 😱🤯👏</p>);
-        return;
-      }
-    }
-  }, [status]);
-
-  return (
-    <Modal
-      visible={!!status}
-      centered
-      onCancel={() => {
-        setStatus(undefined);
-      }}
-      title="Exporting everything everywhere all at once"
-      footer={null}>
-      {statusMessage}
-    </Modal>
-  );
-}
-
-function ExportEverythingEverywhereAllAtOnceButton() {
-  const store = useStore();
-  const [status, setStatus] = useState<
-    ExportEverythingEverywhereAllAtOnceStatus | undefined
-  >();
-
-  const exportEverythingEverywhereAllAtOnceTracked = useTrackedCallback(
-    'Debug data export',
-    () =>
-      exportEverythingEverywhereAllAtOnce(
-        store,
-        (...args) => setStatus(args),
-        config.isFBBuild,
-      ),
-    [store, setStatus],
-  );
-
-  return (
-    <>
-      <ExportEverythingEverywhereAllAtOnceStatusModal
-        status={status}
-        setStatus={setStatus}
-      />
-      <NUX title="Press this button if you have issues with Flipper. It will collect Flipper debug data that you can send to the Flipper team to get help.">
-        <LeftRailButton
-          icon={<BugOutlined />}
-          title="Export Flipper debug data"
-          onClick={() => {
-            exportEverythingEverywhereAllAtOnceTracked();
-          }}
-          small
-        />
-      </NUX>
     </>
   );
 }
