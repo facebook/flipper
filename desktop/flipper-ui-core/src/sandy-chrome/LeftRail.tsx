@@ -13,7 +13,6 @@ import {SettingOutlined} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
 import {
   theme,
-  Layout,
   withTrackingScope,
   useTrackedCallback,
   NUX,
@@ -22,8 +21,6 @@ import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
 import styled from '@emotion/styled';
 import {setStaticView} from '../reducers/connections';
-import {SandyRatingButton} from '../chrome/RatingButton';
-import UpdateIndicator from '../chrome/UpdateIndicator';
 import constants from '../fb-stubs/constants';
 import {
   canFileExport,
@@ -115,20 +112,7 @@ const LeftRailDivider = styled(Divider)({
 LeftRailDivider.displayName = 'LeftRailDividier';
 
 export const LeftRail = withTrackingScope(function LeftRail() {
-  return (
-    <Layout.Container
-      borderRight
-      borderTop
-      padv={12}
-      width={48}
-      style={{background: theme.backgroundDefault}}>
-      <Layout.Container center gap={10} padh={6}>
-        <UpdateIndicator />
-        <SandyRatingButton />
-        <ExtrasMenu />
-      </Layout.Container>
-    </Layout.Container>
-  );
+  return <ExtrasMenu />;
 });
 
 const menu = css`
