@@ -14,7 +14,19 @@ import config from '../fb-stubs/config';
 import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
 import {Avatar, Badge, Button, Popover, Tooltip} from 'antd';
-import {LoginOutlined, WarningOutlined} from '@ant-design/icons';
+import {
+  AppstoreAddOutlined,
+  BellOutlined,
+  CameraOutlined,
+  EllipsisOutlined,
+  FileExclamationOutlined,
+  LayoutOutlined,
+  LoginOutlined,
+  MedicineBoxOutlined,
+  QuestionCircleOutlined,
+  VideoCameraOutlined,
+  WarningOutlined,
+} from '@ant-design/icons';
 
 export function Navbar() {
   return (
@@ -28,21 +40,55 @@ export function Navbar() {
         background: theme.backgroundDefault,
         borderBottom: `solid 1px ${theme.dividerColor}`,
       }}>
-      <Layout.Horizontal style={{gap: 16}}>
-        <button>show/hide sidebar</button>
+      <Layout.Horizontal style={{gap: 4}}>
+        <NavbarButton label="Toggle Sidebar" icon={LayoutOutlined} />
         <button>device picker</button>
-        <button>screenshot</button>
-        <button>record video</button>
+        <NavbarButton label="Screenshot" icon={CameraOutlined} />
+        <NavbarButton label="Record" icon={VideoCameraOutlined} />
       </Layout.Horizontal>
-      <Layout.Horizontal style={{gap: 16}}>
-        <button>add plugins</button>
-        <button>Alerts</button>
-        <button>Doctor</button>
-        <button>Help</button>
-        <button>More</button>
+      <Layout.Horizontal style={{gap: 4, alignItems: 'center'}}>
+        <NavbarButton label="Add Plugins" icon={AppstoreAddOutlined} />
+        <NavbarButton label="Logs" icon={FileExclamationOutlined} />
+        <NavbarButton label="Alerts" icon={BellOutlined} />
+        <NavbarButton label="Doctor" icon={MedicineBoxOutlined} />
+        <NavbarButton label="Help" icon={QuestionCircleOutlined} />
+        <NavbarButton label="More" icon={EllipsisOutlined} />
         {config.showLogin && <LoginConnectivityButton />}
       </Layout.Horizontal>
     </Layout.Horizontal>
+  );
+}
+
+function NavbarButton({
+  icon: Icon,
+  label,
+  selected,
+}: {
+  icon: typeof LoginOutlined;
+  label: string;
+  selected?: boolean;
+}) {
+  return (
+    <Button
+      ghost={!selected}
+      style={{
+        color: theme.textColorPrimary,
+        boxShadow: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: 'auto',
+      }}>
+      <Icon style={{color: theme.textColorPrimary, fontSize: 24}} />
+      <span
+        style={{
+          margin: 0,
+          fontSize: theme.fontSize.small,
+          color: theme.textColorSecondary,
+        }}>
+        {label}
+      </span>
+    </Button>
   );
 }
 
