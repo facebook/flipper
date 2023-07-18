@@ -15,7 +15,6 @@ import {
   FileExclamationOutlined,
   SettingOutlined,
   MedicineBoxOutlined,
-  RocketOutlined,
   BugOutlined,
   ApiOutlined,
 } from '@ant-design/icons';
@@ -37,7 +36,6 @@ import {ToplevelProps} from './SandyApp';
 import {useValue} from 'flipper-plugin';
 import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
-import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import {setStaticView} from '../reducers/connections';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
@@ -185,7 +183,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
           )}
           <UpdateIndicator />
           <SandyRatingButton />
-          <LaunchEmulatorButton />
           <SetupDoctorButton />
           <RightSidebarToggleButton />
           <ExportEverythingEverywhereAllAtOnceButton />
@@ -529,21 +526,6 @@ function ExportEverythingEverywhereAllAtOnceButton() {
         />
       </NUX>
     </>
-  );
-}
-
-function LaunchEmulatorButton() {
-  const store = useStore();
-
-  return (
-    <LeftRailButton
-      icon={<RocketOutlined />}
-      title="Start Emulator / Simulator"
-      onClick={() => {
-        showEmulatorLauncher(store);
-      }}
-      small
-    />
   );
 }
 

@@ -24,11 +24,13 @@ import {
   LoginOutlined,
   MedicineBoxOutlined,
   QuestionCircleOutlined,
+  RocketOutlined,
   VideoCameraOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
 import {toggleLeftSidebarVisible} from '../reducers/application';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
+import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 
 export function Navbar() {
   return (
@@ -47,6 +49,7 @@ export function Navbar() {
         <button>device picker</button>
         <NavbarButton label="Screenshot" icon={CameraOutlined} />
         <NavbarButton label="Record" icon={VideoCameraOutlined} />
+        <LaunchEmulatorButton />
       </Layout.Horizontal>
       <Layout.Horizontal style={{gap: 4, alignItems: 'center'}}>
         <NavbarButton
@@ -80,6 +83,20 @@ function LeftSidebarToggleButton() {
       toggled={!mainMenuVisible}
       onClick={() => {
         dispatch(toggleLeftSidebarVisible());
+      }}
+    />
+  );
+}
+
+function LaunchEmulatorButton() {
+  const store = useStore();
+
+  return (
+    <NavbarButton
+      icon={RocketOutlined}
+      label="Start [E/Si]mulator"
+      onClick={() => {
+        showEmulatorLauncher(store);
       }}
     />
   );
