@@ -9,8 +9,8 @@
 
 import React from 'react';
 import {Typography} from 'antd';
-import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
-import {Layout, Link, styled} from '../../ui';
+import {LeftSidebar, SidebarTitle} from '../LeftSidebar';
+import {Layout, styled} from '../../ui';
 import {theme, useValue} from 'flipper-plugin';
 import {PluginList} from './PluginList';
 import MetroButton from '../../chrome/MetroButton';
@@ -29,15 +29,6 @@ import {PluginActionsMenu} from '../../chrome/PluginActionsMenu';
 
 const {Text} = Typography;
 
-const appTooltip = (
-  <>
-    Inspect apps by selecting connected devices and emulators. Navigate and
-    bookmark frequent destinations in the app. Refresh, screenshot and
-    screenrecord is also available.{' '}
-    <Link href="https://fbflipper.com/docs/getting-started/">Learn More</Link>
-  </>
-);
-
 export function AppInspect() {
   const metroDevice = useSelector(getMetroDevice);
   const client = useSelector(getActiveClient);
@@ -49,16 +40,16 @@ export function AppInspect() {
     <LeftSidebar>
       <Layout.Top>
         <Layout.Container borderBottom>
-          <SidebarTitle actions={<InfoIcon>{appTooltip}</InfoIcon>}>
-            App Inspect
-          </SidebarTitle>
+          <Toolbar gap>
+            <SidebarTitle>App Inspect</SidebarTitle>
+            <div style={{flex: 1, marginRight: -16}} />
+            <PluginActionsMenu />
+          </Toolbar>
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
             {isDeviceConnected && isAppConnected && <BookmarkSection />}
             {isDeviceConnected && activeDevice && (
               <Toolbar gap>
                 <MetroButton />
-                <div style={{flex: 1}} />
-                <PluginActionsMenu />
               </Toolbar>
             )}
           </Layout.Container>
