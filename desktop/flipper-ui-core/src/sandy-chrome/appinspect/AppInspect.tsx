@@ -12,9 +12,7 @@ import {Typography} from 'antd';
 import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
 import {Layout, Link, styled} from '../../ui';
 import {theme, useValue} from 'flipper-plugin';
-import {AppSelector} from './AppSelector';
 import {PluginList} from './PluginList';
-import ScreenCaptureButtons from '../../chrome/ScreenCaptureButtons';
 import MetroButton from '../../chrome/MetroButton';
 import {BookmarkSection} from './BookmarkSection';
 import Client from '../../Client';
@@ -56,7 +54,6 @@ export function AppInspect() {
             App Inspect
           </SidebarTitle>
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
-            <AppSelector />
             {renderStatusMessage(
               isDeviceConnected,
               activeDevice,
@@ -68,7 +65,6 @@ export function AppInspect() {
             {isDeviceConnected && activeDevice && (
               <Toolbar gap>
                 <MetroButton />
-                <ScreenCaptureButtons />
                 <div style={{flex: 1}} />
                 <PluginActionsMenu />
               </Toolbar>

@@ -36,7 +36,6 @@ import {
   AppstoreAddOutlined,
   BellOutlined,
   BugOutlined,
-  CameraOutlined,
   FileExclamationOutlined,
   LayoutOutlined,
   LoginOutlined,
@@ -44,7 +43,6 @@ import {
   MobileOutlined,
   RocketOutlined,
   SettingOutlined,
-  VideoCameraOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
 import {
@@ -77,6 +75,11 @@ import {StyleGuide} from './StyleGuide';
 import {openDeeplinkDialog} from '../deeplink';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
+import {AppSelector} from './appinspect/AppSelector';
+import {
+  NavbarScreenRecordButton,
+  NavbarScreenshotButton,
+} from '../chrome/ScreenCaptureButtons';
 
 export const Navbar = withTrackingScope(function Navbar({
   toplevelSelection,
@@ -103,9 +106,9 @@ export const Navbar = withTrackingScope(function Navbar({
             setToplevelSelection('appinspect');
           }}
         />
-        <button>device picker</button>
-        <NavbarButton label="Screenshot" icon={CameraOutlined} />
-        <NavbarButton label="Record" icon={VideoCameraOutlined} />
+        <DevicePicker />
+        <NavbarScreenshotButton />
+        <NavbarScreenRecordButton />
         <LaunchEmulatorButton />
         {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
           <ConnectionTroubleshootButton
@@ -423,7 +426,7 @@ const badgeCountClassname = css`
     margin-top: 8px;
   }
 `;
-function NavbarButton({
+export function NavbarButton({
   icon: Icon,
   label,
   toggled = false,
@@ -490,6 +493,10 @@ function NavbarButton({
   } else {
     return button;
   }
+}
+
+function DevicePicker() {
+  return <AppSelector />;
 }
 
 function LoginConnectivityButton() {
