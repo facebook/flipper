@@ -11,7 +11,6 @@ import {
   Dialog,
   Layout,
   NUX,
-  styled,
   theme,
   useMemoize,
   useTrackedCallback,
@@ -19,13 +18,7 @@ import {
   withTrackingScope,
 } from 'flipper-plugin';
 import {getRenderHostInstance} from 'flipper-frontend-core';
-import React, {
-  cloneElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
 import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
@@ -479,83 +472,12 @@ function LoginConnectivityButton() {
       </Layout.Container>
     </Popover>
   ) : (
-    <>
-      <LeftRailButton
-        icon={<LoginOutlined />}
-        title="Log In"
-        onClick={() => showLoginDialog()}
-      />
-    </>
-  );
-}
-
-const LeftRailButtonElem = styled(Button)<{kind?: 'small'}>(({kind}) => ({
-  width: kind === 'small' ? 32 : 36,
-  height: kind === 'small' ? 32 : 36,
-  border: 'none',
-  boxShadow: 'none',
-}));
-LeftRailButtonElem.displayName = 'LeftRailButtonElem';
-
-export function LeftRailButton({
-  icon,
-  small,
-  selected,
-  toggled,
-  count,
-  title,
-  onClick,
-  disabled,
-}: {
-  icon?: React.ReactElement;
-  small?: boolean;
-  toggled?: boolean;
-  selected?: boolean;
-  disabled?: boolean;
-  count?: number | true;
-  title?: string;
-  onClick?: React.MouseEventHandler<HTMLElement>;
-}) {
-  const iconElement =
-    icon && cloneElement(icon, {style: {fontSize: small ? 16 : 24}});
-
-  let res = (
-    <LeftRailButtonElem
-      title={title}
-      kind={small ? 'small' : undefined}
-      type={selected ? 'primary' : 'ghost'}
-      icon={iconElement}
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        color: toggled ? theme.primaryColor : undefined,
-        background: toggled ? theme.backgroundWash : undefined,
-      }}
+    <NavbarButton
+      icon={LoginOutlined}
+      label="Log In"
+      onClick={showLoginDialog}
     />
   );
-
-  if (count !== undefined) {
-    res =
-      count === true ? (
-        <Badge dot offset={[-8, 8]} {...{onClick}}>
-          {res}
-        </Badge>
-      ) : (
-        <Badge count={count} offset={[-6, 5]} {...{onClick}}>
-          {res}
-        </Badge>
-      );
-  }
-
-  if (title) {
-    res = (
-      <Tooltip title={title} placement="right">
-        {res}
-      </Tooltip>
-    );
-  }
-
-  return res;
 }
 
 const menu = css`
