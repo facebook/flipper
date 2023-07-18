@@ -32,6 +32,9 @@ import {toggleLeftSidebarVisible} from '../reducers/application';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
+import {isProduction} from 'flipper-common';
+import FpsGraph from '../chrome/FpsGraph';
+import NetworkGraph from '../chrome/NetworkGraph';
 
 export function Navbar() {
   return (
@@ -51,6 +54,12 @@ export function Navbar() {
         <NavbarButton label="Screenshot" icon={CameraOutlined} />
         <NavbarButton label="Record" icon={VideoCameraOutlined} />
         <LaunchEmulatorButton />
+        {!isProduction() && (
+          <div>
+            <FpsGraph />
+            <NetworkGraph />
+          </div>
+        )}
       </Layout.Horizontal>
       <Layout.Horizontal style={{gap: 4, alignItems: 'center'}}>
         <NavbarButton
@@ -135,7 +144,7 @@ function NavbarButton({
   // TODO remove optional
   onClick?: () => void;
   toggled?: boolean;
-  /** red bubble in top right corner, notification like */
+  /** TODO red bubble in top right corner, notification like */
   count?: number | true;
 }) {
   const color = toggled ? theme.primaryColor : theme.textColorActive;

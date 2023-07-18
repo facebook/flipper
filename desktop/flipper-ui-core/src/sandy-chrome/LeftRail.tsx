@@ -38,9 +38,6 @@ import {setStaticView} from '../reducers/connections';
 import {SandyRatingButton} from '../chrome/RatingButton';
 import {filterNotifications} from './notification/notificationUtils';
 import {useMemoize} from 'flipper-plugin';
-import isProduction from '../utils/isProduction';
-import NetworkGraph from '../chrome/NetworkGraph';
-import FpsGraph from '../chrome/FpsGraph';
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import constants from '../fb-stubs/constants';
 import {
@@ -173,12 +170,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
           />
         </Layout.Container>
         <Layout.Container center gap={10} padh={6}>
-          {!isProduction() && (
-            <div>
-              <FpsGraph />
-              <NetworkGraph />
-            </div>
-          )}
           <UpdateIndicator />
           <SandyRatingButton />
           <RightSidebarToggleButton />
