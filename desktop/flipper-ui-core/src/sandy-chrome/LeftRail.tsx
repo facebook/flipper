@@ -7,14 +7,13 @@
  * @format
  */
 
-import React, {cloneElement, useState, useCallback, useMemo} from 'react';
+import React, {cloneElement, useState, useCallback} from 'react';
 import {Button, Divider, Badge, Tooltip, Menu, Modal} from 'antd';
 import {
   MobileFilled,
   BellOutlined,
   FileExclamationOutlined,
   SettingOutlined,
-  MedicineBoxOutlined,
   BugOutlined,
   ApiOutlined,
 } from '@ant-design/icons';
@@ -28,7 +27,6 @@ import {
   useTrackedCallback,
   NUX,
 } from 'flipper-plugin';
-import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
@@ -183,7 +181,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
           )}
           <UpdateIndicator />
           <SandyRatingButton />
-          <SetupDoctorButton />
           <RightSidebarToggleButton />
           <ExportEverythingEverywhereAllAtOnceButton />
           <ExtrasMenu />
@@ -525,27 +522,6 @@ function ExportEverythingEverywhereAllAtOnceButton() {
           small
         />
       </NUX>
-    </>
-  );
-}
-
-function SetupDoctorButton() {
-  const [visible, setVisible] = useState(false);
-  const result = useStore(
-    (state) => state.healthchecks.healthcheckReport.result,
-  );
-  const hasNewProblem = useMemo(() => checkHasNewProblem(result), [result]);
-  const onClose = useCallback(() => setVisible(false), []);
-  return (
-    <>
-      <LeftRailButton
-        icon={<MedicineBoxOutlined />}
-        small
-        title="Setup Doctor"
-        count={hasNewProblem ? true : undefined}
-        onClick={() => setVisible(true)}
-      />
-      <SetupDoctorScreen visible={visible} onClose={onClose} />
     </>
   );
 }

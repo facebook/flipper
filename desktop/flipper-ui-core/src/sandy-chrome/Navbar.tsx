@@ -8,7 +8,7 @@
  */
 
 import {Dialog, Layout, styled, theme, useValue} from 'flipper-plugin';
-import React, {cloneElement, useCallback, useState} from 'react';
+import React, {cloneElement, useCallback, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
 import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
@@ -31,6 +31,7 @@ import {
 import {toggleLeftSidebarVisible} from '../reducers/application';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
+import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 
 export function Navbar() {
   return (
@@ -61,7 +62,7 @@ export function Navbar() {
         />
         <NavbarButton label="Logs" icon={FileExclamationOutlined} />
         <NavbarButton label="Alerts" icon={BellOutlined} />
-        <NavbarButton label="Doctor" icon={MedicineBoxOutlined} />
+        <SetupDoctorButton />
         <NavbarButton label="Help" icon={QuestionCircleOutlined} />
         <NavbarButton label="More" icon={EllipsisOutlined} />
         {config.showLogin && <LoginConnectivityButton />}
@@ -102,6 +103,26 @@ function LaunchEmulatorButton() {
   );
 }
 
+function SetupDoctorButton() {
+  const [visible, setVisible] = useState(false);
+  const result = useStore(
+    (state) => state.healthchecks.healthcheckReport.result,
+  );
+  const hasNewProblem = useMemo(() => checkHasNewProblem(result), [result]);
+  const onClose = useCallback(() => setVisible(false), []);
+  return (
+    <>
+      <NavbarButton
+        icon={MedicineBoxOutlined}
+        label="Setup Doctor"
+        count={hasNewProblem ? true : undefined}
+        onClick={() => setVisible(true)}
+      />
+      <SetupDoctorScreen visible={visible} onClose={onClose} />
+    </>
+  );
+}
+
 function NavbarButton({
   icon: Icon,
   label,
@@ -114,6 +135,8 @@ function NavbarButton({
   // TODO remove optional
   onClick?: () => void;
   toggled?: boolean;
+  /** red bubble in top right corner, notification like */
+  count?: number | true;
 }) {
   const color = toggled ? theme.primaryColor : theme.textColorActive;
   return (
