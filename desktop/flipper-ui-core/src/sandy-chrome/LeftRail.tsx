@@ -16,9 +16,7 @@ import {
   BugOutlined,
   ApiOutlined,
 } from '@ant-design/icons';
-import {SidebarRight} from './SandyIcons';
-import {useDispatch, useStore} from '../utils/useStore';
-import {toggleRightSidebarVisible} from '../reducers/application';
+import {useStore} from '../utils/useStore';
 import {
   theme,
   Layout,
@@ -165,7 +163,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
         <Layout.Container center gap={10} padh={6}>
           <UpdateIndicator />
           <SandyRatingButton />
-          <RightSidebarToggleButton />
           <ExportEverythingEverywhereAllAtOnceButton />
           <ExtrasMenu />
         </Layout.Container>
@@ -293,29 +290,6 @@ function ExtrasMenu() {
         }
       />
     </>
-  );
-}
-
-function RightSidebarToggleButton() {
-  const dispatch = useDispatch();
-  const rightSidebarAvailable = useStore(
-    (state) => state.application.rightSidebarAvailable,
-  );
-  const rightSidebarVisible = useStore(
-    (state) => state.application.rightSidebarVisible,
-  );
-
-  return (
-    <LeftRailButton
-      icon={<SidebarRight />}
-      small
-      title="Right Sidebar Toggle"
-      toggled={rightSidebarVisible}
-      disabled={!rightSidebarAvailable}
-      onClick={() => {
-        dispatch(toggleRightSidebarVisible());
-      }}
-    />
   );
 }
 

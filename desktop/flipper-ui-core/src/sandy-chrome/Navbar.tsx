@@ -35,7 +35,10 @@ import {
   VideoCameraOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
-import {toggleLeftSidebarVisible} from '../reducers/application';
+import {
+  toggleLeftSidebarVisible,
+  toggleRightSidebarVisible,
+} from '../reducers/application';
 import {ToplevelProps} from './SandyApp';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
@@ -90,6 +93,7 @@ export const Navbar = withTrackingScope(function Navbar({
         <SetupDoctorButton />
         <NavbarButton label="Help" icon={QuestionCircleOutlined} />
         <NavbarButton label="More" icon={EllipsisOutlined} />
+        <RightSidebarToggleButton />
         {config.showLogin && <LoginConnectivityButton />}
       </Layout.Horizontal>
     </Layout.Horizontal>
@@ -109,6 +113,29 @@ function LeftSidebarToggleButton() {
       toggled={!mainMenuVisible}
       onClick={() => {
         dispatch(toggleLeftSidebarVisible());
+      }}
+    />
+  );
+}
+
+function RightSidebarToggleButton() {
+  const dispatch = useDispatch();
+  const rightSidebarAvailable = useStore(
+    (state) => state.application.rightSidebarAvailable,
+  );
+  const rightSidebarVisible = useStore(
+    (state) => state.application.rightSidebarVisible,
+  );
+
+  return (
+    <NavbarButton
+      icon={LayoutOutlined}
+      flipIcon
+      label="Toggle R.Sidebar"
+      toggled={!rightSidebarVisible}
+      disabled={!rightSidebarAvailable}
+      onClick={() => {
+        dispatch(toggleRightSidebarVisible());
       }}
     />
   );
@@ -184,14 +211,18 @@ function NavbarButton({
   toggled = false,
   onClick,
   count,
+  disabled = false,
+  flipIcon = false,
 }: {
-  icon: typeof LoginOutlined;
+  icon: (props: any) => any;
   label: string;
   selected?: boolean;
   // TODO remove optional
   onClick?: () => void;
   toggled?: boolean;
   count?: number | true;
+  disabled?: boolean;
+  flipIcon?: boolean;
 }) {
   const color = toggled ? theme.primaryColor : theme.textColorActive;
   const button = (
@@ -206,8 +237,15 @@ function NavbarButton({
         flexDirection: 'column',
         alignItems: 'center',
         height: 'auto',
-      }}>
-      <Icon style={{color, fontSize: 24}} />
+      }}
+      disabled={disabled}>
+      <Icon
+        style={{
+          color,
+          fontSize: 24,
+          transform: flipIcon ? 'scaleX(-1)' : undefined,
+        }}
+      />
       <span
         style={{
           margin: 0,
