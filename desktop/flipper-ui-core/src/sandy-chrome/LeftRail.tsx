@@ -11,7 +11,6 @@ import React, {cloneElement, useState, useCallback} from 'react';
 import {Button, Divider, Badge, Tooltip, Menu, Modal} from 'antd';
 import {
   MobileFilled,
-  BellOutlined,
   SettingOutlined,
   BugOutlined,
   ApiOutlined,
@@ -31,8 +30,6 @@ import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {setStaticView} from '../reducers/connections';
 import {SandyRatingButton} from '../chrome/RatingButton';
-import {filterNotifications} from './notification/notificationUtils';
-import {useMemoize} from 'flipper-plugin';
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import constants from '../fb-stubs/constants';
 import {
@@ -147,10 +144,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
             onClick={() => {
               setToplevelSelection('appinspect');
             }}
-          />
-          <NotificationButton
-            toplevelSelection={toplevelSelection}
-            setToplevelSelection={setToplevelSelection}
           />
           {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
             <ConnectionTroubleshootButton
@@ -290,27 +283,6 @@ function ExtrasMenu() {
         }
       />
     </>
-  );
-}
-
-function NotificationButton({
-  toplevelSelection,
-  setToplevelSelection,
-}: ToplevelProps) {
-  const notifications = useStore((state) => state.notifications);
-  const activeNotifications = useMemoize(filterNotifications, [
-    notifications.activeNotifications,
-    notifications.blocklistedPlugins,
-    notifications.blocklistedCategories,
-  ]);
-  return (
-    <LeftRailButton
-      icon={<BellOutlined />}
-      title="Notifications"
-      selected={toplevelSelection === 'notification'}
-      count={activeNotifications.length}
-      onClick={() => setToplevelSelection('notification')}
-    />
   );
 }
 

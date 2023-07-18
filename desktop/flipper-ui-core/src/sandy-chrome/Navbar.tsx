@@ -12,6 +12,7 @@ import {
   Layout,
   styled,
   theme,
+  useMemoize,
   useValue,
   withTrackingScope,
 } from 'flipper-plugin';
@@ -47,6 +48,7 @@ import {isProduction} from 'flipper-common';
 import FpsGraph from '../chrome/FpsGraph';
 import NetworkGraph from '../chrome/NetworkGraph';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
+import {filterNotifications} from './notification/notificationUtils';
 import {css} from '@emotion/css';
 
 export const Navbar = withTrackingScope(function Navbar({
@@ -89,7 +91,10 @@ export const Navbar = withTrackingScope(function Navbar({
           toplevelSelection={toplevelSelection}
           setToplevelSelection={setToplevelSelection}
         />
-        <NavbarButton label="Alerts" icon={BellOutlined} />
+        <NotificationButton
+          toplevelSelection={toplevelSelection}
+          setToplevelSelection={setToplevelSelection}
+        />
         <SetupDoctorButton />
         <NavbarButton label="Help" icon={QuestionCircleOutlined} />
         <NavbarButton label="More" icon={EllipsisOutlined} />
@@ -99,6 +104,27 @@ export const Navbar = withTrackingScope(function Navbar({
     </Layout.Horizontal>
   );
 });
+
+function NotificationButton({
+  toplevelSelection,
+  setToplevelSelection,
+}: ToplevelProps) {
+  const notifications = useStore((state) => state.notifications);
+  const activeNotifications = useMemoize(filterNotifications, [
+    notifications.activeNotifications,
+    notifications.blocklistedPlugins,
+    notifications.blocklistedCategories,
+  ]);
+  return (
+    <NavbarButton
+      icon={BellOutlined}
+      label="Alerts"
+      toggled={toplevelSelection === 'notification'}
+      count={activeNotifications.length}
+      onClick={() => setToplevelSelection('notification')}
+    />
+  );
+}
 
 function LeftSidebarToggleButton() {
   const dispatch = useDispatch();
@@ -216,7 +242,6 @@ function NavbarButton({
 }: {
   icon: (props: any) => any;
   label: string;
-  selected?: boolean;
   // TODO remove optional
   onClick?: () => void;
   toggled?: boolean;
