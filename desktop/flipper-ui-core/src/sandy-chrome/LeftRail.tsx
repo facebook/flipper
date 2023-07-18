@@ -12,7 +12,6 @@ import {Button, Divider, Badge, Tooltip, Menu, Modal} from 'antd';
 import {
   MobileFilled,
   BellOutlined,
-  FileExclamationOutlined,
   SettingOutlined,
   BugOutlined,
   ApiOutlined,
@@ -29,9 +28,7 @@ import {
 } from 'flipper-plugin';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
-import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {ToplevelProps} from './SandyApp';
-import {useValue} from 'flipper-plugin';
 import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {setStaticView} from '../reducers/connections';
@@ -164,10 +161,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
             />
           )}
           <LeftRailDivider />
-          <DebugLogsButton
-            toplevelSelection={toplevelSelection}
-            setToplevelSelection={setToplevelSelection}
-          />
         </Layout.Container>
         <Layout.Container center gap={10} padh={6}>
           <UpdateIndicator />
@@ -343,24 +336,6 @@ function NotificationButton({
       selected={toplevelSelection === 'notification'}
       count={activeNotifications.length}
       onClick={() => setToplevelSelection('notification')}
-    />
-  );
-}
-
-function DebugLogsButton({
-  toplevelSelection,
-  setToplevelSelection,
-}: ToplevelProps) {
-  const errorCount = useValue(errorCounterAtom);
-  return (
-    <LeftRailButton
-      icon={<FileExclamationOutlined />}
-      title="Flipper Logs"
-      selected={toplevelSelection === 'flipperlogs'}
-      count={errorCount}
-      onClick={() => {
-        setToplevelSelection('flipperlogs');
-      }}
     />
   );
 }

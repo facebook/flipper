@@ -7,7 +7,14 @@
  * @format
  */
 
-import {Dialog, Layout, styled, theme, useValue} from 'flipper-plugin';
+import {
+  Dialog,
+  Layout,
+  styled,
+  theme,
+  useValue,
+  withTrackingScope,
+} from 'flipper-plugin';
 import React, {cloneElement, useCallback, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
@@ -29,14 +36,20 @@ import {
   WarningOutlined,
 } from '@ant-design/icons';
 import {toggleLeftSidebarVisible} from '../reducers/application';
+import {ToplevelProps} from './SandyApp';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
 import {isProduction} from 'flipper-common';
 import FpsGraph from '../chrome/FpsGraph';
 import NetworkGraph from '../chrome/NetworkGraph';
+import {errorCounterAtom} from '../chrome/ConsoleLogs';
+import {css} from '@emotion/css';
 
-export function Navbar() {
+export const Navbar = withTrackingScope(function Navbar({
+  toplevelSelection,
+  setToplevelSelection,
+}: ToplevelProps) {
   return (
     <Layout.Horizontal
       borderBottom
@@ -69,7 +82,10 @@ export function Navbar() {
             Dialog.showModal((onHide) => <PluginManager onHide={onHide} />);
           }}
         />
-        <NavbarButton label="Logs" icon={FileExclamationOutlined} />
+        <DebugLogsButton
+          toplevelSelection={toplevelSelection}
+          setToplevelSelection={setToplevelSelection}
+        />
         <NavbarButton label="Alerts" icon={BellOutlined} />
         <SetupDoctorButton />
         <NavbarButton label="Help" icon={QuestionCircleOutlined} />
@@ -78,7 +94,7 @@ export function Navbar() {
       </Layout.Horizontal>
     </Layout.Horizontal>
   );
-}
+});
 
 function LeftSidebarToggleButton() {
   const dispatch = useDispatch();
@@ -112,6 +128,24 @@ function LaunchEmulatorButton() {
   );
 }
 
+function DebugLogsButton({
+  toplevelSelection,
+  setToplevelSelection,
+}: ToplevelProps) {
+  const errorCount = useValue(errorCounterAtom);
+  return (
+    <NavbarButton
+      icon={FileExclamationOutlined}
+      label="Flipper Logs"
+      toggled={toplevelSelection === 'flipperlogs'}
+      count={errorCount}
+      onClick={() => {
+        setToplevelSelection('flipperlogs');
+      }}
+    />
+  );
+}
+
 function SetupDoctorButton() {
   const [visible, setVisible] = useState(false);
   const result = useStore(
@@ -132,11 +166,24 @@ function SetupDoctorButton() {
   );
 }
 
+const badgeDotClassname = css`
+  sup {
+    right: calc(50% - 14px);
+    margin-top: 8px;
+  }
+`;
+const badgeCountClassname = css`
+  sup {
+    right: calc(50% - 22px);
+    margin-top: 8px;
+  }
+`;
 function NavbarButton({
   icon: Icon,
   label,
   toggled = false,
   onClick,
+  count,
 }: {
   icon: typeof LoginOutlined;
   label: string;
@@ -144,11 +191,10 @@ function NavbarButton({
   // TODO remove optional
   onClick?: () => void;
   toggled?: boolean;
-  /** TODO red bubble in top right corner, notification like */
   count?: number | true;
 }) {
   const color = toggled ? theme.primaryColor : theme.textColorActive;
-  return (
+  const button = (
     <Button
       aria-pressed={toggled}
       ghost
@@ -172,6 +218,22 @@ function NavbarButton({
       </span>
     </Button>
   );
+
+  if (count !== undefined) {
+    return (
+      <Badge
+        {...{onClick}}
+        dot={count === true}
+        count={count}
+        // using count instead of "offset" prop as we need to perform css calc()
+        // while antd internally calls `parseInt` on passed string
+        className={count === true ? badgeDotClassname : badgeCountClassname}>
+        {button}
+      </Badge>
+    );
+  } else {
+    return button;
+  }
 }
 
 function LoginConnectivityButton() {

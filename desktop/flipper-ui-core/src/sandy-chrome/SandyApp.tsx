@@ -169,7 +169,10 @@ export function SandyApp() {
     <RootElement>
       <Layout.Bottom>
         <Layout.Top gap={16}>
-          <Navbar />
+          <Navbar
+            toplevelSelection={toplevelSelection}
+            setToplevelSelection={setToplevelSelection}
+          />
           <Layout.Left>
             <Layout.Horizontal>
               <LeftRail
