@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Layout, styled, theme, useValue} from 'flipper-plugin';
+import {Dialog, Layout, styled, theme, useValue} from 'flipper-plugin';
 import React, {cloneElement, useCallback, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
@@ -28,6 +28,7 @@ import {
   WarningOutlined,
 } from '@ant-design/icons';
 import {toggleLeftSidebarVisible} from '../reducers/application';
+import PluginManager from '../chrome/plugin-manager/PluginManager';
 
 export function Navbar() {
   return (
@@ -48,7 +49,13 @@ export function Navbar() {
         <NavbarButton label="Record" icon={VideoCameraOutlined} />
       </Layout.Horizontal>
       <Layout.Horizontal style={{gap: 4, alignItems: 'center'}}>
-        <NavbarButton label="Add Plugins" icon={AppstoreAddOutlined} />
+        <NavbarButton
+          label="Add Plugins"
+          icon={AppstoreAddOutlined}
+          onClick={() => {
+            Dialog.showModal((onHide) => <PluginManager onHide={onHide} />);
+          }}
+        />
         <NavbarButton label="Logs" icon={FileExclamationOutlined} />
         <NavbarButton label="Alerts" icon={BellOutlined} />
         <NavbarButton label="Doctor" icon={MedicineBoxOutlined} />

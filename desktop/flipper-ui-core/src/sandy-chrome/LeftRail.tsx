@@ -11,7 +11,6 @@ import React, {cloneElement, useState, useCallback, useMemo} from 'react';
 import {Button, Divider, Badge, Tooltip, Menu, Modal} from 'antd';
 import {
   MobileFilled,
-  AppstoreOutlined,
   BellOutlined,
   FileExclamationOutlined,
   SettingOutlined,
@@ -27,7 +26,6 @@ import {
   theme,
   Layout,
   withTrackingScope,
-  Dialog,
   useTrackedCallback,
   NUX,
 } from 'flipper-plugin';
@@ -48,7 +46,6 @@ import isProduction from '../utils/isProduction';
 import NetworkGraph from '../chrome/NetworkGraph';
 import FpsGraph from '../chrome/FpsGraph';
 import UpdateIndicator from '../chrome/UpdateIndicator';
-import PluginManager from '../chrome/plugin-manager/PluginManager';
 import constants from '../fb-stubs/constants';
 import {
   canFileExport,
@@ -161,13 +158,6 @@ export const LeftRail = withTrackingScope(function LeftRail({
             selected={toplevelSelection === 'appinspect'}
             onClick={() => {
               setToplevelSelection('appinspect');
-            }}
-          />
-          <LeftRailButton
-            icon={<AppstoreOutlined />}
-            title="Plugin Manager"
-            onClick={() => {
-              Dialog.showModal((onHide) => <PluginManager onHide={onHide} />);
             }}
           />
           <NotificationButton
