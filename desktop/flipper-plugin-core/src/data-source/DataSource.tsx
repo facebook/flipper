@@ -772,8 +772,8 @@ export class DataSourceView<T, KeyType> {
    * They allow us to add singular items to table views.
    * Extremely useful for Bloks Debugger where we have to jump between multiple types of rows that could be filtered out
    */
-  public setFilterExpections(ids: KeyType[]) {
-    this.filterExceptions = new Set(ids);
+  public setFilterExpections(ids: KeyType[] | undefined) {
+    this.filterExceptions = ids ? new Set(ids) : undefined;
     this.rebuild();
   }
 

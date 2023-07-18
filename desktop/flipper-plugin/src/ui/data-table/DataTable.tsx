@@ -392,6 +392,10 @@ export function DataTable<T extends object>(
         tableState.columns,
       ),
     );
+    dataView.setFilterExpections(
+      tableState.filterExceptions as T[keyof T][] | undefined,
+    );
+
     // TODO: in the future setFilter effects could be async, at the moment it isn't,
     // so we can safely assume the internal state of the dataView is updated with the
     // filter changes and try to find the same entry back again
@@ -438,6 +442,7 @@ export function DataTable<T extends object>(
       ...tableState.columns.map((c) => c.filters),
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ...tableState.columns.map((c) => c.inversed),
+      tableState.filterExceptions,
     ],
   );
 

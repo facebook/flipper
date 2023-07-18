@@ -126,6 +126,7 @@ type DataManagerActions<T> =
     >
   | Action<'setColumnFilterInverse', {column: keyof T; inversed: boolean}>
   | Action<'setColumnFilterFromSelection', {column: keyof T}>
+  | Action<'setFilterExceptions', {exceptions: string[] | undefined}>
   | Action<'appliedInitialScroll'>
   | Action<'toggleUseRegex'>
   | Action<'toggleAutoScroll'>
@@ -164,6 +165,7 @@ export type DataManagerState<T> = {
   showNumberedHistory: boolean;
   autoScroll: boolean;
   searchValue: string;
+  filterExceptions: string[] | undefined;
   /** Used to remember the record entry to lookup when user presses ctrl */
   previousSearchValue: string;
   searchHistory: string[];
@@ -188,6 +190,7 @@ export const dataTableManagerReducer = produce<
       draft.sorting = undefined;
       draft.searchValue = '';
       draft.selection = castDraft(emptySelection);
+      draft.filterExceptions = undefined;
       break;
     }
     case 'resetFilters': {
@@ -195,6 +198,7 @@ export const dataTableManagerReducer = produce<
         c.filters?.forEach((f) => (f.enabled = false)),
       );
       draft.searchValue = '';
+      draft.filterExceptions = undefined;
       break;
     }
     case 'resizeColumn': {
@@ -221,6 +225,7 @@ export const dataTableManagerReducer = produce<
     case 'setSearchValue': {
       draft.searchValue = action.value;
       draft.previousSearchValue = '';
+      draft.filterExceptions = undefined;
       if (
         action.addToHistory &&
         action.value &&
@@ -235,6 +240,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'toggleSearchValue': {
+      draft.filterExceptions = undefined;
       if (draft.searchValue) {
         draft.previousSearchValue = draft.searchValue;
         draft.searchValue = '';
@@ -291,6 +297,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'addColumnFilter': {
+      draft.filterExceptions = undefined;
       addColumnFilter(
         draft.columns,
         action.column,
@@ -300,6 +307,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'removeColumnFilter': {
+      draft.filterExceptions = undefined;
       const column = draft.columns.find((c) => c.key === action.column)!;
       const index =
         action.index ??
@@ -313,6 +321,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'toggleColumnFilter': {
+      draft.filterExceptions = undefined;
       const column = draft.columns.find((c) => c.key === action.column)!;
       const index =
         action.index ??
@@ -326,11 +335,13 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'setColumnFilterInverse': {
+      draft.filterExceptions = undefined;
       draft.columns.find((c) => c.key === action.column)!.inversed =
         action.inversed;
       break;
     }
     case 'setColumnFilterFromSelection': {
+      draft.filterExceptions = undefined;
       const items = getSelectedItems(
         config.dataView as _DataSourceView<any, any>,
         draft.selection,
@@ -382,6 +393,10 @@ export const dataTableManagerReducer = produce<
       draft.showNumberedHistory = action.showNumberedHistory;
       break;
     }
+    case 'setFilterExceptions': {
+      draft.filterExceptions = action.exceptions;
+      break;
+    }
     default: {
       throw new Error('Unknown action ' + (action as any).type);
     }
@@ -425,6 +440,7 @@ export type DataTableManager<T> = {
     options?: AddColumnFilterOptions,
   ): void;
   removeColumnFilter(column: keyof T, label: string): void;
+  setFilterExceptions(exceptions: string[] | undefined): void;
 };
 
 export function createDataTableManager<T>(
@@ -495,6 +511,9 @@ export function createDataTableManager<T>(
     removeColumnFilter(column, label) {
       dispatch({type: 'removeColumnFilter', column, label});
     },
+    setFilterExceptions(exceptions: string[] | undefined) {
+      dispatch({type: 'setFilterExceptions', exceptions});
+    },
     dataView,
     stateRef,
   };
@@ -541,6 +560,7 @@ export function createInitialState<T>(
     searchHistory: prefs?.searchHistory ?? [],
     useRegex: prefs?.useRegex ?? false,
     filterSearchHistory: prefs?.filterSearchHistory ?? true,
+    filterExceptions: undefined,
     autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
     highlightSearchSetting: prefs?.highlightSearchSetting ?? {
       highlightEnabled: false,
