@@ -35,6 +35,7 @@ import {
   ApiOutlined,
   AppstoreAddOutlined,
   BellOutlined,
+  BugOutlined,
   ExportOutlined,
   FileExclamationOutlined,
   LayoutOutlined,
@@ -111,7 +112,7 @@ export const Navbar = withTrackingScope(function Navbar({
         <StatusMessage />
         <NavbarScreenshotButton />
         <NavbarScreenRecordButton />
-        <LaunchEmulatorButton />
+        <LaunchVirtualDeviceButton />
         {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
           <ConnectionTroubleshootButton
             toplevelSelection={toplevelSelection}
@@ -141,6 +142,7 @@ export const Navbar = withTrackingScope(function Navbar({
           toplevelSelection={toplevelSelection}
           setToplevelSelection={setToplevelSelection}
         />
+        <TroubleshootMenu />
         <ExtrasMenu />
         <SetupDoctorButton />
         <ExportEverythingEverywhereAllAtOnceButton />
@@ -364,13 +366,13 @@ function RightSidebarToggleButton() {
   );
 }
 
-function LaunchEmulatorButton() {
+function LaunchVirtualDeviceButton() {
   const store = useStore();
 
   return (
     <NavbarButton
       icon={RocketOutlined}
-      label="Start [E/Si]mulator"
+      label="Virtual Device"
       onClick={() => {
         showEmulatorLauncher(store);
       }}
@@ -644,6 +646,27 @@ const submenu = css`
     display: none;
   }
 `;
+
+function TroubleshootMenu() {
+  return (
+    <Menu
+      mode="vertical"
+      className={menu}
+      selectable={false}
+      style={{backgroundColor: theme.backgroundDefault}}>
+      <Menu.SubMenu
+        popupOffset={[-90, 50]}
+        key="extras"
+        title={<NavbarButton icon={BugOutlined} label="Troubleshoot" />}
+        className={submenu}>
+        <Menu.Item>TODO troubleshooting guide</Menu.Item>
+        <Menu.Item>TODO troubleshoot</Menu.Item>
+        <Menu.Item>TODO flipper logs</Menu.Item>
+        <Menu.Item>TODO setup doctor</Menu.Item>
+      </Menu.SubMenu>
+    </Menu>
+  );
+}
 
 function ExtrasMenu() {
   const store = useStore();
