@@ -9,7 +9,7 @@
 
 import React, {cloneElement, useState, useCallback} from 'react';
 import {Button, Divider, Badge, Tooltip, Menu, Modal} from 'antd';
-import {MobileFilled, SettingOutlined, BugOutlined} from '@ant-design/icons';
+import {SettingOutlined, BugOutlined} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
 import {
   theme,
@@ -20,7 +20,6 @@ import {
 } from 'flipper-plugin';
 import SettingsSheet from '../chrome/SettingsSheet';
 import WelcomeScreen from './WelcomeScreen';
-import {ToplevelProps} from './SandyApp';
 import config from '../fb-stubs/config';
 import styled from '@emotion/styled';
 import {setStaticView} from '../reducers/connections';
@@ -119,10 +118,7 @@ const LeftRailDivider = styled(Divider)({
 });
 LeftRailDivider.displayName = 'LeftRailDividier';
 
-export const LeftRail = withTrackingScope(function LeftRail({
-  toplevelSelection,
-  setToplevelSelection,
-}: ToplevelProps) {
+export const LeftRail = withTrackingScope(function LeftRail() {
   return (
     <Layout.Container
       borderRight
@@ -130,25 +126,12 @@ export const LeftRail = withTrackingScope(function LeftRail({
       padv={12}
       width={48}
       style={{background: theme.backgroundDefault}}>
-      <Layout.Bottom style={{overflow: 'visible'}}>
-        <Layout.Container center gap={10} padh={6}>
-          <LeftRailButton
-            icon={<MobileFilled />}
-            title="App Inspect"
-            selected={toplevelSelection === 'appinspect'}
-            onClick={() => {
-              setToplevelSelection('appinspect');
-            }}
-          />
-          <LeftRailDivider />
-        </Layout.Container>
-        <Layout.Container center gap={10} padh={6}>
-          <UpdateIndicator />
-          <SandyRatingButton />
-          <ExportEverythingEverywhereAllAtOnceButton />
-          <ExtrasMenu />
-        </Layout.Container>
-      </Layout.Bottom>
+      <Layout.Container center gap={10} padh={6}>
+        <UpdateIndicator />
+        <SandyRatingButton />
+        <ExportEverythingEverywhereAllAtOnceButton />
+        <ExtrasMenu />
+      </Layout.Container>
     </Layout.Container>
   );
 });

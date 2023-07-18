@@ -175,10 +175,7 @@ export function SandyApp() {
           />
           <Layout.Left>
             <Layout.Horizontal>
-              <LeftRail
-                toplevelSelection={toplevelSelection}
-                setToplevelSelection={setToplevelSelection}
-              />
+              <LeftRail />
               <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
                 {leftMenuContent && (
                   <TrackingScope scope={toplevelSelection!}>

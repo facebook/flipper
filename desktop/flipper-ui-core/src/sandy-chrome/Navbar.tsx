@@ -33,6 +33,7 @@ import {
   LayoutOutlined,
   LoginOutlined,
   MedicineBoxOutlined,
+  MobileOutlined,
   QuestionCircleOutlined,
   RocketOutlined,
   VideoCameraOutlined,
@@ -70,6 +71,15 @@ export const Navbar = withTrackingScope(function Navbar({
       }}>
       <Layout.Horizontal style={{gap: 4}}>
         <LeftSidebarToggleButton />
+        <NavbarButton
+          icon={MobileOutlined}
+          label="App Inspect"
+          toggled={toplevelSelection === 'appinspect'}
+          onClick={() => {
+            setToplevelSelection('appinspect');
+          }}
+        />
+
         <button>device picker</button>
         <NavbarButton label="Screenshot" icon={CameraOutlined} />
         <NavbarButton label="Record" icon={VideoCameraOutlined} />
