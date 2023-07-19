@@ -533,7 +533,9 @@ const ContextMenu: React.FC<{
       )),
     );
 
-    copyItems.push(<BigGrepContextMenuItems node={hoveredNode} />);
+    copyItems.push(
+      <BigGrepContextMenuItems key="big-grep" node={hoveredNode} />,
+    );
   }
   const focus = hoveredNode != null &&
     focusedNodeId !== hoveredNodeId &&
@@ -570,7 +572,7 @@ const ContextMenu: React.FC<{
           {removeFocus}
           {(focus || removeFocus) && <Menu.Divider key="divider-focus" />}
           {copyItems}
-          {hoveredNode && <IDEContextMenuItems node={hoveredNode} />}
+          {hoveredNode && <IDEContextMenuItems key="ide" node={hoveredNode} />}
         </Menu>
       )}
       trigger={['contextMenu']}>
