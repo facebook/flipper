@@ -20,7 +20,6 @@ import {Layout} from './Layout';
 const SidebarInteractiveContainer = styled(Interactive)<InteractiveProps>({
   display: 'flex',
   flex: '0 1 1',
-  background: theme.backgroundDefault,
 });
 SidebarInteractiveContainer.displayName = 'Sidebar:SidebarInteractiveContainer';
 
@@ -201,7 +200,13 @@ export class Sidebar extends Component<SidebarProps, SidebarState> {
           {gutter ? (
             <GutterWrapper position={position}>
               {/* Stop propagating mousedown events to prevent SidebarInteractiveContainer from resizing whenever a user starts selecting text in a child */}
-              <Layout.Container grow onMouseDown={(e) => e.stopPropagation()}>
+              <Layout.Container
+                style={{
+                  background: theme.backgroundDefault,
+                  borderRadius: theme.borderRadius,
+                }}
+                grow
+                onMouseDown={(e) => e.stopPropagation()}>
                 {children}
               </Layout.Container>
             </GutterWrapper>
