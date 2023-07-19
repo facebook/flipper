@@ -213,6 +213,7 @@ export function plugin(client: PluginClient<Events>) {
     frameworkEventMonitoring: createState(
       new Map<FrameworkEventType, boolean>(),
     ),
+    filterMainThreadMonitoring: createState(false),
 
     isPaused: createState(false),
 
@@ -297,10 +298,16 @@ export function plugin(client: PluginClient<Events>) {
 
     const monitoredEvents = uiState.frameworkEventMonitoring.get();
 
+    const filterMainThread = uiState.filterMainThreadMonitoring.get();
+
     const nodesToHighlight =
       frameScan.frameworkEvents
         ?.filter(
           (frameworkEvent) => monitoredEvents.get(frameworkEvent.type) === true,
+        )
+        .filter(
+          (frameworkEvent) =>
+            filterMainThread === false || frameworkEvent.thread === 'main',
         )
         .map((event) => event.nodeId) ?? [];
 
@@ -456,6 +463,10 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
     uiState.visualiserWidth.set(width);
   };
 
+  const onSetFilterMainThreadMonitoring = (toggled: boolean) => {
+    uiState.filterMainThreadMonitoring.set(toggled);
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
@@ -464,6 +475,7 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
     onContextMenuOpen,
     onFocusNode,
     setVisualiserWidth,
+    onSetFilterMainThreadMonitoring,
   };
 }
 

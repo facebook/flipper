@@ -22,6 +22,7 @@ export type UIState = {
   expandedNodes: Atom<Set<Id>>;
   visualiserWidth: Atom<number>;
   frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
+  filterMainThreadMonitoring: Atom<boolean>;
 };
 
 export type NodeSelection = {
@@ -42,6 +43,7 @@ export type UIActions = {
   onExpandNode: (node: Id) => void;
   onCollapseNode: (node: Id) => void;
   setVisualiserWidth: (width: number) => void;
+  onSetFilterMainThreadMonitoring: (toggled: boolean) => void;
 };
 export type SelectionSource = 'visualiser' | 'tree' | 'keyboard';
 
@@ -113,6 +115,7 @@ export type FrameworkEvent = {
   timestamp: number;
   payload?: JSON;
   attribution?: FrameworkEventAttribution;
+  thread?: 'main' | string;
 };
 
 export type InitEvent = {

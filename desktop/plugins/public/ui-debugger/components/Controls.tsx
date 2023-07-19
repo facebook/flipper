@@ -19,6 +19,7 @@ import {
   Typography,
   TreeSelect,
   Space,
+  Switch,
 } from 'antd';
 import {
   MoreOutlined,
@@ -39,6 +40,9 @@ export const Controls: React.FC = () => {
   const instance = usePlugin(plugin);
   const searchTerm = useValue(instance.uiState.searchTerm);
   const isPaused = useValue(instance.uiState.isPaused);
+  const filterMainThreadMonitoring = useValue(
+    instance.uiState.filterMainThreadMonitoring,
+  );
 
   const frameworkEventMonitoring: Map<FrameworkEventType, boolean> = useValue(
     instance.uiState.frameworkEventMonitoring,
@@ -81,6 +85,10 @@ export const Controls: React.FC = () => {
         }></Button>
       {frameworkEventMonitoring.size > 0 && (
         <MoreOptionsMenu
+          filterMainThreadMonitoring={filterMainThreadMonitoring}
+          onSetFilterMainThreadMonitoring={
+            instance.uiActions.onSetFilterMainThreadMonitoring
+          }
           onSetEventMonitored={onSetEventMonitored}
           frameworkEventTypes={[...frameworkEventMonitoring.entries()]}
         />
@@ -92,7 +100,11 @@ export const Controls: React.FC = () => {
 function MoreOptionsMenu({
   onSetEventMonitored,
   frameworkEventTypes,
+  filterMainThreadMonitoring,
+  onSetFilterMainThreadMonitoring,
 }: {
+  filterMainThreadMonitoring: boolean;
+  onSetFilterMainThreadMonitoring: (toggled: boolean) => void;
   onSetEventMonitored: (
     eventType: FrameworkEventType,
     monitored: boolean,
@@ -126,6 +138,8 @@ function MoreOptionsMenu({
 
       {/*invisible until shown*/}
       <FrameworkEventsMonitoringModal
+        filterMainThreadMonitoring={filterMainThreadMonitoring}
+        onSetFilterMainThreadMonitoring={onSetFilterMainThreadMonitoring}
         frameworkEventTypes={frameworkEventTypes}
         onSetEventMonitored={onSetEventMonitored}
         visible={showFrameworkEventsModal}
@@ -139,6 +153,8 @@ function FrameworkEventsMonitoringModal({
   visible,
   onCancel,
   onSetEventMonitored,
+  onSetFilterMainThreadMonitoring,
+  filterMainThreadMonitoring,
   frameworkEventTypes,
 }: {
   visible: boolean;
@@ -147,6 +163,8 @@ function FrameworkEventsMonitoringModal({
     eventType: FrameworkEventType,
     monitored: boolean,
   ) => void;
+  filterMainThreadMonitoring: boolean;
+  onSetFilterMainThreadMonitoring: (toggled: boolean) => void;
   frameworkEventTypes: [FrameworkEventType, boolean][];
 }) {
   const selectedFrameworkEvents = frameworkEventTypes
@@ -193,6 +211,18 @@ function FrameworkEventsMonitoringModal({
             }
           }}
         />
+
+        <Layout.Horizontal gap="medium">
+          <Switch
+            checked={filterMainThreadMonitoring}
+            onChange={(event) => {
+              onSetFilterMainThreadMonitoring(event);
+            }}
+          />
+          <Typography.Text>
+            Only highlight events that occured on the main thread
+          </Typography.Text>
+        </Layout.Horizontal>
       </Space>
     </Modal>
   );

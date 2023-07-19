@@ -80,6 +80,9 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
   const hoveredNode = head(useValue(instance.uiState.hoveredNodes));
 
   const frameworkEvents = useValue(instance.frameworkEvents);
+  const filterMainThreadMonitoring = useValue(
+    instance.uiState.filterMainThreadMonitoring,
+  );
   const frameworkEventsMonitoring = useValue(
     instance.uiState.frameworkEventMonitoring,
   );
@@ -239,6 +242,7 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
                   treeNode={treeNodes[virtualRow.index]}
                   frameworkEvents={frameworkEvents}
                   frameworkEventsMonitoring={frameworkEventsMonitoring}
+                  filterMainThreadMonitoring={filterMainThreadMonitoring}
                   highlightedNodes={highlightedNodes}
                   selectedNode={selectedNode?.id}
                   hoveredNode={hoveredNode}
@@ -290,6 +294,7 @@ function TreeItemContainer({
   treeNode,
   frameworkEvents,
   frameworkEventsMonitoring,
+  filterMainThreadMonitoring,
   highlightedNodes,
   selectedNode,
   hoveredNode,
@@ -306,6 +311,7 @@ function TreeItemContainer({
   frameworkEvents: Map<Id, FrameworkEvent[]>;
   highlightedNodes: Set<Id>;
   frameworkEventsMonitoring: Map<FrameworkEventType, boolean>;
+  filterMainThreadMonitoring: boolean;
   selectedNode?: Id;
   hoveredNode?: Id;
   isUsingKBToScroll: RefObject<MillisSinceEpoch>;
@@ -317,7 +323,11 @@ function TreeItemContainer({
 }) {
   let events = frameworkEvents.get(treeNode.id);
   if (events) {
-    events = events.filter((e) => frameworkEventsMonitoring.get(e.type));
+    events = events
+      .filter((e) => frameworkEventsMonitoring.get(e.type))
+      .filter(
+        (e) => filterMainThreadMonitoring === false || e.thread === 'main',
+      );
   }
 
   return (
