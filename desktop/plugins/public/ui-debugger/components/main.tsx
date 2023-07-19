@@ -54,6 +54,7 @@ export function Component() {
   if (showPerfStats)
     return (
       <PerfStats
+        frameworkEvents={instance.frameworkEvents}
         uiState={instance.uiState}
         rootId={rootId}
         nodes={nodes}

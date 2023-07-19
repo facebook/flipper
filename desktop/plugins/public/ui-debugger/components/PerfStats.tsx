@@ -13,15 +13,18 @@ import {
   UIState,
   Id,
   UINode,
+  FrameworkEvent,
 } from '../types';
 import React, {useMemo} from 'react';
 import {
+  Atom,
   DataInspector,
   DataSource,
   DataTable,
   DataTableColumn,
   DetailSidebar,
   Layout,
+  useValue,
 } from 'flipper-plugin';
 
 export function PerfStats(props: {
@@ -29,11 +32,14 @@ export function PerfStats(props: {
   nodes: Map<Id, UINode>;
   rootId?: Id;
   events: DataSource<DynamicPerformanceStatsEvent, number>;
+  frameworkEvents: Atom<Map<Id, FrameworkEvent[]>>;
 }) {
   const uiStateValues = Object.entries(props.uiState).map(([key, value]) => [
     key,
     value.get(),
   ]);
+
+  const frameworkEventsValue = useValue(props.frameworkEvents);
 
   const allColumns = useMemo(() => {
     if (props.events.size > 0) {
@@ -59,6 +65,7 @@ export function PerfStats(props: {
     return columns;
   }, [props.events]);
 
+  const newLocal = [...frameworkEventsValue.entries()];
   return (
     <Layout.Container grow>
       <DataTable<PerformanceStatsEvent>
@@ -72,6 +79,11 @@ export function PerfStats(props: {
             rootId: props.rootId,
             nodesCount: props.nodes.size,
             rootNode: props.nodes.get(props.rootId ?? 'noroot'),
+            frameworkEvents: newLocal,
+            frameworkEventsSize: newLocal.reduce(
+              (acc, value) => acc + value[1].length,
+              0,
+            ),
           }}></DataInspector>
       </DetailSidebar>
     </Layout.Container>
