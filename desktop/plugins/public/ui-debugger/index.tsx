@@ -281,16 +281,6 @@ export function plugin(client: PluginClient<Events>) {
     frameworkEvents.update((draft) => {
       if (frameScan?.frameworkEvents) {
         frameScan.frameworkEvents.forEach((frameworkEvent) => {
-          if (
-            uiState.frameworkEventMonitoring.get().get(frameworkEvent.type) ===
-              true &&
-            uiState.isPaused.get() === false
-          ) {
-            highlightedNodes.update((draft) => {
-              draft.add(frameworkEvent.nodeId);
-            });
-          }
-
           const frameworkEventsForNode = draft.get(frameworkEvent.nodeId);
           if (frameworkEventsForNode) {
             frameworkEventsForNode.push(frameworkEvent);
@@ -298,15 +288,35 @@ export function plugin(client: PluginClient<Events>) {
             draft.set(frameworkEvent.nodeId, [frameworkEvent]);
           }
         });
-        setTimeout(() => {
-          highlightedNodes.update((laterDraft) => {
-            for (const event of frameScan.frameworkEvents!!.values()) {
-              laterDraft.delete(event.nodeId);
-            }
-          });
-        }, HighlightTime);
       }
     });
+
+    if (uiState.isPaused.get() === true) {
+      return;
+    }
+
+    const monitoredEvents = uiState.frameworkEventMonitoring.get();
+
+    const nodesToHighlight =
+      frameScan.frameworkEvents
+        ?.filter(
+          (frameworkEvent) => monitoredEvents.get(frameworkEvent.type) === true,
+        )
+        .map((event) => event.nodeId) ?? [];
+
+    highlightedNodes.update((draft) => {
+      for (const node of nodesToHighlight) {
+        draft.add(node);
+      }
+    });
+
+    setTimeout(() => {
+      highlightedNodes.update((draft) => {
+        for (const nodeId of nodesToHighlight) {
+          draft.delete(nodeId);
+        }
+      });
+    }, HighlightTime);
   }
 
   //todo deal with racecondition, where bloks screen is fetching, takes time then you go back get more recent frame then bloks screen comes and overrites it
