@@ -55,7 +55,11 @@ export const Inspector: React.FC<Props> = ({
 
   return (
     <Layout.Container gap pad>
-      <Tabs grow centered key={selectedNodeId}>
+      <Tabs
+        localStorageKeyOverride="sidebar-tabs"
+        grow
+        centered
+        key={selectedNodeId}>
         <Tab
           key={'identity'}
           tab={
