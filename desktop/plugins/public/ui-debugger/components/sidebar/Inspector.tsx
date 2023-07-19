@@ -41,7 +41,7 @@ export const Inspector: React.FC<Props> = ({
   showExtra,
 }) => {
   const instance = usePlugin(plugin);
-  const selectedNodeId = useValue(instance.uiState.selectedNode);
+  const selectedNodeId = useValue(instance.uiState.selectedNode)?.id;
   const frameworkEvents = useValue(instance.frameworkEvents);
 
   const selectedNode = selectedNodeId ? nodes.get(selectedNodeId) : undefined;

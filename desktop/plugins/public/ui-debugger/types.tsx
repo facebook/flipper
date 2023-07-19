@@ -16,13 +16,34 @@ export type UIState = {
   searchTerm: Atom<string>;
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
-  selectedNode: Atom<Id | undefined>;
+  selectedNode: Atom<NodeSelection | undefined>;
   highlightedNodes: Atom<Set<Id>>;
   focusedNode: Atom<Id | undefined>;
   expandedNodes: Atom<Set<Id>>;
   visualiserWidth: Atom<number>;
   frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
 };
+
+export type NodeSelection = {
+  id: Id;
+  source: SelectionSource;
+};
+
+export type OnSelectNode = (
+  node: Id | undefined,
+  source: SelectionSource,
+) => void;
+
+export type UIActions = {
+  onHoverNode: (node?: Id) => void;
+  onFocusNode: (focused?: Id) => void;
+  onContextMenuOpen: (open: boolean) => void;
+  onSelectNode: OnSelectNode;
+  onExpandNode: (node: Id) => void;
+  onCollapseNode: (node: Id) => void;
+  setVisualiserWidth: (width: number) => void;
+};
+export type SelectionSource = 'visualiser' | 'tree' | 'keyboard';
 
 export type StreamState =
   | {state: 'Ok'}

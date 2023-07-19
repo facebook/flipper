@@ -8,7 +8,14 @@
  */
 
 import React, {useEffect, useMemo, useRef} from 'react';
-import {Bounds, Coordinate, Id, NestedNode, UINode} from '../types';
+import {
+  Bounds,
+  Coordinate,
+  Id,
+  NestedNode,
+  OnSelectNode,
+  UINode,
+} from '../types';
 
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
 import {plugin} from '../index';
@@ -21,7 +28,7 @@ export const Visualization2D: React.FC<
   {
     width: number;
     nodes: Map<Id, UINode>;
-    onSelectNode: (id?: Id) => void;
+    onSelectNode: OnSelectNode;
   } & React.HTMLAttributes<HTMLDivElement>
 > = ({width, nodes, onSelectNode}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
@@ -129,7 +136,7 @@ export const Visualization2D: React.FC<
         {selectedNodeId && (
           <OverlayBorder
             type="selected"
-            nodeId={selectedNodeId}
+            nodeId={selectedNodeId.id}
             nodes={nodes}
           />
         )}
@@ -185,7 +192,7 @@ function Visualization2DNode({
   onSelectNode,
 }: {
   node: NestedNode;
-  onSelectNode: (id?: Id) => void;
+  onSelectNode: OnSelectNode;
 }) {
   const instance = usePlugin(plugin);
 
@@ -236,7 +243,7 @@ function Visualization2DNode({
 
         const hoveredNodes = instance.uiState.hoveredNodes.get();
 
-        onSelectNode(hoveredNodes[0]);
+        onSelectNode(hoveredNodes[0], 'visualiser');
       }}>
       <NodeBorder />
 

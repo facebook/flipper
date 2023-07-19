@@ -7,6 +7,7 @@
  * @format
  */
 
+import {Atom} from 'flipper-plugin';
 import {useEffect, useRef, useState} from 'react';
 
 export function useDelay(delayTimeMs: number) {

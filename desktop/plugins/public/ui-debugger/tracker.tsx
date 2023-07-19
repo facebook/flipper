@@ -8,6 +8,7 @@
  */
 
 import {getFlipperLib} from 'flipper-plugin';
+import {SelectionSource} from '.';
 import {FrameworkEventType, Tag} from './types';
 
 const UI_DEBUGGER_IDENTIFIER = 'ui-debugger';
@@ -15,6 +16,7 @@ const UI_DEBUGGER_IDENTIFIER = 'ui-debugger';
 type NodeEventPayload = {
   name: string;
   tags: Tag[];
+  source?: SelectionSource;
 };
 
 type TrackerEvents = {

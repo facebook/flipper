@@ -7,7 +7,13 @@
  * @format
  */
 
-import {FrameworkEvent, FrameworkEventType, Id, UINode} from '../types';
+import {
+  FrameworkEvent,
+  FrameworkEventType,
+  Id,
+  OnSelectNode,
+  UINode,
+} from '../types';
 import React, {
   ReactNode,
   Ref,
@@ -18,7 +24,6 @@ import React, {
   useRef,
 } from 'react';
 import {
-  Atom,
   getFlipperLib,
   HighlightManager,
   HighlightProvider,
@@ -86,7 +91,7 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
       nodes,
       focusedNode || rootId,
       expandedNodes,
-      selectedNode,
+      selectedNode?.id,
     );
 
     const refs: React.RefObject<HTMLLIElement>[] = treeNodes.map(() =>
@@ -119,7 +124,7 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
   useKeyboardShortcuts(
     treeNodes,
     rowVirtualizer,
-    selectedNode,
+    selectedNode?.id,
     hoveredNode,
     instance.uiActions.onSelectNode,
     instance.uiActions.onHoverNode,
@@ -162,17 +167,27 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
   });
 
   useLayoutEffect(() => {
-    if (selectedNode) {
-      const idx = treeNodes.findIndex((node) => node.id === selectedNode);
+    if (selectedNode != null) {
+      const selectedTreeNode = treeNodes.find(
+        (node) => node.id === selectedNode?.id,
+      );
 
-      const kbIsNoLongerReservingScroll =
-        new Date().getTime() > (isUsingKBToScrollUtill.current ?? 0);
+      const ref = parentRef.current;
+      if (
+        ref != null &&
+        selectedTreeNode != null &&
+        selectedNode?.source === 'visualiser'
+      ) {
+        ref.scrollLeft =
+          Math.max(0, selectedTreeNode.depth - 10) * renderDepthOffset;
 
-      if (idx !== -1 && kbIsNoLongerReservingScroll) {
-        parentRef.current!!.scrollLeft =
-          Math.max(0, treeNodes[idx].depth - 10) * renderDepthOffset;
+        let scrollToIndex = selectedTreeNode.idx;
 
-        rowVirtualizer.scrollToIndex(idx, {align: 'auto'});
+        if (selectedTreeNode.idx > rowVirtualizer.range.endIndex) {
+          //when scrolling down the scrollbar gets in the way if you scroll to the precise node
+          scrollToIndex = Math.min(scrollToIndex + 1, treeNodes.length);
+        }
+        rowVirtualizer.scrollToIndex(scrollToIndex, {align: 'auto'});
       }
     }
     // NOTE: We don't want to add refs or tree nodes to the dependency list since when new data comes in over the wire
@@ -226,7 +241,7 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
                   frameworkEvents={frameworkEvents}
                   frameworkEventsMonitoring={frameworkEventsMonitoring}
                   highlightedNodes={highlightedNodes}
-                  selectedNode={selectedNode}
+                  selectedNode={selectedNode?.id}
                   hoveredNode={hoveredNode}
                   isUsingKBToScroll={isUsingKBToScrollUtill}
                   isContextMenuOpen={isContextMenuOpen}
@@ -296,7 +311,7 @@ function TreeItemContainer({
   hoveredNode?: Id;
   isUsingKBToScroll: RefObject<MillisSinceEpoch>;
   isContextMenuOpen: boolean;
-  onSelectNode: (node?: Id) => void;
+  onSelectNode: OnSelectNode;
   onExpandNode: (node: Id) => void;
   onCollapseNode: (node: Id) => void;
   onHoverNode: (node: Id) => void;
@@ -333,7 +348,7 @@ function TreeItemContainer({
           }
         }}
         onClick={() => {
-          onSelectNode(treeNode.id);
+          onSelectNode(treeNode.id, 'tree');
         }}
         item={treeNode}
         style={{overflow: 'visible'}}>
@@ -688,7 +703,7 @@ function useKeyboardShortcuts(
   rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
   selectedNode: Id | undefined,
   hoveredNodeId: Id | undefined,
-  onSelectNode: (id?: Id) => void,
+  onSelectNode: OnSelectNode,
   onHoverNode: (id?: Id) => void,
   onExpandNode: (id: Id) => void,
   onCollapseNode: (id: Id) => void,
@@ -702,7 +717,7 @@ function useKeyboardShortcuts(
       switch (event.key) {
         case 'Enter': {
           if (hoveredNodeId != null) {
-            onSelectNode(hoveredNodeId);
+            onSelectNode(hoveredNodeId, 'keyboard');
           }
 
           break;
@@ -793,7 +808,7 @@ function moveSelectedNodeUpOrDown(
   rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
   hoveredNode: Id | undefined,
   selectedNode: Id | undefined,
-  onSelectNode: (id?: Id) => void,
+  onSelectNode: OnSelectNode,
   onHoverNode: (id?: Id) => void,
   isUsingKBToScrollUntill: React.MutableRefObject<MillisSinceEpoch>,
 ) {
@@ -818,7 +833,7 @@ function moveSelectedNodeViaKeyBoard(
   newIdx: number,
   treeNodes: TreeNode[],
   rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
-  onSelectNode: (id?: Id) => void,
+  onSelectNode: OnSelectNode,
   onHoverNode: (id?: Id) => void,
   isUsingKBToScrollUntil: React.MutableRefObject<number>,
 ) {
@@ -826,7 +841,7 @@ function moveSelectedNodeViaKeyBoard(
     const newNode = treeNodes[newIdx];
 
     extendKBControlLease(isUsingKBToScrollUntil);
-    onSelectNode(newNode.id);
+    onSelectNode(newNode.id, 'keyboard');
     onHoverNode(newNode.id);
 
     rowVirtualizer.scrollToIndex(newIdx, {align: 'auto'});

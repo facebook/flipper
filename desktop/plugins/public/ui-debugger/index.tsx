@@ -22,10 +22,13 @@ import {
   Id,
   Metadata,
   MetadataId,
+  NodeSelection,
   PerformanceStatsEvent,
+  SelectionSource,
   SnapshotInfo,
   StreamInterceptorError,
   StreamState,
+  UIActions,
   UINode,
   UIState,
 } from './types';
@@ -204,7 +207,7 @@ export function plugin(client: PluginClient<Events>) {
 
     highlightedNodes,
 
-    selectedNode: createState<Id | undefined>(undefined),
+    selectedNode: createState<NodeSelection | undefined>(undefined),
     //used to indicate whether we will higher the visualizer / tree when a matching event comes in
     //also whether or not will show running total  in the tree
     frameworkEventMonitoring: createState(
@@ -371,34 +374,28 @@ export function plugin(client: PluginClient<Events>) {
   };
 }
 
-type UIActions = {
-  onHoverNode: (node?: Id) => void;
-  onFocusNode: (focused?: Id) => void;
-  onContextMenuOpen: (open: boolean) => void;
-  onSelectNode: (node?: Id) => void;
-  onExpandNode: (node: Id) => void;
-  onCollapseNode: (node: Id) => void;
-  setVisualiserWidth: (width: number) => void;
-};
-
 function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
   const onExpandNode = (node: Id) => {
     uiState.expandedNodes.update((draft) => {
       draft.add(node);
     });
   };
-  const onSelectNode = (node?: Id) => {
-    if (uiState.selectedNode.get() === node) {
+  const onSelectNode = (node: Id | undefined, source: SelectionSource) => {
+    if (node == null || uiState.selectedNode.get()?.id === node) {
       uiState.selectedNode.set(undefined);
     } else {
-      uiState.selectedNode.set(node);
+      uiState.selectedNode.set({id: node, source});
     }
 
     if (node) {
       const selectedNode = nodes.get().get(node);
       const tags = selectedNode?.tags;
       if (tags) {
-        tracker.track('node-selected', {name: selectedNode.name, tags});
+        tracker.track('node-selected', {
+          name: selectedNode.name,
+          tags,
+          source: source,
+        });
       }
 
       let current = selectedNode?.parent;
