@@ -14,15 +14,13 @@ import {
   Input,
   Modal,
   Tooltip,
-  Dropdown,
-  Menu,
   Typography,
   TreeSelect,
   Space,
   Switch,
 } from 'antd';
 import {
-  MoreOutlined,
+  EyeOutlined,
   PauseCircleOutlined,
   PlayCircleOutlined,
   SearchOutlined,
@@ -47,6 +45,9 @@ export const Controls: React.FC = () => {
   const frameworkEventMonitoring: Map<FrameworkEventType, boolean> = useValue(
     instance.uiState.frameworkEventMonitoring,
   );
+
+  const [showFrameworkEventsModal, setShowFrameworkEventsModal] =
+    useState(false);
 
   const onSetEventMonitored: (
     eventType: FrameworkEventType,
@@ -83,71 +84,32 @@ export const Controls: React.FC = () => {
             {isPaused ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
           </Tooltip>
         }></Button>
+      <Button
+        type="default"
+        shape="circle"
+        onClick={() => {
+          setShowFrameworkEventsModal(true);
+        }}
+        icon={
+          <Tooltip title="Framework event monitoring">
+            <EyeOutlined />
+          </Tooltip>
+        }></Button>
       {frameworkEventMonitoring.size > 0 && (
-        <MoreOptionsMenu
+        <FrameworkEventsMonitoringModal
           filterMainThreadMonitoring={filterMainThreadMonitoring}
           onSetFilterMainThreadMonitoring={
             instance.uiActions.onSetFilterMainThreadMonitoring
           }
-          onSetEventMonitored={onSetEventMonitored}
           frameworkEventTypes={[...frameworkEventMonitoring.entries()]}
+          onSetEventMonitored={onSetEventMonitored}
+          visible={showFrameworkEventsModal}
+          onCancel={() => setShowFrameworkEventsModal(false)}
         />
       )}
     </Layout.Horizontal>
   );
 };
-
-function MoreOptionsMenu({
-  onSetEventMonitored,
-  frameworkEventTypes,
-  filterMainThreadMonitoring,
-  onSetFilterMainThreadMonitoring,
-}: {
-  filterMainThreadMonitoring: boolean;
-  onSetFilterMainThreadMonitoring: (toggled: boolean) => void;
-  onSetEventMonitored: (
-    eventType: FrameworkEventType,
-    monitored: boolean,
-  ) => void;
-  frameworkEventTypes: [FrameworkEventType, boolean][];
-}) {
-  const [showFrameworkEventsModal, setShowFrameworkEventsModal] =
-    useState(false);
-
-  const moreOptionsMenu = (
-    <Menu>
-      <Menu.Item
-        onClick={() => {
-          tracker.track('more-options-opened', {});
-          setShowFrameworkEventsModal(true);
-        }}>
-        Framework event monitoring
-      </Menu.Item>
-    </Menu>
-  );
-
-  return (
-    <>
-      <Dropdown
-        key="more"
-        mouseLeaveDelay={0.7}
-        overlay={moreOptionsMenu}
-        placement="bottomRight">
-        <Button type="text" icon={<MoreOutlined style={{fontSize: 20}} />} />
-      </Dropdown>
-
-      {/*invisible until shown*/}
-      <FrameworkEventsMonitoringModal
-        filterMainThreadMonitoring={filterMainThreadMonitoring}
-        onSetFilterMainThreadMonitoring={onSetFilterMainThreadMonitoring}
-        frameworkEventTypes={frameworkEventTypes}
-        onSetEventMonitored={onSetEventMonitored}
-        visible={showFrameworkEventsModal}
-        onCancel={() => setShowFrameworkEventsModal(false)}
-      />
-    </>
-  );
-}
 
 function FrameworkEventsMonitoringModal({
   visible,
@@ -184,15 +146,15 @@ function FrameworkEventsMonitoringModal({
       <Space direction="vertical" size="large">
         <Typography.Text>
           Monitoring an event will cause the relevant node in the visualizer and
-          tree to highlight briefly. Additionally a running total of the number
-          of each event will be show in the tree inline
+          tree to highlight briefly. Additionally counter will show the number
+          of matching events in the tree
         </Typography.Text>
 
         <TreeSelect
           treeCheckable
           showSearch={false}
           showCheckedStrategy={TreeSelect.SHOW_PARENT}
-          placeholder="Select nodes to monitor"
+          placeholder="Select node types to monitor"
           virtual={false} //for scrollbar
           style={{
             width: '100%',
