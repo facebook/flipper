@@ -70,7 +70,6 @@ export type TreeNode = UINode & {
   isExpanded: boolean;
   indentGuide: NodeIndentGuide | null;
 };
-
 export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
   const instance = usePlugin(plugin);
   const focusedNode = useValue(instance.uiState.focusedNode);
@@ -364,17 +363,16 @@ function TreeItemContainer({
           }}
         />
         {nodeIcon(treeNode)}
-        {events ? (
+
+        <TreeItemRowContent treeNode={treeNode} />
+        {events && (
           <Badge
-            key={treeNode.id}
             count={events.length}
-            size="small"
-            color={theme.primaryColor}
-            offset={[10, 5]}>
-            <TreeItemRowContent treeNode={treeNode} />
-          </Badge>
-        ) : (
-          <TreeItemRowContent treeNode={treeNode} />
+            style={{
+              backgroundColor: theme.primaryColor,
+              marginLeft: theme.space.small,
+            }}
+          />
         )}
       </TreeItemRow>
     </div>
