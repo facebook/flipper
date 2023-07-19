@@ -4,6 +4,9 @@
     "start": "yarn copy-schema && yarn generate-plugin-docs && yarn build:style-guide && docusaurus start --port 3001",
     "build": "yarn copy-schema && yarn generate-plugin-docs && yarn build:style-guide && docusaurus build",
     "publish-gh-pages": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "clean": "docusaurus clear",
+    "swizzle": "docusaurus swizzle",
     "write-translations": "docusaurus write-translations",
     "version": "docusaurus version",
     "rename-version": "docusaurus rename-version",
@@ -19,7 +22,8 @@
     "@emotion/styled": "^11.10.6",
     "@types/fs-extra": "^11.0.1",
     "antd": "^4.23.4",
-    "docusaurus-plugin-internaldocs-fb": "1.9.1",
+    "docusaurus-plugin-internaldocs-fb": "1.13.0",
+    "docusaurus-lunr-search": "^2.3.2",
     "file-cli": "^1.2.0",
     "flipper-plugin": "^0.183.0",
     "fs-extra": "^11.1.0",
@@ -32,7 +36,6 @@
     "typescript": "^4.9.5",
     "yarn-audit-fix": "^9.3.9"
   },
-  "dependencies": {},
   "resolutions": {
     "kind-of": "6.0.3",
     "chokidar": "^3.1.5",
