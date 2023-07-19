@@ -46,6 +46,9 @@ export const Visualization2D: React.FC<
     return rootNode && caclulateFocusState(rootNode, focusedNodeId);
   }, [snapshot, nodes, focusedNodeId]);
 
+  //this ref is to ensure the mouse has entered the visualiser, otherwise when you have overlapping modals
+  //the hover state / tooltips all fire
+  const mouseInVisualiserRef = useRef(false);
   useEffect(() => {
     const mouseListener = throttle((ev: MouseEvent) => {
       const domRect = rootNodeRef.current?.getBoundingClientRect();
@@ -54,7 +57,8 @@ export const Visualization2D: React.FC<
         !focusState ||
         !domRect ||
         instance.uiState.isContextMenuOpen.get() ||
-        !snapshotNode
+        !snapshotNode ||
+        !mouseInVisualiserRef.current
       ) {
         return;
       }
@@ -114,6 +118,11 @@ export const Visualization2D: React.FC<
           if (!instance.uiState.isContextMenuOpen.get()) {
             instance.uiState.hoveredNodes.set([]);
           }
+
+          mouseInVisualiserRef.current = false;
+        }}
+        onMouseEnter={() => {
+          mouseInVisualiserRef.current = true;
         }}
         //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
         style={
