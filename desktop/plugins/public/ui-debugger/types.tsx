@@ -110,6 +110,7 @@ type UpstreamEvent = {type: 'upstreamEvent'; eventId: Id};
 type FrameworkEventAttribution = Stacktrace | Reason | UpstreamEvent;
 
 export type FrameworkEvent = {
+  id: number;
   nodeId: Id;
   type: FrameworkEventType;
   timestamp: number;

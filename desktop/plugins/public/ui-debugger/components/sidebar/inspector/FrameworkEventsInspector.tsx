@@ -15,7 +15,7 @@ import {StackTraceInspector} from './StackTraceInspector';
 
 type Props = {
   node: UINode;
-  events: FrameworkEvent[];
+  events: readonly FrameworkEvent[];
   showExtra?: (element: ReactNode) => void;
 };
 export const FrameworkEventsInspector: React.FC<Props> = ({
@@ -41,7 +41,7 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
   };
 
   const hasStacktrace = (event: FrameworkEvent) => {
-    return event.attribution?.type === 'stacktrace';
+    return event?.attribution?.type === 'stacktrace';
   };
 
   return (

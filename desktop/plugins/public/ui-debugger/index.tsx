@@ -143,7 +143,7 @@ export function plugin(client: PluginClient<Events>) {
         clearCallBack: async () => {
           uiState.streamState.set({state: 'Ok'});
           nodesAtom.set(new Map());
-          frameworkEvents.set(new Map());
+          frameworkEvents.clear();
           snapshot.set(null);
         },
       });
@@ -191,7 +191,10 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const nodesAtom = createState<Map<Id, UINode>>(new Map());
-  const frameworkEvents = createState<Map<Id, FrameworkEvent[]>>(new Map());
+  const frameworkEvents = createDataSource<FrameworkEvent>([], {
+    indices: [['nodeId']],
+    limit: 10000,
+  });
 
   const highlightedNodes = createState(new Set<Id>());
   const snapshot = createState<SnapshotInfo | null>(null);
@@ -279,18 +282,9 @@ export function plugin(client: PluginClient<Events>) {
   };
 
   function applyFrameworkEvents(frameScan: FrameScanEvent) {
-    frameworkEvents.update((draft) => {
-      if (frameScan?.frameworkEvents) {
-        frameScan.frameworkEvents.forEach((frameworkEvent) => {
-          const frameworkEventsForNode = draft.get(frameworkEvent.nodeId);
-          if (frameworkEventsForNode) {
-            frameworkEventsForNode.push(frameworkEvent);
-          } else {
-            draft.set(frameworkEvent.nodeId, [frameworkEvent]);
-          }
-        });
-      }
-    });
+    for (const frameworkEvent of frameScan.frameworkEvents ?? []) {
+      frameworkEvents.append(frameworkEvent);
+    }
 
     if (uiState.isPaused.get() === true) {
       return;

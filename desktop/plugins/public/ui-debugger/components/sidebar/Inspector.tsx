@@ -42,7 +42,6 @@ export const Inspector: React.FC<Props> = ({
 }) => {
   const instance = usePlugin(plugin);
   const selectedNodeId = useValue(instance.uiState.selectedNode)?.id;
-  const frameworkEvents = useValue(instance.frameworkEvents);
 
   const selectedNode = selectedNodeId ? nodes.get(selectedNodeId) : undefined;
   if (!selectedNode) {
@@ -50,8 +49,8 @@ export const Inspector: React.FC<Props> = ({
   }
 
   const selectedFrameworkEvents = selectedNodeId
-    ? frameworkEvents?.get(selectedNodeId)
-    : undefined;
+    ? instance.frameworkEvents.getAllRecordsByIndex({nodeId: selectedNodeId})
+    : [];
 
   return (
     <Layout.Container gap pad>
@@ -108,7 +107,7 @@ export const Inspector: React.FC<Props> = ({
             />
           </Tab>
         )}
-        {selectedFrameworkEvents && (
+        {selectedFrameworkEvents?.length > 0 && (
           <Tab
             key={'events'}
             tab={

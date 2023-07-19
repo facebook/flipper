@@ -24,6 +24,7 @@ import React, {
   useRef,
 } from 'react';
 import {
+  DataSource,
   getFlipperLib,
   HighlightManager,
   HighlightProvider,
@@ -69,6 +70,7 @@ export type TreeNode = UINode & {
   idx: number;
   isExpanded: boolean;
   indentGuide: NodeIndentGuide | null;
+  frameworkEvents: number | null;
 };
 export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
   const instance = usePlugin(plugin);
@@ -79,7 +81,6 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
   const isContextMenuOpen = useValue(instance.uiState.isContextMenuOpen);
   const hoveredNode = head(useValue(instance.uiState.hoveredNodes));
 
-  const frameworkEvents = useValue(instance.frameworkEvents);
   const filterMainThreadMonitoring = useValue(
     instance.uiState.filterMainThreadMonitoring,
   );
@@ -94,6 +95,9 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
       focusedNode || rootId,
       expandedNodes,
       selectedNode?.id,
+      instance.frameworkEvents,
+      frameworkEventsMonitoring,
+      filterMainThreadMonitoring,
     );
 
     const refs: React.RefObject<HTMLLIElement>[] = treeNodes.map(() =>
@@ -101,7 +105,16 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
     );
 
     return {treeNodes, refs};
-  }, [expandedNodes, focusedNode, nodes, rootId, selectedNode]);
+  }, [
+    expandedNodes,
+    filterMainThreadMonitoring,
+    focusedNode,
+    frameworkEventsMonitoring,
+    instance.frameworkEvents,
+    nodes,
+    rootId,
+    selectedNode?.id,
+  ]);
 
   const isUsingKBToScrollUtill = useRef<MillisSinceEpoch>(0);
 
@@ -240,9 +253,6 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
                   innerRef={refs[virtualRow.index]}
                   key={virtualRow.index}
                   treeNode={treeNodes[virtualRow.index]}
-                  frameworkEvents={frameworkEvents}
-                  frameworkEventsMonitoring={frameworkEventsMonitoring}
-                  filterMainThreadMonitoring={filterMainThreadMonitoring}
                   highlightedNodes={highlightedNodes}
                   selectedNode={selectedNode?.id}
                   hoveredNode={hoveredNode}
@@ -292,9 +302,6 @@ function TreeItemContainer({
   transform,
   innerRef,
   treeNode,
-  frameworkEvents,
-  frameworkEventsMonitoring,
-  filterMainThreadMonitoring,
   highlightedNodes,
   selectedNode,
   hoveredNode,
@@ -308,10 +315,7 @@ function TreeItemContainer({
   transform: string;
   innerRef: Ref<any>;
   treeNode: TreeNode;
-  frameworkEvents: Map<Id, FrameworkEvent[]>;
   highlightedNodes: Set<Id>;
-  frameworkEventsMonitoring: Map<FrameworkEventType, boolean>;
-  filterMainThreadMonitoring: boolean;
   selectedNode?: Id;
   hoveredNode?: Id;
   isUsingKBToScroll: RefObject<MillisSinceEpoch>;
@@ -321,15 +325,6 @@ function TreeItemContainer({
   onCollapseNode: (node: Id) => void;
   onHoverNode: (node: Id) => void;
 }) {
-  let events = frameworkEvents.get(treeNode.id);
-  if (events) {
-    events = events
-      .filter((e) => frameworkEventsMonitoring.get(e.type))
-      .filter(
-        (e) => filterMainThreadMonitoring === false || e.thread === 'main',
-      );
-  }
-
   return (
     <div
       ref={innerRef}
@@ -375,9 +370,9 @@ function TreeItemContainer({
         {nodeIcon(treeNode)}
 
         <TreeItemRowContent treeNode={treeNode} />
-        {events && (
+        {treeNode.frameworkEvents && (
           <Badge
-            count={events.length}
+            count={treeNode.frameworkEvents}
             style={{
               backgroundColor: theme.primaryColor,
               marginLeft: theme.space.small,
@@ -616,6 +611,9 @@ function toTreeNodes(
   rootId: Id,
   expandedNodes: Set<Id>,
   selectedNode: Id | undefined,
+  frameworkEvents: DataSource<FrameworkEvent>,
+  frameworkEventsMonitoring: Map<FrameworkEventType, boolean>,
+  filterMainThreadMonitoring: boolean,
 ): TreeNode[] {
   const root = nodes.get(rootId);
   if (root == null) {
@@ -643,11 +641,21 @@ function toTreeNodes(
     const isExpanded = expandedNodes.has(node.id);
     const isSelected = node.id === selectedNode;
 
+    let events = frameworkEvents.getAllRecordsByIndex({nodeId: node.id});
+    if (events) {
+      events = events
+        .filter((e) => frameworkEventsMonitoring.get(e.type))
+        .filter(
+          (e) => filterMainThreadMonitoring === false || e.thread === 'main',
+        );
+    }
+
     treeNodes.push({
       ...node,
       idx: i,
       depth,
       isExpanded,
+      frameworkEvents: events.length > 0 ? events.length : null,
       indentGuide: stackItem.isChildOfSelectedNode
         ? {
             depth: stackItem.selectedNodeDepth,
