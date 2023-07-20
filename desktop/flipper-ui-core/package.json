@@ -40,7 +40,7 @@
     "react-is": "^18.2.0",
     "react-markdown": "^6.0.3",
     "react-player": "^2.11.0",
-    "react-redux": "^7.2.6",
+    "react-redux": "^8.1.1",
     "react-test-renderer": "^0.0.0-experimental-2bf7c02f0-20220314",
     "react-virtualized-auto-sizer": "^1.0.7",
     "react-window": "^1.8.6",
