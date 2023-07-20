@@ -70,6 +70,7 @@ import {
   NavbarScreenshotButton,
 } from '../chrome/ScreenCaptureButtons';
 import {StatusMessage} from './appinspect/AppInspect';
+import {TroubleshootingGuide} from './appinspect/fb-stubs/TroubleshootingGuide';
 
 export const Navbar = withTrackingScope(function Navbar({
   toplevelSelection,
@@ -509,6 +510,7 @@ function TroubleshootMenu({
                 Troubleshoot connectivity
               </Menu.Item>
             )}
+            <TroubleshootingGuide />
             <Menu.Item
               key="flipperlogs"
               onClick={() => setToplevelSelection('flipperlogs')}>
