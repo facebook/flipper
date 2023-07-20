@@ -1,3 +1,11 @@
+# 0.207.0 (20/7/2023)
+
+ * [D47295799](https://github.com/facebook/flipper/search?q=D47295799&type=Commits) -  UIDebugger Add seperate icon for litho mountables
+ * [D47295799](https://github.com/facebook/flipper/search?q=D47295799&type=Commits) -  UIDebugger Serialize all props using java.lang.toString
+ * [D47295799](https://github.com/facebook/flipper/search?q=D47295799&type=Commits) -  UIDebugger show drawables mounted by litho
+ * [D47334078](https://github.com/facebook/flipper/search?q=D47334078&type=Commits) -  UIDebugger only autoscroll horizontally when selecting via the visualiser
+
+
 # 0.205.0 (13/7/2023)
 
  * [D47212492](https://github.com/facebook/flipper/search?q=D47212492&type=Commits) -  [UIDebugger] Using keyboard arrow control changes the selected and hovered state together for faster / easier navigation
