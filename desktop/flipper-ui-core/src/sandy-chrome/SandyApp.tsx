@@ -24,7 +24,10 @@ import {Navbar} from './Navbar';
 import {useStore, useDispatch} from '../utils/useStore';
 import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {setStaticView} from '../reducers/connections';
-import {toggleLeftSidebarVisible} from '../reducers/application';
+import {
+  toggleHasLeftSidebar,
+  toggleLeftSidebarVisible,
+} from '../reducers/application';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
@@ -79,6 +82,8 @@ export function SandyApp() {
       // toggle sidebar visibility if needed
       const hasLeftSidebar =
         newSelection === 'appinspect' || newSelection === 'notification';
+
+      dispatch(toggleHasLeftSidebar(hasLeftSidebar));
       if (hasLeftSidebar) {
         if (newSelection === toplevelSelection) {
           dispatch(toggleLeftSidebarVisible());

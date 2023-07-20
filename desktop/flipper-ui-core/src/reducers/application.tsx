@@ -37,6 +37,7 @@ export type ShareType = {
 } & SubShareType;
 
 export type State = {
+  hasLeftSidebar: boolean;
   leftSidebarVisible: boolean;
   rightSidebarVisible: boolean;
   rightSidebarAvailable: boolean;
@@ -48,6 +49,7 @@ export type State = {
 };
 
 type BooleanActionType =
+  | 'hasLeftSidebar'
   | 'leftSidebarVisible'
   | 'rightSidebarVisible'
   | 'rightSidebarAvailable';
@@ -78,6 +80,7 @@ export type Action =
     };
 
 export const initialState: () => State = () => ({
+  hasLeftSidebar: true,
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
@@ -110,6 +113,7 @@ export default function reducer(
 ): State {
   state = state || initialState();
   if (
+    action.type === 'hasLeftSidebar' ||
     action.type === 'leftSidebarVisible' ||
     action.type === 'rightSidebarVisible' ||
     action.type === 'rightSidebarAvailable'
@@ -172,6 +176,11 @@ export const toggleAction = (
 
 export const toggleLeftSidebarVisible = (payload?: boolean): Action => ({
   type: 'leftSidebarVisible',
+  payload,
+});
+
+export const toggleHasLeftSidebar = (payload?: boolean): Action => ({
+  type: 'hasLeftSidebar',
   payload,
 });
 

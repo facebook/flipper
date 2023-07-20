@@ -246,20 +246,25 @@ function NotificationButton({
 
 function LeftSidebarToggleButton() {
   const dispatch = useDispatch();
+  const hasMainMenu = useStore((state) => state.application.hasLeftSidebar);
   const mainMenuVisible = useStore(
     (state) => state.application.leftSidebarVisible,
   );
 
-  return (
-    <NavbarButton
-      label="Toggle Sidebar"
-      icon={LayoutOutlined}
-      toggled={!mainMenuVisible}
-      onClick={() => {
-        dispatch(toggleLeftSidebarVisible());
-      }}
-    />
-  );
+  if (hasMainMenu) {
+    return (
+      <NavbarButton
+        label="Toggle Sidebar"
+        icon={LayoutOutlined}
+        toggled={!mainMenuVisible}
+        onClick={() => {
+          dispatch(toggleLeftSidebarVisible());
+        }}
+      />
+    );
+  }
+
+  return null;
 }
 
 function RightSidebarToggleButton() {
