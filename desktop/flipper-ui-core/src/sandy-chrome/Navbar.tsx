@@ -503,30 +503,31 @@ function TroubleshootMenu({
             key="troubleshooting"
             title={<NavbarButton icon={BugOutlined} label="Troubleshoot" />}
             className={submenu}>
+            <Menu.Item
+              key="setupdoctor"
+              onClick={() => setIsDoctorVisible(true)}>
+              <Badge dot={hasNewProblem}>Setup Doctor</Badge>
+            </Menu.Item>
             {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
               <Menu.Item
                 key="connectivity"
                 onClick={() => setToplevelSelection('connectivity')}>
-                Troubleshoot connectivity
+                Troubleshoot Connectivity
               </Menu.Item>
             )}
             <TroubleshootingGuide />
+
+            <Menu.Item
+              key="rage"
+              onClick={exportEverythingEverywhereAllAtOnceTracked}>
+              Export All
+            </Menu.Item>
             <Menu.Item
               key="flipperlogs"
               onClick={() => setToplevelSelection('flipperlogs')}>
               <Badge offset={[12, 0]} count={flipperErrorLogCount}>
                 Flipper Logs
               </Badge>
-            </Menu.Item>
-            <Menu.Item
-              key="setupdoctor"
-              onClick={() => setIsDoctorVisible(true)}>
-              <Badge dot={hasNewProblem}>Setup Doctor</Badge>
-            </Menu.Item>
-            <Menu.Item
-              key="rage"
-              onClick={exportEverythingEverywhereAllAtOnceTracked}>
-              Rage
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>
