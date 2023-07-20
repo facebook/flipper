@@ -609,7 +609,7 @@ function ExtrasMenu() {
               </Menu.Item>
             ) : null}
             <Menu.Divider />
-            <Menu.SubMenu title="Plugin developers">
+            <Menu.SubMenu key="plugin developers" title="Plugin developers">
               <Menu.Item
                 key="styleguide"
                 onClick={() => {
