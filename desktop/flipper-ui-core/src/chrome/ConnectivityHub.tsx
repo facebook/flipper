@@ -15,6 +15,8 @@ import {
   DataTable,
   DataTableColumn,
   DataTableManager,
+  Tab,
+  Tabs,
   theme,
 } from 'flipper-plugin';
 import {CloseCircleFilled} from '@ant-design/icons';
@@ -23,6 +25,7 @@ import {
   ConnectionRecordEntry,
   FlipperServer,
 } from 'flipper-common';
+import SetupDoctorScreen from '../sandy-chrome/SetupDoctorScreen';
 
 const rows = createDataSource<ConnectionRecordEntry>([], {
   limit: 200000,
@@ -146,7 +149,14 @@ export function ConnectivityHub() {
 
   return (
     <Layout.Container grow>
-      <LogView />
+      <Tabs grow>
+        <Tab tab="Environment Check">
+          <SetupDoctorScreen visible modal={false} onClose={() => {}} />
+        </Tab>
+        <Tab tab="Connectivity Logs">
+          <LogView />
+        </Tab>
+      </Tabs>
     </Layout.Container>
   );
 }
