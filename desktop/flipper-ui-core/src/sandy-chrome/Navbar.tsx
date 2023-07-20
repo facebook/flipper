@@ -25,10 +25,8 @@ import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
 import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
 import {Avatar, Badge, Button, Menu, Modal, Popover, Tooltip} from 'antd';
 import {
-  AppstoreAddOutlined,
   BellOutlined,
   BugOutlined,
-  ExportOutlined,
   LayoutOutlined,
   LoginOutlined,
   MobileOutlined,
@@ -111,20 +109,12 @@ export const Navbar = withTrackingScope(function Navbar({
         )}
       </Layout.Horizontal>
       <Layout.Horizontal style={{gap: 6, alignItems: 'center'}}>
-        <NavbarButton
-          label="Add Plugins"
-          icon={AppstoreAddOutlined}
-          onClick={() => {
-            Dialog.showModal((onHide) => <PluginManager onHide={onHide} />);
-          }}
-        />
         <NotificationButton
           toplevelSelection={toplevelSelection}
           setToplevelSelection={setToplevelSelection}
         />
         <TroubleshootMenu setToplevelSelection={setToplevelSelection} />
         <ExtrasMenu />
-        <ExportEverythingEverywhereAllAtOnceButton />
         <RightSidebarToggleButton />
         {config.showLogin && <LoginConnectivityButton />}
         <UpdateIndicator />
@@ -133,41 +123,6 @@ export const Navbar = withTrackingScope(function Navbar({
   );
 });
 
-function ExportEverythingEverywhereAllAtOnceButton() {
-  const store = useStore();
-  const [status, setStatus] = useState<
-    ExportEverythingEverywhereAllAtOnceStatus | undefined
-  >();
-
-  const exportEverythingEverywhereAllAtOnceTracked = useTrackedCallback(
-    'Debug data export',
-    () =>
-      exportEverythingEverywhereAllAtOnce(
-        store,
-        (...args) => setStatus(args),
-        config.isFBBuild,
-      ),
-    [store, setStatus],
-  );
-
-  return (
-    <>
-      <ExportEverythingEverywhereAllAtOnceStatusModal
-        status={status}
-        setStatus={setStatus}
-      />
-      <NUX title="Press this button if you have issues with Flipper. It will collect Flipper debug data that you can send to the Flipper team to get help.">
-        <NavbarButton
-          icon={ExportOutlined}
-          label="Rage"
-          onClick={() => {
-            exportEverythingEverywhereAllAtOnceTracked();
-          }}
-        />
-      </NUX>
-    </>
-  );
-}
 function ExportEverythingEverywhereAllAtOnceStatusModal({
   status,
   setStatus,
@@ -506,6 +461,21 @@ function TroubleshootMenu({
 }: {
   setToplevelSelection: (x: ToplevelNavItem) => void;
 }) {
+  const store = useStore();
+  const [status, setStatus] = useState<
+    ExportEverythingEverywhereAllAtOnceStatus | undefined
+  >();
+
+  const exportEverythingEverywhereAllAtOnceTracked = useTrackedCallback(
+    'Debug data export',
+    () =>
+      exportEverythingEverywhereAllAtOnce(
+        store,
+        (...args) => setStatus(args),
+        config.isFBBuild,
+      ),
+    [store, setStatus],
+  );
   const [isDoctorVisible, setIsDoctorVisible] = useState(false);
   const result = useStore(
     (state) => state.healthchecks.healthcheckReport.result,
@@ -551,12 +521,21 @@ function TroubleshootMenu({
               onClick={() => setIsDoctorVisible(true)}>
               <Badge dot={hasNewProblem}>Setup Doctor</Badge>
             </Menu.Item>
+            <Menu.Item
+              key="rage"
+              onClick={exportEverythingEverywhereAllAtOnceTracked}>
+              Rage
+            </Menu.Item>
           </Menu.SubMenu>
         </Menu>
       </Badge>
       <SetupDoctorScreen
         visible={isDoctorVisible}
         onClose={() => setIsDoctorVisible(false)}
+      />
+      <ExportEverythingEverywhereAllAtOnceStatusModal
+        status={status}
+        setStatus={setStatus}
       />
     </>
   );
@@ -603,6 +582,13 @@ function ExtrasMenu() {
             key="extras"
             title={<NavbarButton icon={SettingOutlined} label="More" />}
             className={submenu}>
+            <Menu.Item
+              key="addplugins"
+              onClick={() => {
+                Dialog.showModal((onHide) => <PluginManager onHide={onHide} />);
+              }}>
+              Add Plugins
+            </Menu.Item>
             {canOpenDialog() ? (
               <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
                 Import Flipper file
