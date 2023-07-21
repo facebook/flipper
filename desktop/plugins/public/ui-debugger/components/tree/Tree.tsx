@@ -237,7 +237,7 @@ export function Tree2({
                 }
               }}>
               {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-                <TreeItemContainer
+                <TreeNodeRow
                   transform={`translateY(${virtualRow.start}px)`}
                   innerRef={refs[virtualRow.index]}
                   key={virtualRow.index}
@@ -287,7 +287,7 @@ function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
   );
 }
 
-function TreeItemContainer({
+function TreeNodeRow({
   transform,
   innerRef,
   treeNode,
@@ -328,7 +328,7 @@ function TreeItemContainer({
       {treeNode.indentGuide != null && (
         <IndentGuide indentGuide={treeNode.indentGuide} />
       )}
-      <TreeItemRow
+      <TreeNodeContent
         isHighlighted={highlightedNodes.has(treeNode.id)}
         isSelected={treeNode.id === selectedNode}
         isHovered={hoveredNode === treeNode.id}
@@ -358,7 +358,7 @@ function TreeItemContainer({
         />
         {nodeIcon(treeNode)}
 
-        <TreeItemRowContent treeNode={treeNode} />
+        <TreeNodeTextContent treeNode={treeNode} />
         {treeNode.frameworkEvents && (
           <Badge
             count={treeNode.frameworkEvents}
@@ -368,12 +368,12 @@ function TreeItemContainer({
             }}
           />
         )}
-      </TreeItemRow>
+      </TreeNodeContent>
     </div>
   );
 }
 
-function TreeItemRowContent({treeNode}: {treeNode: TreeNode}) {
+function TreeNodeTextContent({treeNode}: {treeNode: TreeNode}) {
   return (
     <>
       <HighlightedText text={treeNode.name} />
@@ -407,7 +407,7 @@ function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
 const TreeItemHeight = '26px';
 const HalfTreeItemHeight = `calc(${TreeItemHeight} / 2)`;
 
-const TreeItemRow = styled.li<{
+const TreeNodeContent = styled.li<{
   item: TreeNode;
   isHovered: boolean;
   isSelected: boolean;
