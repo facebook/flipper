@@ -7,14 +7,8 @@
  * @format
  */
 
-import {
-  FrameworkEvent,
-  FrameworkEventType,
-  Id,
-  OnSelectNode,
-  UINode,
-  ViewMode,
-} from '../types';
+import {FrameworkEvent, FrameworkEventType, Id, UINode} from '../ClientTypes';
+import {OnSelectNode, ViewMode} from '../DesktopTypes';
 import React, {
   ReactNode,
   Ref,

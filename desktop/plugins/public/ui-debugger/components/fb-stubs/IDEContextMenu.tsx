@@ -9,7 +9,7 @@
 
 import React from 'react';
 
-import {UINode} from '../../types';
+import {UINode} from '../../ClientTypes';
 
 export async function prefetchSourceFileLocation(_: UINode) {}
 

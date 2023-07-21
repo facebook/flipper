@@ -9,7 +9,7 @@
 
 import {Button} from 'antd';
 import {theme, TimelineDataDescription} from 'flipper-plugin';
-import {FrameworkEvent, UINode} from '../../../types';
+import {FrameworkEvent, UINode} from '../../../ClientTypes';
 import React, {ReactNode, useState} from 'react';
 import {StackTraceInspector} from './StackTraceInspector';
 

@@ -19,7 +19,7 @@ import {
   usePlugin,
   useValue,
 } from 'flipper-plugin';
-import {Id, Metadata, MetadataId, UINode} from '../../types';
+import {Id, Metadata, MetadataId, UINode} from '../../ClientTypes';
 import {IdentityInspector} from './inspector/IdentityInspector';
 import {AttributesInspector} from './inspector/AttributesInspector';
 import {Tooltip} from 'antd';

@@ -22,17 +22,19 @@ import {
   Id,
   Metadata,
   MetadataId,
-  NodeSelection,
   PerformanceStatsEvent,
-  SelectionSource,
   SnapshotInfo,
+  UINode,
+} from './ClientTypes';
+import {
+  UIState,
+  NodeSelection,
+  SelectionSource,
   StreamInterceptorError,
   StreamState,
   UIActions,
-  UINode,
-  UIState,
   ViewMode,
-} from './types';
+} from './DesktopTypes';
 import {Draft} from 'immer';
 import {tracker} from './utils/tracker';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
@@ -531,4 +533,4 @@ function collapseinActiveChildren(node: UINode, expandedNodes: Draft<Set<Id>>) {
 const HighlightTime = 300;
 
 export {Component} from './components/main';
-export * from './types';
+export * from './ClientTypes';

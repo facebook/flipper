@@ -9,7 +9,7 @@
 
 import React from 'react';
 import {Col, Popover, Row} from 'antd';
-import {Color} from '../../../types';
+import {Color} from '../../../ClientTypes';
 import {SketchPicker, ColorResult} from 'react-color';
 import {styled} from 'flipper-plugin';
 import {

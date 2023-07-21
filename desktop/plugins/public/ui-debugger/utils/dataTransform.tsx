@@ -7,7 +7,12 @@
  * @format
  */
 
-import {Inspectable, InspectableObject, Metadata, MetadataId} from '../types';
+import {
+  Inspectable,
+  InspectableObject,
+  Metadata,
+  MetadataId,
+} from '../ClientTypes';
 
 function transformAny(
   metadata: Map<MetadataId, Metadata>,

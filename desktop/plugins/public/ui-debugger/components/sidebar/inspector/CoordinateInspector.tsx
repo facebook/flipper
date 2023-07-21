@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {Coordinate} from '../../../types';
+import {Coordinate} from '../../../ClientTypes';
 import {Col, Row} from 'antd';
 import {
   CenteredContentStyle,

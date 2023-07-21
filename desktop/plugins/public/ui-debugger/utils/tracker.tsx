@@ -8,8 +8,9 @@
  */
 
 import {getFlipperLib} from 'flipper-plugin';
-import {SelectionSource} from '..';
-import {FrameworkEventType, Tag} from '../types';
+
+import {FrameworkEventType, Tag} from '../ClientTypes';
+import {SelectionSource} from '../DesktopTypes';
 
 const UI_DEBUGGER_IDENTIFIER = 'ui-debugger';
 

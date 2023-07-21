@@ -8,7 +8,8 @@
  */
 
 import {DeviceOS} from 'flipper-plugin';
-import {Id, Metadata, StreamInterceptor, UINode} from '../types';
+import {Id, Metadata, UINode} from '../ClientTypes';
+import {StreamInterceptor} from '../DesktopTypes';
 
 export function getStreamInterceptor(_: DeviceOS): StreamInterceptor {
   return new NoOpStreamInterceptor();

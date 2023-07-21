@@ -14,7 +14,7 @@ import {
   Metadata,
   MetadataId,
   UINode,
-} from '../../../types';
+} from '../../../ClientTypes';
 import {DataInspector, Panel, styled} from 'flipper-plugin';
 import {Col, Row} from 'antd';
 import {displayableName} from '../utilities/displayableName';

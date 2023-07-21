@@ -9,7 +9,7 @@
 
 import React from 'react';
 import {Col, Row} from 'antd';
-import {UINode} from '../../../types';
+import {UINode} from '../../../ClientTypes';
 import {styled, theme} from 'flipper-plugin';
 import {CodeInspector} from './fb-stubs/CodeInspector';
 import {TopSpacedContainerStyle} from './Styles';

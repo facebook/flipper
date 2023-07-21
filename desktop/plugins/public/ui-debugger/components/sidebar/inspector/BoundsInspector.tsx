@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {Bounds} from '../../../types';
+import {Bounds} from '../../../ClientTypes';
 import {InspectorStyle} from './Styles';
 
 type Props = {

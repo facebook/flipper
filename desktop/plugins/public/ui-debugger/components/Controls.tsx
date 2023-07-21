@@ -26,7 +26,7 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout} from 'flipper-plugin';
-import {FrameworkEventType} from '../types';
+import {FrameworkEventType} from '../ClientTypes';
 import {tracker} from '../utils/tracker';
 import {debounce} from 'lodash';
 

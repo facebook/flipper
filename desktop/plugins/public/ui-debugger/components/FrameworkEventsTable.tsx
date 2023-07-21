@@ -16,7 +16,7 @@ import {
   usePlugin,
 } from 'flipper-plugin';
 import React, {useEffect, useRef} from 'react';
-import {FrameworkEvent, Id} from '../types';
+import {FrameworkEvent, Id} from '../ClientTypes';
 import {plugin} from '../index';
 import {Button, Tooltip} from 'antd';
 

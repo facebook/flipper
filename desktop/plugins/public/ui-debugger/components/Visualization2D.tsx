@@ -8,14 +8,8 @@
  */
 
 import React, {useEffect, useMemo, useRef} from 'react';
-import {
-  Bounds,
-  Coordinate,
-  Id,
-  NestedNode,
-  OnSelectNode,
-  UINode,
-} from '../types';
+import {Bounds, Coordinate, Id, UINode} from '../ClientTypes';
+import {NestedNode, OnSelectNode} from '../DesktopTypes';
 
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
 import {plugin} from '../index';

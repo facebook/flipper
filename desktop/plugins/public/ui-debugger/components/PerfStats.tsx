@@ -10,11 +10,11 @@
 import {
   PerformanceStatsEvent,
   DynamicPerformanceStatsEvent,
-  UIState,
   Id,
   UINode,
   FrameworkEvent,
-} from '../types';
+} from '../ClientTypes';
+import {UIState} from '../DesktopTypes';
 import React, {useMemo} from 'react';
 import {
   DataInspector,

@@ -7,67 +7,6 @@
  * @format
  */
 
-import {Atom} from 'flipper-plugin';
-
-export type UIState = {
-  viewMode: Atom<ViewMode>;
-  isConnected: Atom<boolean>;
-  isPaused: Atom<boolean>;
-  streamState: Atom<StreamState>;
-  searchTerm: Atom<string>;
-  isContextMenuOpen: Atom<boolean>;
-  hoveredNodes: Atom<Id[]>;
-  selectedNode: Atom<NodeSelection | undefined>;
-  highlightedNodes: Atom<Set<Id>>;
-  focusedNode: Atom<Id | undefined>;
-  expandedNodes: Atom<Set<Id>>;
-  visualiserWidth: Atom<number>;
-  frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
-  filterMainThreadMonitoring: Atom<boolean>;
-};
-
-export type ViewMode =
-  | {mode: 'default'}
-  | {mode: 'frameworkEventsTable'; treeRootId: Id};
-
-export type NodeSelection = {
-  id: Id;
-  source: SelectionSource;
-};
-
-export type OnSelectNode = (
-  node: Id | undefined,
-  source: SelectionSource,
-) => void;
-
-export type UIActions = {
-  onHoverNode: (node?: Id) => void;
-  onFocusNode: (focused?: Id) => void;
-  onContextMenuOpen: (open: boolean) => void;
-  onSelectNode: OnSelectNode;
-  onExpandNode: (node: Id) => void;
-  onCollapseNode: (node: Id) => void;
-  setVisualiserWidth: (width: number) => void;
-  onSetFilterMainThreadMonitoring: (toggled: boolean) => void;
-  onSetViewMode: (viewMode: ViewMode) => void;
-};
-
-export type SelectionSource = 'visualiser' | 'tree' | 'keyboard';
-
-export type StreamState =
-  | {state: 'Ok'}
-  | {state: 'RetryingAfterError'}
-  | {
-      state: 'StreamInterceptorRetryableError';
-      error: StreamInterceptorError;
-      retryCallback: () => Promise<void>;
-    }
-  | {
-      state: 'FatalError';
-      error: Error;
-      clearCallBack: () => Promise<void>;
-    };
-
 export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
@@ -76,8 +15,6 @@ export type Events = {
   performanceStats: PerformanceStatsEvent;
   metadataUpdate: UpdateMetadataEvent;
 };
-
-export type StreamFlowState = {paused: boolean};
 
 export type FrameScanEvent = {
   frameTime: number;
@@ -170,16 +107,6 @@ export type UpdateMetadataEvent = {
   attributeMetadata: Record<MetadataId, Metadata>;
 };
 
-export type NestedNode = {
-  id: Id;
-  name: string;
-  attributes: Record<string, Inspectable>;
-  children: NestedNode[];
-  bounds: Bounds;
-  tags: Tag[];
-  activeChildIdx?: number;
-};
-
 export type UINode = {
   id: Id;
   parent?: Id;
@@ -246,7 +173,6 @@ export type SnapshotInfo = {nodeId: Id; data: Snapshot};
 export type Id = number | string;
 
 export type MetadataId = number;
-export type TreeState = {expandedNodes: Id[]};
 
 export type Tag =
   | 'Native'
@@ -338,20 +264,3 @@ export type InspectableUnknown = {
   type: 'unknown';
   value: string;
 };
-
-export interface StreamInterceptor {
-  transformNodes(
-    nodes: Map<Id, UINode>,
-  ): Promise<[Map<Id, UINode>, Metadata[]]>;
-
-  transformMetadata(metadata: Metadata): Promise<Metadata>;
-}
-
-export class StreamInterceptorError extends Error {
-  title: string;
-
-  constructor(title: string, message: string) {
-    super(message);
-    this.title = title;
-  }
-}

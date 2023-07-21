@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {Tag} from '../../../../types';
+import {Tag} from '../../../../ClientTypes';
 
 type CodeInspectorProps = {
   name: string;

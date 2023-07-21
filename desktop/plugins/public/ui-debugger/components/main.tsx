@@ -18,7 +18,7 @@ import {
   theme,
 } from 'flipper-plugin';
 import {useHotkeys} from 'react-hotkeys-hook';
-import {Id, Metadata, MetadataId, UINode} from '../types';
+import {Id, Metadata, MetadataId, UINode} from '../ClientTypes';
 import {PerfStats} from './PerfStats';
 import {Visualization2D} from './Visualization2D';
 import {Inspector} from './sidebar/Inspector';
