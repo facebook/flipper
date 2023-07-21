@@ -14,7 +14,7 @@ import {
   Inspectable,
   Bounds,
   Tag,
-  UINode,
+  ClientNode,
   Metadata,
 } from './ClientTypes';
 
@@ -91,8 +91,8 @@ export type StreamState =
 
 export interface StreamInterceptor {
   transformNodes(
-    nodes: Map<Id, UINode>,
-  ): Promise<[Map<Id, UINode>, Metadata[]]>;
+    nodes: Map<Id, ClientNode>,
+  ): Promise<[Map<Id, ClientNode>, Metadata[]]>;
 
   transformMetadata(metadata: Metadata): Promise<Metadata>;
 }

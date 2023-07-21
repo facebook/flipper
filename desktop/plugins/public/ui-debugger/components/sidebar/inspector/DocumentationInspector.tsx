@@ -8,10 +8,10 @@
  */
 
 import React from 'react';
-import {UINode} from '../../../ClientTypes';
+import {ClientNode} from '../../../ClientTypes';
 
 type Props = {
-  node: UINode;
+  node: ClientNode;
 };
 
 export const DocumentationInspector: React.FC<Props> = () => {

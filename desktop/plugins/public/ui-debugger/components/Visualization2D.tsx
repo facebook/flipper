@@ -8,7 +8,7 @@
  */
 
 import React, {useEffect, useMemo, useRef} from 'react';
-import {Bounds, Coordinate, Id, UINode} from '../ClientTypes';
+import {Bounds, Coordinate, Id, ClientNode} from '../ClientTypes';
 import {NestedNode, OnSelectNode} from '../DesktopTypes';
 
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
@@ -21,7 +21,7 @@ import {useDelay} from '../hooks/useDelay';
 export const Visualization2D: React.FC<
   {
     width: number;
-    nodes: Map<Id, UINode>;
+    nodes: Map<Id, ClientNode>;
     onSelectNode: OnSelectNode;
   } & React.HTMLAttributes<HTMLDivElement>
 > = ({width, nodes, onSelectNode}) => {
@@ -255,7 +255,13 @@ function Visualization2DNode({
   );
 }
 
-function HoveredOverlay({nodeId, nodes}: {nodeId: Id; nodes: Map<Id, UINode>}) {
+function HoveredOverlay({
+  nodeId,
+  nodes,
+}: {
+  nodeId: Id;
+  nodes: Map<Id, ClientNode>;
+}) {
   const node = nodes.get(nodeId);
 
   const isVisible = useDelay(longHoverDelay);
@@ -279,7 +285,7 @@ function HoveredOverlay({nodeId, nodes}: {nodeId: Id; nodes: Map<Id, UINode>}) {
 const OverlayBorder = styled.div<{
   type: 'selected' | 'hovered';
   nodeId: Id;
-  nodes: Map<Id, UINode>;
+  nodes: Map<Id, ClientNode>;
 }>(({type, nodeId, nodes}) => {
   const offset = getTotalOffset(nodeId, nodes);
   const node = nodes.get(nodeId);
@@ -305,7 +311,7 @@ const OverlayBorder = styled.div<{
  * computes the x,y offset of a given node from the root of the visualization
  * in node coordinates
  */
-function getTotalOffset(id: Id, nodes: Map<Id, UINode>): Coordinate {
+function getTotalOffset(id: Id, nodes: Map<Id, ClientNode>): Coordinate {
   const offset = {x: 0, y: 0};
   let curId: Id | undefined = id;
 
@@ -321,7 +327,7 @@ function getTotalOffset(id: Id, nodes: Map<Id, UINode>): Coordinate {
   return offset;
 }
 
-const ContextMenu: React.FC<{nodes: Map<Id, UINode>}> = ({children}) => {
+const ContextMenu: React.FC<{nodes: Map<Id, ClientNode>}> = ({children}) => {
   const instance = usePlugin(plugin);
 
   const focusedNodeId = useValue(instance.uiState.focusedNode);
@@ -392,9 +398,9 @@ function toPx(n: number) {
 
 function toNestedNode(
   rootId: Id,
-  nodes: Map<Id, UINode>,
+  nodes: Map<Id, ClientNode>,
 ): NestedNode | undefined {
-  function uiNodeToNestedNode(node: UINode): NestedNode {
+  function uiNodeToNestedNode(node: ClientNode): NestedNode {
     const nonNullChildren = node.children.filter(
       (childId) => nodes.get(childId) != null,
     );

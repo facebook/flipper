@@ -9,12 +9,12 @@
 
 import {Button} from 'antd';
 import {theme, TimelineDataDescription} from 'flipper-plugin';
-import {FrameworkEvent, UINode} from '../../../ClientTypes';
+import {FrameworkEvent, ClientNode} from '../../../ClientTypes';
 import React, {ReactNode, useState} from 'react';
 import {StackTraceInspector} from './StackTraceInspector';
 
 type Props = {
-  node: UINode;
+  node: ClientNode;
   events: readonly FrameworkEvent[];
   showExtra?: (element: ReactNode) => void;
 };

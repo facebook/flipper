@@ -7,7 +7,12 @@
  * @format
  */
 
-import {FrameworkEvent, FrameworkEventType, Id, UINode} from '../ClientTypes';
+import {
+  FrameworkEvent,
+  FrameworkEventType,
+  Id,
+  ClientNode,
+} from '../ClientTypes';
 import {OnSelectNode, ViewMode} from '../DesktopTypes';
 import React, {
   ReactNode,
@@ -61,14 +66,20 @@ type NodeIndentGuide = {
   addHorizontalMarker: boolean;
   trimBottom: boolean;
 };
-export type TreeNode = UINode & {
+export type TreeNode = ClientNode & {
   depth: number;
   idx: number;
   isExpanded: boolean;
   indentGuide: NodeIndentGuide | null;
   frameworkEvents: number | null;
 };
-export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
+export function Tree2({
+  nodes,
+  rootId,
+}: {
+  nodes: Map<Id, ClientNode>;
+  rootId: Id;
+}) {
   const instance = usePlugin(plugin);
   const focusedNode = useValue(instance.uiState.focusedNode);
   const expandedNodes = useValue(instance.uiState.expandedNodes);
@@ -476,7 +487,7 @@ function HighlightedText(props: {text: string}) {
   return <span>{highlightManager.render(props.text)} </span>;
 }
 
-function nodeIcon(node: UINode) {
+function nodeIcon(node: ClientNode) {
   if (node.tags.includes('LithoMountable')) {
     return <DecorationImage src="icons/litho-logo-blue.png" />;
   } else if (node.tags.includes('Litho')) {
@@ -503,7 +514,7 @@ const renderDepthOffset = 12;
 
 const ContextMenu: React.FC<{
   frameworkEvents: DataSource<FrameworkEvent>;
-  nodes: Map<Id, UINode>;
+  nodes: Map<Id, ClientNode>;
   hoveredNodeId?: Id;
   focusedNodeId?: Id;
   onFocusNode: (id?: Id) => void;
@@ -625,14 +636,14 @@ const ContextMenu: React.FC<{
 };
 
 type TreeListStackItem = {
-  node: UINode;
+  node: ClientNode;
   depth: number;
   isChildOfSelectedNode: boolean;
   selectedNodeDepth: number;
 };
 
 function toTreeNodes(
-  nodes: Map<Id, UINode>,
+  nodes: Map<Id, ClientNode>,
   rootId: Id,
   expandedNodes: Set<Id>,
   selectedNode: Id | undefined,

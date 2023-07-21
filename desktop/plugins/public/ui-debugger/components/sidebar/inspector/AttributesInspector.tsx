@@ -13,7 +13,7 @@ import {
   InspectableObject,
   Metadata,
   MetadataId,
-  UINode,
+  ClientNode,
 } from '../../../ClientTypes';
 import {DataInspector, Panel, styled} from 'flipper-plugin';
 import {Col, Row} from 'antd';
@@ -244,7 +244,7 @@ function createSection(
 
 type InspectorMode = 'layout' | 'attribute';
 type Props = {
-  node: UINode;
+  node: ClientNode;
   metadata: Map<MetadataId, Metadata>;
   mode: InspectorMode;
   rawEnabled?: boolean;

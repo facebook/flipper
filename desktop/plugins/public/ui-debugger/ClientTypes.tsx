@@ -18,7 +18,7 @@ export type Events = {
 
 export type FrameScanEvent = {
   frameTime: number;
-  nodes: UINode[];
+  nodes: ClientNode[];
   snapshot?: SnapshotInfo;
   frameworkEvents?: FrameworkEvent[];
 };
@@ -30,7 +30,7 @@ export type FrameScanEvent = {
 export type SubtreeUpdateEvent = {
   txId: number;
   rootId: Id;
-  nodes: UINode[];
+  nodes: ClientNode[];
   snapshot: Snapshot;
   frameworkEvents?: FrameworkEvent[];
 };
@@ -107,7 +107,7 @@ export type UpdateMetadataEvent = {
   attributeMetadata: Record<MetadataId, Metadata>;
 };
 
-export type UINode = {
+export type ClientNode = {
   id: Id;
   parent?: Id;
   qualifiedName: string; //this is the name of the component plus qualification so myles has a chance of finding it. E.g com.facebook.MyView

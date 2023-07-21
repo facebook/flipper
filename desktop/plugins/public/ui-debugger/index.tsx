@@ -24,7 +24,7 @@ import {
   MetadataId,
   PerformanceStatsEvent,
   SnapshotInfo,
-  UINode,
+  ClientNode,
 } from './ClientTypes';
 import {
   UIState,
@@ -42,7 +42,7 @@ import {prefetchSourceFileLocation} from './components/fb-stubs/IDEContextMenu';
 
 type LiveClientState = {
   snapshotInfo: SnapshotInfo | null;
-  nodes: Map<Id, UINode>;
+  nodes: Map<Id, ClientNode>;
 };
 
 type PendingData = {
@@ -193,7 +193,7 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents.append(event);
   });
 
-  const nodesAtom = createState<Map<Id, UINode>>(new Map());
+  const nodesAtom = createState<Map<Id, ClientNode>>(new Map());
   const frameworkEvents = createDataSource<FrameworkEvent>([], {
     indices: [['nodeId']],
     limit: 10000,
@@ -327,7 +327,7 @@ export function plugin(client: PluginClient<Events>) {
 
   //todo deal with racecondition, where bloks screen is fetching, takes time then you go back get more recent frame then bloks screen comes and overrites it
   function applyFrameData(
-    nodes: Map<Id, UINode>,
+    nodes: Map<Id, ClientNode>,
     snapshotInfo: SnapshotInfo | undefined,
   ) {
     liveClientData = produce(liveClientData, (draft) => {
@@ -390,7 +390,10 @@ export function plugin(client: PluginClient<Events>) {
   };
 }
 
-function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
+function uiActions(
+  uiState: UIState,
+  nodes: Atom<Map<Id, ClientNode>>,
+): UIActions {
   const onExpandNode = (node: Id) => {
     uiState.expandedNodes.update((draft) => {
       draft.add(node);
@@ -483,7 +486,10 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
   };
 }
 
-function checkFocusedNodeStillActive(uiState: UIState, nodes: Map<Id, UINode>) {
+function checkFocusedNodeStillActive(
+  uiState: UIState,
+  nodes: Map<Id, ClientNode>,
+) {
   const focusedNodeId = uiState.focusedNode.get();
   const focusedNode = focusedNodeId && nodes.get(focusedNodeId);
   if (!focusedNode || !isFocusedNodeAncestryAllActive(focusedNode, nodes)) {
@@ -492,8 +498,8 @@ function checkFocusedNodeStillActive(uiState: UIState, nodes: Map<Id, UINode>) {
 }
 
 function isFocusedNodeAncestryAllActive(
-  focused: UINode,
-  nodes: Map<Id, UINode>,
+  focused: ClientNode,
+  nodes: Map<Id, ClientNode>,
 ): boolean {
   let node = focused;
 
@@ -519,7 +525,10 @@ function isFocusedNodeAncestryAllActive(
   return false;
 }
 
-function collapseinActiveChildren(node: UINode, expandedNodes: Draft<Set<Id>>) {
+function collapseinActiveChildren(
+  node: ClientNode,
+  expandedNodes: Draft<Set<Id>>,
+) {
   if (node.activeChild) {
     expandedNodes.add(node.activeChild);
     for (const child of node.children) {

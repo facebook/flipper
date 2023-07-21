@@ -8,7 +8,7 @@
  */
 
 import {DeviceOS} from 'flipper-plugin';
-import {Id, Metadata, UINode} from '../ClientTypes';
+import {Id, Metadata, ClientNode} from '../ClientTypes';
 import {StreamInterceptor} from '../DesktopTypes';
 
 export function getStreamInterceptor(_: DeviceOS): StreamInterceptor {
@@ -21,8 +21,8 @@ class NoOpStreamInterceptor implements StreamInterceptor {
   }
 
   async transformNodes(
-    nodes: Map<Id, UINode>,
-  ): Promise<[Map<Id, UINode>, Metadata[]]> {
+    nodes: Map<Id, ClientNode>,
+  ): Promise<[Map<Id, ClientNode>, Metadata[]]> {
     return [nodes, []];
   }
 

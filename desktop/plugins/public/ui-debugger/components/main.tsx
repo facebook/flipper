@@ -18,7 +18,7 @@ import {
   theme,
 } from 'flipper-plugin';
 import {useHotkeys} from 'react-hotkeys-hook';
-import {Id, Metadata, MetadataId, UINode} from '../ClientTypes';
+import {Id, Metadata, MetadataId, ClientNode} from '../ClientTypes';
 import {PerfStats} from './PerfStats';
 import {Visualization2D} from './Visualization2D';
 import {Inspector} from './sidebar/Inspector';
@@ -35,7 +35,7 @@ export function Component() {
   const rootId = useValue(instance.rootId);
   const streamState = useValue(instance.uiState.streamState);
   const visualiserWidth = useValue(instance.uiState.visualiserWidth);
-  const nodes: Map<Id, UINode> = useValue(instance.nodes);
+  const nodes: Map<Id, ClientNode> = useValue(instance.nodes);
   const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
 
   const [showPerfStats, setShowPerfStats] = useState(false);

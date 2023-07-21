@@ -11,7 +11,7 @@ import {
   PerformanceStatsEvent,
   DynamicPerformanceStatsEvent,
   Id,
-  UINode,
+  ClientNode,
   FrameworkEvent,
 } from '../ClientTypes';
 import {UIState} from '../DesktopTypes';
@@ -27,7 +27,7 @@ import {
 
 export function PerfStats(props: {
   uiState: UIState;
-  nodes: Map<Id, UINode>;
+  nodes: Map<Id, ClientNode>;
   rootId?: Id;
   events: DataSource<DynamicPerformanceStatsEvent, number>;
   frameworkEvents: DataSource<FrameworkEvent>;

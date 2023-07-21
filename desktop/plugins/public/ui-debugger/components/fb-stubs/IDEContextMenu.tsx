@@ -9,14 +9,14 @@
 
 import React from 'react';
 
-import {UINode} from '../../ClientTypes';
+import {ClientNode} from '../../ClientTypes';
 
-export async function prefetchSourceFileLocation(_: UINode) {}
+export async function prefetchSourceFileLocation(_: ClientNode) {}
 
-export function IDEContextMenuItems(_: {node: UINode}) {
+export function IDEContextMenuItems(_: {node: ClientNode}) {
   return <></>;
 }
 
-export function BigGrepContextMenuItems(_: {node: UINode}) {
+export function BigGrepContextMenuItems(_: {node: ClientNode}) {
   return <></>;
 }

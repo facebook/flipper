@@ -9,13 +9,13 @@
 
 import React from 'react';
 import {Col, Row} from 'antd';
-import {UINode} from '../../../ClientTypes';
+import {ClientNode} from '../../../ClientTypes';
 import {styled, theme} from 'flipper-plugin';
 import {CodeInspector} from './fb-stubs/CodeInspector';
 import {TopSpacedContainerStyle} from './Styles';
 
 type Props = {
-  node: UINode;
+  node: ClientNode;
 };
 
 const IdentityKey = styled.div({

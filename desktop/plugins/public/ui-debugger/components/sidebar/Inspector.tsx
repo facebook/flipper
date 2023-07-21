@@ -19,7 +19,7 @@ import {
   usePlugin,
   useValue,
 } from 'flipper-plugin';
-import {Id, Metadata, MetadataId, UINode} from '../../ClientTypes';
+import {Id, Metadata, MetadataId, ClientNode} from '../../ClientTypes';
 import {IdentityInspector} from './inspector/IdentityInspector';
 import {AttributesInspector} from './inspector/AttributesInspector';
 import {Tooltip} from 'antd';
@@ -29,7 +29,7 @@ import {FrameworkEventsInspector} from './inspector/FrameworkEventsInspector';
 
 type Props = {
   os: DeviceOS;
-  nodes: Map<Id, UINode>;
+  nodes: Map<Id, ClientNode>;
   metadata: Map<MetadataId, Metadata>;
   showExtra: (element: ReactNode) => void;
 };
