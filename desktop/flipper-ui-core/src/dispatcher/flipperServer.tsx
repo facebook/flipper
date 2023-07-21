@@ -366,7 +366,7 @@ export async function handleClientConnected(
       );
       return;
     }
-    throw e;
+    console.warn(`[conn] Failed to handle client connected: ${e}`);
   }
 }
 
