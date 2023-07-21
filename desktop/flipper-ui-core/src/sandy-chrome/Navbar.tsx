@@ -276,13 +276,16 @@ function RightSidebarToggleButton() {
     (state) => state.application.rightSidebarVisible,
   );
 
+  if (!rightSidebarAvailable) {
+    return null;
+  }
+
   return (
     <NavbarButton
       icon={LayoutOutlined}
       flipIcon
       label="Toggle R.Sidebar"
       toggled={!rightSidebarVisible}
-      disabled={!rightSidebarAvailable}
       onClick={() => {
         dispatch(toggleRightSidebarVisible());
       }}
