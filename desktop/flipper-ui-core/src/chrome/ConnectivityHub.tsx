@@ -26,6 +26,8 @@ import {
   FlipperServer,
 } from 'flipper-common';
 import SetupDoctorScreen from '../sandy-chrome/SetupDoctorScreen';
+import {ConsoleLogs} from './ConsoleLogs';
+import {FlipperMessages} from './FlipperMessages';
 
 const rows = createDataSource<ConnectionRecordEntry>([], {
   limit: 200000,
@@ -155,6 +157,12 @@ export function ConnectivityHub() {
         </Tab>
         <Tab tab="Connectivity Logs">
           <LogView />
+        </Tab>
+        <Tab tab="Console Logs">
+          <ConsoleLogs />
+        </Tab>
+        <Tab tab="Messages">
+          <FlipperMessages />
         </Tab>
       </Tabs>
     </Layout.Container>
