@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#if FB_SONARKIT_ENABLED
+
+#import <Foundation/Foundation.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@class UIDFrameworkEventMetadata;
+
+@interface UIDInitEvent : NSObject
+
+@property(nonatomic) NSUInteger rootId;
+@property(nonatomic, strong)
+    NSArray<UIDFrameworkEventMetadata*>* frameworkEventMetadata;
+
++ (NSString*)name;
+
+@end
+
+NS_ASSUME_NONNULL_END
+
+#endif
