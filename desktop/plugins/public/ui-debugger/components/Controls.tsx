@@ -27,7 +27,7 @@ import {
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout} from 'flipper-plugin';
 import {FrameworkEventType} from '../types';
-import {tracker} from '../tracker';
+import {tracker} from '../utils/tracker';
 import {debounce} from 'lodash';
 
 const searchTermUpdated = debounce((searchTerm: string) => {

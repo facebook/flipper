@@ -41,7 +41,7 @@ import {head, last} from 'lodash';
 import {reverse} from 'lodash/fp';
 import {Badge, Dropdown, Menu, Typography} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
-import {tracker} from '../tracker';
+import {tracker} from '../utils/tracker';
 
 import {useVirtualizer, Virtualizer} from '@tanstack/react-virtual';
 import {

@@ -34,7 +34,7 @@ import {
   ViewMode,
 } from './types';
 import {Draft} from 'immer';
-import {tracker} from './tracker';
+import {tracker} from './utils/tracker';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
 import {prefetchSourceFileLocation} from './components/fb-stubs/IDEContextMenu';
 

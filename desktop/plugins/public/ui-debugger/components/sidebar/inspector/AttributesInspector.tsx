@@ -33,7 +33,7 @@ import {
   RowStyle,
   TextAttributeValueStyle,
 } from './Styles';
-import {transform} from '../../../dataTransform';
+import {transform} from '../../../utils/dataTransform';
 import {NoData} from './NoData';
 
 const NumberValue = styled.span(NumberAttributeValueStyle);

@@ -27,7 +27,7 @@ import {Button, Spin} from 'antd';
 import {QueryClientProvider} from 'react-query';
 import {Tree2} from './Tree';
 import {StreamInterceptorErrorView} from './StreamInterceptorErrorView';
-import {queryClient} from '../reactQuery';
+import {queryClient} from '../utils/reactQuery';
 import {FrameworkEventsTable} from './FrameworkEventsTable';
 
 export function Component() {
