@@ -7,12 +7,7 @@
  * @format
  */
 
-import {
-  Atom,
-  createDataSource,
-  createState,
-  PluginClient,
-} from 'flipper-plugin';
+import {createDataSource, createState, PluginClient} from 'flipper-plugin';
 import {
   Events,
   FrameScanEvent,
@@ -28,23 +23,18 @@ import {
 import {
   UIState,
   NodeSelection,
-  SelectionSource,
   StreamInterceptorError,
   StreamState,
-  UIActions,
-  ViewMode,
   ReadOnlyUIState,
+  LiveClientState,
 } from './DesktopTypes';
-import {Draft} from 'immer';
-import {tracker} from './utils/tracker';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
 import {prefetchSourceFileLocation} from './components/fb-stubs/IDEContextMenu';
-import {debounce} from 'lodash';
-
-type LiveClientState = {
-  snapshotInfo: SnapshotInfo | null;
-  nodes: Map<Id, ClientNode>;
-};
+import {
+  checkFocusedNodeStillActive,
+  collapseinActiveChildren,
+} from './plugin/ClientDataUtils';
+import {uiActions} from './plugin/uiActions';
 
 type PendingData = {
   metadata: Record<MetadataId, Metadata>;
@@ -53,12 +43,38 @@ type PendingData = {
 
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
-
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
   const streamInterceptor = getStreamInterceptor(client.device.os);
+  const snapshot = createState<SnapshotInfo | null>(null);
+  const nodesAtom = createState<Map<Id, ClientNode>>(new Map());
+  const frameworkEvents = createDataSource<FrameworkEvent>([], {
+    indices: [['nodeId']],
+    limit: 10000,
+  });
+
+  const uiState: UIState = createUIState();
+
+  //this is the client data is what drives all of desktop UI
+  //it is always up-to-date with the client regardless of whether we are paused or not
+  const mutableLiveClientData: LiveClientState = {
+    snapshotInfo: null,
+    nodes: new Map(),
+  };
+
+  const perfEvents = createDataSource<PerformanceStatsEvent, 'txId'>([], {
+    key: 'txId',
+    limit: 10 * 1024,
+  });
+
+  //this keeps track of all node ids we have seen so we dont keep reexpanding nodes when they come in again.
+  //Could probably be removed if we refactor the nodes to be expanded by default and only collapsed is toggled on
+  const seenNodes = new Set<Id>();
+
+  //this holds pending any pending data that needs to be applied in the event of a stream interceptor error
+  //while in the error state more metadata or a more recent frame may come in so both cases need to apply the same darta
+  const pendingData: PendingData = {frame: null, metadata: {}};
 
   let lastFrameTime = 0;
-  const os = client.device.os;
 
   client.onMessage('init', (event) => {
     console.log('[ui-debugger] init');
@@ -104,10 +120,6 @@ export function plugin(client: PluginClient<Events>) {
       return false;
     }
   }
-
-  //this holds pending any pending data that needs to be applied in the event of a stream interceptor error
-  //while in the error state more metadata or a more recent frame may come in so both cases need to apply the same darta
-  const pendingData: PendingData = {frame: null, metadata: {}};
 
   function handleStreamError(source: 'Frame' | 'Metadata', error: any) {
     if (error instanceof StreamInterceptorError) {
@@ -162,11 +174,6 @@ export function plugin(client: PluginClient<Events>) {
     await processMetadata(event.attributeMetadata);
   });
 
-  const perfEvents = createDataSource<PerformanceStatsEvent, 'txId'>([], {
-    key: 'txId',
-    limit: 10 * 1024,
-  });
-
   /**
    * The message handling below is a temporary measure for a couple of weeks until
    * clients migrate to the newer message/format.
@@ -194,55 +201,6 @@ export function plugin(client: PluginClient<Events>) {
     perfEvents.append(event);
   });
 
-  const nodesAtom = createState<Map<Id, ClientNode>>(new Map());
-  const frameworkEvents = createDataSource<FrameworkEvent>([], {
-    indices: [['nodeId']],
-    limit: 10000,
-  });
-
-  const highlightedNodes = createState(new Set<Id>());
-  const snapshot = createState<SnapshotInfo | null>(null);
-
-  const uiState: UIState = {
-    isConnected: createState(false),
-
-    viewMode: createState({mode: 'default'}),
-
-    //used to disabled hover effects which cause rerenders and mess up the existing context menu
-    isContextMenuOpen: createState<boolean>(false),
-
-    streamState: createState<StreamState>({state: 'Ok'}),
-    visualiserWidth: createState(Math.min(window.innerWidth / 4.5, 500)),
-
-    highlightedNodes,
-
-    selectedNode: createState<NodeSelection | undefined>(undefined),
-    //used to indicate whether we will higher the visualizer / tree when a matching event comes in
-    //also whether or not will show running total  in the tree
-    frameworkEventMonitoring: createState(
-      new Map<FrameworkEventType, boolean>(),
-    ),
-    filterMainThreadMonitoring: createState(false),
-
-    isPaused: createState(false),
-
-    //The reason for the array as that user could be hovering multiple overlapping nodes at once in the visualiser.
-    //The nodes are sorted by area since you most likely want to select the smallest node under your cursor
-    hoveredNodes: createState<Id[]>([]),
-
-    searchTerm: createState<string>(''),
-    focusedNode: createState<Id | undefined>(undefined),
-    expandedNodes: createState<Set<Id>>(new Set()),
-  };
-
-  //this is the client data is what drives all of desktop UI
-  //it is always up-to-date with the client regardless of whether we are paused or not
-  const mutableLiveClientData: LiveClientState = {
-    snapshotInfo: null,
-    nodes: new Map(),
-  };
-
-  const seenNodes = new Set<Id>();
   const processFrame = async (frameScan: FrameScanEvent) => {
     try {
       const [processedNodes, additionalMetadata] =
@@ -295,14 +253,14 @@ export function plugin(client: PluginClient<Events>) {
         )
         .map((event) => event.nodeId) ?? [];
 
-    highlightedNodes.update((draft) => {
+    uiState.highlightedNodes.update((draft) => {
       for (const node of nodesToHighlight) {
         draft.add(node);
       }
     });
 
     setTimeout(() => {
-      highlightedNodes.update((draft) => {
+      uiState.highlightedNodes.update((draft) => {
         for (const nodeId of nodesToHighlight) {
           draft.delete(nodeId);
         }
@@ -367,202 +325,45 @@ export function plugin(client: PluginClient<Events>) {
     snapshot,
     metadata,
     perfEvents,
-    os,
+    os: client.device.os,
   };
-}
-
-function uiActions(
-  uiState: UIState,
-  nodes: Atom<Map<Id, ClientNode>>,
-  snapshot: Atom<SnapshotInfo | null>,
-  liveClientData: LiveClientState,
-): UIActions {
-  const onExpandNode = (node: Id) => {
-    uiState.expandedNodes.update((draft) => {
-      draft.add(node);
-    });
-  };
-  const onSelectNode = (node: Id | undefined, source: SelectionSource) => {
-    if (node == null || uiState.selectedNode.get()?.id === node) {
-      uiState.selectedNode.set(undefined);
-    } else {
-      uiState.selectedNode.set({id: node, source});
-    }
-
-    if (node) {
-      const selectedNode = nodes.get().get(node);
-      const tags = selectedNode?.tags;
-      if (tags) {
-        tracker.track('node-selected', {
-          name: selectedNode.name,
-          tags,
-          source: source,
-        });
-      }
-
-      let current = selectedNode?.parent;
-      // expand entire ancestory in case it has been manually collapsed
-      uiState.expandedNodes.update((expandedNodesDraft) => {
-        while (current != null) {
-          expandedNodesDraft.add(current);
-          current = nodes.get().get(current)?.parent;
-        }
-      });
-    }
-  };
-
-  const onCollapseNode = (node: Id) => {
-    uiState.expandedNodes.update((draft) => {
-      draft.delete(node);
-    });
-  };
-
-  const onHoverNode = (...node: Id[]) => {
-    if (node != null) {
-      uiState.hoveredNodes.set(node);
-    } else {
-      uiState.hoveredNodes.set([]);
-    }
-  };
-
-  const onContextMenuOpen = (open: boolean) => {
-    tracker.track('context-menu-opened', {});
-    uiState.isContextMenuOpen.set(open);
-  };
-
-  const onFocusNode = (node?: Id) => {
-    if (node != null) {
-      const focusedNode = nodes.get().get(node);
-      const tags = focusedNode?.tags;
-      if (tags) {
-        tracker.track('node-focused', {name: focusedNode.name, tags});
-      }
-
-      uiState.selectedNode.set(undefined);
-    }
-
-    uiState.focusedNode.set(node);
-  };
-
-  const setVisualiserWidth = (width: number) => {
-    uiState.visualiserWidth.set(width);
-  };
-
-  const onSetFilterMainThreadMonitoring = (toggled: boolean) => {
-    uiState.filterMainThreadMonitoring.set(toggled);
-  };
-
-  const onSetViewMode = (viewMode: ViewMode) => {
-    uiState.viewMode.set(viewMode);
-  };
-
-  const onSetFrameworkEventMonitored = (
-    eventType: FrameworkEventType,
-    monitored: boolean,
-  ) => {
-    tracker.track('framework-event-monitored', {eventType, monitored});
-    uiState.frameworkEventMonitoring.update((draft) =>
-      draft.set(eventType, monitored),
-    );
-  };
-
-  const onPlayPauseToggled = () => {
-    const isPaused = !uiState.isPaused.get();
-    tracker.track('play-pause-toggled', {paused: isPaused});
-    uiState.isPaused.set(isPaused);
-    if (!isPaused) {
-      //When going back to play mode then set the atoms to the live state to rerender the latest
-      //Also need to fixed expanded state for any change in active child state
-      uiState.expandedNodes.update((draft) => {
-        liveClientData.nodes.forEach((node) => {
-          collapseinActiveChildren(node, draft);
-        });
-      });
-      nodes.set(liveClientData.nodes);
-      snapshot.set(liveClientData.snapshotInfo);
-      checkFocusedNodeStillActive(uiState, nodes.get());
-    }
-  };
-
-  const searchTermUpdatedDebounced = debounce((searchTerm: string) => {
-    tracker.track('search-term-updated', {searchTerm});
-  }, 250);
-
-  const onSearchTermUpdated = (searchTerm: string) => {
-    uiState.searchTerm.set(searchTerm);
-    searchTermUpdatedDebounced(searchTerm);
-  };
-
-  return {
-    onExpandNode,
-    onCollapseNode,
-    onHoverNode,
-    onSelectNode,
-    onContextMenuOpen,
-    onFocusNode,
-    setVisualiserWidth,
-    onSetFilterMainThreadMonitoring,
-    onSetViewMode,
-    onSetFrameworkEventMonitored,
-    onPlayPauseToggled,
-    onSearchTermUpdated,
-  };
-}
-
-function checkFocusedNodeStillActive(
-  uiState: UIState,
-  nodes: Map<Id, ClientNode>,
-) {
-  const focusedNodeId = uiState.focusedNode.get();
-  const focusedNode = focusedNodeId && nodes.get(focusedNodeId);
-  if (!focusedNode || !isFocusedNodeAncestryAllActive(focusedNode, nodes)) {
-    uiState.focusedNode.set(undefined);
-  }
-}
-
-function isFocusedNodeAncestryAllActive(
-  focused: ClientNode,
-  nodes: Map<Id, ClientNode>,
-): boolean {
-  let node = focused;
-
-  while (node != null) {
-    if (node.parent == null) {
-      return true;
-    }
-
-    const parent = nodes.get(node.parent);
-
-    if (parent == null) {
-      //should also never happen
-      return false;
-    }
-
-    if (parent.activeChild != null && parent.activeChild !== node.id) {
-      return false;
-    }
-
-    node = parent;
-  }
-  //wont happen
-  return false;
-}
-
-function collapseinActiveChildren(
-  node: ClientNode,
-  expandedNodes: Draft<Set<Id>>,
-) {
-  if (node.activeChild) {
-    expandedNodes.add(node.activeChild);
-    for (const child of node.children) {
-      if (child !== node.activeChild) {
-        expandedNodes.delete(child);
-      }
-    }
-  }
 }
 
 const HighlightTime = 300;
 
 export {Component} from './components/main';
 export * from './ClientTypes';
+
+function createUIState(): UIState {
+  return {
+    isConnected: createState(false),
+
+    viewMode: createState({mode: 'default'}),
+
+    //used to disabled hover effects which cause rerenders and mess up the existing context menu
+    isContextMenuOpen: createState<boolean>(false),
+
+    streamState: createState<StreamState>({state: 'Ok'}),
+    visualiserWidth: createState(Math.min(window.innerWidth / 4.5, 500)),
+
+    highlightedNodes: createState(new Set<Id>()),
+
+    selectedNode: createState<NodeSelection | undefined>(undefined),
+    //used to indicate whether we will higher the visualizer / tree when a matching event comes in
+    //also whether or not will show running total  in the tree
+    frameworkEventMonitoring: createState(
+      new Map<FrameworkEventType, boolean>(),
+    ),
+    filterMainThreadMonitoring: createState(false),
+
+    isPaused: createState(false),
+
+    //The reason for the array as that user could be hovering multiple overlapping nodes at once in the visualiser.
+    //The nodes are sorted by area since you most likely want to select the smallest node under your cursor
+    hoveredNodes: createState<Id[]>([]),
+
+    searchTerm: createState<string>(''),
+    focusedNode: createState<Id | undefined>(undefined),
+    expandedNodes: createState<Set<Id>>(new Set()),
+  };
+}

@@ -16,7 +16,13 @@ import {
   Tag,
   ClientNode,
   Metadata,
+  SnapshotInfo,
 } from './ClientTypes';
+
+export type LiveClientState = {
+  snapshotInfo: SnapshotInfo | null;
+  nodes: Map<Id, ClientNode>;
+};
 
 export type UIState = {
   viewMode: Atom<ViewMode>;
