@@ -31,6 +31,7 @@ import {
   UIActions,
   UINode,
   UIState,
+  ViewMode,
 } from './types';
 import {Draft} from 'immer';
 import {tracker} from './tracker';
@@ -201,6 +202,8 @@ export function plugin(client: PluginClient<Events>) {
 
   const uiState: UIState = {
     isConnected: createState(false),
+
+    viewMode: createState({mode: 'default'}),
 
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
     isContextMenuOpen: createState<boolean>(false),
@@ -461,6 +464,10 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
     uiState.filterMainThreadMonitoring.set(toggled);
   };
 
+  const onSetViewMode = (viewMode: ViewMode) => {
+    uiState.viewMode.set(viewMode);
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
@@ -470,6 +477,7 @@ function uiActions(uiState: UIState, nodes: Atom<Map<Id, UINode>>): UIActions {
     onFocusNode,
     setVisualiserWidth,
     onSetFilterMainThreadMonitoring,
+    onSetViewMode,
   };
 }
 

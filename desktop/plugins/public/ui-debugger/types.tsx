@@ -10,6 +10,7 @@
 import {Atom} from 'flipper-plugin';
 
 export type UIState = {
+  viewMode: Atom<ViewMode>;
   isConnected: Atom<boolean>;
   isPaused: Atom<boolean>;
   streamState: Atom<StreamState>;
@@ -24,6 +25,10 @@ export type UIState = {
   frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
   filterMainThreadMonitoring: Atom<boolean>;
 };
+
+export type ViewMode =
+  | {mode: 'default'}
+  | {mode: 'frameworkEventsTable'; treeRootId: Id};
 
 export type NodeSelection = {
   id: Id;
@@ -44,7 +49,9 @@ export type UIActions = {
   onCollapseNode: (node: Id) => void;
   setVisualiserWidth: (width: number) => void;
   onSetFilterMainThreadMonitoring: (toggled: boolean) => void;
+  onSetViewMode: (viewMode: ViewMode) => void;
 };
+
 export type SelectionSource = 'visualiser' | 'tree' | 'keyboard';
 
 export type StreamState =

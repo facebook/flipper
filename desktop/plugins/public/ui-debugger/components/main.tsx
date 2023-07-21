@@ -28,6 +28,7 @@ import {QueryClientProvider} from 'react-query';
 import {Tree2} from './Tree';
 import {StreamInterceptorErrorView} from './StreamInterceptorErrorView';
 import {queryClient} from '../reactQuery';
+import {FrameworkEventsTable} from './FrameworkEventsTable';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -41,6 +42,7 @@ export function Component() {
 
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
+  const viewMode = useValue(instance.uiState.viewMode);
   const [bottomPanelComponent, setBottomPanelComponent] = useState<
     ReactNode | undefined
   >();
@@ -96,49 +98,53 @@ export function Component() {
         <Spin data-testid="loading-indicator" />
       </Centered>
     );
-  } else {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <Layout.Container grow padh="small" padv="medium">
-          <Layout.Top>
-            <>
-              <Controls />
-              <Layout.Horizontal grow pad="small">
-                <Tree2 nodes={nodes} rootId={rootId} />
-
-                <ResizablePanel
-                  position="right"
-                  minWidth={200}
-                  width={visualiserWidth + theme.space.large}
-                  maxWidth={800}
-                  onResize={(width) => {
-                    instance.uiActions.setVisualiserWidth(width);
-                  }}
-                  gutter>
-                  <Visualization2D
-                    width={visualiserWidth}
-                    nodes={nodes}
-                    onSelectNode={instance.uiActions.onSelectNode}
-                  />
-                </ResizablePanel>
-                <DetailSidebar width={350}>
-                  <Inspector
-                    os={instance.os}
-                    metadata={metadata}
-                    nodes={nodes}
-                    showExtra={openBottomPanelWithContent}
-                  />
-                </DetailSidebar>
-              </Layout.Horizontal>
-            </>
-            <BottomPanel dismiss={dismissBottomPanel}>
-              {bottomPanelComponent}
-            </BottomPanel>
-          </Layout.Top>
-        </Layout.Container>
-      </QueryClientProvider>
-    );
   }
+
+  if (viewMode.mode === 'frameworkEventsTable') {
+    return <FrameworkEventsTable rootTreeId={viewMode.treeRootId} />;
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Layout.Container grow padh="small" padv="medium">
+        <Layout.Top>
+          <>
+            <Controls />
+            <Layout.Horizontal grow pad="small">
+              <Tree2 nodes={nodes} rootId={rootId} />
+
+              <ResizablePanel
+                position="right"
+                minWidth={200}
+                width={visualiserWidth + theme.space.large}
+                maxWidth={800}
+                onResize={(width) => {
+                  instance.uiActions.setVisualiserWidth(width);
+                }}
+                gutter>
+                <Visualization2D
+                  width={visualiserWidth}
+                  nodes={nodes}
+                  onSelectNode={instance.uiActions.onSelectNode}
+                />
+              </ResizablePanel>
+              <DetailSidebar width={350}>
+                <Inspector
+                  os={instance.os}
+                  metadata={metadata}
+                  nodes={nodes}
+                  showExtra={openBottomPanelWithContent}
+                />
+              </DetailSidebar>
+            </Layout.Horizontal>
+          </>
+          <BottomPanel dismiss={dismissBottomPanel}>
+            {bottomPanelComponent}
+          </BottomPanel>
+        </Layout.Top>
+      </Layout.Container>
+    </QueryClientProvider>
+  );
 }
 
 export function Centered(props: {children: React.ReactNode}) {

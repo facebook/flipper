@@ -13,6 +13,7 @@ import {
   Id,
   OnSelectNode,
   UINode,
+  ViewMode,
 } from '../types';
 import React, {
   ReactNode,
@@ -52,6 +53,7 @@ import {
   FullscreenExitOutlined,
   FullscreenOutlined,
   SnippetsOutlined,
+  TableOutlined,
 } from '@ant-design/icons';
 
 const {Text} = Typography;
@@ -216,9 +218,11 @@ export function Tree2({nodes, rootId}: {nodes: Map<Id, UINode>; rootId: Id}) {
       text={searchTerm}
       highlightColor={theme.searchHighlightBackground.yellow}>
       <ContextMenu
+        frameworkEvents={instance.frameworkEvents}
         focusedNodeId={focusedNode}
         hoveredNodeId={hoveredNode}
         nodes={nodes}
+        onSetViewMode={instance.uiActions.onSetViewMode}
         onContextMenuOpen={instance.uiActions.onContextMenuOpen}
         onFocusNode={instance.uiActions.onFocusNode}>
         <div
@@ -504,18 +508,22 @@ const DecorationImage = styled.img({
 const renderDepthOffset = 12;
 
 const ContextMenu: React.FC<{
+  frameworkEvents: DataSource<FrameworkEvent>;
   nodes: Map<Id, UINode>;
   hoveredNodeId?: Id;
   focusedNodeId?: Id;
   onFocusNode: (id?: Id) => void;
   onContextMenuOpen: (open: boolean) => void;
+  onSetViewMode: (viewMode: ViewMode) => void;
 }> = ({
   nodes,
+  frameworkEvents,
   hoveredNodeId,
   children,
   focusedNodeId,
   onFocusNode,
   onContextMenuOpen,
+  onSetViewMode,
 }) => {
   const copyItems: ReactNode[] = [];
   const hoveredNode = nodes.get(hoveredNodeId ?? Number.MAX_SAFE_INTEGER);
@@ -579,6 +587,25 @@ const ContextMenu: React.FC<{
       }}
     />
   );
+
+  const matchingFrameworkEvents =
+    (hoveredNode &&
+      frameworkEvents.getAllRecordsByIndex({nodeId: hoveredNode.id})) ??
+    [];
+
+  const frameworkEventsTable = matchingFrameworkEvents.length > 0 && (
+    <UIDebuggerMenuItem
+      text="Explore events"
+      onClick={() => {
+        onSetViewMode({
+          mode: 'frameworkEventsTable',
+          treeRootId: hoveredNode?.id ?? '',
+        });
+      }}
+      icon={<TableOutlined />}
+    />
+  );
+
   return (
     <Dropdown
       onVisibleChange={(visible) => {
@@ -588,8 +615,12 @@ const ContextMenu: React.FC<{
         <Menu>
           {focus}
           {removeFocus}
-          {(focus || removeFocus) && <Menu.Divider key="divider-focus" />}
+          {frameworkEventsTable}
+          {(focus || removeFocus || frameworkEventsTable) && (
+            <Menu.Divider key="divider-focus" />
+          )}
           {copyItems}
+
           {hoveredNode && <IDEContextMenuItems key="ide" node={hoveredNode} />}
         </Menu>
       )}
