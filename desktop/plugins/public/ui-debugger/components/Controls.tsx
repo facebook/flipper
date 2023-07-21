@@ -27,12 +27,6 @@ import {
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout} from 'flipper-plugin';
 import {FrameworkEventType} from '../ClientTypes';
-import {tracker} from '../utils/tracker';
-import {debounce} from 'lodash';
-
-const searchTermUpdated = debounce((searchTerm: string) => {
-  tracker.track('search-term-updated', {searchTerm});
-}, 250);
 
 export const Controls: React.FC = () => {
   const instance = usePlugin(plugin);
@@ -49,23 +43,12 @@ export const Controls: React.FC = () => {
   const [showFrameworkEventsModal, setShowFrameworkEventsModal] =
     useState(false);
 
-  const onSetEventMonitored: (
-    eventType: FrameworkEventType,
-    monitored: boolean,
-  ) => void = (eventType: FrameworkEventType, monitored: boolean) => {
-    tracker.track('framework-event-monitored', {eventType, monitored});
-    instance.uiState.frameworkEventMonitoring.update((draft) =>
-      draft.set(eventType, monitored),
-    );
-  };
-
   return (
     <Layout.Horizontal pad="small" gap="small">
       <Input
         value={searchTerm}
         onChange={(e) => {
-          instance.uiState.searchTerm.set(e.target.value);
-          searchTermUpdated(e.target.value);
+          instance.uiActions.onSearchTermUpdated(e.target.value);
         }}
         prefix={<SearchOutlined />}
         placeholder="Search"
@@ -73,11 +56,7 @@ export const Controls: React.FC = () => {
       <Button
         type="default"
         shape="circle"
-        onClick={() => {
-          const isPaused = !instance.uiState.isPaused.get();
-          tracker.track('play-pause-toggled', {paused: isPaused});
-          instance.setPlayPause(isPaused);
-        }}
+        onClick={instance.uiActions.onPlayPauseToggled}
         icon={
           <Tooltip
             title={isPaused ? 'Resume live updates' : 'Pause incoming updates'}>
@@ -102,7 +81,7 @@ export const Controls: React.FC = () => {
             instance.uiActions.onSetFilterMainThreadMonitoring
           }
           frameworkEventTypes={[...frameworkEventMonitoring.entries()]}
-          onSetEventMonitored={onSetEventMonitored}
+          onSetEventMonitored={instance.uiActions.onSetFrameworkEventMonitored}
           visible={showFrameworkEventsModal}
           onCancel={() => setShowFrameworkEventsModal(false)}
         />

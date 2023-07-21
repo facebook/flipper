@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Atom} from 'flipper-plugin';
+import {Atom, _ReadOnlyAtom} from 'flipper-plugin';
 import {
   Id,
   FrameworkEventType,
@@ -34,6 +34,14 @@ export type UIState = {
   frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
   filterMainThreadMonitoring: Atom<boolean>;
 };
+
+//enumerates the keys of input type and casts each to ReadOnlyAtom, this is so we only expose read only atoms to the UI
+//and all writes come through UIActions
+type TransformToReadOnly<T> = {
+  [P in keyof T]: T[P] extends Atom<infer U> ? _ReadOnlyAtom<U> : T[P];
+};
+
+export type ReadOnlyUIState = TransformToReadOnly<UIState>;
 
 export type StreamFlowState = {paused: boolean};
 
@@ -62,7 +70,7 @@ export type OnSelectNode = (
 ) => void;
 
 export type UIActions = {
-  onHoverNode: (node?: Id) => void;
+  onHoverNode: (...node: Id[]) => void;
   onFocusNode: (focused?: Id) => void;
   onContextMenuOpen: (open: boolean) => void;
   onSelectNode: OnSelectNode;
@@ -71,6 +79,12 @@ export type UIActions = {
   setVisualiserWidth: (width: number) => void;
   onSetFilterMainThreadMonitoring: (toggled: boolean) => void;
   onSetViewMode: (viewMode: ViewMode) => void;
+  onSetFrameworkEventMonitored: (
+    eventType: FrameworkEventType,
+    monitored: boolean,
+  ) => void;
+  onPlayPauseToggled: () => void;
+  onSearchTermUpdated: (searchTerm: string) => void;
 };
 
 export type SelectionSource = 'visualiser' | 'tree' | 'keyboard';

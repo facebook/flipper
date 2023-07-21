@@ -39,7 +39,7 @@ export const UIDebuggerMenuItem: React.FC<{
       disabled={onClick == null}
       onClick={() => {
         onClick?.();
-        instance.uiState.isContextMenuOpen.set(false);
+        instance.uiActions.onContextMenuOpen(false);
       }}>
       <Layout.Horizontal center gap="small">
         {icon}

@@ -80,7 +80,7 @@ export const Visualization2D: React.FC<
         hitNodes.length > 0 &&
         !isEqual(hitNodes, instance.uiState.hoveredNodes.get())
       ) {
-        instance.uiState.hoveredNodes.set(hitNodes);
+        instance.uiActions.onHoverNode(...hitNodes);
       }
     }, MouseThrottle);
     window.addEventListener('mousemove', mouseListener);
@@ -95,6 +95,7 @@ export const Visualization2D: React.FC<
     instance.uiState.isContextMenuOpen,
     width,
     snapshotNode,
+    instance.uiActions,
   ]);
 
   if (!focusState || !snapshotNode) {
@@ -110,7 +111,7 @@ export const Visualization2D: React.FC<
           e.stopPropagation();
           //the context menu triggers this callback but we dont want to remove hover effect
           if (!instance.uiState.isContextMenuOpen.get()) {
-            instance.uiState.hoveredNodes.set([]);
+            instance.uiActions.onHoverNode();
           }
 
           mouseInVisualiserRef.current = false;
@@ -338,7 +339,7 @@ const ContextMenu: React.FC<{nodes: Map<Id, ClientNode>}> = ({children}) => {
   return (
     <Dropdown
       onVisibleChange={(open) => {
-        instance.uiState.isContextMenuOpen.set(open);
+        instance.uiActions.onContextMenuOpen(open);
       }}
       trigger={['contextMenu']}
       overlay={() => {
@@ -358,7 +359,7 @@ const ContextMenu: React.FC<{nodes: Map<Id, ClientNode>}> = ({children}) => {
                 key="remove-focus"
                 text="Remove focus"
                 onClick={() => {
-                  instance.uiState.focusedNode.set(undefined);
+                  instance.uiActions.onFocusNode(undefined);
                 }}
               />
             )}

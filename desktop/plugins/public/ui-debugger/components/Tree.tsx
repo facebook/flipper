@@ -253,7 +253,7 @@ export function Tree2({
               }}
               onMouseLeave={() => {
                 if (isContextMenuOpen === false) {
-                  instance.uiState.hoveredNodes.set([]);
+                  instance.uiActions.onHoverNode();
                 }
               }}>
               {rowVirtualizer.getVirtualItems().map((virtualRow) => (
@@ -756,7 +756,7 @@ function useKeyboardShortcuts(
   selectedNode: Id | undefined,
   hoveredNodeId: Id | undefined,
   onSelectNode: OnSelectNode,
-  onHoverNode: (id?: Id) => void,
+  onHoverNode: (...id: Id[]) => void,
   onExpandNode: (id: Id) => void,
   onCollapseNode: (id: Id) => void,
   isUsingKBToScrollUntill: React.MutableRefObject<number>,
@@ -861,7 +861,7 @@ function moveSelectedNodeUpOrDown(
   hoveredNode: Id | undefined,
   selectedNode: Id | undefined,
   onSelectNode: OnSelectNode,
-  onHoverNode: (id?: Id) => void,
+  onHoverNode: (...id: Id[]) => void,
   isUsingKBToScrollUntill: React.MutableRefObject<MillisSinceEpoch>,
 ) {
   const nodeToUse = selectedNode != null ? selectedNode : hoveredNode;
@@ -886,7 +886,7 @@ function moveSelectedNodeViaKeyBoard(
   treeNodes: TreeNode[],
   rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
   onSelectNode: OnSelectNode,
-  onHoverNode: (id?: Id) => void,
+  onHoverNode: (...id: Id[]) => void,
   isUsingKBToScrollUntil: React.MutableRefObject<number>,
 ) {
   if (newIdx >= 0 && newIdx < treeNodes.length) {

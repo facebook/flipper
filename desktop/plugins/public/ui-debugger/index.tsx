@@ -12,7 +12,6 @@ import {
   createDataSource,
   createState,
   PluginClient,
-  produce,
 } from 'flipper-plugin';
 import {
   Events,
@@ -34,11 +33,13 @@ import {
   StreamState,
   UIActions,
   ViewMode,
+  ReadOnlyUIState,
 } from './DesktopTypes';
 import {Draft} from 'immer';
 import {tracker} from './utils/tracker';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
 import {prefetchSourceFileLocation} from './components/fb-stubs/IDEContextMenu';
+import {debounce} from 'lodash';
 
 type LiveClientState = {
   snapshotInfo: SnapshotInfo | null;
@@ -234,25 +235,9 @@ export function plugin(client: PluginClient<Events>) {
     expandedNodes: createState<Set<Id>>(new Set()),
   };
 
-  const setPlayPause = (isPaused: boolean) => {
-    uiState.isPaused.set(isPaused);
-    if (!isPaused) {
-      //When going back to play mode then set the atoms to the live state to rerender the latest
-      //Also need to fixed expanded state for any change in active child state
-      uiState.expandedNodes.update((draft) => {
-        liveClientData.nodes.forEach((node) => {
-          collapseinActiveChildren(node, draft);
-        });
-      });
-      nodesAtom.set(liveClientData.nodes);
-      snapshot.set(liveClientData.snapshotInfo);
-      checkFocusedNodeStillActive(uiState, nodesAtom.get());
-    }
-  };
-
   //this is the client data is what drives all of desktop UI
   //it is always up-to-date with the client regardless of whether we are paused or not
-  let liveClientData: LiveClientState = {
+  const mutableLiveClientData: LiveClientState = {
     snapshotInfo: null,
     nodes: new Map(),
   };
@@ -330,13 +315,10 @@ export function plugin(client: PluginClient<Events>) {
     nodes: Map<Id, ClientNode>,
     snapshotInfo: SnapshotInfo | undefined,
   ) {
-    liveClientData = produce(liveClientData, (draft) => {
-      if (snapshotInfo) {
-        draft.snapshotInfo = snapshotInfo;
-      }
-
-      draft.nodes = nodes;
-    });
+    if (snapshotInfo) {
+      mutableLiveClientData.snapshotInfo = snapshotInfo;
+    }
+    mutableLiveClientData.nodes = nodes;
 
     uiState.expandedNodes.update((draft) => {
       for (const node of nodes.values()) {
@@ -354,8 +336,8 @@ export function plugin(client: PluginClient<Events>) {
     });
 
     if (!uiState.isPaused.get()) {
-      nodesAtom.set(liveClientData.nodes);
-      snapshot.set(liveClientData.snapshotInfo);
+      nodesAtom.set(mutableLiveClientData.nodes);
+      snapshot.set(mutableLiveClientData.snapshotInfo);
 
       checkFocusedNodeStillActive(uiState, nodesAtom.get());
     }
@@ -378,14 +360,13 @@ export function plugin(client: PluginClient<Events>) {
 
   return {
     rootId,
-    uiState,
-    uiActions: uiActions(uiState, nodesAtom),
+    uiState: uiState as ReadOnlyUIState,
+    uiActions: uiActions(uiState, nodesAtom, snapshot, mutableLiveClientData),
     nodes: nodesAtom,
     frameworkEvents,
     snapshot,
     metadata,
     perfEvents,
-    setPlayPause,
     os,
   };
 }
@@ -393,6 +374,8 @@ export function plugin(client: PluginClient<Events>) {
 function uiActions(
   uiState: UIState,
   nodes: Atom<Map<Id, ClientNode>>,
+  snapshot: Atom<SnapshotInfo | null>,
+  liveClientData: LiveClientState,
 ): UIActions {
   const onExpandNode = (node: Id) => {
     uiState.expandedNodes.update((draft) => {
@@ -434,9 +417,9 @@ function uiActions(
     });
   };
 
-  const onHoverNode = (node?: Id) => {
+  const onHoverNode = (...node: Id[]) => {
     if (node != null) {
-      uiState.hoveredNodes.set([node]);
+      uiState.hoveredNodes.set(node);
     } else {
       uiState.hoveredNodes.set([]);
     }
@@ -473,6 +456,43 @@ function uiActions(
     uiState.viewMode.set(viewMode);
   };
 
+  const onSetFrameworkEventMonitored = (
+    eventType: FrameworkEventType,
+    monitored: boolean,
+  ) => {
+    tracker.track('framework-event-monitored', {eventType, monitored});
+    uiState.frameworkEventMonitoring.update((draft) =>
+      draft.set(eventType, monitored),
+    );
+  };
+
+  const onPlayPauseToggled = () => {
+    const isPaused = !uiState.isPaused.get();
+    tracker.track('play-pause-toggled', {paused: isPaused});
+    uiState.isPaused.set(isPaused);
+    if (!isPaused) {
+      //When going back to play mode then set the atoms to the live state to rerender the latest
+      //Also need to fixed expanded state for any change in active child state
+      uiState.expandedNodes.update((draft) => {
+        liveClientData.nodes.forEach((node) => {
+          collapseinActiveChildren(node, draft);
+        });
+      });
+      nodes.set(liveClientData.nodes);
+      snapshot.set(liveClientData.snapshotInfo);
+      checkFocusedNodeStillActive(uiState, nodes.get());
+    }
+  };
+
+  const searchTermUpdatedDebounced = debounce((searchTerm: string) => {
+    tracker.track('search-term-updated', {searchTerm});
+  }, 250);
+
+  const onSearchTermUpdated = (searchTerm: string) => {
+    uiState.searchTerm.set(searchTerm);
+    searchTermUpdatedDebounced(searchTerm);
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
@@ -483,6 +503,9 @@ function uiActions(
     setVisualiserWidth,
     onSetFilterMainThreadMonitoring,
     onSetViewMode,
+    onSetFrameworkEventMonitored,
+    onPlayPauseToggled,
+    onSearchTermUpdated,
   };
 }
 

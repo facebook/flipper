@@ -14,7 +14,7 @@ import {
   ClientNode,
   FrameworkEvent,
 } from '../ClientTypes';
-import {UIState} from '../DesktopTypes';
+import {ReadOnlyUIState} from '../DesktopTypes';
 import React, {useMemo} from 'react';
 import {
   DataInspector,
@@ -26,7 +26,7 @@ import {
 } from 'flipper-plugin';
 
 export function PerfStats(props: {
-  uiState: UIState;
+  uiState: ReadOnlyUIState;
   nodes: Map<Id, ClientNode>;
   rootId?: Id;
   events: DataSource<DynamicPerformanceStatsEvent, number>;
