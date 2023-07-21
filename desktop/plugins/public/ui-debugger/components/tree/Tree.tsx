@@ -7,15 +7,9 @@
  * @format
  */
 
-import {
-  FrameworkEvent,
-  FrameworkEventType,
-  Id,
-  ClientNode,
-} from '../../ClientTypes';
-import {OnSelectNode, ViewMode} from '../../DesktopTypes';
+import {Id, ClientNode} from '../../ClientTypes';
+import {OnSelectNode} from '../../DesktopTypes';
 import React, {
-  ReactNode,
   Ref,
   RefObject,
   useEffect,
@@ -24,8 +18,6 @@ import React, {
   useRef,
 } from 'react';
 import {
-  DataSource,
-  getFlipperLib,
   HighlightManager,
   HighlightProvider,
   styled,
@@ -36,30 +28,18 @@ import {
 } from 'flipper-plugin';
 import {plugin} from '../../index';
 import {Glyph} from 'flipper';
-import {head, last} from 'lodash';
-import {reverse} from 'lodash/fp';
-import {Badge, Dropdown, Menu, Typography} from 'antd';
-import {UIDebuggerMenuItem} from '../util/UIDebuggerMenuItem';
-import {tracker} from '../../utils/tracker';
+import {head} from 'lodash';
+import {Badge, Typography} from 'antd';
 
-import {useVirtualizer, Virtualizer} from '@tanstack/react-virtual';
-import {
-  BigGrepContextMenuItems,
-  IDEContextMenuItems,
-} from '../fb-stubs/IDEContextMenu';
-import {
-  CopyOutlined,
-  FullscreenExitOutlined,
-  FullscreenOutlined,
-  SnippetsOutlined,
-  TableOutlined,
-} from '@ant-design/icons';
+import {useVirtualizer} from '@tanstack/react-virtual';
+import {ContextMenu} from './ContextMenu';
+import {MillisSinceEpoch, useKeyboardControls} from './useKeyboardControls';
+import {toTreeList} from './toTreeList';
 
 const {Text} = Typography;
 
 type LineStyle = 'ToParent' | 'ToChildren';
 
-type MillisSinceEpoch = number;
 type NodeIndentGuide = {
   depth: number;
   style: LineStyle;
@@ -97,7 +77,7 @@ export function Tree2({
   const highlightedNodes = useValue(instance.uiState.highlightedNodes);
 
   const {treeNodes, refs} = useMemo(() => {
-    const treeNodes = toTreeNodes(
+    const treeNodes = toTreeList(
       nodes,
       focusedNode || rootId,
       expandedNodes,
@@ -143,7 +123,7 @@ export function Tree2({
     }
   }, [rowVirtualizer, searchTerm, treeNodes]);
 
-  useKeyboardShortcuts(
+  useKeyboardControls(
     treeNodes,
     rowVirtualizer,
     selectedNode?.id,
@@ -511,409 +491,6 @@ const DecorationImage = styled.img({
 });
 
 const renderDepthOffset = 12;
-
-const ContextMenu: React.FC<{
-  frameworkEvents: DataSource<FrameworkEvent>;
-  nodes: Map<Id, ClientNode>;
-  hoveredNodeId?: Id;
-  focusedNodeId?: Id;
-  onFocusNode: (id?: Id) => void;
-  onContextMenuOpen: (open: boolean) => void;
-  onSetViewMode: (viewMode: ViewMode) => void;
-}> = ({
-  nodes,
-  frameworkEvents,
-  hoveredNodeId,
-  children,
-  focusedNodeId,
-  onFocusNode,
-  onContextMenuOpen,
-  onSetViewMode,
-}) => {
-  const copyItems: ReactNode[] = [];
-  const hoveredNode = nodes.get(hoveredNodeId ?? Number.MAX_SAFE_INTEGER);
-
-  if (hoveredNode) {
-    copyItems.push(
-      <UIDebuggerMenuItem
-        key="Copy Element name"
-        text="Copy Element name"
-        icon={<CopyOutlined />}
-        onClick={() => {
-          tracker.track('context-menu-name-copied', {name: hoveredNode.name});
-          getFlipperLib().writeTextToClipboard(hoveredNode.name);
-        }}
-      />,
-    );
-
-    copyItems.push(
-      Object.entries(hoveredNode.inlineAttributes).map(([key, value]) => (
-        <UIDebuggerMenuItem
-          key={key}
-          text={`Copy ${key}`}
-          icon={<SnippetsOutlined />}
-          onClick={() => {
-            tracker.track('context-menu-copied', {
-              name: hoveredNode.name,
-              key,
-              value,
-            });
-            getFlipperLib().writeTextToClipboard(value);
-          }}
-        />
-      )),
-    );
-
-    copyItems.push(
-      <BigGrepContextMenuItems key="big-grep" node={hoveredNode} />,
-    );
-  }
-  const focus = hoveredNode != null &&
-    focusedNodeId !== hoveredNodeId &&
-    hoveredNode.bounds.height !== 0 &&
-    hoveredNode.bounds.width !== 0 && (
-      <UIDebuggerMenuItem
-        key="focus"
-        text={`Focus element`}
-        icon={<FullscreenExitOutlined />}
-        onClick={() => {
-          onFocusNode(hoveredNodeId);
-        }}
-      />
-    );
-
-  const removeFocus = focusedNodeId && (
-    <UIDebuggerMenuItem
-      key="remove-focus"
-      text="Remove focus"
-      icon={<FullscreenOutlined />}
-      onClick={() => {
-        onFocusNode(undefined);
-      }}
-    />
-  );
-
-  const matchingFrameworkEvents =
-    (hoveredNode &&
-      frameworkEvents.getAllRecordsByIndex({nodeId: hoveredNode.id})) ??
-    [];
-
-  const frameworkEventsTable = matchingFrameworkEvents.length > 0 && (
-    <UIDebuggerMenuItem
-      text="Explore events"
-      onClick={() => {
-        onSetViewMode({
-          mode: 'frameworkEventsTable',
-          treeRootId: hoveredNode?.id ?? '',
-        });
-      }}
-      icon={<TableOutlined />}
-    />
-  );
-
-  return (
-    <Dropdown
-      onVisibleChange={(visible) => {
-        onContextMenuOpen(visible);
-      }}
-      overlay={() => (
-        <Menu>
-          {focus}
-          {removeFocus}
-          {frameworkEventsTable}
-          {(focus || removeFocus || frameworkEventsTable) && (
-            <Menu.Divider key="divider-focus" />
-          )}
-          {copyItems}
-
-          {hoveredNode && <IDEContextMenuItems key="ide" node={hoveredNode} />}
-        </Menu>
-      )}
-      trigger={['contextMenu']}>
-      {children}
-    </Dropdown>
-  );
-};
-
-type TreeListStackItem = {
-  node: ClientNode;
-  depth: number;
-  isChildOfSelectedNode: boolean;
-  selectedNodeDepth: number;
-};
-
-function toTreeNodes(
-  nodes: Map<Id, ClientNode>,
-  rootId: Id,
-  expandedNodes: Set<Id>,
-  selectedNode: Id | undefined,
-  frameworkEvents: DataSource<FrameworkEvent>,
-  frameworkEventsMonitoring: Map<FrameworkEventType, boolean>,
-  filterMainThreadMonitoring: boolean,
-): TreeNode[] {
-  const root = nodes.get(rootId);
-  if (root == null) {
-    return [];
-  }
-  const stack = [
-    {node: root, depth: 0, isChildOfSelectedNode: false, selectedNodeDepth: 0},
-  ] as TreeListStackItem[];
-
-  const treeNodes = [] as TreeNode[];
-
-  let i = 0;
-  while (stack.length > 0) {
-    const stackItem = stack.pop()!!;
-
-    const {node, depth} = stackItem;
-
-    //if the previous item has an indent guide but we don't then it was the last segment
-    //so we trim the bottom
-    const prevItemLine = last(treeNodes)?.indentGuide;
-    if (prevItemLine != null && stackItem.isChildOfSelectedNode === false) {
-      prevItemLine.trimBottom = true;
-    }
-
-    const isExpanded = expandedNodes.has(node.id);
-    const isSelected = node.id === selectedNode;
-
-    let events = frameworkEvents.getAllRecordsByIndex({nodeId: node.id});
-    if (events) {
-      events = events
-        .filter((e) => frameworkEventsMonitoring.get(e.type))
-        .filter(
-          (e) => filterMainThreadMonitoring === false || e.thread === 'main',
-        );
-    }
-
-    treeNodes.push({
-      ...node,
-      idx: i,
-      depth,
-      isExpanded,
-      frameworkEvents: events.length > 0 ? events.length : null,
-      indentGuide: stackItem.isChildOfSelectedNode
-        ? {
-            depth: stackItem.selectedNodeDepth,
-            style: 'ToChildren',
-            //if first child of selected node add horizontal marker
-            addHorizontalMarker: depth === stackItem.selectedNodeDepth + 1,
-            trimBottom: false,
-          }
-        : null,
-    });
-    i++;
-
-    let isChildOfSelectedNode = stackItem.isChildOfSelectedNode;
-    let selectedNodeDepth = stackItem.selectedNodeDepth;
-    if (isSelected) {
-      isChildOfSelectedNode = true;
-      selectedNodeDepth = depth;
-      // walk back through tree nodes, while depth is greater or equal than current it is your
-      // parents child / your previous cousin so set dashed line
-      for (let i = treeNodes.length - 1; i >= 0; i--) {
-        const prevNode = treeNodes[i];
-        if (prevNode.depth < depth) {
-          break;
-        }
-        prevNode.indentGuide = {
-          depth: selectedNodeDepth - 1,
-          style: 'ToParent',
-          addHorizontalMarker: prevNode.depth == depth,
-          trimBottom: prevNode.id === selectedNode,
-        };
-      }
-    }
-
-    if (isExpanded) {
-      //since we do dfs and use a stack we have to reverse children to get the order correct
-      for (const childId of reverse(node.children)) {
-        const child = nodes.get(childId);
-        if (child != null) {
-          stack.push({
-            node: child,
-            depth: depth + 1,
-            isChildOfSelectedNode: isChildOfSelectedNode,
-            selectedNodeDepth: selectedNodeDepth,
-          });
-        }
-      }
-    }
-  }
-
-  //always trim last indent guide
-  const prevItemLine = last(treeNodes)?.indentGuide;
-  if (prevItemLine != null) {
-    prevItemLine.trimBottom = true;
-  }
-
-  return treeNodes;
-}
-
-function useKeyboardShortcuts(
-  treeNodes: TreeNode[],
-  rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
-  selectedNode: Id | undefined,
-  hoveredNodeId: Id | undefined,
-  onSelectNode: OnSelectNode,
-  onHoverNode: (...id: Id[]) => void,
-  onExpandNode: (id: Id) => void,
-  onCollapseNode: (id: Id) => void,
-  isUsingKBToScrollUntill: React.MutableRefObject<number>,
-) {
-  const instance = usePlugin(plugin);
-
-  useEffect(() => {
-    const listener = (event: KeyboardEvent) => {
-      const hoveredNode = treeNodes.find((item) => item.id === hoveredNodeId);
-      switch (event.key) {
-        case 'Enter': {
-          if (hoveredNodeId != null) {
-            onSelectNode(hoveredNodeId, 'keyboard');
-          }
-
-          break;
-        }
-
-        case 'ArrowRight':
-          event.preventDefault();
-          if (hoveredNode) {
-            if (hoveredNode.isExpanded) {
-              moveSelectedNodeUpOrDown(
-                'ArrowDown',
-                treeNodes,
-                rowVirtualizer,
-                hoveredNodeId,
-                selectedNode,
-                onSelectNode,
-                onHoverNode,
-                isUsingKBToScrollUntill,
-              );
-            } else {
-              onExpandNode(hoveredNode.id);
-            }
-          }
-          break;
-        case 'ArrowLeft': {
-          event.preventDefault();
-          if (hoveredNode) {
-            if (hoveredNode.isExpanded) {
-              onCollapseNode(hoveredNode.id);
-            } else {
-              const parentIdx = treeNodes.findIndex(
-                (treeNode) => treeNode.id === hoveredNode.parent,
-              );
-              moveSelectedNodeViaKeyBoard(
-                parentIdx,
-                treeNodes,
-                rowVirtualizer,
-                onSelectNode,
-                onHoverNode,
-                isUsingKBToScrollUntill,
-              );
-            }
-          }
-          break;
-        }
-
-        case 'ArrowUp':
-        case 'ArrowDown':
-          event.preventDefault();
-
-          moveSelectedNodeUpOrDown(
-            event.key,
-            treeNodes,
-            rowVirtualizer,
-            hoveredNodeId,
-            selectedNode,
-            onSelectNode,
-            onHoverNode,
-            isUsingKBToScrollUntill,
-          );
-
-          break;
-      }
-    };
-    window.addEventListener('keydown', listener);
-    return () => {
-      window.removeEventListener('keydown', listener);
-    };
-  }, [
-    treeNodes,
-    onSelectNode,
-    selectedNode,
-    isUsingKBToScrollUntill,
-    onExpandNode,
-    onCollapseNode,
-    instance.uiState.hoveredNodes,
-    hoveredNodeId,
-    rowVirtualizer,
-    onHoverNode,
-  ]);
-}
-
-export type UpOrDown = 'ArrowDown' | 'ArrowUp';
-
-function moveSelectedNodeUpOrDown(
-  direction: UpOrDown,
-  treeNodes: TreeNode[],
-  rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
-  hoveredNode: Id | undefined,
-  selectedNode: Id | undefined,
-  onSelectNode: OnSelectNode,
-  onHoverNode: (...id: Id[]) => void,
-  isUsingKBToScrollUntill: React.MutableRefObject<MillisSinceEpoch>,
-) {
-  const nodeToUse = selectedNode != null ? selectedNode : hoveredNode;
-  const curIdx = treeNodes.findIndex((item) => item.id === nodeToUse);
-  if (curIdx != -1) {
-    const increment = direction === 'ArrowDown' ? 1 : -1;
-    const newIdx = curIdx + increment;
-
-    moveSelectedNodeViaKeyBoard(
-      newIdx,
-      treeNodes,
-      rowVirtualizer,
-      onSelectNode,
-      onHoverNode,
-      isUsingKBToScrollUntill,
-    );
-  }
-}
-
-function moveSelectedNodeViaKeyBoard(
-  newIdx: number,
-  treeNodes: TreeNode[],
-  rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
-  onSelectNode: OnSelectNode,
-  onHoverNode: (...id: Id[]) => void,
-  isUsingKBToScrollUntil: React.MutableRefObject<number>,
-) {
-  if (newIdx >= 0 && newIdx < treeNodes.length) {
-    const newNode = treeNodes[newIdx];
-
-    extendKBControlLease(isUsingKBToScrollUntil);
-    onSelectNode(newNode.id, 'keyboard');
-    onHoverNode(newNode.id);
-
-    rowVirtualizer.scrollToIndex(newIdx, {align: 'auto'});
-  }
-}
-
-const KBScrollOverrideTimeMS = 250;
-function extendKBControlLease(
-  isUsingKBToScrollUntil: React.MutableRefObject<number>,
-) {
-  /**
-   * The reason for this grossness is that when scrolling to an element via keyboard, it will move a new dom node
-   * under the cursor which will trigger the onmouseenter event for that node even if the mouse never actually was moved.
-   * This will in turn cause that event handler to hover that node rather than the one the user is trying to get to via keyboard.
-   * This is a dubious way to work around this. We set this to indicate how long into the future we should disable the
-   *  onmouseenter -> hover behaviour
-   */
-  isUsingKBToScrollUntil.current =
-    new Date().getTime() + KBScrollOverrideTimeMS;
-}
 
 //due to virtualisation the out of the box dom based scrolling doesnt work
 function findSearchMatchingIndexes(
