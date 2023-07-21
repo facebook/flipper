@@ -65,12 +65,34 @@ typedef NSMutableDictionary<NSString*, UIDMetadata*>* UIDNamedMetadata;
                                      name:(NSString*)name
                                 isMutable:(bool)isMutable
                                 definedBy:(UIDMetadataId)parent {
+  return [self registerMetadataWithType:type
+                                   name:name
+                              isMutable:isMutable
+                              definedBy:parent
+                       customAttributes:nil];
+}
+
+- (UIDMetadataId)registerMetadataWithType:(NSString*)type
+                                     name:(NSString*)name
+                                isMutable:(bool)isMutable
+                                definedBy:(UIDMetadataId)parent
+                         customAttributes:
+                             (nullable NSDictionary<NSString*, id>*)
+                                 customAttributes {
+  if (!parent) {
+    parent = _rootId;
+  }
+
   UIDMetadataId identifier = @(++_generator);
-  UIDMetadata* metadata = [[UIDMetadata alloc] initWithIdentifier:identifier
-                                                             type:type
-                                                             name:name
-                                                        isMutable:isMutable
-                                                           parent:parent];
+  UIDMetadata* metadata =
+      [[UIDMetadata alloc] initWithIdentifier:identifier
+                                         type:type
+                                         name:name
+                                    isMutable:isMutable
+                                       parent:parent
+                               possibleValues:nil
+                                         tags:nil
+                             customAttributes:customAttributes];
 
   [_lock lock];
   if (![_register objectForKey:parent]) {

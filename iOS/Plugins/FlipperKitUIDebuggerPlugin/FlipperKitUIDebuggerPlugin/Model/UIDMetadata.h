@@ -23,32 +23,33 @@ typedef NSNumber* UIDMetadataId;
  */
 @interface UIDMetadata : NSObject
 
+#pragma mark - Included in the wire protocol
+
 @property(nonatomic, readonly) UIDMetadataId identifier;
 @property(nonatomic, strong, readonly) NSString* type;
-@property(nonatomic, readonly) UIDMetadataId parent;
 @property(nonatomic, strong, readonly) NSString* name;
 @property(nonatomic, readonly) bool isMutable;
-@property(nonatomic, strong, readonly)
+@property(nonatomic, readonly, nullable)
+    NSDictionary<NSString*, id>* customAttributes;
+
+#pragma mark -  Not included in the wire protocol
+
+@property(nonatomic, readonly) UIDMetadataId parent;
+@property(nonatomic, strong, readonly, nullable)
     NSSet<UIDInspectableValue*>* possibleValues;
-@property(nonatomic, strong, readonly) NSSet<NSString*>* tags;
+@property(nonatomic, strong, readonly, nullable) NSSet<NSString*>* tags;
 
-- (instancetype)initWithIdentifier:(UIDMetadataId)identifier
-                              type:(NSString*)type
-                              name:(NSString*)name;
+#pragma mark -
 
-- (instancetype)initWithIdentifier:(UIDMetadataId)identifier
-                              type:(NSString*)type
-                              name:(NSString*)name
-                         isMutable:(bool)isMutable
-                            parent:(UIDMetadataId)parent;
-
-- (instancetype)initWithIdentifier:(UIDMetadataId)identifier
-                              type:(NSString*)type
-                              name:(NSString*)name
-                         isMutable:(bool)isMutable
-                            parent:(UIDMetadataId)parent
-                    possibleValues:(NSSet<UIDInspectableValue*>*)possibleValues
-                              tags:(NSSet<NSString*>*)tags;
+- (instancetype)
+    initWithIdentifier:(UIDMetadataId)identifier
+                  type:(NSString*)type
+                  name:(NSString*)name
+             isMutable:(bool)isMutable
+                parent:(UIDMetadataId)parent
+        possibleValues:(nullable NSSet<UIDInspectableValue*>*)possibleValues
+                  tags:(nullable NSSet<NSString*>*)tags
+      customAttributes:(nullable NSDictionary<NSString*, id>*)customAttributes;
 @end
 
 NS_ASSUME_NONNULL_END

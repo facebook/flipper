@@ -14,46 +14,23 @@
 
 - (instancetype)initWithIdentifier:(UIDMetadataId)identifier
                               type:(NSString*)type
-                              name:(NSString*)name {
-  return [self initWithIdentifier:identifier
-                             type:type
-                             name:name
-                        isMutable:false
-                           parent:@0
-                   possibleValues:[NSSet set]
-                             tags:[NSSet set]];
-}
-
-- (instancetype)initWithIdentifier:(UIDMetadataId)identifier
-                              type:(NSString*)type
-                              name:(NSString*)name
-                         isMutable:(bool)isMutable
-                            parent:(UIDMetadataId)parent {
-  return [self initWithIdentifier:identifier
-                             type:type
-                             name:name
-                        isMutable:isMutable
-                           parent:parent
-                   possibleValues:[NSSet set]
-                             tags:[NSSet set]];
-}
-
-- (instancetype)initWithIdentifier:(UIDMetadataId)identifier
-                              type:(NSString*)type
                               name:(NSString*)name
                          isMutable:(bool)isMutable
                             parent:(UIDMetadataId)parent
                     possibleValues:(NSSet<UIDInspectableValue*>*)possibleValues
-                              tags:(NSSet<NSString*>*)tags {
+                              tags:(NSSet<NSString*>*)tags
+                  customAttributes:
+                      (nullable NSDictionary<NSString*, id>*)customAttributes {
   self = [super init];
   if (self) {
     _identifier = identifier;
     _type = type;
     _name = name;
     _isMutable = isMutable;
-    _parent = parent;
-    _possibleValues = possibleValues;
-    _tags = tags;
+    _parent = parent ?: @0;
+    _possibleValues = possibleValues ?: [NSSet set];
+    _tags = tags ?: [NSSet set];
+    _customAttributes = customAttributes;
   }
   return self;
 }

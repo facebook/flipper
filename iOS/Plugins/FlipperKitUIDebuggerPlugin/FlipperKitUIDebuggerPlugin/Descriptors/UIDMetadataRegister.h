@@ -26,7 +26,15 @@ FOUNDATION_EXPORT NSString* const UIDEBUGGER_METADATA_TYPE_DOCUMENTATION;
 - (UIDMetadataId)registerMetadataWithType:(NSString*)type
                                      name:(NSString*)name
                                 isMutable:(bool)isMutable
-                                definedBy:(UIDMetadataId)definedById;
+                                definedBy:(UIDMetadataId)parent;
+
+- (UIDMetadataId)registerMetadataWithType:(NSString*)type
+                                     name:(NSString*)name
+                                isMutable:(bool)isMutable
+                                definedBy:(UIDMetadataId)parent
+                         customAttributes:
+                             (nullable NSDictionary<NSString*, id>*)
+                                 customAttributes;
 
 - (NSDictionary<UIDMetadataId, UIDMetadata*>*)extractPendingMetadata;
 
