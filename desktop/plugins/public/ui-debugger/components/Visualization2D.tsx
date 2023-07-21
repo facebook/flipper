@@ -132,6 +132,7 @@ export const Visualization2D: React.FC<
         }>
         {hoveredNodeId && (
           <HoveredOverlay
+            onSelectNode={instance.uiActions.onSelectNode}
             key={hoveredNodeId}
             nodeId={hoveredNodeId}
             nodes={nodes}
@@ -241,13 +242,6 @@ function Visualization2DNode({
         height: toPx(node.bounds.height),
         opacity: isHighlighted ? 0.3 : 1,
         backgroundColor: isHighlighted ? 'red' : 'transparent',
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-
-        const hoveredNodes = instance.uiState.hoveredNodes.get();
-
-        onSelectNode(hoveredNodes[0], 'visualiser');
       }}>
       <NodeBorder />
 
@@ -259,9 +253,11 @@ function Visualization2DNode({
 function HoveredOverlay({
   nodeId,
   nodes,
+  onSelectNode,
 }: {
   nodeId: Id;
   nodes: Map<Id, ClientNode>;
+  onSelectNode: OnSelectNode;
 }) {
   const node = nodes.get(nodeId);
 
@@ -278,7 +274,14 @@ function HoveredOverlay({
       align={{
         offset: [0, 7],
       }}>
-      <OverlayBorder nodeId={nodeId} nodes={nodes} type="hovered" />
+      <OverlayBorder
+        onClick={() => {
+          onSelectNode(nodeId, 'visualiser');
+        }}
+        nodeId={nodeId}
+        nodes={nodes}
+        type="hovered"
+      />
     </Tooltip>
   );
 }
@@ -292,7 +295,7 @@ const OverlayBorder = styled.div<{
   const node = nodes.get(nodeId);
   return {
     zIndex: 100,
-    pointerEvents: 'none',
+    pointerEvents: type === 'selected' ? 'none' : 'auto',
     cursor: 'pointer',
     position: 'absolute',
     top: toPx(offset.y),
