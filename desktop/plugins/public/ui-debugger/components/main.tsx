@@ -25,7 +25,7 @@ import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
 import {Button, Spin} from 'antd';
 import {QueryClientProvider} from 'react-query';
-import {Tree2} from './Tree';
+import {Tree2} from './tree/Tree';
 import {StreamInterceptorErrorView} from './StreamInterceptorErrorView';
 import {queryClient} from '../utils/reactQuery';
 import {FrameworkEventsTable} from './FrameworkEventsTable';

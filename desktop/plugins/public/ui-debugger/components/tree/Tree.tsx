@@ -12,8 +12,8 @@ import {
   FrameworkEventType,
   Id,
   ClientNode,
-} from '../ClientTypes';
-import {OnSelectNode, ViewMode} from '../DesktopTypes';
+} from '../../ClientTypes';
+import {OnSelectNode, ViewMode} from '../../DesktopTypes';
 import React, {
   ReactNode,
   Ref,
@@ -34,19 +34,19 @@ import {
   usePlugin,
   useValue,
 } from 'flipper-plugin';
-import {plugin} from '../index';
+import {plugin} from '../../index';
 import {Glyph} from 'flipper';
 import {head, last} from 'lodash';
 import {reverse} from 'lodash/fp';
 import {Badge, Dropdown, Menu, Typography} from 'antd';
-import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
-import {tracker} from '../utils/tracker';
+import {UIDebuggerMenuItem} from '../util/UIDebuggerMenuItem';
+import {tracker} from '../../utils/tracker';
 
 import {useVirtualizer, Virtualizer} from '@tanstack/react-virtual';
 import {
   BigGrepContextMenuItems,
   IDEContextMenuItems,
-} from './fb-stubs/IDEContextMenu';
+} from '../fb-stubs/IDEContextMenu';
 import {
   CopyOutlined,
   FullscreenExitOutlined,
