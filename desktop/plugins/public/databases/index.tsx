@@ -108,7 +108,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   const updateDatabases = (event: {
     databases: Array<{name: string; id: number; tables: Array<string>}>;
   }) => {
-    const updates = event.databases;
+    const updates = event.databases ?? [];
     const state = pluginState.get();
     const databases = updates.sort((db1, db2) => db1.id - db2.id);
     const selectedDatabase =
