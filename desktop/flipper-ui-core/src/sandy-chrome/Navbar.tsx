@@ -500,7 +500,7 @@ function TroubleshootMenu({
   return (
     <>
       {/* using Badge **here** as NavbarButton badge is being cut off by Menu component */}
-      <Badge {...badgeProps}>
+      <Badge {...badgeProps} style={{zIndex: 100}}>
         <Menu
           mode="vertical"
           className={menu}
