@@ -21,14 +21,12 @@ import {getRenderHostInstance} from 'flipper-frontend-core';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
-import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
-import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
-import {Avatar, Badge, Button, Menu, Modal, Popover, Tooltip} from 'antd';
+import {currentUser, isConnected, logoutUser} from '../fb-stubs/user';
+import {Badge, Button, Menu, Modal} from 'antd';
 import {
   BellOutlined,
   BugOutlined,
   LayoutOutlined,
-  LoginOutlined,
   MobileOutlined,
   RocketOutlined,
   SettingOutlined,
@@ -110,6 +108,8 @@ export const Navbar = withTrackingScope(function Navbar({
         )}
       </Layout.Horizontal>
       <Layout.Horizontal style={{gap: 6, alignItems: 'center'}}>
+        <NoConnectivityWarning />
+
         <NotificationButton
           toplevelSelection={toplevelSelection}
           setToplevelSelection={setToplevelSelection}
@@ -117,7 +117,7 @@ export const Navbar = withTrackingScope(function Navbar({
         <TroubleshootMenu setToplevelSelection={setToplevelSelection} />
         <ExtrasMenu />
         <RightSidebarToggleButton />
-        {config.showLogin && <LoginConnectivityButton />}
+
         <UpdateIndicator />
       </Layout.Horizontal>
     </Layout.Horizontal>
@@ -336,10 +336,12 @@ export function NavbarButton({
   disabled = false,
   flipIcon = false,
   zIndex,
+  colorOverride,
 }: {
   icon: (props: any) => any;
   label: string;
   // TODO remove optional
+  colorOverride?: string;
   zIndex?: number;
   onClick?: () => void;
   toggled?: boolean;
@@ -367,7 +369,7 @@ export function NavbarButton({
       disabled={disabled}>
       <Icon
         style={{
-          color,
+          color: colorOverride || color,
           fontSize: 24,
           transform: flipIcon ? 'scaleX(-1)' : undefined,
         }}
@@ -376,7 +378,7 @@ export function NavbarButton({
         style={{
           margin: 0,
           fontSize: theme.fontSize.small,
-          color: theme.textColorSecondary,
+          color: colorOverride || theme.textColorSecondary,
         }}>
         {label}
       </span>
@@ -401,60 +403,21 @@ export function NavbarButton({
   }
 }
 
-function LoginConnectivityButton() {
-  const loggedIn = useValue(currentUser());
-  const user = useStore((state) => state.user);
-
-  const profileUrl = user?.profile_picture?.uri;
-  const [showLogout, setShowLogout] = useState(false);
-  const onHandleVisibleChange = useCallback(
-    (visible) => setShowLogout(visible),
-    [],
-  );
-
+function NoConnectivityWarning() {
   const connected = useValue(isConnected());
 
   if (!connected) {
     return (
-      <Tooltip
-        placement="left"
-        title="No connection to intern, ensure you are VPN/Lighthouse for plugin updates and other features">
-        <WarningOutlined
-          style={{color: theme.warningColor, fontSize: '20px'}}
-        />
-      </Tooltip>
+      <NavbarButton
+        disabled
+        icon={WarningOutlined}
+        colorOverride={theme.errorColor}
+        label="No connectivity"
+      />
     );
   }
 
-  return loggedIn ? (
-    <Popover
-      content={
-        <Button
-          block
-          style={{backgroundColor: theme.backgroundDefault}}
-          onClick={async () => {
-            onHandleVisibleChange(false);
-            await logoutUser();
-          }}>
-          Log Out
-        </Button>
-      }
-      trigger="click"
-      placement="bottom"
-      visible={showLogout}
-      overlayStyle={{padding: 0}}
-      onVisibleChange={onHandleVisibleChange}>
-      <Layout.Container padv={theme.inlinePaddingV}>
-        <Avatar size={40} src={profileUrl} />
-      </Layout.Container>
-    </Popover>
-  ) : (
-    <NavbarButton
-      icon={LoginOutlined}
-      label="Log In"
-      onClick={showLoginDialog}
-    />
-  );
+  return null;
 }
 
 const menu = css`
@@ -593,6 +556,7 @@ function ExtrasMenu() {
   const settings = useStore((state) => state.settingsState);
   const {showWelcomeAtStartup} = settings;
   const [welcomeVisible, setWelcomeVisible] = useState(showWelcomeAtStartup);
+  const loggedIn = useValue(currentUser());
 
   return (
     <>
@@ -655,6 +619,11 @@ function ExtrasMenu() {
             <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
               Help
             </Menu.Item>
+            {config.showLogin && loggedIn && (
+              <Menu.Item key="logout" onClick={async () => await logoutUser()}>
+                Logout
+              </Menu.Item>
+            )}
           </Menu.SubMenu>
         </Menu>
       </NUX>
