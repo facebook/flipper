@@ -255,9 +255,9 @@ function LeftSidebarToggleButton() {
   if (hasMainMenu) {
     return (
       <NavbarButton
-        label="Toggle Sidebar"
+        label="Sidebar"
         icon={LayoutOutlined}
-        toggled={!mainMenuVisible}
+        toggled={mainMenuVisible}
         onClick={() => {
           dispatch(toggleLeftSidebarVisible());
         }}
@@ -277,16 +277,13 @@ function RightSidebarToggleButton() {
     (state) => state.application.rightSidebarVisible,
   );
 
-  if (!rightSidebarAvailable) {
-    return null;
-  }
-
   return (
     <NavbarButton
       icon={LayoutOutlined}
       flipIcon
-      label="Toggle R.Sidebar"
-      toggled={!rightSidebarVisible}
+      disabled={!rightSidebarAvailable}
+      label="Sidebar"
+      toggled={rightSidebarAvailable && rightSidebarVisible}
       onClick={() => {
         dispatch(toggleRightSidebarVisible());
       }}
@@ -320,6 +317,16 @@ const badgeCountClassname = css`
     margin-top: 8px;
   }
 `;
+
+const hideBorderWhenDisabled = css`
+  :disabled {
+    border-color: transparent !important;
+  }
+  :disabled:hover {
+    border-color: ${theme.disabledColor} !important;
+  }
+`;
+
 export function NavbarButton({
   icon: Icon,
   label,
@@ -343,10 +350,12 @@ export function NavbarButton({
   const color = toggled ? theme.primaryColor : theme.textColorActive;
   const button = (
     <Button
+      className={hideBorderWhenDisabled}
       aria-pressed={toggled}
       ghost
       onClick={onClick}
       style={{
+        boxSizing: 'border-box',
         color,
         boxShadow: 'none',
         display: 'flex',
