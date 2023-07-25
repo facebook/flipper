@@ -292,8 +292,8 @@ export class FlipperClient {
 
       if (method === 'getBackgroundPlugins') {
         responder.success({
-          plugins: [...this.plugins.keys()].filter((key) =>
-            this.plugins.get(key)?.runInBackground?.(),
+          plugins: [...this.plugins.keys()].filter(
+            (key) => this.plugins.get(key)?.runInBackground?.(),
           ),
         });
         return;
