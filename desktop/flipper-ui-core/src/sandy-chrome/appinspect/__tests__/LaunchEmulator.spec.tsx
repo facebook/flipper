@@ -16,6 +16,7 @@ import {LaunchEmulatorDialog} from '../LaunchEmulator';
 import {createRootReducer} from '../../../reducers';
 import {sleep} from 'flipper-plugin';
 import {getRenderHostInstance} from 'flipper-frontend-core';
+import {last} from 'lodash';
 
 test('Can render and launch android apps - no emulators', async () => {
   const store = createStore(createRootReducer());
@@ -43,11 +44,12 @@ test('Can render and launch android apps - no emulators', async () => {
     </Provider>,
   );
 
-  expect(await renderer.findByText(/No emulators/)).toMatchInlineSnapshot(`
+  expect(await renderer.findByText(/No virtual devices/))
+    .toMatchInlineSnapshot(`
     <div
       class="ant-alert-message"
     >
-      No emulators available. 
+      No virtual devices available.
       <br />
       <a
         class="ant-typography"
@@ -126,6 +128,12 @@ test('Can render and launch android apps', async () => {
 
   expect(await renderer.findAllByText(/emulator/)).toMatchInlineSnapshot(`
     [
+      <h3
+        class="ant-typography"
+        style="padding: 4px;"
+      >
+        Android emulators
+      </h3>,
       <span>
         emulator1
       </span>,
@@ -149,6 +157,72 @@ test('Can render and launch android apps', async () => {
         "emulator2",
         false,
       ],
+    ]
+  `);
+});
+
+test('Favouriting a virtual device brings it to the top', async () => {
+  const store = createStore(createRootReducer());
+
+  const exec = jest.fn().mockImplementation(async (cmd) => {
+    if (cmd === 'android-get-emulators') {
+      return ['emulator1', 'emulator2'];
+    }
+  });
+
+  getRenderHostInstance().flipperServer.exec = exec;
+
+  store.dispatch({
+    type: 'UPDATE_SETTINGS',
+    payload: {
+      ...store.getState().settingsState,
+      enableAndroid: true,
+    },
+  });
+  const onClose = jest.fn();
+
+  const renderer = render(
+    <Provider store={store}>
+      <LaunchEmulatorDialog onClose={onClose} />
+    </Provider>,
+  );
+
+  await sleep(1); // give exec time to resolve
+
+  expect(await renderer.findAllByText(/emulator/)).toMatchInlineSnapshot(`
+    [
+      <h3
+        class="ant-typography"
+        style="padding: 4px;"
+      >
+        Android emulators
+      </h3>,
+      <span>
+        emulator1
+      </span>,
+      <span>
+        emulator2
+      </span>,
+    ]
+  `);
+
+  const lastFavourite = last(renderer.getAllByLabelText('not-favorite'))!;
+  fireEvent.click(lastFavourite);
+
+  expect(await renderer.findAllByText(/emulator/)).toMatchInlineSnapshot(`
+    [
+      <h3
+        class="ant-typography"
+        style="padding: 4px;"
+      >
+        Android emulators
+      </h3>,
+      <span>
+        emulator2
+      </span>,
+      <span>
+        emulator1
+      </span>,
     ]
   `);
 });
