@@ -237,6 +237,7 @@ function NotificationButton({
     <NavbarButton
       icon={BellOutlined}
       label="Alerts"
+      zIndex={AlertsZIndex}
       toggled={toplevelSelection === 'notification'}
       count={activeNotifications.length}
       onClick={() => setToplevelSelection('notification')}
@@ -327,10 +328,12 @@ export function NavbarButton({
   count,
   disabled = false,
   flipIcon = false,
+  zIndex,
 }: {
   icon: (props: any) => any;
   label: string;
   // TODO remove optional
+  zIndex?: number;
   onClick?: () => void;
   toggled?: boolean;
   count?: number | true;
@@ -374,6 +377,7 @@ export function NavbarButton({
   if (count !== undefined) {
     return (
       <Badge
+        style={{zIndex: zIndex}}
         {...{onClick}}
         dot={count === true}
         count={count}
@@ -465,6 +469,9 @@ const submenu = css`
   }
 `;
 
+const AlertsZIndex = 101;
+const TroubleShootZIndex = 100;
+
 function TroubleshootMenu({
   setToplevelSelection,
 }: {
@@ -500,7 +507,7 @@ function TroubleshootMenu({
   return (
     <>
       {/* using Badge **here** as NavbarButton badge is being cut off by Menu component */}
-      <Badge {...badgeProps} style={{zIndex: 100}}>
+      <Badge {...badgeProps} style={{zIndex: TroubleShootZIndex}}>
         <Menu
           mode="vertical"
           className={menu}
