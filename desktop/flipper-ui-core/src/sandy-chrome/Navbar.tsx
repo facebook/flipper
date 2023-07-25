@@ -512,9 +512,9 @@ function TroubleshootMenu({
             <Menu.Item
               key="flipperlogs"
               onClick={() => setToplevelSelection('flipperlogs')}>
-              <Badge offset={[12, 0]} count={flipperErrorLogCount}>
-                Flipper Logs
-              </Badge>
+              <Layout.Horizontal center gap="small">
+                Flipper Logs <Badge count={flipperErrorLogCount} />
+              </Layout.Horizontal>
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>
