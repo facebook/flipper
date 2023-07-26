@@ -7,21 +7,15 @@
  * @format
  */
 
-import React, {ReactNode, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {Bounds, Coordinate, Id, ClientNode} from '../../ClientTypes';
 import {NestedNode, OnSelectNode} from '../../DesktopTypes';
 
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
 import {plugin} from '../../index';
 import {head, isEqual, throttle} from 'lodash';
-import {Dropdown, Menu, Tooltip} from 'antd';
-import {UIDebuggerMenuItem} from '../util/UIDebuggerMenuItem';
 import {useDelay} from '../../hooks/useDelay';
-import {
-  AimOutlined,
-  FullscreenExitOutlined,
-  FullscreenOutlined,
-} from '@ant-design/icons';
+import {Tooltip} from 'antd';
 
 export const Visualization2D: React.FC<
   {
@@ -118,85 +112,83 @@ export const Visualization2D: React.FC<
   const pxScaleFactor = calcPxScaleFactor(snapshotNode.bounds, width);
 
   return (
-    <ContextMenu nodes={nodes}>
-      <div
-        onMouseLeave={(e) => {
-          e.stopPropagation();
-          //the context menu triggers this callback but we dont want to remove hover effect
-          if (!instance.uiState.isContextMenuOpen.get()) {
-            instance.uiActions.onHoverNode();
-          }
+    <div
+      onMouseLeave={(e) => {
+        e.stopPropagation();
+        //the context menu triggers this callback but we dont want to remove hover effect
+        if (!instance.uiState.isContextMenuOpen.get()) {
+          instance.uiActions.onHoverNode();
+        }
 
-          visualizerActive.current = false;
-        }}
-        onMouseEnter={() => {
-          visualizerActive.current = true;
-        }}
-        //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
-        style={
-          {
-            backgroundColor: theme.backgroundWash,
-            borderRadius: theme.borderRadius,
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            position: 'relative', //this is for the absolutely positioned overlays
-            [pxScaleFactorCssVar]: pxScaleFactor,
-            width: toPx(focusState.actualRoot.bounds.width),
-            height: toPx(focusState.actualRoot.bounds.height),
-          } as React.CSSProperties
-        }>
-        {hoveredNodeId && (
-          <HoveredOverlay
-            onSelectNode={instance.uiActions.onSelectNode}
-            key={hoveredNodeId}
-            nodeId={hoveredNodeId}
-            nodes={nodes}
+        visualizerActive.current = false;
+      }}
+      onMouseEnter={() => {
+        visualizerActive.current = true;
+      }}
+      //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
+      style={
+        {
+          backgroundColor: theme.backgroundWash,
+          borderRadius: theme.borderRadius,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          position: 'relative', //this is for the absolutely positioned overlays
+          [pxScaleFactorCssVar]: pxScaleFactor,
+          width: toPx(focusState.actualRoot.bounds.width),
+          height: toPx(focusState.actualRoot.bounds.height),
+        } as React.CSSProperties
+      }>
+      {hoveredNodeId && (
+        <HoveredOverlay
+          onSelectNode={instance.uiActions.onSelectNode}
+          key={hoveredNodeId}
+          nodeId={hoveredNodeId}
+          nodes={nodes}
+        />
+      )}
+      {selectedNodeId && (
+        <OverlayBorder
+          type="selected"
+          nodeId={selectedNodeId.id}
+          nodes={nodes}
+        />
+      )}
+      <div
+        ref={rootNodeRef as any}
+        style={{
+          /**
+           * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
+           * position itself relative to.
+           *
+           * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
+           * which despite the name acts are a reference point for absolute positioning...
+           *
+           * When focused the global offset of the focussed node is used to offset and size this 'root' node
+           */
+          position: 'relative',
+          marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
+          marginTop: toPx(focusState.focusedRootGlobalOffset.y),
+          width: toPx(focusState.focusedRoot.bounds.width),
+          height: toPx(focusState.focusedRoot.bounds.height),
+          overflow: 'hidden',
+        }}>
+        {snapshotNode && (
+          <img
+            src={'data:image/png;base64,' + snapshot.data}
+            style={{
+              marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
+              marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
+              width: toPx(snapshotNode.bounds.width),
+              height: toPx(snapshotNode.bounds.height),
+            }}
           />
         )}
-        {selectedNodeId && (
-          <OverlayBorder
-            type="selected"
-            nodeId={selectedNodeId.id}
-            nodes={nodes}
-          />
-        )}
-        <div
-          ref={rootNodeRef as any}
-          style={{
-            /**
-             * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
-             * position itself relative to.
-             *
-             * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
-             * which despite the name acts are a reference point for absolute positioning...
-             *
-             * When focused the global offset of the focussed node is used to offset and size this 'root' node
-             */
-            position: 'relative',
-            marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
-            marginTop: toPx(focusState.focusedRootGlobalOffset.y),
-            width: toPx(focusState.focusedRoot.bounds.width),
-            height: toPx(focusState.focusedRoot.bounds.height),
-            overflow: 'hidden',
-          }}>
-          {snapshotNode && (
-            <img
-              src={'data:image/png;base64,' + snapshot.data}
-              style={{
-                marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
-                marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
-                width: toPx(snapshotNode.bounds.width),
-                height: toPx(snapshotNode.bounds.height),
-              }}
-            />
-          )}
-          <MemoedVisualizationNode2D
-            node={focusState.focusedRoot}
-            onSelectNode={onSelectNode}
-          />
-        </div>
+        <MemoedVisualizationNode2D
+          node={focusState.focusedRoot}
+          onSelectNode={onSelectNode}
+        />
       </div>
-    </ContextMenu>
+    </div>
   );
 };
 
@@ -345,109 +337,6 @@ function getTotalOffset(id: Id, nodes: Map<Id, ClientNode>): Coordinate {
 
   return offset;
 }
-
-function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-  return value != null;
-}
-
-const iconStyle = {fontSize: 14};
-const ContextMenu: React.FC<{nodes: Map<Id, ClientNode>}> = ({children}) => {
-  const instance = usePlugin(plugin);
-  const focusedNodeId = useValue(instance.uiState.focusedNode);
-  const hoveredNodeIds = useValue(instance.uiState.hoveredNodes);
-
-  const nodes = useValue(instance.nodes);
-
-  const hoveredNodes = hoveredNodeIds
-    .map((id) => nodes.get(id))
-    .filter(notEmpty)
-    .reverse();
-
-  const focusItems = hoveredNodes.map((node: ClientNode) => (
-    <UIDebuggerMenuItem
-      key={node.id}
-      onMouseEnter={() => {
-        instance.uiActions.onHoverNode(node.id);
-      }}
-      text={node.name}
-      onClick={() => {
-        instance.uiActions.onFocusNode(node.id);
-      }}
-    />
-  ));
-
-  const selectItems = hoveredNodes.map((node: ClientNode) => (
-    <UIDebuggerMenuItem
-      key={node.id}
-      text={node.name}
-      onMouseEnter={() => {
-        instance.uiActions.onHoverNode(node.id);
-      }}
-      onClick={() => {
-        instance.uiActions.onSelectNode(node.id, 'visualiser');
-      }}
-    />
-  ));
-
-  //since the context menu changes the hover state to indicate where you are this
-  //causes a rerender and therefore changes the context menu items. to work around
-  //we grab the hovered items at the time the context menu opens and this is unaffected
-  //by any further changes to hover state
-  const [staticItems, setStaticItems] = useState<{
-    focusItems: ReactNode[];
-    selectItems: ReactNode[];
-  }>({
-    selectItems: [],
-    focusItems: [],
-  });
-
-  return (
-    <Dropdown
-      onVisibleChange={(open) => {
-        instance.uiActions.onContextMenuOpen(open);
-        if (open) {
-          setStaticItems({focusItems: focusItems, selectItems: selectItems});
-        }
-      }}
-      trigger={['contextMenu']}
-      overlay={() => {
-        return (
-          <Menu>
-            {staticItems.focusItems.length > 0 && (
-              <Menu.SubMenu
-                title="Focus"
-                icon={<FullscreenExitOutlined style={iconStyle} />}>
-                {staticItems.focusItems}
-              </Menu.SubMenu>
-            )}
-
-            {focusedNodeId != null && (
-              <UIDebuggerMenuItem
-                icon={<FullscreenOutlined />}
-                key="remove-focus"
-                text="Remove focus"
-                onClick={() => {
-                  instance.uiActions.onFocusNode(undefined);
-                }}
-              />
-            )}
-
-            {focusedNodeId != null && <Menu.Divider />}
-
-            {staticItems.selectItems.length > 0 && (
-              <Menu.SubMenu
-                title="Select"
-                icon={<AimOutlined style={iconStyle} />}>
-                {staticItems.selectItems}
-              </Menu.SubMenu>
-            )}
-          </Menu>
-        );
-      }}>
-      {children}
-    </Dropdown>
-  );
-};
 
 /**
  * this is the border that shows the green or blue line, it is implemented as a sibling to the
