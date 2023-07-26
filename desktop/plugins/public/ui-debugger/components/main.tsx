@@ -22,7 +22,7 @@ import {Id, Metadata, MetadataId, ClientNode} from '../ClientTypes';
 import {PerfStats} from './PerfStats';
 import {Visualization2D} from './visualizer/Visualization2D';
 import {Inspector} from './sidebar/Inspector';
-import {Controls} from './Controls';
+import {TreeControls} from './tree/TreeControls';
 import {Button, Spin} from 'antd';
 import {QueryClientProvider} from 'react-query';
 import {Tree2} from './tree/Tree';
@@ -118,7 +118,7 @@ export function Component() {
             borderRadius: theme.borderRadius,
             backgroundColor: theme.backgroundDefault,
           }}>
-          <Controls />
+          <TreeControls />
           <Tree2 nodes={nodes} rootId={rootId} />
         </Layout.Container>
 

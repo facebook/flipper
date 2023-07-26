@@ -87,6 +87,7 @@ export function VisualiserControls({
       <Layout.Horizontal gap="medium">
         <Tooltip title={targetToolTip}>
           <Button
+            shape="circle"
             onClick={() => {
               if (targetMode.state === 'disabled') {
                 setTargetMode({state: 'active'});
@@ -108,6 +109,7 @@ export function VisualiserControls({
         </Tooltip>
         <Tooltip title={focusToolTip}>
           <Button
+            shape="circle"
             disabled={focusDisabled}
             onClick={() => {
               if (focusedNode == null) {

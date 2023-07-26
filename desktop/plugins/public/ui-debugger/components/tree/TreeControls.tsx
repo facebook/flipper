@@ -8,7 +8,7 @@
  */
 
 import React, {useState} from 'react';
-import {plugin} from '../index';
+import {plugin} from '../../index';
 import {
   Button,
   Input,
@@ -26,9 +26,9 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout} from 'flipper-plugin';
-import {FrameworkEventType} from '../ClientTypes';
+import {FrameworkEventType} from '../../ClientTypes';
 
-export const Controls: React.FC = () => {
+export const TreeControls: React.FC = () => {
   const instance = usePlugin(plugin);
   const searchTerm = useValue(instance.uiState.searchTerm);
   const isPaused = useValue(instance.uiState.isPaused);
