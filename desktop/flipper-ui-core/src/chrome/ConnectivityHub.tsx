@@ -111,7 +111,7 @@ function createColumnConfig(): DataTableColumn<ConnectionRecordEntry>[] {
       key: 'medium',
       title: 'Medium',
       width: 80,
-      visible: false,
+      visible: true,
     },
     {
       key: 'message',
