@@ -12,12 +12,14 @@ import React, {createRef, CSSProperties, useState} from 'react';
 import {
   createDataSource,
   DataFormatter,
+  DataInspector,
   DataTable,
   DataTableColumn,
   DataTableManager,
   Tab,
   Tabs,
   theme,
+  styled,
 } from 'flipper-plugin';
 import {CloseCircleFilled, DeleteOutlined} from '@ant-design/icons';
 import {
@@ -131,13 +133,40 @@ function getRowStyle(entry: ConnectionRecordEntry): CSSProperties | undefined {
   return (logTypes[entry.type]?.style as any) ?? baseRowStyle;
 }
 
+const Placeholder = styled(Layout.Container)({
+  center: true,
+  color: theme.textColorPlaceholder,
+  fontSize: 18,
+});
+
+function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
+  const renderExtra = (extra: any) => (
+    <>
+      <p>Details</p>
+      <DataInspector data={extra} expandRoot />
+    </>
+  );
+
+  return (
+    <Layout.ScrollContainer pad>
+      {selection != null ? (
+        renderExtra(selection)
+      ) : (
+        <Placeholder grow pad="large">
+          Select an entry to visualize details
+        </Placeholder>
+      )}
+    </Layout.ScrollContainer>
+  );
+}
+
 function clearMessages() {
   rows.clear();
 }
 
 export function ConnectivityHub() {
   const columns = createColumnConfig();
-  const [_selection, setSelection] = useState<
+  const [selection, setSelection] = useState<
     ConnectionRecordEntry | undefined
   >();
   const tableManagerRef = createRef<
@@ -155,19 +184,22 @@ export function ConnectivityHub() {
     </Button>
   );
 
-  const LogView = () => (
-    <DataTable<ConnectionRecordEntry>
-      dataSource={rows}
-      columns={columns}
-      enableAutoScroll
-      enableMultiPanels
-      onSelect={setSelection}
-      onRowStyle={getRowStyle}
-      enableHorizontalScroll={false}
-      tableManagerRef={tableManagerRef}
-      extraActions={clearButton}
-    />
-  );
+  const LogView = () => {
+    return (
+      <Layout.Right resizable width={400}>
+        <DataTable<ConnectionRecordEntry>
+          dataSource={rows}
+          columns={columns}
+          enableAutoScroll
+          onRowStyle={getRowStyle}
+          onSelect={setSelection}
+          tableManagerRef={tableManagerRef}
+          extraActions={clearButton}
+        />
+        <Sidebar selection={selection} />
+      </Layout.Right>
+    );
+  };
 
   return (
     <Layout.Container grow>
