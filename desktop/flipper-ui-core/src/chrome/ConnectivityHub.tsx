@@ -8,7 +8,7 @@
  */
 
 import {Layout} from '../ui';
-import React, {createRef, CSSProperties} from 'react';
+import React, {createRef, CSSProperties, useState} from 'react';
 import {
   createDataSource,
   DataFormatter,
@@ -137,7 +137,9 @@ function clearMessages() {
 
 export function ConnectivityHub() {
   const columns = createColumnConfig();
-
+  const [_selection, setSelection] = useState<
+    ConnectionRecordEntry | undefined
+  >();
   const tableManagerRef = createRef<
     undefined | DataTableManager<ConnectionRecordEntry>
   >();
@@ -146,6 +148,7 @@ export function ConnectivityHub() {
     <Button
       title="Clear logs"
       onClick={() => {
+        setSelection(undefined);
         clearMessages();
       }}>
       <DeleteOutlined />
@@ -158,6 +161,7 @@ export function ConnectivityHub() {
       columns={columns}
       enableAutoScroll
       enableMultiPanels
+      onSelect={setSelection}
       onRowStyle={getRowStyle}
       enableHorizontalScroll={false}
       tableManagerRef={tableManagerRef}
