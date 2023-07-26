@@ -7,15 +7,23 @@
  * @format
  */
 
-import React, {useEffect, useMemo, useRef} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Bounds, Coordinate, Id, ClientNode} from '../../ClientTypes';
 import {NestedNode, OnSelectNode} from '../../DesktopTypes';
 
-import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
+import {
+  produce,
+  styled,
+  theme,
+  usePlugin,
+  useValue,
+  Layout,
+} from 'flipper-plugin';
 import {plugin} from '../../index';
 import {head, isEqual, throttle} from 'lodash';
 import {useDelay} from '../../hooks/useDelay';
 import {Tooltip} from 'antd';
+import {TargetModeState, VisualiserControls} from './VisualizerControls';
 
 export const Visualization2D: React.FC<
   {
@@ -32,7 +40,12 @@ export const Visualization2D: React.FC<
   const focusedNodeId = useValue(instance.uiState.focusedNode);
 
   const selectedNodeId = useValue(instance.uiState.selectedNode);
-  const hoveredNodeId = head(useValue(instance.uiState.hoveredNodes));
+  const hoveredNodes = useValue(instance.uiState.hoveredNodes);
+  const hoveredNodeId = head(hoveredNodes);
+
+  const [targetMode, setTargetMode] = useState<TargetModeState>({
+    state: 'disabled',
+  });
   const focusState = useMemo(() => {
     //use the snapshot node as root since we cant realistically visualise any node above this
     const rootNode = snapshot && toNestedNode(snapshot.nodeId, nodes);
@@ -111,84 +124,114 @@ export const Visualization2D: React.FC<
 
   const pxScaleFactor = calcPxScaleFactor(snapshotNode.bounds, width);
 
-  return (
-    <div
-      onMouseLeave={(e) => {
-        e.stopPropagation();
-        //the context menu triggers this callback but we dont want to remove hover effect
-        if (!instance.uiState.isContextMenuOpen.get()) {
-          instance.uiActions.onHoverNode();
-        }
+  const overlayCursor =
+    targetMode.state === 'disabled' ? 'pointer' : 'crosshair';
 
-        visualizerActive.current = false;
-      }}
-      onMouseEnter={() => {
-        visualizerActive.current = true;
-      }}
-      //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
-      style={
-        {
-          backgroundColor: theme.backgroundWash,
-          borderRadius: theme.borderRadius,
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          position: 'relative', //this is for the absolutely positioned overlays
-          [pxScaleFactorCssVar]: pxScaleFactor,
-          width: toPx(focusState.actualRoot.bounds.width),
-          height: toPx(focusState.actualRoot.bounds.height),
-        } as React.CSSProperties
-      }>
-      {hoveredNodeId && (
-        <HoveredOverlay
-          onSelectNode={instance.uiActions.onSelectNode}
-          key={hoveredNodeId}
-          nodeId={hoveredNodeId}
-          nodes={nodes}
-        />
-      )}
-      {selectedNodeId && (
-        <OverlayBorder
-          type="selected"
-          nodeId={selectedNodeId.id}
-          nodes={nodes}
-        />
-      )}
+  const onClickOverlay = () => {
+    instance.uiActions.onSelectNode(hoveredNodeId, 'visualiser');
+    if (targetMode.state !== 'disabled') {
+      setTargetMode({
+        state: 'selected',
+        targetedNodes: hoveredNodes.slice().reverse(),
+        sliderPosition: hoveredNodes.length - 1,
+      });
+    }
+  };
+
+  return (
+    <Layout.Container>
+      <VisualiserControls
+        focusedNode={focusedNodeId}
+        selectedNode={selectedNodeId?.id}
+        setTargetMode={setTargetMode}
+        targetMode={targetMode}
+      />
+
       <div
-        ref={rootNodeRef as any}
-        style={{
-          /**
-           * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
-           * position itself relative to.
-           *
-           * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
-           * which despite the name acts are a reference point for absolute positioning...
-           *
-           * When focused the global offset of the focussed node is used to offset and size this 'root' node
-           */
-          position: 'relative',
-          marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
-          marginTop: toPx(focusState.focusedRootGlobalOffset.y),
-          width: toPx(focusState.focusedRoot.bounds.width),
-          height: toPx(focusState.focusedRoot.bounds.height),
-          overflow: 'hidden',
-        }}>
-        {snapshotNode && (
-          <img
-            src={'data:image/png;base64,' + snapshot.data}
-            style={{
-              marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
-              marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
-              width: toPx(snapshotNode.bounds.width),
-              height: toPx(snapshotNode.bounds.height),
-            }}
+        onMouseLeave={(e) => {
+          e.stopPropagation();
+          //the context menu triggers this callback but we dont want to remove hover effect
+          if (!instance.uiState.isContextMenuOpen.get()) {
+            instance.uiActions.onHoverNode();
+          }
+
+          visualizerActive.current = false;
+        }}
+        onMouseEnter={() => {
+          visualizerActive.current = true;
+        }}
+        //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
+        style={
+          {
+            backgroundColor: theme.backgroundWash,
+            borderRadius: theme.borderRadius,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            position: 'relative', //this is for the absolutely positioned overlays
+            [pxScaleFactorCssVar]: pxScaleFactor,
+            width: toPx(focusState.actualRoot.bounds.width),
+            height: toPx(focusState.actualRoot.bounds.height),
+          } as React.CSSProperties
+        }>
+        {hoveredNodeId && (
+          <DelayedHoveredToolTip
+            key={hoveredNodeId}
+            nodeId={hoveredNodeId}
+            nodes={nodes}>
+            <OverlayBorder
+              cursor={overlayCursor}
+              onClick={onClickOverlay}
+              nodeId={hoveredNodeId}
+              nodes={nodes}
+              type="hovered"
+            />
+          </DelayedHoveredToolTip>
+        )}
+        {selectedNodeId && (
+          <OverlayBorder
+            cursor={overlayCursor}
+            type="selected"
+            nodeId={selectedNodeId.id}
+            nodes={nodes}
           />
         )}
-        <MemoedVisualizationNode2D
-          node={focusState.focusedRoot}
-          onSelectNode={onSelectNode}
-        />
+        <div
+          ref={rootNodeRef as any}
+          style={{
+            /**
+             * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
+             * position itself relative to.
+             *
+             * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
+             * which despite the name acts are a reference point for absolute positioning...
+             *
+             * When focused the global offset of the focussed node is used to offset and size this 'root' node
+             */
+            position: 'relative',
+            marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
+            marginTop: toPx(focusState.focusedRootGlobalOffset.y),
+            width: toPx(focusState.focusedRoot.bounds.width),
+            height: toPx(focusState.focusedRoot.bounds.height),
+            overflow: 'hidden',
+          }}>
+          {snapshotNode && (
+            <img
+              src={'data:image/png;base64,' + snapshot.data}
+              style={{
+                marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
+                marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
+                width: toPx(snapshotNode.bounds.width),
+                height: toPx(snapshotNode.bounds.height),
+              }}
+            />
+          )}
+          <MemoedVisualizationNode2D
+            node={focusState.focusedRoot}
+            onSelectNode={onSelectNode}
+          />
+        </div>
       </div>
-    </div>
+    </Layout.Container>
   );
 };
 
@@ -257,15 +300,11 @@ function Visualization2DNode({
   );
 }
 
-function HoveredOverlay({
-  nodeId,
-  nodes,
-  onSelectNode,
-}: {
+const DelayedHoveredToolTip: React.FC<{
   nodeId: Id;
   nodes: Map<Id, ClientNode>;
-  onSelectNode: OnSelectNode;
-}) {
+  children: JSX.Element;
+}> = ({nodeId, nodes, children}) => {
   const node = nodes.get(nodeId);
 
   const isVisible = useDelay(longHoverDelay);
@@ -281,29 +320,23 @@ function HoveredOverlay({
       align={{
         offset: [0, 7],
       }}>
-      <OverlayBorder
-        onClick={() => {
-          onSelectNode(nodeId, 'visualiser');
-        }}
-        nodeId={nodeId}
-        nodes={nodes}
-        type="hovered"
-      />
+      {children}
     </Tooltip>
   );
-}
+};
 
 const OverlayBorder = styled.div<{
+  cursor: 'pointer' | 'crosshair';
   type: 'selected' | 'hovered';
   nodeId: Id;
   nodes: Map<Id, ClientNode>;
-}>(({type, nodeId, nodes}) => {
+}>(({type, nodeId, nodes, cursor}) => {
   const offset = getTotalOffset(nodeId, nodes);
   const node = nodes.get(nodeId);
   return {
     zIndex: 100,
     pointerEvents: type === 'selected' ? 'none' : 'auto',
-    cursor: 'pointer',
+    cursor: cursor,
     position: 'absolute',
     top: toPx(offset.y),
     left: toPx(offset.x),
