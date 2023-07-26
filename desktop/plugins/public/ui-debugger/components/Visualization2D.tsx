@@ -135,6 +135,8 @@ export const Visualization2D: React.FC<
         //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
         style={
           {
+            backgroundColor: theme.backgroundWash,
+            borderRadius: theme.borderRadius,
             overflowY: 'auto',
             overflowX: 'hidden',
             position: 'relative', //this is for the absolutely positioned overlays

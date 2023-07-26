@@ -44,7 +44,7 @@ export const Controls: React.FC = () => {
     useState(false);
 
   return (
-    <Layout.Horizontal pad="small" gap="small">
+    <Layout.Horizontal gap="medium" pad="medium">
       <Input
         value={searchTerm}
         onChange={(e) => {

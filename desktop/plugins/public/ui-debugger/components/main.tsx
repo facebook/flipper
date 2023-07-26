@@ -106,43 +106,49 @@ export function Component() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Layout.Container grow padh="small" padv="medium">
-        <Layout.Top>
-          <>
-            <Controls />
-            <Layout.Horizontal grow pad="small">
-              <Tree2 nodes={nodes} rootId={rootId} />
+      <Layout.Horizontal
+        grow
+        style={{
+          borderRadius: theme.borderRadius,
+          backgroundColor: theme.backgroundWash,
+        }}>
+        <Layout.Container
+          grow
+          style={{
+            borderRadius: theme.borderRadius,
+            backgroundColor: theme.backgroundDefault,
+          }}>
+          <Controls />
+          <Tree2 nodes={nodes} rootId={rootId} />
+        </Layout.Container>
 
-              <ResizablePanel
-                position="right"
-                minWidth={200}
-                width={visualiserWidth + theme.space.large}
-                maxWidth={800}
-                onResize={(width) => {
-                  instance.uiActions.setVisualiserWidth(width);
-                }}
-                gutter>
-                <Visualization2D
-                  width={visualiserWidth}
-                  nodes={nodes}
-                  onSelectNode={instance.uiActions.onSelectNode}
-                />
-              </ResizablePanel>
-              <DetailSidebar width={350}>
-                <Inspector
-                  os={instance.os}
-                  metadata={metadata}
-                  nodes={nodes}
-                  showExtra={openBottomPanelWithContent}
-                />
-              </DetailSidebar>
-            </Layout.Horizontal>
-          </>
-          <BottomPanel dismiss={dismissBottomPanel}>
-            {bottomPanelComponent}
-          </BottomPanel>
-        </Layout.Top>
-      </Layout.Container>
+        <ResizablePanel
+          position="right"
+          minWidth={200}
+          width={visualiserWidth + theme.space.large}
+          maxWidth={800}
+          onResize={(width) => {
+            instance.uiActions.setVisualiserWidth(width);
+          }}
+          gutter>
+          <Visualization2D
+            width={visualiserWidth}
+            nodes={nodes}
+            onSelectNode={instance.uiActions.onSelectNode}
+          />
+        </ResizablePanel>
+        <DetailSidebar width={350}>
+          <Inspector
+            os={instance.os}
+            metadata={metadata}
+            nodes={nodes}
+            showExtra={openBottomPanelWithContent}
+          />
+        </DetailSidebar>
+        <BottomPanel dismiss={dismissBottomPanel}>
+          {bottomPanelComponent}
+        </BottomPanel>
+      </Layout.Horizontal>
     </QueryClientProvider>
   );
 }

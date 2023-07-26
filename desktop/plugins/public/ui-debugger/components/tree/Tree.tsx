@@ -213,6 +213,7 @@ export function Tree2({
           //We use this normal divs flexbox sizing to measure how much vertical space we need for the child div
           ref={grandParentRef}
           style={{
+            paddingLeft: theme.space.medium,
             height: '100%',
             width: '100%',
           }}>
