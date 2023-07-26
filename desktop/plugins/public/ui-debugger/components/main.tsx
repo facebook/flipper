@@ -20,7 +20,7 @@ import {
 import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, Metadata, MetadataId, ClientNode} from '../ClientTypes';
 import {PerfStats} from './PerfStats';
-import {Visualization2D} from './Visualization2D';
+import {Visualization2D} from './visualizer/Visualization2D';
 import {Inspector} from './sidebar/Inspector';
 import {Controls} from './Controls';
 import {Button, Spin} from 'antd';

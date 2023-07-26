@@ -8,15 +8,15 @@
  */
 
 import React, {ReactNode, useEffect, useMemo, useRef, useState} from 'react';
-import {Bounds, Coordinate, Id, ClientNode} from '../ClientTypes';
-import {NestedNode, OnSelectNode} from '../DesktopTypes';
+import {Bounds, Coordinate, Id, ClientNode} from '../../ClientTypes';
+import {NestedNode, OnSelectNode} from '../../DesktopTypes';
 
 import {produce, styled, theme, usePlugin, useValue} from 'flipper-plugin';
-import {plugin} from '../index';
+import {plugin} from '../../index';
 import {head, isEqual, throttle} from 'lodash';
 import {Dropdown, Menu, Tooltip} from 'antd';
-import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
-import {useDelay} from '../hooks/useDelay';
+import {UIDebuggerMenuItem} from '../util/UIDebuggerMenuItem';
+import {useDelay} from '../../hooks/useDelay';
 import {
   AimOutlined,
   FullscreenExitOutlined,
