@@ -19,7 +19,7 @@ import {
   Tabs,
   theme,
 } from 'flipper-plugin';
-import {CloseCircleFilled} from '@ant-design/icons';
+import {CloseCircleFilled, DeleteOutlined} from '@ant-design/icons';
 import {
   CommandRecordEntry,
   ConnectionRecordEntry,
@@ -28,6 +28,7 @@ import {
 import SetupDoctorScreen from '../sandy-chrome/SetupDoctorScreen';
 import {ConsoleLogs} from './ConsoleLogs';
 import {FlipperMessages} from './FlipperMessages';
+import {Button} from 'antd';
 
 const rows = createDataSource<ConnectionRecordEntry>([], {
   limit: 200000,
@@ -130,12 +131,26 @@ function getRowStyle(entry: ConnectionRecordEntry): CSSProperties | undefined {
   return (logTypes[entry.type]?.style as any) ?? baseRowStyle;
 }
 
+function clearMessages() {
+  rows.clear();
+}
+
 export function ConnectivityHub() {
   const columns = createColumnConfig();
 
   const tableManagerRef = createRef<
     undefined | DataTableManager<ConnectionRecordEntry>
   >();
+
+  const clearButton = (
+    <Button
+      title="Clear logs"
+      onClick={() => {
+        clearMessages();
+      }}>
+      <DeleteOutlined />
+    </Button>
+  );
 
   const LogView = () => (
     <DataTable<ConnectionRecordEntry>
@@ -146,6 +161,7 @@ export function ConnectivityHub() {
       onRowStyle={getRowStyle}
       enableHorizontalScroll={false}
       tableManagerRef={tableManagerRef}
+      extraActions={clearButton}
     />
   );
 
