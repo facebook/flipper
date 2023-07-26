@@ -1,3 +1,8 @@
+# 0.208.0 (26/7/2023)
+
+ * [D47724521](https://github.com/facebook/flipper/search?q=D47724521&type=Commits) -  Added ability to favourite emulators / simulators in the launch virtual devices dialog
+
+
 # 0.207.0 (20/7/2023)
 
  * [D47295799](https://github.com/facebook/flipper/search?q=D47295799&type=Commits) -  UIDebugger Add seperate icon for litho mountables
