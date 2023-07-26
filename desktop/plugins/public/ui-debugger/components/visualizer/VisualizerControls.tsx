@@ -17,6 +17,8 @@ import {
   FullscreenExitOutlined,
   FullscreenOutlined,
 } from '@ant-design/icons';
+import {tracker} from '../../utils/tracker';
+import {debounce} from 'lodash';
 
 export type TargetModeState =
   | {
@@ -79,6 +81,7 @@ export function VisualiserControls({
                 targetMode.targetedNodes[value],
                 'visualiser',
               );
+              debouncedReportTargetAdjusted();
             }}
           />
         )}
@@ -91,8 +94,10 @@ export function VisualiserControls({
             onClick={() => {
               if (targetMode.state === 'disabled') {
                 setTargetMode({state: 'active'});
+                tracker.track('target-mode-switched', {on: true});
               } else {
                 setTargetMode({state: 'disabled'});
+                tracker.track('target-mode-switched', {on: false});
               }
             }}
             icon={
@@ -139,3 +144,7 @@ export function VisualiserControls({
     </Layout.Right>
   );
 }
+
+const debouncedReportTargetAdjusted = debounce(() => {
+  tracker.track('target-mode-adjusted', {});
+}, 500);
