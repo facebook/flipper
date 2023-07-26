@@ -20,6 +20,7 @@ import React, {
 import {
   HighlightManager,
   HighlightProvider,
+  Layout,
   styled,
   theme,
   useHighlighter,
@@ -27,30 +28,28 @@ import {
   useValue,
 } from 'flipper-plugin';
 import {plugin} from '../../index';
-import {Glyph} from 'flipper';
-import {head} from 'lodash';
+import {head, last} from 'lodash';
 import {Badge, Typography} from 'antd';
 
 import {useVirtualizer} from '@tanstack/react-virtual';
 import {ContextMenu} from './ContextMenu';
 import {MillisSinceEpoch, useKeyboardControls} from './useKeyboardControls';
 import {toTreeList} from './toTreeList';
+import {CaretDownOutlined} from '@ant-design/icons';
 
 const {Text} = Typography;
 
-type LineStyle = 'ToParent' | 'ToChildren';
-
 type NodeIndentGuide = {
   depth: number;
-  style: LineStyle;
   addHorizontalMarker: boolean;
   trimBottom: boolean;
+  color: 'primary' | 'secondary';
 };
 export type TreeNode = ClientNode & {
   depth: number;
   idx: number;
   isExpanded: boolean;
-  indentGuide: NodeIndentGuide | null;
+  indentGuides: NodeIndentGuide[];
   frameworkEvents: number | null;
 };
 export function Tree2({
@@ -111,7 +110,7 @@ export function Tree2({
   const rowVirtualizer = useVirtualizer({
     count: treeNodes.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 26,
+    estimateSize: () => TreeItemHeightNumber,
     overscan: 20,
   });
 
@@ -261,31 +260,82 @@ export function Tree2({
   );
 }
 
-function IndentGuide({indentGuide}: {indentGuide: NodeIndentGuide}) {
-  const verticalLinePadding = `${renderDepthOffset * indentGuide.depth + 8}px`;
+const secondaryColor = theme.buttonDefaultBackground;
+const GuideOffset = 11;
 
-  return (
-    <div>
-      <div
-        style={{
-          position: 'absolute',
-          width: verticalLinePadding,
-          height: indentGuide.trimBottom ? HalfTreeItemHeight : TreeItemHeight,
-          borderRight: `1px solid ${theme.primaryColor}`,
-        }}></div>
-      {indentGuide.addHorizontalMarker && (
-        <div
-          style={{
-            position: 'absolute',
-            width: renderDepthOffset / 3,
-            height: HalfTreeItemHeight,
-            borderBottom: `1px solid ${theme.primaryColor}`,
-            marginLeft: verticalLinePadding,
-          }}></div>
-      )}
-    </div>
-  );
-}
+const IndentGuides = React.memo(
+  ({
+    isSelected,
+    indentGuides,
+    hasExpandChildrenIcon,
+  }: {
+    isSelected: boolean;
+    hasExpandChildrenIcon: boolean;
+    indentGuides: NodeIndentGuide[];
+  }) => {
+    const lastGuide = last(indentGuides);
+
+    const lastGuidePadding = `${
+      renderDepthOffset * (lastGuide?.depth ?? 0) + GuideOffset
+    }px`;
+
+    return (
+      <div style={{pointerEvents: 'none'}}>
+        {indentGuides.map((guide, idx) => {
+          const indentGuideLinePadding = `${
+            renderDepthOffset * guide.depth + GuideOffset
+          }px`;
+
+          const isLastGuide = idx === indentGuides.length - 1;
+          const drawHalfprimary = isSelected && isLastGuide;
+
+          const firstHalf =
+            guide.color === 'primary' ? theme.primaryColor : secondaryColor;
+
+          const secondHalf = guide.trimBottom
+            ? 'transparent'
+            : guide.color === 'primary' && !drawHalfprimary
+            ? theme.primaryColor
+            : secondaryColor;
+
+          return (
+            <div
+              key={guide.depth}
+              style={{
+                position: 'absolute',
+                width: indentGuideLinePadding,
+                height: TreeItemHeight,
+                borderRight: `1px solid`,
+                borderImage: `linear-gradient(to bottom, ${firstHalf} 50%, ${secondHalf} 50%) 1`,
+                borderImageSlice: 1,
+              }}
+            />
+          );
+        })}
+        {lastGuide?.addHorizontalMarker && (
+          <div
+            style={{
+              position: 'absolute',
+              width: hasExpandChildrenIcon
+                ? renderDepthOffset / 2
+                : renderDepthOffset,
+              height: HalfTreeItemHeight,
+              borderBottom: `1px solid ${
+                lastGuide.color === 'primary'
+                  ? theme.primaryColor
+                  : secondaryColor
+              }`,
+              marginLeft: lastGuidePadding,
+            }}></div>
+        )}
+      </div>
+    );
+  },
+  (props, nextProps) =>
+    props.hasExpandChildrenIcon === nextProps.hasExpandChildrenIcon &&
+    props.indentGuides === nextProps.indentGuides &&
+    props.isSelected === nextProps.isSelected,
+);
 
 function TreeNodeRow({
   transform,
@@ -314,6 +364,8 @@ function TreeNodeRow({
   onCollapseNode: (node: Id) => void;
   onHoverNode: (node: Id) => void;
 }) {
+  const showExpandChildrenIcon = treeNode.children.length > 0;
+  const isSelected = treeNode.id === selectedNode;
   return (
     <div
       ref={innerRef}
@@ -325,12 +377,15 @@ function TreeNodeRow({
         transform: transform,
         //Due to absolute positioning width is set outside of react via a useLayoutEffect in parent
       }}>
-      {treeNode.indentGuide != null && (
-        <IndentGuide indentGuide={treeNode.indentGuide} />
-      )}
+      <IndentGuides
+        isSelected={isSelected}
+        hasExpandChildrenIcon={showExpandChildrenIcon}
+        indentGuides={treeNode.indentGuides}
+      />
+
       <TreeNodeContent
         isHighlighted={highlightedNodes.has(treeNode.id)}
-        isSelected={treeNode.id === selectedNode}
+        isSelected={isSelected}
         isHovered={hoveredNode === treeNode.id}
         onMouseEnter={() => {
           const kbIsNoLongerReservingScroll =
@@ -347,7 +402,7 @@ function TreeNodeRow({
         style={{overflow: 'visible'}}>
         <ExpandedIconOrSpace
           expanded={treeNode.isExpanded}
-          showIcon={treeNode.children.length > 0}
+          showIcon={showExpandChildrenIcon}
           onClick={() => {
             if (treeNode.isExpanded) {
               onCollapseNode(treeNode.id);
@@ -356,8 +411,8 @@ function TreeNodeRow({
             }
           }}
         />
-        {nodeIcon(treeNode)}
 
+        {nodeIcon(treeNode)}
         <TreeNodeTextContent treeNode={treeNode} />
         {treeNode.frameworkEvents && (
           <Badge
@@ -375,10 +430,14 @@ function TreeNodeRow({
 
 function TreeNodeTextContent({treeNode}: {treeNode: TreeNode}) {
   return (
-    <>
+    <Layout.Horizontal
+      style={{
+        alignItems: 'baseline',
+        userSelect: 'none',
+      }}>
       <HighlightedText text={treeNode.name} />
       <InlineAttributes attributes={treeNode.inlineAttributes} />
-    </>
+    </Layout.Horizontal>
   );
 }
 
@@ -404,7 +463,8 @@ function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
   );
 }
 
-const TreeItemHeight = '26px';
+const TreeItemHeightNumber = 28;
+const TreeItemHeight = `${TreeItemHeightNumber}px`;
 const HalfTreeItemHeight = `calc(${TreeItemHeight} / 2)`;
 
 const TreeNodeContent = styled.li<{
@@ -414,12 +474,12 @@ const TreeNodeContent = styled.li<{
   isHighlighted: boolean;
 }>(({item, isHovered, isSelected, isHighlighted}) => ({
   display: 'flex',
-  alignItems: 'baseline',
+  alignItems: 'center',
   height: TreeItemHeight,
   paddingLeft: `${item.depth * renderDepthOffset}px`,
   borderWidth: '1px',
   borderRadius: '3px',
-  borderColor: isHovered ? theme.selectionBackgroundColor : 'transparent',
+  borderColor: 'transparent',
   borderStyle: 'solid',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
@@ -427,6 +487,8 @@ const TreeNodeContent = styled.li<{
     ? 'rgba(255,0,0,.3)'
     : isSelected
     ? theme.selectionBackgroundColor
+    : isHovered
+    ? theme.backgroundWash
     : theme.backgroundDefault,
 }));
 
@@ -440,57 +502,82 @@ function ExpandedIconOrSpace(props: {
       <div
         role="button"
         tabIndex={0}
-        style={{display: 'flex'}}
+        style={{
+          display: 'flex',
+          height: TreeItemHeight,
+          width: 20,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
         onClick={(e) => {
           e.stopPropagation();
           props.onClick();
         }}>
-        <Glyph
+        <CaretDownOutlined
           style={{
-            transform: props.expanded ? 'rotate(90deg)' : '',
-            marginRight: '4px',
-            marginBottom: props.expanded ? '2px' : '',
+            cursor: 'pointer',
+            color: theme.textColorPlaceholder,
+            fontSize: 14,
+            transform: props.expanded ? '' : 'rotate(-90deg)',
           }}
-          name="chevron-right"
-          size={12}
-          color="grey"
         />
       </div>
     );
   } else {
-    return <div style={{width: '16px'}}></div>;
+    return (
+      <div
+        style={{
+          width: 20,
+          height: TreeItemHeight,
+        }}></div>
+    );
   }
 }
 
 function HighlightedText(props: {text: string}) {
   const highlightManager: HighlightManager = useHighlighter();
-  return <span>{highlightManager.render(props.text)} </span>;
+  return (
+    <Typography.Text>{highlightManager.render(props.text)} </Typography.Text>
+  );
 }
 
-function nodeIcon(node: ClientNode) {
+function nodeIcon(node: TreeNode) {
   if (node.tags.includes('LithoMountable')) {
-    return <DecorationImage src="icons/litho-logo-blue.png" />;
+    return <NodeIconImage src="icons/litho-logo-blue.png" />;
   } else if (node.tags.includes('Litho')) {
-    return <DecorationImage src="icons/litho-logo.png" />;
+    return <NodeIconImage src="icons/litho-logo.png" />;
   } else if (node.tags.includes('CK')) {
     if (node.tags.includes('iOS')) {
-      return <DecorationImage src="icons/ck-mounted-logo.png" />;
+      return <NodeIconImage src="icons/ck-mounted-logo.png" />;
     }
-    return <DecorationImage src="icons/ck-logo.png" />;
+    return <NodeIconImage src="icons/ck-logo.png" />;
   } else if (node.tags.includes('BloksBoundTree')) {
-    return <DecorationImage src="facebook/bloks-logo-orange.png" />;
+    return <NodeIconImage src="facebook/bloks-logo-orange.png" />;
   } else if (node.tags.includes('BloksDerived')) {
-    return <DecorationImage src="facebook/bloks-logo-blue.png" />;
+    return <NodeIconImage src="facebook/bloks-logo-blue.png" />;
+  } else {
+    return (
+      <div
+        style={{
+          height: NodeIconSize,
+          width: 0,
+          marginRight: IconRightMargin,
+        }}
+      />
+    );
   }
 }
 
-const DecorationImage = styled.img({
-  height: 12,
-  marginRight: 5,
-  width: 12,
+const NodeIconSize = 14;
+const IconRightMargin = '4px';
+const NodeIconImage = styled.img({
+  height: NodeIconSize,
+  width: NodeIconSize,
+  marginRight: IconRightMargin,
+  userSelect: 'none',
 });
 
-const renderDepthOffset = 12;
+const renderDepthOffset = 14;
 
 //due to virtualisation the out of the box dom based scrolling doesnt work
 function findSearchMatchingIndexes(
