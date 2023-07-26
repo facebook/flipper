@@ -53,6 +53,8 @@ PODS:
     - FlipperKit/Core
   - FlipperKit/FlipperKitReactPlugin (0.202.0):
     - FlipperKit/Core
+  - FlipperKit/FlipperKitUIDebuggerPlugin (0.202.0):
+    - FlipperKit/Core
   - FlipperKit/FlipperKitUserDefaultsPlugin (0.202.0):
     - FlipperKit/Core
   - FlipperKit/SKIOSNetworkPlugin (0.202.0):
@@ -74,6 +76,7 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitExamplePlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitLayoutPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitReactPlugin (from `../../FlipperKit.podspec`)
+  - FlipperKit/FlipperKitUIDebuggerPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitUserDefaultsPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/SKIOSNetworkPlugin (from `../../FlipperKit.podspec`)
   - libevent
@@ -108,11 +111,11 @@ SPEC CHECKSUMS:
   Flipper-Folly: 584845625005ff068a6ebf41f857f468decd26b3
   Flipper-Glog: 70c50ce58ddaf67dc35180db05f191692570f446
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
-  FlipperKit: 6a2be223aff449e4c0b1e7c55a636f67ac050b15
+  FlipperKit: 13477e6bc0a428163fdece76b10adf4da74c2632
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
 
-PODFILE CHECKSUM: 4d30d7695e19226b890d64952dd09dde3e2d80fc
+PODFILE CHECKSUM: 183869a0e4a7ff3632408564a06aeb8f4ddc1992
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.12.1

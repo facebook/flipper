@@ -11,6 +11,7 @@
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+#import <FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin.h>
 #import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 
@@ -44,6 +45,9 @@
                     initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client addPlugin:[FlipperKitExamplePlugin sharedInstance]];
   [client addPlugin:[FlipperKitReactPlugin new]];
+
+  FlipperKitUIDebuggerAddPlugin(client);
+
   [client start];
 
   UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard"

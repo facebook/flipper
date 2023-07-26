@@ -145,6 +145,15 @@ Pod::Spec.new do |spec|
     ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**", "ONLY_ACTIVE_ARCH": "YES" }
   end
 
+  spec.subspec "FlipperKitUIDebuggerPlugin" do |ss|
+    ss.header_dir = "FlipperKitUIDebuggerPlugin"
+    ss.dependency             'FlipperKit/Core'
+    ss.public_header_files  = 'iOS/Plugins/FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin.h'
+    ss.source_files         = 'iOS/Plugins/FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin/**/*.{h,cpp,m,mm}'
+    ss.exclude_files        = ['iOS/Plugins/FlipperKitUIDebuggerPlugin/fb/*','iOS/Plugins/FlipperKitUIDebuggerPlugin/facebook/*','iOS/Plugins/FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin/fb/*' ,'iOS/Plugins/FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin/facebook/*']
+    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**", "ONLY_ACTIVE_ARCH": "YES" }
+  end
+
   spec.subspec "FlipperKitLayoutComponentKitSupport" do |ss|
     ss.header_dir = "FlipperKitLayoutComponentKitSupport"
     ss.dependency             'FlipperKit/Core'

@@ -13,6 +13,10 @@
 #import "UIDDescriptorRegister.h"
 #import "UIDTreeObserverFactory.h"
 
+@interface FlipperKitUIDebuggerPlugin ()
+- (instancetype)initWithContext:(UIDContext*)context;
+@end
+
 #ifdef __cplusplus
 extern "C" {
 #endif
