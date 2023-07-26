@@ -63,28 +63,32 @@ export const TreeControls: React.FC = () => {
             {isPaused ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
           </Tooltip>
         }></Button>
-      <Button
-        type="default"
-        shape="circle"
-        onClick={() => {
-          setShowFrameworkEventsModal(true);
-        }}
-        icon={
-          <Tooltip title="Framework event monitoring">
-            <EyeOutlined />
-          </Tooltip>
-        }></Button>
       {frameworkEventMonitoring.size > 0 && (
-        <FrameworkEventsMonitoringModal
-          filterMainThreadMonitoring={filterMainThreadMonitoring}
-          onSetFilterMainThreadMonitoring={
-            instance.uiActions.onSetFilterMainThreadMonitoring
-          }
-          frameworkEventTypes={[...frameworkEventMonitoring.entries()]}
-          onSetEventMonitored={instance.uiActions.onSetFrameworkEventMonitored}
-          visible={showFrameworkEventsModal}
-          onCancel={() => setShowFrameworkEventsModal(false)}
-        />
+        <>
+          <Button
+            type="default"
+            shape="circle"
+            onClick={() => {
+              setShowFrameworkEventsModal(true);
+            }}
+            icon={
+              <Tooltip title="Framework event monitoring">
+                <EyeOutlined />
+              </Tooltip>
+            }></Button>
+          <FrameworkEventsMonitoringModal
+            filterMainThreadMonitoring={filterMainThreadMonitoring}
+            onSetFilterMainThreadMonitoring={
+              instance.uiActions.onSetFilterMainThreadMonitoring
+            }
+            frameworkEventTypes={[...frameworkEventMonitoring.entries()]}
+            onSetEventMonitored={
+              instance.uiActions.onSetFrameworkEventMonitored
+            }
+            visible={showFrameworkEventsModal}
+            onCancel={() => setShowFrameworkEventsModal(false)}
+          />
+        </>
       )}
     </Layout.Horizontal>
   );
