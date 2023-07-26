@@ -26,6 +26,8 @@ import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
   private var mSuper: ChainedDescriptor<T>? = null
 
+  override fun getId(node: T): Id = System.identityHashCode(node)
+
   fun setSuper(superDescriptor: ChainedDescriptor<T>) {
     if (superDescriptor !== mSuper) {
       check(mSuper == null)

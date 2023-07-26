@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.jetpackcompose.descriptors
 import android.graphics.Bitmap
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
 import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
+import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
@@ -134,4 +135,6 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
   override fun getActiveChild(node: ComposeNode): Any? = null
 
   override fun getTags(node: ComposeNode): Set<String> = setOf(BaseTags.Android, "Compose")
+
+  override fun getId(node: ComposeNode): Id = node.inspectorNode.id.toInt()
 }

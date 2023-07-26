@@ -38,7 +38,7 @@ typealias Id = Int
 interface NodeDescriptor<T> {
 
   /** Used to detect the same node across traversals */
-  fun getId(node: T): Id = System.identityHashCode(node)
+  fun getId(node: T): Id
 
   /** Should be w.r.t the direct parent */
   fun getBounds(node: T): Bounds
