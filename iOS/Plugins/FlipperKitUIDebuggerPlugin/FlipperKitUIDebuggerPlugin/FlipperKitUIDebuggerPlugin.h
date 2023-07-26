@@ -16,10 +16,12 @@
 
 @end
 
-FB_EXTERN_C_BEGIN
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 void FlipperKitUIDebuggerAddPlugin(FlipperClient*);
-
-FB_EXTERN_C_END
+#ifdef __cplusplus
+}
+#endif
 
 #endif
