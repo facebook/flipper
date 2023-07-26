@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useEffect, useMemo, useRef} from 'react';
+import React, {ReactNode, useEffect, useMemo, useRef, useState} from 'react';
 import {Bounds, Coordinate, Id, ClientNode} from '../ClientTypes';
 import {NestedNode, OnSelectNode} from '../DesktopTypes';
 
@@ -17,6 +17,11 @@ import {head, isEqual, throttle} from 'lodash';
 import {Dropdown, Menu, Tooltip} from 'antd';
 import {UIDebuggerMenuItem} from './util/UIDebuggerMenuItem';
 import {useDelay} from '../hooks/useDelay';
+import {
+  AimOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+} from '@ant-design/icons';
 
 export const Visualization2D: React.FC<
   {
@@ -311,7 +316,7 @@ const OverlayBorder = styled.div<{
     width: toPx(node?.bounds?.width ?? 0),
     height: toPx(node?.bounds?.height ?? 0),
     boxSizing: 'border-box',
-    borderWidth: type === 'selected' ? 3 : 2,
+    borderWidth: 3,
     borderStyle: 'solid',
     color: 'transparent',
     borderColor:
@@ -339,40 +344,100 @@ function getTotalOffset(id: Id, nodes: Map<Id, ClientNode>): Coordinate {
   return offset;
 }
 
+function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+  return value != null;
+}
+
+const iconStyle = {fontSize: 14};
 const ContextMenu: React.FC<{nodes: Map<Id, ClientNode>}> = ({children}) => {
   const instance = usePlugin(plugin);
-
   const focusedNodeId = useValue(instance.uiState.focusedNode);
-  const hoveredNodeId = head(useValue(instance.uiState.hoveredNodes));
+  const hoveredNodeIds = useValue(instance.uiState.hoveredNodes);
+
   const nodes = useValue(instance.nodes);
-  const hoveredNode = hoveredNodeId ? nodes.get(hoveredNodeId) : null;
+
+  const hoveredNodes = hoveredNodeIds
+    .map((id) => nodes.get(id))
+    .filter(notEmpty)
+    .reverse();
+
+  const focusItems = hoveredNodes.map((node: ClientNode) => (
+    <UIDebuggerMenuItem
+      key={node.id}
+      onMouseEnter={() => {
+        instance.uiActions.onHoverNode(node.id);
+      }}
+      text={node.name}
+      onClick={() => {
+        instance.uiActions.onFocusNode(node.id);
+      }}
+    />
+  ));
+
+  const selectItems = hoveredNodes.map((node: ClientNode) => (
+    <UIDebuggerMenuItem
+      key={node.id}
+      text={node.name}
+      onMouseEnter={() => {
+        instance.uiActions.onHoverNode(node.id);
+      }}
+      onClick={() => {
+        instance.uiActions.onSelectNode(node.id, 'visualiser');
+      }}
+    />
+  ));
+
+  //since the context menu changes the hover state to indicate where you are this
+  //causes a rerender and therefore changes the context menu items. to work around
+  //we grab the hovered items at the time the context menu opens and this is unaffected
+  //by any further changes to hover state
+  const [staticItems, setStaticItems] = useState<{
+    focusItems: ReactNode[];
+    selectItems: ReactNode[];
+  }>({
+    selectItems: [],
+    focusItems: [],
+  });
 
   return (
     <Dropdown
       onVisibleChange={(open) => {
         instance.uiActions.onContextMenuOpen(open);
+        if (open) {
+          setStaticItems({focusItems: focusItems, selectItems: selectItems});
+        }
       }}
       trigger={['contextMenu']}
       overlay={() => {
         return (
           <Menu>
-            {hoveredNode != null && hoveredNode?.id !== focusedNodeId && (
-              <UIDebuggerMenuItem
-                key="focus"
-                text={`Focus ${hoveredNode?.name}`}
-                onClick={() => {
-                  instance.uiActions.onFocusNode(hoveredNode?.id);
-                }}
-              />
+            {staticItems.focusItems.length > 0 && (
+              <Menu.SubMenu
+                title="Focus"
+                icon={<FullscreenExitOutlined style={iconStyle} />}>
+                {staticItems.focusItems}
+              </Menu.SubMenu>
             )}
+
             {focusedNodeId != null && (
               <UIDebuggerMenuItem
+                icon={<FullscreenOutlined />}
                 key="remove-focus"
                 text="Remove focus"
                 onClick={() => {
                   instance.uiActions.onFocusNode(undefined);
                 }}
               />
+            )}
+
+            {focusedNodeId != null && <Menu.Divider />}
+
+            {staticItems.selectItems.length > 0 && (
+              <Menu.SubMenu
+                title="Select"
+                icon={<AimOutlined style={iconStyle} />}>
+                {staticItems.selectItems}
+              </Menu.SubMenu>
             )}
           </Menu>
         );
