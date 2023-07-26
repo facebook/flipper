@@ -25,6 +25,16 @@ UIImage* UIDViewSnapshot(UIView* view) {
 
 UIImage* UIDApplicationSnapshot(UIApplication* application, NSArray* windows) {
   CGSize size = [UIScreen mainScreen].bounds.size;
+
+  // Use the application key window bounds if possible.
+  // In the case where the application is not using the entire screen,
+  // like in Split View on an iPad, the running application is
+  // not using the entire screen thus the snapshot stretches to
+  // fill the screen size which is incorrect.
+  if (application.keyWindow) {
+    size = application.keyWindow.bounds.size;
+  }
+
   UIGraphicsImageRenderer* renderer =
       [[UIGraphicsImageRenderer alloc] initWithSize:size];
 
