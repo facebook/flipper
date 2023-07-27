@@ -612,6 +612,10 @@ async function setUpLinuxBundle(outputDir: string) {
   await fs.chmod(path.join(outputDir, 'flipper'), 0o755);
 }
 
+async function setUpWindowsBundle(outputDir: string) {
+  console.log(`⚙️  Creating Windows bundle in ${outputDir}`);
+}
+
 async function setUpMacBundle(
   outputDir: string,
   versionNumber: string,
@@ -676,6 +680,8 @@ async function bundleServerReleaseForPlatform(
     outputPaths = await setUpMacBundle(outputDir, versionNumber);
   } else if (platform === BuildPlatform.LINUX) {
     await setUpLinuxBundle(outputDir);
+  } else if (platform === BuildPlatform.WINDOWS) {
+    await setUpWindowsBundle(outputDir);
   }
 
   console.log(`⚙️  Copying from ${dir} to ${outputPaths.resourcesPath}`);
