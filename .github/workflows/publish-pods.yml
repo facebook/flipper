@@ -1,4 +1,5 @@
 name: Publish Pods
+# This action runs on 'git push tag v*'
 on:
   push:
     tags:
@@ -9,7 +10,7 @@ jobs:
   publish_flipper_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
 
       - name: Install Dependences
         run: pod repo update
@@ -29,7 +30,7 @@ jobs:
     needs: publish_flipper_pod
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
 
       - name: Install Dependences
         run: pod repo update
@@ -49,7 +50,7 @@ jobs:
     needs: publish_flipperkit_pod
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
 
       - name: Update Flipper's Podspec
         run: ./scripts/update-pod-versions.sh ./ ./Flipper.podspec
@@ -123,7 +124,7 @@ jobs:
           git branch
 
       - name: Create PR to Update Podfile.lock
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v5.0.2
         with:
           title: "Automated: Update Podfile.lock"
           body: |
