@@ -8,14 +8,13 @@
  */
 
 import {Layout} from '../ui';
-import React, {createRef, CSSProperties, useState} from 'react';
+import React, {CSSProperties, useState} from 'react';
 import {
   createDataSource,
   DataFormatter,
   DataInspector,
   DataTable,
   DataTableColumn,
-  DataTableManager,
   Tab,
   Tabs,
   theme,
@@ -129,6 +128,8 @@ function createColumnConfig(): DataTableColumn<ConnectionRecordEntry>[] {
   ];
 }
 
+const columns = createColumnConfig();
+
 function getRowStyle(entry: ConnectionRecordEntry): CSSProperties | undefined {
   return (logTypes[entry.type]?.style as any) ?? baseRowStyle;
 }
@@ -164,13 +165,9 @@ function clearMessages() {
   rows.clear();
 }
 
-export function ConnectivityHub() {
-  const columns = createColumnConfig();
+const LogView = () => {
   const [selection, setSelection] = useState<
     ConnectionRecordEntry | undefined
-  >();
-  const tableManagerRef = createRef<
-    undefined | DataTableManager<ConnectionRecordEntry>
   >();
 
   const clearButton = (
@@ -184,23 +181,22 @@ export function ConnectivityHub() {
     </Button>
   );
 
-  const LogView = () => {
-    return (
-      <Layout.Right resizable width={400}>
-        <DataTable<ConnectionRecordEntry>
-          dataSource={rows}
-          columns={columns}
-          enableAutoScroll
-          onRowStyle={getRowStyle}
-          onSelect={setSelection}
-          tableManagerRef={tableManagerRef}
-          extraActions={clearButton}
-        />
-        <Sidebar selection={selection} />
-      </Layout.Right>
-    );
-  };
+  return (
+    <Layout.Right resizable width={400}>
+      <DataTable<ConnectionRecordEntry>
+        dataSource={rows}
+        columns={columns}
+        enableAutoScroll
+        onRowStyle={getRowStyle}
+        onSelect={setSelection}
+        extraActions={clearButton}
+      />
+      <Sidebar selection={selection} />
+    </Layout.Right>
+  );
+};
 
+export function ConnectivityHub() {
   return (
     <Layout.Container grow>
       <Tabs grow>
