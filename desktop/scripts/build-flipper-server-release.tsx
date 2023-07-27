@@ -333,6 +333,7 @@ async function packNpmArchive(dir: string, versionNumber: any) {
   const archive = path.resolve(distDir, 'flipper-server.tgz');
   await spawn('yarn', ['pack', '--filename', archive], {
     cwd: dir,
+    shell: true,
     stdio: 'inherit',
   });
 
@@ -357,6 +358,7 @@ async function runPostBuildAction(archive: string, dir: string) {
       ],
       {
         stdio: 'inherit',
+        shell: true,
       },
     );
   } else if (argv.start) {
@@ -367,6 +369,7 @@ async function runPostBuildAction(archive: string, dir: string) {
       {
         cwd: dir,
         stdio: 'inherit',
+        shell: true,
       },
     );
   }
@@ -396,6 +399,7 @@ async function yarnInstall(dir: string) {
     {
       cwd: dir,
       stdio: 'inherit',
+      shell: true,
     },
   );
 
