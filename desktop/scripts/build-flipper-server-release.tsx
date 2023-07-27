@@ -55,6 +55,13 @@ cd "$THIS_DIR"
 ./node ./server "$@"
 `;
 
+const WINDOWS_STARTUP_SCRIPT = `@echo off
+setlocal
+set "THIS_DIR=%~dp0"
+cd /d "%THIS_DIR%"
+node server %*
+`;
+
 const argv = yargs
   .usage('yarn build-flipper-server [args]')
   .version(false)
@@ -618,6 +625,12 @@ async function setUpLinuxBundle(outputDir: string) {
 
 async function setUpWindowsBundle(outputDir: string) {
   console.log(`⚙️  Creating Windows bundle in ${outputDir}`);
+  await fs.writeFile(
+    path.join(outputDir, 'flipper.bat'),
+    WINDOWS_STARTUP_SCRIPT,
+  );
+  // Give the script +x
+  await fs.chmod(path.join(outputDir, 'flipper.bat'), 0o755);
 }
 
 async function setUpMacBundle(
