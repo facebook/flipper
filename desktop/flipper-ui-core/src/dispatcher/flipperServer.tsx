@@ -37,13 +37,7 @@ export function connectFlipperServerToStore(
 ) {
   server.on('notification', ({type, title, description}) => {
     const key = `[${type}] ${title}: ${description}`;
-    notification.open({
-      message: title,
-      description: <NotificationBody text={description} />,
-      type: type,
-      duration: 0,
-      key,
-    });
+    showNotification(key, type, title, description);
   });
 
   server.on(
@@ -286,6 +280,21 @@ export function handleDeviceDisconnected(
     .getState()
     .connections.devices.find((device) => device.serial === deviceInfo.serial);
   existing?.connected.set(false);
+}
+
+function showNotification(
+  key: string,
+  type: 'success' | 'info' | 'error' | 'warning',
+  message: string,
+  description: string,
+) {
+  notification.open({
+    message,
+    description: <NotificationBody text={description} />,
+    type,
+    duration: 0,
+    key,
+  });
 }
 
 function showConnectivityTroubleshootNotification(
