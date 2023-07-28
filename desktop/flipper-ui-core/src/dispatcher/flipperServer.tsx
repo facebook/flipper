@@ -53,9 +53,11 @@ export function connectFlipperServerToStore(
     if (err.code === 'EADDRINUSE') {
       handeEADDRINUSE('' + err);
     } else {
+      const text = err.message ?? err;
       notification.error({
+        key: text,
         message: 'Connection error',
-        description: <NotificationBody text={err.message ?? err} />,
+        description: <NotificationBody text={text} />,
         duration: null,
       });
     }
