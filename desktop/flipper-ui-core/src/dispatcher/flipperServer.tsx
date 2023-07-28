@@ -188,6 +188,7 @@ function handleServerStateChange({
       handeEADDRINUSE(error);
     } else {
       notification.error({
+        key: `server-${state}-error`,
         message: 'Failed to start flipper-server',
         description: '' + error,
         duration: null,
