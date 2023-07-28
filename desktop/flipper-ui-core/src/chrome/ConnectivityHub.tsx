@@ -193,16 +193,16 @@ export function ConnectivityHub() {
   return (
     <Layout.Container grow>
       <Tabs grow>
-        <Tab tab="Environment Check">
+        <Tab tab="Environment Check" tabKey="environment-check">
           <SetupDoctorScreen visible modal={false} onClose={() => {}} />
         </Tab>
-        <Tab tab="Connectivity Logs">
+        <Tab tab="Connectivity Logs" tabKey="connectivity-logs" active>
           <LogView />
         </Tab>
-        <Tab tab="Console Logs">
+        <Tab tab="Console Logs" tabKey="console-logs">
           <ConsoleLogs />
         </Tab>
-        <Tab tab="Messages">
+        <Tab tab="Messages" tabKey="messages">
           <FlipperMessages />
         </Tab>
       </Tabs>
