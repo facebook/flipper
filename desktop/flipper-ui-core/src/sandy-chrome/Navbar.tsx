@@ -512,16 +512,14 @@ function TroubleshootMenu() {
               onClick={() => setIsDoctorVisible(true)}>
               <Badge dot={hasNewProblem}>Setup Doctor</Badge>
             </Menu.Item>
-            {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
-              <Menu.Item
-                key="connectivity"
-                onClick={() => {
-                  store.dispatch(setTopLevelSelection('connectivity'));
-                  store.dispatch(setStaticView(ConnectivityHub));
-                }}>
-                Troubleshoot Connectivity
-              </Menu.Item>
-            )}
+            <Menu.Item
+              key="connectivity"
+              onClick={() => {
+                store.dispatch(setTopLevelSelection('connectivity'));
+                store.dispatch(setStaticView(ConnectivityHub));
+              }}>
+              Troubleshoot Connectivity
+            </Menu.Item>
             <TroubleshootingGuide />
 
             <Menu.Item
