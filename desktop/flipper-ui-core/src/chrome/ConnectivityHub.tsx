@@ -141,17 +141,10 @@ const Placeholder = styled(Layout.Container)({
 });
 
 function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
-  const renderExtra = (extra: any) => (
-    <>
-      <p>Details</p>
-      <DataInspector data={extra} expandRoot />
-    </>
-  );
-
   return (
     <Layout.ScrollContainer pad>
       {selection != null ? (
-        renderExtra(selection)
+        <DataInspector data={selection} expandRoot />
       ) : (
         <Placeholder grow pad="large">
           Select an entry to visualize details
