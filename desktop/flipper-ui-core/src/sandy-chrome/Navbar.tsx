@@ -33,10 +33,11 @@ import {
   WarningOutlined,
 } from '@ant-design/icons';
 import {
+  setTopLevelSelection,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
+  ToplevelNavigationItem,
 } from '../reducers/application';
-import {ToplevelNavItem, ToplevelProps} from './SandyApp';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
@@ -57,11 +58,11 @@ import {
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import {css} from '@emotion/css';
 import constants from '../fb-stubs/constants';
-import {setStaticView} from '../reducers/connections';
+import {selectPlugin, setStaticView} from '../reducers/connections';
 import {StyleGuide} from './StyleGuide';
 import {openDeeplinkDialog} from '../deeplink';
 import SettingsSheet from '../chrome/SettingsSheet';
-import WelcomeScreen from './WelcomeScreen';
+import WelcomeScreen, {WelcomeScreenStaticView} from './WelcomeScreen';
 import {AppSelector} from './appinspect/AppSelector';
 import {
   NavbarScreenRecordButton,
@@ -69,11 +70,21 @@ import {
 } from '../chrome/ScreenCaptureButtons';
 import {StatusMessage} from './appinspect/AppInspect';
 import {TroubleshootingGuide} from './appinspect/fb-stubs/TroubleshootingGuide';
+import {FlipperDevTools} from '../chrome/FlipperDevTools';
+import {ConnectivityHub} from '../chrome/ConnectivityHub';
 
-export const Navbar = withTrackingScope(function Navbar({
-  toplevelSelection,
-  setToplevelSelection,
-}: ToplevelProps) {
+export const Navbar = withTrackingScope(function Navbar() {
+  const {topLevelSelection, selectedDevice, selectedAppId, selectedPlugin} =
+    useStore((state) => {
+      return {
+        topLevelSelection: state.application.topLevelSelection,
+        selectedDevice: state.connections.selectedDevice,
+        selectedAppId: state.connections.selectedAppId,
+        selectedPlugin: state.connections.selectedPlugin,
+      };
+    });
+
+  const dispatch = useDispatch();
   return (
     <Layout.Horizontal
       borderBottom
@@ -90,9 +101,20 @@ export const Navbar = withTrackingScope(function Navbar({
         <NavbarButton
           icon={MobileOutlined}
           label="App Inspect"
-          toggled={toplevelSelection === 'appinspect'}
+          toggled={topLevelSelection === 'appinspect'}
           onClick={() => {
-            setToplevelSelection('appinspect');
+            dispatch(setTopLevelSelection('appinspect'));
+            if (selectedPlugin) {
+              dispatch(
+                selectPlugin({
+                  selectedPlugin,
+                  selectedAppId,
+                  selectedDevice: selectedDevice,
+                }),
+              );
+            } else {
+              dispatch(setStaticView(WelcomeScreenStaticView));
+            }
           }}
         />
         <AppSelector />
@@ -110,11 +132,8 @@ export const Navbar = withTrackingScope(function Navbar({
       <Layout.Horizontal style={{gap: 6, alignItems: 'center'}}>
         <NoConnectivityWarning />
 
-        <NotificationButton
-          toplevelSelection={toplevelSelection}
-          setToplevelSelection={setToplevelSelection}
-        />
-        <TroubleshootMenu setToplevelSelection={setToplevelSelection} />
+        <NotificationButton topLevelSelection={topLevelSelection} />
+        <TroubleshootMenu />
         <ExtrasMenu />
         <RightSidebarToggleButton />
 
@@ -224,23 +243,25 @@ function ExportEverythingEverywhereAllAtOnceStatusModal({
 }
 
 function NotificationButton({
-  toplevelSelection,
-  setToplevelSelection,
-}: ToplevelProps) {
+  topLevelSelection,
+}: {
+  topLevelSelection: ToplevelNavigationItem;
+}) {
   const notifications = useStore((state) => state.notifications);
   const activeNotifications = useMemoize(filterNotifications, [
     notifications.activeNotifications,
     notifications.blocklistedPlugins,
     notifications.blocklistedCategories,
   ]);
+  const dispatch = useDispatch();
   return (
     <NavbarButton
       icon={BellOutlined}
       label="Alerts"
       zIndex={AlertsZIndex}
-      toggled={toplevelSelection === 'notification'}
+      toggled={topLevelSelection === 'notification'}
       count={activeNotifications.length}
-      onClick={() => setToplevelSelection('notification')}
+      onClick={() => dispatch(setTopLevelSelection('notification'))}
     />
   );
 }
@@ -444,11 +465,7 @@ const submenu = css`
 const AlertsZIndex = 101;
 const TroubleShootZIndex = 100;
 
-function TroubleshootMenu({
-  setToplevelSelection,
-}: {
-  setToplevelSelection: (x: ToplevelNavItem) => void;
-}) {
+function TroubleshootMenu() {
   const store = useStore();
   const [status, setStatus] = useState<
     ExportEverythingEverywhereAllAtOnceStatus | undefined
@@ -498,7 +515,10 @@ function TroubleshootMenu({
             {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
               <Menu.Item
                 key="connectivity"
-                onClick={() => setToplevelSelection('connectivity')}>
+                onClick={() => {
+                  store.dispatch(setTopLevelSelection('connectivity'));
+                  store.dispatch(setStaticView(ConnectivityHub));
+                }}>
                 Troubleshoot Connectivity
               </Menu.Item>
             )}
@@ -511,7 +531,10 @@ function TroubleshootMenu({
             </Menu.Item>
             <Menu.Item
               key="flipperlogs"
-              onClick={() => setToplevelSelection('flipperlogs')}>
+              onClick={() => {
+                store.dispatch(setTopLevelSelection('flipperlogs'));
+                store.dispatch(setStaticView(FlipperDevTools));
+              }}>
               <Layout.Horizontal center gap="small">
                 Flipper Logs <Badge count={flipperErrorLogCount} />
               </Layout.Horizontal>
