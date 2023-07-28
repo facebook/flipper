@@ -295,6 +295,36 @@ export function handleDeviceDisconnected(
   existing?.connected.set(false);
 }
 
+function showConnectivityTroubleshootNotification(
+  store: Store,
+  key: string,
+  message: string,
+  description: string,
+) {
+  notification.error({
+    key,
+    message,
+    description: (
+      <Layout.Bottom>
+        <p>${description}</p>
+        <div>
+          <Button
+            type="primary"
+            style={{float: 'right'}}
+            onClick={() => {
+              store.dispatch(setTopLevelSelection('connectivity'));
+              store.dispatch(setStaticView(ConnectivityHub));
+              notification.close(key);
+            }}>
+            Troubleshoot
+          </Button>
+        </div>
+      </Layout.Bottom>
+    ),
+    duration: 0,
+  });
+}
+
 export async function handleClientConnected(
   server: FlipperServer,
   store: Store,
@@ -330,31 +360,13 @@ export async function handleClientConnected(
           e,
         );
         const key = `device-find-failure-${query.device_id}`;
-        notification.error({
+        showConnectivityTroubleshootNotification(
+          store,
           key,
-          message: 'Connection failed',
-          description: (
-            <Layout.Bottom>
-              <p>
-                Failed to find device '{query.device_id}' while trying to
-                connect app '{query.app}'`
-              </p>
-              <div>
-                <Button
-                  type="primary"
-                  style={{float: 'right'}}
-                  onClick={() => {
-                    store.dispatch(setTopLevelSelection('connectivity'));
-                    store.dispatch(setStaticView(ConnectivityHub));
-                    notification.close(key);
-                  }}>
-                  Troubleshoot
-                </Button>
-              </div>
-            </Layout.Bottom>
-          ),
-          duration: 0,
-        });
+          'Connection failed',
+          `Failed to find device '${query.device_id}' while trying to
+        connect app '${query.app}'`,
+        );
       },
     ));
 
