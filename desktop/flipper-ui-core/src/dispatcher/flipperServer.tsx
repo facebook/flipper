@@ -200,6 +200,7 @@ function handleServerStateChange({
 
 function handeEADDRINUSE(errorMessage: string) {
   notification.error({
+    key: 'eaddrinuse-error',
     message: 'Connection error',
     description: (
       <>
