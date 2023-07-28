@@ -140,7 +140,7 @@ export class FlipperServerImpl implements FlipperServer {
     server.addListener(
       'client-setup-error',
       ({client, error}: {client: UninitializedClient; error: Error}) => {
-        this.emit('notification', {
+        this.emit('connectivity-troubleshoot-notification', {
           title: `Connection to '${client.appName}' on '${client.deviceName}' failed`,
           description: `Failed to start client connection: ${error}`,
           type: 'error',
@@ -161,7 +161,7 @@ export class FlipperServerImpl implements FlipperServer {
         const clientIdentifier = `${client.deviceName}#${client.appName}`;
         if (!this.unresponsiveClients.has(clientIdentifier)) {
           this.unresponsiveClients.add(clientIdentifier);
-          this.emit('notification', {
+          this.emit('connectivity-troubleshoot-notification', {
             type: 'error',
             title: `Timed out establishing connection with "${client.appName}" on "${client.deviceName}".`,
             description:
