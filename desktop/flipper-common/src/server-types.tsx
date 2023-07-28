@@ -161,6 +161,11 @@ export type FlipperServerEvents = {
   };
   'connectivity-troubleshoot-cmd': CommandRecordEntry;
   'connectivity-troubleshoot-log': ConnectionRecordEntry;
+  'connectivity-troubleshoot-notification': {
+    type: 'error' | 'warning';
+    title: string;
+    description: string;
+  };
   'plugins-server-add-on-message': ExecuteMessage;
   'download-file-update': DownloadFileUpdate;
   'server-log': LoggerInfo;

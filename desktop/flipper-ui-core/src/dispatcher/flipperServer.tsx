@@ -47,6 +47,20 @@ export function connectFlipperServerToStore(
     });
   });
 
+  server.on(
+    'connectivity-troubleshoot-notification',
+    ({type, title, description}) => {
+      const text = `[${type}] ${title}: ${description}`;
+      notification.open({
+        message: title,
+        description: <NotificationBody text={description} />,
+        type: type,
+        duration: 0,
+        key: text,
+      });
+    },
+  );
+
   server.on('server-state', handleServerStateChange);
 
   server.on('server-error', (err) => {
