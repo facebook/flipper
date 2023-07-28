@@ -308,6 +308,7 @@ export async function handleClientConnected(
           e,
         );
         notification.error({
+          key: `device-find-failure-${query.device_id}`,
           message: 'Connection failed',
           description: `Failed to find device '${query.device_id}' while trying to connect app '${query.app}'`,
           duration: 0,
