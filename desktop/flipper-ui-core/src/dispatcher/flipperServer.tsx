@@ -36,28 +36,21 @@ export function connectFlipperServerToStore(
   logger: Logger,
 ) {
   server.on('notification', ({type, title, description}) => {
-    const text = `[${type}] ${title}: ${description}`;
-    console.warn(text);
+    const key = `[${type}] ${title}: ${description}`;
     notification.open({
       message: title,
       description: <NotificationBody text={description} />,
       type: type,
       duration: 0,
-      key: text,
+      key,
     });
   });
 
   server.on(
     'connectivity-troubleshoot-notification',
     ({type, title, description}) => {
-      const text = `[${type}] ${title}: ${description}`;
-      notification.open({
-        message: title,
-        description: <NotificationBody text={description} />,
-        type: type,
-        duration: 0,
-        key: text,
-      });
+      const key = `[${type}] ${title}: ${description}`;
+      showConnectivityTroubleshootNotification(store, key, title, description);
     },
   );
 
