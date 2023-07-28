@@ -18,13 +18,17 @@ import {
   FlipperServerState,
 } from 'flipper-common';
 import Client from '../Client';
-import {notification} from 'antd';
+import {Button, notification} from 'antd';
 import {BaseDevice} from 'flipper-frontend-core';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
 import {waitFor} from '../utils/waitFor';
 import {NotificationBody} from '../ui/components/NotificationBody';
+import {Layout} from '../ui';
+import {setStaticView} from '../reducers/connections';
+import {ConnectivityHub} from '../chrome/ConnectivityHub';
+import {setTopLevelSelection} from '../reducers/application';
 
 export function connectFlipperServerToStore(
   server: FlipperServer,
@@ -307,10 +311,30 @@ export async function handleClientConnected(
           `[conn] Failed to find device '${query.device_id}' while connection app '${query.app}'`,
           e,
         );
+        const key = `device-find-failure-${query.device_id}`;
         notification.error({
-          key: `device-find-failure-${query.device_id}`,
+          key,
           message: 'Connection failed',
-          description: `Failed to find device '${query.device_id}' while trying to connect app '${query.app}'`,
+          description: (
+            <Layout.Bottom>
+              <p>
+                Failed to find device '{query.device_id}' while trying to
+                connect app '{query.app}'`
+              </p>
+              <div>
+                <Button
+                  type="primary"
+                  style={{float: 'right'}}
+                  onClick={() => {
+                    store.dispatch(setTopLevelSelection('connectivity'));
+                    store.dispatch(setStaticView(ConnectivityHub));
+                    notification.close(key);
+                  }}>
+                  Troubleshoot
+                </Button>
+              </div>
+            </Layout.Bottom>
+          ),
           duration: 0,
         });
       },
