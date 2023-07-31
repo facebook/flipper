@@ -27,7 +27,7 @@
     "fs-extra": "^10.1.0",
     "glob": "^8.0.1",
     "ignore": "^5.2.4",
-    "metro": "^0.70.2",
+    "metro": "^0.77.0",
     "metro-minify-terser": "^0.75.0",
     "p-filter": "^2.1.0",
     "p-map": "^4.0.0",
