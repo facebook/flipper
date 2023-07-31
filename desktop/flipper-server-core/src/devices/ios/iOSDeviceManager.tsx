@@ -184,16 +184,15 @@ export class IOSDeviceManager {
     }
   }
 
-  private queryDevicesForever(bridge: IOSBridge) {
-    return this.queryDevices(bridge)
-      .then(() => {
-        // It's important to schedule the next check AFTER the current one has completed
-        // to avoid simultaneous queries which can cause multiple user input prompts.
-        setTimeout(() => this.queryDevicesForever(bridge), 3000);
-      })
-      .catch((err) => {
-        console.warn('Failed to continuously query devices:', err);
-      });
+  private async queryDevicesForever(bridge: IOSBridge) {
+    try {
+      await this.queryDevices(bridge);
+      // It's important to schedule the next check AFTER the current one has completed
+      // to avoid simultaneous queries which can cause multiple user input prompts.
+      setTimeout(() => this.queryDevicesForever(bridge), 3000);
+    } catch (err) {
+      console.warn('Failed to continuously query devices:', err);
+    }
   }
 
   async checkXcodeVersionMismatch() {
