@@ -46,7 +46,7 @@
     "@types/sinon": "^10.0.15",
     "@types/ws": "^8.5.5",
     "@typescript-eslint/eslint-plugin": "6.1.0",
-    "@typescript-eslint/parser": "6.1.0",
+    "@typescript-eslint/parser": "6.2.0",
     "ansi-to-html": "^0.7.2",
     "cross-env": "^7.0.3",
     "eslint": "8.45.0",
