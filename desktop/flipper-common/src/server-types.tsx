@@ -297,6 +297,7 @@ export type FlipperServerCommands = {
   'android-launch-emulator': (name: string, coldboot: boolean) => Promise<void>;
   'ios-get-simulators': (bootedOnly: boolean) => Promise<IOSDeviceParams[]>;
   'ios-launch-simulator': (udid: string) => Promise<void>;
+  'ios-idb-kill': () => Promise<void>;
   'persist-settings': (settings: Settings) => Promise<void>;
   'persist-launcher-settings': (settings: LauncherSettings) => Promise<void>;
   'keychain-write': (service: string, token: string) => Promise<void>;

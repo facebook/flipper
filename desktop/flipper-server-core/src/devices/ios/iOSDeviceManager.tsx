@@ -225,6 +225,14 @@ export class IOSDeviceManager {
       console.warn('Failed to determine Xcode version:', e);
     }
   }
+
+  async idbKill() {
+    if (!this.idbConfig.idbPath || this.idbConfig.idbPath.length === 0) {
+      return;
+    }
+    const cmd = `${this.idbConfig.idbPath} kill`;
+    await exec(cmd);
+  }
 }
 
 function confirmSimulatorAppMatchesThatOfXcodeSelect(
