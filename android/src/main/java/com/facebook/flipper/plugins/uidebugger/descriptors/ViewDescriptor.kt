@@ -25,6 +25,8 @@ import com.facebook.flipper.plugins.uidebugger.common.*
 import com.facebook.flipper.plugins.uidebugger.model.*
 import com.facebook.flipper.plugins.uidebugger.util.ResourcesUtil
 import java.lang.reflect.Field
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
 
 object ViewDescriptor : ChainedDescriptor<View>() {
 
@@ -432,6 +434,13 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       params[GravityAttributeId] = GravityMapping.toInspectable(layoutParams.gravity)
     }
     return InspectableObject(params)
+  }
+
+  override fun onGetHiddenAttributes(node: View, attributes: MutableMap<String, JsonElement>) {
+
+    if (node.visibility != View.VISIBLE) {
+      attributes["invisible"] = JsonPrimitive(true)
+    }
   }
 
   private fun getViewTags(node: View): MutableMap<Int, Inspectable> {
