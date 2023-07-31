@@ -71,7 +71,7 @@ import {
 import {StatusMessage} from './appinspect/AppInspect';
 import {TroubleshootingGuide} from './appinspect/fb-stubs/TroubleshootingGuide';
 import {FlipperDevTools} from '../chrome/FlipperDevTools';
-import {ConnectivityHub} from '../chrome/ConnectivityHub';
+import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
 
 export const Navbar = withTrackingScope(function Navbar() {
   const {topLevelSelection, selectedDevice, selectedAppId, selectedPlugin} =
@@ -516,7 +516,7 @@ function TroubleshootMenu() {
               key="connectivity"
               onClick={() => {
                 store.dispatch(setTopLevelSelection('connectivity'));
-                store.dispatch(setStaticView(ConnectivityHub));
+                store.dispatch(setStaticView(TroubleshootingHub));
               }}>
               Troubleshoot Connectivity
             </Menu.Item>

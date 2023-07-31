@@ -43,7 +43,7 @@ import {getRenderHostInstance} from 'flipper-frontend-core';
 import {startGlobalErrorHandling} from './utils/globalErrorHandling';
 import {loadTheme} from './utils/loadTheme';
 import {connectFlipperServerToStore} from './dispatcher/flipperServer';
-import {enableConnectivityHub} from './chrome/ConnectivityHub';
+import {enableConnectivityHook} from './chrome/TroubleshootingHub';
 import ReactDOM from 'react-dom';
 
 class AppFrame extends React.Component<
@@ -178,7 +178,7 @@ function init(flipperServer: FlipperServer) {
   );
 
   enableConsoleHook();
-  enableConnectivityHub(flipperServer);
+  enableConnectivityHook(flipperServer);
 
   const launcherMessage =
     getRenderHostInstance().serverConfig.processConfig.launcherMsg;

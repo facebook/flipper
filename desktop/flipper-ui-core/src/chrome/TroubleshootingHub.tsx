@@ -36,7 +36,7 @@ const rows = createDataSource<ConnectionRecordEntry>([], {
   persist: 'connectivity-logs',
 });
 
-export function enableConnectivityHub(flipperServer: FlipperServer) {
+export function enableConnectivityHook(flipperServer: FlipperServer) {
   flipperServer.on(
     'connectivity-troubleshoot-log',
     (entry: ConnectionRecordEntry) => {
@@ -189,7 +189,7 @@ const LogView = () => {
   );
 };
 
-export function ConnectivityHub() {
+export function TroubleshootingHub() {
   return (
     <Layout.Container grow>
       <Tabs activeKey="connectivity-logs" grow>

@@ -27,7 +27,7 @@ import {waitFor} from '../utils/waitFor';
 import {NotificationBody} from '../ui/components/NotificationBody';
 import {Layout} from '../ui';
 import {setStaticView} from '../reducers/connections';
-import {ConnectivityHub} from '../chrome/ConnectivityHub';
+import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
 import {setTopLevelSelection} from '../reducers/application';
 
 export function connectFlipperServerToStore(
@@ -315,7 +315,7 @@ function showConnectivityTroubleshootNotification(
             style={{float: 'right'}}
             onClick={() => {
               store.dispatch(setTopLevelSelection('connectivity'));
-              store.dispatch(setStaticView(ConnectivityHub));
+              store.dispatch(setStaticView(TroubleshootingHub));
               notification.close(key);
             }}>
             Troubleshoot
