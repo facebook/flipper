@@ -192,11 +192,11 @@ const LogView = () => {
 export function ConnectivityHub() {
   return (
     <Layout.Container grow>
-      <Tabs grow>
+      <Tabs activeKey="connectivity-logs" grow>
         <Tab tab="Environment Check" tabKey="environment-check">
           <SetupDoctorScreen visible modal={false} onClose={() => {}} />
         </Tab>
-        <Tab tab="Connectivity Logs" tabKey="connectivity-logs" active>
+        <Tab tab="Connectivity Logs" tabKey="connectivity-logs">
           <LogView />
         </Tab>
         <Tab tab="Console Logs" tabKey="console-logs">
