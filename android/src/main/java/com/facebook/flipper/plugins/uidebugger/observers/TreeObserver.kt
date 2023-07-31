@@ -35,35 +35,37 @@ abstract class TreeObserver<T> {
 
   abstract val type: String
 
-  abstract fun subscribe(node: Any)
+  abstract fun subscribe(node: Any, parentId: Id?)
 
   abstract fun unsubscribe()
 
   /** Traverses the layout hierarchy while managing any encountered child observers. */
   fun traverseAndSend(
+      parentId: Id?,
       context: UIDContext,
       root: Any,
       snapshotBitmap: BitmapPool.ReusableBitmap? = null,
       frameworkEvents: List<FrameworkEvent>? = null
   ) {
     val traversalStartTimestamp = System.currentTimeMillis()
-    val (visitedNodes, observableRoots) = context.layoutTraversal.traverse(root)
+    val (visitedNodes, observableRoots) = context.layoutTraversal.traverse(root, parentId)
 
     // Add any new observers
-    observableRoots.forEach { observable ->
+    observableRoots.forEach { (observable, parentId) ->
       if (!children.containsKey(observable.objectIdentity())) {
         context.observerFactory.createObserver(observable, context)?.let { observer ->
           Log.d(
               LogTag,
               "Observer ${this.type} discovered new child of type ${observer.type} Node ID ${observable.objectIdentity()}")
-          observer.subscribe(observable)
+          observer.subscribe(observable, parentId)
           children[observable.objectIdentity()] = observer
         }
       }
     }
 
     // Remove any old observers
-    val observableRootsIdentifiers = observableRoots.map { it.objectIdentity() }
+    val observableRootsIdentifiers =
+        observableRoots.map { (observable, _) -> observable.objectIdentity() }
     val removables = mutableListOf<Id>()
     children.keys.forEach { key ->
       if (!observableRootsIdentifiers.contains(key)) {
