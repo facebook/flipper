@@ -42,7 +42,7 @@ class Recorder {
 
         const entry: CommandRecordEntry = {
           time: new Date(),
-          type: 'cmd',
+          type: payload.success ? 'info' : 'error',
           device,
           app,
           message: payload.cmd,
