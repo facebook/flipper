@@ -98,7 +98,7 @@
     "less": "^4.1.2",
     "patch-package": "^6.4.7",
     "prettier": "^2.8.7",
-    "pretty-format": "^27.5.0",
+    "pretty-format": "^29.6.2",
     "rimraf": "^3.0.2",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
