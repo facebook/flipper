@@ -167,8 +167,10 @@ export class IOSDeviceManager {
     }
   }
 
-  getSimulators(bootedOnly: boolean): Promise<Array<IOSDeviceParams>> {
-    return this.simctlBridge.getActiveDevices(bootedOnly).catch((e: Error) => {
+  async getSimulators(bootedOnly: boolean): Promise<Array<IOSDeviceParams>> {
+    try {
+      return await this.simctlBridge.getActiveDevices(bootedOnly);
+    } catch (e) {
       console.warn('Failed to query simulators:', e);
       if (e.message.includes('Xcode license agreements')) {
         this.flipperServer.emit('notification', {
@@ -178,8 +180,8 @@ export class IOSDeviceManager {
             'The Xcode license agreement has changed. You need to either open Xcode and agree to the terms or run `sudo xcodebuild -license` in a Terminal to allow simulators to work with Flipper.',
         });
       }
-      return Promise.resolve([]);
-    });
+      return [];
+    }
   }
 
   private queryDevicesForever(bridge: IOSBridge) {
