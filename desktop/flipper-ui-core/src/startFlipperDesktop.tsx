@@ -43,7 +43,7 @@ import {getRenderHostInstance} from 'flipper-frontend-core';
 import {startGlobalErrorHandling} from './utils/globalErrorHandling';
 import {loadTheme} from './utils/loadTheme';
 import {connectFlipperServerToStore} from './dispatcher/flipperServer';
-import {enableConnectivityHook} from './chrome/TroubleshootingHub';
+import {enableConnectivityHook} from './chrome/ConnectivityLogs';
 import ReactDOM from 'react-dom';
 
 class AppFrame extends React.Component<
