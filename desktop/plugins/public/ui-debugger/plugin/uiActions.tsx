@@ -16,6 +16,7 @@ import {
   UIActions,
   UIState,
   ViewMode,
+  WireFrameMode,
 } from '../DesktopTypes';
 import {tracker} from '../utils/tracker';
 import {
@@ -108,6 +109,10 @@ export function uiActions(
     uiState.viewMode.set(viewMode);
   };
 
+  const onSetWireFrameMode = (wireFrameMode: WireFrameMode) => {
+    uiState.wireFrameMode.set(wireFrameMode);
+  };
+
   const onSetFrameworkEventMonitored = (
     eventType: FrameworkEventType,
     monitored: boolean,
@@ -158,5 +163,6 @@ export function uiActions(
     onSetFrameworkEventMonitored,
     onPlayPauseToggled,
     onSearchTermUpdated,
+    onSetWireFrameMode,
   };
 }

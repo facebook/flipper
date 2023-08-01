@@ -27,6 +27,7 @@ import {
   StreamState,
   ReadOnlyUIState,
   LiveClientState,
+  WireFrameMode,
 } from './DesktopTypes';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
 import {prefetchSourceFileLocation} from './components/fb-stubs/IDEContextMenu';
@@ -365,5 +366,6 @@ function createUIState(): UIState {
     searchTerm: createState<string>(''),
     focusedNode: createState<Id | undefined>(undefined),
     expandedNodes: createState<Set<Id>>(new Set()),
+    wireFrameMode: createState<WireFrameMode>('All'),
   };
 }

@@ -30,7 +30,7 @@ export function checkFocusedNodeStillActive(
   nodes: Map<Id, ClientNode>,
 ) {
   const focusedNodeId = uiState.focusedNode.get();
-  const focusedNode = focusedNodeId && nodes.get(focusedNodeId);
+  const focusedNode = focusedNodeId != null && nodes.get(focusedNodeId);
   if (!focusedNode || !isFocusedNodeAncestryAllActive(focusedNode, nodes)) {
     uiState.focusedNode.set(undefined);
   }

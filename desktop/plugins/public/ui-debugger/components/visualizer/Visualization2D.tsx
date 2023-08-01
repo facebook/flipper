@@ -9,7 +9,7 @@
 
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Bounds, Coordinate, Id, ClientNode} from '../../ClientTypes';
-import {NestedNode, OnSelectNode} from '../../DesktopTypes';
+import {NestedNode, OnSelectNode, WireFrameMode} from '../../DesktopTypes';
 
 import {
   produce,
@@ -42,6 +42,7 @@ export const Visualization2D: React.FC<
   const selectedNodeId = useValue(instance.uiState.selectedNode);
   const hoveredNodes = useValue(instance.uiState.hoveredNodes);
   const hoveredNodeId = head(hoveredNodes);
+  const wireFrameMode = useValue(instance.uiState.wireFrameMode);
 
   const [targetMode, setTargetMode] = useState<TargetModeState>({
     state: 'disabled',
@@ -141,6 +142,8 @@ export const Visualization2D: React.FC<
   return (
     <Layout.Container>
       <VisualiserControls
+        onSetWireFrameMode={instance.uiActions.onSetWireFrameMode}
+        wireFrameMode={wireFrameMode}
         focusedNode={focusedNodeId}
         selectedNode={selectedNodeId?.id}
         setTargetMode={setTargetMode}
@@ -226,6 +229,9 @@ export const Visualization2D: React.FC<
             />
           )}
           <MemoedVisualizationNode2D
+            wireframeMode={wireFrameMode}
+            isSelectedOrChildOrSelected={false}
+            selectedNode={selectedNodeId?.id}
             node={focusState.focusedRoot}
             onSelectNode={onSelectNode}
           />
@@ -238,19 +244,30 @@ export const Visualization2D: React.FC<
 const MemoedVisualizationNode2D = React.memo(
   Visualization2DNode,
   (prev, next) => {
-    return prev.node === next.node;
+    return (
+      prev.node === next.node &&
+      prev.selectedNode === next.selectedNode &&
+      prev.wireframeMode === next.wireframeMode
+    );
   },
 );
 
 function Visualization2DNode({
+  wireframeMode,
+  isSelectedOrChildOrSelected,
+  selectedNode,
   node,
   onSelectNode,
 }: {
+  wireframeMode: WireFrameMode;
+  isSelectedOrChildOrSelected: boolean;
+  selectedNode?: Id;
   node: NestedNode;
   onSelectNode: OnSelectNode;
 }) {
   const instance = usePlugin(plugin);
 
+  const isSelected = node.id === selectedNode;
   const ref = useRef<HTMLDivElement>(null);
   let nestedChildren: NestedNode[];
 
@@ -268,6 +285,9 @@ function Visualization2DNode({
 
   const children = nestedChildren.map((child) => (
     <MemoedVisualizationNode2D
+      wireframeMode={wireframeMode}
+      selectedNode={selectedNode}
+      isSelectedOrChildOrSelected={isSelected || isSelectedOrChildOrSelected}
       key={child.id}
       node={child}
       onSelectNode={onSelectNode}
@@ -277,6 +297,11 @@ function Visualization2DNode({
   const isHighlighted = useValue(instance.uiState.highlightedNodes).has(
     node.id,
   );
+
+  const showBorder =
+    wireframeMode === 'All' ||
+    (wireframeMode === 'SelectedAndChildren' && isSelectedOrChildOrSelected) ||
+    (wireframeMode === 'SelectedOnly' && isSelected);
 
   return (
     <div
@@ -293,7 +318,7 @@ function Visualization2DNode({
         opacity: isHighlighted ? 0.3 : 1,
         backgroundColor: isHighlighted ? 'red' : 'transparent',
       }}>
-      <NodeBorder />
+      {showBorder && <NodeBorder />}
 
       {children}
     </div>
