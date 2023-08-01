@@ -98,6 +98,7 @@ export type UIActions = {
   onExpandAllRecursively: (nodeId: Id) => void;
   onCollapseAllNonAncestors: (nodeId: Id) => void;
   onCollapseAllRecursively: (nodeId: Id) => void;
+  ensureAncestorsExpanded: (nodeId: Id) => void;
 };
 
 export type SelectionSource =

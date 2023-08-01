@@ -19,10 +19,7 @@ import {
   WireFrameMode,
 } from '../DesktopTypes';
 import {tracker} from '../utils/tracker';
-import {
-  checkFocusedNodeStillActive,
-  collapseinActiveChildren,
-} from './ClientDataUtils';
+import {checkFocusedNodeStillActive} from './ClientDataUtils';
 
 export function uiActions(
   uiState: UIState,
@@ -87,19 +84,19 @@ export function uiActions(
   };
 
   const onCollapseAllNonAncestors = (nodeId: Id) => {
-    //this is not the simplest way to achieve this but on android there is a parent pointer missing for the decor view
-    //due to the nested obversers.
+    uiState.expandedNodes.update((draft) => {
+      draft.clear();
+    });
+    ensureAncestorsExpanded(nodeId);
+  };
+
+  const ensureAncestorsExpanded = (nodeId: Id) => {
     uiState.expandedNodes.update((draft) => {
       const nodesMap = nodes.get();
-      let prevNode: Id | null = null;
+
       let curNode = nodesMap.get(nodeId);
       while (curNode != null) {
-        for (const child of curNode.children) {
-          if (child !== prevNode) {
-            draft.delete(child);
-          }
-        }
-        prevNode = curNode.id;
+        draft.add(curNode.id);
         curNode = nodesMap.get(curNode?.parent ?? 'Nonode');
       }
     });
@@ -177,13 +174,6 @@ export function uiActions(
     tracker.track('play-pause-toggled', {paused: isPaused});
     uiState.isPaused.set(isPaused);
     if (!isPaused) {
-      //When going back to play mode then set the atoms to the live state to rerender the latest
-      //Also need to fixed expanded state for any change in active child state
-      uiState.expandedNodes.update((draft) => {
-        liveClientData.nodes.forEach((node) => {
-          collapseinActiveChildren(node, draft);
-        });
-      });
       nodes.set(liveClientData.nodes);
       snapshot.set(liveClientData.snapshotInfo);
       checkFocusedNodeStillActive(uiState, nodes.get());
@@ -216,5 +206,6 @@ export function uiActions(
     onCollapseAllNonAncestors,
     onExpandAllRecursively,
     onCollapseAllRecursively,
+    ensureAncestorsExpanded,
   };
 }

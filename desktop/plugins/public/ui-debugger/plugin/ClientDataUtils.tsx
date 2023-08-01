@@ -7,23 +7,8 @@
  * @format
  */
 
-import {Draft} from 'flipper-plugin';
 import {ClientNode, Id} from '../ClientTypes';
 import {UIState} from '../DesktopTypes';
-
-export function collapseinActiveChildren(
-  node: ClientNode,
-  expandedNodes: Draft<Set<Id>>,
-) {
-  if (node.activeChild) {
-    expandedNodes.add(node.activeChild);
-    for (const child of node.children) {
-      if (child !== node.activeChild) {
-        expandedNodes.delete(child);
-      }
-    }
-  }
-}
 
 export function checkFocusedNodeStillActive(
   uiState: UIState,

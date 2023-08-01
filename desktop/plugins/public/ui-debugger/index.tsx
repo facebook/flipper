@@ -31,10 +31,7 @@ import {
 } from './DesktopTypes';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
 import {prefetchSourceFileLocation} from './components/fb-stubs/IDEContextMenu';
-import {
-  checkFocusedNodeStillActive,
-  collapseinActiveChildren,
-} from './plugin/ClientDataUtils';
+import {checkFocusedNodeStillActive} from './plugin/ClientDataUtils';
 import {uiActions} from './plugin/uiActions';
 
 type PendingData = {
@@ -66,10 +63,6 @@ export function plugin(client: PluginClient<Events>) {
     key: 'txId',
     limit: 10 * 1024,
   });
-
-  //this keeps track of all node ids we have seen so we dont keep reexpanding nodes when they come in again.
-  //Could probably be removed if we refactor the nodes to be expanded by default and only collapsed is toggled on
-  const seenNodes = new Set<Id>();
 
   //this holds pending any pending data that needs to be applied in the event of a stream interceptor error
   //while in the error state more metadata or a more recent frame may come in so both cases need to apply the same darta
@@ -278,21 +271,6 @@ export function plugin(client: PluginClient<Events>) {
       mutableLiveClientData.snapshotInfo = snapshotInfo;
     }
     mutableLiveClientData.nodes = nodes;
-
-    uiState.expandedNodes.update((draft) => {
-      for (const node of nodes.values()) {
-        if (!seenNodes.has(node.id)) {
-          draft.add(node.id);
-        }
-        seenNodes.add(node.id);
-
-        if (!uiState.isPaused.get()) {
-          //we need to not do this while paused as you may move to another screen / tab
-          //and it would collapse the tree node for the activity you were paused on.
-          collapseinActiveChildren(node, draft);
-        }
-      }
-    });
 
     if (!uiState.isPaused.get()) {
       nodesAtom.set(mutableLiveClientData.nodes);
