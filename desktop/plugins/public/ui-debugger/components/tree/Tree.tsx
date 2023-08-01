@@ -114,7 +114,12 @@ export function Tree2({
     overscan: 20,
   });
 
+  const prevSearchTerm = useRef<string | null>(null);
   useEffect(() => {
+    if (prevSearchTerm.current === searchTerm) {
+      return;
+    }
+    prevSearchTerm.current = searchTerm;
     const matchingIndexes = findSearchMatchingIndexes(treeNodes, searchTerm);
 
     if (matchingIndexes.length > 0) {
