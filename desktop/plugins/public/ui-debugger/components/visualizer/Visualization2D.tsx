@@ -24,6 +24,7 @@ import {head, isEqual, throttle} from 'lodash';
 import {useDelay} from '../../hooks/useDelay';
 import {Tooltip} from 'antd';
 import {TargetModeState, VisualiserControls} from './VisualizerControls';
+import {getNode} from '../../utils/map';
 
 export const Visualization2D: React.FC<
   {
@@ -149,7 +150,7 @@ export const Visualization2D: React.FC<
         onSetWireFrameMode={instance.uiActions.onSetWireFrameMode}
         wireFrameMode={wireFrameMode}
         focusedNode={focusedNodeId}
-        selectedNode={selectedNodeId?.id}
+        selectedNode={getNode(selectedNodeId?.id, nodes)}
         setTargetMode={setTargetMode}
         targetMode={targetMode}
       />

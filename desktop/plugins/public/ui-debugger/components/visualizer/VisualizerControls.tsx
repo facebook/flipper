@@ -9,7 +9,7 @@
 
 import {Button, Dropdown, Menu, Slider, Tooltip, Typography} from 'antd';
 import {Layout, produce, theme, usePlugin} from 'flipper-plugin';
-import {Id} from '../../ClientTypes';
+import {ClientNode, Id} from '../../ClientTypes';
 import {plugin} from '../../index';
 import React from 'react';
 import {
@@ -44,16 +44,18 @@ export function VisualiserControls({
 }: {
   wireFrameMode: WireFrameMode;
   onSetWireFrameMode: (mode: WireFrameMode) => void;
-  selectedNode?: Id;
+  selectedNode?: ClientNode;
   focusedNode?: Id;
   setTargetMode: (targetMode: TargetModeState) => void;
   targetMode: TargetModeState;
 }) {
   const instance = usePlugin(plugin);
 
-  const focusDisabled = focusedNode == null && selectedNode == null;
+  const focusDisabled =
+    focusedNode == null &&
+    (selectedNode == null || selectedNode.children.length === 0);
   const focusToolTip = focusDisabled
-    ? 'Select a node to focus it'
+    ? 'Select a non leaf node to focus it'
     : focusedNode == null
     ? 'Focus current node'
     : 'Remove focus';
@@ -153,7 +155,7 @@ export function VisualiserControls({
             disabled={focusDisabled}
             onClick={() => {
               if (focusedNode == null) {
-                instance.uiActions.onFocusNode(selectedNode);
+                instance.uiActions.onFocusNode(selectedNode?.id);
               } else {
                 instance.uiActions.onFocusNode();
               }
