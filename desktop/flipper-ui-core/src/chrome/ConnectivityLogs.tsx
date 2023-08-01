@@ -136,19 +136,43 @@ const Placeholder = styled(Layout.Container)({
 });
 
 function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
-  return (
-    <Layout.ScrollContainer pad>
-      {selection != null ? (
-        <Panel key="Raw" heading="Raw Details">
-          <DataInspector data={selection} />
-        </Panel>
-      ) : (
-        <Placeholder grow pad="large">
-          Select an entry to visualize details
-        </Placeholder>
-      )}
-    </Layout.ScrollContainer>
-  );
+  const content: JSX.Element[] = [];
+
+  if (selection) {
+    if ('cmd' in selection) {
+      const cmd = selection as CommandRecordEntry;
+      content.push(
+        <Panel key="cmd" heading="CMD">
+          {cmd.cmd}
+        </Panel>,
+        <Panel key="description" heading="Description">
+          {cmd.description}
+        </Panel>,
+        <Panel key="stdout" heading="STDOUT">
+          {cmd.stdout}
+        </Panel>,
+        <Panel key="stderr" heading="STDERR">
+          {cmd.stderr}
+        </Panel>,
+        <Panel key="troubleshoot" heading="Troubleshooting Tips">
+          {cmd.troubleshoot}
+        </Panel>,
+      );
+    }
+    content.push(
+      <Panel key="Raw" heading="Raw Details" collapsed>
+        <DataInspector data={selection} />
+      </Panel>,
+    );
+  } else {
+    content.push(
+      <Placeholder grow pad="large" center>
+        Select an entry to visualize details
+      </Placeholder>,
+    );
+  }
+
+  return <Layout.ScrollContainer pad>{content}</Layout.ScrollContainer>;
 }
 
 function clearMessages() {
