@@ -17,6 +17,7 @@ import {
   SystemError,
   getLogger,
   CompanionEventWebSocketMessage,
+  isProduction,
 } from 'flipper-common';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {RawData, WebSocketServer} from 'ws';
@@ -242,7 +243,7 @@ export function attachSocketServer(
          * If, after 15 min, there are no more connected clients, we exit the process.
          */
         disconnectTimeout = setTimeout(() => {
-          if (numberOfConnectedClients === 0) {
+          if (numberOfConnectedClients === 0 && isProduction()) {
             console.info('Shutdown as no clients are currently connected');
             process.exit(0);
           }
