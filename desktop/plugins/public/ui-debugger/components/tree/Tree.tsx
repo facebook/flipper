@@ -451,6 +451,7 @@ function TreeNodeTextContent({treeNode}: {treeNode: TreeNode}) {
   return (
     <Layout.Horizontal
       style={{
+        fontFamily: 'monospace',
         opacity: isZero || invisible ? 0.5 : 1,
         alignItems: 'baseline',
         userSelect: 'none',
@@ -483,7 +484,7 @@ function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
   );
 }
 
-const TreeItemHeightNumber = 28;
+const TreeItemHeightNumber = 24;
 const TreeItemHeight = `${TreeItemHeightNumber}px`;
 const HalfTreeItemHeight = `calc(${TreeItemHeight} / 2)`;
 
@@ -597,7 +598,7 @@ const NodeIconImage = styled.img({
   userSelect: 'none',
 });
 
-const renderDepthOffset = 14;
+const renderDepthOffset = 12;
 
 //due to virtualisation the out of the box dom based scrolling doesnt work
 function findSearchMatchingIndexes(
