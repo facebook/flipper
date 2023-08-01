@@ -26,6 +26,8 @@ import {
 } from 'flipper-common';
 import {Button} from 'antd';
 
+const SIDEBAR_WIDTH = 400;
+
 const rows = createDataSource<ConnectionRecordEntry>([], {
   limit: 200000,
   persist: 'connectivity-logs',
@@ -135,6 +137,12 @@ const Placeholder = styled(Layout.Container)({
   fontSize: 18,
 });
 
+const PanelContainer = styled.div({
+  width: SIDEBAR_WIDTH - 2 * 32,
+  whiteSpace: 'pre-wrap',
+  overflow: 'scroll',
+});
+
 function isShellCommand(
   entry: ConnectionRecordEntry,
 ): entry is CommandRecordEntry {
@@ -154,10 +162,10 @@ function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
           {selection.description}
         </Panel>,
         <Panel key="stdout" heading="STDOUT">
-          {selection.stdout}
+          <PanelContainer>{selection.stdout}</PanelContainer>
         </Panel>,
         <Panel key="stderr" heading="STDERR">
-          {selection.stderr}
+          <PanelContainer>{selection.stderr}</PanelContainer>
         </Panel>,
         <Panel key="troubleshoot" heading="Troubleshooting Tips">
           {selection.troubleshoot}
@@ -212,7 +220,7 @@ export const ConnectivityLogs = () => {
   );
 
   return (
-    <Layout.Right resizable width={selection ? 400 : 0}>
+    <Layout.Right resizable width={selection ? SIDEBAR_WIDTH : 0}>
       <DataTable<ConnectionRecordEntry>
         dataSource={rows}
         columns={columns}
