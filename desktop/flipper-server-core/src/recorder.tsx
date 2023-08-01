@@ -11,6 +11,7 @@ import {
   ClientQuery,
   ConnectionRecordEntry,
   CommandRecordEntry,
+  getLogger,
 } from 'flipper-common';
 import {FlipperServerImpl} from './FlipperServerImpl';
 
@@ -84,6 +85,7 @@ class Recorder {
       };
 
       this.flipperServer_.emit('connectivity-troubleshoot-log', entry);
+      getLogger().track('usage', 'connectivity-log', entry);
     }
   };
 
