@@ -8,7 +8,7 @@
  */
 
 import {Layout, Panel} from '../ui';
-import React, {CSSProperties, useState} from 'react';
+import React, {CSSProperties, useCallback, useState} from 'react';
 import {
   createDataSource,
   DataFormatter,
@@ -135,27 +135,32 @@ const Placeholder = styled(Layout.Container)({
   fontSize: 18,
 });
 
+function isShellCommand(
+  entry: ConnectionRecordEntry,
+): entry is CommandRecordEntry {
+  return 'cmd' in entry;
+}
+
 function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
   const content: JSX.Element[] = [];
 
   if (selection) {
-    if ('cmd' in selection) {
-      const cmd = selection as CommandRecordEntry;
+    if (isShellCommand(selection)) {
       content.push(
         <Panel key="cmd" heading="CMD">
-          {cmd.cmd}
+          {selection.cmd}
         </Panel>,
         <Panel key="description" heading="Description">
-          {cmd.description}
+          {selection.description}
         </Panel>,
         <Panel key="stdout" heading="STDOUT">
-          {cmd.stdout}
+          {selection.stdout}
         </Panel>,
         <Panel key="stderr" heading="STDERR">
-          {cmd.stderr}
+          {selection.stderr}
         </Panel>,
         <Panel key="troubleshoot" heading="Troubleshooting Tips">
-          {cmd.troubleshoot}
+          {selection.troubleshoot}
         </Panel>,
       );
     }
@@ -195,17 +200,28 @@ export const ConnectivityLogs = () => {
     </Button>
   );
 
+  const onSelection = useCallback(
+    (entry: ConnectionRecordEntry) => {
+      if (isShellCommand(entry)) {
+        setSelection(entry);
+      } else {
+        setSelection(undefined);
+      }
+    },
+    [setSelection],
+  );
+
   return (
-    <Layout.Right resizable width={400}>
+    <Layout.Right resizable width={selection ? 400 : 0}>
       <DataTable<ConnectionRecordEntry>
         dataSource={rows}
         columns={columns}
         enableAutoScroll
         onRowStyle={getRowStyle}
-        onSelect={setSelection}
+        onSelect={onSelection}
         extraActions={clearButton}
       />
-      <Sidebar selection={selection} />
+      {selection && <Sidebar selection={selection} />}
     </Layout.Right>
   );
 };
