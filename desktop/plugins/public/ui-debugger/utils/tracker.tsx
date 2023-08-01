@@ -56,6 +56,9 @@ type TrackerEvents = {
     on: boolean;
   };
   'target-mode-adjusted': {};
+  'context-menu-expand-recursive': {};
+  'context-menu-collapse-recursive': {};
+  'context-menu-collapse-non-ancestors': {};
 };
 
 export interface Tracker {

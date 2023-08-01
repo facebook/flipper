@@ -95,9 +95,16 @@ export type UIActions = {
   onPlayPauseToggled: () => void;
   onSearchTermUpdated: (searchTerm: string) => void;
   onSetWireFrameMode: (WireFrameMode: WireFrameMode) => void;
+  onExpandAllRecursively: (nodeId: Id) => void;
+  onCollapseAllNonAncestors: (nodeId: Id) => void;
+  onCollapseAllRecursively: (nodeId: Id) => void;
 };
 
-export type SelectionSource = 'visualiser' | 'tree' | 'keyboard';
+export type SelectionSource =
+  | 'visualiser'
+  | 'tree'
+  | 'keyboard'
+  | 'context-menu';
 
 export type StreamState =
   | {state: 'Ok'}

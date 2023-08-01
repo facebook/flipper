@@ -211,9 +211,13 @@ export function Tree2({
         focusedNodeId={focusedNode}
         hoveredNodeId={hoveredNode}
         nodes={nodes}
+        onSelectNode={instance.uiActions.onSelectNode}
         onSetViewMode={instance.uiActions.onSetViewMode}
         onContextMenuOpen={instance.uiActions.onContextMenuOpen}
-        onFocusNode={instance.uiActions.onFocusNode}>
+        onFocusNode={instance.uiActions.onFocusNode}
+        onCollapseNonAncestors={instance.uiActions.onCollapseAllNonAncestors}
+        onCollapseRecursively={instance.uiActions.onCollapseAllRecursively}
+        onExpandRecursively={instance.uiActions.onExpandAllRecursively}>
         <div
           //We use this normal divs flexbox sizing to measure how much vertical space we need for the child div
           ref={grandParentRef}

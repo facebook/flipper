@@ -36,7 +36,10 @@ export function uiActions(
     });
   };
   const onSelectNode = (node: Id | undefined, source: SelectionSource) => {
-    if (node == null || uiState.selectedNode.get()?.id === node) {
+    if (
+      node == null ||
+      (uiState.selectedNode.get()?.id === node && source !== 'context-menu')
+    ) {
       uiState.selectedNode.set(undefined);
     } else {
       uiState.selectedNode.set({id: node, source});
@@ -81,6 +84,52 @@ export function uiActions(
   const onContextMenuOpen = (open: boolean) => {
     tracker.track('context-menu-opened', {});
     uiState.isContextMenuOpen.set(open);
+  };
+
+  const onCollapseAllNonAncestors = (nodeId: Id) => {
+    //this is not the simplest way to achieve this but on android there is a parent pointer missing for the decor view
+    //due to the nested obversers.
+    uiState.expandedNodes.update((draft) => {
+      const nodesMap = nodes.get();
+      let prevNode: Id | null = null;
+      let curNode = nodesMap.get(nodeId);
+      while (curNode != null) {
+        for (const child of curNode.children) {
+          if (child !== prevNode) {
+            draft.delete(child);
+          }
+        }
+        prevNode = curNode.id;
+        curNode = nodesMap.get(curNode?.parent ?? 'Nonode');
+      }
+    });
+  };
+
+  function treeTraverseUtil(
+    nodeID: Id,
+    nodeVisitor: (node: ClientNode) => void,
+  ) {
+    const nodesMap = nodes.get();
+
+    const node = nodesMap.get(nodeID);
+    if (node != null) {
+      nodeVisitor(node);
+      for (const childId of node.children) {
+        treeTraverseUtil(childId, nodeVisitor);
+      }
+    }
+  }
+
+  const onExpandAllRecursively = (nodeId: Id) => {
+    uiState.expandedNodes.update((draft) => {
+      treeTraverseUtil(nodeId, (node) => draft.add(node.id));
+    });
+  };
+
+  const onCollapseAllRecursively = (nodeId: Id) => {
+    uiState.expandedNodes.update((draft) => {
+      treeTraverseUtil(nodeId, (node) => draft.delete(node.id));
+    });
   };
 
   const onFocusNode = (node?: Id) => {
@@ -164,5 +213,8 @@ export function uiActions(
     onPlayPauseToggled,
     onSearchTermUpdated,
     onSetWireFrameMode,
+    onCollapseAllNonAncestors,
+    onExpandAllRecursively,
+    onCollapseAllRecursively,
   };
 }

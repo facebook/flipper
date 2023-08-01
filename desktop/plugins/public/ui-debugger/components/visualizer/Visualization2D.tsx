@@ -130,6 +130,10 @@ export const Visualization2D: React.FC<
 
   const onClickOverlay = () => {
     instance.uiActions.onSelectNode(hoveredNodeId, 'visualiser');
+    if (hoveredNodeId != null) {
+      instance.uiActions.onCollapseAllNonAncestors(hoveredNodeId);
+    }
+
     if (targetMode.state !== 'disabled') {
       setTargetMode({
         state: 'selected',
