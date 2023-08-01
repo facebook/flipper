@@ -20,7 +20,7 @@ export type MillisSinceEpoch = number;
 export function useKeyboardControls(
   treeNodes: TreeNode[],
   rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
-  selectedNode: Id | undefined,
+  selectedNodeId: Id | undefined,
   hoveredNodeId: Id | undefined,
   onSelectNode: OnSelectNode,
   onHoverNode: (...id: Id[]) => void,
@@ -32,7 +32,9 @@ export function useKeyboardControls(
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
-      const hoveredNode = treeNodes.find((item) => item.id === hoveredNodeId);
+      const kbTargetNodeId = selectedNodeId ?? hoveredNodeId;
+      const kbTargetNode = treeNodes.find((item) => item.id === kbTargetNodeId);
+
       switch (event.key) {
         case 'Enter': {
           if (hoveredNodeId != null) {
@@ -44,31 +46,32 @@ export function useKeyboardControls(
 
         case 'ArrowRight':
           event.preventDefault();
-          if (hoveredNode) {
-            if (hoveredNode.isExpanded) {
+          if (kbTargetNode) {
+            if (kbTargetNode.isExpanded) {
               moveSelectedNodeUpOrDown(
                 'ArrowDown',
                 treeNodes,
                 rowVirtualizer,
-                hoveredNodeId,
-                selectedNode,
+                kbTargetNode.id,
+                selectedNodeId,
                 onSelectNode,
                 onHoverNode,
                 isUsingKBToScrollUntill,
               );
             } else {
-              onExpandNode(hoveredNode.id);
+              onExpandNode(kbTargetNode.id);
             }
           }
           break;
         case 'ArrowLeft': {
           event.preventDefault();
-          if (hoveredNode) {
-            if (hoveredNode.isExpanded) {
-              onCollapseNode(hoveredNode.id);
+
+          if (kbTargetNode) {
+            if (kbTargetNode.isExpanded) {
+              onCollapseNode(kbTargetNode.id);
             } else {
               const parentIdx = treeNodes.findIndex(
-                (treeNode) => treeNode.id === hoveredNode.parent,
+                (treeNode) => treeNode.id === kbTargetNode.parent,
               );
               moveSelectedNodeViaKeyBoard(
                 parentIdx,
@@ -92,7 +95,7 @@ export function useKeyboardControls(
             treeNodes,
             rowVirtualizer,
             hoveredNodeId,
-            selectedNode,
+            selectedNodeId,
             onSelectNode,
             onHoverNode,
             isUsingKBToScrollUntill,
@@ -108,7 +111,7 @@ export function useKeyboardControls(
   }, [
     treeNodes,
     onSelectNode,
-    selectedNode,
+    selectedNodeId,
     isUsingKBToScrollUntill,
     onExpandNode,
     onCollapseNode,
