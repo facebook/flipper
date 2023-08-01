@@ -446,9 +446,12 @@ function TreeNodeRow({
 }
 
 function TreeNodeTextContent({treeNode}: {treeNode: TreeNode}) {
+  const isZero = treeNode.bounds.width === 0 && treeNode.bounds.height === 0;
+  const invisible = treeNode.hiddenAttributes?.['invisible'] === true;
   return (
     <Layout.Horizontal
       style={{
+        opacity: isZero || invisible ? 0.5 : 1,
         alignItems: 'baseline',
         userSelect: 'none',
       }}>
