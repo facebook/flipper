@@ -248,11 +248,17 @@ export const Visualization2D: React.FC<
 const MemoedVisualizationNode2D = React.memo(
   Visualization2DNode,
   (prev, next) => {
-    return (
-      prev.node === next.node &&
-      prev.selectedNode === next.selectedNode &&
-      prev.wireframeMode === next.wireframeMode
-    );
+    if (prev.node != next.node || prev.wireframeMode != next.wireframeMode) {
+      return false;
+    }
+    if (next.wireframeMode == 'All') {
+      //if all wire frames are drawn and the root node is the same
+      //then we are safe
+      return true;
+    } else {
+      //with other modes the selected node affects the drawing
+      return prev.selectedNode === next.selectedNode;
+    }
   },
 );
 
@@ -288,7 +294,7 @@ function Visualization2DNode({
   }
 
   const children = nestedChildren.map((child) => (
-    <MemoedVisualizationNode2D
+    <Visualization2DNode
       wireframeMode={wireframeMode}
       selectedNode={selectedNode}
       isSelectedOrChildOrSelected={isSelected || isSelectedOrChildOrSelected}
