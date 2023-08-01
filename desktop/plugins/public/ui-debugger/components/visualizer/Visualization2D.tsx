@@ -530,18 +530,19 @@ function hitTest(node: NestedNode, mouseCoordinate: Coordinate): NestedNode[] {
       children = [node.children[node.activeChildIdx]];
     }
     const offsetMouseCoord = offsetCoordinate(mouseCoordinate, nodeBounds);
-    let childHit = false;
+    let anyChildHitRecursive = false;
 
     for (const child of children) {
-      childHit = hitTestRec(child, offsetMouseCoord) || childHit;
+      anyChildHitRecursive =
+        hitTestRec(child, offsetMouseCoord) || anyChildHitRecursive;
     }
 
-    const hit = thisNodeHit && !childHit;
+    const hit = thisNodeHit && !anyChildHitRecursive;
     if (hit) {
       res.push(node);
     }
 
-    return hit;
+    return thisNodeHit || anyChildHitRecursive;
   }
 
   hitTestRec(node, mouseCoordinate);
