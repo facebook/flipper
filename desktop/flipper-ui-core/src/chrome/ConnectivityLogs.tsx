@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Layout} from '../ui';
+import {Layout, Panel} from '../ui';
 import React, {CSSProperties, useState} from 'react';
 import {
   createDataSource,
@@ -139,7 +139,9 @@ function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
   return (
     <Layout.ScrollContainer pad>
       {selection != null ? (
-        <DataInspector data={selection} expandRoot />
+        <Panel key="Raw" heading="Raw Details">
+          <DataInspector data={selection} />
+        </Panel>
       ) : (
         <Placeholder grow pad="large">
           Select an entry to visualize details
