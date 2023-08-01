@@ -29,11 +29,18 @@ type ConnectionRecorderEvents = {
 };
 
 class Recorder {
-  private flipperServer: FlipperServerImpl | undefined;
+  private flipperServer_: FlipperServerImpl | undefined;
+  private undefinedClientQuery_: ClientQuery = {
+    app: 'NONE',
+    device: 'NONE',
+    medium: 'NONE',
+    os: 'Browser',
+    device_id: '',
+  };
 
   private handler_ = {
     cmd: (payload: CommandEventPayload) => {
-      if (this.flipperServer) {
+      if (this.flipperServer_) {
         const clientQuery = payload.context as ClientQuery | undefined;
 
         const device = clientQuery?.device ?? 'NONE';
@@ -55,9 +62,29 @@ class Recorder {
           troubleshoot: payload.troubleshoot,
         };
 
-        this.flipperServer.emit('connectivity-troubleshoot-cmd', entry);
+        this.flipperServer_.emit('connectivity-troubleshoot-cmd', entry);
       }
     },
+  };
+
+  private log_ = (
+    type: 'info' | 'warning' | 'error',
+    clientQuery: ClientQuery,
+    ...args: any[]
+  ) => {
+    console.log(`[conn][${type}]`, ...args);
+    if (this.flipperServer_) {
+      const entry: ConnectionRecordEntry = {
+        time: new Date(),
+        type,
+        device: clientQuery.device,
+        app: clientQuery.app,
+        message: args.join(' '),
+        medium: clientQuery.medium,
+      };
+
+      this.flipperServer_.emit('connectivity-troubleshoot-log', entry);
+    }
   };
 
   event<Event extends keyof ConnectionRecorderEvents>(
@@ -72,29 +99,19 @@ class Recorder {
   }
 
   log(clientQuery: ClientQuery, ...args: any[]) {
-    console.log('[conn]', ...args);
-    if (this.flipperServer) {
-      const entry: ConnectionRecordEntry = {
-        time: new Date(),
-        type: 'info',
-        device: clientQuery.device,
-        app: clientQuery.app,
-        message: args.join(' '),
-        medium: clientQuery.medium,
-      };
+    this.log_('info', clientQuery, args);
+  }
 
-      this.flipperServer.emit('connectivity-troubleshoot-log', entry);
-    }
-  }
   rawError(...args: any[]) {
-    console.error('[conn]', ...args);
+    this.log_('error', this.undefinedClientQuery_, args);
   }
+
   error(clientQuery: ClientQuery, ...args: any[]) {
-    console.error('[conn]', ...args);
+    this.log_('error', clientQuery, args);
   }
 
   enable(flipperServer: FlipperServerImpl) {
-    this.flipperServer = flipperServer;
+    this.flipperServer_ = flipperServer;
   }
 }
 
