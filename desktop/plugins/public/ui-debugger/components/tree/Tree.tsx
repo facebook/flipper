@@ -376,6 +376,13 @@ function TreeNodeRow({
 }) {
   const showExpandChildrenIcon = treeNode.children.length > 0;
   const isSelected = treeNode.id === selectedNode;
+  const expandOrCollapse = () => {
+    if (treeNode.isExpanded) {
+      onCollapseNode(treeNode.id);
+    } else {
+      onExpandNode(treeNode.id);
+    }
+  };
   return (
     <div
       ref={innerRef}
@@ -405,21 +412,21 @@ function TreeNodeRow({
             onHoverNode(treeNode.id);
           }
         }}
-        onClick={() => {
-          onSelectNode(treeNode.id, 'tree');
+        onClick={(event) => {
+          if (event.detail === 1) {
+            //single click
+            onSelectNode(treeNode.id, 'tree');
+          } else if (event.detail === 2) {
+            //double click
+            expandOrCollapse();
+          }
         }}
         item={treeNode}
         style={{overflow: 'visible'}}>
         <ExpandedIconOrSpace
           expanded={treeNode.isExpanded}
           showIcon={showExpandChildrenIcon}
-          onClick={() => {
-            if (treeNode.isExpanded) {
-              onCollapseNode(treeNode.id);
-            } else {
-              onExpandNode(treeNode.id);
-            }
-          }}
+          onClick={expandOrCollapse}
         />
 
         {nodeIcon(treeNode)}
