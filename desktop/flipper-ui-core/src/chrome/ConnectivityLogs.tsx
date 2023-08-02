@@ -22,9 +22,12 @@ import {CloseCircleFilled, DeleteOutlined} from '@ant-design/icons';
 import {
   CommandRecordEntry,
   ConnectionRecordEntry,
+  DeviceOS,
   FlipperServer,
+  FlipperServerCommands,
 } from 'flipper-common';
 import {Button} from 'antd';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 const SIDEBAR_WIDTH = 400;
 
@@ -149,6 +152,35 @@ function isShellCommand(
   return 'cmd' in entry;
 }
 
+function KillDebuggingBridge({os}: {os: DeviceOS}) {
+  const {
+    title,
+    cmd,
+  }: {
+    title: string;
+    cmd: keyof FlipperServerCommands;
+  } =
+    os === 'iOS'
+      ? {title: 'Kill idb', cmd: 'ios-idb-kill'}
+      : {title: 'Kill adb server', cmd: 'android-adb-kill'};
+
+  return (
+    <>
+      <p>
+        Sometimes the error can be resolved by killing the {os} debugging
+        bridge.
+      </p>
+      <Button
+        type="default"
+        onClick={() => {
+          getRenderHostInstance().flipperServer.exec(cmd);
+        }}>
+        {title}
+      </Button>
+    </>
+  );
+}
+
 function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
   const content: JSX.Element[] = [];
 
@@ -168,7 +200,8 @@ function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
           <PanelContainer>{selection.stderr}</PanelContainer>
         </Panel>,
         <Panel key="troubleshoot" heading="Troubleshooting Tips">
-          {selection.troubleshoot}
+          <p>{selection.troubleshoot}</p>
+          {!selection.success && <KillDebuggingBridge os={selection.os} />}
         </Panel>,
       );
     }
