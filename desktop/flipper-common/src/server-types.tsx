@@ -295,6 +295,7 @@ export type FlipperServerCommands = {
   ) => Promise<ClientResponseType>;
   'android-get-emulators': () => Promise<string[]>;
   'android-launch-emulator': (name: string, coldboot: boolean) => Promise<void>;
+  'android-adb-kill': () => Promise<void>;
   'ios-get-simulators': (bootedOnly: boolean) => Promise<IOSDeviceParams[]>;
   'ios-launch-simulator': (udid: string) => Promise<void>;
   'ios-idb-kill': () => Promise<void>;
