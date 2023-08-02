@@ -79,6 +79,7 @@ export type DeviceLogLevel =
 export type ConnectionRecordEntry = {
   time: Date;
   type: 'warning' | 'info' | 'error';
+  os: DeviceOS;
   device: string;
   app: string;
   message: string;

@@ -47,10 +47,12 @@ class Recorder {
         const device = clientQuery?.device ?? 'NONE';
         const app = clientQuery?.app ?? 'NONE';
         const medium = clientQuery?.medium ?? 'NONE';
+        const os = clientQuery?.os ?? 'Browser';
 
         const entry: CommandRecordEntry = {
           time: new Date(),
           type: payload.success ? 'info' : 'error',
+          os,
           device,
           app,
           message: payload.cmd,
@@ -78,6 +80,7 @@ class Recorder {
       const entry: ConnectionRecordEntry = {
         time: new Date(),
         type,
+        os: clientQuery.os,
         device: clientQuery.device,
         app: clientQuery.app,
         message: args.join(' '),
