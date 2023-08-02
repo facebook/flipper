@@ -47,7 +47,8 @@ class Recorder {
         const device = clientQuery?.device ?? 'NONE';
         const app = clientQuery?.app ?? 'NONE';
         const medium = clientQuery?.medium ?? 'NONE';
-        const os = clientQuery?.os ?? 'Browser';
+        const os =
+          clientQuery?.os ?? (payload.cmd.includes('idb') ? 'iOS' : 'Android');
 
         const entry: CommandRecordEntry = {
           time: new Date(),
