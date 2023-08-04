@@ -15,8 +15,6 @@
 #import <FlipperKit/FlipperResponder.h>
 
 #import "Core/UIDContext.h"
-#import "PluginSockets.h"
-#import "Plugins.h"
 
 #import "Descriptors/UIDDescriptorRegister.h"
 #import "Observer/UIDTreeObserverFactory.h"
@@ -61,25 +59,5 @@
 }
 
 @end
-
-void FlipperKitUIDebuggerAddPlugin(FlipperClient* client) {
-  UIDContext* context = [[UIDContext alloc]
-      initWithApplication:[UIApplication sharedApplication]
-       descriptorRegister:[UIDDescriptorRegister defaultRegister]
-          observerFactory:[UIDTreeObserverFactory shared]];
-
-  FlipperKitUIDebuggerPlugin* plugin =
-      [[FlipperKitUIDebuggerPlugin alloc] initWithContext:context];
-
-  for (const auto& p : FlipperUIDebuggerDescriptorRegisterSocket_Plugins()) {
-    FlipperUIDebuggerDescriptorRegisterSocket_InvokeConfigure(p, context);
-  }
-
-  [client addPlugin:plugin];
-}
-
-void FlipperKitUIDebuggerPluginInit(FlipperClient* client) {
-  FlipperKitUIDebuggerAddPlugin(client);
-}
 
 #endif

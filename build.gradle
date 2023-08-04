@@ -14,7 +14,6 @@ buildscript {
         classpath 'com.android.tools.build:gradle:8.0.2'
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.25.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.8.20"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
     }
 }
@@ -76,10 +75,10 @@ ext.deps = [
         screenshot         : 'com.facebook.testing.screenshot:core:0.15.0',
         boltsTasks         : 'com.parse.bolts:bolts-tasks:1.4.0',
         // Third-party
-        websocket          : 'org.java-websocket:Java-WebSocket:1.5.3',
+        websocket          : 'org.java-websocket:Java-WebSocket:1.5.4',
         openssl            : 'com.android.ndk.thirdparty:openssl:1.1.1l-beta-1',
         // Annotations
-        kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1",
+        kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1",
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
         proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.19.0',

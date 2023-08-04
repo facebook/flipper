@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 folly_compiler_flags = '-DDEBUG=1 -DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_HAVE_BACKTRACE=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
-flipperkit_version = '0.202.0'
+flipperkit_version = '0.208.0'
 Pod::Spec.new do |spec|
   spec.name = 'FlipperKit'
   spec.version = flipperkit_version
@@ -142,6 +142,15 @@ Pod::Spec.new do |spec|
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKDescriptorMapper.h'
     ss.source_files         = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/**/*.{h,cpp,m,mm}'
     ss.exclude_files        = ['iOS/Plugins/FlipperKitLayoutPlugin/fb/*','iOS/Plugins/FlipperKitLayoutPlugin/facebook/*','iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/fb/*' ,'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/facebook/*']
+    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**", "ONLY_ACTIVE_ARCH": "YES" }
+  end
+
+  spec.subspec "FlipperKitUIDebuggerPlugin" do |ss|
+    ss.header_dir = "FlipperKitUIDebuggerPlugin"
+    ss.dependency             'FlipperKit/Core'
+    ss.public_header_files  = 'iOS/Plugins/FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin.h'
+    ss.source_files         = 'iOS/Plugins/FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin/**/*.{h,cpp,m,mm}'
+    ss.exclude_files        = ['iOS/Plugins/FlipperKitUIDebuggerPlugin/fb/*','iOS/Plugins/FlipperKitUIDebuggerPlugin/facebook/*','iOS/Plugins/FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin/fb/*' ,'iOS/Plugins/FlipperKitUIDebuggerPlugin/FlipperKitUIDebuggerPlugin/facebook/*']
     ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**", "ONLY_ACTIVE_ARCH": "YES" }
   end
 

@@ -78,7 +78,7 @@ export type DeviceLogLevel =
 
 export type ConnectionRecordEntry = {
   time: Date;
-  type: 'cmd' | 'info' | 'error';
+  type: 'warning' | 'info' | 'error';
   device: string;
   app: string;
   message: string;
@@ -161,6 +161,11 @@ export type FlipperServerEvents = {
   };
   'connectivity-troubleshoot-cmd': CommandRecordEntry;
   'connectivity-troubleshoot-log': ConnectionRecordEntry;
+  'connectivity-troubleshoot-notification': {
+    type: 'error' | 'warning';
+    title: string;
+    description: string;
+  };
   'plugins-server-add-on-message': ExecuteMessage;
   'download-file-update': DownloadFileUpdate;
   'server-log': LoggerInfo;
@@ -292,6 +297,7 @@ export type FlipperServerCommands = {
   'android-launch-emulator': (name: string, coldboot: boolean) => Promise<void>;
   'ios-get-simulators': (bootedOnly: boolean) => Promise<IOSDeviceParams[]>;
   'ios-launch-simulator': (udid: string) => Promise<void>;
+  'ios-idb-kill': () => Promise<void>;
   'persist-settings': (settings: Settings) => Promise<void>;
   'persist-launcher-settings': (settings: LauncherSettings) => Promise<void>;
   'keychain-write': (service: string, token: string) => Promise<void>;

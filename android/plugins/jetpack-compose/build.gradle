@@ -27,8 +27,15 @@ android {
         implementation project(':android')
         implementation 'androidx.compose.ui:ui:1.4.3'
         implementation 'androidx.compose.ui:ui-tooling:1.4.3'
-        implementation 'org.jetbrains.kotlin:kotlin-reflect:1.8.22'
+        implementation 'org.jetbrains.kotlin:kotlin-reflect:1.9.0'
     }
 }
 
 apply plugin: 'com.vanniktech.maven.publish'
+
+import com.vanniktech.maven.publish.SonatypeHost
+mavenPublishing {
+  // Disable javadoc publishing
+  publishToMavenCentral(SonatypeHost.DEFAULT, false)
+}
+

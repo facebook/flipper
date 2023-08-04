@@ -15,6 +15,8 @@ import com.facebook.flipper.plugins.uidebugger.util.Immediate
 
 object ObjectDescriptor : NodeDescriptor<Any> {
 
+  override fun getId(node: Any): Id = System.identityHashCode(node)
+
   override fun getActiveChild(node: Any): Any? = null
 
   override fun getName(node: Any): String {

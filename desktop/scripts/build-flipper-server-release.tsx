@@ -55,6 +55,13 @@ cd "$THIS_DIR"
 ./node ./server "$@"
 `;
 
+const WINDOWS_STARTUP_SCRIPT = `@echo off
+setlocal
+set "THIS_DIR=%~dp0"
+cd /d "%THIS_DIR%"
+node server %*
+`;
+
 const argv = yargs
   .usage('yarn build-flipper-server [args]')
   .version(false)
@@ -333,6 +340,7 @@ async function packNpmArchive(dir: string, versionNumber: any) {
   const archive = path.resolve(distDir, 'flipper-server.tgz');
   await spawn('yarn', ['pack', '--filename', archive], {
     cwd: dir,
+    shell: true,
     stdio: 'inherit',
   });
 
@@ -357,6 +365,7 @@ async function runPostBuildAction(archive: string, dir: string) {
       ],
       {
         stdio: 'inherit',
+        shell: true,
       },
     );
   } else if (argv.start) {
@@ -367,6 +376,7 @@ async function runPostBuildAction(archive: string, dir: string) {
       {
         cwd: dir,
         stdio: 'inherit',
+        shell: true,
       },
     );
   }
@@ -396,6 +406,7 @@ async function yarnInstall(dir: string) {
     {
       cwd: dir,
       stdio: 'inherit',
+      shell: true,
     },
   );
 
@@ -612,6 +623,16 @@ async function setUpLinuxBundle(outputDir: string) {
   await fs.chmod(path.join(outputDir, 'flipper'), 0o755);
 }
 
+async function setUpWindowsBundle(outputDir: string) {
+  console.log(`⚙️  Creating Windows bundle in ${outputDir}`);
+  await fs.writeFile(
+    path.join(outputDir, 'flipper.bat'),
+    WINDOWS_STARTUP_SCRIPT,
+  );
+  // Give the script +x
+  await fs.chmod(path.join(outputDir, 'flipper.bat'), 0o755);
+}
+
 async function setUpMacBundle(
   outputDir: string,
   versionNumber: string,
@@ -676,6 +697,8 @@ async function bundleServerReleaseForPlatform(
     outputPaths = await setUpMacBundle(outputDir, versionNumber);
   } else if (platform === BuildPlatform.LINUX) {
     await setUpLinuxBundle(outputDir);
+  } else if (platform === BuildPlatform.WINDOWS) {
+    await setUpWindowsBundle(outputDir);
   }
 
   console.log(`⚙️  Copying from ${dir} to ${outputPaths.resourcesPath}`);

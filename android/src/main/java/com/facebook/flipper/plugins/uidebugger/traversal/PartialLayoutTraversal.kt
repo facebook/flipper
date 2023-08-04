@@ -31,14 +31,14 @@ class PartialLayoutTraversal(
   @Suppress("unchecked_cast")
   internal fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
 
-  fun traverse(root: Any): Pair<List<MaybeDeferred<Node>>, List<Any>> {
+  fun traverse(root: Any, parentId: Id?): Pair<List<MaybeDeferred<Node>>, List<Pair<Any, Id?>>> {
 
     val visited = mutableListOf<MaybeDeferred<Node>>()
-    val observableRoots = mutableListOf<Any>()
+    val observableRoots = mutableListOf<Pair<Any, Id?>>()
 
     // cur and parent Id
     val stack = mutableListOf<Pair<Any, Id?>>()
-    stack.add(Pair(root, null))
+    stack.add(Pair(root, parentId))
 
     val shallow = mutableSetOf<Any>()
 
@@ -48,7 +48,7 @@ class PartialLayoutTraversal(
       try {
         // If we encounter a node that has it own observer, don't traverse
         if (node != root && treeObserverFactory.hasObserverFor(node)) {
-          observableRoots.add(node)
+          observableRoots.add((node to parentId))
           continue
         }
 

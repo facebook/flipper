@@ -20,9 +20,9 @@ import {
 import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, Metadata, MetadataId, ClientNode} from '../ClientTypes';
 import {PerfStats} from './PerfStats';
-import {Visualization2D} from './Visualization2D';
+import {Visualization2D} from './visualizer/Visualization2D';
 import {Inspector} from './sidebar/Inspector';
-import {Controls} from './Controls';
+import {TreeControls} from './tree/TreeControls';
 import {Button, Spin} from 'antd';
 import {QueryClientProvider} from 'react-query';
 import {Tree2} from './tree/Tree';
@@ -106,43 +106,49 @@ export function Component() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Layout.Container grow padh="small" padv="medium">
-        <Layout.Top>
-          <>
-            <Controls />
-            <Layout.Horizontal grow pad="small">
-              <Tree2 nodes={nodes} rootId={rootId} />
+      <Layout.Horizontal
+        grow
+        style={{
+          borderRadius: theme.borderRadius,
+          backgroundColor: theme.backgroundWash,
+        }}>
+        <Layout.Container
+          grow
+          style={{
+            borderRadius: theme.borderRadius,
+            backgroundColor: theme.backgroundDefault,
+          }}>
+          <TreeControls />
+          <Tree2 nodes={nodes} rootId={rootId} />
+        </Layout.Container>
 
-              <ResizablePanel
-                position="right"
-                minWidth={200}
-                width={visualiserWidth + theme.space.large}
-                maxWidth={800}
-                onResize={(width) => {
-                  instance.uiActions.setVisualiserWidth(width);
-                }}
-                gutter>
-                <Visualization2D
-                  width={visualiserWidth}
-                  nodes={nodes}
-                  onSelectNode={instance.uiActions.onSelectNode}
-                />
-              </ResizablePanel>
-              <DetailSidebar width={350}>
-                <Inspector
-                  os={instance.os}
-                  metadata={metadata}
-                  nodes={nodes}
-                  showExtra={openBottomPanelWithContent}
-                />
-              </DetailSidebar>
-            </Layout.Horizontal>
-          </>
-          <BottomPanel dismiss={dismissBottomPanel}>
-            {bottomPanelComponent}
-          </BottomPanel>
-        </Layout.Top>
-      </Layout.Container>
+        <ResizablePanel
+          position="right"
+          minWidth={200}
+          width={visualiserWidth + theme.space.large}
+          maxWidth={800}
+          onResize={(width) => {
+            instance.uiActions.setVisualiserWidth(width);
+          }}
+          gutter>
+          <Visualization2D
+            width={visualiserWidth}
+            nodes={nodes}
+            onSelectNode={instance.uiActions.onSelectNode}
+          />
+        </ResizablePanel>
+        <DetailSidebar width={350}>
+          <Inspector
+            os={instance.os}
+            metadata={metadata}
+            nodes={nodes}
+            showExtra={openBottomPanelWithContent}
+          />
+        </DetailSidebar>
+        <BottomPanel dismiss={dismissBottomPanel}>
+          {bottomPanelComponent}
+        </BottomPanel>
+      </Layout.Horizontal>
     </QueryClientProvider>
   );
 }

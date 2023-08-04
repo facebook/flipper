@@ -13,6 +13,8 @@ import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.Immediate
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 
 /**
  * A chained descriptor is a special type of descriptor that models the inheritance hierarchy in
@@ -25,6 +27,8 @@ import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
  */
 abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
   private var mSuper: ChainedDescriptor<T>? = null
+
+  override fun getId(node: T): Id = System.identityHashCode(node)
 
   fun setSuper(superDescriptor: ChainedDescriptor<T>) {
     if (superDescriptor !== mSuper) {
@@ -75,6 +79,32 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
   }
 
   open fun onGetBounds(node: T): Bounds? = null
+
+  final override fun getHiddenAttributes(node: T): JsonObject? {
+
+    val descriptors = mutableListOf(this)
+
+    var curDescriptor: ChainedDescriptor<T>? = mSuper
+
+    while (curDescriptor != null) {
+      descriptors.add(curDescriptor)
+      curDescriptor = curDescriptor.mSuper
+    }
+
+    // reverse the list so that subclasses can override attributes of the base class if they wish to
+    descriptors.reverse()
+    val builder = mutableMapOf<String, JsonElement>()
+
+    descriptors.forEach { it.onGetHiddenAttributes(node, builder) }
+
+    return if (builder.isNotEmpty()) {
+      JsonObject(builder)
+    } else {
+      null
+    }
+  }
+
+  open fun onGetHiddenAttributes(node: T, attributes: MutableMap<String, JsonElement>) {}
 
   final override fun getChildren(node: T): List<Any> {
     val children = onGetChildren(node) ?: mSuper?.getChildren(node)

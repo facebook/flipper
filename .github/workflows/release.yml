@@ -1,4 +1,5 @@
 name: Release
+# This action runs on push to 'main' and below specified paths
 on:
   push:
     branches:
@@ -11,12 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag-version-commit.outputs.tag }}
+      
     steps:
       - uses: passy/extract-version-commit@v1.0.0
         id: extract-version-commit
         with:
           version_regex: '^Flipper Release: v([0-9]+\.[0-9]+\.[0-9]+)(?:\n|$)'
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
         if: ${{ steps.extract-version-commit.outputs.commit != ''}}
         with:
           ref: ${{ steps.extract-version-commit.outputs.commit }}
@@ -31,12 +33,12 @@ jobs:
           version_assertion_command: 'grep -q "\"version\": \"$version\"" desktop/package.json'
       - name: Create release
         if: ${{ steps.tag-version-commit.outputs.tag != '' }}
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v0.1.15
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag-version-commit.outputs.tag }}
-          release_name: ${{ steps.tag-version-commit.outputs.tag }}
+          name: ${{ steps.tag-version-commit.outputs.tag }}
           body: |
             See https://github.com/facebook/flipper/blob/main/desktop/static/CHANGELOG.md
             for full notes.
@@ -51,26 +53,26 @@ jobs:
       desktop-directory: ./desktop
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.3
       with:
         ref: ${{ needs.release.outputs.tag }}
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3.6.0
       with:
         node-version: '18.x'
     - name: Install
-      uses: nick-invision/retry@v2.6.0
+      uses: nick-fields/retry@v2.8.3
       with:
         timeout_minutes: 10
         max_attempts: 3
         command: cd ${{env.desktop-directory}} && yarn
     - name: Build
-      uses: nick-invision/retry@v2.6.0
+      uses: nick-fields/retry@v2.8.3
       with:
         timeout_minutes: 30
         max_attempts: 3
         command: cd ${{env.desktop-directory}} && yarn build --mac --mac-dmg
     - name: Upload
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: 'Flipper-mac.dmg'
         path: 'dist/Flipper-mac.dmg'
@@ -83,26 +85,26 @@ jobs:
       desktop-directory: ./desktop
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.3
       with:
         ref: ${{ needs.release.outputs.tag }}
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3.6.0
       with:
         node-version: '18.x'
     - name: Install
-      uses: nick-invision/retry@v2.6.0
+      uses: nick-fields/retry@v2.8.3
       with:
         timeout_minutes: 10
         max_attempts: 3
         command: cd ${{env.desktop-directory}} && yarn
     - name: Build
-      uses: nick-invision/retry@v2.6.0
+      uses: nick-fields/retry@v2.8.3
       with:
         timeout_minutes: 30
         max_attempts: 3
         command: cd ${{env.desktop-directory}} && yarn build --linux
     - name: Upload Linux
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: 'Flipper-linux.zip'
         path: 'dist/Flipper-linux.zip'
@@ -115,28 +117,28 @@ jobs:
       desktop-directory: ./desktop
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.3
       with:
         ref: ${{ needs.release.outputs.tag }}
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3.6.0
       with:
         node-version: '18.x'
     - name: Install
-      uses: nick-invision/retry@v2.6.0
+      uses: nick-fields/retry@v2.8.3
       with:
         timeout_minutes: 10
         max_attempts: 3
         shell: pwsh
         command: cd ${{env.desktop-directory}}; yarn
     - name: Build
-      uses: nick-invision/retry@v2.6.0
+      uses: nick-fields/retry@v2.8.3
       with:
         timeout_minutes: 30
         max_attempts: 3
         shell: pwsh
         command: cd ${{env.desktop-directory}}; yarn build --win
     - name: Upload Windows
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: 'Flipper-win.zip'
         path: 'dist/Flipper-win.zip'
@@ -149,10 +151,10 @@ jobs:
       desktop-directory: ./desktop
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.3
       with:
         ref: ${{ needs.release.outputs.tag }}
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3.6.0
       with:
         node-version: '18.x'
     - name: Install
@@ -166,7 +168,7 @@ jobs:
     - name: List dist artifacts
       run: ls -l dist/
     - name: Upload flipper-server
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: 'flipper-server.tgz'
         path: 'dist/flipper-server.tgz'
@@ -181,7 +183,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.3
       with:
         ref: ${{ needs.release.outputs.tag }}
     - name: Download Mac
@@ -226,7 +228,7 @@ jobs:
         yarn publish
     - name: Open issue on failure
       if: failure()
-      uses: JasonEtco/create-an-issue@v2.4.0
+      uses: JasonEtco/create-an-issue@v2.9.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         REPOSITORY: ${{ github.repository }}
@@ -234,6 +236,7 @@ jobs:
         WORKFLOW_NAME: "Publish"
       with:
         filename: .github/action-failure-template.md
+        
   dispatch:
     needs:
       - release

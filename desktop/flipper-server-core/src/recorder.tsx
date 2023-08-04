@@ -33,15 +33,20 @@ class Recorder {
 
   private handler_ = {
     cmd: (payload: CommandEventPayload) => {
-      if (this.flipperServer && payload.context) {
-        const clientQuery = payload.context as ClientQuery;
+      if (this.flipperServer) {
+        const clientQuery = payload.context as ClientQuery | undefined;
+
+        const device = clientQuery?.device ?? 'NONE';
+        const app = clientQuery?.app ?? 'NONE';
+        const medium = clientQuery?.medium ?? 'NONE';
+
         const entry: CommandRecordEntry = {
           time: new Date(),
-          type: 'cmd',
-          device: clientQuery.device,
-          app: clientQuery.app,
+          type: payload.success ? 'info' : 'error',
+          device,
+          app,
           message: payload.cmd,
-          medium: clientQuery.medium,
+          medium,
           cmd: payload.cmd,
           description: payload.description,
           success: payload.success,

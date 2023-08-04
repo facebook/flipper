@@ -8,7 +8,7 @@
  */
 
 import React, {useState} from 'react';
-import {plugin} from '../index';
+import {plugin} from '../../index';
 import {
   Button,
   Input,
@@ -26,9 +26,9 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout} from 'flipper-plugin';
-import {FrameworkEventType} from '../ClientTypes';
+import {FrameworkEventType} from '../../ClientTypes';
 
-export const Controls: React.FC = () => {
+export const TreeControls: React.FC = () => {
   const instance = usePlugin(plugin);
   const searchTerm = useValue(instance.uiState.searchTerm);
   const isPaused = useValue(instance.uiState.isPaused);
@@ -44,7 +44,7 @@ export const Controls: React.FC = () => {
     useState(false);
 
   return (
-    <Layout.Horizontal pad="small" gap="small">
+    <Layout.Horizontal gap="medium" pad="medium">
       <Input
         value={searchTerm}
         onChange={(e) => {
@@ -63,28 +63,32 @@ export const Controls: React.FC = () => {
             {isPaused ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
           </Tooltip>
         }></Button>
-      <Button
-        type="default"
-        shape="circle"
-        onClick={() => {
-          setShowFrameworkEventsModal(true);
-        }}
-        icon={
-          <Tooltip title="Framework event monitoring">
-            <EyeOutlined />
-          </Tooltip>
-        }></Button>
       {frameworkEventMonitoring.size > 0 && (
-        <FrameworkEventsMonitoringModal
-          filterMainThreadMonitoring={filterMainThreadMonitoring}
-          onSetFilterMainThreadMonitoring={
-            instance.uiActions.onSetFilterMainThreadMonitoring
-          }
-          frameworkEventTypes={[...frameworkEventMonitoring.entries()]}
-          onSetEventMonitored={instance.uiActions.onSetFrameworkEventMonitored}
-          visible={showFrameworkEventsModal}
-          onCancel={() => setShowFrameworkEventsModal(false)}
-        />
+        <>
+          <Button
+            type="default"
+            shape="circle"
+            onClick={() => {
+              setShowFrameworkEventsModal(true);
+            }}
+            icon={
+              <Tooltip title="Framework event monitoring">
+                <EyeOutlined />
+              </Tooltip>
+            }></Button>
+          <FrameworkEventsMonitoringModal
+            filterMainThreadMonitoring={filterMainThreadMonitoring}
+            onSetFilterMainThreadMonitoring={
+              instance.uiActions.onSetFilterMainThreadMonitoring
+            }
+            frameworkEventTypes={[...frameworkEventMonitoring.entries()]}
+            onSetEventMonitored={
+              instance.uiActions.onSetFrameworkEventMonitored
+            }
+            visible={showFrameworkEventsModal}
+            onCancel={() => setShowFrameworkEventsModal(false)}
+          />
+        </>
       )}
     </Layout.Horizontal>
   );

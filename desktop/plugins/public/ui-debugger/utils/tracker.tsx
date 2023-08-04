@@ -52,6 +52,10 @@ type TrackerEvents = {
     name: string;
     tags: Tag[];
   };
+  'target-mode-switched': {
+    on: boolean;
+  };
+  'target-mode-adjusted': {};
 };
 
 export interface Tracker {

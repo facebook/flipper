@@ -21,24 +21,23 @@ import {getRenderHostInstance} from 'flipper-frontend-core';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
-import {isConnected, currentUser, logoutUser} from '../fb-stubs/user';
-import {showLoginDialog} from '../chrome/fb-stubs/SignInSheet';
-import {Avatar, Badge, Button, Menu, Modal, Popover, Tooltip} from 'antd';
+import {currentUser, isConnected, logoutUser} from '../fb-stubs/user';
+import {Badge, Button, Menu, Modal} from 'antd';
 import {
   BellOutlined,
   BugOutlined,
   LayoutOutlined,
-  LoginOutlined,
   MobileOutlined,
   RocketOutlined,
   SettingOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
 import {
+  setTopLevelSelection,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
+  ToplevelNavigationItem,
 } from '../reducers/application';
-import {ToplevelNavItem, ToplevelProps} from './SandyApp';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
 import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
@@ -59,11 +58,11 @@ import {
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import {css} from '@emotion/css';
 import constants from '../fb-stubs/constants';
-import {setStaticView} from '../reducers/connections';
+import {selectPlugin, setStaticView} from '../reducers/connections';
 import {StyleGuide} from './StyleGuide';
 import {openDeeplinkDialog} from '../deeplink';
 import SettingsSheet from '../chrome/SettingsSheet';
-import WelcomeScreen from './WelcomeScreen';
+import WelcomeScreen, {WelcomeScreenStaticView} from './WelcomeScreen';
 import {AppSelector} from './appinspect/AppSelector';
 import {
   NavbarScreenRecordButton,
@@ -71,11 +70,21 @@ import {
 } from '../chrome/ScreenCaptureButtons';
 import {StatusMessage} from './appinspect/AppInspect';
 import {TroubleshootingGuide} from './appinspect/fb-stubs/TroubleshootingGuide';
+import {FlipperDevTools} from '../chrome/FlipperDevTools';
+import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
 
-export const Navbar = withTrackingScope(function Navbar({
-  toplevelSelection,
-  setToplevelSelection,
-}: ToplevelProps) {
+export const Navbar = withTrackingScope(function Navbar() {
+  const {topLevelSelection, selectedDevice, selectedAppId, selectedPlugin} =
+    useStore((state) => {
+      return {
+        topLevelSelection: state.application.topLevelSelection,
+        selectedDevice: state.connections.selectedDevice,
+        selectedAppId: state.connections.selectedAppId,
+        selectedPlugin: state.connections.selectedPlugin,
+      };
+    });
+
+  const dispatch = useDispatch();
   return (
     <Layout.Horizontal
       borderBottom
@@ -92,9 +101,20 @@ export const Navbar = withTrackingScope(function Navbar({
         <NavbarButton
           icon={MobileOutlined}
           label="App Inspect"
-          toggled={toplevelSelection === 'appinspect'}
+          toggled={topLevelSelection === 'appinspect'}
           onClick={() => {
-            setToplevelSelection('appinspect');
+            dispatch(setTopLevelSelection('appinspect'));
+            if (selectedPlugin) {
+              dispatch(
+                selectPlugin({
+                  selectedPlugin,
+                  selectedAppId,
+                  selectedDevice: selectedDevice,
+                }),
+              );
+            } else {
+              dispatch(setStaticView(WelcomeScreenStaticView));
+            }
           }}
         />
         <AppSelector />
@@ -110,14 +130,13 @@ export const Navbar = withTrackingScope(function Navbar({
         )}
       </Layout.Horizontal>
       <Layout.Horizontal style={{gap: 6, alignItems: 'center'}}>
-        <NotificationButton
-          toplevelSelection={toplevelSelection}
-          setToplevelSelection={setToplevelSelection}
-        />
-        <TroubleshootMenu setToplevelSelection={setToplevelSelection} />
+        <NoConnectivityWarning />
+
+        <NotificationButton topLevelSelection={topLevelSelection} />
+        <TroubleshootMenu />
         <ExtrasMenu />
         <RightSidebarToggleButton />
-        {config.showLogin && <LoginConnectivityButton />}
+
         <UpdateIndicator />
       </Layout.Horizontal>
     </Layout.Horizontal>
@@ -224,22 +243,25 @@ function ExportEverythingEverywhereAllAtOnceStatusModal({
 }
 
 function NotificationButton({
-  toplevelSelection,
-  setToplevelSelection,
-}: ToplevelProps) {
+  topLevelSelection,
+}: {
+  topLevelSelection: ToplevelNavigationItem;
+}) {
   const notifications = useStore((state) => state.notifications);
   const activeNotifications = useMemoize(filterNotifications, [
     notifications.activeNotifications,
     notifications.blocklistedPlugins,
     notifications.blocklistedCategories,
   ]);
+  const dispatch = useDispatch();
   return (
     <NavbarButton
       icon={BellOutlined}
       label="Alerts"
-      toggled={toplevelSelection === 'notification'}
+      zIndex={AlertsZIndex}
+      toggled={topLevelSelection === 'notification'}
       count={activeNotifications.length}
-      onClick={() => setToplevelSelection('notification')}
+      onClick={() => dispatch(setTopLevelSelection('notification'))}
     />
   );
 }
@@ -254,9 +276,9 @@ function LeftSidebarToggleButton() {
   if (hasMainMenu) {
     return (
       <NavbarButton
-        label="Toggle Sidebar"
+        label="Sidebar"
         icon={LayoutOutlined}
-        toggled={!mainMenuVisible}
+        toggled={mainMenuVisible}
         onClick={() => {
           dispatch(toggleLeftSidebarVisible());
         }}
@@ -276,16 +298,13 @@ function RightSidebarToggleButton() {
     (state) => state.application.rightSidebarVisible,
   );
 
-  if (!rightSidebarAvailable) {
-    return null;
-  }
-
   return (
     <NavbarButton
       icon={LayoutOutlined}
       flipIcon
-      label="Toggle R.Sidebar"
-      toggled={!rightSidebarVisible}
+      disabled={!rightSidebarAvailable}
+      label="Sidebar"
+      toggled={rightSidebarAvailable && rightSidebarVisible}
       onClick={() => {
         dispatch(toggleRightSidebarVisible());
       }}
@@ -319,6 +338,16 @@ const badgeCountClassname = css`
     margin-top: 8px;
   }
 `;
+
+const hideBorderWhenDisabled = css`
+  :disabled {
+    border-color: transparent !important;
+  }
+  :disabled:hover {
+    border-color: ${theme.disabledColor} !important;
+  }
+`;
+
 export function NavbarButton({
   icon: Icon,
   label,
@@ -327,10 +356,14 @@ export function NavbarButton({
   count,
   disabled = false,
   flipIcon = false,
+  zIndex,
+  colorOverride,
 }: {
   icon: (props: any) => any;
   label: string;
   // TODO remove optional
+  colorOverride?: string;
+  zIndex?: number;
   onClick?: () => void;
   toggled?: boolean;
   count?: number | true;
@@ -340,10 +373,12 @@ export function NavbarButton({
   const color = toggled ? theme.primaryColor : theme.textColorActive;
   const button = (
     <Button
+      className={hideBorderWhenDisabled}
       aria-pressed={toggled}
       ghost
       onClick={onClick}
       style={{
+        boxSizing: 'border-box',
         color,
         boxShadow: 'none',
         display: 'flex',
@@ -355,7 +390,7 @@ export function NavbarButton({
       disabled={disabled}>
       <Icon
         style={{
-          color,
+          color: colorOverride || color,
           fontSize: 24,
           transform: flipIcon ? 'scaleX(-1)' : undefined,
         }}
@@ -364,7 +399,7 @@ export function NavbarButton({
         style={{
           margin: 0,
           fontSize: theme.fontSize.small,
-          color: theme.textColorSecondary,
+          color: colorOverride || theme.textColorSecondary,
         }}>
         {label}
       </span>
@@ -374,6 +409,7 @@ export function NavbarButton({
   if (count !== undefined) {
     return (
       <Badge
+        style={{zIndex: zIndex}}
         {...{onClick}}
         dot={count === true}
         count={count}
@@ -388,60 +424,21 @@ export function NavbarButton({
   }
 }
 
-function LoginConnectivityButton() {
-  const loggedIn = useValue(currentUser());
-  const user = useStore((state) => state.user);
-
-  const profileUrl = user?.profile_picture?.uri;
-  const [showLogout, setShowLogout] = useState(false);
-  const onHandleVisibleChange = useCallback(
-    (visible) => setShowLogout(visible),
-    [],
-  );
-
+function NoConnectivityWarning() {
   const connected = useValue(isConnected());
 
   if (!connected) {
     return (
-      <Tooltip
-        placement="left"
-        title="No connection to intern, ensure you are VPN/Lighthouse for plugin updates and other features">
-        <WarningOutlined
-          style={{color: theme.warningColor, fontSize: '20px'}}
-        />
-      </Tooltip>
+      <NavbarButton
+        disabled
+        icon={WarningOutlined}
+        colorOverride={theme.errorColor}
+        label="No connectivity"
+      />
     );
   }
 
-  return loggedIn ? (
-    <Popover
-      content={
-        <Button
-          block
-          style={{backgroundColor: theme.backgroundDefault}}
-          onClick={async () => {
-            onHandleVisibleChange(false);
-            await logoutUser();
-          }}>
-          Log Out
-        </Button>
-      }
-      trigger="click"
-      placement="bottom"
-      visible={showLogout}
-      overlayStyle={{padding: 0}}
-      onVisibleChange={onHandleVisibleChange}>
-      <Layout.Container padv={theme.inlinePaddingV}>
-        <Avatar size={40} src={profileUrl} />
-      </Layout.Container>
-    </Popover>
-  ) : (
-    <NavbarButton
-      icon={LoginOutlined}
-      label="Log In"
-      onClick={showLoginDialog}
-    />
-  );
+  return null;
 }
 
 const menu = css`
@@ -465,11 +462,10 @@ const submenu = css`
   }
 `;
 
-function TroubleshootMenu({
-  setToplevelSelection,
-}: {
-  setToplevelSelection: (x: ToplevelNavItem) => void;
-}) {
+const AlertsZIndex = 101;
+const TroubleShootZIndex = 100;
+
+function TroubleshootMenu() {
   const store = useStore();
   const [status, setStatus] = useState<
     ExportEverythingEverywhereAllAtOnceStatus | undefined
@@ -500,7 +496,7 @@ function TroubleshootMenu({
   return (
     <>
       {/* using Badge **here** as NavbarButton badge is being cut off by Menu component */}
-      <Badge {...badgeProps}>
+      <Badge {...badgeProps} style={{zIndex: TroubleShootZIndex}}>
         <Menu
           mode="vertical"
           className={menu}
@@ -516,13 +512,14 @@ function TroubleshootMenu({
               onClick={() => setIsDoctorVisible(true)}>
               <Badge dot={hasNewProblem}>Setup Doctor</Badge>
             </Menu.Item>
-            {getRenderHostInstance().GK('flipper_connection_troubleshoot') && (
-              <Menu.Item
-                key="connectivity"
-                onClick={() => setToplevelSelection('connectivity')}>
-                Troubleshoot Connectivity
-              </Menu.Item>
-            )}
+            <Menu.Item
+              key="connectivity"
+              onClick={() => {
+                store.dispatch(setTopLevelSelection('connectivity'));
+                store.dispatch(setStaticView(TroubleshootingHub));
+              }}>
+              Troubleshoot Connectivity
+            </Menu.Item>
             <TroubleshootingGuide />
 
             <Menu.Item
@@ -532,10 +529,13 @@ function TroubleshootMenu({
             </Menu.Item>
             <Menu.Item
               key="flipperlogs"
-              onClick={() => setToplevelSelection('flipperlogs')}>
-              <Badge offset={[12, 0]} count={flipperErrorLogCount}>
-                Flipper Logs
-              </Badge>
+              onClick={() => {
+                store.dispatch(setTopLevelSelection('flipperlogs'));
+                store.dispatch(setStaticView(FlipperDevTools));
+              }}>
+              <Layout.Horizontal center gap="small">
+                Flipper Logs <Badge count={flipperErrorLogCount} />
+              </Layout.Horizontal>
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>
@@ -577,6 +577,7 @@ function ExtrasMenu() {
   const settings = useStore((state) => state.settingsState);
   const {showWelcomeAtStartup} = settings;
   const [welcomeVisible, setWelcomeVisible] = useState(showWelcomeAtStartup);
+  const loggedIn = useValue(currentUser());
 
   return (
     <>
@@ -639,6 +640,11 @@ function ExtrasMenu() {
             <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
               Help
             </Menu.Item>
+            {config.showLogin && loggedIn && (
+              <Menu.Item key="logout" onClick={async () => await logoutUser()}>
+                Logout
+              </Menu.Item>
+            )}
           </Menu.SubMenu>
         </Menu>
       </NUX>

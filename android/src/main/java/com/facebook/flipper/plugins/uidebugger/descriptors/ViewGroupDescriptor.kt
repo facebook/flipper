@@ -65,6 +65,7 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
       node: ViewGroup,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
+
     val props = mutableMapOf<Int, Inspectable>()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       props[LayoutModeAttributeId] = LayoutModeMapping.toInspectable(node.layoutMode)

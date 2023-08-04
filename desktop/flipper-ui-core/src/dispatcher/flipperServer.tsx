@@ -18,13 +18,17 @@ import {
   FlipperServerState,
 } from 'flipper-common';
 import Client from '../Client';
-import {notification} from 'antd';
+import {Button, notification} from 'antd';
 import {BaseDevice} from 'flipper-frontend-core';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
 import {waitFor} from '../utils/waitFor';
 import {NotificationBody} from '../ui/components/NotificationBody';
+import {Layout} from '../ui';
+import {setStaticView} from '../reducers/connections';
+import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
+import {setTopLevelSelection} from '../reducers/application';
 
 export function connectFlipperServerToStore(
   server: FlipperServer,
@@ -32,16 +36,17 @@ export function connectFlipperServerToStore(
   logger: Logger,
 ) {
   server.on('notification', ({type, title, description}) => {
-    const text = `[${type}] ${title}: ${description}`;
-    console.warn(text);
-    notification.open({
-      message: title,
-      description: <NotificationBody text={description} />,
-      type: type,
-      duration: 0,
-      key: text,
-    });
+    const key = `[${type}] ${title}: ${description}`;
+    showNotification(key, type, title, description);
   });
+
+  server.on(
+    'connectivity-troubleshoot-notification',
+    ({type, title, description}) => {
+      const key = `[${type}] ${title}: ${description}`;
+      showConnectivityTroubleshootNotification(store, key, title, description);
+    },
+  );
 
   server.on('server-state', handleServerStateChange);
 
@@ -49,9 +54,11 @@ export function connectFlipperServerToStore(
     if (err.code === 'EADDRINUSE') {
       handeEADDRINUSE('' + err);
     } else {
+      const text = err.message ?? err;
       notification.error({
+        key: text,
         message: 'Connection error',
-        description: <NotificationBody text={err.message ?? err} />,
+        description: <NotificationBody text={text} />,
         duration: null,
       });
     }
@@ -182,6 +189,7 @@ function handleServerStateChange({
       handeEADDRINUSE(error);
     } else {
       notification.error({
+        key: `server-${state}-error`,
         message: 'Failed to start flipper-server',
         description: '' + error,
         duration: null,
@@ -194,6 +202,7 @@ function handleServerStateChange({
 
 function handeEADDRINUSE(errorMessage: string) {
   notification.error({
+    key: 'eaddrinuse-error',
     message: 'Connection error',
     description: (
       <>
@@ -273,6 +282,51 @@ export function handleDeviceDisconnected(
   existing?.connected.set(false);
 }
 
+function showNotification(
+  key: string,
+  type: 'success' | 'info' | 'error' | 'warning',
+  message: string,
+  description: string,
+) {
+  notification.open({
+    message,
+    description: <NotificationBody text={description} />,
+    type,
+    duration: 0,
+    key,
+  });
+}
+
+function showConnectivityTroubleshootNotification(
+  store: Store,
+  key: string,
+  message: string,
+  description: string,
+) {
+  notification.error({
+    key,
+    message,
+    description: (
+      <Layout.Bottom>
+        <p>${description}</p>
+        <div>
+          <Button
+            type="primary"
+            style={{float: 'right'}}
+            onClick={() => {
+              store.dispatch(setTopLevelSelection('connectivity'));
+              store.dispatch(setStaticView(TroubleshootingHub));
+              notification.close(key);
+            }}>
+            Troubleshoot
+          </Button>
+        </div>
+      </Layout.Bottom>
+    ),
+    duration: 0,
+  });
+}
+
 export async function handleClientConnected(
   server: FlipperServer,
   store: Store,
@@ -307,11 +361,14 @@ export async function handleClientConnected(
           `[conn] Failed to find device '${query.device_id}' while connection app '${query.app}'`,
           e,
         );
-        notification.error({
-          message: 'Connection failed',
-          description: `Failed to find device '${query.device_id}' while trying to connect app '${query.app}'`,
-          duration: 0,
-        });
+        const key = `device-find-failure-${query.device_id}`;
+        showConnectivityTroubleshootNotification(
+          store,
+          key,
+          'Connection failed',
+          `Failed to find device '${query.device_id}' while trying to
+        connect app '${query.app}'`,
+        );
       },
     ));
 

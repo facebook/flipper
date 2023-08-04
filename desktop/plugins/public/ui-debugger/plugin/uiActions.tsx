@@ -90,7 +90,7 @@ export function uiActions(
         tracker.track('node-focused', {name: focusedNode.name, tags});
       }
 
-      uiState.selectedNode.set(undefined);
+      uiState.selectedNode.set({id: node, source: 'visualiser'});
     }
 
     uiState.focusedNode.set(node);

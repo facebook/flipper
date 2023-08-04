@@ -1,10 +1,16 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.flipper.plugins.jetpackcompose.descriptors
 
 import android.graphics.Bitmap
 import android.view.ViewGroup
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeInnerViewNode
+import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.ViewDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.ViewGroupDescriptor
@@ -12,8 +18,11 @@ import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
+import java.lang.System
 
 object ComposeInnerViewDescriptor : NodeDescriptor<ComposeInnerViewNode> {
+
+  override fun getId(node: ComposeInnerViewNode): Id = System.identityHashCode(node.view)
 
   override fun getBounds(node: ComposeInnerViewNode): Bounds {
     return node.bounds

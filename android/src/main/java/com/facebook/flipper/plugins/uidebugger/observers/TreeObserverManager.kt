@@ -78,7 +78,7 @@ class TreeObserverManager(val context: UIDContext) {
       mainScope.launch { start() }
     }
     batchedUpdates = Channel(Channel.UNLIMITED)
-    rootObserver.subscribe(context.applicationRef)
+    rootObserver.subscribe(context.applicationRef, null)
 
     job =
         workerScope.launch {

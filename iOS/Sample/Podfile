@@ -8,6 +8,7 @@ target 'Sample' do
   # See docs/getting-started/ios-native.mdx
   pod 'FlipperKit', :path => '../../FlipperKit.podspec', :configuration => 'Debug'  
   pod 'FlipperKit/FlipperKitLayoutPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug' 
+  pod 'FlipperKit/FlipperKitUIDebuggerPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug' 
   pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitExamplePlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'

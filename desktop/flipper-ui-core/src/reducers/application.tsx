@@ -11,6 +11,13 @@ import {v1 as uuidv1} from 'uuid';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {Actions} from './';
 
+export type ToplevelNavigationItem =
+  | 'appinspect'
+  | 'flipperlogs'
+  | 'notification'
+  | 'connectivity'
+  | undefined;
+
 export type LauncherMsg = {
   message: string;
   severity: 'warning' | 'error';
@@ -37,6 +44,7 @@ export type ShareType = {
 } & SubShareType;
 
 export type State = {
+  topLevelSelection: ToplevelNavigationItem;
   hasLeftSidebar: boolean;
   leftSidebarVisible: boolean;
   rightSidebarVisible: boolean;
@@ -60,6 +68,10 @@ export type Action =
       payload?: boolean;
     }
   | {
+      type: 'topLevelSelection';
+      payload: ToplevelNavigationItem;
+    }
+  | {
       type: 'windowIsFocused';
       payload: {isFocused: boolean; time: number};
     }
@@ -80,6 +92,7 @@ export type Action =
     };
 
 export const initialState: () => State = () => ({
+  topLevelSelection: 'appinspect',
   hasLeftSidebar: true,
   leftSidebarVisible: true,
   rightSidebarVisible: true,
@@ -132,6 +145,19 @@ export default function reducer(
         [action.type]: newValue,
       };
     }
+  } else if (action.type === 'topLevelSelection') {
+    const topLevelSelection = action.payload;
+
+    const hasLeftSidebar =
+      topLevelSelection === 'appinspect' ||
+      topLevelSelection === 'notification';
+
+    return {
+      ...state,
+      leftSidebarVisible: hasLeftSidebar,
+      hasLeftSidebar,
+      topLevelSelection,
+    };
   } else if (action.type === 'windowIsFocused') {
     return {
       ...state,
@@ -171,6 +197,13 @@ export const toggleAction = (
   payload?: boolean,
 ): Action => ({
   type,
+  payload,
+});
+
+export const setTopLevelSelection = (
+  payload: ToplevelNavigationItem,
+): Action => ({
+  type: 'topLevelSelection',
   payload,
 });
 

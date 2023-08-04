@@ -13,6 +13,7 @@ import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.core.RootViewResolver
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext
+import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 
 /**
@@ -23,7 +24,7 @@ class ApplicationTreeObserver(val context: UIDContext) : TreeObserver<Applicatio
 
   override val type = "Application"
 
-  override fun subscribe(node: Any) {
+  override fun subscribe(node: Any, parentId: Id?) {
     Log.i(LogTag, "Subscribing activity / root view changes")
 
     val applicationRef = node as ApplicationRef
@@ -41,7 +42,7 @@ class ApplicationTreeObserver(val context: UIDContext) : TreeObserver<Applicatio
         }
 
     context.sharedThrottle.registerCallback(this.objectIdentity()) {
-      traverseAndSend(context, applicationRef)
+      traverseAndSend(null, context, applicationRef)
     }
 
     context.applicationRef.rootsResolver.attachListener(rootViewListener)

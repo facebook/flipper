@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect} from 'react';
 import {
   TrackingScope,
   useLogger,
@@ -21,13 +21,7 @@ import {theme} from 'flipper-plugin';
 import {Logger} from 'flipper-common';
 
 import {Navbar} from './Navbar';
-import {useStore, useDispatch} from '../utils/useStore';
-import {FlipperDevTools} from '../chrome/FlipperDevTools';
-import {setStaticView} from '../reducers/connections';
-import {
-  toggleHasLeftSidebar,
-  toggleLeftSidebarVisible,
-} from '../reducers/application';
+import {useStore} from '../utils/useStore';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
@@ -47,63 +41,16 @@ import {isFBEmployee} from '../utils/fbEmployee';
 import {notification} from 'antd';
 import isProduction from '../utils/isProduction';
 import {getRenderHostInstance} from 'flipper-frontend-core';
-import {ConnectivityHub} from '../chrome/ConnectivityHub';
-
-export type ToplevelNavItem =
-  | 'appinspect'
-  | 'flipperlogs'
-  | 'notification'
-  | 'connectivity'
-  | undefined;
-export type ToplevelProps = {
-  toplevelSelection: ToplevelNavItem;
-  setToplevelSelection: (_newSelection: ToplevelNavItem) => void;
-};
 
 export function SandyApp() {
   const logger = useLogger();
-  const dispatch = useDispatch();
   const leftSidebarVisible = useStore(
     (state) => state.application.leftSidebarVisible,
   );
-  const staticView = useStore((state) => state.connections.staticView);
-
-  /**
-   * Top level navigation uses two pieces of state, selection stored here, and selection that is based on what is stored in the reducer (which might be influenced by redux action dispatches to different means).
-   * The logic here is to sync both, but without modifying the navigation related reducers to not break classic Flipper.
-   * It is possible to simplify this in the future.
-   */
-  const [toplevelSelection, setStoredToplevelSelection] =
-    useState<ToplevelNavItem>('appinspect');
-
-  // Handle toplevel nav clicks from LeftRail
-  const setToplevelSelection = useCallback(
-    (newSelection: ToplevelNavItem) => {
-      // toggle sidebar visibility if needed
-      const hasLeftSidebar =
-        newSelection === 'appinspect' || newSelection === 'notification';
-
-      dispatch(toggleHasLeftSidebar(hasLeftSidebar));
-      if (hasLeftSidebar) {
-        if (newSelection === toplevelSelection) {
-          dispatch(toggleLeftSidebarVisible());
-        } else {
-          dispatch(toggleLeftSidebarVisible(true));
-        }
-      }
-      switch (newSelection) {
-        case 'flipperlogs':
-          dispatch(setStaticView(FlipperDevTools));
-          break;
-        case 'connectivity':
-          dispatch(setStaticView(ConnectivityHub));
-          break;
-        default:
-      }
-      setStoredToplevelSelection(newSelection);
-    },
-    [dispatch, toplevelSelection],
+  const topLevelSelection = useStore(
+    (state) => state.application.topLevelSelection,
   );
+  const staticView = useStore((state) => state.connections.staticView);
 
   useEffect(() => {
     document.title = `Flipper (${getVersionString()}${
@@ -162,10 +109,10 @@ export function SandyApp() {
     }
   }, []);
 
-  const leftMenuContent = !leftSidebarVisible ? null : toplevelSelection ===
+  const leftMenuContent = !leftSidebarVisible ? null : topLevelSelection ===
     'appinspect' ? (
     <AppInspect />
-  ) : toplevelSelection === 'notification' ? (
+  ) : topLevelSelection === 'notification' ? (
     <Notification />
   ) : null;
 
@@ -173,10 +120,7 @@ export function SandyApp() {
     <RootElement>
       <Layout.Bottom>
         <Layout.Top gap={16}>
-          <Navbar
-            toplevelSelection={toplevelSelection}
-            setToplevelSelection={setToplevelSelection}
-          />
+          <Navbar />
           <Layout.Left
             style={{
               paddingLeft: theme.space.large,
@@ -185,7 +129,7 @@ export function SandyApp() {
             <Layout.Horizontal>
               <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
                 {leftMenuContent && (
-                  <TrackingScope scope={toplevelSelection!}>
+                  <TrackingScope scope={topLevelSelection!}>
                     {leftMenuContent}
                   </TrackingScope>
                 )}

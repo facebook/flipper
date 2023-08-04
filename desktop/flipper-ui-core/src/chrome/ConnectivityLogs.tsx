@@ -8,33 +8,30 @@
  */
 
 import {Layout} from '../ui';
-import React, {createRef, CSSProperties} from 'react';
+import React, {CSSProperties, useState} from 'react';
 import {
   createDataSource,
   DataFormatter,
+  DataInspector,
   DataTable,
   DataTableColumn,
-  DataTableManager,
-  Tab,
-  Tabs,
   theme,
+  styled,
 } from 'flipper-plugin';
-import {CloseCircleFilled} from '@ant-design/icons';
+import {CloseCircleFilled, DeleteOutlined} from '@ant-design/icons';
 import {
   CommandRecordEntry,
   ConnectionRecordEntry,
   FlipperServer,
 } from 'flipper-common';
-import SetupDoctorScreen from '../sandy-chrome/SetupDoctorScreen';
-import {ConsoleLogs} from './ConsoleLogs';
-import {FlipperMessages} from './FlipperMessages';
+import {Button} from 'antd';
 
 const rows = createDataSource<ConnectionRecordEntry>([], {
   limit: 200000,
   persist: 'connectivity-logs',
 });
 
-export function enableConnectivityHub(flipperServer: FlipperServer) {
+export function enableConnectivityHook(flipperServer: FlipperServer) {
   flipperServer.on(
     'connectivity-troubleshoot-log',
     (entry: ConnectionRecordEntry) => {
@@ -111,7 +108,7 @@ function createColumnConfig(): DataTableColumn<ConnectionRecordEntry>[] {
       key: 'medium',
       title: 'Medium',
       width: 80,
-      visible: false,
+      visible: true,
     },
     {
       key: 'message',
@@ -126,45 +123,63 @@ function createColumnConfig(): DataTableColumn<ConnectionRecordEntry>[] {
   ];
 }
 
+const columns = createColumnConfig();
+
 function getRowStyle(entry: ConnectionRecordEntry): CSSProperties | undefined {
   return (logTypes[entry.type]?.style as any) ?? baseRowStyle;
 }
 
-export function ConnectivityHub() {
-  const columns = createColumnConfig();
+const Placeholder = styled(Layout.Container)({
+  center: true,
+  color: theme.textColorPlaceholder,
+  fontSize: 18,
+});
 
-  const tableManagerRef = createRef<
-    undefined | DataTableManager<ConnectionRecordEntry>
+function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
+  return (
+    <Layout.ScrollContainer pad>
+      {selection != null ? (
+        <DataInspector data={selection} expandRoot />
+      ) : (
+        <Placeholder grow pad="large">
+          Select an entry to visualize details
+        </Placeholder>
+      )}
+    </Layout.ScrollContainer>
+  );
+}
+
+function clearMessages() {
+  rows.clear();
+}
+
+export const ConnectivityLogs = () => {
+  const [selection, setSelection] = useState<
+    ConnectionRecordEntry | undefined
   >();
 
-  const LogView = () => (
-    <DataTable<ConnectionRecordEntry>
-      dataSource={rows}
-      columns={columns}
-      enableAutoScroll
-      enableMultiPanels
-      onRowStyle={getRowStyle}
-      enableHorizontalScroll={false}
-      tableManagerRef={tableManagerRef}
-    />
+  const clearButton = (
+    <Button
+      title="Clear logs"
+      onClick={() => {
+        setSelection(undefined);
+        clearMessages();
+      }}>
+      <DeleteOutlined />
+    </Button>
   );
 
   return (
-    <Layout.Container grow>
-      <Tabs grow>
-        <Tab tab="Environment Check">
-          <SetupDoctorScreen visible modal={false} onClose={() => {}} />
-        </Tab>
-        <Tab tab="Connectivity Logs">
-          <LogView />
-        </Tab>
-        <Tab tab="Console Logs">
-          <ConsoleLogs />
-        </Tab>
-        <Tab tab="Messages">
-          <FlipperMessages />
-        </Tab>
-      </Tabs>
-    </Layout.Container>
+    <Layout.Right resizable width={400}>
+      <DataTable<ConnectionRecordEntry>
+        dataSource={rows}
+        columns={columns}
+        enableAutoScroll
+        onRowStyle={getRowStyle}
+        onSelect={setSelection}
+        extraActions={clearButton}
+      />
+      <Sidebar selection={selection} />
+    </Layout.Right>
   );
-}
+};
