@@ -470,6 +470,8 @@ function TroubleshootMenu() {
   const [status, setStatus] = useState<
     ExportEverythingEverywhereAllAtOnceStatus | undefined
   >();
+  const [isFlipperDevToolsModalOpen, setFlipperDevToolsModalOpen] =
+    useState(false);
 
   const exportEverythingEverywhereAllAtOnceTracked = useTrackedCallback(
     'Debug data export',
@@ -530,8 +532,7 @@ function TroubleshootMenu() {
             <Menu.Item
               key="flipperlogs"
               onClick={() => {
-                store.dispatch(setTopLevelSelection('flipperlogs'));
-                store.dispatch(setStaticView(FlipperDevTools));
+                setFlipperDevToolsModalOpen(true);
               }}>
               <Layout.Horizontal center gap="small">
                 Flipper Logs <Badge count={flipperErrorLogCount} />
@@ -548,7 +549,35 @@ function TroubleshootMenu() {
         status={status}
         setStatus={setStatus}
       />
+      <FlipperDevToolsModal
+        isOpen={isFlipperDevToolsModalOpen}
+        onClose={() => setFlipperDevToolsModalOpen(false)}
+      />
     </>
+  );
+}
+
+function FlipperDevToolsModal({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <Modal
+      visible={isOpen}
+      onCancel={onClose}
+      width="100%"
+      footer={null}
+      style={{
+        // override default `top: 100px`
+        top: '5vh',
+      }}>
+      <div style={{minHeight: '85vh', width: '100%', display: 'flex'}}>
+        <FlipperDevTools />
+      </div>
+    </Modal>
   );
 }
 

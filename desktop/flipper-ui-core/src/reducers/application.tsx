@@ -13,7 +13,6 @@ import {Actions} from './';
 
 export type ToplevelNavigationItem =
   | 'appinspect'
-  | 'flipperlogs'
   | 'notification'
   | 'connectivity'
   | undefined;
