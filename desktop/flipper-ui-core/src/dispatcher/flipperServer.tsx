@@ -26,9 +26,7 @@ import {sideEffect} from '../utils/sideEffect';
 import {waitFor} from '../utils/waitFor';
 import {NotificationBody} from '../ui/components/NotificationBody';
 import {Layout} from '../ui';
-import {setStaticView} from '../reducers/connections';
-import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
-import {setTopLevelSelection} from '../reducers/application';
+import {toggleConnectivityModal} from '../reducers/application';
 
 export function connectFlipperServerToStore(
   server: FlipperServer,
@@ -314,8 +312,7 @@ function showConnectivityTroubleshootNotification(
             type="primary"
             style={{float: 'right'}}
             onClick={() => {
-              store.dispatch(setTopLevelSelection('connectivity'));
-              store.dispatch(setStaticView(TroubleshootingHub));
+              store.dispatch(toggleConnectivityModal());
               notification.close(key);
             }}>
             Troubleshoot

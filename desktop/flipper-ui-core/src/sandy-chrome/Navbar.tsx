@@ -34,6 +34,7 @@ import {
 } from '@ant-design/icons';
 import {
   setTopLevelSelection,
+  toggleConnectivityModal,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
   ToplevelNavigationItem,
@@ -268,25 +269,20 @@ function NotificationButton({
 
 function LeftSidebarToggleButton() {
   const dispatch = useDispatch();
-  const hasMainMenu = useStore((state) => state.application.hasLeftSidebar);
   const mainMenuVisible = useStore(
     (state) => state.application.leftSidebarVisible,
   );
 
-  if (hasMainMenu) {
-    return (
-      <NavbarButton
-        label="Sidebar"
-        icon={LayoutOutlined}
-        toggled={mainMenuVisible}
-        onClick={() => {
-          dispatch(toggleLeftSidebarVisible());
-        }}
-      />
-    );
-  }
-
-  return null;
+  return (
+    <NavbarButton
+      label="Sidebar"
+      icon={LayoutOutlined}
+      toggled={mainMenuVisible}
+      onClick={() => {
+        dispatch(toggleLeftSidebarVisible());
+      }}
+    />
+  );
 }
 
 function RightSidebarToggleButton() {
@@ -517,8 +513,7 @@ function TroubleshootMenu() {
             <Menu.Item
               key="connectivity"
               onClick={() => {
-                store.dispatch(setTopLevelSelection('connectivity'));
-                store.dispatch(setStaticView(TroubleshootingHub));
+                store.dispatch(toggleConnectivityModal());
               }}>
               Troubleshoot Connectivity
             </Menu.Item>
@@ -553,7 +548,30 @@ function TroubleshootMenu() {
         isOpen={isFlipperDevToolsModalOpen}
         onClose={() => setFlipperDevToolsModalOpen(false)}
       />
+      <TroubleshootingModal />
     </>
+  );
+}
+
+function TroubleshootingModal() {
+  const store = useStore();
+  const isOpen = useStore(
+    (state) => state.application.isTroubleshootingModalOpen,
+  );
+  return (
+    <Modal
+      visible={isOpen}
+      onCancel={() => store.dispatch(toggleConnectivityModal())}
+      width="100%"
+      footer={null}
+      style={{
+        // override default `top: 100px`
+        top: '5vh',
+      }}>
+      <div style={{minHeight: '80vh', width: '100%', display: 'flex'}}>
+        <TroubleshootingHub />
+      </div>
+    </Modal>
   );
 }
 

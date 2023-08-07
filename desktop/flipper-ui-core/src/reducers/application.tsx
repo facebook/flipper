@@ -11,11 +11,7 @@ import {v1 as uuidv1} from 'uuid';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {Actions} from './';
 
-export type ToplevelNavigationItem =
-  | 'appinspect'
-  | 'notification'
-  | 'connectivity'
-  | undefined;
+export type ToplevelNavigationItem = 'appinspect' | 'notification' | undefined;
 
 export type LauncherMsg = {
   message: string;
@@ -44,7 +40,7 @@ export type ShareType = {
 
 export type State = {
   topLevelSelection: ToplevelNavigationItem;
-  hasLeftSidebar: boolean;
+  isTroubleshootingModalOpen: boolean;
   leftSidebarVisible: boolean;
   rightSidebarVisible: boolean;
   rightSidebarAvailable: boolean;
@@ -88,11 +84,15 @@ export type Action =
   | {
       type: 'REMOVE_STATUS_MSG';
       payload: {msg: string; sender: string};
+    }
+  | {
+      type: 'TOGGLE_CONNECTIVITY_MODAL';
     };
 
 export const initialState: () => State = () => ({
   topLevelSelection: 'appinspect',
   hasLeftSidebar: true,
+  isTroubleshootingModalOpen: false,
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
@@ -125,7 +125,6 @@ export default function reducer(
 ): State {
   state = state || initialState();
   if (
-    action.type === 'hasLeftSidebar' ||
     action.type === 'leftSidebarVisible' ||
     action.type === 'rightSidebarVisible' ||
     action.type === 'rightSidebarAvailable'
@@ -147,15 +146,14 @@ export default function reducer(
   } else if (action.type === 'topLevelSelection') {
     const topLevelSelection = action.payload;
 
-    const hasLeftSidebar =
-      topLevelSelection === 'appinspect' ||
-      topLevelSelection === 'notification';
-
     return {
       ...state,
-      leftSidebarVisible: hasLeftSidebar,
-      hasLeftSidebar,
       topLevelSelection,
+    };
+  } else if (action.type === 'TOGGLE_CONNECTIVITY_MODAL') {
+    return {
+      ...state,
+      isTroubleshootingModalOpen: !state.isTroubleshootingModalOpen,
     };
   } else if (action.type === 'windowIsFocused') {
     return {
@@ -204,6 +202,10 @@ export const setTopLevelSelection = (
 ): Action => ({
   type: 'topLevelSelection',
   payload,
+});
+
+export const toggleConnectivityModal = (): Action => ({
+  type: 'TOGGLE_CONNECTIVITY_MODAL',
 });
 
 export const toggleLeftSidebarVisible = (payload?: boolean): Action => ({
