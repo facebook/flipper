@@ -11,8 +11,6 @@ import {v1 as uuidv1} from 'uuid';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {Actions} from './';
 
-export type ToplevelNavigationItem = 'appinspect' | 'notification' | undefined;
-
 export type LauncherMsg = {
   message: string;
   severity: 'warning' | 'error';
@@ -39,8 +37,8 @@ export type ShareType = {
 } & SubShareType;
 
 export type State = {
-  topLevelSelection: ToplevelNavigationItem;
   isTroubleshootingModalOpen: boolean;
+  isNotificationModalOpen: boolean;
   leftSidebarVisible: boolean;
   rightSidebarVisible: boolean;
   rightSidebarAvailable: boolean;
@@ -54,6 +52,7 @@ export type State = {
 type BooleanActionType =
   | 'hasLeftSidebar'
   | 'leftSidebarVisible'
+  | 'isNotificationModalOpen'
   | 'rightSidebarVisible'
   | 'rightSidebarAvailable';
 
@@ -61,10 +60,6 @@ export type Action =
   | {
       type: BooleanActionType;
       payload?: boolean;
-    }
-  | {
-      type: 'topLevelSelection';
-      payload: ToplevelNavigationItem;
     }
   | {
       type: 'windowIsFocused';
@@ -93,6 +88,7 @@ export const initialState: () => State = () => ({
   topLevelSelection: 'appinspect',
   hasLeftSidebar: true,
   isTroubleshootingModalOpen: false,
+  isNotificationModalOpen: false,
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
@@ -127,6 +123,7 @@ export default function reducer(
   if (
     action.type === 'leftSidebarVisible' ||
     action.type === 'rightSidebarVisible' ||
+    action.type === 'isNotificationModalOpen' ||
     action.type === 'rightSidebarAvailable'
   ) {
     const newValue =
@@ -143,13 +140,6 @@ export default function reducer(
         [action.type]: newValue,
       };
     }
-  } else if (action.type === 'topLevelSelection') {
-    const topLevelSelection = action.payload;
-
-    return {
-      ...state,
-      topLevelSelection,
-    };
   } else if (action.type === 'TOGGLE_CONNECTIVITY_MODAL') {
     return {
       ...state,
@@ -194,13 +184,6 @@ export const toggleAction = (
   payload?: boolean,
 ): Action => ({
   type,
-  payload,
-});
-
-export const setTopLevelSelection = (
-  payload: ToplevelNavigationItem,
-): Action => ({
-  type: 'topLevelSelection',
   payload,
 });
 

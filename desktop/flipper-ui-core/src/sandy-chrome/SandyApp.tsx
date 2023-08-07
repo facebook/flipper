@@ -25,7 +25,6 @@ import {useStore} from '../utils/useStore';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
-import {Notification} from './notification/Notification';
 import {showChangelog} from '../chrome/ChangelogSheet';
 import PlatformSelectWizard, {
   hasPlatformWizardBeenDone,
@@ -46,9 +45,6 @@ export function SandyApp() {
   const logger = useLogger();
   const leftSidebarVisible = useStore(
     (state) => state.application.leftSidebarVisible,
-  );
-  const topLevelSelection = useStore(
-    (state) => state.application.topLevelSelection,
   );
   const staticView = useStore((state) => state.connections.staticView);
 
@@ -109,13 +105,6 @@ export function SandyApp() {
     }
   }, []);
 
-  const leftMenuContent = !leftSidebarVisible ? null : topLevelSelection ===
-    'appinspect' ? (
-    <AppInspect />
-  ) : topLevelSelection === 'notification' ? (
-    <Notification />
-  ) : null;
-
   return (
     <RootElement>
       <Layout.Bottom>
@@ -128,11 +117,7 @@ export function SandyApp() {
             }}>
             <Layout.Horizontal>
               <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
-                {leftMenuContent && (
-                  <TrackingScope scope={topLevelSelection!}>
-                    {leftMenuContent}
-                  </TrackingScope>
-                )}
+                {leftSidebarVisible ? <AppInspect /> : null}
               </_Sidebar>
             </Layout.Horizontal>
             <MainContainer>

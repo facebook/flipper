@@ -115,6 +115,7 @@ function NotificationEntry({notification}: {notification: PluginNotification}) {
     pluginName,
     iconName,
   } = notification;
+  const store = useStore();
 
   const actions = useMemo(
     () => (
@@ -163,7 +164,13 @@ function NotificationEntry({notification}: {notification: PluginNotification}) {
               ? `${clientName}/${appName}`
               : clientName ?? appName ?? 'Not Connected'}
           </Text>
-          <Button style={{width: 'fit-content'}} size="small" onClick={onOpen}>
+          <Button
+            style={{width: 'fit-content'}}
+            size="small"
+            onClick={() => {
+              onOpen();
+              store.dispatch({type: 'isNotificationModalOpen', payload: false});
+            }}>
             Open {pluginName}
           </Button>
         </>
@@ -307,6 +314,7 @@ export function Notification() {
 export function openNotification(store: Store, noti: PluginNotificationOrig) {
   const client = getClientById(store, noti.client);
   if (client) {
+    store.dispatch({type: 'isNotificationModalOpen', payload: true});
     store.dispatch(
       selectPlugin({
         selectedPlugin: noti.pluginId,
@@ -318,6 +326,7 @@ export function openNotification(store: Store, noti: PluginNotificationOrig) {
   } else {
     const device = getDeviceById(store, noti.client);
     if (device) {
+      store.dispatch({type: 'isNotificationModalOpen', payload: true});
       store.dispatch(
         selectPlugin({
           selectedPlugin: noti.pluginId,

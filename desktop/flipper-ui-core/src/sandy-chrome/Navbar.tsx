@@ -27,17 +27,14 @@ import {
   BellOutlined,
   BugOutlined,
   LayoutOutlined,
-  MobileOutlined,
   RocketOutlined,
   SettingOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
 import {
-  setTopLevelSelection,
   toggleConnectivityModal,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
-  ToplevelNavigationItem,
 } from '../reducers/application';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
@@ -59,11 +56,11 @@ import {
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import {css} from '@emotion/css';
 import constants from '../fb-stubs/constants';
-import {selectPlugin, setStaticView} from '../reducers/connections';
+import {setStaticView} from '../reducers/connections';
 import {StyleGuide} from './StyleGuide';
 import {openDeeplinkDialog} from '../deeplink';
 import SettingsSheet from '../chrome/SettingsSheet';
-import WelcomeScreen, {WelcomeScreenStaticView} from './WelcomeScreen';
+import WelcomeScreen from './WelcomeScreen';
 import {AppSelector} from './appinspect/AppSelector';
 import {
   NavbarScreenRecordButton,
@@ -73,19 +70,9 @@ import {StatusMessage} from './appinspect/AppInspect';
 import {TroubleshootingGuide} from './appinspect/fb-stubs/TroubleshootingGuide';
 import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
+import {Notification} from './notification/Notification';
 
 export const Navbar = withTrackingScope(function Navbar() {
-  const {topLevelSelection, selectedDevice, selectedAppId, selectedPlugin} =
-    useStore((state) => {
-      return {
-        topLevelSelection: state.application.topLevelSelection,
-        selectedDevice: state.connections.selectedDevice,
-        selectedAppId: state.connections.selectedAppId,
-        selectedPlugin: state.connections.selectedPlugin,
-      };
-    });
-
-  const dispatch = useDispatch();
   return (
     <Layout.Horizontal
       borderBottom
@@ -99,25 +86,6 @@ export const Navbar = withTrackingScope(function Navbar() {
       }}>
       <Layout.Horizontal style={{gap: 6}}>
         <LeftSidebarToggleButton />
-        <NavbarButton
-          icon={MobileOutlined}
-          label="App Inspect"
-          toggled={topLevelSelection === 'appinspect'}
-          onClick={() => {
-            dispatch(setTopLevelSelection('appinspect'));
-            if (selectedPlugin) {
-              dispatch(
-                selectPlugin({
-                  selectedPlugin,
-                  selectedAppId,
-                  selectedDevice: selectedDevice,
-                }),
-              );
-            } else {
-              dispatch(setStaticView(WelcomeScreenStaticView));
-            }
-          }}
-        />
         <AppSelector />
         <StatusMessage />
         <NavbarScreenshotButton />
@@ -133,7 +101,7 @@ export const Navbar = withTrackingScope(function Navbar() {
       <Layout.Horizontal style={{gap: 6, alignItems: 'center'}}>
         <NoConnectivityWarning />
 
-        <NotificationButton topLevelSelection={topLevelSelection} />
+        <NotificationButton />
         <TroubleshootMenu />
         <ExtrasMenu />
         <RightSidebarToggleButton />
@@ -243,27 +211,38 @@ function ExportEverythingEverywhereAllAtOnceStatusModal({
   );
 }
 
-function NotificationButton({
-  topLevelSelection,
-}: {
-  topLevelSelection: ToplevelNavigationItem;
-}) {
+function NotificationButton() {
+  const store = useStore();
+  const isOpen = useStore((store) => store.application.isNotificationModalOpen);
   const notifications = useStore((state) => state.notifications);
   const activeNotifications = useMemoize(filterNotifications, [
     notifications.activeNotifications,
     notifications.blocklistedPlugins,
     notifications.blocklistedCategories,
   ]);
-  const dispatch = useDispatch();
   return (
-    <NavbarButton
-      icon={BellOutlined}
-      label="Alerts"
-      zIndex={AlertsZIndex}
-      toggled={topLevelSelection === 'notification'}
-      count={activeNotifications.length}
-      onClick={() => dispatch(setTopLevelSelection('notification'))}
-    />
+    <>
+      <NavbarButton
+        icon={BellOutlined}
+        label="Alerts"
+        zIndex={AlertsZIndex}
+        count={activeNotifications.length}
+        onClick={() => {
+          store.dispatch({type: 'isNotificationModalOpen', payload: true});
+        }}
+      />
+      <Modal
+        visible={isOpen}
+        onCancel={() =>
+          store.dispatch({type: 'isNotificationModalOpen', payload: false})
+        }
+        width="70vw"
+        footer={null}>
+        <div style={{minHeight: '80vh', display: 'flex'}}>
+          <Notification />
+        </div>
+      </Modal>
+    </>
   );
 }
 
