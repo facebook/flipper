@@ -108,7 +108,7 @@ class TreeObserverManager(val context: UIDContext) {
     val workerThreadStartTimestamp = System.currentTimeMillis()
 
     val nodes = batchedUpdate.updates.flatMap { it.deferredNodes.map { it.value() } }
-    val frameworkEvents = batchedUpdate.updates.flatMap { it.frameworkEvents ?: listOf() }
+    val frameworkEvents = context.extractPendingFrameworkEvents()
     val snapshotUpdate = batchedUpdate.updates.find { it.snapshot != null }
     val deferredComputationEndTimestamp = System.currentTimeMillis()
 

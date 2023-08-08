@@ -20,4 +20,5 @@ data class FrameworkEvent(
     val nodeId: Id,
     val type: String,
     val timestamp: Long,
+    val thread: String
 )
