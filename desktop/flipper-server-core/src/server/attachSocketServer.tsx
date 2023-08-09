@@ -240,7 +240,7 @@ export function attachSocketServer(
           clearTimeout(disconnectTimeout);
         }
         /**
-         * If, after 15 min, there are no more connected clients, we exit the process.
+         * If, after 30 seconds, there are no more connected clients, we exit the process.
          */
         disconnectTimeout = setTimeout(() => {
           if (numberOfConnectedClients === 0 && isProduction()) {
