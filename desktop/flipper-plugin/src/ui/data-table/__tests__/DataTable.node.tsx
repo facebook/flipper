@@ -14,11 +14,14 @@ import {createDataSource} from 'flipper-plugin-core';
 import {computeDataTableFilter, DataTableManager} from '../DataTableManager';
 import {Button} from 'antd';
 import {sleep} from 'flipper-common';
+import {TestUtils, _setFlipperLibImplementation} from 'flipper-plugin-core';
 
 type Todo = {
   title: string;
   done: boolean;
 };
+
+_setFlipperLibImplementation(TestUtils.createMockFlipperLib());
 
 function createTestDataSource() {
   return createDataSource<Todo>([
