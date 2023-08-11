@@ -28,6 +28,7 @@ export type IdbConfig = {
 // Use debug to get helpful logs when idb fails
 const IDB_LOG_LEVEL = 'DEBUG';
 const LOG_TAG = 'iOSContainerUtility';
+const CMD_RECORD_THROTTLE_COUNT = 10;
 
 const mutex = new Mutex();
 
@@ -48,6 +49,10 @@ export type DeviceTarget = {
   type: DeviceType;
   name: string;
 };
+
+let idbDeviceListing = 0;
+let idbCompanionDeviceListing = 0;
+let xcodeDeviceListing = 0;
 
 async function isAvailable(idbPath: string): Promise<boolean> {
   if (!idbPath) {
@@ -88,12 +93,17 @@ async function queryTargetsWithXcode(
       });
       throw new Error('No output from command');
     }
-    recorder.event('cmd', {
-      cmd,
-      description,
-      success: true,
-      context,
-    });
+
+    xcodeDeviceListing++;
+    if (xcodeDeviceListing % CMD_RECORD_THROTTLE_COUNT === 0) {
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: true,
+        context,
+      });
+    }
+
     return stdout
       .toString()
       .split('\n')
@@ -141,12 +151,15 @@ async function queryTargetsWithIdb(
       throw new Error('No output from command');
     }
 
-    recorder.event('cmd', {
-      cmd,
-      description,
-      success: true,
-      context,
-    });
+    idbDeviceListing++;
+    if (idbDeviceListing % CMD_RECORD_THROTTLE_COUNT === 0) {
+      recorder.event('cmd', {
+        cmd,
+        description,
+        success: true,
+        context,
+      });
+    }
 
     return parseIdbTargets(stdout.toString());
   } catch (e) {
@@ -187,12 +200,15 @@ async function queryTargetsWithIdbCompanion(
         throw new Error('No output from command');
       }
 
-      recorder.event('cmd', {
-        cmd,
-        description,
-        success: true,
-        context,
-      });
+      idbCompanionDeviceListing++;
+      if (idbCompanionDeviceListing % CMD_RECORD_THROTTLE_COUNT === 0) {
+        recorder.event('cmd', {
+          cmd,
+          description,
+          success: true,
+          context,
+        });
+      }
 
       const devices = parseIdbTargets(stdout.toString());
       if (devices.length > 0 && !isPhysicalDeviceEnabled) {
