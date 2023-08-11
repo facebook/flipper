@@ -44,11 +44,6 @@ const argv = yargs
         '[FB-internal only] Will force using public sources only, to be able to iterate quickly on the public version. If sources are checked out from GitHub this is already the default. Setting env var "FLIPPER_FORCE_PUBLIC_BUILD" is equivalent.',
       type: 'boolean',
     },
-    tcp: {
-      describe: 'Enable TCP connections on flipper-server.',
-      type: 'boolean',
-      default: true,
-    },
     channel: {
       description: 'Release channel for the build',
       choices: ['stable', 'insiders'],
@@ -108,7 +103,7 @@ async function copyStaticResources() {
 async function restartServer() {
   try {
     await compileServerMain(true);
-    await launchServer(true, ++startCount === 1, argv.tcp); // only open on the first time
+    await launchServer(true, ++startCount === 1); // only open on the first time
   } catch (e) {
     console.error(
       chalk.red(

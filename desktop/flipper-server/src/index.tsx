@@ -74,12 +74,6 @@ const argv = yargs
       type: 'boolean',
       default: true,
     },
-    tcp: {
-      describe:
-        'Open a TCP port (--no-tcp can be specified as to use unix-domain-socket exclusively)',
-      type: 'boolean',
-      default: true,
-    },
     replace: {
       describe: 'Replaces any running instance, if any.',
       type: 'boolean',
@@ -214,7 +208,7 @@ async function start() {
     staticPath,
     entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
     port: argv.port,
-    tcp: argv.tcp,
+    tcp: true,
   });
 
   const t4 = performance.now();
@@ -308,10 +302,6 @@ async function start() {
 }
 
 async function launch() {
-  if (!argv.tcp) {
-    return;
-  }
-
   let token: string | undefined;
   if (await hasAuthToken()) {
     token = await getAuthToken();
