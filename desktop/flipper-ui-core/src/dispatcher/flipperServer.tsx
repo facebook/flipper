@@ -210,7 +210,7 @@ function handeEADDRINUSE(errorMessage: string) {
         <br />
         <br />
         Please try to kill the offending process by running{' '}
-        <code>kill $(lsof -ti:PORTNUMBER)</code> and restart flipper.
+        <code>sudo kill $(lsof -ti:PORTNUMBER)</code> and restart flipper.
         <br />
         <br />
         {errorMessage}

@@ -50,7 +50,7 @@ export function createFlipperServerWithSocket(
           new Error(
             `Failed to connect to the server in a timely manner.
              It may be unresponsive. Run the following from the terminal 
-             'sudo lsof -i :52342' and kill the listed process, if any.`,
+             'sudo kill $(lsof -t -i :52342)' as to kill any existing running instance, if any.`,
           ),
         );
       }, CONNECTION_TIMEOUT);

@@ -432,11 +432,7 @@ class SettingsSheet extends Component<Props, State> {
                         process listening at port <b>52342</b>. See below:
                       </span>
                       <br />
-                      <code>
-                        sudo lsof -i :52342
-                        <br />
-                        sudo kill &lt;PID&gt;
-                      </code>
+                      <code>sudo kill $(lsof -t -i :52342)</code>
                     </>
                   ) : (
                     <></>
