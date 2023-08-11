@@ -7,18 +7,13 @@
  * @format
  */
 
-import os from 'os';
-
 import express, {Express} from 'express';
-import http, {ServerResponse} from 'http';
+import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import {ServerOptions, VerifyClientCallbackSync, WebSocketServer} from 'ws';
 import {WEBSOCKET_MAX_MESSAGE_SIZE} from '../app-connectivity/ServerWebSocket';
 import {parse} from 'url';
-import {makeSocketPath, checkSocketInUse} from './utilities';
-
-import proxy from 'http-proxy';
 import exitHook from 'exit-hook';
 import {attachSocketServer} from './attachSocketServer';
 import {FlipperServerImpl} from '../FlipperServerImpl';
@@ -124,102 +119,23 @@ async function startHTTPServer(config: Config): Promise<{
 
   app.use(express.static(config.staticPath));
 
-  return startProxyServer(config, app);
-}
-
-/**
- * Creates and starts the HTTP and proxy servers.
- * @param config Server configuration.
- * @param app Express app.
- * @returns Returns both the app and server configured and
- * listening.
- */
-async function startProxyServer(
-  config: Config,
-  app: Express,
-): Promise<{
-  app: Express;
-  server: http.Server;
-  socket: WebSocketServer;
-  readyForIncomingConnections: ReadyForConnections;
-}> {
   const server = http.createServer(app);
-  const socket = addWebsocket(server, config);
-
-  // For now, we only support domain socket access on POSIX-like systems.
-  // On Windows, a proxy is not created and the server starts
-  // listening at the specified port.
-  if (os.platform() === 'win32') {
-    return new Promise((resolve) => {
-      console.log(`Starting server on http://localhost:${config.port}`);
-      const readyForIncomingConnections = (
-        serverImpl: FlipperServerImpl,
-        companionEnv: FlipperServerCompanionEnv,
-      ): Promise<void> => {
-        attachSocketServer(socket, serverImpl, companionEnv);
-        return new Promise((resolve) => {
-          server.listen(config.port, undefined, () => resolve());
-        });
-      };
-      resolve({app, server, socket, readyForIncomingConnections});
-    });
-  }
-
-  const socketPath = await makeSocketPath();
-  if (await checkSocketInUse(socketPath)) {
-    console.warn(
-      `Cannot start flipper-server because socket ${socketPath} is in use.`,
-    );
-    tracker.track('server-socket-already-in-use', {});
-  } else {
-    console.info(`Cleaning up stale socket ${socketPath}`);
-    await fs.rm(socketPath, {force: true});
-  }
-
-  const proxyServer: proxy | undefined = proxy.createProxyServer({
-    target: {host: 'localhost', port: 0, socketPath},
-    autoRewrite: true,
-    ws: true,
-  });
-
-  console.log('Starting socket server on ', socketPath);
-  if (proxyServer) {
-    console.log(`Starting proxy server on http://localhost:${config.port}`);
-  }
+  const socket = attachWS(server, config);
 
   exitHook(() => {
     console.log('Shutdown server');
-    proxyServer?.close();
     server.close();
-
-    console.log('Cleaning up socket on exit:', socketPath);
-    // This *must* run synchronously and we're not blocking any UI loop by definition.
-    // eslint-disable-next-line node/no-sync
-    fs.rmSync(socketPath, {force: true});
-  });
-
-  proxyServer?.on('error', (err, _req, _res) => {
-    console.warn('Error in proxy server:', err);
-    tracker.track('server-proxy-error', {error: err.message});
-
-    // As it stands, if the proxy fails, which is the one
-    // listening on the supplied TCP port, then we should exit.
-    // Otherwise we risk staying in an invalid state, unable
-    // to recover, and thus preventing us to serve incoming requests.
-    // Bear in mind that exiting the process will trigger the exit hook
-    // defined above which will clean and close the sockets.
-    process.exit(0);
   });
 
   return new Promise((resolve) => {
+    console.log(`Starting server on http://localhost:${config.port}`);
     const readyForIncomingConnections = (
       serverImpl: FlipperServerImpl,
       companionEnv: FlipperServerCompanionEnv,
     ): Promise<void> => {
       attachSocketServer(socket, serverImpl, companionEnv);
       return new Promise((resolve) => {
-        proxyServer?.listen(config.port);
-        server.listen(socketPath, undefined, () => {
+        server.listen(config.port, undefined, () => {
           tracker.track('server-started', {
             port: config.port,
           });
@@ -238,7 +154,7 @@ async function startProxyServer(
  * incoming connections origin.
  * @returns Returns the created WS.
  */
-function addWebsocket(server: http.Server, config: Config) {
+function attachWS(server: http.Server, config: Config) {
   const localhost = 'localhost';
   const localhostIPV4 = `localhost:${config.port}`;
   const localhostIPV6 = `[::1]:${config.port}`;
