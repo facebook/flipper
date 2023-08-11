@@ -182,7 +182,7 @@ function handleServerStateChange({
   error?: string;
 }) {
   if (state === 'error') {
-    console.warn(`[conn] Flipper server state -> ${state}`, error);
+    console.warn(`Flipper server state -> ${state}`, error);
     if (error?.includes('EADDRINUSE')) {
       handeEADDRINUSE(error);
     } else {
@@ -194,7 +194,7 @@ function handleServerStateChange({
       });
     }
   } else {
-    console.info(`[conn] Flipper server state -> ${state}`);
+    console.info(`Flipper server state -> ${state}`);
   }
 }
 
@@ -348,14 +348,14 @@ export async function handleClientConnected(
   }
 
   console.log(
-    `[conn] Searching matching device ${query.device_id} for client ${query.app}...`,
+    `Searching matching device ${query.device_id} for client ${query.app}...`,
   );
   const device =
     getDeviceBySerial(store.getState(), query.device_id) ??
     (await findDeviceForConnection(store, query.app, query.device_id).catch(
       (e) => {
         console.warn(
-          `[conn] Failed to find device '${query.device_id}' while connection app '${query.app}'`,
+          `Failed to find device '${query.device_id}' while connection app '${query.app}'`,
           e,
         );
         const key = `device-find-failure-${query.device_id}`;
@@ -408,19 +408,17 @@ export async function handleClientConnected(
     await timeout(
       30 * 1000,
       client.init(),
-      `[conn] Failed to initialize client ${query.app} on ${query.device_id} in a timely manner`,
+      `Failed to initialize client ${query.app} on ${query.device_id} in a timely manner`,
     );
-    console.log(
-      `[conn] ${query.app} on ${query.device_id} connected and ready.`,
-    );
+    console.log(`${query.app} on ${query.device_id} connected and ready.`);
   } catch (e) {
     if (e instanceof NoLongerConnectedToClientError) {
       console.warn(
-        `[conn] Client ${query.app} on ${query.device_id} disconnected while initialising`,
+        `Client ${query.app} on ${query.device_id} disconnected while initialising`,
       );
       return;
     }
-    console.warn(`[conn] Failed to handle client connected: ${e}`);
+    console.warn(`Failed to handle client connected: ${e}`);
   }
 }
 
@@ -465,7 +463,7 @@ async function findDeviceForConnection(
             (device) => device.serial === serial,
           );
           if (matchingDevice) {
-            console.log(`[conn] Found device for: ${clientId} on ${serial}.`);
+            console.log(`Found device for: ${clientId} on ${serial}.`);
             clearTimeout(timeout);
             resolve(matchingDevice);
             unsubscribe();

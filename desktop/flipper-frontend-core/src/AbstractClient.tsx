@@ -134,7 +134,7 @@ export default abstract class AbstractClient extends EventEmitter {
         'Fetch plugin timeout. Unresponsive client?',
       );
     } catch (e) {
-      console.warn('[conn] Fetch plugin error', e);
+      console.warn('Failed to fetch plugin', e);
     }
     this.plugins = new Set(response?.plugins ?? []);
     console.info('AbstractClient.loadPlugins', this.query, [...this.plugins]);
