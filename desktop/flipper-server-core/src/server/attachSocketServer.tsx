@@ -17,7 +17,6 @@ import {
   SystemError,
   getLogger,
   CompanionEventWebSocketMessage,
-  isProduction,
 } from 'flipper-common';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {RawData, WebSocketServer} from 'ws';
@@ -39,7 +38,6 @@ const safe = (f: () => void) => {
 };
 
 let numberOfConnectedClients = 0;
-let disconnectTimeout: NodeJS.Timeout | undefined;
 
 /**
  * Attach and handle incoming messages from clients.
@@ -235,24 +233,17 @@ export function attachSocketServer(
       }
 
       numberOfConnectedClients--;
-      if (getFlipperServerConfig().environmentInfo.isHeadlessBuild) {
-        if (disconnectTimeout) {
-          clearTimeout(disconnectTimeout);
-        }
-        /**
-         * If, after 30 seconds, there are no more connected clients, we exit the process.
-         */
-        disconnectTimeout = setTimeout(() => {
-          if (numberOfConnectedClients === 0 && isProduction()) {
-            console.info('Shutdown as no clients are currently connected');
-            process.exit(0);
-          }
-        }, 30 * 1000);
-      }
 
       connected = false;
       server.offAny(onServerEvent);
       flipperServerCompanion?.destroyAll();
+
+      if (getFlipperServerConfig().environmentInfo.isHeadlessBuild) {
+        if (numberOfConnectedClients === 0) {
+          console.info('Shutdown as no clients are currently connected');
+          process.exit(0);
+        }
+      }
     }
 
     client.on('close', () => {
