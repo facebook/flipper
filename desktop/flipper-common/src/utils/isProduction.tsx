@@ -13,6 +13,7 @@ declare const process: any;
 // this one, and one provided by the RenderHostConfig. Ideally they should be unified
 export function isProduction(): boolean {
   return (
-    typeof process === 'undefined' || process.env.NODE_ENV === 'production'
+    typeof process === 'undefined' ||
+    (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test')
   );
 }
