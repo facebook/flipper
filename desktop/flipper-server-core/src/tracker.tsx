@@ -36,7 +36,7 @@ type ServerBootstrapPerformancePayload = {
 
 type TrackerEvents = {
   'server-bootstrap-performance': ServerBootstrapPerformancePayload;
-  'server-started': {port: number; tcp: boolean};
+  'server-started': {port: number};
   'server-auth-token-verification': {
     successful: boolean;
     present: boolean;

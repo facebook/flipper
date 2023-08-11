@@ -30,7 +30,6 @@ type Config = {
   port: number;
   staticPath: string;
   entry: string;
-  tcp: boolean;
 };
 
 type ReadyForConnections = (
@@ -151,11 +150,6 @@ async function startProxyServer(
   // On Windows, a proxy is not created and the server starts
   // listening at the specified port.
   if (os.platform() === 'win32') {
-    if (!config.tcp) {
-      console.warn(
-        'No port was supplied and domain socket access is not available for non-POSIX systems, falling back to TCP',
-      );
-    }
     return new Promise((resolve) => {
       console.log(`Starting server on http://localhost:${config.port}`);
       const readyForIncomingConnections = (
@@ -182,13 +176,11 @@ async function startProxyServer(
     await fs.rm(socketPath, {force: true});
   }
 
-  const proxyServer: proxy | undefined = config.tcp
-    ? proxy.createProxyServer({
-        target: {host: 'localhost', port: 0, socketPath},
-        autoRewrite: true,
-        ws: true,
-      })
-    : undefined;
+  const proxyServer: proxy | undefined = proxy.createProxyServer({
+    target: {host: 'localhost', port: 0, socketPath},
+    autoRewrite: true,
+    ws: true,
+  });
 
   console.log('Starting socket server on ', socketPath);
   if (proxyServer) {
@@ -230,7 +222,6 @@ async function startProxyServer(
         server.listen(socketPath, undefined, () => {
           tracker.track('server-started', {
             port: config.port,
-            tcp: config.tcp,
           });
           resolve();
         });
@@ -275,8 +266,6 @@ function addWebsocket(server: http.Server, config: Config) {
       // No origin header? The request is not originating from a browser, so should be OK to pass through
       // If origin matches our own address, it means we are serving the page.
 
-      // Need the token or know that is UDS.
-
       return process.env.SKIP_TOKEN_VERIFICATION ? true : verifyAuthToken(req);
     } else {
       // For now we don't allow cross origin request, so that an arbitrary website cannot try to
@@ -299,10 +288,8 @@ function addWebsocket(server: http.Server, config: Config) {
   const options: ServerOptions = {
     noServer: true,
     maxPayload: WEBSOCKET_MAX_MESSAGE_SIZE,
+    verifyClient,
   };
-  if (config.tcp) {
-    options.verifyClient = verifyClient;
-  }
 
   const wss = new WebSocketServer(options);
   server.on('upgrade', function upgrade(request, socket, head) {

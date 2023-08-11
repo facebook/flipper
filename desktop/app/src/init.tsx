@@ -206,7 +206,6 @@ async function getFlipperServer(
     const {readyForIncomingConnections} = await startServer({
       staticPath,
       entry: 'index.web.dev.html',
-      tcp: false,
       port,
     });
 

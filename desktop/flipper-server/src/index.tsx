@@ -208,7 +208,6 @@ async function start() {
     staticPath,
     entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
     port: argv.port,
-    tcp: true,
   });
 
   const t4 = performance.now();
