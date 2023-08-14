@@ -91,19 +91,13 @@
         DatabaseGetTableDataRequest* request = [DatabaseGetTableDataRequest
             getTableDataRequestFromDictionary:params];
         if (!request) {
-          NSDictionary* errorResponse = [ObjectMapper
-              errorWithCode:DatabasesErrorCodesInvalidRequest
-                    message:kDatabasesErrorCodesInvalidRequestMessage];
-          [responder error:errorResponse];
+          [DatabasesManager raiseInvalidRequestError:responder];
           return;
         }
         DatabaseDescriptorHolder* descriptorHolder =
             self.databaseDescriptorHolders[@(request.databaseId)];
         if (!descriptorHolder) {
-          NSDictionary* errorResponse = [ObjectMapper
-              errorWithCode:DatabasesErrorCodesDatabaseInvalid
-                    message:kDatabasesErrorCodesDatabaseInvalidMessage];
-          [responder error:errorResponse];
+          [DatabasesManager raiseDatabaseInvalidError:responder];
           return;
         }
 
@@ -137,20 +131,13 @@
                 getTableStructureRequestFromDictionary:params];
 
         if (!request) {
-          NSDictionary* errorResponse = [ObjectMapper
-              errorWithCode:DatabasesErrorCodesInvalidRequest
-                    message:kDatabasesErrorCodesInvalidRequestMessage];
-          [responder error:errorResponse];
+          [DatabasesManager raiseInvalidRequestError:responder];
           return;
         }
-
         DatabaseDescriptorHolder* descriptorHolder =
             self.databaseDescriptorHolders[@(request.databaseId)];
         if (!descriptorHolder) {
-          NSDictionary* errorResponse = [ObjectMapper
-              errorWithCode:DatabasesErrorCodesDatabaseInvalid
-                    message:kDatabasesErrorCodesDatabaseInvalidMessage];
-          [responder error:errorResponse];
+          [DatabasesManager raiseDatabaseInvalidError:responder];
           return;
         }
 
@@ -178,19 +165,13 @@
         DatabaseGetTableInfoRequest* request = [DatabaseGetTableInfoRequest
             getTableInfoRequestFromDictionary:params];
         if (!request) {
-          NSDictionary* errorResponse = [ObjectMapper
-              errorWithCode:DatabasesErrorCodesInvalidRequest
-                    message:kDatabasesErrorCodesInvalidRequestMessage];
-          [responder error:errorResponse];
+          [DatabasesManager raiseInvalidRequestError:responder];
           return;
         }
         DatabaseDescriptorHolder* descriptorHolder =
             self.databaseDescriptorHolders[@(request.databaseId)];
         if (!descriptorHolder) {
-          NSDictionary* errorResponse = [ObjectMapper
-              errorWithCode:DatabasesErrorCodesDatabaseInvalid
-                    message:kDatabasesErrorCodesDatabaseInvalidMessage];
-          [responder error:errorResponse];
+          [DatabasesManager raiseDatabaseInvalidError:responder];
           return;
         }
 
@@ -218,19 +199,13 @@
         DatabaseExecuteSqlRequest* request = [DatabaseExecuteSqlRequest
             getExecuteSqlRequestFromDictionary:params];
         if (!request) {
-          NSDictionary* errorResponse = [ObjectMapper
-              errorWithCode:DatabasesErrorCodesInvalidRequest
-                    message:kDatabasesErrorCodesInvalidRequestMessage];
-          [responder error:errorResponse];
+          [DatabasesManager raiseInvalidRequestError:responder];
           return;
         }
         DatabaseDescriptorHolder* descriptorHolder =
             self.databaseDescriptorHolders[@(request.databaseId)];
         if (!descriptorHolder) {
-          NSDictionary* errorResponse = [ObjectMapper
-              errorWithCode:DatabasesErrorCodesDatabaseInvalid
-                    message:kDatabasesErrorCodesDatabaseInvalidMessage];
-          [responder error:errorResponse];
+          [DatabasesManager raiseDatabaseInvalidError:responder];
           return;
         }
         @try {
@@ -247,6 +222,20 @@
           [responder error:errorResponse];
         }
       }];
+}
+
++ (void)raiseInvalidRequestError:(id<FlipperResponder>)responder {
+  NSDictionary* errorResponse =
+      [ObjectMapper errorWithCode:DatabasesErrorCodesInvalidRequest
+                          message:kDatabasesErrorCodesInvalidRequestMessage];
+  [responder error:errorResponse];
+}
+
++ (void)raiseDatabaseInvalidError:(id<FlipperResponder>)responder {
+  NSDictionary* errorResponse =
+      [ObjectMapper errorWithCode:DatabasesErrorCodesDatabaseInvalid
+                          message:kDatabasesErrorCodesDatabaseInvalidMessage];
+  [responder error:errorResponse];
 }
 
 @end
