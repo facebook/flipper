@@ -26,7 +26,6 @@ import {DevicePluginMap, ClientPluginMap} from '../plugin';
 import {BaseDevice} from 'flipper-frontend-core';
 import {ArchivedDevice} from 'flipper-frontend-core';
 import {v4 as uuidv4} from 'uuid';
-import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {TestIdler} from './Idler';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
@@ -594,26 +593,14 @@ export const importFileToStore = async (file: string, store: Store) => {
   }
 };
 
-export function canOpenDialog() {
-  return !!getRenderHostInstance().showOpenDialog;
-}
-
-export function showOpenDialog(store: Store) {
-  return getRenderHostInstance()
-    .showOpenDialog?.({
-      filter: {extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'},
-    })
-    .then((filePath) => {
-      if (filePath) {
-        tryCatchReportPlatformFailures(() => {
-          importFileToStore(filePath, store);
-        }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
-      }
-    });
-}
-
-export function canFileExport() {
-  return !!getRenderHostInstance().showSaveDialog;
+export async function startFileImport(store: Store) {
+  const file = await getRenderHostInstance().importFile({
+    extensions: ['flipper', 'json', 'txt'],
+  });
+  if (!file || typeof file.data !== 'string') {
+    return;
+  }
+  importDataToStore(file.name, file.data as string, store);
 }
 
 async function startDeviceFlipperFolderExport() {
@@ -765,25 +752,15 @@ export async function exportEverythingEverywhereAllAtOnce(
 }
 
 export async function startFileExport(dispatch: Store['dispatch']) {
-  const file = await getRenderHostInstance().showSaveDialog?.({
-    title: 'FlipperExport',
-    defaultPath: path.join(
-      getRenderHostInstance().serverConfig.paths.homePath,
-      'FlipperExport.flipper',
-    ),
-  });
-  if (!file) {
-    return;
-  }
   const plugins = await selectPlugins();
   if (plugins === false) {
-    return; // cancelled
+    return;
   }
   // TODO: no need to put this in the store,
-  // need to be cleaned up later in combination with SupportForm
+  // need to be cleaned up later in combination with SupportForm.
   dispatch(selectedPlugins(plugins));
   Dialog.showModal((onHide) => (
-    <ShareSheetExportFile onHide={onHide} file={file} logger={getLogger()} />
+    <ShareSheetExportFile onHide={onHide} logger={getLogger()} />
   ));
 }
 

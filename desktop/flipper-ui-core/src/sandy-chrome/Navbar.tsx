@@ -45,11 +45,9 @@ import NetworkGraph from '../chrome/NetworkGraph';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
 import {filterNotifications} from './notification/notificationUtils';
 import {
-  canFileExport,
-  canOpenDialog,
   exportEverythingEverywhereAllAtOnce,
   ExportEverythingEverywhereAllAtOnceStatus,
-  showOpenDialog,
+  startFileImport,
   startFileExport,
   startLinkExport,
 } from '../utils/exportData';
@@ -591,9 +589,9 @@ function ExtrasMenu() {
     () => startLinkExport(store.dispatch),
     [store.dispatch],
   );
-  const startImportTracked = useTrackedCallback(
+  const startFileImportTracked = useTrackedCallback(
     'File import',
-    () => showOpenDialog(store),
+    () => startFileImport(store),
     [store],
   );
 
@@ -627,16 +625,12 @@ function ExtrasMenu() {
               }}>
               Add Plugins
             </Menu.Item>
-            {canOpenDialog() ? (
-              <Menu.Item key="importFlipperFile" onClick={startImportTracked}>
-                Import Flipper file
-              </Menu.Item>
-            ) : null}
-            {canFileExport() ? (
-              <Menu.Item key="exportFile" onClick={startFileExportTracked}>
-                Export Flipper file
-              </Menu.Item>
-            ) : null}
+            <Menu.Item key="importFlipperFile" onClick={startFileImportTracked}>
+              Import Flipper file
+            </Menu.Item>
+            <Menu.Item key="exportFlipperFile" onClick={startFileExportTracked}>
+              Export Flipper file
+            </Menu.Item>
             {constants.ENABLE_SHAREABLE_LINK ? (
               <Menu.Item
                 key="exportShareableLink"

@@ -13,15 +13,16 @@ import {reportPlatformFailures} from 'flipper-common';
 import {Logger} from 'flipper-common';
 import {IdlerImpl} from '../utils/Idler';
 import {
-  exportStoreToFile,
   EXPORT_FLIPPER_TRACE_EVENT,
   displayFetchMetadataErrors,
+  exportStore,
 } from '../utils/exportData';
 import ShareSheetErrorList from './ShareSheetErrorList';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {ReactReduxContext, ReactReduxContextValue} from 'react-redux';
 import {MiddlewareAPI} from '../reducers/index';
 import {Modal} from 'antd';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -47,7 +48,6 @@ const InfoText = styled(Text)({
 
 type Props = {
   onHide: () => void;
-  file: string;
   logger: Logger;
 };
 
@@ -88,27 +88,25 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     const mark = 'shareSheetExportFile';
     performance.mark(mark);
     try {
-      if (!this.props.file) {
-        return;
-      }
-      const {fetchMetaDataErrors} = await reportPlatformFailures(
-        exportStoreToFile(
-          this.props.file,
-          this.store,
-          false,
-          this.idler,
-          (msg: string) => {
+      const {serializedString, fetchMetaDataErrors} =
+        await reportPlatformFailures(
+          exportStore(this.store, false, this.idler, (msg: string) => {
             this.setState({statusUpdate: msg});
-          },
-        ),
-        `${EXPORT_FLIPPER_TRACE_EVENT}:UI_FILE`,
-      );
+          }),
+          `${EXPORT_FLIPPER_TRACE_EVENT}:UI_FILE`,
+        );
       this.setState({
         fetchMetaDataErrors,
         result: fetchMetaDataErrors
           ? {error: JSON.stringify(fetchMetaDataErrors) as any, kind: 'error'}
           : {kind: 'success'},
       });
+
+      await getRenderHostInstance().exportFile(serializedString, {
+        defaultPath: 'export.flipper',
+        encoding: 'utf-8',
+      });
+
       this.props.logger.trackTimeSince(mark, 'export:file-success');
     } catch (err) {
       const result: {
