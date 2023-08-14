@@ -47,4 +47,23 @@
   return self;
 }
 
++ (DatabaseGetTableDataRequest*)getTableDataRequestFromDictionary:
+    (NSDictionary*)dictionary {
+  NSInteger databaseId = [dictionary[@"databaseId"] integerValue];
+  NSString* table = dictionary[@"table"];
+  NSString* order = dictionary[@"order"];
+  BOOL reverse = [dictionary[@"reverse"] boolValue];
+  NSInteger start = [dictionary[@"start"] integerValue];
+  NSInteger count = [dictionary[@"count"] integerValue];
+  if (databaseId <= 0 || table.length == 0) {
+    return nil;
+  }
+  return [[DatabaseGetTableDataRequest alloc] initWithDatabaseId:databaseId
+                                                           table:table
+                                                           order:order
+                                                         reverse:reverse
+                                                           start:start
+                                                           count:count];
+}
+
 @end

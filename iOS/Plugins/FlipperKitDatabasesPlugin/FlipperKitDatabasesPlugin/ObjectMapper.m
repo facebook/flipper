@@ -15,6 +15,9 @@
 
 @implementation ObjectMapper
 
+static const int MAX_BLOB_LENGTH = 100 * 1024;
+static NSString* const UNKNOWN_BLOB_LABEL_FORMAT = @"{%d-byte %@ blob}";
+
 + (NSMutableArray*)databaseListToFlipperArray:
     (NSMutableSet<DatabaseDescriptorHolder*>*)databaseDescriptorHolderSet {
   NSMutableArray* result = [NSMutableArray new];
@@ -39,7 +42,22 @@
 
 + (NSDictionary*)databaseGetTableDataResponseToDictionary:
     (DatabaseGetTableDataResponse*)response {
-  return @{};
+  NSMutableArray* rows = [NSMutableArray array];
+  for (NSArray* row in response.values) {
+    NSMutableArray* rowValues = [NSMutableArray array];
+    for (id item in row) {
+      [rowValues addObject:[self objectAndTypeToFlipperObject:item]];
+    }
+    [rows addObject:rowValues];
+  }
+
+  return @{
+    @"columns" : response.columns,
+    @"values" : rows,
+    @"start" : @(response.start),
+    @"count" : @(response.count),
+    @"total" : @(response.total)
+  };
 }
 
 + (NSDictionary*)errorWithCode:(NSInteger)code message:(NSString*)message {
@@ -66,6 +84,74 @@
 + (NSDictionary*)databaseExecuteSqlResponseToDictionary:
     (DatabaseExecuteSqlResponse*)response {
   return @{};
+}
+
++ (NSDictionary*)objectAndTypeToFlipperObject:(id)object {
+  if (!object) {
+    return @{@"type" : @"null"};
+  } else if ([object isKindOfClass:[NSNumber class]]) {
+    NSNumber* number = (NSNumber*)object;
+    NSString* type = [NSString stringWithCString:[number objCType]];
+
+    if ([type isEqualToString:@"i"]) {
+      return @{@"type" : @"integer", @"value" : number};
+    } else if ([type isEqualToString:@"f"] || [type isEqualToString:@"d"]) {
+      return @{@"type" : @"float", @"value" : number};
+    } else if ([type isEqualToString:@"B"]) {
+      return @{@"type" : @"boolean", @"value" : number};
+    } else {
+      return @{@"type" : @"integer", @"value" : @([number integerValue])};
+    }
+
+    return @{@"type" : @"integer", @"value" : object};
+  } else if ([object isKindOfClass:[NSDecimalNumber class]]) {
+    return @{@"type" : @"float", @"value" : object};
+  } else if ([object isKindOfClass:[NSString class]]) {
+    return @{@"type" : @"string", @"value" : object};
+  } else if ([object isKindOfClass:[NSData class]]) {
+    NSString* blobString = [self blobToString:(NSData*)object];
+    return @{@"type" : @"blob", @"value" : blobString};
+  } else if ([object isKindOfClass:[NSValue class]]) {
+    return @{@"type" : @"boolean", @"value" : object};
+  } else {
+    @throw [NSException exceptionWithName:@"InvalidArgumentException"
+                                   reason:@"type of Object is invalid"
+                                 userInfo:nil];
+  }
+}
+
++ (NSString*)blobToString:(NSData*)data {
+  const uint8_t* bytes = data.bytes;
+  uint length = data.length;
+
+  if (length <= MAX_BLOB_LENGTH) {
+    if ([self fastIsAscii:bytes length:length]) {
+      NSStringEncoding encoding = NSASCIIStringEncoding;
+      return [[NSString alloc] initWithBytesNoCopy:(void*)bytes
+                                            length:length
+                                          encoding:encoding
+                                      freeWhenDone:NO];
+    } else {
+      // try UTF-8
+      NSStringEncoding encoding = NSUTF8StringEncoding;
+      return [[NSString alloc] initWithBytesNoCopy:(void*)bytes
+                                            length:length
+                                          encoding:encoding
+                                      freeWhenDone:NO];
+    }
+  }
+  return
+      [NSString stringWithFormat:UNKNOWN_BLOB_LABEL_FORMAT, length, @"binary"];
+}
+
++ (BOOL)fastIsAscii:(const uint8_t*)bytes length:(NSUInteger)length {
+  for (int i = 0; i < length; i++) {
+    uint8_t b = bytes[i];
+    if ((b & ~0x7f) != 0) {
+      return NO;
+    }
+  }
+  return YES;
 }
 
 @end

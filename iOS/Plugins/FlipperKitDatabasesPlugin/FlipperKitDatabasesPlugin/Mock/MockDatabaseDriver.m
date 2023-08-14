@@ -6,6 +6,7 @@
  */
 
 #import "MockDatabaseDriver.h"
+#import "DatabaseGetTableData.h"
 #import "DatabaseGetTableInfo.h"
 #import "DatabaseGetTableStructure.h"
 #import "MockDatabaseDescriptor.h"
@@ -53,6 +54,30 @@
                               forTable:(NSString*)tableName {
   return [[DatabaseGetTableInfoResponse alloc]
       initWithDefinition:@"This is mocked table definition"];
+}
+
+- (DatabaseGetTableDataResponse*)
+    getTableDataWithDatabaseDescriptor:
+        (id<DatabaseDescriptor>)databaseDescriptor
+                              forTable:(NSString*)tableName
+                                 order:(NSString*)order
+                               reverse:(BOOL)reverse
+                                 start:(NSInteger)start
+                                 count:(NSInteger)count {
+  NSMutableArray* columns = [NSMutableArray array];
+  NSMutableArray* values = [NSMutableArray array];
+  for (int i = 0; i < 100; i++) {
+    NSString* columnName = [NSString stringWithFormat:@"column%d", i + 1];
+    [columns addObject:columnName];
+    NSArray* valueRow = @[ @"value1", @"value2", @"value3" ];
+    [values addObject:valueRow];
+  }
+
+  return [[DatabaseGetTableDataResponse alloc] initWithColumns:[columns copy]
+                                                        values:[values copy]
+                                                         start:0
+                                                         count:100
+                                                         total:100];
 }
 
 @end

@@ -39,4 +39,7 @@
                              start:(NSInteger)start
                              count:(NSInteger)count;
 
++ (DatabaseGetTableDataRequest*)getTableDataRequestFromDictionary:
+    (NSDictionary*)dictionary;
+
 @end

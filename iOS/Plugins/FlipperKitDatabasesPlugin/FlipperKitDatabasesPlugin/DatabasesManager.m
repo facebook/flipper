@@ -14,6 +14,7 @@
 #import "DatabaseDescriptorHolder.h"
 #import "DatabaseDriver.h"
 #import "DatabaseErrorCodes.h"
+#import "DatabaseGetTableData.h"
 #import "DatabaseGetTableInfo.h"
 #import "DatabaseGetTableStructure.h"
 #import "ObjectMapper.h"
@@ -85,8 +86,46 @@
 
   [self.connection
         receive:@"getTableData"
-      withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
+      withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
+        DatabaseGetTableDataRequest* request = [DatabaseGetTableDataRequest
+            getTableDataRequestFromDictionary:params];
+        if (!request) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesInvalidRequest
+                    message:kDatabasesErrorCodesInvalidRequestMessage];
+          [responder error:errorResponse];
+          return;
+        }
+        DatabaseDescriptorHolder* descriptorHolder =
+            self.databaseDescriptorHolders[@(request.databaseId)];
+        if (!descriptorHolder) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesDatabaseInvalid
+                    message:kDatabasesErrorCodesDatabaseInvalidMessage];
+          [responder error:errorResponse];
+          return;
+        }
 
+        @try {
+          DatabaseGetTableDataResponse* tableDataResponse =
+              [descriptorHolder.databaseDriver
+                  getTableDataWithDatabaseDescriptor:descriptorHolder
+                                                         .databaseDescriptor
+                                            forTable:request.table
+                                               order:request.order
+                                             reverse:request.reverse
+                                               start:request.start
+                                               count:request.count];
+          NSDictionary* response = [ObjectMapper
+              databaseGetTableDataResponseToDictionary:tableDataResponse];
+          [responder success:response];
+        } @catch (NSException* exception) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesSqlExecutionException
+                    message:[kDatabasesErrorCodesSqlExecutionExceptionMessage
+                                stringByAppendingString:exception.reason]];
+          [responder error:errorResponse];
+        }
       }];
 
   [self.connection

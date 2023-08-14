@@ -8,8 +8,9 @@
 #import <Foundation/Foundation.h>
 
 @protocol DatabaseDescriptor;
-@class DatabaseGetTableInfoResponse;
 @class DatabaseGetTableStructureResponse;
+@class DatabaseGetTableInfoResponse;
+@class DatabaseGetTableDataResponse;
 
 @protocol DatabaseDriver<NSObject>
 - (NSArray<id<DatabaseDescriptor>>*)getDatabases;
@@ -22,4 +23,13 @@
     getTableInfoWithDatabaseDescriptor:
         (id<DatabaseDescriptor>)databaseDescriptor
                               forTable:(NSString*)tableName;
+
+- (DatabaseGetTableDataResponse*)
+    getTableDataWithDatabaseDescriptor:
+        (id<DatabaseDescriptor>)databaseDescriptor
+                              forTable:(NSString*)tableName
+                                 order:(NSString*)order
+                               reverse:(BOOL)reverse
+                                 start:(NSInteger)start
+                                 count:(NSInteger)count;
 @end
