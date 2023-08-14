@@ -15,9 +15,9 @@
 
 @implementation ObjectMapper
 
-+ (NSDictionary*)databaseListToDictionary:
++ (NSMutableArray*)databaseListToFlipperArray:
     (NSMutableSet<DatabaseDescriptorHolder*>*)databaseDescriptorHolderSet {
-  NSMutableDictionary* result = [NSMutableDictionary new];
+  NSMutableArray* result = [NSMutableArray new];
 
   for (DatabaseDescriptorHolder* holder in databaseDescriptorHolderSet) {
     NSArray<NSString*>* tables =
@@ -25,12 +25,13 @@
     NSArray<NSString*>* sortedTableNames =
         [tables sortedArrayUsingSelector:@selector(compare:)];
     NSString* idString = [NSString stringWithFormat:@"%ld", holder.identifier];
+
     NSDictionary* databaseInfo = @{
       @"id" : idString,
       @"name" : holder.databaseDescriptor.name,
       @"tables" : sortedTableNames
     };
-    [result setObject:databaseInfo forKey:idString];
+    [result addObject:databaseInfo];
   }
 
   return result;
@@ -47,7 +48,12 @@
 
 + (NSDictionary*)databaseGetTableStructureResponseToDictionary:
     (DatabaseGetTableStructureResponse*)response {
-  return @{};
+  return @{
+    @"structureColumns" : response.structureColumns,
+    @"structureValues" : response.structureValues,
+    @"indexesColumns" : response.indexesColumns,
+    @"indexesValues" : response.indexesValues
+  };
 }
 
 + (NSDictionary*)databaseGetTableInfoResponseToDictionary:

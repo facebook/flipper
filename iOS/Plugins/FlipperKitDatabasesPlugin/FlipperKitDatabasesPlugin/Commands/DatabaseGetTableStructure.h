@@ -30,5 +30,7 @@
 @property(nonatomic, copy, readonly) NSString* table;
 
 - (instancetype)initWithDatabaseId:(NSInteger)databaseId table:(NSString*)table;
++ (DatabaseGetTableStructureRequest*)getTableStructureRequestFromDictionary:
+    (NSDictionary*)dictionary;
 
 @end

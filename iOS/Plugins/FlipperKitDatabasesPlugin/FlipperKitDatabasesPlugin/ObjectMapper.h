@@ -15,7 +15,7 @@
 
 @interface ObjectMapper : NSObject
 
-+ (NSDictionary*)databaseListToDictionary:
++ (NSMutableArray*)databaseListToFlipperArray:
     (NSMutableSet<DatabaseDescriptorHolder*>*)databaseDescriptorHolderSet;
 + (NSDictionary*)databaseGetTableDataResponseToDictionary:
     (DatabaseGetTableDataResponse*)response;

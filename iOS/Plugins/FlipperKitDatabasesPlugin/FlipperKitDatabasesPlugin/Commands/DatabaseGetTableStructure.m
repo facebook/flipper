@@ -38,4 +38,15 @@
   return self;
 }
 
++ (DatabaseGetTableStructureRequest*)getTableStructureRequestFromDictionary:
+    (NSDictionary*)params {
+  int databaseId = [params[@"databaseId"] integerValue];
+  NSString* table = params[@"table"];
+  if (databaseId <= 0 || !table) {
+    return nil;
+  }
+  return [[DatabaseGetTableStructureRequest alloc] initWithDatabaseId:databaseId
+                                                                table:table];
+}
+
 @end

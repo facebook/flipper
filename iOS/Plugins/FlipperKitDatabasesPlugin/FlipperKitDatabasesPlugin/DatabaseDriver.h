@@ -8,12 +8,14 @@
 #import <Foundation/Foundation.h>
 
 @protocol DatabaseDescriptor;
+@class DatabaseGetTableStructureRequest;
+@class DatabaseGetTableStructureResponse;
 
 @protocol DatabaseDriver<NSObject>
-@property(nonatomic, strong, readonly) id<DatabaseDescriptor>
-    databaseDescriptor;
-
 - (NSArray<id<DatabaseDescriptor>>*)getDatabases;
 - (NSArray<NSString*>*)getTableNames:(id<DatabaseDescriptor>)databaseDescriptor;
-
+- (DatabaseGetTableStructureResponse*)
+    getTableStructureWithDatabaseDescriptor:
+        (id<DatabaseDescriptor>)databaseDescriptor
+                                   forTable:(NSString*)tableName;
 @end

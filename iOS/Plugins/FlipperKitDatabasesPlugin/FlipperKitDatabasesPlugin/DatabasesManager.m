@@ -77,19 +77,58 @@
           }
         }
 
-        NSDictionary* result = [ObjectMapper
-            databaseListToDictionary:self.databaseDescriptorHolderSet];
+        id result = [ObjectMapper
+            databaseListToFlipperArray:self.databaseDescriptorHolderSet];
         [responder success:result];
       }];
 
   [self.connection
         receive:@"getTableData"
       withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
+
       }];
 
   [self.connection
         receive:@"getTableStructure"
-      withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
+      withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
+        DatabaseGetTableStructureRequest* request =
+            [DatabaseGetTableStructureRequest
+                getTableStructureRequestFromDictionary:params];
+
+        if (!request) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesInvalidRequest
+                    message:kDatabasesErrorCodesInvalidRequestMessage];
+          [responder error:errorResponse];
+          return;
+        }
+
+        DatabaseDescriptorHolder* descriptorHolder =
+            self.databaseDescriptorHolders[@(request.databaseId)];
+        if (!descriptorHolder) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesDatabaseInvalid
+                    message:kDatabasesErrorCodesDatabaseInvalidMessage];
+          [responder error:errorResponse];
+          return;
+        }
+
+        @try {
+          DatabaseGetTableStructureResponse* tableStructure =
+              [descriptorHolder.databaseDriver
+                  getTableStructureWithDatabaseDescriptor:
+                      descriptorHolder.databaseDescriptor
+                                                 forTable:request.table];
+          NSDictionary* response = [ObjectMapper
+              databaseGetTableStructureResponseToDictionary:tableStructure];
+          [responder success:response];
+        } @catch (NSException* exception) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesSqlExecutionException
+                    message:[kDatabasesErrorCodesSqlExecutionExceptionMessage
+                                stringByAppendingString:exception.reason]];
+          [responder error:errorResponse];
+        }
       }];
 
   [self.connection
