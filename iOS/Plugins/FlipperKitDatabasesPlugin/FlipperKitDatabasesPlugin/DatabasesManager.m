@@ -11,7 +11,11 @@
 #import <FlipperKit/FlipperResponder.h>
 #include <Foundation/Foundation.h>
 #import "DatabaseDescriptor.h"
+#import "DatabaseDescriptorHolder.h"
 #import "DatabaseDriver.h"
+#import "DatabaseErrorCodes.h"
+#import "DatabaseGetTableStructure.h"
+#import "ObjectMapper.h"
 
 @interface DatabasesManager ()
 
@@ -73,7 +77,7 @@
           }
         }
 
-        NSDictionary* result = [DatabasesManager
+        NSDictionary* result = [ObjectMapper
             databaseListToDictionary:self.databaseDescriptorHolderSet];
         [responder success:result];
       }];
@@ -89,7 +93,7 @@
       }];
 
   [self.connection
-        receive:@"getTableInfo"
+        receive:@"getTableStructure"
       withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
       }];
 
@@ -97,109 +101,6 @@
         receive:@"execute"
       withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
       }];
-}
-
-+ (NSDictionary*)databaseListToDictionary:
-    (NSSet<DatabaseDescriptorHolder*>*)databaseDescriptorHolderSet {
-  NSMutableDictionary* resultDict = [NSMutableDictionary new];
-
-  for (DatabaseDescriptorHolder* descriptorHolder in
-           databaseDescriptorHolderSet) {
-    NSArray<NSString*>* tableNameList = [descriptorHolder.databaseDriver
-        getTableNames:descriptorHolder.databaseDescriptor];
-    NSArray<NSString*>* sortedTableNames =
-        [tableNameList sortedArrayUsingSelector:@selector(compare:)];
-    NSString* idString =
-        [NSString stringWithFormat:@"%ld", descriptorHolder.identifier];
-    NSDictionary* databaseDict = @{
-      @"id" : idString,
-      @"name" : descriptorHolder.databaseDescriptor.name,
-      @"tables" : sortedTableNames
-    };
-    [resultDict setObject:databaseDict forKey:idString];
-  }
-
-  return resultDict;
-}
-
-@end
-
-@implementation DatabaseDescriptorHolder
-
-- (instancetype)initWithIdentifier:(NSInteger)identifier
-                    databaseDriver:(id<DatabaseDriver>)databaseDriver
-                databaseDescriptor:(id<DatabaseDescriptor>)databaseDescriptor {
-  self = [super init];
-  if (self) {
-    _identifier = identifier;
-    _databaseDriver = databaseDriver;
-    _databaseDescriptor = databaseDescriptor;
-  }
-  return self;
-}
-
-@end
-
-@implementation ExecuteSqlRequest
-
-- (instancetype)initWithDatabaseId:(NSInteger)databaseId
-                             value:(NSString*)value {
-  self = [super init];
-  if (self) {
-    _databaseId = databaseId;
-    _value = [value copy];
-  }
-  return self;
-}
-
-@end
-
-@implementation GetTableDataRequest
-
-- (instancetype)initWithDatabaseId:(NSInteger)databaseId
-                             table:(NSString*)table
-                             order:(NSString*)order
-                           reverse:(BOOL)reverse
-                             start:(NSInteger)start
-                             count:(NSInteger)count {
-  self = [super init];
-  if (self) {
-    _databaseId = databaseId;
-    _table = [table copy];
-    _order = [order copy];
-    _reverse = reverse;
-    _start = start;
-    _count = count;
-  }
-  return self;
-}
-
-@end
-
-@implementation GetTableStructureRequest
-
-- (instancetype)initWithDatabaseId:(NSInteger)databaseId
-                             table:(NSString*)table {
-  self = [super init];
-  if (self) {
-    _databaseId = databaseId;
-    _table = [table copy];
-  }
-  return self;
-}
-
-@end
-
-@implementation GetTableInfoRequest
-
-- (instancetype)initWithDatabaseId:(NSInteger)databaseId
-                             table:(NSString*)table {
-  self = [super init];
-  if (self) {
-    _databaseId = databaseId;
-    _table = [table copy];
-  }
-  return self;
 }
 
 @end
