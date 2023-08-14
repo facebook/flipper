@@ -14,6 +14,7 @@
 #import "DatabaseDescriptorHolder.h"
 #import "DatabaseDriver.h"
 #import "DatabaseErrorCodes.h"
+#import "DatabaseGetTableInfo.h"
 #import "DatabaseGetTableStructure.h"
 #import "ObjectMapper.h"
 
@@ -132,8 +133,43 @@
       }];
 
   [self.connection
-        receive:@"getTableStructure"
-      withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
+        receive:@"getTableInfo"
+      withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
+        DatabaseGetTableInfoRequest* request = [DatabaseGetTableInfoRequest
+            getTableInfoRequestFromDictionary:params];
+        if (!request) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesInvalidRequest
+                    message:kDatabasesErrorCodesInvalidRequestMessage];
+          [responder error:errorResponse];
+          return;
+        }
+        DatabaseDescriptorHolder* descriptorHolder =
+            self.databaseDescriptorHolders[@(request.databaseId)];
+        if (!descriptorHolder) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesDatabaseInvalid
+                    message:kDatabasesErrorCodesDatabaseInvalidMessage];
+          [responder error:errorResponse];
+          return;
+        }
+
+        @try {
+          DatabaseGetTableInfoResponse* tableInfo =
+              [descriptorHolder.databaseDriver
+                  getTableInfoWithDatabaseDescriptor:descriptorHolder
+                                                         .databaseDescriptor
+                                            forTable:request.table];
+          NSDictionary* response =
+              [ObjectMapper databaseGetTableInfoResponseToDictionary:tableInfo];
+          [responder success:response];
+        } @catch (NSException* exception) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesSqlExecutionException
+                    message:[kDatabasesErrorCodesSqlExecutionExceptionMessage
+                                stringByAppendingString:exception.reason]];
+          [responder error:errorResponse];
+        }
       }];
 
   [self.connection

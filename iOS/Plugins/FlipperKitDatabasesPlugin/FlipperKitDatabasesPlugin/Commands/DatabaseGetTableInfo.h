@@ -21,5 +21,7 @@
 @property(nonatomic, copy, readonly) NSString* table;
 
 - (instancetype)initWithDatabaseId:(NSInteger)databaseId table:(NSString*)table;
++ (DatabaseGetTableInfoRequest*)getTableInfoRequestFromDictionary:
+    (NSDictionary*)dictionary;
 
 @end

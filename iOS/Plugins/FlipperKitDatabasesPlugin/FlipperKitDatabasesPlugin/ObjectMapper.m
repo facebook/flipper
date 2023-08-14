@@ -58,7 +58,9 @@
 
 + (NSDictionary*)databaseGetTableInfoResponseToDictionary:
     (DatabaseGetTableInfoResponse*)response {
-  return @{};
+  return @{
+    @"definition" : response.definition,
+  };
 }
 
 + (NSDictionary*)databaseExecuteSqlResponseToDictionary:

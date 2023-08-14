@@ -6,6 +6,7 @@
  */
 
 #import "MockDatabaseDriver.h"
+#import "DatabaseGetTableInfo.h"
 #import "DatabaseGetTableStructure.h"
 #import "MockDatabaseDescriptor.h"
 
@@ -44,6 +45,14 @@
                structureValues:[structureValues copy]
                 indexesColumns:[indexesColumns copy]
                  indexesValues:[indexesValues copy]];
+}
+
+- (DatabaseGetTableInfoResponse*)
+    getTableInfoWithDatabaseDescriptor:
+        (id<DatabaseDescriptor>)databaseDescriptor
+                              forTable:(NSString*)tableName {
+  return [[DatabaseGetTableInfoResponse alloc]
+      initWithDefinition:@"This is mocked table definition"];
 }
 
 @end

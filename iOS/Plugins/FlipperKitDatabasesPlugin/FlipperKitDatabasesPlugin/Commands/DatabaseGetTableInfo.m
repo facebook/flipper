@@ -31,4 +31,16 @@
   return self;
 }
 
++ (DatabaseGetTableInfoRequest*)getTableInfoRequestFromDictionary:
+    (NSDictionary*)dictionary {
+  NSNumber* databaseId = @([dictionary[@"databaseId"] integerValue]);
+  NSString* table = dictionary[@"table"];
+  if (databaseId == nil || table == nil) {
+    return nil;
+  }
+  return [[DatabaseGetTableInfoRequest alloc]
+      initWithDatabaseId:databaseId.intValue
+                   table:table];
+}
+
 @end
