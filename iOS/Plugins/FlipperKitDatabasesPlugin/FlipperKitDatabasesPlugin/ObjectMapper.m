@@ -66,11 +66,29 @@ static NSString* const UNKNOWN_BLOB_LABEL_FORMAT = @"{%d-byte %@ blob}";
 
 + (NSDictionary*)databaseGetTableStructureResponseToDictionary:
     (DatabaseGetTableStructureResponse*)response {
+  NSMutableArray* structureValues = [NSMutableArray array];
+  for (NSArray* row in response.structureValues) {
+    NSMutableArray* rowValues = [NSMutableArray array];
+    for (id item in row) {
+      [rowValues addObject:[self objectAndTypeToFlipperObject:item]];
+    }
+    [structureValues addObject:rowValues];
+  }
+
+  NSMutableArray* indexesValues = [NSMutableArray array];
+  for (NSArray* row in response.indexesValues) {
+    NSMutableArray* rowValues = [NSMutableArray array];
+    for (id item in row) {
+      [rowValues addObject:[self objectAndTypeToFlipperObject:item]];
+    }
+    [indexesValues addObject:rowValues];
+  }
+
   return @{
     @"structureColumns" : response.structureColumns,
-    @"structureValues" : response.structureValues,
+    @"structureValues" : structureValues,
     @"indexesColumns" : response.indexesColumns,
-    @"indexesValues" : response.indexesValues
+    @"indexesValues" : indexesValues
   };
 }
 
