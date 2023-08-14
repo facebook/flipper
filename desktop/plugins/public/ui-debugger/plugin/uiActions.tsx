@@ -16,12 +16,10 @@ import {
   UIActions,
   UIState,
   ViewMode,
+  WireFrameMode,
 } from '../DesktopTypes';
 import {tracker} from '../utils/tracker';
-import {
-  checkFocusedNodeStillActive,
-  collapseinActiveChildren,
-} from './ClientDataUtils';
+import {checkFocusedNodeStillActive} from './ClientDataUtils';
 
 export function uiActions(
   uiState: UIState,
@@ -35,7 +33,10 @@ export function uiActions(
     });
   };
   const onSelectNode = (node: Id | undefined, source: SelectionSource) => {
-    if (node == null || uiState.selectedNode.get()?.id === node) {
+    if (
+      node == null ||
+      (uiState.selectedNode.get()?.id === node && source !== 'context-menu')
+    ) {
       uiState.selectedNode.set(undefined);
     } else {
       uiState.selectedNode.set({id: node, source});
@@ -82,6 +83,52 @@ export function uiActions(
     uiState.isContextMenuOpen.set(open);
   };
 
+  const onCollapseAllNonAncestors = (nodeId: Id) => {
+    uiState.expandedNodes.update((draft) => {
+      draft.clear();
+    });
+    ensureAncestorsExpanded(nodeId);
+  };
+
+  const ensureAncestorsExpanded = (nodeId: Id) => {
+    uiState.expandedNodes.update((draft) => {
+      const nodesMap = nodes.get();
+
+      let curNode = nodesMap.get(nodeId);
+      while (curNode != null) {
+        draft.add(curNode.id);
+        curNode = nodesMap.get(curNode?.parent ?? 'Nonode');
+      }
+    });
+  };
+
+  function treeTraverseUtil(
+    nodeID: Id,
+    nodeVisitor: (node: ClientNode) => void,
+  ) {
+    const nodesMap = nodes.get();
+
+    const node = nodesMap.get(nodeID);
+    if (node != null) {
+      nodeVisitor(node);
+      for (const childId of node.children) {
+        treeTraverseUtil(childId, nodeVisitor);
+      }
+    }
+  }
+
+  const onExpandAllRecursively = (nodeId: Id) => {
+    uiState.expandedNodes.update((draft) => {
+      treeTraverseUtil(nodeId, (node) => draft.add(node.id));
+    });
+  };
+
+  const onCollapseAllRecursively = (nodeId: Id) => {
+    uiState.expandedNodes.update((draft) => {
+      treeTraverseUtil(nodeId, (node) => draft.delete(node.id));
+    });
+  };
+
   const onFocusNode = (node?: Id) => {
     if (node != null) {
       const focusedNode = nodes.get().get(node);
@@ -108,6 +155,10 @@ export function uiActions(
     uiState.viewMode.set(viewMode);
   };
 
+  const onSetWireFrameMode = (wireFrameMode: WireFrameMode) => {
+    uiState.wireFrameMode.set(wireFrameMode);
+  };
+
   const onSetFrameworkEventMonitored = (
     eventType: FrameworkEventType,
     monitored: boolean,
@@ -123,13 +174,6 @@ export function uiActions(
     tracker.track('play-pause-toggled', {paused: isPaused});
     uiState.isPaused.set(isPaused);
     if (!isPaused) {
-      //When going back to play mode then set the atoms to the live state to rerender the latest
-      //Also need to fixed expanded state for any change in active child state
-      uiState.expandedNodes.update((draft) => {
-        liveClientData.nodes.forEach((node) => {
-          collapseinActiveChildren(node, draft);
-        });
-      });
       nodes.set(liveClientData.nodes);
       snapshot.set(liveClientData.snapshotInfo);
       checkFocusedNodeStillActive(uiState, nodes.get());
@@ -158,5 +202,10 @@ export function uiActions(
     onSetFrameworkEventMonitored,
     onPlayPauseToggled,
     onSearchTermUpdated,
+    onSetWireFrameMode,
+    onCollapseAllNonAncestors,
+    onExpandAllRecursively,
+    onCollapseAllRecursively,
+    ensureAncestorsExpanded,
   };
 }

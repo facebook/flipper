@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.2'
+        classpath 'com.android.tools.build:gradle:8.1.0'
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.25.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
@@ -41,6 +41,10 @@ subprojects {
     tasks.withType(Javadoc).all {
         enabled = false
     }
+
+    tasks.withType(com.android.build.gradle.tasks.JavaDocGenerationTask).all {
+        enabled = false
+    }
 }
 
 ext {
@@ -55,7 +59,7 @@ ext {
 ext.deps = [
         // Kotlin support
         kotlinStdLibrary   : "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION",
-        kotlinCoroutinesAndroid : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2",
+        kotlinCoroutinesAndroid : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3",
         // Android support
         supportAnnotations : "androidx.annotation:annotation:$ANDROIDX_VERSION",
         supportAppCompat   : "androidx.appcompat:appcompat:$ANDROIDX_VERSION",

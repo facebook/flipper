@@ -7,13 +7,17 @@
  * @format
  */
 
-import {Button as AntButton, message} from 'antd';
-import React, {useState, useCallback} from 'react';
+import {message} from 'antd';
+import React, {useState, useCallback, useEffect} from 'react';
 import {capture, getCaptureLocation, getFileName} from '../utils/screenshot';
-import {CameraOutlined, VideoCameraOutlined} from '@ant-design/icons';
+import {
+  CameraOutlined,
+  VideoCameraFilled,
+  VideoCameraOutlined,
+} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
 import {getRenderHostInstance} from 'flipper-frontend-core';
-import {path} from 'flipper-plugin';
+import {path, theme} from 'flipper-plugin';
 import {NavbarButton} from '../sandy-chrome/Navbar';
 
 async function openFile(path: string) {
@@ -85,11 +89,26 @@ export function NavbarScreenRecordButton() {
     }
   }, [selectedDevice, isRecording]);
 
+  const [red, setRed] = useState(false);
+  useEffect(() => {
+    if (isRecording) {
+      setRed(true);
+      const handle = setInterval(() => {
+        setRed((red) => !red);
+      }, FlashInterval);
+
+      return () => {
+        clearInterval(handle);
+      };
+    }
+  }, [isRecording]);
+
   return (
     <NavbarButton
-      icon={VideoCameraOutlined}
+      icon={isRecording && red ? VideoCameraFilled : VideoCameraOutlined}
       label="Record"
       onClick={handleRecording}
+      colorOverride={isRecording && red ? theme.errorColor : undefined}
       disabled={
         !selectedDevice ||
         !selectedDevice.description.features.screenCaptureAvailable
@@ -98,3 +117,5 @@ export function NavbarScreenRecordButton() {
     />
   );
 }
+
+const FlashInterval = 600;

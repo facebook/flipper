@@ -7,8 +7,8 @@
  * @format
  */
 
-import {Layout} from '../ui';
-import React, {CSSProperties, useState} from 'react';
+import {Layout, Panel} from '../ui';
+import React, {CSSProperties, useCallback, useState} from 'react';
 import {
   createDataSource,
   DataFormatter,
@@ -22,9 +22,14 @@ import {CloseCircleFilled, DeleteOutlined} from '@ant-design/icons';
 import {
   CommandRecordEntry,
   ConnectionRecordEntry,
+  DeviceOS,
   FlipperServer,
+  FlipperServerCommands,
 } from 'flipper-common';
 import {Button} from 'antd';
+import {getRenderHostInstance} from 'flipper-frontend-core';
+
+const SIDEBAR_WIDTH = 400;
 
 const rows = createDataSource<ConnectionRecordEntry>([], {
   limit: 200000,
@@ -135,18 +140,85 @@ const Placeholder = styled(Layout.Container)({
   fontSize: 18,
 });
 
-function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
+const PanelContainer = styled.div({
+  width: SIDEBAR_WIDTH - 2 * 32,
+  whiteSpace: 'pre-wrap',
+  overflow: 'scroll',
+});
+
+function isShellCommand(
+  entry: ConnectionRecordEntry,
+): entry is CommandRecordEntry {
+  return 'cmd' in entry;
+}
+
+function KillDebuggingBridge({os}: {os: DeviceOS}) {
+  const {
+    title,
+    cmd,
+  }: {
+    title: string;
+    cmd: keyof FlipperServerCommands;
+  } =
+    os === 'iOS'
+      ? {title: 'Kill idb', cmd: 'ios-idb-kill'}
+      : {title: 'Kill adb server', cmd: 'android-adb-kill'};
+
   return (
-    <Layout.ScrollContainer pad>
-      {selection != null ? (
-        <DataInspector data={selection} expandRoot />
-      ) : (
-        <Placeholder grow pad="large">
-          Select an entry to visualize details
-        </Placeholder>
-      )}
-    </Layout.ScrollContainer>
+    <>
+      <p>
+        Sometimes the error can be resolved by killing the {os} debugging
+        bridge.
+      </p>
+      <Button
+        type="default"
+        onClick={() => {
+          getRenderHostInstance().flipperServer.exec(cmd);
+        }}>
+        {title}
+      </Button>
+    </>
   );
+}
+
+function Sidebar({selection}: {selection: undefined | ConnectionRecordEntry}) {
+  const content: JSX.Element[] = [];
+
+  if (selection) {
+    if (isShellCommand(selection)) {
+      content.push(
+        <Panel key="cmd" heading="CMD">
+          {selection.cmd}
+        </Panel>,
+        <Panel key="description" heading="Description">
+          {selection.description}
+        </Panel>,
+        <Panel key="stdout" heading="STDOUT">
+          <PanelContainer>{selection.stdout}</PanelContainer>
+        </Panel>,
+        <Panel key="stderr" heading="STDERR">
+          <PanelContainer>{selection.stderr}</PanelContainer>
+        </Panel>,
+        <Panel key="troubleshoot" heading="Troubleshooting Tips">
+          <p>{selection.troubleshoot}</p>
+          {!selection.success && <KillDebuggingBridge os={selection.os} />}
+        </Panel>,
+      );
+    }
+    content.push(
+      <Panel key="Raw" heading="Raw Details" collapsed>
+        <DataInspector data={selection} />
+      </Panel>,
+    );
+  } else {
+    content.push(
+      <Placeholder grow pad="large" center>
+        Select an entry to visualize details
+      </Placeholder>,
+    );
+  }
+
+  return <Layout.ScrollContainer pad>{content}</Layout.ScrollContainer>;
 }
 
 function clearMessages() {
@@ -169,17 +241,28 @@ export const ConnectivityLogs = () => {
     </Button>
   );
 
+  const onSelection = useCallback(
+    (entry: ConnectionRecordEntry) => {
+      if (isShellCommand(entry)) {
+        setSelection(entry);
+      } else {
+        setSelection(undefined);
+      }
+    },
+    [setSelection],
+  );
+
   return (
-    <Layout.Right resizable width={400}>
+    <Layout.Right resizable width={selection ? SIDEBAR_WIDTH : 0}>
       <DataTable<ConnectionRecordEntry>
         dataSource={rows}
         columns={columns}
         enableAutoScroll
         onRowStyle={getRowStyle}
-        onSelect={setSelection}
+        onSelect={onSelection}
         extraActions={clearButton}
       />
-      <Sidebar selection={selection} />
+      {selection && <Sidebar selection={selection} />}
     </Layout.Right>
   );
 };

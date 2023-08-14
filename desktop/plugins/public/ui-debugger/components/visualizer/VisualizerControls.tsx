@@ -7,19 +7,20 @@
  * @format
  */
 
-import {Button, Slider, Tooltip, Typography} from 'antd';
+import {Button, Dropdown, Menu, Slider, Tooltip, Typography} from 'antd';
 import {Layout, produce, theme, usePlugin} from 'flipper-plugin';
-import {Id} from '../../ClientTypes';
+import {ClientNode, Id} from '../../ClientTypes';
 import {plugin} from '../../index';
 import React from 'react';
 import {
   AimOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
+  PicCenterOutlined,
 } from '@ant-design/icons';
 import {tracker} from '../../utils/tracker';
 import {debounce} from 'lodash';
-
+import {WireFrameMode} from '../../DesktopTypes';
 export type TargetModeState =
   | {
       state: 'selected';
@@ -38,23 +39,29 @@ export function VisualiserControls({
   setTargetMode,
   selectedNode,
   focusedNode,
+  wireFrameMode,
+  onSetWireFrameMode,
 }: {
-  selectedNode?: Id;
+  wireFrameMode: WireFrameMode;
+  onSetWireFrameMode: (mode: WireFrameMode) => void;
+  selectedNode?: ClientNode;
   focusedNode?: Id;
   setTargetMode: (targetMode: TargetModeState) => void;
   targetMode: TargetModeState;
 }) {
   const instance = usePlugin(plugin);
 
-  const focusDisabled = focusedNode == null && selectedNode == null;
+  const focusDisabled =
+    focusedNode == null &&
+    (selectedNode == null || selectedNode.children.length === 0);
   const focusToolTip = focusDisabled
-    ? 'Select a node to focus it'
+    ? 'Select a non leaf node to focus it'
     : focusedNode == null
     ? 'Focus current node'
     : 'Remove focus';
 
   const targetToolTip =
-    targetMode.state === 'disabled' ? 'TargetMode' : 'Exit target mode';
+    targetMode.state === 'disabled' ? 'Target Mode' : 'Exit  target mode';
 
   return (
     <Layout.Right style={{padding: theme.space.medium}} gap="medium" center>
@@ -81,13 +88,43 @@ export function VisualiserControls({
                 targetMode.targetedNodes[value],
                 'visualiser',
               );
+
               debouncedReportTargetAdjusted();
             }}
           />
         )}
       </Layout.Container>
 
-      <Layout.Horizontal gap="medium">
+      <Layout.Horizontal gap="medium" center>
+        <Dropdown
+          overlay={
+            <Menu>
+              <SelectableDropDownItem
+                onSelect={onSetWireFrameMode}
+                text="All"
+                selectedValue={wireFrameMode}
+                value="All"
+              />
+              <SelectableDropDownItem
+                onSelect={onSetWireFrameMode}
+                text="Selected and children"
+                selectedValue={wireFrameMode}
+                value="SelectedAndChildren"
+              />
+              <SelectableDropDownItem
+                onSelect={onSetWireFrameMode}
+                text="Selected only"
+                selectedValue={wireFrameMode}
+                value="SelectedOnly"
+              />
+            </Menu>
+          }>
+          <Tooltip title="Wireframe Mode">
+            <Button shape="circle">
+              <PicCenterOutlined />
+            </Button>
+          </Tooltip>
+        </Dropdown>
         <Tooltip title={targetToolTip}>
           <Button
             shape="circle"
@@ -118,7 +155,7 @@ export function VisualiserControls({
             disabled={focusDisabled}
             onClick={() => {
               if (focusedNode == null) {
-                instance.uiActions.onFocusNode(selectedNode);
+                instance.uiActions.onFocusNode(selectedNode?.id);
               } else {
                 instance.uiActions.onFocusNode();
               }
@@ -142,6 +179,31 @@ export function VisualiserControls({
         </Tooltip>
       </Layout.Horizontal>
     </Layout.Right>
+  );
+}
+
+function SelectableDropDownItem<T>({
+  value,
+  selectedValue,
+  onSelect,
+  text,
+}: {
+  value: T;
+  selectedValue: T;
+  onSelect: (value: T) => void;
+  text: string;
+}) {
+  return (
+    <Menu.Item
+      style={{
+        color:
+          value === selectedValue ? theme.primaryColor : theme.textColorActive,
+      }}
+      onClick={() => {
+        onSelect(value);
+      }}>
+      {text}
+    </Menu.Item>
   );
 }
 

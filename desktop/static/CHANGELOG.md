@@ -1,3 +1,11 @@
+# 0.210.0 (2/8/2023)
+
+ * [D47832249](https://github.com/facebook/flipper/search?q=D47832249&type=Commits) -  [UIDebugger] Fixed bug with keyboard tree controls
+ * [D47949841](https://github.com/facebook/flipper/search?q=D47949841&type=Commits) -  UIDebugger - Added wireframe mode control, useful when lots of overlapping wireframes
+ * [D47949840](https://github.com/facebook/flipper/search?q=D47949840&type=Commits) -  UIDebugger - added  context menu items for exanding and collapsing the tree.
+ * [D47949843](https://github.com/facebook/flipper/search?q=D47949843&type=Commits) -  UIDebugger Tree starts collapsed and expands as you click from the visualiser
+
+
 # 0.208.0 (26/7/2023)
 
  * [D47724521](https://github.com/facebook/flipper/search?q=D47724521&type=Commits) -  Added ability to favourite emulators / simulators in the launch virtual devices dialog

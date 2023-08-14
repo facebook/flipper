@@ -114,7 +114,12 @@ export function Tree2({
     overscan: 20,
   });
 
+  const prevSearchTerm = useRef<string | null>(null);
   useEffect(() => {
+    if (prevSearchTerm.current === searchTerm) {
+      return;
+    }
+    prevSearchTerm.current = searchTerm;
     const matchingIndexes = findSearchMatchingIndexes(treeNodes, searchTerm);
 
     if (matchingIndexes.length > 0) {
@@ -206,9 +211,13 @@ export function Tree2({
         focusedNodeId={focusedNode}
         hoveredNodeId={hoveredNode}
         nodes={nodes}
+        onSelectNode={instance.uiActions.onSelectNode}
         onSetViewMode={instance.uiActions.onSetViewMode}
         onContextMenuOpen={instance.uiActions.onContextMenuOpen}
-        onFocusNode={instance.uiActions.onFocusNode}>
+        onFocusNode={instance.uiActions.onFocusNode}
+        onCollapseNonAncestors={instance.uiActions.onCollapseAllNonAncestors}
+        onCollapseRecursively={instance.uiActions.onCollapseAllRecursively}
+        onExpandRecursively={instance.uiActions.onExpandAllRecursively}>
         <div
           //We use this normal divs flexbox sizing to measure how much vertical space we need for the child div
           ref={grandParentRef}
@@ -367,6 +376,13 @@ function TreeNodeRow({
 }) {
   const showExpandChildrenIcon = treeNode.children.length > 0;
   const isSelected = treeNode.id === selectedNode;
+  const expandOrCollapse = () => {
+    if (treeNode.isExpanded) {
+      onCollapseNode(treeNode.id);
+    } else {
+      onExpandNode(treeNode.id);
+    }
+  };
   return (
     <div
       ref={innerRef}
@@ -396,21 +412,21 @@ function TreeNodeRow({
             onHoverNode(treeNode.id);
           }
         }}
-        onClick={() => {
-          onSelectNode(treeNode.id, 'tree');
+        onClick={(event) => {
+          if (event.detail === 1) {
+            //single click
+            onSelectNode(treeNode.id, 'tree');
+          } else if (event.detail === 2) {
+            //double click
+            expandOrCollapse();
+          }
         }}
         item={treeNode}
         style={{overflow: 'visible'}}>
         <ExpandedIconOrSpace
           expanded={treeNode.isExpanded}
           showIcon={showExpandChildrenIcon}
-          onClick={() => {
-            if (treeNode.isExpanded) {
-              onCollapseNode(treeNode.id);
-            } else {
-              onExpandNode(treeNode.id);
-            }
-          }}
+          onClick={expandOrCollapse}
         />
 
         {nodeIcon(treeNode)}
@@ -430,9 +446,13 @@ function TreeNodeRow({
 }
 
 function TreeNodeTextContent({treeNode}: {treeNode: TreeNode}) {
+  const isZero = treeNode.bounds.width === 0 && treeNode.bounds.height === 0;
+  const invisible = treeNode.hiddenAttributes?.['invisible'] === true;
   return (
     <Layout.Horizontal
       style={{
+        fontFamily: 'monospace',
+        opacity: isZero || invisible ? 0.5 : 1,
         alignItems: 'baseline',
         userSelect: 'none',
       }}>
@@ -464,7 +484,7 @@ function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
   );
 }
 
-const TreeItemHeightNumber = 28;
+const TreeItemHeightNumber = 24;
 const TreeItemHeight = `${TreeItemHeightNumber}px`;
 const HalfTreeItemHeight = `calc(${TreeItemHeight} / 2)`;
 
@@ -578,7 +598,7 @@ const NodeIconImage = styled.img({
   userSelect: 'none',
 });
 
-const renderDepthOffset = 14;
+const renderDepthOffset = 12;
 
 //due to virtualisation the out of the box dom based scrolling doesnt work
 function findSearchMatchingIndexes(

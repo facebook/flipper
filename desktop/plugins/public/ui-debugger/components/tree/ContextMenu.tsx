@@ -6,8 +6,9 @@
  *
  * @format
  */
+
 import {FrameworkEvent, Id, ClientNode} from '../../ClientTypes';
-import {ViewMode} from '../../DesktopTypes';
+import {OnSelectNode, ViewMode} from '../../DesktopTypes';
 import React, {ReactNode} from 'react';
 import {DataSource, getFlipperLib} from 'flipper-plugin';
 import {Dropdown, Menu} from 'antd';
@@ -21,6 +22,9 @@ import {
   CopyOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  NodeExpandOutlined,
   SnippetsOutlined,
   TableOutlined,
 } from '@ant-design/icons';
@@ -33,6 +37,10 @@ export const ContextMenu: React.FC<{
   onFocusNode: (id?: Id) => void;
   onContextMenuOpen: (open: boolean) => void;
   onSetViewMode: (viewMode: ViewMode) => void;
+  onExpandRecursively: (id: Id) => void;
+  onCollapseRecursively: (id: Id) => void;
+  onCollapseNonAncestors: (id: Id) => void;
+  onSelectNode: OnSelectNode;
 }> = ({
   nodes,
   frameworkEvents,
@@ -42,11 +50,51 @@ export const ContextMenu: React.FC<{
   onFocusNode,
   onContextMenuOpen,
   onSetViewMode,
+  onExpandRecursively,
+  onCollapseRecursively,
+  onCollapseNonAncestors,
+  onSelectNode,
 }) => {
   const copyItems: ReactNode[] = [];
   const hoveredNode = nodes.get(hoveredNodeId ?? Number.MAX_SAFE_INTEGER);
 
+  let treeCollapseItems: ReactNode[] = [];
   if (hoveredNode) {
+    treeCollapseItems = [
+      <UIDebuggerMenuItem
+        key="expand-recursive"
+        text="Expand recursively"
+        icon={<MenuUnfoldOutlined />}
+        onClick={() => {
+          onExpandRecursively(hoveredNode.id);
+          onSelectNode(hoveredNode.id, 'context-menu');
+          tracker.track('context-menu-expand-recursive', {});
+        }}
+      />,
+
+      <UIDebuggerMenuItem
+        key="collapse-recursive"
+        text="Collapse recurisvely"
+        icon={<MenuFoldOutlined />}
+        onClick={() => {
+          onCollapseRecursively(hoveredNode.id);
+          onSelectNode(hoveredNode.id, 'context-menu');
+          tracker.track('context-menu-collapse-recursive', {});
+        }}
+      />,
+      <UIDebuggerMenuItem
+        key="collapse-non-ancestors"
+        text="Collapse non ancestors"
+        icon={<NodeExpandOutlined />}
+        onClick={() => {
+          onCollapseNonAncestors(hoveredNode.id);
+          onSelectNode(hoveredNode.id, 'context-menu');
+          tracker.track('context-menu-collapse-non-ancestors', {});
+        }}
+      />,
+      <Menu.Divider key="expand-divider" />,
+    ];
+
     copyItems.push(
       <UIDebuggerMenuItem
         key="Copy Element name"
@@ -131,6 +179,7 @@ export const ContextMenu: React.FC<{
       }}
       overlay={() => (
         <Menu>
+          {treeCollapseItems}
           {focus}
           {removeFocus}
           {frameworkEventsTable}

@@ -26,6 +26,7 @@ export type LiveClientState = {
 
 export type UIState = {
   viewMode: Atom<ViewMode>;
+  wireFrameMode: Atom<WireFrameMode>;
   isConnected: Atom<boolean>;
   isPaused: Atom<boolean>;
   streamState: Atom<StreamState>;
@@ -46,6 +47,8 @@ export type UIState = {
 type TransformToReadOnly<T> = {
   [P in keyof T]: T[P] extends Atom<infer U> ? _ReadOnlyAtom<U> : T[P];
 };
+
+export type WireFrameMode = 'All' | 'SelectedAndChildren' | 'SelectedOnly';
 
 export type ReadOnlyUIState = TransformToReadOnly<UIState>;
 
@@ -91,9 +94,18 @@ export type UIActions = {
   ) => void;
   onPlayPauseToggled: () => void;
   onSearchTermUpdated: (searchTerm: string) => void;
+  onSetWireFrameMode: (WireFrameMode: WireFrameMode) => void;
+  onExpandAllRecursively: (nodeId: Id) => void;
+  onCollapseAllNonAncestors: (nodeId: Id) => void;
+  onCollapseAllRecursively: (nodeId: Id) => void;
+  ensureAncestorsExpanded: (nodeId: Id) => void;
 };
 
-export type SelectionSource = 'visualiser' | 'tree' | 'keyboard';
+export type SelectionSource =
+  | 'visualiser'
+  | 'tree'
+  | 'keyboard'
+  | 'context-menu';
 
 export type StreamState =
   | {state: 'Ok'}

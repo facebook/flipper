@@ -486,6 +486,10 @@ export class FlipperServerImpl implements FlipperServer {
     },
     'android-launch-emulator': async (name, coldBoot) =>
       launchEmulator(this.config.settings.androidHome, name, coldBoot),
+    'android-adb-kill': async () => {
+      assertNotNull(this.android);
+      return this.android.adbKill();
+    },
     'ios-get-simulators': async (bootedOnly) => {
       assertNotNull(this.ios);
       return this.ios.getSimulators(bootedOnly);

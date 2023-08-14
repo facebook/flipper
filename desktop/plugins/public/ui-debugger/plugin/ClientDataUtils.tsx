@@ -7,30 +7,15 @@
  * @format
  */
 
-import {Draft} from 'flipper-plugin';
 import {ClientNode, Id} from '../ClientTypes';
 import {UIState} from '../DesktopTypes';
-
-export function collapseinActiveChildren(
-  node: ClientNode,
-  expandedNodes: Draft<Set<Id>>,
-) {
-  if (node.activeChild) {
-    expandedNodes.add(node.activeChild);
-    for (const child of node.children) {
-      if (child !== node.activeChild) {
-        expandedNodes.delete(child);
-      }
-    }
-  }
-}
 
 export function checkFocusedNodeStillActive(
   uiState: UIState,
   nodes: Map<Id, ClientNode>,
 ) {
   const focusedNodeId = uiState.focusedNode.get();
-  const focusedNode = focusedNodeId && nodes.get(focusedNodeId);
+  const focusedNode = focusedNodeId != null && nodes.get(focusedNodeId);
   if (!focusedNode || !isFocusedNodeAncestryAllActive(focusedNode, nodes)) {
     uiState.focusedNode.set(undefined);
   }

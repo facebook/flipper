@@ -433,7 +433,7 @@ class SettingsSheet extends Component<Props, State> {
                       </span>
                       <br />
                       <code>
-                        sudo lsof -i -P | grep LISTEN | grep <b>52342</b>
+                        sudo lsof -i :52342
                         <br />
                         sudo kill &lt;PID&gt;
                       </code>

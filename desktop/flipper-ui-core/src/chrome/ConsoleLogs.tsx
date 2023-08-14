@@ -91,7 +91,7 @@ export function ConsoleLogs() {
 
   return (
     <Layout.Top>
-      <Toolbar wash>
+      <Toolbar>
         <Button onClick={clearLogs} icon={<DeleteOutlined />}>
           Clear Logs
         </Button>

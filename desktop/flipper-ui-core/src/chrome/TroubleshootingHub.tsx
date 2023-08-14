@@ -18,7 +18,7 @@ import {ConnectivityLogs} from './ConnectivityLogs';
 export function TroubleshootingHub() {
   return (
     <Layout.Container grow>
-      <Tabs activeKey="connectivity-logs" grow>
+      <Tabs defaultActiveKey="connectivity-logs" grow>
         <Tab tab="Environment Check" tabKey="environment-check">
           <SetupDoctorScreen visible modal={false} onClose={() => {}} />
         </Tab>
