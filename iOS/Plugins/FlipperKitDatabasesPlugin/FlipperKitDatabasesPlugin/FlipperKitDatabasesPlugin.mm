@@ -10,6 +10,8 @@
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKit/FlipperConnection.h>
 #import <FlipperKit/FlipperResponder.h>
+#import "DatabaseDriver.h"
+#import "DatabasesManager.h"
 
 @interface FlipperKitDatabasesPlugin ()
 @property(strong, nonatomic) id<FlipperConnection> connection;
@@ -20,6 +22,9 @@
 
 - (instancetype)init {
   if (self = [super init]) {
+    NSArray<id<DatabaseDriver>>* databaseDrivers = @[];
+    _databasesManager =
+        [[DatabasesManager alloc] initWithDatabaseDrivers:databaseDrivers];
   }
   return self;
 }
@@ -37,56 +42,11 @@
 
 - (void)didConnect:(id<FlipperConnection>)connection {
   self.connection = connection;
-
-  // Define connection event handlers
-
-  // databaseList
-  [connection
-        receive:@"databaseList"
-      withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
-        NSMutableDictionary* response = [NSMutableDictionary dictionary];
-
-        response[@1] = @{
-          @"id" : @1,
-          @"name" : @"Provider1",
-          @"tables" : @[ @"Table1_1", @"Table1_2", @"Table1_3" ]
-        };
-        response[@2] = @{
-          @"id" : @2,
-          @"name" : @"Provider2",
-          @"tables" : @[ @"Table2_1", @"Table2_2" ]
-        };
-        response[@3] =
-            @{@"id" : @3,
-              @"name" : @"Provider3",
-              @"tables" : @[ @"Table3_1" ]};
-        [responder success:response];
-      }];
-
-  // getTableData
-  [connection receive:@"getTableData"
-            withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
-
-            }];
-
-  // getTableStructure
-  [connection receive:@"getTableStructure"
-            withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
-            }];
-
-  // getTableInfo
-  [connection receive:@"getTableInfo"
-            withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
-            }];
-
-  // execute
-  [connection receive:@"execute"
-            withBlock:^(NSDictionary*, id<FlipperResponder> responder){
-            }];
+  [self.databasesManager setConnection:connection];
 }
 
 - (void)didDisconnect {
-  self.connection = nil;
+  [self.databasesManager setConnection:nil];
 }
 
 - (NSString*)identifier {
@@ -94,7 +54,7 @@
 }
 
 - (BOOL)runInBackground {
-  return YES;
+  return NO;
 }
 
 @end

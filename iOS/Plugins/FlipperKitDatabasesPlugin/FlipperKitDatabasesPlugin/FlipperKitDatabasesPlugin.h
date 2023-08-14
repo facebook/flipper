@@ -8,7 +8,11 @@
 #import <FlipperKit/FlipperPlugin.h>
 #import <Foundation/Foundation.h>
 
+@class DatabasesManager;
+
 @interface FlipperKitDatabasesPlugin : NSObject<FlipperPlugin>
+@property(nonatomic, strong) DatabasesManager* databasesManager;
+
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)sharedInstance;
 
