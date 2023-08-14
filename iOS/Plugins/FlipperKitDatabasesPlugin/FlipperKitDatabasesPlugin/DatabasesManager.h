@@ -14,12 +14,11 @@
 @interface DatabasesManager : NSObject
 
 @property(nonatomic, strong) id<FlipperConnection> connection;
-@property(nonatomic, strong, readonly)
-    NSArray<id<DatabaseDriver>>* databaseDrivers;
 
-- (instancetype)initWithDatabaseDrivers:
-    (NSArray<id<DatabaseDriver>>*)databaseDrivers;
+- (instancetype)init;
 - (void)setConnection:(id<FlipperConnection>)connection;
 - (BOOL)isConnected;
+- (void)addDatabaseDriver:(id<DatabaseDriver>)driver;
+- (void)removeDatabaseDriver:(id<DatabaseDriver>)driver;
 
 @end

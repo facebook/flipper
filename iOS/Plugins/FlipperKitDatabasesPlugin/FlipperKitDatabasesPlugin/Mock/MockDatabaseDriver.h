@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <FlipperKitDatabasesPlugin/DatabaseDriver.h>
 #import <Foundation/Foundation.h>
-#import "DatabaseDriver.h"
 
 @interface MockDatabaseDriver : NSObject<DatabaseDriver>
 

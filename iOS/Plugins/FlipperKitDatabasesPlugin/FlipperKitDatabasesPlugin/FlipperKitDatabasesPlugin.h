@@ -7,6 +7,7 @@
 
 #import <FlipperKit/FlipperPlugin.h>
 #import <Foundation/Foundation.h>
+#import "DatabaseDriver.h"
 
 @class DatabasesManager;
 
@@ -15,5 +16,7 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)sharedInstance;
+- (void)addDatabaseDriver:(id<DatabaseDriver>)driver;
+- (void)removeDatabaseDriver:(id<DatabaseDriver>)driver;
 
 @end

@@ -23,10 +23,7 @@
 
 - (instancetype)init {
   if (self = [super init]) {
-    NSArray<id<DatabaseDriver>>* databaseDrivers =
-        @[ [MockDatabaseDriver new] ];
-    _databasesManager =
-        [[DatabasesManager alloc] initWithDatabaseDrivers:databaseDrivers];
+    _databasesManager = [DatabasesManager new];
   }
   return self;
 }
@@ -57,6 +54,14 @@
 
 - (BOOL)runInBackground {
   return NO;
+}
+
+- (void)addDatabaseDriver:(id<DatabaseDriver>)driver {
+  [self.databasesManager addDatabaseDriver:driver];
+}
+
+- (void)removeDatabaseDriver:(id<DatabaseDriver>)driver {
+  [self.databasesManager addDatabaseDriver:driver];
 }
 
 @end

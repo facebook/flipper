@@ -27,18 +27,18 @@
         databaseDescriptorHolders;
 @property(nonatomic, strong)
     NSMutableSet<DatabaseDescriptorHolder*>* databaseDescriptorHolderSet;
+@property(nonatomic, strong) NSMutableSet<id<DatabaseDriver>>* databaseDrivers;
 
 @end
 
 @implementation DatabasesManager
 
-- (instancetype)initWithDatabaseDrivers:
-    (NSArray<id<DatabaseDriver>>*)databaseDrivers {
+- (instancetype)init {
   self = [super init];
   if (self) {
-    _databaseDrivers = [databaseDrivers copy];
-    _databaseDescriptorHolders = [[NSMutableDictionary alloc] init];
-    _databaseDescriptorHolderSet = [[NSMutableSet alloc] init];
+    _databaseDrivers = [NSMutableSet new];
+    _databaseDescriptorHolders = [NSMutableDictionary new];
+    _databaseDescriptorHolderSet = [NSMutableSet new];
   }
   return self;
 }
@@ -222,6 +222,20 @@
           [responder error:errorResponse];
         }
       }];
+}
+
+- (void)addDatabaseDriver:(id<DatabaseDriver>)driver {
+  if ([self.databaseDrivers containsObject:driver]) {
+    return;
+  }
+  [self.databaseDrivers addObject:driver];
+}
+
+- (void)removeDatabaseDriver:(id<DatabaseDriver>)driver {
+  if (![self.databaseDrivers containsObject:driver]) {
+    return;
+  }
+  [self.databaseDrivers removeObject:driver];
 }
 
 + (void)raiseInvalidRequestError:(id<FlipperResponder>)responder {
