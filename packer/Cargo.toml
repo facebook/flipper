@@ -12,7 +12,7 @@ edition = "2021"
 [dependencies]
 clap = { version = "^3", features = ["derive", "cargo"] }
 shellexpand = "^3"
-tar = "0.4.39"
+tar = "0.4.40"
 serde = { version = "^1", features = ["derive"] }
 serde_yaml = "0.9.25"
 anyhow = "^1"
