@@ -14,6 +14,7 @@
 #import "DatabaseDescriptorHolder.h"
 #import "DatabaseDriver.h"
 #import "DatabaseErrorCodes.h"
+#import "DatabaseExecuteSql.h"
 #import "DatabaseGetTableData.h"
 #import "DatabaseGetTableInfo.h"
 #import "DatabaseGetTableStructure.h"
@@ -213,7 +214,38 @@
 
   [self.connection
         receive:@"execute"
-      withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
+      withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
+        DatabaseExecuteSqlRequest* request = [DatabaseExecuteSqlRequest
+            getExecuteSqlRequestFromDictionary:params];
+        if (!request) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesInvalidRequest
+                    message:kDatabasesErrorCodesInvalidRequestMessage];
+          [responder error:errorResponse];
+          return;
+        }
+        DatabaseDescriptorHolder* descriptorHolder =
+            self.databaseDescriptorHolders[@(request.databaseId)];
+        if (!descriptorHolder) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesDatabaseInvalid
+                    message:kDatabasesErrorCodesDatabaseInvalidMessage];
+          [responder error:errorResponse];
+          return;
+        }
+        @try {
+          DatabaseExecuteSqlResponse* sqlResponse =
+              [descriptorHolder.databaseDriver executeSQL:request.value];
+          NSDictionary* response =
+              [ObjectMapper databaseExecuteSqlResponseToDictionary:sqlResponse];
+          [responder success:response];
+        } @catch (NSException* exception) {
+          NSDictionary* errorResponse = [ObjectMapper
+              errorWithCode:DatabasesErrorCodesSqlExecutionException
+                    message:[kDatabasesErrorCodesSqlExecutionExceptionMessage
+                                stringByAppendingString:exception.reason]];
+          [responder error:errorResponse];
+        }
       }];
 }
 

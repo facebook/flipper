@@ -6,6 +6,7 @@
  */
 
 #include "DatabaseExecuteSql.h"
+#include <objc/NSObjCRuntime.h>
 
 @implementation DatabaseExecuteSqlResponse
 
@@ -37,6 +38,17 @@
     _value = [value copy];
   }
   return self;
+}
+
++ (DatabaseExecuteSqlRequest*)getExecuteSqlRequestFromDictionary:
+    (NSDictionary*)dictionary {
+  NSInteger databaseId = [dictionary[@"databaseId"] integerValue];
+  NSString* value = dictionary[@"value"];
+  if (databaseId <= 0 || value.length == 0) {
+    return nil;
+  }
+  return [[DatabaseExecuteSqlRequest alloc] initWithDatabaseId:databaseId
+                                                         value:value];
 }
 
 @end

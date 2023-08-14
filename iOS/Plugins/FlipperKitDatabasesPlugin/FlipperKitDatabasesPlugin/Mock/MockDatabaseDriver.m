@@ -6,6 +6,7 @@
  */
 
 #import "MockDatabaseDriver.h"
+#import "DatabaseExecuteSql.h"
 #import "DatabaseGetTableData.h"
 #import "DatabaseGetTableInfo.h"
 #import "DatabaseGetTableStructure.h"
@@ -78,6 +79,41 @@
                                                          start:0
                                                          count:100
                                                          total:100];
+}
+
+- (DatabaseExecuteSqlResponse*)executeSQL:(NSString*)sql {
+  // Generate a mock response with a random type
+  NSString* type;
+  NSArray* columns = @[ @"id", @"name" ];
+  NSMutableArray* values = [NSMutableArray array];
+  for (int i = 0; i < 100; i++) {
+    [values addObject:@[ @(i), [NSString stringWithFormat:@"Name %d", i] ]];
+  }
+
+  // Randomly select a type
+  NSArray<NSString*>* types = @[ @"SELECT", @"INSERT", @"UPDATE", @"DELETE" ];
+  int index = arc4random_uniform((u_int32_t)types.count);
+  type = types[index];
+
+  // Set affectedCount and insertedId based on type
+  NSInteger affectedCount = 0;
+  NSNumber* insertedId = nil;
+  if ([type isEqualToString:@"INSERT"]) {
+    affectedCount = 1;
+    insertedId = @(15);
+  } else if (
+      [type isEqualToString:@"UPDATE"] || [type isEqualToString:@"DELETE"]) {
+    affectedCount = values.count;
+  }
+
+  DatabaseExecuteSqlResponse* response =
+      [[DatabaseExecuteSqlResponse alloc] initWithType:type
+                                               columns:columns
+                                                values:[values copy]
+                                            insertedId:insertedId
+                                         affectedCount:affectedCount];
+
+  return response;
 }
 
 @end

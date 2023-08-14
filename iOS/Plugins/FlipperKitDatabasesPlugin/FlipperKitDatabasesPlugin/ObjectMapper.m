@@ -83,7 +83,29 @@ static NSString* const UNKNOWN_BLOB_LABEL_FORMAT = @"{%d-byte %@ blob}";
 
 + (NSDictionary*)databaseExecuteSqlResponseToDictionary:
     (DatabaseExecuteSqlResponse*)response {
-  return @{};
+  NSMutableArray* rows = [NSMutableArray array];
+  if (response.values) {
+    for (NSArray* row in response.values) {
+      NSMutableArray* rowValues = [NSMutableArray array];
+      for (id item in row) {
+        [rowValues addObject:[self objectAndTypeToFlipperObject:item]];
+      }
+      [rows addObject:rowValues];
+    }
+  }
+
+  NSMutableDictionary* result = [NSMutableDictionary dictionaryWithDictionary:@{
+    @"type" : response.type,
+    @"columns" : response.columns,
+    @"values" : rows,
+    @"affectedCount" : @(response.affectedCount)
+  }];
+
+  if (response.insertedId) {
+    result[@"insertedId"] = response.insertedId;
+  }
+
+  return result;
 }
 
 + (NSDictionary*)objectAndTypeToFlipperObject:(id)object {

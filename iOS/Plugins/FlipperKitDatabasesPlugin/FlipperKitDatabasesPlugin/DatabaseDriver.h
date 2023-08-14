@@ -11,6 +11,7 @@
 @class DatabaseGetTableStructureResponse;
 @class DatabaseGetTableInfoResponse;
 @class DatabaseGetTableDataResponse;
+@class DatabaseExecuteSqlResponse;
 
 @protocol DatabaseDriver<NSObject>
 - (NSArray<id<DatabaseDescriptor>>*)getDatabases;
@@ -32,4 +33,5 @@
                                reverse:(BOOL)reverse
                                  start:(NSInteger)start
                                  count:(NSInteger)count;
+- (DatabaseExecuteSqlResponse*)executeSQL:(NSString*)sql;
 @end

@@ -6,6 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#include <objc/NSObjCRuntime.h>
 
 @interface DatabaseExecuteSqlResponse : NSObject
 
@@ -15,6 +16,12 @@
 @property(nonatomic, strong) NSNumber* insertedId;
 @property(nonatomic, assign) NSInteger affectedCount;
 
+- (instancetype)initWithType:(NSString*)type
+                     columns:(NSArray*)columns
+                      values:(NSArray*)values
+                  insertedId:(NSNumber*)insertedId
+               affectedCount:(NSInteger)affectedCount;
+
 @end
 
 @interface DatabaseExecuteSqlRequest : NSObject
@@ -23,5 +30,7 @@
 @property(nonatomic, copy, readonly) NSString* value;
 
 - (instancetype)initWithDatabaseId:(NSInteger)databaseId value:(NSString*)value;
++ (DatabaseExecuteSqlRequest*)getExecuteSqlRequestFromDictionary:
+    (NSDictionary*)dictionary;
 
 @end
