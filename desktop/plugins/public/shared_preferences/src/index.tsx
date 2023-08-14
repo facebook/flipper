@@ -123,27 +123,31 @@ export function plugin(client: PluginClient<Events, Methods>) {
   }
   async function loadFromFile() {
     const file = await getFlipperLib().importFile();
-    if (file?.path != undefined) {
-      const data = await getFlipperLib().remoteServerContext.fs.readFile(
-        file.path,
-        {encoding: 'utf-8'},
-      );
-      const preferences = JSON.parse(data) as SharedPreferencesEntry;
-      const name = selectedPreferences.get();
-      if (name != null) {
-        updateSharedPreferences({
-          name: name,
-          preferences: preferences.preferences,
-        });
-
-        for (const key in preferences.preferences) {
-          await client.send('setSharedPreference', {
-            sharedPreferencesName: name,
-            preferenceName: key,
-            preferenceValue: preferences.preferences[key],
+    if (file && file.encoding === 'utf-8' && typeof file.data === 'string') {
+      try {
+        const preferences = JSON.parse(file.data) as SharedPreferencesEntry;
+        const name = selectedPreferences.get();
+        if (name != null) {
+          updateSharedPreferences({
+            name: name,
+            preferences: preferences.preferences,
           });
+
+          for (const key in preferences.preferences) {
+            await client.send('setSharedPreference', {
+              sharedPreferencesName: name,
+              preferenceName: key,
+              preferenceValue: preferences.preferences[key],
+            });
+          }
         }
+      } catch (e) {
+        console.warn('Unable to import shared preferences', e);
       }
+    } else {
+      console.warn(
+        'The loaded file either has wrong encoding or is not a valid json file',
+      );
     }
   }
 

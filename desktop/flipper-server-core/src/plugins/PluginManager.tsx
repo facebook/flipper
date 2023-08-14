@@ -28,7 +28,7 @@ import {
   getInstalledPlugins,
   getPluginVersionInstallationDir,
   getPluginDirNameFromPackageName,
-  installPluginFromFile,
+  installPluginFromFileOrBuffer,
   removePlugins,
   getUpdatablePlugins,
   getInstalledPlugin,
@@ -71,7 +71,7 @@ export class PluginManager {
   removePlugins = removePlugins;
   getUpdatablePlugins = getUpdatablePlugins;
   getInstalledPlugin = getInstalledPlugin;
-  installPluginFromFile = installPluginFromFile;
+  installPluginFromFileOrBuffer = installPluginFromFileOrBuffer;
   installPluginFromNpm = installPluginFromNpm;
 
   async loadSource(path: string): Promise<PluginSource> {
@@ -186,7 +186,7 @@ export class PluginManager {
         await new Promise((resolve, reject) =>
           writeStream.once('finish', resolve).once('error', reject),
         );
-        return await installPluginFromFile(tmpFile);
+        return await installPluginFromFileOrBuffer(tmpFile);
       }
     } catch (error) {
       console.warn(

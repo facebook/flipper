@@ -319,8 +319,8 @@ export type FlipperServerCommands = {
     name: string,
   ) => Promise<InstalledPluginDetails>;
   'plugins-install-from-npm': (name: string) => Promise<InstalledPluginDetails>;
-  'plugins-install-from-file': (
-    path: string,
+  'plugins-install-from-content': (
+    contents: string,
   ) => Promise<InstalledPluginDetails>;
   'plugins-remove-plugins': (names: string[]) => Promise<void>;
   'plugins-server-add-on-start': (

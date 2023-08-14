@@ -16,6 +16,8 @@ import {
 import type {RenderHost} from 'flipper-ui-core';
 import FileSaver from 'file-saver';
 
+import {Base64} from 'js-base64';
+
 declare module globalThis {
   let require: any;
 }
@@ -31,6 +33,13 @@ globalThis.require = wrapRequire((module: string) => {
   );
 });
 
+type FileEncoding = 'utf-8' | 'base64' | 'binary';
+interface FileDescriptor {
+  data: string | Uint8Array | undefined;
+  name: string;
+  encoding: FileEncoding;
+}
+
 export function initializeRenderHost(
   flipperServer: FlipperServer,
   flipperServerConfig: FlipperServerConfig,
@@ -42,8 +51,67 @@ export function initializeRenderHost(
     writeTextToClipboard(text: string) {
       return navigator.clipboard.writeText(text);
     },
-    async importFile() {
-      throw new Error('Not implemented');
+    async importFile(options?: {
+      defaultPath?: string;
+      extensions?: string[];
+      title?: string;
+      encoding?: FileEncoding;
+      multi?: false;
+    }) {
+      return new Promise<FileDescriptor | FileDescriptor[] | undefined>(
+        (resolve, reject) => {
+          try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            if (options?.extensions) {
+              fileInput.accept = options?.extensions.join(', ');
+            }
+            fileInput.multiple = options?.multi ?? false;
+
+            fileInput.addEventListener('change', async (event) => {
+              const target = event.target as HTMLInputElement | undefined;
+              if (!target || !target.files) {
+                resolve(undefined);
+                return;
+              }
+
+              const files: File[] = Array.from(target.files);
+              const descriptors: FileDescriptor[] = await Promise.all(
+                files.map(async (file) => {
+                  switch (options?.encoding) {
+                    case 'base64': {
+                      const bytes = new Uint8Array(await file.arrayBuffer());
+                      const base64Content = Base64.fromUint8Array(bytes);
+                      return {
+                        data: base64Content,
+                        name: file.name,
+                        encoding: 'base64',
+                      };
+                    }
+                    case 'binary':
+                      return {
+                        data: new Uint8Array(await file.arrayBuffer()),
+                        name: file.name,
+                        encoding: 'binary',
+                      };
+                    default:
+                      return {
+                        data: await file.text(),
+                        name: file.name,
+                        encoding: 'utf-8',
+                      };
+                  }
+                }),
+              );
+              resolve(options?.multi ? descriptors : descriptors[0]);
+            });
+
+            fileInput.click();
+          } catch (error) {
+            reject(error);
+          }
+        },
+      );
     },
     async exportFile(data: string, {defaultPath}: {defaultPath?: string}) {
       const file = new File([data], defaultPath ?? 'unknown', {

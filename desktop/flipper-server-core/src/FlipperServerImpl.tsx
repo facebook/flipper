@@ -521,8 +521,11 @@ export class FlipperServerImpl implements FlipperServer {
       this.pluginManager.downloadPlugin(details),
     'plugins-get-updatable-plugins': (query) =>
       this.pluginManager.getUpdatablePlugins(query),
-    'plugins-install-from-file': (path) =>
-      this.pluginManager.installPluginFromFile(path),
+    'plugins-install-from-content': (contents) => {
+      const bytes = Base64.toUint8Array(contents);
+      const buffer = Buffer.from(bytes);
+      return this.pluginManager.installPluginFromFileOrBuffer(buffer);
+    },
     'plugins-install-from-marketplace': (name: string) =>
       this.pluginManager.installPluginForMarketplace(name),
     'plugins-install-from-npm': (name) =>
