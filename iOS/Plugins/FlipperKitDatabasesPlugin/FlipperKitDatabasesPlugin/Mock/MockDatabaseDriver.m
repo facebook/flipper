@@ -6,6 +6,8 @@
  */
 
 #import "MockDatabaseDriver.h"
+#include <Foundation/Foundation.h>
+#include <objc/NSObjCRuntime.h>
 #import "DatabaseExecuteSql.h"
 #import "DatabaseGetTableData.h"
 #import "DatabaseGetTableInfo.h"
@@ -67,42 +69,55 @@
                                  count:(NSInteger)count {
   NSMutableArray* columns = [NSMutableArray array];
   NSMutableArray* values = [NSMutableArray array];
-  for (int i = 0; i < 100; i++) {
+  NSUInteger numColums = 10;
+  NSUInteger numRows = 100;
+  for (int i = 0; i < numColums; i++) {
     NSString* columnName = [NSString stringWithFormat:@"column%d", i + 1];
     [columns addObject:columnName];
-    NSArray* valueRow = @[ @"value1", @"value2", @"value3" ];
+  }
+
+  for (int i = 0; i < numRows; i++) {
+    NSMutableArray* valueRow = [NSMutableArray array];
+    for (int j = 0; j < numColums; j++) {
+      [valueRow addObject:[NSString stringWithFormat:@"value%d", j]];
+    }
     [values addObject:valueRow];
   }
 
   return [[DatabaseGetTableDataResponse alloc] initWithColumns:[columns copy]
                                                         values:[values copy]
                                                          start:0
-                                                         count:100
-                                                         total:100];
+                                                         count:numRows
+                                                         total:numRows];
 }
 
 - (DatabaseExecuteSqlResponse*)executeSQL:(NSString*)sql {
   // Generate a mock response with a random type
   NSString* type;
-  NSArray* columns = @[ @"id", @"name" ];
+  NSArray* columns = @[ @"id", @"name", @"age" ];
   NSMutableArray* values = [NSMutableArray array];
-  for (int i = 0; i < 100; i++) {
-    [values addObject:@[ @(i), [NSString stringWithFormat:@"Name %d", i] ]];
+  NSUInteger numRows = 100;
+  for (int i = 0; i < numRows; i++) {
+    NSUInteger randomAge = arc4random_uniform(40);
+    [values addObject:@[
+      @(i),
+      [NSString stringWithFormat:@"Name %d", i],
+      @(randomAge)
+    ]];
   }
 
   // Randomly select a type
-  NSArray<NSString*>* types = @[ @"SELECT", @"INSERT", @"UPDATE", @"DELETE" ];
+  NSArray<NSString*>* types = @[ @"select", @"insert", @"update_delete" ];
   int index = arc4random_uniform((u_int32_t)types.count);
   type = types[index];
 
   // Set affectedCount and insertedId based on type
   NSInteger affectedCount = 0;
   NSNumber* insertedId = nil;
-  if ([type isEqualToString:@"INSERT"]) {
+  if ([type isEqualToString:@"insert"]) {
     affectedCount = 1;
     insertedId = @(15);
-  } else if (
-      [type isEqualToString:@"UPDATE"] || [type isEqualToString:@"DELETE"]) {
+  } else if ([type isEqualToString:@"update_delete"]) {
     affectedCount = values.count;
   }
 
