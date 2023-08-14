@@ -41,6 +41,10 @@ subprojects {
     tasks.withType(Javadoc).all {
         enabled = false
     }
+
+    tasks.withType(com.android.build.gradle.tasks.JavaDocGenerationTask).all {
+        enabled = false
+    }
 }
 
 ext {
