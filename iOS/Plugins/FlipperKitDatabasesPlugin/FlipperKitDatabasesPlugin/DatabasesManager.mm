@@ -9,6 +9,8 @@
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKit/FlipperConnection.h>
 #import <FlipperKit/FlipperResponder.h>
+#include <Foundation/Foundation.h>
+#import "DatabaseDescriptor.h"
 #import "DatabaseDriver.h"
 
 @interface DatabasesManager ()
@@ -46,11 +48,78 @@
 }
 
 - (void)listenForCommands {
-  // TODO(fulvioabrahao) implement commands.
   [self.connection
         receive:@"databaseList"
+      withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
+        NSInteger databaseId = 1;
+        [self.databaseDescriptorHolders removeAllObjects];
+        [self.databaseDescriptorHolderSet removeAllObjects];
+
+        for (id<DatabaseDriver> databaseDriver in self.databaseDrivers) {
+          NSArray<id<DatabaseDescriptor>>* databaseDescriptorList =
+              [databaseDriver getDatabases];
+          for (id<DatabaseDescriptor> databaseDescriptor in
+                   databaseDescriptorList) {
+            DatabaseDescriptorHolder* databaseDescriptorHolder =
+                [[DatabaseDescriptorHolder alloc]
+                    initWithIdentifier:databaseId
+                        databaseDriver:databaseDriver
+                    databaseDescriptor:databaseDescriptor];
+            self.databaseDescriptorHolders[@(databaseId)] =
+                databaseDescriptorHolder;
+            [self.databaseDescriptorHolderSet
+                addObject:databaseDescriptorHolder];
+            databaseId++;
+          }
+        }
+
+        NSDictionary* result = [DatabasesManager
+            databaseListToDictionary:self.databaseDescriptorHolderSet];
+        [responder success:result];
+      }];
+
+  [self.connection
+        receive:@"getTableData"
       withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
       }];
+
+  [self.connection
+        receive:@"getTableStructure"
+      withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
+      }];
+
+  [self.connection
+        receive:@"getTableInfo"
+      withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
+      }];
+
+  [self.connection
+        receive:@"execute"
+      withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
+      }];
+}
+
++ (NSDictionary*)databaseListToDictionary:
+    (NSSet<DatabaseDescriptorHolder*>*)databaseDescriptorHolderSet {
+  NSMutableDictionary* resultDict = [NSMutableDictionary new];
+
+  for (DatabaseDescriptorHolder* descriptorHolder in
+           databaseDescriptorHolderSet) {
+    NSArray<NSString*>* tableNameList = [descriptorHolder.databaseDriver
+        getTableNames:descriptorHolder.databaseDescriptor];
+    NSArray<NSString*>* sortedTableNames =
+        [tableNameList sortedArrayUsingSelector:@selector(compare:)];
+    NSString* idString =
+        [NSString stringWithFormat:@"%ld", descriptorHolder.identifier];
+    NSDictionary* databaseDict = @{
+      @"id" : idString,
+      @"name" : descriptorHolder.databaseDescriptor.name,
+      @"tables" : sortedTableNames
+    };
+    [resultDict setObject:databaseDict forKey:idString];
+  }
+
+  return resultDict;
 }
 
 @end

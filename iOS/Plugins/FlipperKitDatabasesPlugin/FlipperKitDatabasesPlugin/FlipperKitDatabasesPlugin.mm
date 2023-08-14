@@ -12,6 +12,7 @@
 #import <FlipperKit/FlipperResponder.h>
 #import "DatabaseDriver.h"
 #import "DatabasesManager.h"
+#import "MockDatabaseDriver.h"
 
 @interface FlipperKitDatabasesPlugin ()
 @property(strong, nonatomic) id<FlipperConnection> connection;
@@ -22,7 +23,8 @@
 
 - (instancetype)init {
   if (self = [super init]) {
-    NSArray<id<DatabaseDriver>>* databaseDrivers = @[];
+    NSArray<id<DatabaseDriver>>* databaseDrivers =
+        @[ [MockDatabaseDriver new] ];
     _databasesManager =
         [[DatabasesManager alloc] initWithDatabaseDrivers:databaseDrivers];
   }
