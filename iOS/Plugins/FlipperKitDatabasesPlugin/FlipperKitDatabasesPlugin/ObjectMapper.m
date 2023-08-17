@@ -151,6 +151,25 @@ static NSString* const UNKNOWN_BLOB_LABEL_FORMAT = @"{%d-byte %@ blob}";
   } else if ([object isKindOfClass:[NSData class]]) {
     NSString* blobString = [self blobToString:(NSData*)object];
     return @{@"type" : @"blob", @"value" : blobString};
+  } else if ([object isKindOfClass:[NSDictionary class]]) {
+    // Usualy the dictionary is a Json blob, and we can parse it as string.
+    NSError* error;
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:object
+                                                       options:0
+                                                         error:&error];
+    if (!jsonData) {
+      NSString* reason = [NSString
+          stringWithFormat:@"NSDictionary is not in a json format: %@",
+                           [error localizedDescription]];
+      @throw [NSException exceptionWithName:@"InvalidArgumentException"
+                                     reason:reason
+                                   userInfo:nil];
+    }
+
+    NSString* jsonString = [[NSString alloc] initWithData:jsonData
+                                                 encoding:NSUTF8StringEncoding];
+    return @{@"type" : @"blob", @"value" : jsonString};
+
   } else if ([object isKindOfClass:[NSValue class]]) {
     return @{@"type" : @"boolean", @"value" : object};
   } else {
