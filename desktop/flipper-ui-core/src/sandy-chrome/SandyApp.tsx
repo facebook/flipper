@@ -196,5 +196,4 @@ function registerStartupTime(logger: Logger) {
   });
 
   renderHost.sendIpcEvent('getLaunchTime');
-  renderHost.sendIpcEvent('componentDidMount');
 }

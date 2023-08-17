@@ -30,7 +30,7 @@ import {TestIdler} from './Idler';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
-import {Dialog, getFlipperLib, Idler, path} from 'flipper-plugin';
+import {Dialog, getFlipperLib, Idler} from 'flipper-plugin';
 import {ClientQuery} from 'flipper-common';
 import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
@@ -43,6 +43,7 @@ import {safeFilename} from './safeFilename';
 import {getExportablePlugins} from '../selectors/connections';
 import {notification} from 'antd';
 import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
+import {getStore} from '../store';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -526,7 +527,7 @@ export const exportStoreToFile = (
 export async function importDataToStore(
   source: string,
   data: string,
-  store: Store,
+  store: Store = getStore(),
 ) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
   const json: ExportType = JSON.parse(data);

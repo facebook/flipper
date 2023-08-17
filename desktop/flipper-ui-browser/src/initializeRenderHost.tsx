@@ -153,11 +153,13 @@ export function initializeRenderHost(
     hasFocus() {
       return document.hasFocus();
     },
-    onIpcEvent(_event) {
-      // no-op
+    onIpcEvent(event, cb) {
+      window.addEventListener(event as string, (ev) => {
+        cb(...((ev as CustomEvent).detail as any));
+      });
     },
-    sendIpcEvent(_event, ..._args: any[]) {
-      // no-op
+    sendIpcEvent(event, ...args: any[]) {
+      window.dispatchEvent(new CustomEvent(event, {detail: args}));
     },
     shouldUseDarkColors() {
       return !!(

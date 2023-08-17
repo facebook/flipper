@@ -63,14 +63,6 @@ if (process.platform === 'darwin') {
 const argv = yargs
   .usage('$0 [args]')
   .options({
-    file: {
-      describe: 'Define a file to open on startup.',
-      type: 'string',
-    },
-    url: {
-      describe: 'Define a flipper:// URL to open on startup.',
-      type: 'string',
-    },
     updater: {
       default: true,
       describe: 'Toggle the built-in update mechanism.',
@@ -114,9 +106,8 @@ if (argv['disable-gpu'] || process.env.FLIPPER_DISABLE_GPU === '1') {
 // possible reference to main app window
 let win: BrowserWindow;
 let appReady = false;
-let deeplinkURL: string | undefined = argv.url;
-let filePath: string | undefined = argv.file;
-let didMount = false;
+let deeplinkURL: string | undefined;
+let filePath: string | undefined;
 
 // check if we already have an instance of this app open
 const gotTheLock = app.requestSingleInstanceLock();
@@ -138,6 +129,24 @@ if (!gotTheLock) {
   app.on('ready', () => {});
 }
 
+const openFileIfAny = () => {
+  if (!filePath || !win) {
+    return;
+  }
+  fs.readFile(filePath, {encoding: 'utf-8'}, (_err, data) => {
+    win.webContents.send('open-flipper-file', filePath, data);
+    filePath = undefined;
+  });
+};
+
+const openURLIfAny = () => {
+  if (!deeplinkURL || !win) {
+    return;
+  }
+  win.webContents.send('flipper-protocol-handler', deeplinkURL);
+  deeplinkURL = undefined;
+};
+
 // quit app once all windows are closed
 app.on('window-all-closed', () => {
   appReady = false;
@@ -148,22 +157,16 @@ app.on('will-finish-launching', () => {
   // Protocol handler for osx
   app.on('open-url', function (event, url) {
     event.preventDefault();
-    argv.url = url;
-    if (win && didMount) {
-      win.webContents.send('flipper-protocol-handler', url);
-    } else {
-      deeplinkURL = url;
-    }
+    deeplinkURL = url;
+    openURLIfAny();
   });
   app.on('open-file', (event, path) => {
-    // When flipper app is running, and someone double clicks the import file, `componentDidMount` will not be called again and windows object will exist in that case. That's why calling `win.webContents.send('open-flipper-file', filePath);` again.
+    // When flipper app is running, and someone double clicks the import file,
+    // component and store is already mounted and the windows object will exist.
+    // In that case, the file can be immediately opened.
     event.preventDefault();
     filePath = path;
-    argv.file = path;
-    if (win) {
-      win.webContents.send('open-flipper-file', filePath);
-      filePath = undefined;
-    }
+    openFileIfAny();
   });
 });
 
@@ -256,17 +259,9 @@ function configureSession() {
   );
 }
 
-ipcMain.on('componentDidMount', (_event) => {
-  didMount = true;
-  if (deeplinkURL) {
-    win.webContents.send('flipper-protocol-handler', deeplinkURL);
-    deeplinkURL = undefined;
-  }
-  if (filePath) {
-    // When flipper app is not running, the windows object might not exist in the callback of `open-file`, but after ``componentDidMount` it will definitely exist.
-    win.webContents.send('open-flipper-file', filePath);
-    filePath = undefined;
-  }
+ipcMain.on('storeRehydrated', (_event) => {
+  openFileIfAny();
+  openURLIfAny();
 });
 
 ipcMain.on('getLaunchTime', (event) => {

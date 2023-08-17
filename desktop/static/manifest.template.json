@@ -14,5 +14,15 @@
         "type": "image/png",
         "sizes": "256x256"
       }
+    ],
+    "file_handlers": [
+      {
+          "action": "/",
+          "accept": {
+              "text/*": [
+                  ".flipper"
+              ]
+          }
+      }
     ]
   }

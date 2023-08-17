@@ -52,8 +52,7 @@ self.addEventListener('fetch', (event) => {
         }
 
         // Always try the network first (try flipper server)
-        const networkResponse = await fetch(event.request);
-        return networkResponse;
+        return await fetch(event.request);
       } catch (error) {
         // Catch is only triggered if an exception is thrown, which is likely
         // due to a network error.
@@ -62,8 +61,7 @@ self.addEventListener('fetch', (event) => {
         console.log('Fetch failed; returning offline page instead.', error);
 
         const cache = await caches.open(CACHE_NAME);
-        const cachedResponse = await cache.match(OFFLINE_URL);
-        return cachedResponse;
+        return await cache.match(OFFLINE_URL);
       }
     })());
   }

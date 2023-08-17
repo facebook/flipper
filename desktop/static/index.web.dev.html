@@ -138,25 +138,6 @@
           document.body.appendChild(script);
         }
 
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker
-            .register('/service-worker.js')
-            .then(() => {
-              console.log('Flipper Service Worker has been registered');
-            })
-            .catch((e) => {
-              console.error('Flipper failed to register Service Worker', e);
-            });
-        }
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-          console.log('Flipper PWA before install prompt with event', e);
-          // Prevent Chrome 67 and earlier from automatically showing the prompt.
-          e.preventDefault();
-          // Stash the event so it can be triggered later.
-          global.PWAppInstallationEvent = e;
-        });
-
         init();
       })();
   </script>

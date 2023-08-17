@@ -26,7 +26,10 @@ import {Store} from '../reducers/index';
 import {Dispatcher} from './types';
 import {notNull} from '../utils/typeUtils';
 
-export default function (store: Store, logger: Logger): () => Promise<void> {
+export default async function (
+  store: Store,
+  logger: Logger,
+): Promise<() => Promise<void>> {
   // This only runs in development as when the reload
   // kicks in it doesn't unregister the shortcuts
   const dispatchers: Array<Dispatcher> = [
@@ -43,10 +46,11 @@ export default function (store: Store, logger: Logger): () => Promise<void> {
     pluginChangeListener,
     pluginsSourceUpdateListener,
   ].filter(notNull);
-  const globalCleanup = dispatchers
-    .map((dispatcher) => dispatcher(store, logger))
-    .filter(Boolean);
-  return () => {
-    return Promise.all(globalCleanup).then(() => {});
+  const globalCleanup = await Promise.all(
+    dispatchers.map((dispatcher) => dispatcher(store, logger)).filter(Boolean),
+  );
+
+  return async () => {
+    await Promise.all(globalCleanup);
   };
 }
