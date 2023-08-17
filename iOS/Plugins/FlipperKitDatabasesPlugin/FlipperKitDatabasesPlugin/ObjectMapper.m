@@ -127,7 +127,7 @@ static NSString* const UNKNOWN_BLOB_LABEL_FORMAT = @"{%d-byte %@ blob}";
 }
 
 + (NSDictionary*)objectAndTypeToFlipperObject:(id)object {
-  if (!object) {
+  if (!object || [object isKindOfClass:[NSNull class]]) {
     return @{@"type" : @"null"};
   } else if ([object isKindOfClass:[NSNumber class]]) {
     NSNumber* number = (NSNumber*)object;
