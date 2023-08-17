@@ -11,6 +11,7 @@ import {
   FlipperServer,
   FlipperServerConfig,
   isProduction,
+  uuid,
   wrapRequire,
 } from 'flipper-common';
 import type {RenderHost} from 'flipper-ui-core';
@@ -61,14 +62,18 @@ export function initializeRenderHost(
       return new Promise<FileDescriptor | FileDescriptor[] | undefined>(
         (resolve, reject) => {
           try {
+            let selectionMade = false;
+
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
+            fileInput.id = uuid();
             if (options?.extensions) {
               fileInput.accept = options?.extensions.join(', ');
             }
             fileInput.multiple = options?.multi ?? false;
 
             fileInput.addEventListener('change', async (event) => {
+              selectionMade = true;
               const target = event.target as HTMLInputElement | undefined;
               if (!target || !target.files) {
                 resolve(undefined);
@@ -105,6 +110,18 @@ export function initializeRenderHost(
               );
               resolve(options?.multi ? descriptors : descriptors[0]);
             });
+
+            window.addEventListener(
+              'focus',
+              () => {
+                setTimeout(() => {
+                  if (!selectionMade) {
+                    resolve(undefined);
+                  }
+                }, 300);
+              },
+              {once: true},
+            );
 
             fileInput.click();
           } catch (error) {
