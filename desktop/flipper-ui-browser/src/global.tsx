@@ -17,7 +17,8 @@ declare global {
       debug: boolean;
     };
 
-    flipperShowError?(error: string): void;
-    flipperHideError?(): void;
+    flipperShowMessage?(message: string): void;
+    flipperHideMessage?(): void;
+    flipperShowNoConnection?(): void;
   }
 }

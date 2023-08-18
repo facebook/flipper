@@ -169,7 +169,7 @@ export function initializeRenderHost(
       );
     },
     restartFlipper() {
-      window.flipperShowError?.(
+      window.flipperShowMessage?.(
         'Flipper settings have changed, please restart flipper server for the changes to take effect',
       );
     },

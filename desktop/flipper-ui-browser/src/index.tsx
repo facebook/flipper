@@ -47,13 +47,13 @@ async function start() {
     (state: FlipperServerState) => {
       switch (state) {
         case FlipperServerState.CONNECTING:
-          window.flipperShowError?.('Connecting to server...');
+          window.flipperShowMessage?.('Connecting to server...');
           break;
         case FlipperServerState.CONNECTED:
-          window?.flipperHideError?.();
+          window?.flipperHideMessage?.();
           break;
         case FlipperServerState.DISCONNECTED:
-          window?.flipperShowError?.('Lost connection to server');
+          window?.flipperShowNoConnection?.();
           break;
       }
     },
@@ -78,17 +78,17 @@ async function start() {
   // This prevent issues where the render host is referred at module initialisation level,
   // but not set yet, which might happen when using normal imports.
   // TODO: remove
-  window.flipperShowError?.('Connected to Flipper Server successfully');
+  window.flipperShowMessage?.('Connected to Flipper Server successfully');
 
   // @ts-ignore
   // eslint-disable-next-line import/no-commonjs
   require('flipper-ui-core').startFlipperDesktop(flipperServer);
-  window.flipperHideError?.();
+  window.flipperHideMessage?.();
 }
 
 start().catch((e) => {
   console.error('Failed to start flipper-ui-browser', e);
-  window.flipperShowError?.('Failed to start flipper-ui-browser: ' + e);
+  window.flipperShowMessage?.('Failed to start flipper-ui-browser: ' + e);
 });
 
 async function initializePWA() {

@@ -21,7 +21,7 @@
     }
   </script>
   <style>
-    #loading {
+    .message {
       -webkit-app-region: drag;
       z-index: 999999;
       position: absolute;
@@ -39,12 +39,92 @@
       text-align: center;
     }
 
+    .console {
+      font-family: 'Fira Mono';
+      width: 600px;
+      height: 250px;
+      box-sizing: border-box;
+      margin: auto;
+    }
+
+    .console header {
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      background-color: #9254de;
+      height: 45px;
+      line-height: 45px;
+      text-align: center;
+      color: white;
+    }
+
+    .console .consolebody {
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+      box-sizing: border-box;
+      padding: 0px 10px;
+      height: calc(100% - 40px);
+      overflow: scroll;
+      background-color: #000;
+      color: white;
+      text-align: left;
+    }
+
+    input[type="submit"] {
+      background-color: #9254de;
+      color: white;
+      font-family: system-ui;
+      font-size: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #722ed1;
+    }
+
+    input[type="submit"]:active {
+      background-color: #722ed1;
+    }
+
+    #troubleshoot {
+      display: none;
+      background-color: white;
+    }
+
   </style>
 </head>
 
 <body>
+  <div id="troubleshoot" class="message">
+    <div>
+      <b>Flipper is not running in the background</b>
+
+      <p>It can be started by clicking the button below.</p>
+      <form action="flipper-launcher://start-server">
+        <input type="submit" value="Start" />
+      </form>
+      <br />
+      <p>
+        Flipper will automatically reload once the connection is re-established.
+      </p>
+      <p>If is taking a bit longer than it should, you can manually start Flipper.</p>
+      <p>From the terminal, please run:</p>
+
+      <div class="console">
+        <header>
+          <p>shell</p>
+        </header>
+        <div class="consolebody">
+          <p>> open -a 'Flipper' --args '--server'</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="root">
-    <div id="loading">
+    <div id="loading" class="message">
       Connecting...
     </div>
   </div>
@@ -55,6 +135,39 @@
         window.global = window;
         let suppressErrors = false;
         let connected = false;
+
+        // Listen to changes in the network state, reload when online.
+        // This handles the case when the device is completely offline
+        // i.e. no network connection.
+        window.addEventListener('online', () => {
+          window.location.reload();
+        });
+
+        // Check if the server is responding & reload the page if it is.
+        // This handles the case when the device is online, but the server
+        // is offline or misbehaving.
+        async function checkNetworkAndReload() {
+          try {
+            const response = await fetch('.');
+            if (response.status >= 200 && response.status < 500) {
+              window.location.reload();
+              return;
+            }
+          } catch {
+            // Unable to connect to the server, ignore.
+          }
+          window.setTimeout(checkNetworkAndReload, 2500);
+        }
+
+        function showNoConnection() {
+          const root = document.getElementById('root');
+          root.remove();
+
+          const troubleshoot = document.getElementById('troubleshoot');
+          troubleshoot.style.display = 'flex';
+
+          checkNetworkAndReload();
+        }
 
         const params = new URL(location.href).searchParams;
         let token = params.get('token');
@@ -73,7 +186,7 @@
           if (typeof message.event === 'string') {
             switch (message.event) {
               case 'hasErrors': {
-                openError(message.payload);
+                showMessage(message.payload);
                 suppressErrors = true;
                 break;
               }
@@ -90,10 +203,10 @@
 
         socket.addEventListener('error', (e) => {
           if (!connected) {
-            openError('Socket failed to connect. Is the server running? Have you provided a valid authentication token?');
+            showMessage('Socket failed to connect. Is the server running? Have you provided a valid authentication token?');
           }
           else {
-            openError('Socket failed with error.');
+            showMessage('Socket failed with error.');
           }
 
           suppressErrors = true;
@@ -103,7 +216,7 @@
           connected = true;
         })
 
-        function openError(text) {
+        function showMessage(text) {
           if (suppressErrors) {
             return;
           }
@@ -113,7 +226,8 @@
             box.textContent = text;
           }
         }
-        window.flipperShowError = openError;
+        window.flipperShowMessage = showMessage;
+        window.flipperShowNoConnection = showNoConnection;
 
         // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
         try {
@@ -132,7 +246,7 @@
           script.src = window.flipperConfig.entryPoint;
 
           script.onerror = (e) => {
-            openError('Failed to load entry point. Check Chrome console for more info.');
+            showMessage('Failed to load entry point. Check Chrome console for more info.');
           };
 
           document.body.appendChild(script);
