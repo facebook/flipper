@@ -5994,10 +5994,10 @@ react-native-codegen@^0.69.1, react-native-codegen@^0.69.2:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-flipper@^0.195.0:
-  version "0.195.0"
-  resolved "https://registry.yarnpkg.com/react-native-flipper/-/react-native-flipper-0.195.0.tgz#0769bd76a42b649c1c92b884c833fd0cda34c59e"
-  integrity sha512-tNP3F552S3pi+CYLZrjAeX4a2ZW5ktOi6UWo99yCMJAp6oUQKbhFxpFw1xoyFZzKtdsKVxtUxewYDNJG0MEItg==
+react-native-flipper@^0.211.1:
+  version "0.211.1"
+  resolved "https://registry.yarnpkg.com/react-native-flipper/-/react-native-flipper-0.211.1.tgz#c6bf94f86ad1101e3c51b07aa2c68d99fd19e027"
+  integrity sha512-G0AfySXdWLBk0pvyx88SMI3+g9E+JHELEqnxAORjAace4eSGDucJ0GsT85uXX4iUKK/B1BSHZ39FIzy79dPMkQ==
 
 react-native-gradle-plugin@^0.0.7:
   version "0.0.7"
