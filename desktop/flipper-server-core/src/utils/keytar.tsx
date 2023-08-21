@@ -13,9 +13,13 @@ import {UserNotSignedInError} from 'flipper-common';
 export const SERVICE_FLIPPER = 'flipper.oAuthToken';
 
 export type KeytarModule = {
-  getPassword(service: string, username: string): string;
-  deletePassword(service: string, username: string): void;
-  setPassword(service: string, username: string, password: string): void;
+  getPassword(service: string, username: string): Promise<string>;
+  deletePassword(service: string, username: string): Promise<void>;
+  setPassword(
+    service: string,
+    username: string,
+    password: string,
+  ): Promise<void>;
 };
 
 export class KeytarManager {
