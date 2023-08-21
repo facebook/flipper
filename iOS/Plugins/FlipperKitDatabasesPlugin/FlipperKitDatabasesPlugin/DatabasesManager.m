@@ -115,10 +115,11 @@
               databaseGetTableDataResponseToDictionary:tableDataResponse];
           [responder success:response];
         } @catch (NSException* exception) {
+          NSString* reason = exception.reason ?: @"Unknown error";
           NSDictionary* errorResponse = [ObjectMapper
               errorWithCode:DatabasesErrorCodesSqlExecutionException
                     message:[kDatabasesErrorCodesSqlExecutionExceptionMessage
-                                stringByAppendingString:exception.reason]];
+                                stringByAppendingString:reason]];
           [responder error:errorResponse];
         }
       }];
@@ -151,10 +152,11 @@
               databaseGetTableStructureResponseToDictionary:tableStructure];
           [responder success:response];
         } @catch (NSException* exception) {
+          NSString* reason = exception.reason ?: @"Unknown error";
           NSDictionary* errorResponse = [ObjectMapper
               errorWithCode:DatabasesErrorCodesSqlExecutionException
                     message:[kDatabasesErrorCodesSqlExecutionExceptionMessage
-                                stringByAppendingString:exception.reason]];
+                                stringByAppendingString:reason]];
           [responder error:errorResponse];
         }
       }];
@@ -185,10 +187,11 @@
               [ObjectMapper databaseGetTableInfoResponseToDictionary:tableInfo];
           [responder success:response];
         } @catch (NSException* exception) {
+          NSString* reason = exception.reason ?: @"Unknown error";
           NSDictionary* errorResponse = [ObjectMapper
               errorWithCode:DatabasesErrorCodesSqlExecutionException
                     message:[kDatabasesErrorCodesSqlExecutionExceptionMessage
-                                stringByAppendingString:exception.reason]];
+                                stringByAppendingString:reason]];
           [responder error:errorResponse];
         }
       }];
@@ -215,10 +218,11 @@
               [ObjectMapper databaseExecuteSqlResponseToDictionary:sqlResponse];
           [responder success:response];
         } @catch (NSException* exception) {
+          NSString* reason = exception.reason ?: @"Unknown error";
           NSDictionary* errorResponse = [ObjectMapper
               errorWithCode:DatabasesErrorCodesSqlExecutionException
                     message:[kDatabasesErrorCodesSqlExecutionExceptionMessage
-                                stringByAppendingString:exception.reason]];
+                                stringByAppendingString:reason]];
           [responder error:errorResponse];
         }
       }];
