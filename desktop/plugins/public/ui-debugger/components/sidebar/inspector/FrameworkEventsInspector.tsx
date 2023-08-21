@@ -17,6 +17,7 @@ import {FrameworkEvent, ClientNode} from '../../../ClientTypes';
 import React, {ReactNode} from 'react';
 import {StackTraceInspector} from './StackTraceInspector';
 import {Descriptions, Tag} from 'antd';
+import {frameworkEventSeparator} from '../../shared/FrameworkEventsTreeSelect';
 
 type Props = {
   node: ClientNode;
@@ -131,7 +132,7 @@ function formatDuration(nanoseconds: number): string {
   }
 }
 function eventTypeToName(eventType: string) {
-  return eventType.slice(eventType.lastIndexOf('.') + 1);
+  return eventType.slice(eventType.lastIndexOf(frameworkEventSeparator) + 1);
 }
 
 function threadToColor(thread?: string) {

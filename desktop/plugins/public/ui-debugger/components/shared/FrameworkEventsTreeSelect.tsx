@@ -78,6 +78,7 @@ function getAllLeaves(treeSelectNode: TreeSelectNode) {
   return result;
 }
 
+export const frameworkEventSeparator = '.';
 /**
  * transformed flat event type data structure into tree
  */
@@ -85,7 +86,7 @@ export function buildTreeSelectData(eventTypes: string[]): TreeSelectNode[] {
   const root: TreeSelectNode = buildTreeSelectNode('root', 'root');
 
   eventTypes.forEach((eventType) => {
-    const eventSubtypes = eventType.split(':');
+    const eventSubtypes = eventType.split(frameworkEventSeparator);
     let currentNode = root;
 
     // Find the parent node for the current id
@@ -101,7 +102,7 @@ export function buildTreeSelectData(eventTypes: string[]): TreeSelectNode[] {
       if (!foundChild) {
         const newNode: TreeSelectNode = buildTreeSelectNode(
           eventSubtypes[i],
-          eventSubtypes.slice(0, i + 1).join(':'),
+          eventSubtypes.slice(0, i + 1).join(frameworkEventSeparator),
         );
 
         currentNode.children.push(newNode);
@@ -112,7 +113,9 @@ export function buildTreeSelectData(eventTypes: string[]): TreeSelectNode[] {
     currentNode.children.push(
       buildTreeSelectNode(
         eventSubtypes[eventSubtypes.length - 1],
-        eventSubtypes.slice(0, eventSubtypes.length).join(':'),
+        eventSubtypes
+          .slice(0, eventSubtypes.length)
+          .join(frameworkEventSeparator),
       ),
     );
   });
