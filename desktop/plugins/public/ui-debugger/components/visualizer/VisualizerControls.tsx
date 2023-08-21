@@ -21,6 +21,7 @@ import {
 import {tracker} from '../../utils/tracker';
 import {debounce} from 'lodash';
 import {WireFrameMode} from '../../DesktopTypes';
+import {SelectableDropDownItem} from '../shared/SelectableDropDownItem';
 export type TargetModeState =
   | {
       state: 'selected';
@@ -179,31 +180,6 @@ export function VisualiserControls({
         </Tooltip>
       </Layout.Horizontal>
     </Layout.Right>
-  );
-}
-
-function SelectableDropDownItem<T>({
-  value,
-  selectedValue,
-  onSelect,
-  text,
-}: {
-  value: T;
-  selectedValue: T;
-  onSelect: (value: T) => void;
-  text: string;
-}) {
-  return (
-    <Menu.Item
-      style={{
-        color:
-          value === selectedValue ? theme.primaryColor : theme.textColorActive,
-      }}
-      onClick={() => {
-        onSelect(value);
-      }}>
-      {text}
-    </Menu.Item>
   );
 }
 

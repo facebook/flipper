@@ -9,7 +9,16 @@
 
 import React, {useState} from 'react';
 import {plugin} from '../../index';
-import {Button, Input, Modal, Tooltip, Typography, Space, Switch} from 'antd';
+import {
+  Button,
+  Input,
+  Modal,
+  Tooltip,
+  Typography,
+  Space,
+  Switch,
+  Badge,
+} from 'antd';
 import {
   EyeOutlined,
   PauseCircleOutlined,
@@ -62,17 +71,25 @@ export const TreeControls: React.FC = () => {
         }></Button>
       {frameworkEventMonitoring.size > 0 && (
         <>
-          <Button
-            type="default"
-            shape="circle"
-            onClick={() => {
-              setShowFrameworkEventsModal(true);
-            }}
-            icon={
-              <Tooltip title="Framework event monitoring">
-                <EyeOutlined />
-              </Tooltip>
-            }></Button>
+          <Badge
+            size="small"
+            count={
+              [...frameworkEventMonitoring.values()].filter(
+                (val) => val === true,
+              ).length
+            }>
+            <Button
+              type="default"
+              shape="circle"
+              onClick={() => {
+                setShowFrameworkEventsModal(true);
+              }}
+              icon={
+                <Tooltip title="Framework event monitoring">
+                  <EyeOutlined />
+                </Tooltip>
+              }></Button>
+          </Badge>
           <FrameworkEventsMonitoringModal
             metadata={frameworkEventMetadata}
             filterMainThreadMonitoring={filterMainThreadMonitoring}

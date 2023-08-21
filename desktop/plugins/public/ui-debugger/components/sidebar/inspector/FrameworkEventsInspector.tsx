@@ -22,15 +22,20 @@ import {
 } from '../../../ClientTypes';
 import React, {ReactNode, useState} from 'react';
 import {StackTraceInspector} from './StackTraceInspector';
-import {Button, Collapse, Descriptions, Select, Tag} from 'antd';
-import {frameworkEventSeparator} from '../../shared/FrameworkEventsTreeSelect';
 import {
-  buildTreeSelectData,
-  FrameworkEventsTreeSelect,
-} from '../../shared/FrameworkEventsTreeSelect';
-import {uniqBy} from 'lodash';
-import {TableOutlined} from '@ant-design/icons';
+  Badge,
+  Button,
+  Descriptions,
+  Dropdown,
+  Tag,
+  Tooltip,
+  Typography,
+} from 'antd';
+import {frameworkEventSeparator} from '../../shared/FrameworkEventsTreeSelect';
+import {last, startCase, uniqBy} from 'lodash';
+import {FilterOutlined, TableOutlined} from '@ant-design/icons';
 import {ViewMode} from '../../../DesktopTypes';
+import {MultiSelectableDropDownItem} from '../../shared/MultiSelectableDropDownItem';
 
 type Props = {
   node: ClientNode;
@@ -39,6 +44,7 @@ type Props = {
   frameworkEventMetadata: Map<FrameworkEventType, FrameworkEventMetadata>;
   onSetViewMode: (viewMode: ViewMode) => void;
 };
+
 export const FrameworkEventsInspector: React.FC<Props> = ({
   node,
   events,
@@ -68,54 +74,100 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
 
   return (
     <Layout.Container gap="small" padv="small">
-      {node.tags.includes('TreeRoot') && (
-        <Button
-          type="ghost"
-          icon={<TableOutlined />}
-          size="middle"
-          onClick={() =>
-            onSetViewMode({mode: 'frameworkEventsTable', treeRootId: node.id})
-          }>
-          Explore all events
-        </Button>
-      )}
-      <Collapse>
-        <Collapse.Panel header="Filter events" key="1">
-          <Layout.Container gap="tiny">
-            <FrameworkEventsTreeSelect
-              placeholder="Select events types to filter by"
-              treeData={buildTreeSelectData(
-                allEventTypes,
-                frameworkEventMetadata,
-              )}
-              width={250}
-              onSetEventSelected={(eventType, selected) => {
-                setFilteredEventTypes((cur) =>
-                  produce(cur, (draft) => {
-                    if (selected) {
-                      draft.add(eventType);
-                    } else {
-                      draft.delete(eventType);
-                    }
-                  }),
-                );
-              }}
-              selected={[...filteredEventTypes]}
+      <Layout.Right center gap>
+        <Typography.Title level={3}>Event timeline</Typography.Title>
+
+        <Layout.Horizontal center gap padh="medium">
+          {node.tags.includes('TreeRoot') && (
+            <Tooltip title="Explore all tree events in table">
+              <Button
+                shape="circle"
+                icon={<TableOutlined />}
+                onClick={() =>
+                  onSetViewMode({
+                    mode: 'frameworkEventsTable',
+                    treeRootId: node.id,
+                  })
+                }
+              />
+            </Tooltip>
+          )}
+          <Dropdown
+            overlayStyle={{minWidth: 200}}
+            overlay={
+              <Layout.Container
+                gap="small"
+                pad="small"
+                style={{
+                  backgroundColor: theme.white,
+                  borderRadius: theme.borderRadius,
+                  boxShadow: `0 0 4px 1px rgba(0,0,0,0.10)`,
+                }}>
+                {allThreads.length > 1 && (
+                  <>
+                    <Typography.Text strong>By thread</Typography.Text>
+                    {allThreads.map((thread) => (
+                      <MultiSelectableDropDownItem
+                        onSelect={(thread, selected) => {
+                          setFilteredThreads((cur) =>
+                            produce(cur, (draft) => {
+                              if (selected) {
+                                draft.add(thread);
+                              } else {
+                                draft.delete(thread);
+                              }
+                            }),
+                          );
+                        }}
+                        selectedValues={filteredThreads}
+                        key={thread}
+                        value={thread as string}
+                        text={startCase(thread) as string}
+                      />
+                    ))}
+                  </>
+                )}
+
+                {allEventTypes.length > 1 && (
+                  <>
+                    <Typography.Text strong>By event type</Typography.Text>
+                    {allEventTypes.map((eventType) => (
+                      <MultiSelectableDropDownItem
+                        onSelect={(eventType, selected) => {
+                          setFilteredEventTypes((cur) =>
+                            produce(cur, (draft) => {
+                              if (selected) {
+                                draft.add(eventType);
+                              } else {
+                                draft.delete(eventType);
+                              }
+                            }),
+                          );
+                        }}
+                        selectedValues={filteredEventTypes}
+                        key={eventType}
+                        value={eventType as string}
+                        text={last(eventType.split('.')) as string}
+                      />
+                    ))}
+                  </>
+                )}
+              </Layout.Container>
+            }>
+            <Button
+              shape="circle"
+              icon={
+                <Badge
+                  offset={[8, -8]}
+                  size="small"
+                  count={filteredEventTypes.size + filteredThreads.size}>
+                  <FilterOutlined style={{}} />
+                </Badge>
+              }
             />
-            <Select
-              mode="multiple"
-              style={{width: '250px'}}
-              placeholder="Select threads to filter by"
-              defaultValue={[] as string[]}
-              options={allThreads.map((thread) => ({
-                value: thread,
-                label: thread,
-              }))}
-              onChange={(value) => setFilteredThreads(new Set(value))}
-            />
-          </Layout.Container>
-        </Collapse.Panel>
-      </Collapse>
+          </Dropdown>
+        </Layout.Horizontal>
+      </Layout.Right>
 
       <TimelineDataDescription
         key={node.id}
@@ -228,7 +280,7 @@ function formatDuration(nanoseconds: number): string {
   } else if (nanoseconds < 1_000_000_000_000) {
     return `${(nanoseconds / 1_000_000_000).toFixed(2)} seconds`;
   } else {
-    return `${(nanoseconds / 1_000_000_000_000).toFixed(2)} minutes`;
+    return `${(nanoseconds / (1_000_000_000 * 60)).toFixed(2)} minutes`;
   }
 }
 function eventTypeToName(eventType: string) {
