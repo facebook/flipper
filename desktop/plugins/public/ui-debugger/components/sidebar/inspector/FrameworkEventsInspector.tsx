@@ -22,25 +22,29 @@ import {
 } from '../../../ClientTypes';
 import React, {ReactNode, useState} from 'react';
 import {StackTraceInspector} from './StackTraceInspector';
-import {Collapse, Descriptions, Select, Tag} from 'antd';
+import {Button, Collapse, Descriptions, Select, Tag} from 'antd';
 import {frameworkEventSeparator} from '../../shared/FrameworkEventsTreeSelect';
 import {
   buildTreeSelectData,
   FrameworkEventsTreeSelect,
 } from '../../shared/FrameworkEventsTreeSelect';
 import {uniqBy} from 'lodash';
+import {TableOutlined} from '@ant-design/icons';
+import {ViewMode} from '../../../DesktopTypes';
 
 type Props = {
   node: ClientNode;
   events: readonly FrameworkEvent[];
   showExtra?: (title: string, element: ReactNode) => void;
   frameworkEventMetadata: Map<FrameworkEventType, FrameworkEventMetadata>;
+  onSetViewMode: (viewMode: ViewMode) => void;
 };
 export const FrameworkEventsInspector: React.FC<Props> = ({
   node,
   events,
   showExtra,
   frameworkEventMetadata,
+  onSetViewMode,
 }) => {
   const allThreads = uniqBy(events, 'thread').map((event) => event.thread);
   const [filteredThreads, setFilteredThreads] = useState<Set<string>>(
@@ -64,6 +68,17 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
 
   return (
     <Layout.Container gap="small" padv="small">
+      {node.tags.includes('TreeRoot') && (
+        <Button
+          type="ghost"
+          icon={<TableOutlined />}
+          size="middle"
+          onClick={() =>
+            onSetViewMode({mode: 'frameworkEventsTable', treeRootId: node.id})
+          }>
+          Explore all events
+        </Button>
+      )}
       <Collapse>
         <Collapse.Panel header="Filter events" key="1">
           <Layout.Container gap="tiny">

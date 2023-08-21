@@ -123,6 +123,7 @@ export const Inspector: React.FC<Props> = ({
               </Tooltip>
             }>
             <FrameworkEventsInspector
+              onSetViewMode={instance.uiActions.onSetViewMode}
               frameworkEventMetadata={frameworkEventMetadata}
               node={selectedNode}
               events={selectedFrameworkEvents}
