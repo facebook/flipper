@@ -353,6 +353,7 @@ export const dataTableManagerReducer = produce<
           getValueAtPath(item, String(action.column)),
           {
             disableOthers: index === 0, // remove existing filters before adding the first
+            exact: true,
           },
         );
       });
