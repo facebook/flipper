@@ -205,9 +205,13 @@ async function buildDist(buildFolder: string) {
     if (argv['mac-dmg']) {
       targetsRaw.push(Platform.MAC.createTarget(['dmg']));
     }
+    const macPath = path.join(
+      distDir,
+      process.arch === 'arm64' ? 'mac-arm64' : 'mac',
+    );
     postBuildCallbacks.push(() =>
       spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
-        cwd: path.join(distDir, 'mac'),
+        cwd: macPath,
         encoding: 'utf-8',
       }),
     );
