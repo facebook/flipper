@@ -20,17 +20,17 @@ import {FrameworkEvent, Id} from '../ClientTypes';
 import {plugin} from '../index';
 import {Button, Tooltip} from 'antd';
 
-export function FrameworkEventsTable({rootTreeId}: {rootTreeId?: Id}) {
+export function FrameworkEventsTable({treeId}: {treeId?: Id}) {
   const instance = usePlugin(plugin);
 
   const managerRef = useRef<DataTableManager<FrameworkEvent> | null>(null);
 
   useEffect(() => {
-    if (rootTreeId != null) {
+    if (treeId != null) {
       managerRef.current?.resetFilters();
-      managerRef.current?.addColumnFilter('nodeId', rootTreeId as string);
+      managerRef.current?.addColumnFilter('treeId', treeId as string);
     }
-  }, [rootTreeId]);
+  }, [treeId]);
 
   return (
     <Layout.Container grow>
@@ -58,6 +58,9 @@ const columns: DataTableColumn<FrameworkEvent>[] = [
     onRender: (row: FrameworkEvent) => {
       return new Date(row.timestamp).toLocaleTimeString();
     },
+  },
+  {
+    key: 'treeId',
   },
   {
     key: 'nodeId',

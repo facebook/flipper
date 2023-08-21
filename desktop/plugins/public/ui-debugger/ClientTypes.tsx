@@ -55,6 +55,7 @@ type FrameworkEventAttribution = Stacktrace | Reason | UpstreamEvent;
 
 export type FrameworkEvent = {
   id: number;
+  treeId?: Id;
   nodeId: Id;
   type: FrameworkEventType;
   timestamp: number;
@@ -183,7 +184,8 @@ export type Tag =
   | 'CK'
   | 'iOS'
   | 'BloksBoundTree'
-  | 'BloksDerived';
+  | 'BloksDerived'
+  | 'TreeRoot';
 
 export type Inspectable =
   | InspectableObject

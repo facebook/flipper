@@ -159,38 +159,43 @@ export const ContextMenu: React.FC<{
       frameworkEvents.getAllRecordsByIndex({nodeId: hoveredNode.id})) ??
     [];
 
-  const frameworkEventsTable = matchingFrameworkEvents.length > 0 && (
-    <UIDebuggerMenuItem
-      text="Explore events"
-      onClick={() => {
-        onSetViewMode({
-          mode: 'frameworkEventsTable',
-          treeRootId: hoveredNode?.id ?? '',
-        });
-      }}
-      icon={<TableOutlined />}
-    />
-  );
+  const frameworkEventsTable = hoveredNode?.tags.includes('TreeRoot') &&
+    matchingFrameworkEvents.length > 0 && (
+      <UIDebuggerMenuItem
+        text="Explore events"
+        onClick={() => {
+          onSetViewMode({
+            mode: 'frameworkEventsTable',
+            treeRootId: hoveredNode?.id ?? '',
+          });
+        }}
+        icon={<TableOutlined />}
+      />
+    );
 
   return (
     <Dropdown
       onVisibleChange={(visible) => {
         onContextMenuOpen(visible);
       }}
-      overlay={() => (
-        <Menu>
-          {treeCollapseItems}
-          {focus}
-          {removeFocus}
-          {frameworkEventsTable}
-          {(focus || removeFocus || frameworkEventsTable) && (
-            <Menu.Divider key="divider-focus" />
-          )}
-          {copyItems}
+      overlay={() => {
+        return (
+          <Menu>
+            {treeCollapseItems}
+            {focus}
+            {removeFocus}
+            {frameworkEventsTable}
+            {(focus || removeFocus || frameworkEventsTable) && (
+              <Menu.Divider key="divider-focus" />
+            )}
+            {copyItems}
 
-          {hoveredNode && <IDEContextMenuItems key="ide" node={hoveredNode} />}
-        </Menu>
-      )}
+            {hoveredNode && (
+              <IDEContextMenuItems key="ide" node={hoveredNode} />
+            )}
+          </Menu>
+        );
+      }}
       trigger={['contextMenu']}>
       {children}
     </Dropdown>
