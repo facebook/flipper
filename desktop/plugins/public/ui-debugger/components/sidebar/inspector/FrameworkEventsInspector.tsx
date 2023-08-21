@@ -10,14 +10,20 @@
 import {
   DataInspector,
   Layout,
+  produce,
   theme,
   TimelineDataDescription,
 } from 'flipper-plugin';
 import {FrameworkEvent, ClientNode} from '../../../ClientTypes';
-import React, {ReactNode} from 'react';
+import React, {ReactNode, useState} from 'react';
 import {StackTraceInspector} from './StackTraceInspector';
-import {Descriptions, Tag} from 'antd';
+import {Collapse, Descriptions, Select, Tag} from 'antd';
 import {frameworkEventSeparator} from '../../shared/FrameworkEventsTreeSelect';
+import {
+  buildTreeSelectData,
+  FrameworkEventsTreeSelect,
+} from '../../shared/FrameworkEventsTreeSelect';
+import {uniqBy} from 'lodash';
 
 type Props = {
   node: ClientNode;
@@ -29,30 +35,87 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
   events,
   showExtra,
 }) => {
+  const allThreads = uniqBy(events, 'thread').map((event) => event.thread);
+  const [filteredThreads, setFilteredThreads] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const allEventTypes = uniqBy(events, 'type').map((event) => event.type);
+  const [filteredEventTypes, setFilteredEventTypes] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const filteredEvents = events
+    .filter(
+      (event) =>
+        filteredEventTypes.size === 0 || filteredEventTypes.has(event.type),
+    )
+    .filter(
+      (event) =>
+        filteredThreads.size === 0 || filteredThreads.has(event.thread!),
+    );
+
   return (
-    <TimelineDataDescription
-      key={node.id}
-      canSetCurrent={false}
-      onClick={(current) => {
-        const idx = parseInt(current, 10);
-        const event = events[idx];
-        showExtra?.(
-          'Event details',
-          <EventDetails event={event} node={node} />,
-        );
-      }}
-      timeline={{
-        time: events.map((event, idx) => {
-          return {
-            moment: event.timestamp,
-            display: `${eventTypeToName(event.type)}`,
-            color: threadToColor(event.thread),
-            key: idx.toString(),
-          };
-        }),
-        current: 'initialNone',
-      }}
-    />
+    <Layout.Container gap="small" padv="small">
+      <Collapse>
+        <Collapse.Panel header="Filter events" key="1">
+          <Layout.Container gap="tiny">
+            <FrameworkEventsTreeSelect
+              placeholder="Select events types to filter by"
+              treeData={buildTreeSelectData(allEventTypes)}
+              width={250}
+              onSetEventSelected={(eventType, selected) => {
+                setFilteredEventTypes((cur) =>
+                  produce(cur, (draft) => {
+                    if (selected) {
+                      draft.add(eventType);
+                    } else {
+                      draft.delete(eventType);
+                    }
+                  }),
+                );
+              }}
+              selected={[...filteredEventTypes]}
+            />
+            <Select
+              mode="multiple"
+              style={{width: '250px'}}
+              placeholder="Select threads to filter by"
+              defaultValue={[] as string[]}
+              options={allThreads.map((thread) => ({
+                value: thread,
+                label: thread,
+              }))}
+              onChange={(value) => setFilteredThreads(new Set(value))}
+            />
+          </Layout.Container>
+        </Collapse.Panel>
+      </Collapse>
+
+      <TimelineDataDescription
+        key={node.id}
+        canSetCurrent={false}
+        onClick={(current) => {
+          const idx = parseInt(current, 10);
+          const event = filteredEvents[idx];
+          showExtra?.(
+            'Event details',
+            <EventDetails event={event} node={node} />,
+          );
+        }}
+        timeline={{
+          time: filteredEvents.map((event, idx) => {
+            return {
+              moment: event.timestamp,
+              display: `${eventTypeToName(event.type)}`,
+              color: threadToColor(event.thread),
+              key: idx.toString(),
+            };
+          }),
+          current: 'initialNone',
+        }}
+      />
+    </Layout.Container>
   );
 };
 

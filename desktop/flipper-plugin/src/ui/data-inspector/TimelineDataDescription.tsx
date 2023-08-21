@@ -45,6 +45,9 @@ export class TimelineDataDescription extends Component<Props, State> {
 
   render(): ReactNode {
     const moments = Object.values(this.props.timeline.time);
+    if (moments == null || moments.length === 0) {
+      return null;
+    }
     const firstMoment = moments[0].moment;
     const points = moments.map((value) => ({
       label: value.display,

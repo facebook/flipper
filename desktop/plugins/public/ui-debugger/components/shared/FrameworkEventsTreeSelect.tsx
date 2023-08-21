@@ -16,7 +16,9 @@ export function FrameworkEventsTreeSelect({
   onSetEventSelected,
   selected,
   placeholder,
+  width,
 }: {
+  width?: number;
   placeholder: string;
   selected: string[];
   treeData: TreeSelectNode[];
@@ -33,7 +35,7 @@ export function FrameworkEventsTreeSelect({
       placeholder={placeholder}
       virtual={false} //for scrollbar
       style={{
-        width: '100%',
+        width: width ?? '100%',
       }}
       treeData={treeData}
       treeDefaultExpandAll
