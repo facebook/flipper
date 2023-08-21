@@ -17,8 +17,11 @@ data class FrameworkEventMetadata(
 
 @kotlinx.serialization.Serializable
 data class FrameworkEvent(
+    val treeId: Id,
     val nodeId: Id,
     val type: String,
-    val timestamp: Long,
-    val thread: String
+    val timestamp: Long,  //millis since epoch
+    val duration: Long?,   //in Nanoseconds
+    val thread: String,
+    val payload: Map<String, String> //can be json
 )
