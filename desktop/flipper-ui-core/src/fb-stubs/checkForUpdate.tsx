@@ -9,8 +9,7 @@
 
 import {VersionCheckResult} from '../chrome/UpdateIndicator';
 import {getRenderHostInstance} from 'flipper-frontend-core';
-
-const updateServer = 'https://www.facebook.com/fbflipper/public/latest.json';
+import config from './config';
 
 const getPlatformSpecifier = (): string => {
   switch (getRenderHostInstance().serverConfig.environmentInfo.os.platform) {
@@ -52,7 +51,7 @@ const parseResponse = (resp: any): VersionCheckResult => {
 export async function checkForUpdate(
   currentVersion: string,
 ): Promise<VersionCheckResult> {
-  return fetch(`${updateServer}?version=${currentVersion}`).then(
+  return fetch(`${config.updateServer}?version=${currentVersion}`).then(
     (res: Response) => {
       switch (res.status) {
         case 204:
