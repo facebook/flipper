@@ -226,8 +226,17 @@ export default abstract class AbstractClient extends EventEmitter {
           this.startPluginIfNeeded(await this.getPlugin(pluginId)),
         ),
       );
-      const newBackgroundPlugins = await this.getBackgroundPlugins();
-      this.backgroundPlugins = new Set(newBackgroundPlugins);
+      let newBackgroundPlugins: PluginsArr = [];
+      try {
+        newBackgroundPlugins = await this.getBackgroundPlugins();
+        this.backgroundPlugins = new Set(newBackgroundPlugins);
+      } catch (e: unknown) {
+        if ((e as Error).message.includes('timeout')) {
+          console.warn(e);
+        } else {
+          throw e;
+        }
+      }
       // diff the background plugin list, disconnect old, connect new ones
       oldBackgroundPlugins.forEach((plugin) => {
         if (!this.backgroundPlugins.has(plugin)) {
