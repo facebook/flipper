@@ -324,7 +324,7 @@ const IndentGuides = React.memo(
                 width: indentGuideLinePadding,
                 height: TreeItemHeight,
                 borderRight: `1px solid`,
-                borderImage: `linear-gradient(to bottom, ${firstHalf} 50%, ${secondHalf} 50%) 1`,
+                borderImageSource: `linear-gradient(to bottom, ${firstHalf} 50%, ${secondHalf} 50%)`,
                 borderImageSlice: 1,
               }}
             />
