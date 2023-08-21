@@ -78,20 +78,18 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
         <Typography.Title level={3}>Event timeline</Typography.Title>
 
         <Layout.Horizontal center gap padh="medium">
-          {node.tags.includes('TreeRoot') && (
-            <Tooltip title="Explore all tree events in table">
-              <Button
-                shape="circle"
-                icon={<TableOutlined />}
-                onClick={() =>
-                  onSetViewMode({
-                    mode: 'frameworkEventsTable',
-                    treeRootId: node.id,
-                  })
-                }
-              />
-            </Tooltip>
-          )}
+          <Tooltip title="Explore events in table">
+            <Button
+              shape="circle"
+              icon={<TableOutlined />}
+              onClick={() =>
+                onSetViewMode({
+                  mode: 'frameworkEventsTable',
+                  nodeId: node.id,
+                })
+              }
+            />
+          </Tooltip>
           <Dropdown
             overlayStyle={{minWidth: 200}}
             overlay={

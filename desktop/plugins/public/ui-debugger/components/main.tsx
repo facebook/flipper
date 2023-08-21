@@ -103,7 +103,7 @@ export function Component() {
   }
 
   if (viewMode.mode === 'frameworkEventsTable') {
-    return <FrameworkEventsTable treeId={viewMode.treeRootId} />;
+    return <FrameworkEventsTable nodeId={viewMode.nodeId} />;
   }
 
   return (

@@ -20,17 +20,17 @@ import {FrameworkEvent, Id} from '../ClientTypes';
 import {plugin} from '../index';
 import {Button, Tooltip} from 'antd';
 
-export function FrameworkEventsTable({treeId}: {treeId?: Id}) {
+export function FrameworkEventsTable({nodeId}: {nodeId: Id}) {
   const instance = usePlugin(plugin);
 
   const managerRef = useRef<DataTableManager<FrameworkEvent> | null>(null);
 
   useEffect(() => {
-    if (treeId != null) {
+    if (nodeId != null) {
       managerRef.current?.resetFilters();
-      managerRef.current?.addColumnFilter('treeId', treeId as string);
+      managerRef.current?.addColumnFilter('nodeId', nodeId as string);
     }
-  }, [treeId]);
+  }, [nodeId]);
 
   return (
     <Layout.Container grow>
