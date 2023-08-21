@@ -69,7 +69,7 @@ export class TimelineDataDescription extends Component<Props, State> {
             </Button>
           </div>
         )}
-        <div>
+        <div style={{userSelect: 'none'}}>
           <MarkerTimeline
             points={points}
             onClick={(ids) => {
