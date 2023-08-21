@@ -72,6 +72,8 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
         filteredThreads.size === 0 || filteredThreads.has(event.thread!),
     );
 
+  const showThreadsSection = allThreads.length > 1;
+  const showEventTypesSection = allEventTypes.length > 1;
   return (
     <Layout.Container gap="small" padv="small">
       <Layout.Right center gap>
@@ -90,80 +92,82 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
               }
             />
           </Tooltip>
-          <Dropdown
-            overlayStyle={{minWidth: 200}}
-            overlay={
-              <Layout.Container
-                gap="small"
-                pad="small"
-                style={{
-                  backgroundColor: theme.white,
-                  borderRadius: theme.borderRadius,
-                  boxShadow: `0 0 4px 1px rgba(0,0,0,0.10)`,
-                }}>
-                {allThreads.length > 1 && (
-                  <>
-                    <Typography.Text strong>By thread</Typography.Text>
-                    {allThreads.map((thread) => (
-                      <MultiSelectableDropDownItem
-                        onSelect={(thread, selected) => {
-                          setFilteredThreads((cur) =>
-                            produce(cur, (draft) => {
-                              if (selected) {
-                                draft.add(thread);
-                              } else {
-                                draft.delete(thread);
-                              }
-                            }),
-                          );
-                        }}
-                        selectedValues={filteredThreads}
-                        key={thread}
-                        value={thread as string}
-                        text={startCase(thread) as string}
-                      />
-                    ))}
-                  </>
-                )}
+          {(showEventTypesSection || showThreadsSection) && (
+            <Dropdown
+              overlayStyle={{minWidth: 200}}
+              overlay={
+                <Layout.Container
+                  gap="small"
+                  pad="small"
+                  style={{
+                    backgroundColor: theme.white,
+                    borderRadius: theme.borderRadius,
+                    boxShadow: `0 0 4px 1px rgba(0,0,0,0.10)`,
+                  }}>
+                  {showThreadsSection && (
+                    <>
+                      <Typography.Text strong>By thread</Typography.Text>
+                      {allThreads.map((thread) => (
+                        <MultiSelectableDropDownItem
+                          onSelect={(thread, selected) => {
+                            setFilteredThreads((cur) =>
+                              produce(cur, (draft) => {
+                                if (selected) {
+                                  draft.add(thread);
+                                } else {
+                                  draft.delete(thread);
+                                }
+                              }),
+                            );
+                          }}
+                          selectedValues={filteredThreads}
+                          key={thread}
+                          value={thread as string}
+                          text={startCase(thread) as string}
+                        />
+                      ))}
+                    </>
+                  )}
 
-                {allEventTypes.length > 1 && (
-                  <>
-                    <Typography.Text strong>By event type</Typography.Text>
-                    {allEventTypes.map((eventType) => (
-                      <MultiSelectableDropDownItem
-                        onSelect={(eventType, selected) => {
-                          setFilteredEventTypes((cur) =>
-                            produce(cur, (draft) => {
-                              if (selected) {
-                                draft.add(eventType);
-                              } else {
-                                draft.delete(eventType);
-                              }
-                            }),
-                          );
-                        }}
-                        selectedValues={filteredEventTypes}
-                        key={eventType}
-                        value={eventType as string}
-                        text={last(eventType.split('.')) as string}
-                      />
-                    ))}
-                  </>
-                )}
-              </Layout.Container>
-            }>
-            <Button
-              shape="circle"
-              icon={
-                <Badge
-                  offset={[8, -8]}
-                  size="small"
-                  count={filteredEventTypes.size + filteredThreads.size}>
-                  <FilterOutlined style={{}} />
-                </Badge>
-              }
-            />
-          </Dropdown>
+                  {showEventTypesSection && (
+                    <>
+                      <Typography.Text strong>By event type</Typography.Text>
+                      {allEventTypes.map((eventType) => (
+                        <MultiSelectableDropDownItem
+                          onSelect={(eventType, selected) => {
+                            setFilteredEventTypes((cur) =>
+                              produce(cur, (draft) => {
+                                if (selected) {
+                                  draft.add(eventType);
+                                } else {
+                                  draft.delete(eventType);
+                                }
+                              }),
+                            );
+                          }}
+                          selectedValues={filteredEventTypes}
+                          key={eventType}
+                          value={eventType as string}
+                          text={last(eventType.split('.')) as string}
+                        />
+                      ))}
+                    </>
+                  )}
+                </Layout.Container>
+              }>
+              <Button
+                shape="circle"
+                icon={
+                  <Badge
+                    offset={[8, -8]}
+                    size="small"
+                    count={filteredEventTypes.size + filteredThreads.size}>
+                    <FilterOutlined style={{}} />
+                  </Badge>
+                }
+              />
+            </Dropdown>
+          )}
         </Layout.Horizontal>
       </Layout.Right>
 
