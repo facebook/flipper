@@ -53,6 +53,8 @@ export function Component() {
     setBottomPanelComponent(undefined);
   };
 
+  const [bottomPanelHeight, setBottomPanelHeight] = useState(400);
+
   if (showPerfStats)
     return (
       <PerfStats
@@ -106,49 +108,62 @@ export function Component() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Layout.Horizontal
-        grow
-        style={{
-          borderRadius: theme.borderRadius,
-          backgroundColor: theme.backgroundWash,
-        }}>
-        <Layout.Container
+      <Layout.Container grow>
+        <Layout.Horizontal
           grow
           style={{
             borderRadius: theme.borderRadius,
-            backgroundColor: theme.backgroundDefault,
+            backgroundColor: theme.backgroundWash,
           }}>
-          <TreeControls />
-          <Tree2 nodes={nodes} rootId={rootId} />
-        </Layout.Container>
+          <Layout.Container
+            grow
+            style={{
+              borderRadius: theme.borderRadius,
+              backgroundColor: theme.backgroundDefault,
+            }}>
+            <TreeControls />
+            <Tree2
+              additionalHeightOffset={
+                bottomPanelComponent != null ? bottomPanelHeight : 0
+              }
+              nodes={nodes}
+              rootId={rootId}
+            />
+          </Layout.Container>
 
-        <ResizablePanel
-          position="right"
-          minWidth={200}
-          width={visualiserWidth + theme.space.large}
-          maxWidth={800}
-          onResize={(width) => {
-            instance.uiActions.setVisualiserWidth(width);
-          }}
-          gutter>
-          <Visualization2D
-            width={visualiserWidth}
-            nodes={nodes}
-            onSelectNode={instance.uiActions.onSelectNode}
-          />
-        </ResizablePanel>
-        <DetailSidebar width={350}>
-          <Inspector
-            os={instance.os}
-            metadata={metadata}
-            nodes={nodes}
-            showExtra={openBottomPanelWithContent}
-          />
-        </DetailSidebar>
-        <BottomPanel dismiss={dismissBottomPanel}>
-          {bottomPanelComponent}
-        </BottomPanel>
-      </Layout.Horizontal>
+          <ResizablePanel
+            position="right"
+            minWidth={200}
+            width={visualiserWidth + theme.space.large}
+            maxWidth={800}
+            onResize={(width) => {
+              instance.uiActions.setVisualiserWidth(width);
+            }}
+            gutter>
+            <Visualization2D
+              width={visualiserWidth}
+              nodes={nodes}
+              onSelectNode={instance.uiActions.onSelectNode}
+            />
+          </ResizablePanel>
+          <DetailSidebar width={350}>
+            <Inspector
+              os={instance.os}
+              metadata={metadata}
+              nodes={nodes}
+              showExtra={openBottomPanelWithContent}
+            />
+          </DetailSidebar>
+        </Layout.Horizontal>
+        {bottomPanelComponent && (
+          <BottomPanel
+            height={bottomPanelHeight}
+            setHeight={setBottomPanelHeight}
+            dismiss={dismissBottomPanel}>
+            {bottomPanelComponent}
+          </BottomPanel>
+        )}
+      </Layout.Container>
     </QueryClientProvider>
   );
 }
@@ -166,8 +181,15 @@ export function Centered(props: {children: React.ReactNode}) {
 type BottomPanelProps = {
   dismiss: () => void;
   children: React.ReactNode;
+  height: number;
+  setHeight: (height: number) => void;
 };
-export function BottomPanel({dismiss, children}: BottomPanelProps) {
+export function BottomPanel({
+  dismiss,
+  children,
+  height,
+  setHeight,
+}: BottomPanelProps) {
   const bottomPanelRef = useRef<any>(null);
 
   useEffect(() => {
@@ -191,9 +213,15 @@ export function BottomPanel({dismiss, children}: BottomPanelProps) {
   if (!children) {
     return <></>;
   }
+
   return (
     <div ref={bottomPanelRef}>
-      <ResizablePanel position="bottom" minHeight={200} height={400} gutter>
+      <ResizablePanel
+        position="bottom"
+        minHeight={200}
+        height={height}
+        onResize={(_, height) => setHeight(height)}
+        gutter>
         <Layout.ScrollContainer>{children}</Layout.ScrollContainer>
         <div style={{margin: 10}}>
           <Button type="ghost" style={{float: 'right'}} onClick={dismiss}>

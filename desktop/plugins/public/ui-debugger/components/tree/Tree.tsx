@@ -55,7 +55,9 @@ export type TreeNode = ClientNode & {
 export function Tree2({
   nodes,
   rootId,
+  additionalHeightOffset,
 }: {
+  additionalHeightOffset: number;
   nodes: Map<Id, ClientNode>;
   rootId: Id;
 }) {
@@ -139,16 +141,22 @@ export function Tree2({
     isUsingKBToScrollUtill,
   );
 
+  const initialHeightOffset = useRef<number | null>(null);
   useLayoutEffect(() => {
     //the grand parent gets its size correclty via flex box, we use its initial
     //position to size the scroll parent ref for react virtual, It uses vh which accounts for window size changes
     //However  if we dynamically add content above or below we may need to revisit this approach
     const boundingClientRect = grandParentRef?.current?.getBoundingClientRect();
 
-    parentRef.current!!.style.height = `calc(100vh - ${
-      boundingClientRect!!.top
-    }px - ${window.innerHeight - boundingClientRect!!.bottom}px )`;
-  }, []);
+    if (initialHeightOffset.current == null) {
+      //it is important to capture the initial height offset as we dont want to consider them again if elements are added dynamically later
+      initialHeightOffset.current =
+        boundingClientRect!!.top +
+        (window.innerHeight - boundingClientRect!!.bottom) -
+        additionalHeightOffset;
+    }
+    parentRef.current!!.style.height = `calc(100vh - ${initialHeightOffset.current}px - ${additionalHeightOffset}px )`;
+  }, [additionalHeightOffset]);
 
   useLayoutEffect(() => {
     //scroll width is the width of the element including overflow, we grab the scroll width
