@@ -7,70 +7,133 @@
  * @format
  */
 
-import {Button} from 'antd';
-import {theme, TimelineDataDescription} from 'flipper-plugin';
+import {
+  DataInspector,
+  Layout,
+  theme,
+  TimelineDataDescription,
+} from 'flipper-plugin';
 import {FrameworkEvent, ClientNode} from '../../../ClientTypes';
-import React, {ReactNode, useState} from 'react';
+import React, {ReactNode} from 'react';
 import {StackTraceInspector} from './StackTraceInspector';
+import {Descriptions, Tag} from 'antd';
 
 type Props = {
   node: ClientNode;
   events: readonly FrameworkEvent[];
-  showExtra?: (element: ReactNode) => void;
+  showExtra?: (title: string, element: ReactNode) => void;
 };
 export const FrameworkEventsInspector: React.FC<Props> = ({
   node,
   events,
   showExtra,
 }) => {
-  const [selectedEvent, setSelectedEvent] = useState<FrameworkEvent>(
-    events[events.length - 1],
-  );
-
-  const showStacktrace = () => {
-    const attribution = selectedEvent.attribution;
-    if (attribution?.type === 'stacktrace') {
-      const stacktraceInspector = (
-        <StackTraceInspector
-          stacktrace={attribution.stacktrace}
-          tags={node.tags}
-        />
-      );
-      showExtra?.(stacktraceInspector);
-    }
-  };
-
-  const hasStacktrace = (event: FrameworkEvent) => {
-    return event?.attribution?.type === 'stacktrace';
-  };
-
   return (
-    <>
-      <TimelineDataDescription
-        key={node.id}
-        canSetCurrent={false}
-        onClick={(current) => {
-          const idx = parseInt(current, 10);
-          setSelectedEvent(events[idx]);
-        }}
-        timeline={{
-          time: events.map((e, idx) => {
-            return {
-              moment: e.timestamp,
-              display: e.type.slice(e.type.lastIndexOf(':') + 1),
-              color: theme.primaryColor,
-              key: idx.toString(),
-              properties: e.payload as any,
-            };
-          }),
-          current: (events.length - 1).toString(),
-        }}
-      />
-      {hasStacktrace(selectedEvent) && (
-        <Button type="ghost" onClick={showStacktrace}>
-          Stacktrace
-        </Button>
-      )}
-    </>
+    <TimelineDataDescription
+      key={node.id}
+      canSetCurrent={false}
+      onClick={(current) => {
+        const idx = parseInt(current, 10);
+        const event = events[idx];
+        showExtra?.(
+          'Event details',
+          <EventDetails event={event} node={node} />,
+        );
+      }}
+      timeline={{
+        time: events.map((event, idx) => {
+          return {
+            moment: event.timestamp,
+            display: `${eventTypeToName(event.type)}`,
+            color: threadToColor(event.thread),
+            key: idx.toString(),
+          };
+        }),
+        current: 'initialNone',
+      }}
+    />
   );
 };
+
+function EventDetails({
+  event,
+  node,
+}: {
+  event: FrameworkEvent;
+  node: ClientNode;
+}) {
+  const stackTrace =
+    event?.attribution?.type === 'stacktrace' ? (
+      <StackTraceInspector
+        stacktrace={event.attribution.stacktrace}
+        tags={node.tags}
+      />
+    ) : null;
+
+  const details = (
+    <Layout.Container>
+      <Descriptions size="small" bordered column={1}>
+        <Descriptions.Item label="Event type">{event.type}</Descriptions.Item>
+        <Descriptions.Item label="Thread">
+          <Tag color={threadToColor(event.thread)}>{event.thread}</Tag>
+        </Descriptions.Item>
+        <Descriptions.Item label="Timestamp">
+          {formatTimestamp(event.timestamp)}
+        </Descriptions.Item>
+        {event.duration && (
+          <Descriptions.Item label="Duration">
+            {formatDuration(event.duration)}
+          </Descriptions.Item>
+        )}
+        {event.payload && Object.keys(event.payload).length > 0 && (
+          <Descriptions.Item label="Attributes">
+            <DataInspector data={event.payload} />
+          </Descriptions.Item>
+        )}
+      </Descriptions>
+    </Layout.Container>
+  );
+
+  return (
+    <Layout.Horizontal>
+      {details}
+      {stackTrace}
+    </Layout.Horizontal>
+  );
+}
+
+const options: Intl.DateTimeFormatOptions = {
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+  hour12: false,
+};
+function formatTimestamp(timestamp: number): string {
+  const date = new Date(timestamp);
+
+  const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
+  const milliseconds = date.getMilliseconds();
+
+  return `${formattedDate}.${milliseconds.toString().padStart(3, '0')}`;
+}
+
+function formatDuration(nanoseconds: number): string {
+  if (nanoseconds < 1_000) {
+    return `${nanoseconds} nanoseconds`;
+  } else if (nanoseconds < 1_000_000) {
+    return `${(nanoseconds / 1_000).toFixed(2)} microseconds`;
+  } else if (nanoseconds < 1_000_000_000) {
+    return `${(nanoseconds / 1_000_000).toFixed(2)} milliseconds`;
+  } else if (nanoseconds < 1_000_000_000_000) {
+    return `${(nanoseconds / 1_000_000_000).toFixed(2)} seconds`;
+  } else {
+    return `${(nanoseconds / 1_000_000_000_000).toFixed(2)} minutes`;
+  }
+}
+function eventTypeToName(eventType: string) {
+  return eventType.slice(eventType.lastIndexOf('.') + 1);
+}
+
+function threadToColor(thread?: string) {
+  return thread === 'main' ? theme.warningColor : theme.primaryColor;
+}

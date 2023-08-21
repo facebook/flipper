@@ -23,7 +23,7 @@ import {PerfStats} from './PerfStats';
 import {Visualization2D} from './visualizer/Visualization2D';
 import {Inspector} from './sidebar/Inspector';
 import {TreeControls} from './tree/TreeControls';
-import {Button, Spin} from 'antd';
+import {Button, Spin, Typography} from 'antd';
 import {QueryClientProvider} from 'react-query';
 import {Tree2} from './tree/Tree';
 import {StreamInterceptorErrorView} from './StreamInterceptorErrorView';
@@ -43,14 +43,14 @@ export function Component() {
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
   const viewMode = useValue(instance.uiState.viewMode);
-  const [bottomPanelComponent, setBottomPanelComponent] = useState<
-    ReactNode | undefined
+  const [bottomPanel, setBottomPanel] = useState<
+    {title: string; component: ReactNode} | undefined
   >();
-  const openBottomPanelWithContent = (component: ReactNode) => {
-    setBottomPanelComponent(component);
+  const openBottomPanelWithContent = (title: string, component: ReactNode) => {
+    setBottomPanel({title, component});
   };
   const dismissBottomPanel = () => {
-    setBottomPanelComponent(undefined);
+    setBottomPanel(undefined);
   };
 
   const [bottomPanelHeight, setBottomPanelHeight] = useState(400);
@@ -124,7 +124,7 @@ export function Component() {
             <TreeControls />
             <Tree2
               additionalHeightOffset={
-                bottomPanelComponent != null ? bottomPanelHeight : 0
+                bottomPanel != null ? bottomPanelHeight : 0
               }
               nodes={nodes}
               rootId={rootId}
@@ -146,7 +146,7 @@ export function Component() {
               onSelectNode={instance.uiActions.onSelectNode}
             />
           </ResizablePanel>
-          <DetailSidebar width={350}>
+          <DetailSidebar width={450}>
             <Inspector
               os={instance.os}
               metadata={metadata}
@@ -155,12 +155,13 @@ export function Component() {
             />
           </DetailSidebar>
         </Layout.Horizontal>
-        {bottomPanelComponent && (
+        {bottomPanel && (
           <BottomPanel
+            title={bottomPanel.title}
             height={bottomPanelHeight}
             setHeight={setBottomPanelHeight}
             dismiss={dismissBottomPanel}>
-            {bottomPanelComponent}
+            {bottomPanel.component}
           </BottomPanel>
         )}
       </Layout.Container>
@@ -179,12 +180,14 @@ export function Centered(props: {children: React.ReactNode}) {
 }
 
 type BottomPanelProps = {
+  title: string;
   dismiss: () => void;
   children: React.ReactNode;
   height: number;
   setHeight: (height: number) => void;
 };
 export function BottomPanel({
+  title,
   dismiss,
   children,
   height,
@@ -198,7 +201,10 @@ export function BottomPanel({
         bottomPanelRef.current &&
         !bottomPanelRef.current.contains(event.target)
       ) {
-        dismiss();
+        setTimeout(() => {
+          //push to back of event queue so that you can still select item in the tree
+          dismiss();
+        }, 0);
       }
     };
     // Add event listener when the component is mounted.
@@ -222,12 +228,22 @@ export function BottomPanel({
         height={height}
         onResize={(_, height) => setHeight(height)}
         gutter>
-        <Layout.ScrollContainer>{children}</Layout.ScrollContainer>
-        <div style={{margin: 10}}>
-          <Button type="ghost" style={{float: 'right'}} onClick={dismiss}>
-            Dismiss
-          </Button>
-        </div>
+        <Layout.Container grow>
+          <Layout.Horizontal
+            center
+            pad="small"
+            style={{
+              justifyContent: 'space-between',
+            }}>
+            <Typography.Title level={3}>{title}</Typography.Title>
+            <Button type="ghost" onClick={dismiss}>
+              Dismiss
+            </Button>
+          </Layout.Horizontal>
+          <Layout.ScrollContainer pad="small">
+            {children}
+          </Layout.ScrollContainer>
+        </Layout.Container>
       </ResizablePanel>
     </div>
   );

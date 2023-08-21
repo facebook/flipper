@@ -31,7 +31,7 @@ type Props = {
   os: DeviceOS;
   nodes: Map<Id, ClientNode>;
   metadata: Map<MetadataId, Metadata>;
-  showExtra: (element: ReactNode) => void;
+  showExtra: (title: string, element: ReactNode) => void;
 };
 
 export const Inspector: React.FC<Props> = ({

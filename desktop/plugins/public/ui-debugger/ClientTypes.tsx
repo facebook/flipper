@@ -60,6 +60,7 @@ export type FrameworkEvent = {
   type: FrameworkEventType;
   timestamp: number;
   payload?: JSON;
+  duration?: number;
   attribution?: FrameworkEventAttribution;
   thread?: 'main' | string;
 };
