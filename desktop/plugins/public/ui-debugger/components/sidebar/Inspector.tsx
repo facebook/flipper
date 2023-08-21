@@ -43,6 +43,7 @@ export const Inspector: React.FC<Props> = ({
   const instance = usePlugin(plugin);
   const selectedNodeId = useValue(instance.uiState.selectedNode)?.id;
 
+  const frameworkEventMetadata = useValue(instance.frameworkEventMetadata);
   const selectedNode = selectedNodeId ? nodes.get(selectedNodeId) : undefined;
   if (!selectedNode) {
     return <NoData message="Please select a node to view its details" />;
@@ -122,6 +123,7 @@ export const Inspector: React.FC<Props> = ({
               </Tooltip>
             }>
             <FrameworkEventsInspector
+              frameworkEventMetadata={frameworkEventMetadata}
               node={selectedNode}
               events={selectedFrameworkEvents}
               showExtra={showExtra}

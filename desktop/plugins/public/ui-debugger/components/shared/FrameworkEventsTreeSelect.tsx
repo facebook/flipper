@@ -7,9 +7,11 @@
  * @format
  */
 
-import {TreeSelect} from 'antd';
-import {FrameworkEventType} from '../../ClientTypes';
-import React from 'react';
+import React, {ReactNode} from 'react';
+import {InfoCircleOutlined} from '@ant-design/icons';
+import {Tooltip, TreeSelect} from 'antd';
+import {Layout, theme} from 'flipper-plugin';
+import {FrameworkEventMetadata, FrameworkEventType} from '../../ClientTypes';
 
 export function FrameworkEventsTreeSelect({
   treeData,
@@ -55,7 +57,8 @@ export function FrameworkEventsTreeSelect({
 }
 
 type TreeSelectNode = {
-  title: string;
+  title: ReactNode;
+  titleValue: string;
   key: string;
   value: string;
   children: TreeSelectNode[];
@@ -84,8 +87,11 @@ export const frameworkEventSeparator = '.';
 /**
  * transformed flat event type data structure into tree
  */
-export function buildTreeSelectData(eventTypes: string[]): TreeSelectNode[] {
-  const root: TreeSelectNode = buildTreeSelectNode('root', 'root');
+export function buildTreeSelectData(
+  eventTypes: string[],
+  metadata: Map<FrameworkEventType, FrameworkEventMetadata>,
+): TreeSelectNode[] {
+  const root: TreeSelectNode = buildTreeSelectNode('root', 'root', metadata);
 
   eventTypes.forEach((eventType) => {
     const eventSubtypes = eventType.split(frameworkEventSeparator);
@@ -95,7 +101,7 @@ export function buildTreeSelectData(eventTypes: string[]): TreeSelectNode[] {
     for (let i = 0; i < eventSubtypes.length - 1; i++) {
       let foundChild = false;
       for (const child of currentNode.children) {
-        if (child.title === eventSubtypes[i]) {
+        if (child.titleValue === eventSubtypes[i]) {
           currentNode = child;
           foundChild = true;
           break;
@@ -105,6 +111,7 @@ export function buildTreeSelectData(eventTypes: string[]): TreeSelectNode[] {
         const newNode: TreeSelectNode = buildTreeSelectNode(
           eventSubtypes[i],
           eventSubtypes.slice(0, i + 1).join(frameworkEventSeparator),
+          metadata,
         );
 
         currentNode.children.push(newNode);
@@ -118,6 +125,7 @@ export function buildTreeSelectData(eventTypes: string[]): TreeSelectNode[] {
         eventSubtypes
           .slice(0, eventSubtypes.length)
           .join(frameworkEventSeparator),
+        metadata,
       ),
     );
   });
@@ -125,9 +133,29 @@ export function buildTreeSelectData(eventTypes: string[]): TreeSelectNode[] {
   return root.children;
 }
 
-function buildTreeSelectNode(title: string, fullValue: string): TreeSelectNode {
+function buildTreeSelectNode(
+  title: string,
+  fullValue: string,
+  metadata: Map<FrameworkEventType, FrameworkEventMetadata>,
+): TreeSelectNode {
+  const documentation = metadata.get(fullValue)?.documentation;
   return {
-    title: title,
+    title: (
+      <Layout.Horizontal gap="small" center>
+        {title}
+        {documentation && (
+          <Tooltip title={documentation}>
+            <InfoCircleOutlined
+              style={{
+                color: theme.primaryColor,
+                fontSize: theme.fontSize.large,
+              }}
+            />
+          </Tooltip>
+        )}
+      </Layout.Horizontal>
+    ),
+    titleValue: title,
     key: fullValue,
     value: fullValue,
     children: [],

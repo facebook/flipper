@@ -17,7 +17,7 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout} from 'flipper-plugin';
-import {FrameworkEventType} from '../../ClientTypes';
+import {FrameworkEventMetadata, FrameworkEventType} from '../../ClientTypes';
 import {
   buildTreeSelectData,
   FrameworkEventsTreeSelect,
@@ -34,6 +34,8 @@ export const TreeControls: React.FC = () => {
   const frameworkEventMonitoring: Map<FrameworkEventType, boolean> = useValue(
     instance.uiState.frameworkEventMonitoring,
   );
+
+  const frameworkEventMetadata = useValue(instance.frameworkEventMetadata);
 
   const [showFrameworkEventsModal, setShowFrameworkEventsModal] =
     useState(false);
@@ -72,6 +74,7 @@ export const TreeControls: React.FC = () => {
               </Tooltip>
             }></Button>
           <FrameworkEventsMonitoringModal
+            metadata={frameworkEventMetadata}
             filterMainThreadMonitoring={filterMainThreadMonitoring}
             onSetFilterMainThreadMonitoring={
               instance.uiActions.onSetFilterMainThreadMonitoring
@@ -96,7 +99,9 @@ function FrameworkEventsMonitoringModal({
   onSetFilterMainThreadMonitoring,
   filterMainThreadMonitoring,
   frameworkEventTypes,
+  metadata,
 }: {
+  metadata: Map<FrameworkEventType, FrameworkEventMetadata>;
   visible: boolean;
   onCancel: () => void;
   onSetEventMonitored: (
@@ -113,6 +118,7 @@ function FrameworkEventsMonitoringModal({
 
   const treeData = buildTreeSelectData(
     frameworkEventTypes.map(([type]) => type),
+    metadata,
   );
 
   return (

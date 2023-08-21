@@ -14,7 +14,12 @@ import {
   theme,
   TimelineDataDescription,
 } from 'flipper-plugin';
-import {FrameworkEvent, ClientNode} from '../../../ClientTypes';
+import {
+  FrameworkEvent,
+  ClientNode,
+  FrameworkEventType,
+  FrameworkEventMetadata,
+} from '../../../ClientTypes';
 import React, {ReactNode, useState} from 'react';
 import {StackTraceInspector} from './StackTraceInspector';
 import {Collapse, Descriptions, Select, Tag} from 'antd';
@@ -29,11 +34,13 @@ type Props = {
   node: ClientNode;
   events: readonly FrameworkEvent[];
   showExtra?: (title: string, element: ReactNode) => void;
+  frameworkEventMetadata: Map<FrameworkEventType, FrameworkEventMetadata>;
 };
 export const FrameworkEventsInspector: React.FC<Props> = ({
   node,
   events,
   showExtra,
+  frameworkEventMetadata,
 }) => {
   const allThreads = uniqBy(events, 'thread').map((event) => event.thread);
   const [filteredThreads, setFilteredThreads] = useState<Set<string>>(
@@ -62,7 +69,10 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
           <Layout.Container gap="tiny">
             <FrameworkEventsTreeSelect
               placeholder="Select events types to filter by"
-              treeData={buildTreeSelectData(allEventTypes)}
+              treeData={buildTreeSelectData(
+                allEventTypes,
+                frameworkEventMetadata,
+              )}
               width={250}
               onSetEventSelected={(eventType, selected) => {
                 setFilteredEventTypes((cur) =>
@@ -100,7 +110,11 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
           const event = filteredEvents[idx];
           showExtra?.(
             'Event details',
-            <EventDetails event={event} node={node} />,
+            <EventDetails
+              frameworkEventMetadata={frameworkEventMetadata.get(event.type)}
+              event={event}
+              node={node}
+            />,
           );
         }}
         timeline={{
@@ -122,7 +136,9 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
 function EventDetails({
   event,
   node,
+  frameworkEventMetadata,
 }: {
+  frameworkEventMetadata?: FrameworkEventMetadata;
   event: FrameworkEvent;
   node: ClientNode;
 }) {
@@ -138,6 +154,12 @@ function EventDetails({
     <Layout.Container>
       <Descriptions size="small" bordered column={1}>
         <Descriptions.Item label="Event type">{event.type}</Descriptions.Item>
+        {frameworkEventMetadata && (
+          <Descriptions.Item label="Event documentation">
+            {frameworkEventMetadata?.documentation}
+          </Descriptions.Item>
+        )}
+
         <Descriptions.Item label="Thread">
           <Tag color={threadToColor(event.thread)}>{event.thread}</Tag>
         </Descriptions.Item>

@@ -19,6 +19,7 @@ import {
   PerformanceStatsEvent,
   SnapshotInfo,
   ClientNode,
+  FrameworkEventMetadata,
 } from './ClientTypes';
 import {
   UIState,
@@ -50,6 +51,10 @@ export function plugin(client: PluginClient<Events>) {
     limit: 10000,
   });
 
+  const frameworkEventMetadata = createState<
+    Map<FrameworkEventType, FrameworkEventMetadata>
+  >(new Map());
+
   const uiState: UIState = createUIState();
 
   //this is the client data is what drives all of desktop UI
@@ -76,6 +81,11 @@ export function plugin(client: PluginClient<Events>) {
     uiState.frameworkEventMonitoring.update((draft) => {
       event.frameworkEventMetadata?.forEach((frameworkEventMeta) => {
         draft.set(frameworkEventMeta.type, false);
+      });
+    });
+    frameworkEventMetadata.update((draft) => {
+      event.frameworkEventMetadata?.forEach((frameworkEventMeta) => {
+        draft.set(frameworkEventMeta.type, frameworkEventMeta);
       });
     });
   });
@@ -301,6 +311,7 @@ export function plugin(client: PluginClient<Events>) {
     uiActions: uiActions(uiState, nodesAtom, snapshot, mutableLiveClientData),
     nodes: nodesAtom,
     frameworkEvents,
+    frameworkEventMetadata,
     snapshot,
     metadata,
     perfEvents,
