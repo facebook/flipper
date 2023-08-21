@@ -9,9 +9,9 @@
     "fix-path": "^3.0.0",
     "mkdirp": "^1.0.4",
     "node-fetch": "^2.6.7",
-    "ws": "^8.6.0",
+    "ws": "^8.13.0",
     "xdg-basedir": "^4.0.0",
-    "yargs": "^17.6.2"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/mkdirp": "^1.0.2"

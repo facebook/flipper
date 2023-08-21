@@ -26,8 +26,8 @@
   "author": "Facebook, Inc",
   "dependencies": {
     "envinfo": "^7.8.1",
-    "fb-watchman": "^2.0.1",
+    "fb-watchman": "^2.0.2",
     "flipper-common": "0.0.0",
-    "fs-extra": "^11.1.0"
+    "fs-extra": "^11.1.1"
   }
 }

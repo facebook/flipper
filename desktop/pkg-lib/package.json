@@ -11,10 +11,10 @@
   "dependencies": {
     "chalk": "^4",
     "esbuild": "^0.15.7",
-    "fb-watchman": "^2.0.1",
+    "fb-watchman": "^2.0.2",
     "flipper-common": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
-    "fs-extra": "^11.1.0",
+    "fs-extra": "^11.1.1",
     "metro": "^0.70.2",
     "metro-cache": "^0.70.2",
     "metro-minify-terser": "^0.75.0",

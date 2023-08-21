@@ -12,7 +12,7 @@
   "dependencies": {
     "flipper-common": "0.0.0",
     "flipper-server-core": "0.0.0",
-    "yargs": "^17.6.2"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/node": "^17.0.31"
