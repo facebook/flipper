@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if FB_SONARKIT_ENABLED
+
 #import <FlipperKit/FlipperPlugin.h>
 #import <Foundation/Foundation.h>
 #import "DatabaseDriver.h"
@@ -20,3 +22,5 @@
 - (void)removeDatabaseDriver:(id<DatabaseDriver>)driver;
 
 @end
+
+#endif
