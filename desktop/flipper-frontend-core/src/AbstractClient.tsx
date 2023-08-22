@@ -137,7 +137,10 @@ export default abstract class AbstractClient extends EventEmitter {
       console.warn('Failed to fetch plugin', e);
     }
     this.plugins = new Set(response?.plugins ?? []);
-    console.info('AbstractClient.loadPlugins', this.query, [...this.plugins]);
+    console.info(
+      `Received plugins from '${this.query.app}' on device '${this.query.device}'`,
+      [...this.plugins],
+    );
     return this.plugins;
   }
 
