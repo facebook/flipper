@@ -258,14 +258,17 @@ export function Component() {
               }
               const values = entry.preferences;
               let newValue = value;
-              if (path.length === 2 && values) {
-                newValue = clone(values[path[0]]);
-                newValue[path[1]] = value;
+              // Traverse the path to the nested preference and update it
+              let current = values;
+              for (let i = 0; i < path.length - 1; i++) {
+                current = current[path[i]];
               }
+              current[path[path.length - 1]] = newValue;
+
               await instance.setSharedPreference({
                 sharedPreferencesName: selectedPreferences,
                 preferenceName: path[0],
-                preferenceValue: newValue,
+                preferenceValue: values, // Send the updated preferences object
               });
             }}
             onDelete={async (path: Array<string>) =>
