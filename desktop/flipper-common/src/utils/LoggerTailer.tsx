@@ -7,6 +7,7 @@
  * @format
  */
 
+import {getStringFromErrorLike} from './errors';
 import {LoggerTypes} from './Logger';
 
 export const logLevels: LoggerTypes[] = ['debug', 'info', 'warn', 'error'];
@@ -42,10 +43,13 @@ export function initLogTailer() {
     const originalConsoleLogFunction = originalConsole[level];
     originalConsoleLogFunctions[level] = originalConsoleLogFunction;
     const overrideMethod = (...args: Array<unknown>) => {
-      const newConsoleLogFunction = originalConsoleLogFunctions[level];
+      const message = getStringFromErrorLike(args);
+      const newLevel = transformLogLevel(level, message);
+
+      const newConsoleLogFunction = originalConsoleLogFunctions[newLevel];
       const result = newConsoleLogFunction(...args);
       logTailers.forEach((handler) => {
-        handler(level, ...args);
+        handler(newLevel, ...args);
       });
       return result;
     };
@@ -53,4 +57,20 @@ export function initLogTailer() {
     overrideMethod.__FLIPPER_ORIGINAL_METHOD__ = originalConsoleLogFunction;
     originalConsole[level] = overrideMethod;
   }
+}
+
+function transformLogLevel(level: LoggerTypes, message: string) {
+  if (level === 'error') {
+    // Error comes from one of our dependencies and is not actionable
+    if (message.includes('ResizeObserver loop limit exceeded')) {
+      return 'warn';
+    }
+    // Axios will create rather unhelpful error messages which
+    // lead to unactionable tasks, e.g. T150636191
+    if (message.endsWith('Network Error')) {
+      return 'warn';
+    }
+  }
+
+  return level;
 }

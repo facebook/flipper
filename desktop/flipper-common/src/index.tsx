@@ -20,6 +20,7 @@ export {
   setLoggerInstance,
   NoopLogger,
 } from './utils/Logger';
+export * from './utils/LoggerTailer';
 export * from './server-types';
 export * from './companion-types';
 export * from './ServerAddOn';
