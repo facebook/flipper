@@ -524,6 +524,7 @@ export type FlipperServerConfig = {
   validWebSocketOrigins: string[];
   environmentInfo: EnvironmentInfo;
   type?: FlipperServerType;
+  sessionId: string;
 };
 
 export interface FlipperServerExecOptions {

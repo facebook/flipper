@@ -39,13 +39,13 @@ import {
   Logger,
   parseEnvironmentVariables,
   setLoggerInstance,
+  uuid,
   wrapRequire,
 } from 'flipper-common';
 import constants from './fb-stubs/constants';
 import {initializeElectron} from './electron/initializeElectron';
 import path from 'path';
 import fs from 'fs-extra';
-import os from 'os';
 import {ElectronIpcClientRenderer} from './electronIpc';
 import {KeytarModule} from 'flipper-server-core/src/utils/keytar';
 import {initCompanionEnv} from 'flipper-server-companion';
@@ -167,6 +167,7 @@ async function getFlipperServer(
   const getEmbeddedServer = async () => {
     const server = new FlipperServerImpl(
       {
+        sessionId: uuid(),
         environmentInfo,
         env: parseEnvironmentVariables(env),
         gatekeepers: gatekeepers,

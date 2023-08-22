@@ -9,7 +9,6 @@
 
 import {Provider} from 'react-redux';
 import {init as initLogger} from './fb-stubs/Logger';
-import {initLogTailer} from './consoleLogTailer';
 import {SandyApp} from './sandy-chrome/SandyApp';
 import {Persistor, persistStore} from 'redux-persist';
 import dispatcher from './dispatcher/index';
@@ -38,7 +37,7 @@ import styled from '@emotion/styled';
 import {CopyOutlined} from '@ant-design/icons';
 import {getVersionString} from './utils/versionString';
 import {PersistGate} from 'redux-persist/integration/react';
-import {setLoggerInstance, FlipperServer} from 'flipper-common';
+import {setLoggerInstance, FlipperServer, initLogTailer} from 'flipper-common';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {startGlobalErrorHandling} from './utils/globalErrorHandling';
 import {loadTheme} from './utils/loadTheme';

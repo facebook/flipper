@@ -22,6 +22,7 @@ import {
   ReleaseChannel,
   Tristate,
   parseEnvironmentVariables,
+  uuid,
 } from 'flipper-common';
 
 // Only import the type!
@@ -131,6 +132,7 @@ Object.defineProperty(global, 'matchMedia', {
 function createStubRenderHost(): RenderHost {
   const rootPath = resolve(__dirname, '..');
   const stubConfig: FlipperServerConfig = {
+    sessionId: uuid(),
     environmentInfo: {
       processId: process.pid,
       appVersion: '0.0.0',
