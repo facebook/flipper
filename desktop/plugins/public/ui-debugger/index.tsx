@@ -210,10 +210,18 @@ export function plugin(client: PluginClient<Events>) {
 
   const processFrame = async (frameScan: FrameScanEvent) => {
     try {
+      const nodes = new Map(
+        frameScan.nodes.map((node) => [node.id, {...node}]),
+      );
+      if (frameScan.frameTime > lastFrameTime) {
+        applyFrameData(nodes, frameScan.snapshot);
+        lastFrameTime = frameScan.frameTime;
+      }
+      applyFrameworkEvents(frameScan, nodes);
+      lastFrameTime = frameScan.frameTime;
+
       const [processedNodes, additionalMetadata] =
-        await streamInterceptor.transformNodes(
-          new Map(frameScan.nodes.map((node) => [node.id, {...node}])),
-        );
+        await streamInterceptor.transformNodes(nodes);
 
       metadata.update((draft) => {
         for (const metadata of additionalMetadata) {
@@ -221,14 +229,10 @@ export function plugin(client: PluginClient<Events>) {
         }
       });
 
-      if (frameScan.frameTime > lastFrameTime) {
+      if (frameScan.frameTime >= lastFrameTime) {
         applyFrameData(processedNodes, frameScan.snapshot);
         lastFrameTime = frameScan.frameTime;
       }
-
-      applyFrameworkEvents(frameScan, processedNodes);
-
-      return true;
     } catch (error) {
       pendingData.frame = frameScan;
       handleStreamError('Frame', error);
