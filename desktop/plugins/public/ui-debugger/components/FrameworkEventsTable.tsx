@@ -7,7 +7,7 @@
  * @format
  */
 
-import {PartitionOutlined} from '@ant-design/icons';
+import {DeleteOutlined, PartitionOutlined} from '@ant-design/icons';
 import {
   DataTable,
   DataTableColumn,
@@ -84,19 +84,30 @@ export function FrameworkEventsTable({
   return (
     <Layout.Container grow>
       <DataTable<FrameworkEvent>
+        enableAutoScroll
         dataSource={instance.frameworkEvents}
         tableManagerRef={managerRef}
         onSelect={onSelectRow}
         columns={allColumns}
         extraActions={
-          <Tooltip title="Back to tree">
-            <Button
-              onClick={() => {
-                instance.uiActions.onFocusNode(undefined);
-                instance.uiActions.onSetViewMode({mode: 'default'});
-              }}
-              icon={<PartitionOutlined />}></Button>
-          </Tooltip>
+          <>
+            <Tooltip title="Back to tree">
+              <Button
+                onClick={() => {
+                  instance.uiActions.onFocusNode(undefined);
+                  instance.uiActions.onSetViewMode({mode: 'default'});
+                }}
+                icon={<PartitionOutlined />}></Button>
+            </Tooltip>
+            <Tooltip title="Delete all events">
+              <Button
+                onClick={() => {
+                  instance.frameworkEvents.clear();
+                  managerRef.current?.clearSelection();
+                }}
+                icon={<DeleteOutlined />}></Button>
+            </Tooltip>
+          </>
         }
       />
       <DetailSidebar width={450}>
