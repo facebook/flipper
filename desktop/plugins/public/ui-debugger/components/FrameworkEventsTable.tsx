@@ -12,21 +12,26 @@ import {
   DataTable,
   DataTableColumn,
   DataTableManager,
+  DetailSidebar,
   Layout,
   usePlugin,
+  useValue,
 } from 'flipper-plugin';
-import React, {useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import {FrameworkEvent, Id, NodeMap} from '../ClientTypes';
 import {plugin} from '../index';
-import {Button, Tooltip} from 'antd';
+import {Button, Result, Tooltip} from 'antd';
 import {AugmentedFrameworkEvent} from '../DesktopTypes';
 import {formatDuration, formatTimestampMillis} from '../utils/timeUtils';
 import {eventTypeToName} from './sidebar/inspector/FrameworkEventsInspector';
 import {startCase} from 'lodash';
+import {Visualization2D} from './visualizer/Visualization2D';
+import {getNode} from '../utils/map';
 
 export function FrameworkEventsTable({
   nodeId,
   isTree,
+  nodes,
 }: {
   nodeId: Id;
   nodes: NodeMap;
@@ -34,11 +39,13 @@ export function FrameworkEventsTable({
 }) {
   const instance = usePlugin(plugin);
 
+  const focusedNode = useValue(instance.uiState.focusedNode);
   const managerRef = useRef<DataTableManager<AugmentedFrameworkEvent> | null>(
     null,
   );
 
   useEffect(() => {
+    instance.uiActions.onSelectNode(undefined, 'tree');
     if (nodeId != null) {
       managerRef.current?.resetFilters();
       if (isTree) {
@@ -51,24 +58,45 @@ export function FrameworkEventsTable({
         });
       }
     }
-  }, [isTree, nodeId]);
+  }, [instance.uiActions, isTree, nodeId]);
 
+  const onSelectRow = useCallback(
+    (event: FrameworkEvent | undefined): void => {
+      instance.uiActions.onFocusNode(event?.nodeId);
+    },
+    [instance.uiActions],
+  );
   return (
     <Layout.Container grow>
       <DataTable<FrameworkEvent>
         dataSource={instance.frameworkEvents}
         tableManagerRef={managerRef}
+        onSelect={onSelectRow}
         columns={columns}
         extraActions={
           <Tooltip title="Back to tree">
             <Button
               onClick={() => {
+                instance.uiActions.onFocusNode(undefined);
                 instance.uiActions.onSetViewMode({mode: 'default'});
               }}
               icon={<PartitionOutlined />}></Button>
           </Tooltip>
         }
       />
+      <DetailSidebar width={450}>
+        {getNode(focusedNode, nodes) != null ? (
+          <Visualization2D
+            disableInteractivity
+            hideControls
+            width={400}
+            nodes={nodes}
+            onSelectNode={instance.uiActions.onSelectNode}
+          />
+        ) : (
+          <Result title="Node is no longer on screen" />
+        )}
+      </DetailSidebar>
     </Layout.Container>
   );
 }
