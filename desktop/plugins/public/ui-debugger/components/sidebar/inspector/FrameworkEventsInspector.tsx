@@ -36,6 +36,7 @@ import {last, startCase, uniqBy} from 'lodash';
 import {FilterOutlined, TableOutlined} from '@ant-design/icons';
 import {ViewMode} from '../../../DesktopTypes';
 import {MultiSelectableDropDownItem} from '../../shared/MultiSelectableDropDownItem';
+import {formatDuration, formatTimestampMillis} from '../../../utils/timeUtils';
 
 type Props = {
   node: ClientNode;
@@ -88,6 +89,7 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
                 onSetViewMode({
                   mode: 'frameworkEventsTable',
                   nodeId: node.id,
+                  isTree: node.tags.includes('TreeRoot'),
                 })
               }
             />
@@ -233,7 +235,7 @@ function EventDetails({
           <Tag color={threadToColor(event.thread)}>{event.thread}</Tag>
         </Descriptions.Item>
         <Descriptions.Item label="Timestamp">
-          {formatTimestamp(event.timestamp)}
+          {formatTimestampMillis(event.timestamp)}
         </Descriptions.Item>
         {event.duration && (
           <Descriptions.Item label="Duration">
@@ -257,35 +259,14 @@ function EventDetails({
   );
 }
 
-const options: Intl.DateTimeFormatOptions = {
+export const options: Intl.DateTimeFormatOptions = {
   hour: 'numeric',
   minute: 'numeric',
   second: 'numeric',
   hour12: false,
 };
-function formatTimestamp(timestamp: number): string {
-  const date = new Date(timestamp);
 
-  const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
-  const milliseconds = date.getMilliseconds();
-
-  return `${formattedDate}.${milliseconds.toString().padStart(3, '0')}`;
-}
-
-function formatDuration(nanoseconds: number): string {
-  if (nanoseconds < 1_000) {
-    return `${nanoseconds} nanoseconds`;
-  } else if (nanoseconds < 1_000_000) {
-    return `${(nanoseconds / 1_000).toFixed(2)} microseconds`;
-  } else if (nanoseconds < 1_000_000_000) {
-    return `${(nanoseconds / 1_000_000).toFixed(2)} milliseconds`;
-  } else if (nanoseconds < 1_000_000_000_000) {
-    return `${(nanoseconds / 1_000_000_000).toFixed(2)} seconds`;
-  } else {
-    return `${(nanoseconds / (1_000_000_000 * 60)).toFixed(2)} minutes`;
-  }
-}
-function eventTypeToName(eventType: string) {
+export function eventTypeToName(eventType: string) {
   return eventType.slice(eventType.lastIndexOf(frameworkEventSeparator) + 1);
 }
 

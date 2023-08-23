@@ -11,6 +11,7 @@ import {Atom, _ReadOnlyAtom} from 'flipper-plugin';
 import {
   Id,
   FrameworkEventType,
+  FrameworkEvent,
   Inspectable,
   Bounds,
   Tag,
@@ -66,11 +67,16 @@ export type NestedNode = {
 
 export type ViewMode =
   | {mode: 'default'}
-  | {mode: 'frameworkEventsTable'; nodeId: Id};
+  | {mode: 'frameworkEventsTable'; nodeId: Id; isTree: boolean};
 
 export type NodeSelection = {
   id: Id;
   source: SelectionSource;
+};
+
+export type AugmentedFrameworkEvent = FrameworkEvent & {
+  nodeName?: string;
+  rootComponentName?: string;
 };
 
 export type OnSelectNode = (
