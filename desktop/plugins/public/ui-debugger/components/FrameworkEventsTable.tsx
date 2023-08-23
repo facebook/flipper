@@ -17,7 +17,7 @@ import {
   usePlugin,
   useValue,
 } from 'flipper-plugin';
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {FrameworkEvent, Id, NodeMap} from '../ClientTypes';
 import {plugin} from '../index';
 import {Button, Result, Tooltip} from 'antd';
@@ -60,6 +60,21 @@ export function FrameworkEventsTable({
     }
   }, [instance.uiActions, isTree, nodeId]);
 
+  const allColumns = useMemo(() => {
+    const customColumnKeys = instance.frameworkEventsCustomColumns.get();
+
+    const customColumns = [...customColumnKeys].map(
+      (customKey: string) =>
+        ({
+          key: customKey,
+          title: startCase(customKey),
+          onRender: (row: AugmentedFrameworkEvent) => row.payload?.[customKey],
+        } as DataTableColumn<AugmentedFrameworkEvent>),
+    );
+
+    return staticColumns.concat(customColumns);
+  }, [instance.frameworkEventsCustomColumns]);
+
   const onSelectRow = useCallback(
     (event: FrameworkEvent | undefined): void => {
       instance.uiActions.onFocusNode(event?.nodeId);
@@ -72,7 +87,7 @@ export function FrameworkEventsTable({
         dataSource={instance.frameworkEvents}
         tableManagerRef={managerRef}
         onSelect={onSelectRow}
-        columns={columns}
+        columns={allColumns}
         extraActions={
           <Tooltip title="Back to tree">
             <Button
@@ -101,7 +116,7 @@ export function FrameworkEventsTable({
   );
 }
 
-const columns: DataTableColumn<AugmentedFrameworkEvent>[] = [
+const staticColumns: DataTableColumn<AugmentedFrameworkEvent>[] = [
   {
     key: 'timestamp',
     onRender: (row: FrameworkEvent) => formatTimestampMillis(row.timestamp),
@@ -138,13 +153,5 @@ const columns: DataTableColumn<AugmentedFrameworkEvent>[] = [
     key: 'thread',
     title: 'Thread',
     onRender: (row: FrameworkEvent) => startCase(row.thread),
-  },
-  {
-    key: 'payload',
-    title: 'Payload',
-    onRender: (row: FrameworkEvent) =>
-      Object.keys(row.payload ?? {}).length > 0
-        ? JSON.stringify(row.payload)
-        : null,
   },
 ];

@@ -52,6 +52,7 @@ export function plugin(client: PluginClient<Events>) {
     indices: [['nodeId']],
     limit: 10000,
   });
+  const frameworkEventsCustomColumns = createState<Set<string>>(new Set());
 
   const frameworkEventMetadata = createState<
     Map<FrameworkEventType, FrameworkEventMetadata>
@@ -239,8 +240,14 @@ export function plugin(client: PluginClient<Events>) {
     frameScan: FrameScanEvent,
     nodes: Map<Id, ClientNode>,
   ) {
+    const customColumns = frameworkEventsCustomColumns.get();
     for (const frameworkEvent of frameScan.frameworkEvents ?? []) {
+      for (const key in frameworkEvent.payload) {
+        customColumns.add(key);
+      }
+
       const treeRoot = getNode(frameworkEvent.treeId, nodes);
+
       const treeRootFirstChild = getNode(first(treeRoot?.children), nodes);
       frameworkEvents.append({
         ...frameworkEvent,
@@ -248,6 +255,7 @@ export function plugin(client: PluginClient<Events>) {
         rootComponentName: treeRootFirstChild?.name,
       });
     }
+    frameworkEventsCustomColumns.set(customColumns);
 
     if (uiState.isPaused.get() === true) {
       return;
@@ -323,6 +331,7 @@ export function plugin(client: PluginClient<Events>) {
     nodes: nodesAtom,
     frameworkEvents,
     frameworkEventMetadata,
+    frameworkEventsCustomColumns,
     snapshot,
     metadata,
     perfEvents,
