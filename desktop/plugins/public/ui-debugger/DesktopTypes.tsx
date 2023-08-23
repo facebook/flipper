@@ -67,7 +67,7 @@ export type NestedNode = {
 
 export type ViewMode =
   | {mode: 'default'}
-  | {mode: 'frameworkEventsTable'; nodeId: Id};
+  | {mode: 'frameworkEventsTable'; nodeId: Id; isTree: boolean};
 
 export type NodeSelection = {
   id: Id;

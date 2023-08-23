@@ -159,18 +159,20 @@ export const ContextMenu: React.FC<{
       frameworkEvents.getAllRecordsByIndex({nodeId: hoveredNode.id})) ??
     [];
 
-  const frameworkEventsTable = matchingFrameworkEvents.length > 0 && (
-    <UIDebuggerMenuItem
-      text="Explore events"
-      onClick={() => {
-        onSetViewMode({
-          mode: 'frameworkEventsTable',
-          nodeId: hoveredNode?.id ?? '',
-        });
-      }}
-      icon={<TableOutlined />}
-    />
-  );
+  const frameworkEventsTable = matchingFrameworkEvents.length > 0 &&
+    hoveredNode && (
+      <UIDebuggerMenuItem
+        text="Explore events"
+        onClick={() => {
+          onSetViewMode({
+            mode: 'frameworkEventsTable',
+            nodeId: hoveredNode.id,
+            isTree: hoveredNode.tags.includes('TreeRoot'),
+          });
+        }}
+        icon={<TableOutlined />}
+      />
+    );
 
   return (
     <Dropdown

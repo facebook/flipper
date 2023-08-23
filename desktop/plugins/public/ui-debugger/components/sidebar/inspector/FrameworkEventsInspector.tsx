@@ -89,6 +89,7 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
                 onSetViewMode({
                   mode: 'frameworkEventsTable',
                   nodeId: node.id,
+                  isTree: node.tags.includes('TreeRoot'),
                 })
               }
             />

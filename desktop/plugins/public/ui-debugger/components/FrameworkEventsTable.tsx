@@ -24,7 +24,14 @@ import {formatDuration, formatTimestampMillis} from '../utils/timeUtils';
 import {eventTypeToName} from './sidebar/inspector/FrameworkEventsInspector';
 import {startCase} from 'lodash';
 
-export function FrameworkEventsTable({nodeId}: {nodeId: Id; nodes: NodeMap}) {
+export function FrameworkEventsTable({
+  nodeId,
+  isTree,
+}: {
+  nodeId: Id;
+  nodes: NodeMap;
+  isTree: boolean;
+}) {
   const instance = usePlugin(plugin);
 
   const managerRef = useRef<DataTableManager<AugmentedFrameworkEvent> | null>(
@@ -34,9 +41,17 @@ export function FrameworkEventsTable({nodeId}: {nodeId: Id; nodes: NodeMap}) {
   useEffect(() => {
     if (nodeId != null) {
       managerRef.current?.resetFilters();
-      managerRef.current?.addColumnFilter('nodeId', nodeId as string);
+      if (isTree) {
+        managerRef.current?.addColumnFilter('treeId', nodeId as string, {
+          exact: true,
+        });
+      } else {
+        managerRef.current?.addColumnFilter('nodeId', nodeId as string, {
+          exact: true,
+        });
+      }
     }
-  }, [nodeId]);
+  }, [isTree, nodeId]);
 
   return (
     <Layout.Container grow>
