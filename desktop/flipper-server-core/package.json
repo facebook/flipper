@@ -63,7 +63,9 @@
     "@types/split2": "^3.2.1",
     "@types/tmp": "^0.2.3",
     "@types/which": "^2.0.1",
-    "@types/ws": "^8.5.3"
+    "@types/ws": "^8.5.3",
+    "@types/mock-fs": "^4.13.1",
+    "mock-fs": "^5.2.0"
   },
   "peerDependencies": {},
   "scripts": {
