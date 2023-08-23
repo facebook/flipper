@@ -12,6 +12,7 @@ import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -22,13 +23,13 @@ import okhttp3.Response;
 
 public final class ExampleActions {
 
-    // Create a custom OkHttpClient with timeouts
-    private static final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .build();
+   public static void sendPostRequest() {
+       // Create a new OkHttpClient instance with timeouts for this request
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .build();
 
-    public static void sendPostRequest() {
         final RequestBody formBody =
                 new FormBody.Builder().add("app", "Flipper").add("remarks", "Its awesome").build();
 
@@ -46,6 +47,10 @@ public final class ExampleActions {
                             public void onFailure(final Call call, final IOException e) {
                                 e.printStackTrace();
                                 Log.d("Flipper", "Post Request Failed: " + e.getMessage());
+
+                                // Close the OkHttpClient when no longer needed
+                                client.dispatcher().executorService().shutdown();
+                                client.connectionPool().evictAll();
                             }
 
                             @Override
@@ -55,13 +60,24 @@ public final class ExampleActions {
                                 } else {
                                     Log.d("Flipper", "Post Request Not Successful: " + response.code());
                                 }
+
+                                // Close the OkHttpClient when no longer needed
+                                client.dispatcher().executorService().shutdown();
+                                client.connectionPool().evictAll();
                             }
                         });
     }
 
     public static void sendGetRequest() {
+        // Create a new OkHttpClient instance with timeouts for this request
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .build();
+
         final Request request =
                 new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
+
         client
                 .newCall(request)
                 .enqueue(
@@ -70,6 +86,10 @@ public final class ExampleActions {
                             public void onFailure(final Call call, final IOException e) {
                                 e.printStackTrace();
                                 Log.d("Flipper", "Get Request Failed: " + e.getMessage());
+
+                                // Close the OkHttpClient when no longer needed
+                                client.dispatcher().executorService().shutdown();
+                                client.connectionPool().evictAll();
                             }
 
                             @Override
@@ -79,6 +99,10 @@ public final class ExampleActions {
                                 } else {
                                     Log.d("Flipper", "Get Request Not Successful: " + response.code());
                                 }
+
+                                // Close the OkHttpClient when no longer needed
+                                client.dispatcher().executorService().shutdown();
+                                client.connectionPool().evictAll();
                             }
                         });
     }
