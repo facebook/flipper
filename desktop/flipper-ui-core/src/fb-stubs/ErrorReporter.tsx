@@ -13,7 +13,7 @@
  * so that all logged errors get reported to this class.
  */
 export function cleanStack(_stack: string, _loc?: string) {}
-import ScribeLogger from './ScribeLogger';
+import {ScribeLogger} from 'flipper-common';
 
 export default class ErrorReporter {
   constructor(_scribeLogger: ScribeLogger) {}
