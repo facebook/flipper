@@ -16,14 +16,20 @@ import {
   usePlugin,
 } from 'flipper-plugin';
 import React, {useEffect, useRef} from 'react';
-import {FrameworkEvent, Id} from '../ClientTypes';
+import {FrameworkEvent, Id, NodeMap} from '../ClientTypes';
 import {plugin} from '../index';
 import {Button, Tooltip} from 'antd';
+import {AugmentedFrameworkEvent} from '../DesktopTypes';
+import {formatDuration, formatTimestampMillis} from '../utils/timeUtils';
+import {eventTypeToName} from './sidebar/inspector/FrameworkEventsInspector';
+import {startCase} from 'lodash';
 
-export function FrameworkEventsTable({nodeId}: {nodeId: Id}) {
+export function FrameworkEventsTable({nodeId}: {nodeId: Id; nodes: NodeMap}) {
   const instance = usePlugin(plugin);
 
-  const managerRef = useRef<DataTableManager<FrameworkEvent> | null>(null);
+  const managerRef = useRef<DataTableManager<AugmentedFrameworkEvent> | null>(
+    null,
+  );
 
   useEffect(() => {
     if (nodeId != null) {
@@ -52,23 +58,50 @@ export function FrameworkEventsTable({nodeId}: {nodeId: Id}) {
   );
 }
 
-const columns: DataTableColumn<FrameworkEvent>[] = [
+const columns: DataTableColumn<AugmentedFrameworkEvent>[] = [
   {
     key: 'timestamp',
-    onRender: (row: FrameworkEvent) => {
-      return new Date(row.timestamp).toLocaleTimeString();
-    },
-  },
-  {
-    key: 'treeId',
-  },
-  {
-    key: 'nodeId',
+    onRender: (row: FrameworkEvent) => formatTimestampMillis(row.timestamp),
+    title: 'Timestamp',
   },
   {
     key: 'type',
+    title: 'Event type',
+    onRender: (row: FrameworkEvent) => eventTypeToName(row.type),
+  },
+  {
+    key: 'duration',
+    title: 'Duration',
+    onRender: (row: FrameworkEvent) =>
+      row.duration != null ? formatDuration(row.duration) : null,
+  },
+  {
+    key: 'treeId',
+    title: 'TreeId',
+  },
+  {
+    key: 'rootComponentName',
+    title: 'Root component name',
+  },
+  {
+    key: 'nodeId',
+    title: 'Component ID',
+  },
+  {
+    key: 'nodeName',
+    title: 'Component name',
   },
   {
     key: 'thread',
+    title: 'Thread',
+    onRender: (row: FrameworkEvent) => startCase(row.thread),
+  },
+  {
+    key: 'payload',
+    title: 'Payload',
+    onRender: (row: FrameworkEvent) =>
+      Object.keys(row.payload ?? {}).length > 0
+        ? JSON.stringify(row.payload)
+        : null,
   },
 ];

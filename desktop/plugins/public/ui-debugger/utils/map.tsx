@@ -9,7 +9,10 @@
 
 import {ClientNode, Id} from '../ClientTypes';
 
-export function getNode(id: Id | undefined, nodes: Map<Id, ClientNode>) {
+export function getNode(
+  id: Id | undefined,
+  nodes: Map<Id, ClientNode>,
+): ClientNode | undefined {
   //map just returns undefined when you pass null or undefined as a key
   return nodes.get(id!);
 }

@@ -35,6 +35,7 @@ export type SubtreeUpdateEvent = {
   frameworkEvents?: FrameworkEvent[];
 };
 
+export type NodeMap = Map<Id, ClientNode>;
 export type FrameworkEventType = string;
 
 export type FrameworkEventMetadata = {
@@ -59,7 +60,7 @@ export type FrameworkEvent = {
   nodeId: Id;
   type: FrameworkEventType;
   timestamp: number;
-  payload?: JSON;
+  payload?: JsonObject;
   duration?: number;
   attribution?: FrameworkEventAttribution;
   thread?: 'main' | string;

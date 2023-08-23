@@ -11,7 +11,6 @@ import {createDataSource, createState, PluginClient} from 'flipper-plugin';
 import {
   Events,
   FrameScanEvent,
-  FrameworkEvent,
   FrameworkEventType,
   Id,
   Metadata,
@@ -29,11 +28,14 @@ import {
   ReadOnlyUIState,
   LiveClientState,
   WireFrameMode,
+  AugmentedFrameworkEvent,
 } from './DesktopTypes';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
 import {prefetchSourceFileLocation} from './components/fb-stubs/IDEContextMenu';
 import {checkFocusedNodeStillActive} from './plugin/ClientDataUtils';
 import {uiActions} from './plugin/uiActions';
+import {first} from 'lodash';
+import {getNode} from './utils/map';
 
 type PendingData = {
   metadata: Record<MetadataId, Metadata>;
@@ -46,7 +48,7 @@ export function plugin(client: PluginClient<Events>) {
   const streamInterceptor = getStreamInterceptor(client.device.os);
   const snapshot = createState<SnapshotInfo | null>(null);
   const nodesAtom = createState<Map<Id, ClientNode>>(new Map());
-  const frameworkEvents = createDataSource<FrameworkEvent>([], {
+  const frameworkEvents = createDataSource<AugmentedFrameworkEvent>([], {
     indices: [['nodeId']],
     limit: 10000,
   });
@@ -223,7 +225,7 @@ export function plugin(client: PluginClient<Events>) {
         lastFrameTime = frameScan.frameTime;
       }
 
-      applyFrameworkEvents(frameScan);
+      applyFrameworkEvents(frameScan, processedNodes);
 
       return true;
     } catch (error) {
@@ -233,9 +235,18 @@ export function plugin(client: PluginClient<Events>) {
     }
   };
 
-  function applyFrameworkEvents(frameScan: FrameScanEvent) {
+  function applyFrameworkEvents(
+    frameScan: FrameScanEvent,
+    nodes: Map<Id, ClientNode>,
+  ) {
     for (const frameworkEvent of frameScan.frameworkEvents ?? []) {
-      frameworkEvents.append(frameworkEvent);
+      const treeRoot = getNode(frameworkEvent.treeId, nodes);
+      const treeRootFirstChild = getNode(first(treeRoot?.children), nodes);
+      frameworkEvents.append({
+        ...frameworkEvent,
+        nodeName: nodes.get(frameworkEvent.nodeId)?.name,
+        rootComponentName: treeRootFirstChild?.name,
+      });
     }
 
     if (uiState.isPaused.get() === true) {
