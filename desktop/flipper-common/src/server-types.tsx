@@ -351,6 +351,7 @@ export type FlipperServerCommands = {
     options: {
       timeout?: number;
       internGraphUrl?: string;
+      headers?: Record<string, string | number | boolean>;
     },
   ) => Promise<GraphResponse>;
   'intern-graph-get': (
@@ -359,6 +360,7 @@ export type FlipperServerCommands = {
     options: {
       timeout?: number;
       internGraphUrl?: string;
+      headers?: Record<string, string | number | boolean>;
     },
   ) => Promise<GraphResponse>;
   'intern-upload-scribe-logs': (
