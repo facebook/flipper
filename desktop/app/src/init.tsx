@@ -28,6 +28,7 @@ import {
   loadLauncherSettings,
   loadProcessConfig,
   loadSettings,
+  sessionId,
   setupPrefetcher,
   startFlipperServer,
   startServer,
@@ -39,7 +40,6 @@ import {
   Logger,
   parseEnvironmentVariables,
   setLoggerInstance,
-  uuid,
   wrapRequire,
 } from 'flipper-common';
 import constants from './fb-stubs/constants';
@@ -167,7 +167,7 @@ async function getFlipperServer(
   const getEmbeddedServer = async () => {
     const server = new FlipperServerImpl(
       {
-        sessionId: uuid(),
+        sessionId,
         environmentInfo,
         env: parseEnvironmentVariables(env),
         gatekeepers: gatekeepers,

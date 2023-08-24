@@ -28,3 +28,5 @@ export {
   getAuthToken,
   hasAuthToken,
 } from './app-connectivity/certificate-exchange/certificate-utils';
+
+export {sessionId} from './sessionId';
