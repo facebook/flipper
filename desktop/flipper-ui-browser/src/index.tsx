@@ -16,6 +16,9 @@ if (loadingContainer) {
   loadingContainer.innerText = 'Loading...';
 }
 
+let cachedFile: {name: string; data: string} | undefined;
+let cachedDeepLinkURL: string | undefined;
+
 async function start() {
   // @ts-ignore
   electronRequire = function (path: string) {
@@ -36,6 +39,23 @@ async function start() {
     const manifestResponse = await fetch('manifest.json');
     const manifest = await manifestResponse.json();
     token = manifest.token;
+  }
+
+  const openPlugin = params.get('open-plugin');
+  if (openPlugin) {
+    function removePrefix(input: string, prefix: string): string {
+      const regex = new RegExp(`^${prefix}+`);
+      return input.replace(regex, '');
+    }
+
+    const url = new URL(openPlugin);
+    const maybeParams = removePrefix(url.pathname, '/');
+    const params = new URLSearchParams(maybeParams);
+
+    const deeplinkURL = new URL('flipper://open-plugin');
+    deeplinkURL.search = params.toString();
+
+    cachedDeepLinkURL = deeplinkURL.toString();
   }
 
   const searchParams = new URLSearchParams({token: token ?? ''});
@@ -94,7 +114,6 @@ start().catch((e) => {
 async function initializePWA() {
   console.log('[PWA] Initialization');
 
-  let cachedFile: {name: string; data: string} | undefined;
   let rehydrated = false;
   const openFileIfAny = () => {
     if (!cachedFile || !rehydrated) {
@@ -106,6 +125,18 @@ async function initializePWA() {
       }),
     );
     cachedFile = undefined;
+  };
+
+  const openURLIfAny = () => {
+    if (!cachedDeepLinkURL || !rehydrated) {
+      return;
+    }
+    window.dispatchEvent(
+      new CustomEvent('flipper-protocol-handler', {
+        detail: [cachedDeepLinkURL],
+      }),
+    );
+    cachedDeepLinkURL = undefined;
   };
 
   if ('serviceWorker' in navigator) {
@@ -158,6 +189,7 @@ async function initializePWA() {
     console.info('[PWA] Store is rehydrated');
     rehydrated = true;
     openFileIfAny();
+    openURLIfAny();
   });
 }
 

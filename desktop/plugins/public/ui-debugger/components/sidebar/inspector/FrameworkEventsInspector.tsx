@@ -37,6 +37,7 @@ import {FilterOutlined, TableOutlined} from '@ant-design/icons';
 import {ViewMode} from '../../../DesktopTypes';
 import {MultiSelectableDropDownItem} from '../../shared/MultiSelectableDropDownItem';
 import {formatDuration, formatTimestampMillis} from '../../../utils/timeUtils';
+import {tracker} from '../../../utils/tracker';
 
 type Props = {
   node: ClientNode;
@@ -97,6 +98,14 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
           {(showEventTypesSection || showThreadsSection) && (
             <Dropdown
               overlayStyle={{minWidth: 200}}
+              onVisibleChange={(visible) => {
+                if (visible) {
+                  tracker.track(
+                    'framework-event-timeline-filters-adjusted',
+                    {},
+                  );
+                }
+              }}
               overlay={
                 <Layout.Container
                   gap="small"
@@ -179,6 +188,9 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
         onClick={(current) => {
           const idx = parseInt(current, 10);
           const event = filteredEvents[idx];
+          tracker.track('framework-event-timeline-event-selected', {
+            eventType: event.type,
+          });
           showExtra?.(
             'Event details',
             <EventDetails

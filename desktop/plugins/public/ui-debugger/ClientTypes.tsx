@@ -56,14 +56,14 @@ type FrameworkEventAttribution = Stacktrace | Reason | UpstreamEvent;
 
 export type FrameworkEvent = {
   id: number;
-  treeId?: Id;
+  treeId?: Id; //todo should be mandatory once ios implements this
   nodeId: Id;
   type: FrameworkEventType;
   timestamp: number;
   payload?: JsonObject;
   duration?: number;
   attribution?: FrameworkEventAttribution;
-  thread?: 'main' | string;
+  thread?: 'main' | string; //todo should be mandatory once ios implements this
 };
 
 export type InitEvent = {

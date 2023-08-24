@@ -9,11 +9,11 @@
 
 import path from 'path';
 import {
+  addLogTailer,
+  EnvironmentInfo,
   LoggerExtractError,
   LoggerFormat,
-  LoggerInfo,
   LoggerTypes,
-  Logger,
   setLoggerInstance,
 } from 'flipper-common';
 // @ts-expect-error
@@ -21,81 +21,21 @@ import fsRotator from 'file-stream-rotator';
 import {ensureFile} from 'fs-extra';
 import {access} from 'fs/promises';
 import {constants} from 'fs';
+import {initializeLogger as initLogger} from 'flipper-server-core';
 
 export const loggerOutputFile = 'flipper-server-log.out';
 
-const logTypes: LoggerTypes[] = ['debug', 'info', 'warn', 'error'];
-
-function createLogger(): Logger {
-  return {
-    track(..._args: [any, any, any?, any?]) {
-      // TODO: only if verbose console.debug(...args);
-      // console.warn('(skipper track)', args);
-    },
-    trackTimeSince(..._args: [any, any, any?]) {
-      // TODO: only if verbose console.debug(...args);
-      // console.warn('(skipped trackTimeSince)', args);
-    },
-    debug(...args: any[]) {
-      console.debug(...args);
-    },
-    error(...args: any[]) {
-      console.error(...args);
-    },
-    warn(...args: any[]) {
-      console.warn(...args);
-    },
-    info(...args: any[]) {
-      console.info(...args);
-    },
-  };
-}
-
-type FlipperLogProxy = (entry: LoggerInfo) => void;
-
-const consoleProxy = (proxy: FlipperLogProxy) => {
-  function log(level: LoggerTypes, ...data: Array<any>): void {
-    const logInfo = LoggerFormat(level, ...data);
-    proxy(logInfo);
-
-    if (level === 'error') {
-      const {
-        message,
-        error: {stack, interaction, name},
-      } = LoggerExtractError(data);
-      const logInfo = LoggerFormat(level, {
-        name,
-        stack,
-        interaction,
-        message,
-      });
-      proxy(logInfo);
-    }
-  }
-
-  for (const method of logTypes) {
-    const originalConsole: {[key: string]: any} = console;
-    const originalMethod = originalConsole[method];
-    const overrideMethod = (...args: Array<unknown>) => {
-      const result = originalMethod(...args);
-      log(method, ...args);
-      return result;
-    };
-    originalConsole[method] = overrideMethod;
-  }
-};
-
-export async function initializeLogger(staticDir: string) {
+export async function initializeLogger(
+  environmentInfo: EnvironmentInfo,
+  staticDir: string,
+) {
   // Suppress stdout debug messages, but keep writing them to the file.
   console.debug = function () {};
 
-  const logger = createLogger();
+  const logger = initLogger(environmentInfo);
   setLoggerInstance(logger);
 
-  let onConsoleEntry: ((entry: LoggerInfo) => void) | undefined;
-
   const logFilename = path.join(staticDir, loggerOutputFile);
-
   let logStream: NodeJS.WriteStream | undefined = undefined;
   try {
     await ensureFile(logFilename);
@@ -112,12 +52,22 @@ export async function initializeLogger(staticDir: string) {
     console.warn('initializeLogger -> cannot write logs to FS', e);
   }
 
-  consoleProxy((entry: LoggerInfo) => {
-    logStream?.write(`${JSON.stringify(entry)}\n`);
-    onConsoleEntry?.(entry);
-  });
+  addLogTailer((level: LoggerTypes, ...data: Array<any>) => {
+    const logInfo = LoggerFormat(level, ...data);
+    logStream?.write(`${JSON.stringify(logInfo)}\n`);
 
-  return (newOnConsoleEntry: (entry: LoggerInfo) => void) => {
-    onConsoleEntry = newOnConsoleEntry;
-  };
+    if (level === 'error') {
+      const {
+        message,
+        error: {stack, interaction, name},
+      } = LoggerExtractError(data);
+      const logInfo = LoggerFormat(level, {
+        name,
+        stack,
+        interaction,
+        message,
+      });
+      logStream?.write(`${JSON.stringify(logInfo)}\n`);
+    }
+  });
 }

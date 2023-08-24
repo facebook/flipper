@@ -13,7 +13,6 @@ import {
   getLogger,
   FlipperServerType,
   EnvironmentInfo,
-  uuid,
 } from 'flipper-common';
 import path from 'path';
 import fs from 'fs-extra';
@@ -23,6 +22,7 @@ import {getGatekeepers} from '../gk';
 import {loadLauncherSettings} from '../utils/launcherSettings';
 import {loadProcessConfig} from '../utils/processConfig';
 import {loadSettings} from '../utils/settings';
+import {sessionId} from '../sessionId';
 
 /**
  * Creates an instance of FlipperServer (FlipperServerImpl). This is the
@@ -59,7 +59,7 @@ export async function startFlipperServer(
   ]);
   return new FlipperServerImpl(
     {
-      sessionId: uuid(),
+      sessionId,
       environmentInfo,
       env: parseEnvironmentVariables(process.env),
       gatekeepers: getGatekeepers(environmentInfo.os.unixname),
