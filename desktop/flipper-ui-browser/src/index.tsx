@@ -38,6 +38,25 @@ async function start() {
     token = manifest.token;
   }
 
+  const openPlugin = params.get('open-plugin');
+  if (openPlugin) {
+    function removePrefix(input: string, prefix: string): string {
+      const regex = new RegExp(`^${prefix}+`);
+      return input.replace(regex, '');
+    }
+
+    const url = new URL(openPlugin);
+    const maybeParams = removePrefix(url.pathname, '/');
+    const params = new URLSearchParams(maybeParams);
+
+    const queryParamsObject: any = {};
+    params.forEach((value, key) => {
+      queryParamsObject[key] = value;
+    });
+
+    console.log(JSON.stringify(queryParamsObject));
+  }
+
   const searchParams = new URLSearchParams({token: token ?? ''});
 
   const flipperServer = await createFlipperServer(
