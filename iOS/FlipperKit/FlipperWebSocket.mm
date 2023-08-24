@@ -121,6 +121,14 @@ void FlipperWebSocket::send(
   if (socket_ == NULL) {
     return;
   }
+
+  // Ensure the payload size is valid before sending.
+  // The maximum allowed size for a message payload is 2^53 - 1. But that is
+  // for the entire message, including any additional metadata.
+  if (message.length() > pow(2, 53) - 1) {
+    throw std::length_error("Payload is too big to send");
+  }
+
   NSString* messageObjc = [NSString stringWithUTF8String:message.c_str()];
   [socket_ send:messageObjc
       withCompletionHandler:^(NSError*) {
