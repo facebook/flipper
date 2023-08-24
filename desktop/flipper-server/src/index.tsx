@@ -144,10 +144,17 @@ async function shutdown() {
 }
 
 async function start() {
-  console.info('[flipper-server][bootstrap] Booting up');
   const t0 = performance.now();
 
-  const enhanceLogger = await initializeLogger(staticPath);
+  const isProduction =
+    process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
+  const environmentInfo = await getEnvironmentInfo(
+    rootPath,
+    isProduction,
+    true,
+  );
+
+  await initializeLogger(environmentInfo, staticPath);
 
   const t1 = performance.now();
   const loggerInitializedMS = t1 - t0;
@@ -178,15 +185,6 @@ async function start() {
   const keytarLoadedMS = t2 - t1;
   console.info(
     `[flipper-server][bootstrap] Keytar loaded (${keytarLoadedMS} ms)`,
-  );
-
-  const isProduction =
-    process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
-
-  const environmentInfo = await getEnvironmentInfo(
-    rootPath,
-    isProduction,
-    true,
   );
 
   if (await checkPortInUse(argv.port)) {
@@ -235,10 +233,6 @@ async function start() {
 
   exitHook(async () => {
     await flipperServer.close();
-  });
-
-  enhanceLogger((logEntry) => {
-    flipperServer.emit('server-log', logEntry);
   });
 
   const companionEnv = await initCompanionEnv(flipperServer);

@@ -20,6 +20,7 @@ export * from './server/startFlipperServer';
 export * from './server/startServer';
 export * from './server/utilities';
 export {isFBBuild} from './fb-stubs/constants';
+export {initializeLogger} from './fb-stubs/Logger';
 
 export {WEBSOCKET_MAX_MESSAGE_SIZE} from './app-connectivity/ServerWebSocket';
 
