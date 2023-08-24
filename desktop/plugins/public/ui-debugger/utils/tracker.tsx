@@ -30,6 +30,14 @@ type TrackerEvents = {
     eventType: FrameworkEventType;
     monitored: boolean;
   };
+  'framework-event-table-row-selected': {
+    eventType: FrameworkEventType;
+  };
+  'framework-event-table-opened': {};
+  'framework-event-timeline-filters-adjusted': {};
+  'framework-event-timeline-event-selected': {
+    eventType: FrameworkEventType;
+  };
   'search-term-updated': {
     searchTerm: string;
   };

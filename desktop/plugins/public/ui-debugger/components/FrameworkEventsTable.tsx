@@ -27,6 +27,7 @@ import {eventTypeToName} from './sidebar/inspector/FrameworkEventsInspector';
 import {startCase} from 'lodash';
 import {Visualization2D} from './visualizer/Visualization2D';
 import {getNode} from '../utils/map';
+import {tracker} from '../utils/tracker';
 
 export function FrameworkEventsTable({
   nodeId,
@@ -45,6 +46,7 @@ export function FrameworkEventsTable({
   );
 
   useEffect(() => {
+    tracker.track('framework-event-table-opened', {});
     instance.uiActions.onSelectNode(undefined, 'tree');
     if (nodeId != null) {
       managerRef.current?.resetFilters();
@@ -77,6 +79,12 @@ export function FrameworkEventsTable({
 
   const onSelectRow = useCallback(
     (event: FrameworkEvent | undefined): void => {
+      if (event != null) {
+        tracker.track('framework-event-table-row-selected', {
+          eventType: event.type,
+        });
+      }
+
       instance.uiActions.onFocusNode(event?.nodeId);
     },
     [instance.uiActions],
