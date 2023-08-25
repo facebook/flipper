@@ -92,7 +92,8 @@ void FlipperClient::removePlugin(std::shared_ptr<FlipperPlugin> plugin) {
 
     std::lock_guard<std::mutex> lock(mutex_);
     if (plugins_.find(plugin->identifier()) == plugins_.end()) {
-      throw std::out_of_range("plugin " + plugin->identifier() + " not added.");
+      log("plugin " + plugin->identifier() + " not added.");
+      return;
     }
     disconnect(plugin);
     plugins_.erase(plugin->identifier());
