@@ -41,7 +41,7 @@
     "rsocket-tcp-server": "^0.0.25",
     "rsocket-types": "^0.0.25",
     "semver": "^7.3.7",
-    "serialize-error": "^8.1.0",
+    "serialize-error": "^11.0.1",
     "split2": "^4.1.0",
     "tmp": "^0.2.1",
     "which": "^2.0.2",
