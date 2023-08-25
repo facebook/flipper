@@ -59,15 +59,17 @@ void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
   performAndReportError([this, plugin]() {
     log("FlipperClient::addPlugin " + plugin->identifier());
     auto step = flipperState_->start("Add plugin " + plugin->identifier());
+    auto needs_refresh = false;
 
     std::lock_guard<std::mutex> lock(mutex_);
     if (plugins_.find(plugin->identifier()) != plugins_.end()) {
-      throw std::out_of_range(
-          "plugin " + plugin->identifier() + " already added.");
+      log("plugin " + plugin->identifier() + " already added.");
+    } else {
+      plugins_[plugin->identifier()] = plugin;
+      needs_refresh = true;
     }
-    plugins_[plugin->identifier()] = plugin;
     step->complete();
-    if (connected_) {
+    if (connected_ && needs_refresh) {
       refreshPlugins();
     }
   });
