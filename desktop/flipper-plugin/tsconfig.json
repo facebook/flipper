@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "lib": ["dom", "ES2019"],
+    "lib": ["dom", "ES2021"],
     "types": ["jest", "../types/jest-extensions", "react/next", "react-dom/next"]
   },
   "references": [
