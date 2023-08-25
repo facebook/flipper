@@ -228,10 +228,9 @@ export function attachSocketServer(
     });
 
     async function onClientClose(error: Error | undefined = undefined) {
+      console.log(`Client disconnected ${clientAddress}`);
       if (error) {
-        console.error(`Client disconnected ${clientAddress} with error`, error);
-      } else {
-        console.log(`Client disconnected ${clientAddress}`);
+        console.error('Client disconnected with error', error);
       }
 
       numberOfConnectedClients--;

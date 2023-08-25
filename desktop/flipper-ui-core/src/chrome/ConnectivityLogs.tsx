@@ -242,8 +242,8 @@ export const ConnectivityLogs = () => {
   );
 
   const onSelection = useCallback(
-    (entry: ConnectionRecordEntry) => {
-      if (isShellCommand(entry)) {
+    (entry: ConnectionRecordEntry | undefined) => {
+      if (entry !== undefined && isShellCommand(entry)) {
         setSelection(entry);
       } else {
         setSelection(undefined);

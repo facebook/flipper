@@ -39,6 +39,6 @@
     "flipper-plugin": "*"
   },
   "scripts": {
-    "postinstall": "ts-node scripts/remove-sourcemap-reference.tsx"
+    "postinstall": "ts-node scripts/remove-sourcemap-reference.tsx || true"
   }
 }
