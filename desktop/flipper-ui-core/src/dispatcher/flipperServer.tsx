@@ -306,7 +306,7 @@ function showConnectivityTroubleshootNotification(
     message,
     description: (
       <Layout.Bottom>
-        <p>${description}</p>
+        <p>{description}</p>
         <div>
           <Button
             type="primary"
