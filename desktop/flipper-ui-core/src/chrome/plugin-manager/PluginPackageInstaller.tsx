@@ -43,17 +43,20 @@ export default function PluginPackageInstaller({
 }: {
   onInstall: () => Promise<void>;
 }) {
-  const [path, setPath] = useState('');
+  const [content, setContent] = useState<string | undefined>();
   const [isPathValid, setIsPathValid] = useState(false);
   const [error, setError] = useState<Error>();
   const [inProgress, setInProgress] = useState(false);
   const onClick = async () => {
+    if (!content) {
+      return;
+    }
     setError(undefined);
     setInProgress(true);
     try {
-      await getRenderHostInstance().flipperServer!.exec(
-        'plugins-install-from-file',
-        path,
+      await getRenderHostInstance().flipperServer?.exec(
+        'plugins-install-from-content',
+        content,
       );
       await onInstall();
     } catch (e) {
@@ -83,13 +86,13 @@ export default function PluginPackageInstaller({
     <Toolbar>
       <FileSelector
         label="Select a Flipper package or just drag and drop it here..."
-        onChange={(newFile) => {
+        encoding="base64"
+        onChange={async (newFile) => {
           if (newFile) {
-            // TODO: Fix me before implementing Browser Flipper. "path" is only availbale in Electron!
-            setPath(newFile.path!);
+            setContent(newFile.data as string);
             setIsPathValid(true);
           } else {
-            setPath('');
+            setContent(undefined);
             setIsPathValid(false);
           }
           setError(undefined);

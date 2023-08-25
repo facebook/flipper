@@ -26,12 +26,11 @@ import {DevicePluginMap, ClientPluginMap} from '../plugin';
 import {BaseDevice} from 'flipper-frontend-core';
 import {ArchivedDevice} from 'flipper-frontend-core';
 import {v4 as uuidv4} from 'uuid';
-import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {TestIdler} from './Idler';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {capture} from './screenshot';
-import {Dialog, getFlipperLib, Idler, path} from 'flipper-plugin';
+import {Dialog, getFlipperLib, Idler} from 'flipper-plugin';
 import {ClientQuery} from 'flipper-common';
 import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
@@ -44,6 +43,7 @@ import {safeFilename} from './safeFilename';
 import {getExportablePlugins} from '../selectors/connections';
 import {notification} from 'antd';
 import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
+import {getStore} from '../store';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -527,7 +527,7 @@ export const exportStoreToFile = (
 export async function importDataToStore(
   source: string,
   data: string,
-  store: Store,
+  store: Store = getStore(),
 ) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
   const json: ExportType = JSON.parse(data);
@@ -594,26 +594,14 @@ export const importFileToStore = async (file: string, store: Store) => {
   }
 };
 
-export function canOpenDialog() {
-  return !!getRenderHostInstance().showOpenDialog;
-}
-
-export function showOpenDialog(store: Store) {
-  return getRenderHostInstance()
-    .showOpenDialog?.({
-      filter: {extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'},
-    })
-    .then((filePath) => {
-      if (filePath) {
-        tryCatchReportPlatformFailures(() => {
-          importFileToStore(filePath, store);
-        }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
-      }
-    });
-}
-
-export function canFileExport() {
-  return !!getRenderHostInstance().showSaveDialog;
+export async function startFileImport(store: Store) {
+  const file = await getRenderHostInstance().importFile({
+    extensions: ['flipper', 'json', 'txt'],
+  });
+  if (!file || typeof file.data !== 'string') {
+    return;
+  }
+  importDataToStore(file.name, file.data as string, store);
 }
 
 async function startDeviceFlipperFolderExport() {
@@ -765,25 +753,15 @@ export async function exportEverythingEverywhereAllAtOnce(
 }
 
 export async function startFileExport(dispatch: Store['dispatch']) {
-  const file = await getRenderHostInstance().showSaveDialog?.({
-    title: 'FlipperExport',
-    defaultPath: path.join(
-      getRenderHostInstance().serverConfig.paths.homePath,
-      'FlipperExport.flipper',
-    ),
-  });
-  if (!file) {
-    return;
-  }
   const plugins = await selectPlugins();
   if (plugins === false) {
-    return; // cancelled
+    return;
   }
   // TODO: no need to put this in the store,
-  // need to be cleaned up later in combination with SupportForm
+  // need to be cleaned up later in combination with SupportForm.
   dispatch(selectedPlugins(plugins));
   Dialog.showModal((onHide) => (
-    <ShareSheetExportFile onHide={onHide} file={file} logger={getLogger()} />
+    <ShareSheetExportFile onHide={onHide} logger={getLogger()} />
   ));
 }
 

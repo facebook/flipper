@@ -31,8 +31,10 @@ export const Visualization2D: React.FC<
     width: number;
     nodes: Map<Id, ClientNode>;
     onSelectNode: OnSelectNode;
+    hideControls?: boolean;
+    disableInteractivity?: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({width, nodes, onSelectNode}) => {
+> = ({width, nodes, onSelectNode, hideControls, disableInteractivity}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
   const instance = usePlugin(plugin);
 
@@ -62,6 +64,7 @@ export const Visualization2D: React.FC<
       const domRect = rootNodeRef.current?.getBoundingClientRect();
 
       if (
+        disableInteractivity ||
         !focusState ||
         !domRect ||
         instance.uiState.isContextMenuOpen.get() ||
@@ -110,6 +113,7 @@ export const Visualization2D: React.FC<
     width,
     snapshotNode,
     instance.uiActions,
+    disableInteractivity,
   ]);
 
   useEffect(() => {
@@ -146,14 +150,16 @@ export const Visualization2D: React.FC<
 
   return (
     <Layout.Container>
-      <VisualiserControls
-        onSetWireFrameMode={instance.uiActions.onSetWireFrameMode}
-        wireFrameMode={wireFrameMode}
-        focusedNode={focusedNodeId}
-        selectedNode={getNode(selectedNodeId?.id, nodes)}
-        setTargetMode={setTargetMode}
-        targetMode={targetMode}
-      />
+      {!hideControls && (
+        <VisualiserControls
+          onSetWireFrameMode={instance.uiActions.onSetWireFrameMode}
+          wireFrameMode={wireFrameMode}
+          focusedNode={focusedNodeId}
+          selectedNode={getNode(selectedNodeId?.id, nodes)}
+          setTargetMode={setTargetMode}
+          targetMode={targetMode}
+        />
+      )}
 
       <div
         onMouseLeave={(e) => {

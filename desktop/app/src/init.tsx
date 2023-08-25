@@ -28,6 +28,7 @@ import {
   loadLauncherSettings,
   loadProcessConfig,
   loadSettings,
+  sessionId,
   setupPrefetcher,
   startFlipperServer,
   startServer,
@@ -45,9 +46,7 @@ import constants from './fb-stubs/constants';
 import {initializeElectron} from './electron/initializeElectron';
 import path from 'path';
 import fs from 'fs-extra';
-import os from 'os';
 import {ElectronIpcClientRenderer} from './electronIpc';
-import {checkSocketInUse, makeSocketPath} from 'flipper-server-core';
 import {KeytarModule} from 'flipper-server-core/src/utils/keytar';
 import {initCompanionEnv} from 'flipper-server-companion';
 import ReconnectingWebSocket from 'reconnecting-websocket';
@@ -118,8 +117,6 @@ async function getFlipperServer(
 
   const serverUsageEnabled = gatekeepers['flipper_desktop_use_server'];
   const settings = await loadSettings();
-
-  const socketPath = await makeSocketPath();
   const port = 52342;
   /**
    * Only attempt to use the auth token if one is available. Otherwise,
@@ -134,7 +131,6 @@ async function getFlipperServer(
   // check first with the actual TCP socket
   const searchParams = new URLSearchParams(token ? {token} : {});
   const TCPconnectionURL = new URL(`ws://localhost:${port}?${searchParams}`);
-  const UDSconnectionURL = new URL(`ws+unix://${socketPath}`);
 
   /**
    * Attempt to shutdown a running instance of Flipper server.
@@ -159,12 +155,7 @@ async function getFlipperServer(
    */
   if (await checkPortInUse(port)) {
     console.warn(`[flipper-server] TCP port ${port} is already in use.`);
-
     await shutdown(TCPconnectionURL);
-  } else if (await checkSocketInUse(socketPath)) {
-    console.warn(`[flipper-server] UDS socket is already in use.`);
-
-    await shutdown(UDSconnectionURL);
   }
 
   const [homePath, tempPath, desktopPath] = await Promise.all([
@@ -176,6 +167,7 @@ async function getFlipperServer(
   const getEmbeddedServer = async () => {
     const server = new FlipperServerImpl(
       {
+        sessionId,
         environmentInfo,
         env: parseEnvironmentVariables(env),
         gatekeepers: gatekeepers,
@@ -206,7 +198,6 @@ async function getFlipperServer(
     const {readyForIncomingConnections} = await startServer({
       staticPath,
       entry: 'index.web.dev.html',
-      tcp: false,
       port,
     });
 
@@ -224,9 +215,7 @@ async function getFlipperServer(
     await server.connect();
     await readyForIncomingConnections(server, companionEnv);
 
-    return getExternalServer(
-      os.platform() === 'win32' ? TCPconnectionURL : UDSconnectionURL,
-    );
+    return getExternalServer(TCPconnectionURL);
   }
   return getEmbeddedServer();
 }

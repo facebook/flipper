@@ -16,7 +16,7 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "ws": "^8.6.0"
+    "ws": "^8.13.0"
   },
   "files": [
     "*.js",

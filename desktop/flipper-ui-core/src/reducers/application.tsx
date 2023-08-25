@@ -7,7 +7,6 @@
  * @format
  */
 
-import {v1 as uuidv1} from 'uuid';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {Actions} from './';
 
@@ -44,7 +43,6 @@ export type State = {
   rightSidebarAvailable: boolean;
   windowIsFocused: boolean;
   share: ShareType | null;
-  sessionId: string | null;
   launcherMsg: LauncherMsg;
   statusMessages: Array<string>;
 };
@@ -95,7 +93,6 @@ export const initialState: () => State = () => ({
   windowIsFocused: getRenderHostInstance().hasFocus(),
   activeSheet: null,
   share: null,
-  sessionId: uuidv1(),
   launcherMsg: {
     severity: 'warning',
     message: '',

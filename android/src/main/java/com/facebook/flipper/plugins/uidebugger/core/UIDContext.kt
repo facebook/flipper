@@ -11,25 +11,51 @@ import android.app.Application
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+import com.facebook.flipper.plugins.uidebugger.model.FrameworkEvent
 import com.facebook.flipper.plugins.uidebugger.model.FrameworkEventMetadata
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverManager
 import com.facebook.flipper.plugins.uidebugger.scheduler.SharedThrottle
 import com.facebook.flipper.plugins.uidebugger.traversal.PartialLayoutTraversal
 
-data class UIDContext(
+interface ConnectionListener {
+  fun onConnect()
+
+  fun onDisconnect()
+}
+
+class UIDContext(
     val applicationRef: ApplicationRef,
     val connectionRef: ConnectionRef,
     val descriptorRegister: DescriptorRegister,
     val observerFactory: TreeObserverFactory,
-    val frameworkEventMetadata: MutableList<FrameworkEventMetadata>
+    val frameworkEventMetadata: MutableList<FrameworkEventMetadata>,
+    val connectionListeners: MutableList<ConnectionListener>,
+    private val pendingFrameworkEvents: MutableList<FrameworkEvent>
 ) {
+
   val layoutTraversal: PartialLayoutTraversal =
       PartialLayoutTraversal(descriptorRegister, observerFactory)
 
   val treeObserverManager = TreeObserverManager(this)
   val sharedThrottle: SharedThrottle = SharedThrottle()
   val bitmapPool = BitmapPool()
+
+  fun addFrameworkEvent(frameworkEvent: FrameworkEvent) {
+    synchronized(pendingFrameworkEvents) { pendingFrameworkEvents.add(frameworkEvent) }
+  }
+
+  fun extractPendingFrameworkEvents(): List<FrameworkEvent> {
+    synchronized(pendingFrameworkEvents) {
+      val copy = pendingFrameworkEvents.toList()
+      pendingFrameworkEvents.clear()
+      return copy
+    }
+  }
+
+  fun clearFrameworkEvents() {
+    synchronized(pendingFrameworkEvents) { pendingFrameworkEvents.clear() }
+  }
 
   companion object {
     fun create(application: Application): UIDContext {
@@ -38,7 +64,9 @@ data class UIDContext(
           ConnectionRef(null),
           descriptorRegister = DescriptorRegister.withDefaults(),
           observerFactory = TreeObserverFactory.withDefaults(),
-          frameworkEventMetadata = mutableListOf())
+          frameworkEventMetadata = mutableListOf(),
+          connectionListeners = mutableListOf(),
+          pendingFrameworkEvents = mutableListOf())
     }
   }
 }

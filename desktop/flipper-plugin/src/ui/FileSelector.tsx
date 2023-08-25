@@ -56,7 +56,7 @@ export type FileSelectorProps = {
 );
 
 const formatFileDescriptor = (fileDescriptor?: FileDescriptor) =>
-  fileDescriptor?.path || fileDescriptor?.name;
+  fileDescriptor?.name;
 
 export function FileSelector({
   onChange,
@@ -74,14 +74,8 @@ export function FileSelector({
   const onSetFiles = async () => {
     setLoading(true);
 
-    let defaultPath: string | undefined = files[0]?.path ?? files[0]?.name;
-    if (multi) {
-      defaultPath = files[0]?.path;
-    }
-
     try {
       const newFileSelection = await getFlipperLib().importFile?.({
-        defaultPath,
         extensions,
         title: label,
         encoding,
@@ -126,7 +120,7 @@ export function FileSelector({
         droppedFiles.map(async (droppedFile) => {
           const raw = await droppedFile.arrayBuffer();
 
-          let data: string;
+          let data: string | Uint8Array | undefined;
           switch (encoding) {
             case 'utf-8': {
               data = new TextDecoder().decode(raw);
@@ -136,18 +130,19 @@ export function FileSelector({
               data = fromUint8Array(new Uint8Array(raw));
               break;
             }
+            case 'binary':
+              data = new Uint8Array(raw);
+              break;
             default: {
               assertNever(encoding);
             }
           }
 
-          const droppedFileDescriptor: FileDescriptor = {
-            data: data!,
+          return {
+            data,
             name: droppedFile.name,
-            // Electron "File" has "path" attribute
-            path: (droppedFile as any).path,
+            encoding,
           };
-          return droppedFileDescriptor;
         }),
       );
 

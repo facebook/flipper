@@ -11,7 +11,6 @@ import {createDataSource, createState, PluginClient} from 'flipper-plugin';
 import {
   Events,
   FrameScanEvent,
-  FrameworkEvent,
   FrameworkEventType,
   Id,
   Metadata,
@@ -19,6 +18,7 @@ import {
   PerformanceStatsEvent,
   SnapshotInfo,
   ClientNode,
+  FrameworkEventMetadata,
 } from './ClientTypes';
 import {
   UIState,
@@ -28,11 +28,14 @@ import {
   ReadOnlyUIState,
   LiveClientState,
   WireFrameMode,
+  AugmentedFrameworkEvent,
 } from './DesktopTypes';
 import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
 import {prefetchSourceFileLocation} from './components/fb-stubs/IDEContextMenu';
 import {checkFocusedNodeStillActive} from './plugin/ClientDataUtils';
 import {uiActions} from './plugin/uiActions';
+import {first} from 'lodash';
+import {getNode} from './utils/map';
 
 type PendingData = {
   metadata: Record<MetadataId, Metadata>;
@@ -45,10 +48,15 @@ export function plugin(client: PluginClient<Events>) {
   const streamInterceptor = getStreamInterceptor(client.device.os);
   const snapshot = createState<SnapshotInfo | null>(null);
   const nodesAtom = createState<Map<Id, ClientNode>>(new Map());
-  const frameworkEvents = createDataSource<FrameworkEvent>([], {
+  const frameworkEvents = createDataSource<AugmentedFrameworkEvent>([], {
     indices: [['nodeId']],
     limit: 10000,
   });
+  const frameworkEventsCustomColumns = createState<Set<string>>(new Set());
+
+  const frameworkEventMetadata = createState<
+    Map<FrameworkEventType, FrameworkEventMetadata>
+  >(new Map());
 
   const uiState: UIState = createUIState();
 
@@ -76,6 +84,11 @@ export function plugin(client: PluginClient<Events>) {
     uiState.frameworkEventMonitoring.update((draft) => {
       event.frameworkEventMetadata?.forEach((frameworkEventMeta) => {
         draft.set(frameworkEventMeta.type, false);
+      });
+    });
+    frameworkEventMetadata.update((draft) => {
+      event.frameworkEventMetadata?.forEach((frameworkEventMeta) => {
+        draft.set(frameworkEventMeta.type, frameworkEventMeta);
       });
     });
   });
@@ -197,10 +210,18 @@ export function plugin(client: PluginClient<Events>) {
 
   const processFrame = async (frameScan: FrameScanEvent) => {
     try {
+      const nodes = new Map(
+        frameScan.nodes.map((node) => [node.id, {...node}]),
+      );
+      if (frameScan.frameTime > lastFrameTime) {
+        applyFrameData(nodes, frameScan.snapshot);
+        lastFrameTime = frameScan.frameTime;
+      }
+      applyFrameworkEvents(frameScan, nodes);
+      lastFrameTime = frameScan.frameTime;
+
       const [processedNodes, additionalMetadata] =
-        await streamInterceptor.transformNodes(
-          new Map(frameScan.nodes.map((node) => [node.id, {...node}])),
-        );
+        await streamInterceptor.transformNodes(nodes);
 
       metadata.update((draft) => {
         for (const metadata of additionalMetadata) {
@@ -208,14 +229,10 @@ export function plugin(client: PluginClient<Events>) {
         }
       });
 
-      if (frameScan.frameTime > lastFrameTime) {
+      if (frameScan.frameTime >= lastFrameTime) {
         applyFrameData(processedNodes, frameScan.snapshot);
         lastFrameTime = frameScan.frameTime;
       }
-
-      applyFrameworkEvents(frameScan);
-
-      return true;
     } catch (error) {
       pendingData.frame = frameScan;
       handleStreamError('Frame', error);
@@ -223,10 +240,26 @@ export function plugin(client: PluginClient<Events>) {
     }
   };
 
-  function applyFrameworkEvents(frameScan: FrameScanEvent) {
+  function applyFrameworkEvents(
+    frameScan: FrameScanEvent,
+    nodes: Map<Id, ClientNode>,
+  ) {
+    const customColumns = frameworkEventsCustomColumns.get();
     for (const frameworkEvent of frameScan.frameworkEvents ?? []) {
-      frameworkEvents.append(frameworkEvent);
+      for (const key in frameworkEvent.payload) {
+        customColumns.add(key);
+      }
+
+      const treeRoot = getNode(frameworkEvent.treeId, nodes);
+
+      const treeRootFirstChild = getNode(first(treeRoot?.children), nodes);
+      frameworkEvents.append({
+        ...frameworkEvent,
+        nodeName: nodes.get(frameworkEvent.nodeId)?.name,
+        rootComponentName: treeRootFirstChild?.name,
+      });
     }
+    frameworkEventsCustomColumns.set(customColumns);
 
     if (uiState.isPaused.get() === true) {
       return;
@@ -301,6 +334,8 @@ export function plugin(client: PluginClient<Events>) {
     uiActions: uiActions(uiState, nodesAtom, snapshot, mutableLiveClientData),
     nodes: nodesAtom,
     frameworkEvents,
+    frameworkEventMetadata,
+    frameworkEventsCustomColumns,
     snapshot,
     metadata,
     perfEvents,

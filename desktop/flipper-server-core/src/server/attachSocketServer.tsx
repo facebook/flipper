@@ -228,31 +228,32 @@ export function attachSocketServer(
     });
 
     async function onClientClose(error: Error | undefined = undefined) {
+      console.log(`Client disconnected ${clientAddress}`);
       if (error) {
-        console.error(`Client disconnected ${clientAddress} with error`, error);
-      } else {
-        console.log(`Client disconnected ${clientAddress}`);
+        console.error('Client disconnected with error', error);
       }
 
       numberOfConnectedClients--;
+
+      connected = false;
+      server.offAny(onServerEvent);
+      flipperServerCompanion?.destroyAll();
+
       if (getFlipperServerConfig().environmentInfo.isHeadlessBuild) {
         if (disconnectTimeout) {
           clearTimeout(disconnectTimeout);
         }
+
         /**
-         * If, after 15 min, there are no more connected clients, we exit the process.
+         * If, after 60 seconds, there are no more connected clients, we exit the process.
          */
         disconnectTimeout = setTimeout(() => {
           if (numberOfConnectedClients === 0 && isProduction()) {
             console.info('Shutdown as no clients are currently connected');
             process.exit(0);
           }
-        }, 30 * 1000);
+        }, 60 * 1000);
       }
-
-      connected = false;
-      server.offAny(onServerEvent);
-      flipperServerCompanion?.destroyAll();
     }
 
     client.on('close', () => {

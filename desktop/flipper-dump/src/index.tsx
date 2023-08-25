@@ -16,6 +16,7 @@ import {
   loadLauncherSettings,
   loadProcessConfig,
   loadSettings,
+  sessionId,
 } from 'flipper-server-core';
 import {
   ClientDescription,
@@ -94,6 +95,7 @@ async function start(deviceQuery: string, appName: string, pluginId: string) {
     ]);
     const server = new FlipperServerImpl(
       {
+        sessionId,
         environmentInfo,
         env: parseEnvironmentVariables(process.env),
         gatekeepers: {},

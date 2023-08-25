@@ -33,10 +33,3 @@ android {
 
 
 apply plugin: 'com.vanniktech.maven.publish'
-
-import com.vanniktech.maven.publish.SonatypeHost
-mavenPublishing {
-  // Disable javadoc publishing
-  publishToMavenCentral(SonatypeHost.DEFAULT, false)
-}
-

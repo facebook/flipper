@@ -9,7 +9,6 @@
 
 import {Provider} from 'react-redux';
 import {init as initLogger} from './fb-stubs/Logger';
-import {initLogTailer} from './consoleLogTailer';
 import {SandyApp} from './sandy-chrome/SandyApp';
 import {Persistor, persistStore} from 'redux-persist';
 import dispatcher from './dispatcher/index';
@@ -38,7 +37,7 @@ import styled from '@emotion/styled';
 import {CopyOutlined} from '@ant-design/icons';
 import {getVersionString} from './utils/versionString';
 import {PersistGate} from 'redux-persist/integration/react';
-import {setLoggerInstance, FlipperServer} from 'flipper-common';
+import {setLoggerInstance, FlipperServer, initLogTailer} from 'flipper-common';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {startGlobalErrorHandling} from './utils/globalErrorHandling';
 import {loadTheme} from './utils/loadTheme';
@@ -149,9 +148,10 @@ function init(flipperServer: FlipperServer) {
   loadTheme(settings.darkMode);
 
   // rehydrate app state before exposing init
-  const persistor = persistStore(store, undefined, () => {
+  const persistor = persistStore(store, undefined, async () => {
     // Make sure process state is set before dispatchers run
-    dispatcher(store, logger);
+    await dispatcher(store, logger);
+    getRenderHostInstance().sendIpcEvent('storeRehydrated');
   });
 
   setPersistor(persistor);
@@ -168,17 +168,17 @@ function init(flipperServer: FlipperServer) {
 
   connectFlipperServerToStore(flipperServer, store, logger);
 
+  enableConsoleHook();
+  enableConnectivityHook(flipperServer);
+
   // TODO T116224873: Return the following code back instead of ReactDOM.react when the following issue is fixed: https://github.com/react-component/trigger/issues/288
   // const root = createRoot(document.getElementById('root')!);
   // root.render(<AppFrame logger={logger} persistor={persistor} />);
 
-  ReactDOM.render(
-    <AppFrame logger={logger} persistor={persistor} />,
-    document.getElementById('root')!,
-  );
-
-  enableConsoleHook();
-  enableConnectivityHook(flipperServer);
+  const root = document.getElementById('root');
+  if (root) {
+    ReactDOM.render(<AppFrame logger={logger} persistor={persistor} />, root);
+  }
 
   const launcherMessage =
     getRenderHostInstance().serverConfig.processConfig.launcherMsg;
@@ -193,8 +193,8 @@ function init(flipperServer: FlipperServer) {
   }
 }
 
-export async function startFlipperDesktop(flipperServer: FlipperServer) {
-  getRenderHostInstance(); // renderHost instance should be set at this point!
+export function startFlipperDesktop(flipperServer: FlipperServer) {
+  getRenderHostInstance();
   init(flipperServer);
 }
 

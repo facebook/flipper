@@ -134,10 +134,13 @@ export default abstract class AbstractClient extends EventEmitter {
         'Fetch plugin timeout. Unresponsive client?',
       );
     } catch (e) {
-      console.warn('[conn] Fetch plugin error', e);
+      console.warn('Failed to fetch plugin', e);
     }
     this.plugins = new Set(response?.plugins ?? []);
-    console.info('AbstractClient.loadPlugins', this.query, [...this.plugins]);
+    console.info(
+      `Received plugins from '${this.query.app}' on device '${this.query.device}'`,
+      [...this.plugins],
+    );
     return this.plugins;
   }
 
@@ -226,8 +229,17 @@ export default abstract class AbstractClient extends EventEmitter {
           this.startPluginIfNeeded(await this.getPlugin(pluginId)),
         ),
       );
-      const newBackgroundPlugins = await this.getBackgroundPlugins();
-      this.backgroundPlugins = new Set(newBackgroundPlugins);
+      let newBackgroundPlugins: PluginsArr = [];
+      try {
+        newBackgroundPlugins = await this.getBackgroundPlugins();
+        this.backgroundPlugins = new Set(newBackgroundPlugins);
+      } catch (e: unknown) {
+        if ((e as Error).message.includes('timeout')) {
+          console.warn(e);
+        } else {
+          throw e;
+        }
+      }
       // diff the background plugin list, disconnect old, connect new ones
       oldBackgroundPlugins.forEach((plugin) => {
         if (!this.backgroundPlugins.has(plugin)) {

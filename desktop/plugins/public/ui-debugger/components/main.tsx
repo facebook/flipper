@@ -23,7 +23,7 @@ import {PerfStats} from './PerfStats';
 import {Visualization2D} from './visualizer/Visualization2D';
 import {Inspector} from './sidebar/Inspector';
 import {TreeControls} from './tree/TreeControls';
-import {Button, Spin} from 'antd';
+import {Button, Spin, Typography} from 'antd';
 import {QueryClientProvider} from 'react-query';
 import {Tree2} from './tree/Tree';
 import {StreamInterceptorErrorView} from './StreamInterceptorErrorView';
@@ -43,15 +43,17 @@ export function Component() {
   useHotkeys('ctrl+i', () => setShowPerfStats((show) => !show));
 
   const viewMode = useValue(instance.uiState.viewMode);
-  const [bottomPanelComponent, setBottomPanelComponent] = useState<
-    ReactNode | undefined
+  const [bottomPanel, setBottomPanel] = useState<
+    {title: string; component: ReactNode} | undefined
   >();
-  const openBottomPanelWithContent = (component: ReactNode) => {
-    setBottomPanelComponent(component);
+  const openBottomPanelWithContent = (title: string, component: ReactNode) => {
+    setBottomPanel({title, component});
   };
   const dismissBottomPanel = () => {
-    setBottomPanelComponent(undefined);
+    setBottomPanel(undefined);
   };
+
+  const [bottomPanelHeight, setBottomPanelHeight] = useState(400);
 
   if (showPerfStats)
     return (
@@ -101,54 +103,74 @@ export function Component() {
   }
 
   if (viewMode.mode === 'frameworkEventsTable') {
-    return <FrameworkEventsTable rootTreeId={viewMode.treeRootId} />;
+    return (
+      <FrameworkEventsTable
+        nodeId={viewMode.nodeId}
+        isTree={viewMode.isTree}
+        nodes={nodes}
+      />
+    );
   }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Layout.Horizontal
-        grow
-        style={{
-          borderRadius: theme.borderRadius,
-          backgroundColor: theme.backgroundWash,
-        }}>
-        <Layout.Container
+      <Layout.Container grow>
+        <Layout.Horizontal
           grow
           style={{
             borderRadius: theme.borderRadius,
-            backgroundColor: theme.backgroundDefault,
+            backgroundColor: theme.backgroundWash,
           }}>
-          <TreeControls />
-          <Tree2 nodes={nodes} rootId={rootId} />
-        </Layout.Container>
+          <Layout.Container
+            grow
+            style={{
+              borderRadius: theme.borderRadius,
+              backgroundColor: theme.backgroundDefault,
+            }}>
+            <TreeControls />
+            <Tree2
+              additionalHeightOffset={
+                bottomPanel != null ? bottomPanelHeight : 0
+              }
+              nodes={nodes}
+              rootId={rootId}
+            />
+          </Layout.Container>
 
-        <ResizablePanel
-          position="right"
-          minWidth={200}
-          width={visualiserWidth + theme.space.large}
-          maxWidth={800}
-          onResize={(width) => {
-            instance.uiActions.setVisualiserWidth(width);
-          }}
-          gutter>
-          <Visualization2D
-            width={visualiserWidth}
-            nodes={nodes}
-            onSelectNode={instance.uiActions.onSelectNode}
-          />
-        </ResizablePanel>
-        <DetailSidebar width={350}>
-          <Inspector
-            os={instance.os}
-            metadata={metadata}
-            nodes={nodes}
-            showExtra={openBottomPanelWithContent}
-          />
-        </DetailSidebar>
-        <BottomPanel dismiss={dismissBottomPanel}>
-          {bottomPanelComponent}
-        </BottomPanel>
-      </Layout.Horizontal>
+          <ResizablePanel
+            position="right"
+            minWidth={200}
+            width={visualiserWidth + theme.space.large}
+            maxWidth={800}
+            onResize={(width) => {
+              instance.uiActions.setVisualiserWidth(width);
+            }}
+            gutter>
+            <Visualization2D
+              width={visualiserWidth}
+              nodes={nodes}
+              onSelectNode={instance.uiActions.onSelectNode}
+            />
+          </ResizablePanel>
+          <DetailSidebar width={450}>
+            <Inspector
+              os={instance.os}
+              metadata={metadata}
+              nodes={nodes}
+              showExtra={openBottomPanelWithContent}
+            />
+          </DetailSidebar>
+        </Layout.Horizontal>
+        {bottomPanel && (
+          <BottomPanel
+            title={bottomPanel.title}
+            height={bottomPanelHeight}
+            setHeight={setBottomPanelHeight}
+            dismiss={dismissBottomPanel}>
+            {bottomPanel.component}
+          </BottomPanel>
+        )}
+      </Layout.Container>
     </QueryClientProvider>
   );
 }
@@ -164,10 +186,19 @@ export function Centered(props: {children: React.ReactNode}) {
 }
 
 type BottomPanelProps = {
+  title: string;
   dismiss: () => void;
   children: React.ReactNode;
+  height: number;
+  setHeight: (height: number) => void;
 };
-export function BottomPanel({dismiss, children}: BottomPanelProps) {
+export function BottomPanel({
+  title,
+  dismiss,
+  children,
+  height,
+  setHeight,
+}: BottomPanelProps) {
   const bottomPanelRef = useRef<any>(null);
 
   useEffect(() => {
@@ -176,7 +207,10 @@ export function BottomPanel({dismiss, children}: BottomPanelProps) {
         bottomPanelRef.current &&
         !bottomPanelRef.current.contains(event.target)
       ) {
-        dismiss();
+        setTimeout(() => {
+          //push to back of event queue so that you can still select item in the tree
+          dismiss();
+        }, 0);
       }
     };
     // Add event listener when the component is mounted.
@@ -191,15 +225,31 @@ export function BottomPanel({dismiss, children}: BottomPanelProps) {
   if (!children) {
     return <></>;
   }
+
   return (
     <div ref={bottomPanelRef}>
-      <ResizablePanel position="bottom" minHeight={200} height={400} gutter>
-        <Layout.ScrollContainer>{children}</Layout.ScrollContainer>
-        <div style={{margin: 10}}>
-          <Button type="ghost" style={{float: 'right'}} onClick={dismiss}>
-            Dismiss
-          </Button>
-        </div>
+      <ResizablePanel
+        position="bottom"
+        minHeight={200}
+        height={height}
+        onResize={(_, height) => setHeight(height)}
+        gutter>
+        <Layout.Container grow>
+          <Layout.Horizontal
+            center
+            pad="small"
+            style={{
+              justifyContent: 'space-between',
+            }}>
+            <Typography.Title level={3}>{title}</Typography.Title>
+            <Button type="ghost" onClick={dismiss}>
+              Dismiss
+            </Button>
+          </Layout.Horizontal>
+          <Layout.ScrollContainer pad="small">
+            {children}
+          </Layout.ScrollContainer>
+        </Layout.Container>
       </ResizablePanel>
     </div>
   );

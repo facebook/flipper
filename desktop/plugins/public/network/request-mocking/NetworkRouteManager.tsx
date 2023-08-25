@@ -139,6 +139,9 @@ export function createNetworkManager(
         })
         .then((res) => {
           if (res) {
+            if (res.encoding !== 'utf-8' || typeof res.data !== 'string') {
+              return;
+            }
             const importedRoutes = JSON.parse(res.data);
             importedRoutes?.forEach((importedRoute: Route) => {
               if (importedRoute != null) {

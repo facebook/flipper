@@ -35,6 +35,7 @@ export type SubtreeUpdateEvent = {
   frameworkEvents?: FrameworkEvent[];
 };
 
+export type NodeMap = Map<Id, ClientNode>;
 export type FrameworkEventType = string;
 
 export type FrameworkEventMetadata = {
@@ -55,12 +56,14 @@ type FrameworkEventAttribution = Stacktrace | Reason | UpstreamEvent;
 
 export type FrameworkEvent = {
   id: number;
+  treeId?: Id; //todo should be mandatory once ios implements this
   nodeId: Id;
   type: FrameworkEventType;
   timestamp: number;
-  payload?: JSON;
+  payload?: JsonObject;
+  duration?: number;
   attribution?: FrameworkEventAttribution;
-  thread?: 'main' | string;
+  thread?: 'main' | string; //todo should be mandatory once ios implements this
 };
 
 export type InitEvent = {
@@ -183,7 +186,8 @@ export type Tag =
   | 'CK'
   | 'iOS'
   | 'BloksBoundTree'
-  | 'BloksDerived';
+  | 'BloksDerived'
+  | 'TreeRoot';
 
 export type Inspectable =
   | InspectableObject

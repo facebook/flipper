@@ -36,9 +36,8 @@ export interface ConnectionCtx {
   request: IncomingMessage;
 }
 
-// Based on https://github.com/websockets/ws/blob/master/lib/websocket-server.js#L40,
-// exposed to share with socket.io defaults.
-export const WEBSOCKET_MAX_MESSAGE_SIZE = 100 * 1024 * 1024;
+// This is the maximum size of a message that can be received in a single websocket message.
+export const WEBSOCKET_MAX_MESSAGE_SIZE = Math.pow(2, 53) - 1;
 
 /**
  * It serves as a base class for WebSocket based servers. It delegates the 'connection'

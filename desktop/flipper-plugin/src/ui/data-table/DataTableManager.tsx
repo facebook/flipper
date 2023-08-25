@@ -13,7 +13,7 @@ import {MutableRefObject, Reducer, RefObject} from 'react';
 import {DataSourceVirtualizer} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
 import {theme} from '../theme';
-import {DataSource, _DataSourceView} from 'flipper-plugin-core';
+import {DataSource, getFlipperLib, _DataSourceView} from 'flipper-plugin-core';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting<T = any> = {
@@ -353,6 +353,7 @@ export const dataTableManagerReducer = produce<
           getValueAtPath(item, String(action.column)),
           {
             disableOthers: index === 0, // remove existing filters before adding the first
+            exact: true,
           },
         );
       });
@@ -485,6 +486,7 @@ export function createDataTableManager<T>(
       dispatch({type: 'sortColumn', column, direction});
     },
     setSearchValue(value, addToHistory = false) {
+      getFlipperLib().logger.track('usage', 'data-table:filter:search');
       dispatch({type: 'setSearchValue', value, addToHistory});
     },
     toggleSearchValue() {
@@ -506,9 +508,11 @@ export function createDataTableManager<T>(
       dispatch({type: 'setShowNumberedHistory', showNumberedHistory});
     },
     addColumnFilter(column, value, options = {}) {
+      getFlipperLib().logger.track('usage', 'data-table:filter:add-column');
       dispatch({type: 'addColumnFilter', column, value, options});
     },
     removeColumnFilter(column, label) {
+      getFlipperLib().logger.track('usage', 'data-table:filter:remove-column');
       dispatch({type: 'removeColumnFilter', column, label});
     },
     setFilterExceptions(exceptions: string[] | undefined) {

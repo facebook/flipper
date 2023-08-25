@@ -32,12 +32,12 @@ import {
 import {CreatePasteArgs, CreatePasteResult} from './Paste';
 import {Atom} from '../state/atom';
 
-export type FileEncoding = 'utf-8' | 'base64';
+export type FileEncoding = 'utf-8' | 'base64' | 'binary';
 
 export interface FileDescriptor {
-  data: string;
+  data: string | Uint8Array | undefined;
   name: string;
-  path?: string;
+  encoding: FileEncoding;
 }
 
 export interface DownloadFileResponse extends DownloadFileStartResponse {

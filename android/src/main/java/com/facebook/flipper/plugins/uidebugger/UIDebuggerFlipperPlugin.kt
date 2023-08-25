@@ -49,6 +49,8 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
             MetadataUpdateEvent(MetadataRegister.extractPendingMetadata())))
 
     context.treeObserverManager.start()
+
+    context.connectionListeners.forEach { it.onConnect() }
   }
 
   @Throws(Exception::class)
@@ -59,6 +61,8 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
 
     context.treeObserverManager.stop()
     context.bitmapPool.recycleAll()
+    context.connectionListeners.forEach { it.onDisconnect() }
+    context.clearFrameworkEvents()
   }
 
   override fun runInBackground(): Boolean {

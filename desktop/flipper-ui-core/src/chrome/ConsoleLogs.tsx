@@ -20,7 +20,7 @@ import {Button, Dropdown, Menu, Checkbox} from 'antd';
 import {DownOutlined} from '@ant-design/icons';
 import {DeleteOutlined} from '@ant-design/icons';
 import CBuffer from 'cbuffer';
-import {addLogTailer} from '../consoleLogTailer';
+import {addLogTailer} from 'flipper-common';
 import {v4} from 'uuid';
 
 const MAX_DISPLAY_LOG_ITEMS = 1000;

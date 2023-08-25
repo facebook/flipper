@@ -67,7 +67,7 @@ interface NotificationConstructorOptions {
 // Events that are emitted from the main.ts ovr the IPC process bridge in Electron
 type MainProcessEvents = {
   'flipper-protocol-handler': [query: string];
-  'open-flipper-file': [url: string];
+  'open-flipper-file': [name: string, data: string];
   notificationEvent: [
     eventName: NotificationEvents,
     pluginNotification: PluginNotification,
@@ -88,7 +88,7 @@ type ChildProcessEvents = {
     },
   ];
   getLaunchTime: [];
-  componentDidMount: [];
+  storeRehydrated: [];
 };
 
 /**

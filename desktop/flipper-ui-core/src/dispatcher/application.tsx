@@ -10,7 +10,7 @@
 import {Store} from '../reducers/index';
 import {Logger} from 'flipper-common';
 import {
-  importFileToStore,
+  importDataToStore,
   IMPORT_FLIPPER_TRACE_EVENT,
 } from '../utils/exportData';
 import {tryCatchReportPlatformFailures} from 'flipper-common';
@@ -67,9 +67,9 @@ export default (store: Store, logger: Logger) => {
     });
   });
 
-  renderHost.onIpcEvent('open-flipper-file', (url: string) => {
+  renderHost.onIpcEvent('open-flipper-file', (name: string, data: string) => {
     tryCatchReportPlatformFailures(() => {
-      return importFileToStore(url, store);
+      return importDataToStore(name, data, store);
     }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
   });
 };

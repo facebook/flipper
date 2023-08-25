@@ -14,5 +14,21 @@
         "type": "image/png",
         "sizes": "256x256"
       }
+    ],
+    "file_handlers": [
+      {
+          "action": "/",
+          "accept": {
+              "text/*": [
+                  ".flipper"
+              ]
+          }
+      }
+    ],
+    "protocol_handlers": [
+      {
+        "protocol": "web+flipper",
+        "url": "/?open-plugin=%s"
+      }
     ]
   }

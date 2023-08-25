@@ -319,8 +319,8 @@ export type FlipperServerCommands = {
     name: string,
   ) => Promise<InstalledPluginDetails>;
   'plugins-install-from-npm': (name: string) => Promise<InstalledPluginDetails>;
-  'plugins-install-from-file': (
-    path: string,
+  'plugins-install-from-content': (
+    contents: string,
   ) => Promise<InstalledPluginDetails>;
   'plugins-remove-plugins': (names: string[]) => Promise<void>;
   'plugins-server-add-on-start': (
@@ -351,6 +351,7 @@ export type FlipperServerCommands = {
     options: {
       timeout?: number;
       internGraphUrl?: string;
+      headers?: Record<string, string | number | boolean>;
     },
   ) => Promise<GraphResponse>;
   'intern-graph-get': (
@@ -359,6 +360,7 @@ export type FlipperServerCommands = {
     options: {
       timeout?: number;
       internGraphUrl?: string;
+      headers?: Record<string, string | number | boolean>;
     },
   ) => Promise<GraphResponse>;
   'intern-upload-scribe-logs': (
@@ -524,6 +526,7 @@ export type FlipperServerConfig = {
   validWebSocketOrigins: string[];
   environmentInfo: EnvironmentInfo;
   type?: FlipperServerType;
+  sessionId: string;
 };
 
 export interface FlipperServerExecOptions {

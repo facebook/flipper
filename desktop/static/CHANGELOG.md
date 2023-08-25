@@ -1,3 +1,8 @@
+# 0.212.0 (18/8/2023)
+
+ * [D48280921](https://github.com/facebook/flipper/search?q=D48280921&type=Commits) -  [internal] internal
+
+
 # 0.210.0 (2/8/2023)
 
  * [D47832249](https://github.com/facebook/flipper/search?q=D47832249&type=Commits) -  [UIDebugger] Fixed bug with keyboard tree controls

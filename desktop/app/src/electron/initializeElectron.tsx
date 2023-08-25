@@ -134,7 +134,6 @@ export async function initializeElectron(
           return {
             data,
             name: fileName,
-            path: filePath,
           };
         }),
       );

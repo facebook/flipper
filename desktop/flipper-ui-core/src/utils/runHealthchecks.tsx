@@ -58,7 +58,7 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
           h.key,
         )
         .catch((e) => {
-          console.error('Failed to run doctor check', e);
+          console.warn('Failed to run doctor check', e);
           return {
             status: 'FAILED',
             isAcknowledged: false,

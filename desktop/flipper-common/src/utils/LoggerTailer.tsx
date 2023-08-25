@@ -7,25 +7,33 @@
  * @format
  */
 
-import {getStringFromErrorLike, LoggerTypes} from 'flipper-common';
+import {getStringFromErrorLike} from './errors';
+import {LoggerTypes} from './Logger';
 
-const logLevels: LoggerTypes[] = ['debug', 'info', 'warn', 'error'];
-
+export const logLevels: LoggerTypes[] = ['debug', 'info', 'warn', 'error'];
 export type LogTailer = (level: LoggerTypes, ...data: Array<any>) => void;
 
 const logTailers: LogTailer[] = [];
+let initialized = false;
 
 export function addLogTailer(handler: LogTailer) {
   logTailers.push(handler);
 }
 
 export function initLogTailer() {
+  if (initialized) {
+    return;
+  }
+
+  initialized = true;
+
   const originalConsole: {[key: string]: any} = console;
-  //store the raw console log functions here
+  // Store the raw console log functions here
   const originalConsoleLogFunctions: {[key: string]: (...args: any) => void} =
     {} as {
       [key: string]: (...args: any) => void;
     };
+
   // React Devtools also patches the console methods:
   // https://github.com/facebook/react/blob/206d61f72214e8ae5b935f0bf8628491cb7f0797/packages/react-devtools-shared/src/backend/console.js#L141
   // Not using a proxy object here because it isn't compatible with their patching process.
@@ -52,16 +60,16 @@ export function initLogTailer() {
 }
 
 function transformLogLevel(level: LoggerTypes, message: string) {
-  if (
-    level === 'error' &&
-    message.includes('ResizeObserver loop limit exceeded')
-  ) {
-    return 'warn';
-  }
-
-  // Axios will create rather unhelpful error messages which lead to unactionable tasks, e.g. T150636191
-  if (level === 'error' && message.endsWith('Network Error')) {
-    return 'warn';
+  if (level === 'error') {
+    // Error comes from one of our dependencies and is not actionable
+    if (message.includes('ResizeObserver loop limit exceeded')) {
+      return 'warn';
+    }
+    // Axios will create rather unhelpful error messages which
+    // lead to unactionable tasks, e.g. T150636191
+    if (message.endsWith('Network Error')) {
+      return 'warn';
+    }
   }
 
   return level;

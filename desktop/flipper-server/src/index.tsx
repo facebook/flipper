@@ -74,12 +74,6 @@ const argv = yargs
       type: 'boolean',
       default: true,
     },
-    tcp: {
-      describe:
-        'Open a TCP port (--no-tcp can be specified as to use unix-domain-socket exclusively)',
-      type: 'boolean',
-      default: true,
-    },
     replace: {
       describe: 'Replaces any running instance, if any.',
       type: 'boolean',
@@ -150,10 +144,17 @@ async function shutdown() {
 }
 
 async function start() {
-  console.info('[flipper-server][bootstrap] Booting up');
   const t0 = performance.now();
 
-  const enhanceLogger = await initializeLogger(staticPath);
+  const isProduction =
+    process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
+  const environmentInfo = await getEnvironmentInfo(
+    rootPath,
+    isProduction,
+    true,
+  );
+
+  await initializeLogger(environmentInfo, staticPath);
 
   const t1 = performance.now();
   const loggerInitializedMS = t1 - t0;
@@ -186,15 +187,6 @@ async function start() {
     `[flipper-server][bootstrap] Keytar loaded (${keytarLoadedMS} ms)`,
   );
 
-  const isProduction =
-    process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
-
-  const environmentInfo = await getEnvironmentInfo(
-    rootPath,
-    isProduction,
-    true,
-  );
-
   if (await checkPortInUse(argv.port)) {
     console.warn(`[flipper-server] Port ${argv.port} is already in use`);
     if (!argv.replace) {
@@ -214,7 +206,6 @@ async function start() {
     staticPath,
     entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
     port: argv.port,
-    tcp: argv.tcp,
   });
 
   const t4 = performance.now();
@@ -242,10 +233,6 @@ async function start() {
 
   exitHook(async () => {
     await flipperServer.close();
-  });
-
-  enhanceLogger((logEntry) => {
-    flipperServer.emit('server-log', logEntry);
   });
 
   const companionEnv = await initCompanionEnv(flipperServer);
@@ -308,10 +295,6 @@ async function start() {
 }
 
 async function launch() {
-  if (!argv.tcp) {
-    return;
-  }
-
   let token: string | undefined;
   if (await hasAuthToken()) {
     token = await getAuthToken();

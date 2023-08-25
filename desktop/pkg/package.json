@@ -12,20 +12,20 @@
   },
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
-    "@oclif/command": "^1",
-    "@oclif/config": "^1",
-    "@oclif/parser": "^3.8.5",
-    "@oclif/plugin-help": "^5.1.12",
-    "@oclif/plugin-warn-if-update-available": "^2.0.14",
+    "@oclif/command": "^1.8.35",
+    "@oclif/config": "^1.18.16",
+    "@oclif/parser": "^3.8.16",
+    "@oclif/plugin-help": "^5.2.17",
+    "@oclif/plugin-warn-if-update-available": "^2.0.48",
     "ajv": "^6.12.2",
     "ajv-errors": "^1.0.1",
     "cli-ux": "^6.0.9",
     "flipper-pkg-lib": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
-    "fs-extra": "^11.1.0",
+    "fs-extra": "^11.1.1",
     "inquirer": "^8.2.4",
     "lodash": "^4.17.21",
-    "recursive-readdir": "^2.2.2"
+    "recursive-readdir": "^2.2.3"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
