@@ -131,7 +131,7 @@ static NSString* const UNKNOWN_BLOB_LABEL_FORMAT = @"{%d-byte %@ blob}";
     return @{@"type" : @"null"};
   } else if ([object isKindOfClass:[NSNumber class]]) {
     NSNumber* number = (NSNumber*)object;
-    NSString* type = [NSString stringWithCString:[number objCType]];
+    NSString* type = [NSString stringWithUTF8String:[number objCType]];
 
     if ([type isEqualToString:@"i"]) {
       return @{@"type" : @"integer", @"value" : number};
