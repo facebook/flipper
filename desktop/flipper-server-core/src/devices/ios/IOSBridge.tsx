@@ -42,6 +42,16 @@ interface IOSInstalledAppDescriptor {
   debuggableStatus: boolean;
 }
 
+function getOSVersionFromXCRunOutput(s: string): string | undefined {
+  // E.g. 'com.apple.CoreSimulator.SimRuntime.iOS-16-1'
+  const match = s.match(
+    /com\.apple\.CoreSimulator\.SimRuntime\.iOS-(\d+)-(\d+)/,
+  );
+  if (match) {
+    return `${match[1]}.${match[2]}`;
+  }
+}
+
 export interface IOSBridge {
   startLogListener: (
     udid: string,
@@ -284,21 +294,23 @@ export class SimctlBridge implements IOSBridge {
       '--json',
     ])
       .then(({stdout}) => JSON.parse(stdout!.toString()).devices)
-      .then((simulatorDevices: Array<iOSSimulatorDevice>) => {
-        const simulators = Object.values(simulatorDevices).flat();
-        return simulators
-          .filter(
-            (simulator) =>
-              (!bootedOnly || simulator.state === 'Booted') &&
-              isSimulatorAvailable(simulator),
-          )
-          .map((simulator) => {
-            return {
-              ...simulator,
-              type: 'emulator',
-            } as IOSDeviceParams;
-          });
-      });
+      .then((simulatorDevices: {[key: string]: Array<iOSSimulatorDevice>}) =>
+        Object.keys(simulatorDevices).flatMap((key: string) =>
+          simulatorDevices[key]
+            .filter(
+              (simulator: iOSSimulatorDevice) =>
+                (!bootedOnly || simulator.state === 'Booted') &&
+                isSimulatorAvailable(simulator),
+            )
+            .map((simulator: iOSSimulatorDevice) => {
+              return {
+                ...simulator,
+                type: 'emulator',
+                osVersion: getOSVersionFromXCRunOutput(key),
+              } as IOSDeviceParams;
+            }),
+        ),
+      );
   }
 
   async launchSimulator(udid: string): Promise<any> {

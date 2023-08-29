@@ -24,11 +24,13 @@ const fakeDevices: IOSDeviceParams[] = [
     udid: 'luke',
     type: 'emulator',
     name: 'Luke',
+    osVersion: '16.4',
   },
   {
     udid: 'yoda',
     type: 'emulator',
     name: 'Yoda',
+    osVersion: '16.4',
   },
 ];
 const fakeExistingDevices = [

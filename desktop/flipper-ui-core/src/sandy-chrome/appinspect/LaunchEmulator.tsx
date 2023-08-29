@@ -229,6 +229,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
                   .then(onClose)
               }>
               {device.name}
+              {device.osVersion ? ` (${device.osVersion})` : ''}
             </Button>
           </VirtualDeviceRow>
         ))

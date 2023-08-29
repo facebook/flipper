@@ -176,6 +176,7 @@ export type IOSDeviceParams = {
   udid: string;
   type: DeviceType;
   name: string;
+  osVersion?: string;
   deviceTypeIdentifier?: string;
   state?: string;
 };

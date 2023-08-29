@@ -48,6 +48,7 @@ export type DeviceTarget = {
   udid: string;
   type: DeviceType;
   name: string;
+  osVersion?: string;
 };
 
 let idbDeviceListing = 0;
@@ -253,6 +254,7 @@ function parseIdbTarget(line: string): DeviceTarget | undefined {
         ? 'emulator'
         : ('physical' as DeviceType),
     name: parsed.name,
+    osVersion: parsed.os_version,
   };
 }
 
