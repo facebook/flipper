@@ -70,6 +70,10 @@ function transformLogLevel(level: LoggerTypes, message: string) {
     if (message.endsWith('Network Error')) {
       return 'warn';
     }
+
+    if (message.includes('Watchman was not found in PATH')) {
+      return 'warn';
+    }
   }
 
   return level;
