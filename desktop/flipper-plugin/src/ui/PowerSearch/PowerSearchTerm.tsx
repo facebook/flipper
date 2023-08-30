@@ -11,6 +11,7 @@ import {CloseOutlined} from '@ant-design/icons';
 import {Button, Space} from 'antd';
 import * as React from 'react';
 import {FieldConfig, OperatorConfig} from './PowerSearchConfig';
+import {PowerSearchEnumTerm} from './PowerSearchEnumTerm';
 import {PowerSearchFloatTerm} from './PowerSearchFloatTerm';
 import {PowerSearchIntegerTerm} from './PowerSearchIntegerTerm';
 import {PowerSearchStringTerm} from './PowerSearchStringTerm';
@@ -82,6 +83,21 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
     case 'NO_VALUE': {
       // Nothing needs to be done. The effect below is going to fire and mark it as the final value.
       searchValueInputComponent = null;
+      break;
+    }
+    case 'ENUM': {
+      searchValueInputComponent = (
+        <PowerSearchEnumTerm
+          onCancel={onCancel}
+          onChange={(newValue) => {
+            onFinalize({
+              ...searchTerm,
+              searchValue: newValue,
+            });
+          }}
+          enumLabels={searchTerm.operator.enumLabels}
+        />
+      );
       break;
     }
     default: {
