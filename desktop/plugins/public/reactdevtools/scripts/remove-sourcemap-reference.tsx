@@ -22,14 +22,6 @@ import path from 'path';
 const SOURCEMAP_REFERENCE =
   '//# sourceMappingURL=importFile.worker.worker.js.map';
 
-// Remove this once we're upgrade to a newer JS version. String.prototype.replaceAll is a thing.
-function replaceAll(s: string, find: string, replace: string): string {
-  return s.replace(
-    new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'),
-    replace,
-  );
-}
-
 async function main() {
   const frontendPath = path.resolve(
     __dirname,
@@ -48,10 +40,7 @@ async function main() {
     return 0;
   }
 
-  await fs.writeFile(
-    frontendPath,
-    replaceAll(content, SOURCEMAP_REFERENCE, ''),
-  );
+  await fs.writeFile(frontendPath, content.replaceAll(SOURCEMAP_REFERENCE, ''));
 
   console.log('react-devtools-inline patched successfully.');
   return 0;
