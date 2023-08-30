@@ -154,7 +154,11 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
             },
           ]);
         }}
-        value={''}
+        filterOption={(inputValue, option) => {
+          return !!option?.label
+            .toLowerCase()
+            .includes(inputValue.toLowerCase());
+        }}
       />
     </div>
   );
