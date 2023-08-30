@@ -85,11 +85,9 @@ export type FieldConfig = {
   key: string;
   label: string;
   operators: {[key: string]: OperatorConfig};
-  operatorMenuDisplayOrder: string[];
 };
 
 export type PowerSearchConfig = {
   name: string;
   fields: {[key: string]: FieldConfig};
-  fieldKeyTypeaheadOrder?: string[];
 };

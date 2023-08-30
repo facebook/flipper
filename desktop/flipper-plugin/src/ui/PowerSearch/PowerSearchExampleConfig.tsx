@@ -165,7 +165,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
         in: operators.in,
         not_in: operators.not_in,
       },
-      operatorMenuDisplayOrder: ['in', 'not_in'],
     },
     title: {
       key: 'title',
@@ -174,7 +173,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
         contain: operators.contain,
         not_contain: operators.not_contain,
       },
-      operatorMenuDisplayOrder: ['contain', 'not_contain'],
     },
     description: {
       key: 'description',
@@ -183,7 +181,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
         contain: operators.contain,
         not_contain: operators.not_contain,
       },
-      operatorMenuDisplayOrder: ['contain', 'not_contain'],
     },
     placeholder: {
       key: 'placeholder',
@@ -192,10 +189,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
         predictive_contain: operators.predictive_contain,
         predictive_not_contain: operators.predictive_not_contain,
       },
-      operatorMenuDisplayOrder: [
-        'predictive_contain',
-        'predictive_not_contain',
-      ],
     },
     lines: {
       key: 'lines',
@@ -204,7 +197,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
         greater_than: operators.greater_than,
         less_than: operators.less_than,
       },
-      operatorMenuDisplayOrder: ['greater_than', 'less_than'],
     },
     cost: {
       key: 'cost',
@@ -213,7 +205,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
         greater_than_float: operators.greater_than_float,
         less_than_float: operators.less_than_float,
       },
-      operatorMenuDisplayOrder: ['greater_than_float', 'less_than_float'],
     },
     status: {
       key: 'status',
@@ -222,7 +213,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
         status_any: operators.status_any,
         status_not_any: operators.status_not_any,
       },
-      operatorMenuDisplayOrder: ['status_any', 'status_not_any'],
     },
     caller: {
       key: 'caller',
@@ -230,7 +220,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
       operators: {
         caller_is: operators.caller_is,
       },
-      operatorMenuDisplayOrder: ['caller_is'],
     },
     macro: {
       key: 'macro',
@@ -239,7 +228,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
         macro_is: operators.macro_is,
         macro_is_not: operators.macro_is_not,
       },
-      operatorMenuDisplayOrder: ['macro_is', 'macro_is_not'],
     },
     time: {
       key: 'time',
@@ -247,7 +235,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
       operators: {
         time_after: operators.time_after,
       },
-      operatorMenuDisplayOrder: ['time_after'],
     },
     filtered_time: {
       key: 'filtered_time',
@@ -255,7 +242,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
       operators: {
         filtered_time_after: operators.filtered_time_after,
       },
-      operatorMenuDisplayOrder: ['filtered_time_after'],
     },
     last_update: {
       key: 'last_update',
@@ -266,11 +252,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
         newer_than_absolute_date_no_time:
           operators.newer_than_absolute_date_no_time,
       },
-      operatorMenuDisplayOrder: [
-        'newer_than_relative_date',
-        'newer_than_absolute_date',
-        'newer_than_absolute_date_no_time',
-      ],
     },
     unread_only: {
       key: 'unread_only',
@@ -278,7 +259,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
       operators: {
         unread: operators.unread,
       },
-      operatorMenuDisplayOrder: ['unread_only'],
     },
     NESTED_FIELD: {
       key: 'NESTED_FIELD',
@@ -300,7 +280,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
           valueType: 'NESTED',
         },
       },
-      operatorMenuDisplayOrder: ['AND', 'NOT', 'OR'],
     },
     CONTEXT_TOKEN: {
       key: 'CONTEXT_TOKEN',
@@ -312,7 +291,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
           valueType: 'NO_VALUE',
         },
       },
-      operatorMenuDisplayOrder: [],
     },
   },
 };
