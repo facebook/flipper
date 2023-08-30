@@ -31,6 +31,7 @@ export type StringOperatorConfig = {
   valueType: StringFilterValueType;
   key: string;
   label: string;
+  allowArbitraryEntries?: boolean;
 };
 
 export type EnumOperatorConfig = {
@@ -50,6 +51,7 @@ export type RelativeDateOperatorConfig = {
   key: string;
   label: string;
   allowableTenses: InternPowerSearchRelativeDateAllowableTensesType;
+  isNegative?: boolean;
 };
 
 export type AbsoluteDateOperatorConfig = {
@@ -59,6 +61,7 @@ export type AbsoluteDateOperatorConfig = {
   dateOnly?: boolean;
   minValue?: Date;
   maxValue?: Date;
+  isNegative?: boolean;
 };
 
 export type TimeOperatorConfig = {
@@ -67,6 +70,7 @@ export type TimeOperatorConfig = {
   label: string;
   minValue?: Date;
   maxValue?: Date;
+  isNegative?: boolean;
 };
 
 export type OperatorConfig =
@@ -82,7 +86,6 @@ export type FieldConfig = {
   label: string;
   operators: {[key: string]: OperatorConfig};
   operatorMenuDisplayOrder: string[];
-  typeaheadOperators: string[];
 };
 
 export type PowerSearchConfig = {
