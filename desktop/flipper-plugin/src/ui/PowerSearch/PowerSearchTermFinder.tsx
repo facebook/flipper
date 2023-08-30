@@ -24,12 +24,13 @@ export type PowerSearchTermFinderRef = {
 type PowerSearchTermFinderProps = {
   options: PowerSearchTermFinderOptionGroup[];
   onSelect: (selectedOption: PowerSearchTermFinderOption) => void;
+  onBackspacePressWhileEmpty: () => void;
 };
 
 export const PowerSearchTermFinder = React.forwardRef<
   PowerSearchTermFinderRef,
   PowerSearchTermFinderProps
->(({options, onSelect}, ref) => {
+>(({options, onSelect, onBackspacePressWhileEmpty}, ref) => {
   const [searchTermFinderValue, setSearchTermFinderValue] = React.useState<
     string | null
   >(null);
@@ -61,6 +62,9 @@ export const PowerSearchTermFinder = React.forwardRef<
       onInputKeyDown={(event) => {
         if (event.key === 'Enter') {
           setSearchTermFinderValue(null);
+        }
+        if (event.key === 'Backspace' && !searchTermFinderValue) {
+          onBackspacePressWhileEmpty();
         }
       }}
     />

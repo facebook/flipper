@@ -146,6 +146,14 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
             },
           ]);
         }}
+        onBackspacePressWhileEmpty={() => {
+          setSearchExpression((prevSearchExpression) => {
+            return prevSearchExpression.slice(
+              0,
+              prevSearchExpression.length - 1,
+            );
+          });
+        }}
       />
     </PowerSearchContainer>
   );
