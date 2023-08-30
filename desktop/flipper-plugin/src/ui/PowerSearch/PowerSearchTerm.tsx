@@ -79,6 +79,11 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
       );
       break;
     }
+    case 'NO_VALUE': {
+      // Nothing needs to be done. The effect below is going to fire and mark it as the final value.
+      searchValueInputComponent = null;
+      break;
+    }
     default: {
       console.error(
         'PowerSearchTerm -> unknownoperator.valueType',
@@ -87,6 +92,15 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
       );
     }
   }
+
+  React.useEffect(() => {
+    if (searchTerm.operator.valueType === 'NO_VALUE') {
+      onFinalize({
+        ...searchTerm,
+        searchValue: null,
+      });
+    }
+  }, [searchTerm, onFinalize]);
 
   return (
     <Space.Compact block size="small">
