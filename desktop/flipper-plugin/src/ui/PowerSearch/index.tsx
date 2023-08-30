@@ -71,6 +71,11 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
       ? searchExpression[searchExpression.length - 1].searchValue !== undefined
       : false;
 
+  const searchTermFinderRef = React.useRef<{
+    focus: () => void;
+    blur: () => void;
+    scrollTo: () => void;
+  }>(null);
   const [searchTermFinderValue, setSearchTermFinderValue] = React.useState<
     string | null
   >(null);
@@ -114,6 +119,7 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
                         },
                       ];
                     });
+                    searchTermFinderRef.current?.focus();
                   }}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === 'Escape') {
@@ -141,6 +147,7 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
         })}
       </Space>
       <AutoComplete<string, AutocompleteOption>
+        ref={searchTermFinderRef}
         style={{flex: '1'}}
         options={options}
         bordered={false}
