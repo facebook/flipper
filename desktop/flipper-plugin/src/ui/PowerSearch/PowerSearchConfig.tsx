@@ -9,7 +9,12 @@
 
 // Mostly matches https://www.internalfb.com/code/www/html/intern/js/ui/PowerSearch/PowerSearchExampleConfig.js
 
-export type SimpleFilterValueType = 'NO_VALUE' | 'INTEGER' | 'FLOAT' | 'STRING';
+export type SimpleFilterValueType =
+  | 'NO_VALUE'
+  | 'INTEGER'
+  | 'FLOAT'
+  | 'STRING'
+  | 'STRING_SET';
 
 export type EnumFilterValueType = 'ENUM' | 'ENUM_SET';
 

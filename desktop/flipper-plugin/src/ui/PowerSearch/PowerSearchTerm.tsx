@@ -21,6 +21,7 @@ import {PowerSearchEnumSetTerm} from './PowerSearchEnumSetTerm';
 import {PowerSearchEnumTerm} from './PowerSearchEnumTerm';
 import {PowerSearchFloatTerm} from './PowerSearchFloatTerm';
 import {PowerSearchIntegerTerm} from './PowerSearchIntegerTerm';
+import {PowerSearchStringSetTerm} from './PowerSearchStringSetTerm';
 import {PowerSearchStringTerm} from './PowerSearchStringTerm';
 
 export type IncompleteSearchExpressionTerm = {
@@ -49,6 +50,20 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
       case 'STRING': {
         searchValueComponent = (
           <PowerSearchStringTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+          />
+        );
+        break;
+      }
+      case 'STRING_SET': {
+        searchValueComponent = (
+          <PowerSearchStringSetTerm
             onCancel={onCancel}
             onChange={(newValue) => {
               onFinalize({
@@ -168,6 +183,20 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
               });
             }}
             enumLabels={searchTerm.operator.enumLabels}
+          />
+        );
+        break;
+      }
+      case 'STRING_SET': {
+        searchValueComponent = (
+          <PowerSearchStringSetTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
           />
         );
         break;

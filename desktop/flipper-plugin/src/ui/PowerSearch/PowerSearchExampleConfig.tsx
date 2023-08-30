@@ -26,6 +26,11 @@ const operators = {
     key: 'not_contain',
     valueType: 'STRING',
   },
+  contains_any_of: {
+    label: 'contains any of',
+    key: 'contains_any_of',
+    valueType: 'STRING_SET',
+  },
   greater_than: {
     label: '>',
     key: 'greater_than',
@@ -115,6 +120,7 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
       operators: {
         contain: operators.contain,
         not_contain: operators.not_contain,
+        contains_any_of: operators.contains_any_of,
       },
     },
     placeholder: {
