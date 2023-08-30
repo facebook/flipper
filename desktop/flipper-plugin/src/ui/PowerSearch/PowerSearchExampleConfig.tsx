@@ -77,14 +77,12 @@ const operators = {
   newer_than_absolute_date: {
     key: 'newer_than_absolute_date',
     label: 'is after',
-    isNegative: false,
     valueType: 'ABSOLUTE_DATE',
     dateOnly: false,
   },
   newer_than_absolute_date_no_time: {
     key: 'newer_than_absolute_date_no_time',
     label: 'is after the day',
-    isNegative: false,
     valueType: 'ABSOLUTE_DATE',
     dateOnly: true,
   },
@@ -136,6 +134,15 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
       operators: {
         greater_than_float: operators.greater_than_float,
         less_than_float: operators.less_than_float,
+      },
+    },
+    date: {
+      key: 'date',
+      label: 'Date',
+      operators: {
+        newer_than_absolute_date_no_time:
+          operators.newer_than_absolute_date_no_time,
+        newer_than_absolute_date: operators.newer_than_absolute_date,
       },
     },
     caller: {

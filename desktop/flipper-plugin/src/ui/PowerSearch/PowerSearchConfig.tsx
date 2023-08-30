@@ -35,7 +35,6 @@ export type AbsoluteDateOperatorConfig = {
   dateOnly?: boolean;
   minValue?: Date;
   maxValue?: Date;
-  isNegative?: boolean;
 };
 
 export type OperatorConfig =

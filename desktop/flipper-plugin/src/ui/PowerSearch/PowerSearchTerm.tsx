@@ -9,7 +9,13 @@
 
 import {CloseOutlined} from '@ant-design/icons';
 import {Button, Space} from 'antd';
+import dayjs from 'dayjs';
 import * as React from 'react';
+import {
+  DATE_ONLY_FORMAT,
+  DATE_TIME_FORMAT,
+  PowerSearchAbsoluteDateTerm,
+} from './PowerSearchAbsoluteDateTerm';
 import {FieldConfig, OperatorConfig} from './PowerSearchConfig';
 import {PowerSearchEnumTerm} from './PowerSearchEnumTerm';
 import {PowerSearchFloatTerm} from './PowerSearchFloatTerm';
@@ -101,10 +107,26 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
         );
         break;
       }
+      case 'ABSOLUTE_DATE': {
+        searchValueComponent = (
+          <PowerSearchAbsoluteDateTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+            minValue={searchTerm.operator.minValue}
+            maxValue={searchTerm.operator.maxValue}
+            dateOnly={searchTerm.operator.dateOnly}
+          />
+        );
+        break;
+      }
       default: {
         console.error(
-          'PowerSearchTerm -> unknownoperator.valueType',
-          searchTerm.operator.valueType,
+          'PowerSearchTerm -> unknown operator.valueType',
           searchTerm,
         );
       }
@@ -115,6 +137,16 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
         searchValueComponent = (
           <Button>
             {searchTerm.operator.enumLabels[searchTerm.searchValue]}
+          </Button>
+        );
+        break;
+      }
+      case 'ABSOLUTE_DATE': {
+        searchValueComponent = (
+          <Button>
+            {searchTerm.operator.dateOnly
+              ? dayjs(searchTerm.searchValue).format(DATE_ONLY_FORMAT)
+              : dayjs(searchTerm.searchValue).format(DATE_TIME_FORMAT)}
           </Button>
         );
         break;
