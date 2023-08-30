@@ -14,12 +14,12 @@ import {
   getFlipperServerConfig,
   setFlipperServerConfig,
 } from '../../../FlipperServerConfig';
-import {IOSDeviceParams} from 'flipper-common';
+import {DeviceTarget} from 'flipper-common';
 
 let fakeSimctlBridge: any;
 let fakeIDBBridge: any;
 let fakeFlipperServer: any;
-const fakeDevices: IOSDeviceParams[] = [
+const fakeDevices: DeviceTarget[] = [
   {
     udid: 'luke',
     type: 'emulator',
@@ -122,7 +122,7 @@ test('test queryDevices when simctl used', async () => {
     fakeFlipperServer,
     getFlipperServerConfig().settings,
   );
-  ios.simctlBridge = fakeSimctlBridge;
+  ios.ctlBridge = fakeSimctlBridge;
 
   await ios.queryDevices(fakeSimctlBridge);
 
@@ -145,7 +145,7 @@ test('test queryDevices when idb used', async () => {
     fakeFlipperServer,
     getFlipperServerConfig().settings,
   );
-  ios.simctlBridge = fakeSimctlBridge;
+  ios.ctlBridge = fakeSimctlBridge;
 
   await ios.queryDevices(fakeIDBBridge);
 

@@ -7,6 +7,8 @@
  * @format
  */
 
+import {DeviceType, OS} from './server-types';
+
 export interface PluginDetails {
   name: string;
   specVersion: number;
@@ -56,17 +58,6 @@ export interface SupportedApp {
   readonly os?: OS;
   readonly type?: DeviceType;
 }
-
-export type OS =
-  | 'iOS'
-  | 'Android'
-  | 'Metro'
-  | 'Windows'
-  | 'MacOS'
-  | 'Browser'
-  | 'Linux';
-
-export type DeviceType = 'emulator' | 'physical' | 'dummy';
 
 export type PluginType = 'client' | 'device';
 

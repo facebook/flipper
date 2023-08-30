@@ -8,11 +8,10 @@
  */
 
 import {Mutex} from 'async-mutex';
-import {exec as unsafeExec, Output} from 'promisify-child-process';
-import {reportPlatformFailures} from 'flipper-common';
+import {exec as unsafeExec, Output, execFile} from 'promisify-child-process';
+import {DeviceTarget, DeviceType, reportPlatformFailures} from 'flipper-common';
 import {promises, constants} from 'fs';
 import memoize from 'lodash.memoize';
-import {notNull} from '../../utils/typeUtils';
 import {promisify} from 'util';
 import child_process from 'child_process';
 import fs from 'fs-extra';
@@ -25,6 +24,25 @@ export type IdbConfig = {
   enablePhysicalIOS: boolean;
 };
 
+export type IdbTarget = {
+  udid: string;
+  type: string;
+  name: string;
+  os_version: string;
+  architecture: string;
+  state?: string;
+  target_type?: string | DeviceType;
+};
+
+export type XcodeTarget = {
+  state: 'Booted' | 'Shutdown' | 'Shutting Down';
+  availability?: string;
+  isAvailable?: 'YES' | 'NO' | true | false;
+  name: string;
+  osVersion?: string;
+  udid: string;
+};
+
 // Use debug to get helpful logs when idb fails
 const IDB_LOG_LEVEL = 'DEBUG';
 const LOG_TAG = 'iOSContainerUtility';
@@ -32,30 +50,11 @@ const CMD_RECORD_THROTTLE_COUNT = 10;
 
 const mutex = new Mutex();
 
-type IdbTarget = {
-  name: string;
-  udid: string;
-  state: 'Booted' | 'Shutdown';
-  type: string | DeviceType;
-  target_type?: string | DeviceType;
-  os_version: string;
-  architecture: string;
-};
-
-export type DeviceType = 'physical' | 'emulator';
-
-export type DeviceTarget = {
-  udid: string;
-  type: DeviceType;
-  name: string;
-  osVersion?: string;
-};
-
 let idbDeviceListing = 0;
 let idbCompanionDeviceListing = 0;
 let xcodeDeviceListing = 0;
 
-async function isAvailable(idbPath: string): Promise<boolean> {
+export async function isIdbAvailable(idbPath: string): Promise<boolean> {
   if (!idbPath) {
     return false;
   }
@@ -74,16 +73,50 @@ async function safeExec(
   return await unsafeExec(command).finally(release);
 }
 
-async function queryTargetsWithXcode(
-  context: any,
+export function getDeviceSetPath() {
+  return process.env.DEVICE_SET_PATH
+    ? ['--set', process.env.DEVICE_SET_PATH]
+    : [];
+}
+
+export function isSimulatorAvailable(simulator: XcodeTarget): boolean {
+  // For some users "availability" is set, for others it's "isAvailable"
+  // It's not clear which key is set, so we are checking both.
+  // We've also seen isAvailable return "YES" and true, depending on version.
+  return (
+    simulator.availability === '(available)' ||
+    simulator.isAvailable === 'YES' ||
+    simulator.isAvailable === true
+  );
+}
+
+function getOSVersionFromXCRunOutput(s: string): string | undefined {
+  // E.g. 'com.apple.CoreSimulator.SimRuntime.iOS-16-1'
+  const match = s.match(
+    /com\.apple\.CoreSimulator\.SimRuntime\.iOS-(\d+)-(\d+)/,
+  );
+  if (match) {
+    return `${match[1]}.${match[2]}`;
+  }
+}
+
+export async function queryTargetsWithXcode(
+  context?: any,
 ): Promise<Array<DeviceTarget>> {
-  const cmd = 'xcrun xctrace list devices';
+  const cmd = 'xcrun simctl list devices --json';
   const description = 'Query available devices with Xcode';
   const troubleshoot = `Xcode command line tools are not installed.
     Run 'xcode-select --install' from terminal.`;
 
   try {
-    const {stdout} = await safeExec(cmd);
+    const {stdout} = await execFile('xcrun', [
+      'simctl',
+      ...getDeviceSetPath(),
+      'list',
+      'devices',
+      '--json',
+    ]);
+
     if (!stdout) {
       recorder.event('cmd', {
         cmd,
@@ -105,17 +138,22 @@ async function queryTargetsWithXcode(
       });
     }
 
-    return stdout
-      .toString()
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((line) => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
-      .filter(notNull)
-      .filter(([_match, _name, _udid, isSim]) => !isSim)
-      .map<DeviceTarget>(([_match, name, udid]) => {
-        return {udid, type: 'physical', name};
-      });
+    const devices = JSON.parse(stdout.toString()).devices as {
+      [key: string]: Array<XcodeTarget>;
+    };
+
+    return Object.keys(devices).flatMap((key: string) =>
+      devices[key]
+        .filter((simulator: XcodeTarget) => isSimulatorAvailable(simulator))
+        .map((simulator: XcodeTarget) => {
+          return {
+            ...simulator,
+            type: 'emulator',
+            state: simulator.state.toLowerCase(),
+            osVersion: getOSVersionFromXCRunOutput(key),
+          } as DeviceTarget;
+        }),
+    );
   } catch (e) {
     recorder.event('cmd', {
       cmd,
@@ -176,7 +214,7 @@ async function queryTargetsWithIdb(
   }
 }
 
-async function queryTargetsWithIdbCompanion(
+async function _queryTargetsWithIdbCompanion(
   idbCompanionPath: string,
   isPhysicalDeviceEnabled: boolean,
   context: any,
@@ -187,7 +225,7 @@ async function queryTargetsWithIdbCompanion(
   const troubleshoot = `Unable to locate idb_companion in '${idbCompanionPath}'.
     Try running sudo yum install -y fb-idb`;
 
-  if (await isAvailable(idbCompanionPath)) {
+  if (await isIdbAvailable(idbCompanionPath)) {
     try {
       const {stdout} = await safeExec(cmd);
       if (!stdout) {
@@ -244,9 +282,6 @@ async function queryTargetsWithIdbCompanion(
 
 function parseIdbTarget(line: string): DeviceTarget | undefined {
   const parsed: IdbTarget = JSON.parse(line);
-  if (parsed.state.toLocaleLowerCase() !== 'booted') {
-    return;
-  }
   return {
     udid: parsed.udid,
     type:
@@ -255,6 +290,7 @@ function parseIdbTarget(line: string): DeviceTarget | undefined {
         : ('physical' as DeviceType),
     name: parsed.name,
     osVersion: parsed.os_version,
+    state: parsed.state?.toLocaleLowerCase(),
   };
 }
 
@@ -331,11 +367,20 @@ async function idbDescribeTarget(
 async function targets(
   idbPath: string,
   isPhysicalDeviceEnabled: boolean,
+  bootedOnly: boolean = false,
   context?: any,
 ): Promise<Array<DeviceTarget>> {
   if (process.platform !== 'darwin') {
     return [];
   }
+
+  const bootedFilter = (targets: DeviceTarget[] | undefined) => {
+    return targets
+      ? targets.filter(
+          (target) => !bootedOnly || (bootedOnly && target.state === 'booted'),
+        )
+      : [];
+  };
 
   // If companion is started by some external process and its path
   // is provided to Flipper via IDB_COMPANION environment variable,
@@ -343,33 +388,15 @@ async function targets(
   // See stack of D36315576 for details
   if (process.env.IDB_COMPANION) {
     const target = await idbDescribeTarget(idbPath, context);
-    return target ? [target] : [];
+    return bootedFilter(target ? [target] : []);
   }
 
-  const isXcodeInstalled = await isXcodeDetected();
-  if (!isXcodeInstalled) {
-    if (!isPhysicalDeviceEnabled) {
-      recorder.rawError(
-        'You are trying to connect a physical device. Please enable the toggle "Enable physical iOS device" from the setting screen.',
-      );
-    }
-    const idbCompanionPath = path.dirname(idbPath) + '/idb_companion';
-    return queryTargetsWithIdbCompanion(
-      idbCompanionPath,
-      isPhysicalDeviceEnabled,
-      context,
-    );
-  }
-
-  // Not all users have idb installed because you can still use
-  // Flipper with Simulators without it.
-  // But idb is MUCH more CPU efficient than xcrun, so
-  // when installed, use it. This still holds true
-  // with the move from instruments to xcrun.
-  if (await memoize(isAvailable)(idbPath)) {
-    return await queryTargetsWithIdb(idbPath, context);
+  if (await memoize(isIdbAvailable)(idbPath)) {
+    const targets = await queryTargetsWithIdb(idbPath, context);
+    return bootedFilter(targets);
   } else {
-    return queryTargetsWithXcode(context);
+    const targets = await queryTargetsWithXcode(context);
+    return bootedFilter(targets);
   }
 }
 
@@ -459,7 +486,7 @@ async function pull(
 }
 
 async function checkIdbIsInstalled(idbPath: string): Promise<void> {
-  const isInstalled = await isAvailable(idbPath);
+  const isInstalled = await isIdbAvailable(idbPath);
   if (!isInstalled) {
     throw new Error(
       `idb is required to use iOS devices. Install it with instructions

@@ -26,7 +26,7 @@ import {
   theme,
 } from 'flipper-plugin';
 import {Provider} from 'react-redux';
-import {IOSDeviceParams} from 'flipper-common';
+import {DeviceTarget} from 'flipper-common';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import SettingsSheet from '../../chrome/SettingsSheet';
 import {Link} from '../../ui';
@@ -88,7 +88,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
       (state) => state.settingsState.enableAndroid,
     );
 
-    const [iosEmulators, setIosEmulators] = useState<IOSDeviceParams[]>([]);
+    const [iosEmulators, setIosEmulators] = useState<DeviceTarget[]>([]);
     const [androidEmulators, setAndroidEmulators] = useState<string[]>([]);
     const [waitingForIos, setWaitingForIos] = useState(iosEnabled);
     const [waitingForAndroid, setWaitingForAndroid] = useState(androidEnabled);
@@ -113,13 +113,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
         .flipperServer.exec('ios-get-simulators', false)
         .then((emulators) => {
           setWaitingForIos(false);
-          setIosEmulators(
-            emulators.filter(
-              (device) =>
-                device.state === 'Shutdown' &&
-                device.deviceTypeIdentifier?.match(/iPhone|iPad/i),
-            ),
-          );
+          setIosEmulators(emulators);
         })
         .catch((e) => {
           console.warn('Failed to find simulators', e);

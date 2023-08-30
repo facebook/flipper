@@ -10,11 +10,9 @@
 import {FlipperDoctor} from './doctor';
 import {
   DeviceSpec,
-  DeviceType,
   DownloadablePluginDetails,
   InstalledPluginDetails,
   MarketplacePluginDetails,
-  OS as PluginOS,
   UpdatablePluginDetails,
 } from './PluginDetails';
 import {ServerAddOnStartDetails} from './ServerAddOn';
@@ -39,7 +37,7 @@ export type FlipperServerState =
   | 'error'
   | 'closed';
 
-export type DeviceOS = PluginOS;
+export type DeviceOS = OS;
 
 export type DeviceDescription = {
   readonly os: DeviceOS;
@@ -172,12 +170,22 @@ export type FlipperServerEvents = {
   'server-log': LoggerInfo;
 };
 
-export type IOSDeviceParams = {
+export type OS =
+  | 'iOS'
+  | 'Android'
+  | 'Metro'
+  | 'Windows'
+  | 'MacOS'
+  | 'Browser'
+  | 'Linux';
+
+export type DeviceType = 'physical' | 'emulator' | 'dummy';
+
+export type DeviceTarget = {
   udid: string;
   type: DeviceType;
   name: string;
   osVersion?: string;
-  deviceTypeIdentifier?: string;
   state?: string;
 };
 
@@ -298,7 +306,7 @@ export type FlipperServerCommands = {
   'android-get-emulators': () => Promise<string[]>;
   'android-launch-emulator': (name: string, coldboot: boolean) => Promise<void>;
   'android-adb-kill': () => Promise<void>;
-  'ios-get-simulators': (bootedOnly: boolean) => Promise<IOSDeviceParams[]>;
+  'ios-get-simulators': (bootedOnly: boolean) => Promise<DeviceTarget[]>;
   'ios-launch-simulator': (udid: string) => Promise<void>;
   'ios-idb-kill': () => Promise<void>;
   'persist-settings': (settings: Settings) => Promise<void>;
