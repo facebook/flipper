@@ -15,6 +15,7 @@ import {
   OperatorConfig,
 } from './PowerSearchTypes';
 import {CloseOutlined} from '@ant-design/icons';
+import {PowerSearchContainer} from './PowerSearchContainer';
 
 export {PowerSearchConfig};
 
@@ -81,7 +82,7 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
   >(null);
 
   return (
-    <div style={{display: 'flex', flexDirection: 'row'}}>
+    <PowerSearchContainer>
       <Space size={[0, 8]}>
         {searchExpression.map((searchTerm, i) => {
           const isLastTerm = i === searchExpression.length - 1;
@@ -182,6 +183,6 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
           }
         }}
       />
-    </div>
+    </PowerSearchContainer>
   );
 };
