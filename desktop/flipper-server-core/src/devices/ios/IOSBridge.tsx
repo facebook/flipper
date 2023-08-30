@@ -330,7 +330,7 @@ function isSimulatorAvailable(simulator: iOSSimulatorDevice): boolean {
   );
 }
 
-async function isAvailable(idbPath: string): Promise<boolean> {
+async function isIdbAvailable(idbPath: string): Promise<boolean> {
   if (!idbPath) {
     return false;
   }
@@ -389,9 +389,9 @@ export async function makeIOSBridge(
   idbPath: string,
   isXcodeDetected: boolean,
   enablePhysicalDevices: boolean,
-  isAvailableFn: (idbPath: string) => Promise<boolean> = isAvailable,
+  isAvailable: (idbPath: string) => Promise<boolean> = isIdbAvailable,
 ): Promise<IOSBridge> {
-  if (await isAvailableFn(idbPath)) {
+  if (await isAvailable(idbPath)) {
     return new IDBBridge(idbPath, enablePhysicalDevices);
   }
 
