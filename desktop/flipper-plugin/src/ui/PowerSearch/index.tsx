@@ -8,8 +8,12 @@
  */
 
 import * as React from 'react';
-import {AutoComplete, Space, Tag} from 'antd';
-import {PowerSearchConfig} from './PowerSearchTypes';
+import {AutoComplete, Button, Space} from 'antd';
+import {
+  PowerSearchConfig,
+  FieldConfig,
+  OperatorConfig,
+} from './PowerSearchTypes';
 
 export {PowerSearchConfig};
 
@@ -26,9 +30,15 @@ type AutocompleteOptionGroup = {
 
 const OPTION_KEY_DELIMITER = '::';
 
+type SearchExpressionTerm = {
+  field: FieldConfig;
+  operator: OperatorConfig;
+  searchValue?: string;
+};
+
 export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
   const [searchExpression, setSearchExpression] = React.useState<
-    AutocompleteOption[]
+    SearchExpressionTerm[]
   >([]);
 
   const options: AutocompleteOptionGroup[] = React.useMemo(() => {
@@ -58,8 +68,12 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
   return (
     <div style={{display: 'flex', flexDirection: 'row'}}>
       <Space size={[0, 8]}>
-        {searchExpression.map((searchTerm) => (
-          <Tag key={searchTerm.value}>{searchTerm.label}</Tag>
+        {searchExpression.map((searchTerm, i) => (
+          <Space key={i.toString()}>
+            <Button>{searchTerm.field.label}</Button>
+            <Button>{searchTerm.operator.label}</Button>
+            <Button>{searchTerm.searchValue}</Button>
+          </Space>
         ))}
       </Space>
       <AutoComplete
@@ -67,10 +81,17 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
         options={options}
         bordered={false}
         onSelect={(_: string, selectedOption: AutocompleteOption) => {
-          console.log('selectedOption', selectedOption);
+          const [fieldKey, operatorKey] =
+            selectedOption.value.split(OPTION_KEY_DELIMITER);
+          const fieldConfig = config.fields[fieldKey];
+          const operatorConfig = fieldConfig.operators[operatorKey];
+
           setSearchExpression((prevSearchExpression) => [
             ...prevSearchExpression,
-            selectedOption,
+            {
+              field: fieldConfig,
+              operator: operatorConfig,
+            },
           ]);
         }}
         value={null}
