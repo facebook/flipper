@@ -344,9 +344,7 @@ process.on('unhandledRejection', (reason, promise) => {
   );
 });
 
-start()
-  .then(() => {})
-  .catch((e) => {
-    console.error(chalk.red('Server startup error: '), e);
-    process.exit(1);
-  });
+start().catch((e) => {
+  console.error(chalk.red('Server startup error: '), e);
+  process.exit(1);
+});
