@@ -72,6 +72,8 @@ const verifyAuthToken = (req: http.IncomingMessage): boolean => {
   return true;
 };
 
+let isReady = false;
+
 /**
  * Orchestrates the creation of the HTTP server, proxy, and WS server.
  * @param config Server configuration.
@@ -108,7 +110,10 @@ async function startHTTPServer(config: Config): Promise<{
   });
 
   app.get('/', (_req, res) => {
-    fs.readFile(path.join(config.staticPath, config.entry), (_err, content) => {
+    const resource = isReady
+      ? path.join(config.staticPath, config.entry)
+      : path.join(config.staticPath, 'loading.html');
+    fs.readFile(resource, (_err, content) => {
       res.end(content);
     });
   });
@@ -127,6 +132,8 @@ async function startHTTPServer(config: Config): Promise<{
     server.close();
   });
 
+  server.listen(config.port);
+
   return new Promise((resolve) => {
     console.log(`Starting server on http://localhost:${config.port}`);
     const readyForIncomingConnections = (
@@ -134,13 +141,12 @@ async function startHTTPServer(config: Config): Promise<{
       companionEnv: FlipperServerCompanionEnv,
     ): Promise<void> => {
       attachSocketServer(socket, serverImpl, companionEnv);
+      isReady = true;
       return new Promise((resolve) => {
-        server.listen(config.port, undefined, () => {
-          tracker.track('server-started', {
-            port: config.port,
-          });
-          resolve();
+        tracker.track('server-started', {
+          port: config.port,
         });
+        resolve();
       });
     };
     resolve({app, server, socket, readyForIncomingConnections});
