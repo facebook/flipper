@@ -14,6 +14,7 @@ import {
   FieldConfig,
   OperatorConfig,
 } from './PowerSearchTypes';
+import {CloseOutlined} from '@ant-design/icons';
 
 export {PowerSearchConfig};
 
@@ -117,6 +118,20 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
                   }}
                 />
               )}
+              <Button
+                icon={<CloseOutlined />}
+                onClick={() => {
+                  setSearchExpression((prevSearchExpression) => {
+                    if (prevSearchExpression[i]) {
+                      return [
+                        ...prevSearchExpression.slice(0, i),
+                        ...prevSearchExpression.slice(i + 1),
+                      ];
+                    }
+                    return prevSearchExpression;
+                  });
+                }}
+              />
             </Space.Compact>
           );
         })}
