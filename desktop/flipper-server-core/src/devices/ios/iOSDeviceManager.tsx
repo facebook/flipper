@@ -97,10 +97,9 @@ export class IOSDeviceManager {
     ];
   }
 
-  queryDevices(bridge: IOSBridge): Promise<any> {
-    return bridge
-      .getActiveDevices(true)
-      .then((devices) => this.processDevices(bridge, devices));
+  async queryDevices(bridge: IOSBridge): Promise<any> {
+    const devices = await bridge.getActiveDevices(true);
+    return this.processDevices(bridge, devices);
   }
 
   private processDevices(bridge: IOSBridge, activeDevices: IOSDeviceParams[]) {
