@@ -92,11 +92,11 @@ test('linkify formatter', () => {
   expect(linkify('https://www.google.com')).toMatchInlineSnapshot(`
     <React.Fragment>
       
-      <ForwardRef(Link)
+      <ForwardRef
         href="https://www.google.com"
       >
         https://www.google.com
-      </ForwardRef(Link)>
+      </ForwardRef>
       
     </React.Fragment>
   `);
@@ -107,11 +107,11 @@ test('linkify formatter', () => {
   expect(linkify('test https://www.google.com test')).toMatchInlineSnapshot(`
     <React.Fragment>
       test 
-      <ForwardRef(Link)
+      <ForwardRef
         href="https://www.google.com"
       >
         https://www.google.com
-      </ForwardRef(Link)>
+      </ForwardRef>
        test
     </React.Fragment>
   `);
@@ -119,17 +119,17 @@ test('linkify formatter', () => {
     .toMatchInlineSnapshot(`
     <React.Fragment>
       
-      <ForwardRef(Link)
+      <ForwardRef
         href="https://www.google.com"
       >
         https://www.google.com
-      </ForwardRef(Link)>
+      </ForwardRef>
        test 
-      <ForwardRef(Link)
+      <ForwardRef
         href="http://fb.com"
       >
         http://fb.com
-      </ForwardRef(Link)>
+      </ForwardRef>
       
     </React.Fragment>
   `);
@@ -162,11 +162,11 @@ test('jsonify formatter', () => {
     <React.Fragment>
       {
       "hello": "
-      <ForwardRef(Link)
+      <ForwardRef
         href="http://facebook.com"
       >
         http://facebook.com
-      </ForwardRef(Link)>
+      </ForwardRef>
       "
     }
     </React.Fragment>

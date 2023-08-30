@@ -34,7 +34,7 @@
   "peerDependencies": {
     "@ant-design/icons": "^4.2.2",
     "@testing-library/dom": "^7.26.3",
-    "antd": "^4.23.4"
+    "antd": "^4.24"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",

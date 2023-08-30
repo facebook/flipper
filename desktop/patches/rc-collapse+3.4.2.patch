@@ -1,0 +1,18 @@
+diff --git a/node_modules/rc-collapse/es/Panel.js b/node_modules/rc-collapse/es/Panel.js
+index d908840..3b5926b 100644
+--- a/node_modules/rc-collapse/es/Panel.js
++++ b/node_modules/rc-collapse/es/Panel.js
+@@ -137,9 +137,11 @@ var CollapsePanel = /*#__PURE__*/function (_React$Component) {
+         className: itemCls,
+         style: style,
+         id: id
+-      }), /*#__PURE__*/React.createElement("div", headerProps, this.renderIcon(), this.renderTitle(), ifExtraExist && /*#__PURE__*/React.createElement("div", {
++      }),
++      React.createElement(global.FlipperTracked, { action: 'collapse:' + _this$props4.header },
++      /*#__PURE__*/React.createElement("div", headerProps, this.renderIcon(), this.renderTitle(), ifExtraExist && /*#__PURE__*/React.createElement("div", {
+         className: "".concat(prefixCls, "-extra")
+-      }, extra)), /*#__PURE__*/React.createElement(CSSMotion, _extends({
++      }, extra))), /*#__PURE__*/React.createElement(CSSMotion, _extends({
+         visible: isActive,
+         leavedClassName: "".concat(prefixCls, "-content-hidden")
+       }, openMotion, {

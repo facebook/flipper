@@ -94,7 +94,7 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
             },
           ]);
         }}
-        value={null}
+        value={''}
       />
     </div>
   );

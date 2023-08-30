@@ -15,7 +15,7 @@
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.10.4",
     "@tanishiking/aho-corasick": "^0.0.1",
-    "antd": "4.19.2",
+    "antd": "^4.24",
     "cbuffer": "^2.2.0",
     "deep-equal": "^2.2.2",
     "@nicksrandall/console-feed": "^3.5.0",
