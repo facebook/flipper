@@ -8,14 +8,10 @@
  */
 
 import * as React from 'react';
-import {AutoComplete, Button, Input, Space} from 'antd';
-import {
-  PowerSearchConfig,
-  FieldConfig,
-  OperatorConfig,
-} from './PowerSearchTypes';
-import {CloseOutlined} from '@ant-design/icons';
+import {AutoComplete, Space} from 'antd';
+import {PowerSearchConfig} from './PowerSearchConfig';
 import {PowerSearchContainer} from './PowerSearchContainer';
+import {PowerSearchTerm, SearchExpressionTerm} from './PowerSearchTerm';
 
 export {PowerSearchConfig};
 
@@ -31,12 +27,6 @@ type AutocompleteOptionGroup = {
 };
 
 const OPTION_KEY_DELIMITER = '::';
-
-type SearchExpressionTerm = {
-  field: FieldConfig;
-  operator: OperatorConfig;
-  searchValue?: string;
-};
 
 export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
   const [searchExpression, setSearchExpression] = React.useState<
@@ -88,62 +78,33 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
           const isLastTerm = i === searchExpression.length - 1;
 
           return (
-            <Space.Compact block size="small" key={i.toString()}>
-              <Button>{searchTerm.field.label}</Button>
-              <Button>{searchTerm.operator.label}</Button>
-              {lastSearchTermHasSearchValue || !isLastTerm ? (
-                <Button>{searchTerm.searchValue ?? '...'}</Button>
-              ) : (
-                // TODO: Fix width
-                <Input
-                  autoFocus
-                  style={{width: 100}}
-                  placeholder="..."
-                  onBlur={(event) => {
-                    const newValue = event.target.value;
-
-                    if (!newValue) {
-                      setSearchExpression((prevSearchExpression) => {
-                        return prevSearchExpression.slice(0, -1);
-                      });
-                      return;
-                    }
-
-                    setSearchExpression((prevSearchExpression) => {
-                      return [
-                        ...prevSearchExpression.slice(0, -1),
-                        {
-                          ...prevSearchExpression[
-                            prevSearchExpression.length - 1
-                          ],
-                          searchValue: newValue,
-                        },
-                      ];
-                    });
-                    searchTermFinderRef.current?.focus();
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === 'Escape') {
-                      event.currentTarget.blur();
-                    }
-                  }}
-                />
-              )}
-              <Button
-                icon={<CloseOutlined />}
-                onClick={() => {
-                  setSearchExpression((prevSearchExpression) => {
-                    if (prevSearchExpression[i]) {
-                      return [
-                        ...prevSearchExpression.slice(0, i),
-                        ...prevSearchExpression.slice(i + 1),
-                      ];
-                    }
-                    return prevSearchExpression;
-                  });
-                }}
-              />
-            </Space.Compact>
+            <PowerSearchTerm
+              key={i.toString()}
+              searchTerm={searchTerm}
+              searchValueRenderer={
+                lastSearchTermHasSearchValue || !isLastTerm ? 'button' : 'input'
+              }
+              onCancel={() => {
+                setSearchExpression((prevSearchExpression) => {
+                  if (prevSearchExpression[i]) {
+                    return [
+                      ...prevSearchExpression.slice(0, i),
+                      ...prevSearchExpression.slice(i + 1),
+                    ];
+                  }
+                  return prevSearchExpression;
+                });
+              }}
+              onFinalize={(finalSearchTerm) => {
+                setSearchExpression((prevSearchExpression) => {
+                  return [
+                    ...prevSearchExpression.slice(0, -1),
+                    finalSearchTerm,
+                  ];
+                });
+                searchTermFinderRef.current?.focus();
+              }}
+            />
           );
         })}
       </Space>

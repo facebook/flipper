@@ -7,7 +7,7 @@
  * @format
  */
 
-import {OperatorConfig, PowerSearchConfig} from './PowerSearchTypes';
+import {OperatorConfig, PowerSearchConfig} from './PowerSearchConfig';
 
 const MyStatusEnum = {
   NEEDS_REVIEW: 'Needs review',
