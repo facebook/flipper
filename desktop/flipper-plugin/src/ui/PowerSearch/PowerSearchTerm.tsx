@@ -11,6 +11,7 @@ import {CloseOutlined} from '@ant-design/icons';
 import {Button, Space} from 'antd';
 import * as React from 'react';
 import {FieldConfig, OperatorConfig} from './PowerSearchConfig';
+import {PowerSearchFloatTerm} from './PowerSearchFloatTerm';
 import {PowerSearchIntegerTerm} from './PowerSearchIntegerTerm';
 import {PowerSearchStringTerm} from './PowerSearchStringTerm';
 
@@ -53,6 +54,20 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
     case 'INTEGER': {
       searchValueInputComponent = (
         <PowerSearchIntegerTerm
+          onCancel={onCancel}
+          onChange={(newValue) => {
+            onFinalize({
+              ...searchTerm,
+              searchValue: newValue,
+            });
+          }}
+        />
+      );
+      break;
+    }
+    case 'FLOAT': {
+      searchValueInputComponent = (
+        <PowerSearchFloatTerm
           onCancel={onCancel}
           onChange={(newValue) => {
             onFinalize({
