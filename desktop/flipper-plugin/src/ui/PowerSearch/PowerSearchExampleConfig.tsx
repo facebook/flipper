@@ -155,7 +155,7 @@ const operators = {
   },
 } satisfies {[key: string]: OperatorConfig};
 
-export const config: PowerSearchConfig = {
+export const powerSearchExampleConfig: PowerSearchConfig = {
   name: 'FlipperPowerSearchExampleConfig',
   fields: {
     id: {

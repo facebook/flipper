@@ -17,37 +17,41 @@ type PowerSearchProps = {
   config: PowerSearchConfig;
 };
 
-export const PowerSearch: React.FC<PowerSearchProps> = () => {
+type AutocompleteOption = {label: string; value: string};
+type AutocompleteOptionGroup = {
+  label: string;
+  options: AutocompleteOption[];
+};
+
+const OPTION_KEY_DELIMITER = '::';
+
+export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
+  const options: AutocompleteOptionGroup[] = React.useMemo(() => {
+    const groupedOptions: AutocompleteOptionGroup[] = [];
+
+    console.log('config.fields', config.fields);
+
+    for (const field of Object.values(config.fields)) {
+      const group: AutocompleteOptionGroup = {
+        label: field.label,
+        options: [],
+      };
+
+      for (const operator of Object.values(field.operators)) {
+        const option: AutocompleteOption = {
+          label: operator.label,
+          value: `${field.key}${OPTION_KEY_DELIMITER}${operator.key}`,
+        };
+        group.options.push(option);
+      }
+
+      groupedOptions.push(group);
+    }
+
+    return groupedOptions;
+  }, [config.fields]);
   return (
-    <AutoComplete
-      options={[
-        {
-          label: 'Group 1',
-          options: [
-            {
-              value: 'g1_val1',
-              label: 'Value1',
-            },
-            {
-              value: 'g1_val2',
-              label: 'Value2',
-            },
-          ],
-        },
-        {
-          label: 'Group 2',
-          options: [
-            {
-              value: 'g2_val1',
-              label: 'Value1',
-            },
-            {
-              value: 'g2_val2',
-              label: 'Value2',
-            },
-          ],
-        },
-      ]}>
+    <AutoComplete options={options}>
       <Input.Search size="large" />
     </AutoComplete>
   );
