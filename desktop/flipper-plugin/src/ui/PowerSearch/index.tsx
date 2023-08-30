@@ -23,6 +23,7 @@ import {
 } from './PowerSearchTerm';
 import {useLatestRef} from '../../utils/useLatestRef';
 import {useUpdateEffect} from 'react-use';
+import {theme} from '../theme';
 
 export {PowerSearchConfig};
 
@@ -91,7 +92,7 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
 
   return (
     <PowerSearchContainer>
-      <Space size={[0, 8]}>
+      <Space size={[theme.space.tiny, 0]}>
         {searchExpression.map((searchTerm, i) => {
           const isLastTerm = i === searchExpression.length - 1;
 

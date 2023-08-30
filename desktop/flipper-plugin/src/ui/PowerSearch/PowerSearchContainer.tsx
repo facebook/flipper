@@ -17,6 +17,7 @@ const containerStyle = css`
   border-radius: ${theme.borderRadius};
   border: 1px solid ${theme.borderColor};
   transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  padding: 0 ${theme.space.tiny}px;
 
   &:focus-within,
   &:hover {
