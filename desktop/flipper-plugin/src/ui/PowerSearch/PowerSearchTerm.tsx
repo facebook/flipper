@@ -17,6 +17,7 @@ import {
   PowerSearchAbsoluteDateTerm,
 } from './PowerSearchAbsoluteDateTerm';
 import {FieldConfig, OperatorConfig} from './PowerSearchConfig';
+import {PowerSearchEnumSetTerm} from './PowerSearchEnumSetTerm';
 import {PowerSearchEnumTerm} from './PowerSearchEnumTerm';
 import {PowerSearchFloatTerm} from './PowerSearchFloatTerm';
 import {PowerSearchIntegerTerm} from './PowerSearchIntegerTerm';
@@ -107,6 +108,21 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
         );
         break;
       }
+      case 'ENUM_SET': {
+        searchValueComponent = (
+          <PowerSearchEnumSetTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+            enumLabels={searchTerm.operator.enumLabels}
+          />
+        );
+        break;
+      }
       case 'ABSOLUTE_DATE': {
         searchValueComponent = (
           <PowerSearchAbsoluteDateTerm
@@ -138,6 +154,21 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
           <Button>
             {searchTerm.operator.enumLabels[searchTerm.searchValue]}
           </Button>
+        );
+        break;
+      }
+      case 'ENUM_SET': {
+        searchValueComponent = (
+          <PowerSearchEnumSetTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+            enumLabels={searchTerm.operator.enumLabels}
+          />
         );
         break;
       }

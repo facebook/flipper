@@ -11,7 +11,7 @@
 
 export type SimpleFilterValueType = 'NO_VALUE' | 'INTEGER' | 'FLOAT' | 'STRING';
 
-export type EnumFilterValueType = 'ENUM';
+export type EnumFilterValueType = 'ENUM' | 'ENUM_SET';
 
 export type AbsoluteDateFilterValueType = 'ABSOLUTE_DATE';
 

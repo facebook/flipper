@@ -13,7 +13,6 @@ const MyMacroEnum = {
   SURE_WHY_NOT: 'surewhynot',
   DOGSCIENCE: 'dogscience',
   TEST_IN_PROD: 'testinproduction',
-  '': '',
 };
 
 const operators = {
@@ -62,6 +61,12 @@ const operators = {
     label: 'is not',
     key: 'macro_is_not',
     valueType: 'ENUM',
+    enumLabels: MyMacroEnum,
+  },
+  macro_is_any_of: {
+    label: 'is any of',
+    key: 'macro_is_any_of',
+    valueType: 'ENUM_SET',
     enumLabels: MyMacroEnum,
   },
   predictive_contain: {
@@ -158,6 +163,7 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
       operators: {
         macro_is: operators.macro_is,
         macro_is_not: operators.macro_is_not,
+        macro_is_any_of: operators.macro_is_any_of,
       },
     },
     unread_only: {
