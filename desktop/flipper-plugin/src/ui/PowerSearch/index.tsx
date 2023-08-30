@@ -11,25 +11,48 @@ import * as React from 'react';
 import {Space} from 'antd';
 import {PowerSearchConfig} from './PowerSearchConfig';
 import {PowerSearchContainer} from './PowerSearchContainer';
-import {PowerSearchTerm, SearchExpressionTerm} from './PowerSearchTerm';
 import {
   PowerSearchTermFinder,
   PowerSearchTermFinderOption,
   PowerSearchTermFinderOptionGroup,
 } from './PowerSearchTermFinder';
+import {
+  IncompleteSearchExpressionTerm,
+  PowerSearchTerm,
+  SearchExpressionTerm,
+} from './PowerSearchTerm';
+import {useLatestRef} from '../../utils/useLatestRef';
+import {useUpdateEffect} from 'react-use';
 
 export {PowerSearchConfig};
 
 type PowerSearchProps = {
   config: PowerSearchConfig;
+  initialSearchExpression?: SearchExpressionTerm[];
+  onSearchExpressionChange: (searchExpression: SearchExpressionTerm[]) => void;
 };
 
 const OPTION_KEY_DELIMITER = '::';
 
-export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
+export const PowerSearch: React.FC<PowerSearchProps> = ({
+  config,
+  initialSearchExpression,
+  onSearchExpressionChange,
+}) => {
   const [searchExpression, setSearchExpression] = React.useState<
-    SearchExpressionTerm[]
-  >([]);
+    IncompleteSearchExpressionTerm[]
+  >(initialSearchExpression ?? []);
+
+  const onSearchExpressionChangeLatestRef = useLatestRef(
+    onSearchExpressionChange,
+  );
+  useUpdateEffect(() => {
+    if (searchExpression.every((term) => term.searchValue !== undefined)) {
+      onSearchExpressionChangeLatestRef.current(
+        searchExpression as SearchExpressionTerm[],
+      );
+    }
+  }, [searchExpression, onSearchExpressionChangeLatestRef]);
 
   const options: PowerSearchTermFinderOptionGroup[] = React.useMemo(() => {
     const groupedOptions: PowerSearchTermFinderOptionGroup[] = [];

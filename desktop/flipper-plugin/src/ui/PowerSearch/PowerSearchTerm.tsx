@@ -12,17 +12,18 @@ import {Button, Input, Space} from 'antd';
 import * as React from 'react';
 import {FieldConfig, OperatorConfig} from './PowerSearchConfig';
 
-export type SearchExpressionTerm = {
+export type IncompleteSearchExpressionTerm = {
   field: FieldConfig;
   operator: OperatorConfig;
   searchValue?: string;
 };
+export type SearchExpressionTerm = Required<IncompleteSearchExpressionTerm>;
 
 type PowerSearchTermProps = {
-  searchTerm: SearchExpressionTerm;
+  searchTerm: IncompleteSearchExpressionTerm;
   searchValueRenderer: 'input' | 'button';
   onCancel: () => void;
-  onFinalize: (completeSearchTerm: Required<SearchExpressionTerm>) => void;
+  onFinalize: (completeSearchTerm: SearchExpressionTerm) => void;
 };
 
 export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
