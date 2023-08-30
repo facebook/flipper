@@ -9,20 +9,11 @@
 
 // Mostly matches https://www.internalfb.com/code/www/html/intern/js/ui/PowerSearch/PowerSearchExampleConfig.js
 
-export type SimpleFilterValueType =
-  | 'NO_VALUE'
-  | 'INTEGER'
-  | 'FLOAT'
-  | 'STRING_SET'
-  | 'STRING';
+export type SimpleFilterValueType = 'NO_VALUE' | 'INTEGER' | 'FLOAT' | 'STRING';
 
-export type EnumFilterValueType = 'ENUM_SET' | 'ENUM';
-
-export type RelativeDateFilterValueType = 'RELATIVE_DATE';
+export type EnumFilterValueType = 'ENUM';
 
 export type AbsoluteDateFilterValueType = 'ABSOLUTE_DATE';
-
-export type TimeFilterValueType = 'TIME';
 
 export type SimpleOperatorConfig = {
   valueType: SimpleFilterValueType;
@@ -37,19 +28,6 @@ export type EnumOperatorConfig = {
   enumLabels: {[key: string]: string};
 };
 
-export type InternPowerSearchRelativeDateAllowableTensesType =
-  | 'PAST_ONLY'
-  | 'FUTURE_ONLY'
-  | 'PAST_AND_FUTURE';
-
-export type RelativeDateOperatorConfig = {
-  valueType: RelativeDateFilterValueType;
-  key: string;
-  label: string;
-  allowableTenses: InternPowerSearchRelativeDateAllowableTensesType;
-  isNegative?: boolean;
-};
-
 export type AbsoluteDateOperatorConfig = {
   valueType: AbsoluteDateFilterValueType;
   key: string;
@@ -60,21 +38,10 @@ export type AbsoluteDateOperatorConfig = {
   isNegative?: boolean;
 };
 
-export type TimeOperatorConfig = {
-  valueType: TimeFilterValueType;
-  key: string;
-  label: string;
-  minValue?: Date;
-  maxValue?: Date;
-  isNegative?: boolean;
-};
-
 export type OperatorConfig =
   | SimpleOperatorConfig
   | EnumOperatorConfig
-  | AbsoluteDateOperatorConfig
-  | RelativeDateOperatorConfig
-  | TimeOperatorConfig;
+  | AbsoluteDateOperatorConfig;
 
 export type FieldConfig = {
   key: string;

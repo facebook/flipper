@@ -9,16 +9,6 @@
 
 import {OperatorConfig, PowerSearchConfig} from './PowerSearchConfig';
 
-const MyStatusEnum = {
-  NEEDS_REVIEW: 'Needs review',
-  NEEDS_REVISION: 'Waiting for author',
-  ACCEPTED: 'Accepted',
-  CLOSED: 'Closed',
-  ABANDONED: 'Abandoned',
-  CHANGES_PLANNED: 'Changes planned',
-  IN_PREPARATION: 'Unpublished',
-};
-
 const MyMacroEnum = {
   SURE_WHY_NOT: 'surewhynot',
   DOGSCIENCE: 'dogscience',
@@ -27,16 +17,6 @@ const MyMacroEnum = {
 };
 
 const operators = {
-  in: {
-    label: 'is any of',
-    key: 'in',
-    valueType: 'STRING_SET',
-  },
-  not_in: {
-    label: 'is none of',
-    key: 'not_in',
-    valueType: 'STRING_SET',
-  },
   contain: {
     label: 'contains',
     key: 'contain',
@@ -67,23 +47,6 @@ const operators = {
     key: 'less_than_float',
     valueType: 'FLOAT',
   },
-  status_any: {
-    label: 'is any of',
-    key: 'status_any',
-    valueType: 'ENUM_SET',
-    enumLabels: MyStatusEnum,
-  },
-  status_not_any: {
-    label: 'is not any of',
-    key: 'status_not_any',
-    valueType: 'ENUM_SET',
-    enumLabels: MyStatusEnum,
-  },
-  ent_class_any_with_arbitrary_strings: {
-    label: 'is any of (arbitrary allowed)',
-    key: 'ent_class_any_with_arbitrary_strings',
-    valueType: 'STRING_SET',
-  },
   caller_is: {
     label: 'is',
     key: 'caller_is',
@@ -111,13 +74,6 @@ const operators = {
     key: 'predictive_not_contain',
     valueType: 'STRING',
   },
-  newer_than_relative_date: {
-    key: 'newer_than_relative_date',
-    label: 'is newer than',
-    isNegative: false,
-    valueType: 'RELATIVE_DATE',
-    allowableTenses: 'PAST_AND_FUTURE',
-  },
   newer_than_absolute_date: {
     key: 'newer_than_absolute_date',
     label: 'is after',
@@ -132,20 +88,6 @@ const operators = {
     valueType: 'ABSOLUTE_DATE',
     dateOnly: true,
   },
-  time_after: {
-    label: 'is after',
-    key: 'time_after',
-    valueType: 'TIME',
-  },
-  filtered_time_after: {
-    label: 'is after',
-    key: 'filtered_time_after',
-    valueType: 'TIME',
-    // TODO: Fix me
-    // Only show times between 4 - 11:59PM
-    minValue: undefined,
-    maxValue: undefined,
-  },
   unread: {
     key: 'unread',
     label: '',
@@ -156,14 +98,6 @@ const operators = {
 export const powerSearchExampleConfig: PowerSearchConfig = {
   name: 'FlipperPowerSearchExampleConfig',
   fields: {
-    id: {
-      key: 'id',
-      label: 'ID',
-      operators: {
-        in: operators.in,
-        not_in: operators.not_in,
-      },
-    },
     title: {
       key: 'title',
       label: 'Title',
@@ -204,14 +138,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
         less_than_float: operators.less_than_float,
       },
     },
-    status: {
-      key: 'status',
-      label: 'Status',
-      operators: {
-        status_any: operators.status_any,
-        status_not_any: operators.status_not_any,
-      },
-    },
     caller: {
       key: 'caller',
       label: 'Caller',
@@ -225,30 +151,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
       operators: {
         macro_is: operators.macro_is,
         macro_is_not: operators.macro_is_not,
-      },
-    },
-    time: {
-      key: 'time',
-      label: 'Time',
-      operators: {
-        time_after: operators.time_after,
-      },
-    },
-    filtered_time: {
-      key: 'filtered_time',
-      label: 'Time After 4PM',
-      operators: {
-        filtered_time_after: operators.filtered_time_after,
-      },
-    },
-    last_update: {
-      key: 'last_update',
-      label: 'Last Update',
-      operators: {
-        newer_than_relative_date: operators.newer_than_relative_date,
-        newer_than_absolute_date: operators.newer_than_absolute_date,
-        newer_than_absolute_date_no_time:
-          operators.newer_than_absolute_date_no_time,
       },
     },
     unread_only: {
