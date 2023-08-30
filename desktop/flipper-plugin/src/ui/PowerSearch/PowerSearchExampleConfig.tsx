@@ -83,7 +83,6 @@ const operators = {
     label: 'is any of (arbitrary allowed)',
     key: 'ent_class_any_with_arbitrary_strings',
     valueType: 'STRING_SET',
-    allowArbitraryEntries: true,
   },
   caller_is: {
     label: 'is',
@@ -111,7 +110,6 @@ const operators = {
     label: 'does not contain',
     key: 'predictive_not_contain',
     valueType: 'STRING',
-    allowArbitraryEntries: true,
   },
   newer_than_relative_date: {
     key: 'newer_than_relative_date',
@@ -258,38 +256,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
       label: 'Unread Only',
       operators: {
         unread: operators.unread,
-      },
-    },
-    NESTED_FIELD: {
-      key: 'NESTED_FIELD',
-      label: '',
-      operators: {
-        AND: {
-          key: 'AND',
-          label: 'All of',
-          valueType: 'NESTED',
-        },
-        NOT: {
-          key: 'NOT',
-          label: 'None of',
-          valueType: 'NESTED',
-        },
-        OR: {
-          key: 'OR',
-          label: 'Any of',
-          valueType: 'NESTED',
-        },
-      },
-    },
-    CONTEXT_TOKEN: {
-      key: 'CONTEXT_TOKEN',
-      label: 'Context Token',
-      operators: {
-        CONTEXT_TOKEN: {
-          key: 'CONTEXT_TOKEN',
-          label: '',
-          valueType: 'NO_VALUE',
-        },
       },
     },
   },

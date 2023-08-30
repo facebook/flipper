@@ -7,11 +7,14 @@
  * @format
  */
 
-// Mostly mateches https://www.internalfb.com/code/www/html/intern/js/ui/PowerSearch/PowerSearchExampleConfig.js
+// Mostly matches https://www.internalfb.com/code/www/html/intern/js/ui/PowerSearch/PowerSearchExampleConfig.js
 
-export type SimpleFilterValueType = 'NESTED' | 'NO_VALUE' | 'INTEGER' | 'FLOAT';
-
-export type StringFilterValueType = 'STRING_SET' | 'STRING';
+export type SimpleFilterValueType =
+  | 'NO_VALUE'
+  | 'INTEGER'
+  | 'FLOAT'
+  | 'STRING_SET'
+  | 'STRING';
 
 export type EnumFilterValueType = 'ENUM_SET' | 'ENUM';
 
@@ -25,13 +28,6 @@ export type SimpleOperatorConfig = {
   valueType: SimpleFilterValueType;
   key: string;
   label: string;
-};
-
-export type StringOperatorConfig = {
-  valueType: StringFilterValueType;
-  key: string;
-  label: string;
-  allowArbitraryEntries?: boolean;
 };
 
 export type EnumOperatorConfig = {
@@ -75,7 +71,6 @@ export type TimeOperatorConfig = {
 
 export type OperatorConfig =
   | SimpleOperatorConfig
-  | StringOperatorConfig
   | EnumOperatorConfig
   | AbsoluteDateOperatorConfig
   | RelativeDateOperatorConfig
