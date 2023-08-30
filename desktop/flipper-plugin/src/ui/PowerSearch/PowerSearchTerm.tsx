@@ -36,97 +36,106 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
   onCancel,
   onFinalize,
 }) => {
-  let searchValueInputComponent: React.ReactNode = null;
-  switch (searchTerm.operator.valueType) {
-    case 'STRING': {
-      searchValueInputComponent = (
-        <PowerSearchStringTerm
-          onCancel={onCancel}
-          onChange={(newValue) => {
-            onFinalize({
-              ...searchTerm,
-              searchValue: newValue,
-            });
-          }}
-        />
-      );
-      break;
+  let searchValueComponent: React.ReactNode = null;
+  if (searchValueRenderer === 'input') {
+    switch (searchTerm.operator.valueType) {
+      case 'STRING': {
+        searchValueComponent = (
+          <PowerSearchStringTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+          />
+        );
+        break;
+      }
+      case 'INTEGER': {
+        searchValueComponent = (
+          <PowerSearchIntegerTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+          />
+        );
+        break;
+      }
+      case 'FLOAT': {
+        searchValueComponent = (
+          <PowerSearchFloatTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+          />
+        );
+        break;
+      }
+      case 'NO_VALUE': {
+        // Nothing needs to be done. It should never be the case.
+        searchValueComponent = null;
+        break;
+      }
+      case 'ENUM': {
+        searchValueComponent = (
+          <PowerSearchEnumTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+            enumLabels={searchTerm.operator.enumLabels}
+          />
+        );
+        break;
+      }
+      default: {
+        console.error(
+          'PowerSearchTerm -> unknownoperator.valueType',
+          searchTerm.operator.valueType,
+          searchTerm,
+        );
+      }
     }
-    case 'INTEGER': {
-      searchValueInputComponent = (
-        <PowerSearchIntegerTerm
-          onCancel={onCancel}
-          onChange={(newValue) => {
-            onFinalize({
-              ...searchTerm,
-              searchValue: newValue,
-            });
-          }}
-        />
-      );
-      break;
-    }
-    case 'FLOAT': {
-      searchValueInputComponent = (
-        <PowerSearchFloatTerm
-          onCancel={onCancel}
-          onChange={(newValue) => {
-            onFinalize({
-              ...searchTerm,
-              searchValue: newValue,
-            });
-          }}
-        />
-      );
-      break;
-    }
-    case 'NO_VALUE': {
-      // Nothing needs to be done. The effect below is going to fire and mark it as the final value.
-      searchValueInputComponent = null;
-      break;
-    }
-    case 'ENUM': {
-      searchValueInputComponent = (
-        <PowerSearchEnumTerm
-          onCancel={onCancel}
-          onChange={(newValue) => {
-            onFinalize({
-              ...searchTerm,
-              searchValue: newValue,
-            });
-          }}
-          enumLabels={searchTerm.operator.enumLabels}
-        />
-      );
-      break;
-    }
-    default: {
-      console.error(
-        'PowerSearchTerm -> unknownoperator.valueType',
-        searchTerm.operator.valueType,
-        searchTerm,
-      );
+  } else {
+    switch (searchTerm.operator.valueType) {
+      case 'ENUM': {
+        searchValueComponent = (
+          <Button>
+            {searchTerm.operator.enumLabels[searchTerm.searchValue]}
+          </Button>
+        );
+        break;
+      }
+      case 'NO_VALUE': {
+        searchValueComponent = null;
+        break;
+      }
+      default: {
+        searchValueComponent = <Button>{searchTerm.searchValue}</Button>;
+      }
     }
   }
-
-  React.useEffect(() => {
-    if (searchTerm.operator.valueType === 'NO_VALUE') {
-      onFinalize({
-        ...searchTerm,
-        searchValue: null,
-      });
-    }
-  }, [searchTerm, onFinalize]);
 
   return (
     <Space.Compact block size="small">
       <Button>{searchTerm.field.label}</Button>
-      <Button>{searchTerm.operator.label}</Button>
-      {searchValueRenderer === 'button' ? (
-        <Button>{searchTerm.searchValue ?? '...'}</Button>
-      ) : (
-        searchValueInputComponent
-      )}
+      {searchTerm.operator.label ? (
+        <Button>{searchTerm.operator.label}</Button>
+      ) : null}
+      {searchValueComponent}
       <Button
         icon={<CloseOutlined />}
         onClick={() => {

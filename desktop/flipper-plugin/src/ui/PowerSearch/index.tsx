@@ -116,8 +116,9 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
               onFinalize={(finalSearchTerm) => {
                 setSearchExpression((prevSearchExpression) => {
                   return [
-                    ...prevSearchExpression.slice(0, -1),
+                    ...prevSearchExpression.slice(0, i),
                     finalSearchTerm,
+                    ...prevSearchExpression.slice(i + 1),
                   ];
                 });
                 searchTermFinderRef.current?.focus();
@@ -140,6 +141,8 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
             {
               field: fieldConfig,
               operator: operatorConfig,
+              searchValue:
+                operatorConfig.valueType === 'NO_VALUE' ? null : undefined,
             },
           ]);
         }}
