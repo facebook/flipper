@@ -8,7 +8,7 @@
  */
 
 import * as React from 'react';
-import {AutoComplete, Input} from 'antd';
+import {AutoComplete, Space, Tag} from 'antd';
 import {PowerSearchConfig} from './PowerSearchTypes';
 
 export {PowerSearchConfig};
@@ -21,25 +21,29 @@ type AutocompleteOption = {label: string; value: string};
 type AutocompleteOptionGroup = {
   label: string;
   options: AutocompleteOption[];
+  value: string;
 };
 
 const OPTION_KEY_DELIMITER = '::';
 
 export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
+  const [searchExpression, setSearchExpression] = React.useState<
+    AutocompleteOption[]
+  >([]);
+
   const options: AutocompleteOptionGroup[] = React.useMemo(() => {
     const groupedOptions: AutocompleteOptionGroup[] = [];
-
-    console.log('config.fields', config.fields);
 
     for (const field of Object.values(config.fields)) {
       const group: AutocompleteOptionGroup = {
         label: field.label,
         options: [],
+        value: field.key,
       };
 
       for (const operator of Object.values(field.operators)) {
         const option: AutocompleteOption = {
-          label: operator.label,
+          label: `${field.label} ${operator.label}`,
           value: `${field.key}${OPTION_KEY_DELIMITER}${operator.key}`,
         };
         group.options.push(option);
@@ -50,9 +54,27 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
 
     return groupedOptions;
   }, [config.fields]);
+
   return (
-    <AutoComplete options={options}>
-      <Input.Search size="large" />
-    </AutoComplete>
+    <div style={{display: 'flex', flexDirection: 'row'}}>
+      <Space size={[0, 8]}>
+        {searchExpression.map((searchTerm) => (
+          <Tag key={searchTerm.value}>{searchTerm.label}</Tag>
+        ))}
+      </Space>
+      <AutoComplete
+        style={{flex: '1'}}
+        options={options}
+        bordered={false}
+        onSelect={(_: string, selectedOption: AutocompleteOption) => {
+          console.log('selectedOption', selectedOption);
+          setSearchExpression((prevSearchExpression) => [
+            ...prevSearchExpression,
+            selectedOption,
+          ]);
+        }}
+        value={null}
+      />
+    </div>
   );
 };
