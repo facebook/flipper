@@ -8,9 +8,10 @@
  */
 
 import {CloseOutlined} from '@ant-design/icons';
-import {Button, Input, Space} from 'antd';
+import {Button, Space} from 'antd';
 import * as React from 'react';
 import {FieldConfig, OperatorConfig} from './PowerSearchConfig';
+import {PowerSearchStringTerm} from './PowerSearchStringTerm';
 
 export type IncompleteSearchExpressionTerm = {
   field: FieldConfig;
@@ -39,28 +40,13 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
       {searchValueRenderer === 'button' ? (
         <Button>{searchTerm.searchValue ?? '...'}</Button>
       ) : (
-        // TODO: Fix width
-        <Input
-          autoFocus
-          style={{width: 100}}
-          placeholder="..."
-          onBlur={(event) => {
-            const newValue = event.target.value;
-
-            if (!newValue) {
-              onCancel();
-              return;
-            }
-
+        <PowerSearchStringTerm
+          onCancel={onCancel}
+          onChange={(newValue) => {
             onFinalize({
               ...searchTerm,
               searchValue: newValue,
             });
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' || event.key === 'Escape') {
-              event.currentTarget.blur();
-            }
           }}
         />
       )}
