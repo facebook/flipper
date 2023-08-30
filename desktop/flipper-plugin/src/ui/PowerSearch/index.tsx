@@ -71,6 +71,10 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
       ? searchExpression[searchExpression.length - 1].searchValue !== undefined
       : false;
 
+  const [searchTermFinderValue, setSearchTermFinderValue] = React.useState<
+    string | null
+  >(null);
+
   return (
     <div style={{display: 'flex', flexDirection: 'row'}}>
       <Space size={[0, 8]}>
@@ -111,8 +115,8 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
                       ];
                     });
                   }}
-                  onKeyUp={(event) => {
-                    if (event.key === 'Enter') {
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === 'Escape') {
                       event.currentTarget.blur();
                     }
                   }}
@@ -153,11 +157,22 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
               operator: operatorConfig,
             },
           ]);
+          setSearchTermFinderValue(null);
         }}
         filterOption={(inputValue, option) => {
           return !!option?.label
             .toLowerCase()
             .includes(inputValue.toLowerCase());
+        }}
+        value={searchTermFinderValue}
+        onChange={setSearchTermFinderValue}
+        onBlur={() => {
+          setSearchTermFinderValue(null);
+        }}
+        onInputKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            setSearchTermFinderValue(null);
+          }
         }}
       />
     </div>
