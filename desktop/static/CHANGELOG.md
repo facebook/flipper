@@ -1,3 +1,8 @@
+# 0.214.0 (30/8/2023)
+
+ * [D48777923](https://github.com/facebook/flipper/search?q=D48777923&type=Commits) -  Show the iOS version of simulators in the launcher window
+
+
 # 0.213.0 (25/8/2023)
 
  * [D48467028](https://github.com/facebook/flipper/search?q=D48467028&type=Commits) -  Don't report errors related to timeouts of background plugins
