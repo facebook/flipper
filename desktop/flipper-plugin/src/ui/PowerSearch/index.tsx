@@ -8,22 +8,20 @@
  */
 
 import * as React from 'react';
-import {AutoComplete, Space} from 'antd';
+import {Space} from 'antd';
 import {PowerSearchConfig} from './PowerSearchConfig';
 import {PowerSearchContainer} from './PowerSearchContainer';
 import {PowerSearchTerm, SearchExpressionTerm} from './PowerSearchTerm';
+import {
+  PowerSearchTermFinder,
+  PowerSearchTermFinderOption,
+  PowerSearchTermFinderOptionGroup,
+} from './PowerSearchTermFinder';
 
 export {PowerSearchConfig};
 
 type PowerSearchProps = {
   config: PowerSearchConfig;
-};
-
-type AutocompleteOption = {label: string; value: string};
-type AutocompleteOptionGroup = {
-  label: string;
-  options: AutocompleteOption[];
-  value: string;
 };
 
 const OPTION_KEY_DELIMITER = '::';
@@ -33,18 +31,18 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
     SearchExpressionTerm[]
   >([]);
 
-  const options: AutocompleteOptionGroup[] = React.useMemo(() => {
-    const groupedOptions: AutocompleteOptionGroup[] = [];
+  const options: PowerSearchTermFinderOptionGroup[] = React.useMemo(() => {
+    const groupedOptions: PowerSearchTermFinderOptionGroup[] = [];
 
     for (const field of Object.values(config.fields)) {
-      const group: AutocompleteOptionGroup = {
+      const group: PowerSearchTermFinderOptionGroup = {
         label: field.label,
         options: [],
         value: field.key,
       };
 
       for (const operator of Object.values(field.operators)) {
-        const option: AutocompleteOption = {
+        const option: PowerSearchTermFinderOption = {
           label: `${field.label} ${operator.label}`,
           value: `${field.key}${OPTION_KEY_DELIMITER}${operator.key}`,
         };
@@ -67,9 +65,6 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
     blur: () => void;
     scrollTo: () => void;
   }>(null);
-  const [searchTermFinderValue, setSearchTermFinderValue] = React.useState<
-    string | null
-  >(null);
 
   return (
     <PowerSearchContainer>
@@ -108,12 +103,10 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
           );
         })}
       </Space>
-      <AutoComplete<string, AutocompleteOption>
+      <PowerSearchTermFinder
         ref={searchTermFinderRef}
-        style={{flex: '1'}}
         options={options}
-        bordered={false}
-        onSelect={(_: string, selectedOption: AutocompleteOption) => {
+        onSelect={(selectedOption) => {
           const [fieldKey, operatorKey] =
             selectedOption.value.split(OPTION_KEY_DELIMITER);
           const fieldConfig = config.fields[fieldKey];
@@ -126,22 +119,6 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({config}) => {
               operator: operatorConfig,
             },
           ]);
-          setSearchTermFinderValue(null);
-        }}
-        filterOption={(inputValue, option) => {
-          return !!option?.label
-            .toLowerCase()
-            .includes(inputValue.toLowerCase());
-        }}
-        value={searchTermFinderValue}
-        onChange={setSearchTermFinderValue}
-        onBlur={() => {
-          setSearchTermFinderValue(null);
-        }}
-        onInputKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            setSearchTermFinderValue(null);
-          }
         }}
       />
     </PowerSearchContainer>
