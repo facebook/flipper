@@ -11,6 +11,8 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
   }
 >
   <div
+    aria-busy={true}
+    aria-live="polite"
     className="ant-spin ant-spin-spinning"
   >
     <span
@@ -40,7 +42,6 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
   </div>
   <span
     className="ant-typography"
-    onClick={null}
     style={
       {
         "WebkitLineClamp": undefined,
@@ -57,6 +58,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
     <div />
     <button
       className="ant-btn ant-btn-default"
+      disabled={false}
       onClick={[Function]}
       type="button"
     >
@@ -79,6 +81,8 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
   }
 >
   <div
+    aria-busy={true}
+    aria-live="polite"
     className="ant-spin ant-spin-spinning"
   >
     <span
@@ -108,7 +112,6 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
   </div>
   <span
     className="ant-typography"
-    onClick={null}
     style={
       {
         "WebkitLineClamp": undefined,
@@ -125,6 +128,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
     <div />
     <button
       className="ant-btn ant-btn-default"
+      disabled={false}
       onClick={[Function]}
       type="button"
     >

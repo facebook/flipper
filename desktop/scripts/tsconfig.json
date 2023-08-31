@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": ".",
-    "lib": ["ES2019"],
+    "lib": ["ES2021"],
     "noEmit": true,
     "esModuleInterop": true,
     "types": ["jest"]

@@ -5,7 +5,7 @@
     "rootDir": "src",
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
-    "lib": ["DOM", "ES2019"],
+    "lib": ["DOM", "ES2021"],
     "types": [
       "../types/flipperGlobals"
     ]

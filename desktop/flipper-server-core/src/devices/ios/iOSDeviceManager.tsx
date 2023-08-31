@@ -8,7 +8,7 @@
  */
 
 import {ChildProcess} from 'child_process';
-import type {IOSDeviceParams} from 'flipper-common';
+import type {DeviceTarget} from 'flipper-common';
 import path from 'path';
 import childProcess from 'child_process';
 import {exec} from 'promisify-child-process';
@@ -18,7 +18,6 @@ import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
   IOSBridge,
   makeIOSBridge,
-  SimctlBridge,
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
@@ -34,7 +33,7 @@ export class IOSDeviceManager {
     'MacOS',
     'PortForwardingMacApp',
   );
-  simctlBridge: SimctlBridge = new SimctlBridge();
+  ctlBridge: IOSBridge | undefined;
 
   readonly certificateProvider: iOSCertificateProvider;
 
@@ -97,13 +96,12 @@ export class IOSDeviceManager {
     ];
   }
 
-  queryDevices(bridge: IOSBridge): Promise<any> {
-    return bridge
-      .getActiveDevices(true)
-      .then((devices) => this.processDevices(bridge, devices));
+  async queryDevices(bridge: IOSBridge): Promise<any> {
+    const devices = await bridge.getActiveDevices(true);
+    return this.processDevices(bridge, devices);
   }
 
-  private processDevices(bridge: IOSBridge, activeDevices: IOSDeviceParams[]) {
+  private processDevices(bridge: IOSBridge, activeDevices: DeviceTarget[]) {
     const currentDeviceIDs = new Set(
       this.flipperServer
         .getDevices()
@@ -135,9 +133,23 @@ export class IOSDeviceManager {
     });
   }
 
+  async getBridge(): Promise<IOSBridge> {
+    if (this.ctlBridge !== undefined) {
+      return this.ctlBridge;
+    }
+
+    const isDetected = await iosUtil.isXcodeDetected();
+    this.ctlBridge = await makeIOSBridge(
+      this.idbConfig.idbPath,
+      isDetected,
+      this.idbConfig.enablePhysicalIOS,
+    );
+
+    return this.ctlBridge;
+  }
+
   public async watchIOSDevices() {
     try {
-      const isDetected = await iosUtil.isXcodeDetected();
       if (this.idbConfig.enablePhysicalIOS) {
         this.startDevicePortForwarders();
       }
@@ -145,11 +157,7 @@ export class IOSDeviceManager {
         // Check for version mismatch now for immediate error handling.
         await this.checkXcodeVersionMismatch();
         // Awaiting the promise here to trigger immediate error handling.
-        const bridge = await makeIOSBridge(
-          this.idbConfig.idbPath,
-          isDetected,
-          this.idbConfig.enablePhysicalIOS,
-        );
+        const bridge = await this.getBridge();
         await this.queryDevicesForever(bridge);
       } catch (err) {
         // This case is expected if both Xcode and idb are missing.
@@ -167,9 +175,10 @@ export class IOSDeviceManager {
     }
   }
 
-  async getSimulators(bootedOnly: boolean): Promise<Array<IOSDeviceParams>> {
+  async getSimulators(bootedOnly: boolean): Promise<Array<DeviceTarget>> {
     try {
-      return await this.simctlBridge.getActiveDevices(bootedOnly);
+      const bridge = await this.getBridge();
+      return await bridge.getActiveDevices(bootedOnly);
     } catch (e) {
       console.warn('Failed to query simulators:', e);
       if (e.message.includes('Xcode license agreements')) {
@@ -181,6 +190,15 @@ export class IOSDeviceManager {
         });
       }
       return [];
+    }
+  }
+
+  async launchSimulator(udid: string) {
+    try {
+      const bridge = await this.getBridge();
+      await bridge.launchSimulator(udid);
+    } catch (e) {
+      console.warn('Failed to launch simulator:', e);
     }
   }
 

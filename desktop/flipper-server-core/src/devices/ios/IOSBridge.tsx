@@ -8,10 +8,14 @@
  */
 
 import fs from 'fs-extra';
-import iosUtil from './iOSContainerUtility';
+import iosUtil, {
+  getDeviceSetPath,
+  isIdbAvailable,
+  queryTargetsWithXcode,
+} from './iOSContainerUtility';
 
 import child_process from 'child_process';
-import type {IOSDeviceParams} from 'flipper-common';
+import type {DeviceTarget} from 'flipper-common';
 import {DeviceType, uuid} from 'flipper-common';
 import path from 'path';
 import {ChildProcessPromise, exec, execFile} from 'promisify-child-process';
@@ -53,7 +57,7 @@ export interface IOSBridge {
     serial: string,
     outputFile: string,
   ) => child_process.ChildProcess;
-  getActiveDevices: (bootedOnly: boolean) => Promise<Array<IOSDeviceParams>>;
+  getActiveDevices: (bootedOnly: boolean) => Promise<Array<DeviceTarget>>;
   installApp: (
     serial: string,
     ipaPath: string,
@@ -67,6 +71,7 @@ export interface IOSBridge {
     bundleId: string,
     dst: string,
   ) => Promise<void>;
+  launchSimulator(udid: string): Promise<any>;
 }
 
 export class IDBBridge implements IOSBridge {
@@ -74,6 +79,10 @@ export class IDBBridge implements IOSBridge {
     private idbPath: string,
     private enablePhysicalDevices: boolean,
   ) {}
+  async launchSimulator(udid: string): Promise<any> {
+    await this._execIdb(`boot --udid ${udid}`);
+    await execFile('open', ['-a', 'simulator']);
+  }
 
   async getInstalledApps(serial: string): Promise<IOSInstalledAppDescriptor[]> {
     const {stdout} = await this._execIdb(`list-apps --udid ${serial}`);
@@ -140,9 +149,9 @@ export class IDBBridge implements IOSBridge {
     await this._execIdb(`install ${ipaPath} --udid ${serial}`);
   }
 
-  async getActiveDevices(_bootedOnly: boolean): Promise<IOSDeviceParams[]> {
+  async getActiveDevices(bootedOnly: boolean): Promise<DeviceTarget[]> {
     return iosUtil
-      .targets(this.idbPath, this.enablePhysicalDevices)
+      .targets(this.idbPath, this.enablePhysicalDevices, bootedOnly)
       .catch((e) => {
         console.warn('Failed to get active iOS devices:', e.message);
         return [];
@@ -275,57 +284,17 @@ export class SimctlBridge implements IOSBridge {
     );
   }
 
-  async getActiveDevices(bootedOnly: boolean): Promise<Array<IOSDeviceParams>> {
-    return execFile('xcrun', [
-      'simctl',
-      ...getDeviceSetPath(),
-      'list',
-      'devices',
-      '--json',
-    ])
-      .then(({stdout}) => JSON.parse(stdout!.toString()).devices)
-      .then((simulatorDevices: Array<iOSSimulatorDevice>) => {
-        const simulators = Object.values(simulatorDevices).flat();
-        return simulators
-          .filter(
-            (simulator) =>
-              (!bootedOnly || simulator.state === 'Booted') &&
-              isSimulatorAvailable(simulator),
-          )
-          .map((simulator) => {
-            return {
-              ...simulator,
-              type: 'emulator',
-            } as IOSDeviceParams;
-          });
-      });
+  async getActiveDevices(bootedOnly: boolean): Promise<Array<DeviceTarget>> {
+    const devices = await queryTargetsWithXcode();
+    return devices.filter(
+      (target) => !bootedOnly || (bootedOnly && target.state === 'booted'),
+    );
   }
 
   async launchSimulator(udid: string): Promise<any> {
     await execFile('xcrun', ['simctl', ...getDeviceSetPath(), 'boot', udid]);
     await execFile('open', ['-a', 'simulator']);
   }
-}
-
-function isSimulatorAvailable(simulator: iOSSimulatorDevice): boolean {
-  // For some users "availability" is set, for others it's "isAvailable"
-  // It's not clear which key is set, so we are checking both.
-  // We've also seen isAvailable return "YES" and true, depending on version.
-  return (
-    simulator.availability === '(available)' ||
-    simulator.isAvailable === 'YES' ||
-    simulator.isAvailable === true
-  );
-}
-
-async function isAvailable(idbPath: string): Promise<boolean> {
-  if (!idbPath) {
-    return false;
-  }
-  return fs.promises
-    .access(idbPath, fs.constants.X_OK)
-    .then((_) => true)
-    .catch((_) => false);
 }
 
 function getLogExtraArgs(deviceType: DeviceType) {
@@ -352,7 +321,6 @@ function makeTempScreenshotFilePath() {
 }
 
 async function unzip(filePath: string, destination: string): Promise<void> {
-  // TODO: probably shouldn't involve shelling out.
   await exec(`unzip -qq  -o ${filePath} -d ${destination}`);
   if (!(await fs.pathExists(path.join(destination, 'Payload')))) {
     throw new Error(
@@ -367,19 +335,13 @@ async function readScreenshotIntoBuffer(imagePath: string): Promise<Buffer> {
   return buffer;
 }
 
-export function getDeviceSetPath() {
-  return process.env.DEVICE_SET_PATH
-    ? ['--set', process.env.DEVICE_SET_PATH]
-    : [];
-}
-
 export async function makeIOSBridge(
   idbPath: string,
   isXcodeDetected: boolean,
   enablePhysicalDevices: boolean,
-  isAvailableFn: (idbPath: string) => Promise<boolean> = isAvailable,
+  isAvailable: (idbPath: string) => Promise<boolean> = isIdbAvailable,
 ): Promise<IOSBridge> {
-  if (await isAvailableFn(idbPath)) {
+  if (await isAvailable(idbPath)) {
     return new IDBBridge(idbPath, enablePhysicalDevices);
   }
 

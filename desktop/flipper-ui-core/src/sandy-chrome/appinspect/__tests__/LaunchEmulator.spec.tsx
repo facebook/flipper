@@ -91,7 +91,7 @@ test('Can render and launch android apps - no SDKs', async () => {
     .toMatchInlineSnapshot(`
     <div
       class="ant-modal-title"
-      id="rcDialogTitle1"
+      id="test-id"
     >
       No Mobile SDKs Enabled
     </div>

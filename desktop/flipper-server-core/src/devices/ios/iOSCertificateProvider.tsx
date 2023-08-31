@@ -48,6 +48,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
     const targets = await iosUtil.targets(
       this.idbConfig.idbPath,
       this.idbConfig.enablePhysicalIOS,
+      true,
       clientQuery,
     );
     if (targets.length === 0) {

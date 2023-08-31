@@ -70,6 +70,15 @@ function transformLogLevel(level: LoggerTypes, message: string) {
     if (message.endsWith('Network Error')) {
       return 'warn';
     }
+
+    if (message.includes('Watchman was not found in PATH')) {
+      return 'warn';
+    }
+
+    // Random Electron error, not actionable.
+    if (message.includes('Document is not focused')) {
+      return 'warn';
+    }
   }
 
   return level;

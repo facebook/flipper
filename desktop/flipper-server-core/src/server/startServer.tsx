@@ -73,6 +73,18 @@ const verifyAuthToken = (req: http.IncomingMessage): boolean => {
 };
 
 /**
+ * The following two variables are used to control when
+ * the server is ready to accept incoming connections.
+ * - isReady, is used to synchronously check if the server is
+ * ready or not.
+ * - isReadyWaitable achieves the same but is used by
+ * asynchronous functions which may want to wait until the
+ * server is ready.
+ */
+let isReady = false;
+let isReadyWaitable: Promise<void> | undefined;
+
+/**
  * Orchestrates the creation of the HTTP server, proxy, and WS server.
  * @param config Server configuration.
  * @returns Returns a promise to the created server, proxy and WS server.
@@ -108,7 +120,10 @@ async function startHTTPServer(config: Config): Promise<{
   });
 
   app.get('/', (_req, res) => {
-    fs.readFile(path.join(config.staticPath, config.entry), (_err, content) => {
+    const resource = isReady
+      ? path.join(config.staticPath, config.entry)
+      : path.join(config.staticPath, 'loading.html');
+    fs.readFile(resource, (_err, content) => {
       res.end(content);
     });
   });
@@ -127,6 +142,19 @@ async function startHTTPServer(config: Config): Promise<{
     server.close();
   });
 
+  server.listen(config.port);
+
+  /**
+   * Create the promise which can be waited on. In this case,
+   * a reference to resolve is kept outside of the body of the promise
+   * so that other asynchronous functions can resolve the promise
+   * on its behalf.
+   */
+  let isReadyResolver: (value: void | PromiseLike<void>) => void;
+  isReadyWaitable = new Promise((resolve, _reject) => {
+    isReadyResolver = resolve;
+  });
+
   return new Promise((resolve) => {
     console.log(`Starting server on http://localhost:${config.port}`);
     const readyForIncomingConnections = (
@@ -134,13 +162,19 @@ async function startHTTPServer(config: Config): Promise<{
       companionEnv: FlipperServerCompanionEnv,
     ): Promise<void> => {
       attachSocketServer(socket, serverImpl, companionEnv);
+      /**
+       * At this point, the server is ready to accept incoming
+       * connections. Change the isReady state and resolve the
+       * promise so that other asychronous function become unblocked.
+       */
+      isReady = true;
+      isReadyResolver();
       return new Promise((resolve) => {
-        server.listen(config.port, undefined, () => {
-          tracker.track('server-started', {
-            port: config.port,
-          });
-          resolve();
+        tracker.track('server-started', {
+          port: config.port,
         });
+
+        resolve();
       });
     };
     resolve({app, server, socket, readyForIncomingConnections});
@@ -208,8 +242,14 @@ function attachWS(server: http.Server, config: Config) {
   };
 
   const wss = new WebSocketServer(options);
-  server.on('upgrade', function upgrade(request, socket, head) {
-    const {pathname} = parse(request.url!);
+  server.on('upgrade', async function upgrade(request, socket, head) {
+    if (!request.url) {
+      console.log('[flipper-server] No request URL available');
+      socket.destroy();
+      return;
+    }
+
+    const {pathname} = parse(request.url);
 
     // Handled by Metro
     if (pathname === '/hot') {
@@ -217,13 +257,18 @@ function attachWS(server: http.Server, config: Config) {
     }
 
     if (pathname === '/') {
+      // Wait until the server is ready to accept incoming connections.
+      await isReadyWaitable;
       wss.handleUpgrade(request, socket, head, function done(ws) {
         wss.emit('connection', ws, request);
       });
       return;
     }
 
-    console.error('addWebsocket.upgrade -> unknown pathname', pathname);
+    console.error(
+      '[flipper-server] Unable to upgrade, unknown pathname',
+      pathname,
+    );
     socket.destroy();
   });
 

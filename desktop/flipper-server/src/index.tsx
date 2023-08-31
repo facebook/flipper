@@ -215,6 +215,9 @@ async function start() {
     `[flipper-server][bootstrap] HTTP server started (${httpServerStartedMS} ms)`,
   );
 
+  // At this point, the HTTP server is ready and listening.
+  launch();
+
   const flipperServer = await startFlipperServer(
     rootPath,
     staticPath,
@@ -341,9 +344,7 @@ process.on('unhandledRejection', (reason, promise) => {
   );
 });
 
-start()
-  .then(launch)
-  .catch((e) => {
-    console.error(chalk.red('Server startup error: '), e);
-    process.exit(1);
-  });
+start().catch((e) => {
+  console.error(chalk.red('Server startup error: '), e);
+  process.exit(1);
+});
