@@ -124,12 +124,13 @@ public class RootComponentSpec {
                     .marginDip(YogaEdge.ALL, 10)
                     .textSizeSp(20)
                     .clickHandler(RootComponent.triggerCrash(c)))
-            .child(
+            // TODO: Re-enable once we have a new Litho v0.48.0-compatible version of Fresco.
+            /*.child(
                 FrescoVitoImage2.create(c)
                     .uri(Uri.parse("https://fbflipper.com/img/icon.png"))
                     .marginDip(YogaEdge.ALL, 10)
                     .widthDip(150)
-                    .heightDip(150))
+                    .heightDip(150))*/
             .build();
 
     return VerticalScroll.create(c).childComponent(col).build();
