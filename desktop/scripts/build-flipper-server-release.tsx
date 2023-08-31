@@ -234,6 +234,7 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
     'icons.json',
     'index.web.dev.html',
     'index.web.html',
+    'loading.html',
     'offline.html',
     'service-worker.js',
     'style.css',
