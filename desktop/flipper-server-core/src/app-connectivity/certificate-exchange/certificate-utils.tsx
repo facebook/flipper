@@ -168,6 +168,7 @@ const ensureServerCertExists = async (): Promise<void> => {
   } catch (e) {
     console.warn('Not all certs are valid, generating new ones', e);
     await generateServerCertificate();
+    await generateAuthToken();
   }
 };
 
@@ -317,6 +318,12 @@ export const generateAuthToken = async () => {
 };
 
 export const getAuthToken = async (): Promise<string> => {
+  // Ensure we check for the validity of certificates before
+  // returning an authentication token.
+  // If the server certificates have expired, they will need
+  // to be renewed and will invalidate any existing token.
+  await ensureServerCertExists();
+
   if (!(await hasAuthToken())) {
     return generateAuthToken();
   }
