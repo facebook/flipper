@@ -105,7 +105,7 @@ const growingTabs = css`
   & .ant-tabs-content {
     height: 100%;
   }
-  & .ant-tabs-tabpane {
+  & .ant-tabs-tabpane:not(.ant-tabs-tabpane-hidden) {
     display: flex;
   }
 `;
