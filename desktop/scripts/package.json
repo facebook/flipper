@@ -33,6 +33,7 @@
     "p-map": "^4.0.0",
     "pkg-fetch": "3.4.1",
     "promisify-child-process": "^4.1.0",
+    "semver": "^7.5.4",
     "socket.io": "^4.5.0",
     "tar": "6.1.15",
     "tmp": "^0.2.1",

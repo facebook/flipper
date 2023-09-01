@@ -1,0 +1,132 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import cp from 'child_process';
+import fs from 'fs-extra';
+import semver from 'semver';
+
+type UnmatchedLibType = {
+  types: readonly [string, string];
+  lib: readonly [string, string];
+};
+
+type PackageJsonResult = {
+  packageJson: string;
+  unmatchedTypesPackages: UnmatchedLibType[];
+};
+
+function validatePackageJson(filepath: string): PackageJsonResult {
+  try {
+    const json = JSON.parse(fs.readFileSync(filepath).toString());
+    const deps: Record<string, string> = json.dependencies || {};
+    const devDeps: Record<string, string> = json.devDependencies || {};
+    const typesPackages: Array<[string, string]> = [
+      ...Object.entries(deps).filter(([k, v]) => k.startsWith('@types/')),
+      ...Object.entries(devDeps).filter(([k, v]) => k.startsWith('@types/')),
+    ];
+
+    const unmatchedTypesPackages: UnmatchedLibType[] = typesPackages
+      .map(([rawName, rawVersion]) => {
+        const name: string | void = rawName.split('/', 2).pop();
+        if (name == null) {
+          throw new Error(
+            `Could not infer package name from types "${rawName}"`,
+          );
+        }
+        const typeVersionParsed = parsePackageVersion(
+          rawVersion,
+          rawName,
+          filepath,
+        );
+
+        const depsWithLib = name in deps ? deps : devDeps || {};
+        if (depsWithLib[name] == null) {
+          return null;
+        }
+
+        const targetVersion = parsePackageVersion(
+          depsWithLib[name],
+          name,
+          filepath,
+        );
+        if (targetVersion.major !== typeVersionParsed.major) {
+          return {
+            types: [rawName, rawVersion] as const,
+            lib: [name, depsWithLib[name]] as const,
+          };
+        }
+      })
+      .filter(<T,>(x: T | undefined | null): x is T => x != null);
+
+    return {
+      packageJson: filepath,
+      unmatchedTypesPackages,
+    };
+  } catch (e) {
+    console.error(`Failed to parse ${filepath}`);
+    throw e;
+  }
+}
+
+async function main() {
+  const out = cp.execSync(
+    'find . -name "package.json" -not -path "*/node_modules/*"',
+  );
+
+  const packageJsons = out.toString().trim().split('\n');
+
+  const unmatched = packageJsons
+    .map(validatePackageJson)
+    .filter((x) => x.unmatchedTypesPackages.length > 0);
+
+  if (unmatched.length === 0) {
+    console.log('No issues found');
+    return;
+  }
+
+  console.log(
+    unmatched
+      .map((x) =>
+        [
+          x.packageJson,
+          ...x.unmatchedTypesPackages.map(
+            (x: UnmatchedLibType) =>
+              `\t${x.types[0]}: ${x.types[1]} --- ${x.lib[0]}: ${x.lib[1]}`,
+          ),
+        ].join('\n'),
+      )
+      .join('\n'),
+  );
+
+  process.exit(1);
+}
+
+main().catch((e) => {
+  console.log(`Unexpected error: ${e}`);
+  process.exit(1);
+});
+
+function parsePackageVersion(
+  version: string,
+  pkgName: string,
+  filepath: string,
+): semver.SemVer {
+  // versions can start with ~ or ^
+  if (!version.match(/^\d/)) {
+    version = version.slice(1);
+  }
+  const parsed = semver.parse(version);
+  if (parsed == null) {
+    throw new Error(
+      `Could not parse version number from "${version}" for package "${pkgName}" in ${filepath}`,
+    );
+  }
+
+  return parsed;
+}
