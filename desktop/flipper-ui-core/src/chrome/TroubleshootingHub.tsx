@@ -9,29 +9,43 @@
 
 import {Layout} from '../ui';
 import React from 'react';
-import {Tab, Tabs} from 'flipper-plugin';
+import {Tabs} from 'flipper-plugin';
 import SetupDoctorScreen from '../sandy-chrome/SetupDoctorScreen';
 import {ConsoleLogs} from './ConsoleLogs';
 import {FlipperMessages} from './FlipperMessages';
 import {ConnectivityLogs} from './ConnectivityLogs';
 
 export function TroubleshootingHub() {
+  const items = React.useMemo(
+    () => [
+      {
+        key: 'environment-check',
+        label: 'Environment Check',
+        children: (
+          <SetupDoctorScreen visible modal={false} onClose={() => {}} />
+        ),
+      },
+      {
+        key: 'connectivity-logs',
+        label: 'Connectivity Logs',
+        children: <ConnectivityLogs />,
+      },
+      {
+        key: 'console-logs',
+        label: 'Console Logs',
+        children: <ConsoleLogs />,
+      },
+      {
+        key: 'messages',
+        label: 'Messages',
+        children: <FlipperMessages />,
+      },
+    ],
+    [],
+  );
   return (
     <Layout.Container grow>
-      <Tabs defaultActiveKey="connectivity-logs" grow>
-        <Tab tab="Environment Check" tabKey="environment-check">
-          <SetupDoctorScreen visible modal={false} onClose={() => {}} />
-        </Tab>
-        <Tab tab="Connectivity Logs" tabKey="connectivity-logs">
-          <ConnectivityLogs />
-        </Tab>
-        <Tab tab="Console Logs" tabKey="console-logs">
-          <ConsoleLogs />
-        </Tab>
-        <Tab tab="Messages" tabKey="messages">
-          <FlipperMessages />
-        </Tab>
-      </Tabs>
+      <Tabs defaultActiveKey="connectivity-logs" grow items={items} />
     </Layout.Container>
   );
 }
