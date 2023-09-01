@@ -227,11 +227,8 @@ export function attachSocketServer(
       safe(() => onClientMessage(data));
     });
 
-    async function onClientClose(error: Error | undefined = undefined) {
+    async function onClientClose(closeOnIdle: boolean) {
       console.log(`Client disconnected ${clientAddress}`);
-      if (error) {
-        console.error('Client disconnected with error', error);
-      }
 
       numberOfConnectedClients--;
 
@@ -244,24 +241,43 @@ export function attachSocketServer(
           clearTimeout(disconnectTimeout);
         }
 
-        /**
-         * If, after 60 seconds, there are no more connected clients, we exit the process.
-         */
-        disconnectTimeout = setTimeout(() => {
-          if (numberOfConnectedClients === 0 && isProduction()) {
-            console.info('Shutdown as no clients are currently connected');
-            process.exit(0);
-          }
-        }, 60 * 1000);
+        if (closeOnIdle) {
+          /**
+           * If, after 60 seconds, there are no more connected clients, we exit the process.
+           */
+          disconnectTimeout = setTimeout(() => {
+            if (numberOfConnectedClients === 0 && isProduction()) {
+              console.info('Shutdown as no clients are currently connected');
+              process.exit(0);
+            }
+          }, 60 * 1000);
+        }
       }
     }
 
-    client.on('close', () => {
-      safe(() => onClientClose());
+    client.on('close', (code, _reason) => {
+      /**
+       * The socket will close as the endpoint is terminating
+       * the connection. Status code 1000 and 1001 are used for normal
+       * closures. Either the connection is no longer needed or the
+       * endpoint is going away i.e. browser navigating away from the
+       * current page.
+       * WS RFC: https://www.rfc-editor.org/rfc/rfc6455
+       */
+      const closeOnIdle = code === 1000 || code === 1001;
+      safe(() => onClientClose(closeOnIdle));
     });
 
     client.on('error', (error) => {
-      safe(() => onClientClose(error));
+      safe(() => {
+        /**
+         * The socket will close due to an error. In this case,
+         * do not close on idle as there's a high probability the
+         * client will attempt to connect again.
+         */
+        onClientClose(false);
+        console.error('Client disconnected with error', error);
+      });
     });
   });
 }
