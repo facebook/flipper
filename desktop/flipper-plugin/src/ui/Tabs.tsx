@@ -107,5 +107,6 @@ const growingTabs = css`
   }
   & .ant-tabs-tabpane:not(.ant-tabs-tabpane-hidden) {
     display: flex;
+    flex-direction: column;
   }
 `;
