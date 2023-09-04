@@ -7,16 +7,21 @@
  * @format
  */
 
-import React from 'react';
+import {MenuProps} from 'antd';
 
 import {ClientNode} from '../../ClientTypes';
 
 export async function prefetchSourceFileLocation(_: ClientNode) {}
 
-export function IDEContextMenuItems(_: {node: ClientNode}) {
-  return <></>;
+type MenuItems = MenuProps['items'];
+
+export function ideContextMenuItems(
+  _node: ClientNode,
+  _onResultsUpdated: () => void,
+): MenuItems {
+  return [];
 }
 
-export function BigGrepContextMenuItems(_: {node: ClientNode}) {
-  return <></>;
+export function bigGrepContextMenuItems(_: ClientNode): MenuItems {
+  return [];
 }

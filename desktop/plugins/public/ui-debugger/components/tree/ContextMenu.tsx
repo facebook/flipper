@@ -9,16 +9,16 @@
 
 import {FrameworkEvent, Id, ClientNode} from '../../ClientTypes';
 import {OnSelectNode, ViewMode} from '../../DesktopTypes';
-import React, {ReactNode} from 'react';
+import React, {useEffect, useState} from 'react';
 import {DataSource, getFlipperLib} from 'flipper-plugin';
-import {Dropdown, Menu} from 'antd';
-import {UIDebuggerMenuItem} from '../util/UIDebuggerMenuItem';
+import {Dropdown, MenuProps} from 'antd';
 import {tracker} from '../../utils/tracker';
 import {
-  BigGrepContextMenuItems,
-  IDEContextMenuItems,
+  bigGrepContextMenuItems,
+  ideContextMenuItems,
 } from '../fb-stubs/IDEContextMenu';
 import {
+  CopyFilled,
   CopyOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
@@ -28,6 +28,9 @@ import {
   SnippetsOutlined,
   TableOutlined,
 } from '@ant-design/icons';
+import {filterOutFalsy} from '../../utils/array';
+
+type MenuItems = MenuProps['items'];
 
 export const ContextMenu: React.FC<{
   frameworkEvents: DataSource<FrameworkEvent>;
@@ -55,104 +58,29 @@ export const ContextMenu: React.FC<{
   onCollapseNonAncestors,
   onSelectNode,
 }) => {
-  const copyItems: ReactNode[] = [];
+  const [_, setIdeItemsRerender] = useState(0);
   const hoveredNode = nodes.get(hoveredNodeId ?? Number.MAX_SAFE_INTEGER);
 
-  let treeCollapseItems: ReactNode[] = [];
-  if (hoveredNode) {
-    treeCollapseItems = [
-      <UIDebuggerMenuItem
-        key="expand-recursive"
-        text="Expand recursively"
-        icon={<MenuUnfoldOutlined />}
-        onClick={() => {
-          onExpandRecursively(hoveredNode.id);
-          onSelectNode(hoveredNode.id, 'context-menu');
-          tracker.track('context-menu-expand-recursive', {});
-        }}
-      />,
-
-      <UIDebuggerMenuItem
-        key="collapse-recursive"
-        text="Collapse recurisvely"
-        icon={<MenuFoldOutlined />}
-        onClick={() => {
-          onCollapseRecursively(hoveredNode.id);
-          onSelectNode(hoveredNode.id, 'context-menu');
-          tracker.track('context-menu-collapse-recursive', {});
-        }}
-      />,
-      <UIDebuggerMenuItem
-        key="collapse-non-ancestors"
-        text="Collapse non ancestors"
-        icon={<NodeExpandOutlined />}
-        onClick={() => {
-          onCollapseNonAncestors(hoveredNode.id);
-          onSelectNode(hoveredNode.id, 'context-menu');
-          tracker.track('context-menu-collapse-non-ancestors', {});
-        }}
-      />,
-      <Menu.Divider key="expand-divider" />,
-    ];
-
-    copyItems.push(
-      <UIDebuggerMenuItem
-        key="Copy Element name"
-        text="Copy Element name"
-        icon={<CopyOutlined />}
-        onClick={() => {
-          tracker.track('context-menu-name-copied', {name: hoveredNode.name});
-          getFlipperLib().writeTextToClipboard(hoveredNode.name);
-        }}
-      />,
-    );
-
-    copyItems.push(
-      Object.entries(hoveredNode.inlineAttributes).map(([key, value]) => (
-        <UIDebuggerMenuItem
-          key={key}
-          text={`Copy ${key}`}
-          icon={<SnippetsOutlined />}
-          onClick={() => {
-            tracker.track('context-menu-copied', {
-              name: hoveredNode.name,
-              key,
-              value,
-            });
-            getFlipperLib().writeTextToClipboard(value);
-          }}
-        />
-      )),
-    );
-
-    copyItems.push(
-      <BigGrepContextMenuItems key="big-grep" node={hoveredNode} />,
-    );
-  }
   const focus = hoveredNode != null &&
     focusedNodeId !== hoveredNodeId &&
     hoveredNode.bounds.height !== 0 &&
-    hoveredNode.bounds.width !== 0 && (
-      <UIDebuggerMenuItem
-        key="focus"
-        text={`Focus element`}
-        icon={<FullscreenExitOutlined />}
-        onClick={() => {
-          onFocusNode(hoveredNodeId);
-        }}
-      />
-    );
+    hoveredNode.bounds.width !== 0 && {
+      key: 'focus',
+      label: `Focus element`,
+      icon: <FullscreenExitOutlined />,
+      onClick: () => {
+        onFocusNode(hoveredNodeId);
+      },
+    };
 
-  const removeFocus = focusedNodeId && (
-    <UIDebuggerMenuItem
-      key="remove-focus"
-      text="Remove focus"
-      icon={<FullscreenOutlined />}
-      onClick={() => {
-        onFocusNode(undefined);
-      }}
-    />
-  );
+  const removeFocus = focusedNodeId && {
+    key: 'remove-focus',
+    label: 'Remove focus',
+    icon: <FullscreenOutlined />,
+    onClick: () => {
+      onFocusNode(undefined);
+    },
+  };
 
   const matchingFrameworkEvents =
     (hoveredNode &&
@@ -160,42 +88,100 @@ export const ContextMenu: React.FC<{
     [];
 
   const frameworkEventsTable = matchingFrameworkEvents.length > 0 &&
-    hoveredNode && (
-      <UIDebuggerMenuItem
-        text="Explore events"
-        onClick={() => {
-          onSetViewMode({
-            mode: 'frameworkEventsTable',
-            nodeId: hoveredNode.id,
-            isTree: hoveredNode.tags.includes('TreeRoot'),
-          });
-        }}
-        icon={<TableOutlined />}
-      />
-    );
+    hoveredNode && {
+      key: 'events-table',
+      label: 'Explore events',
+      icon: <TableOutlined />,
+      onClick: () => {
+        onSetViewMode({
+          mode: 'frameworkEventsTable',
+          nodeId: hoveredNode.id,
+          isTree: hoveredNode.tags.includes('TreeRoot'),
+        });
+      },
+    };
+
+  const focusItems = [focus, removeFocus, frameworkEventsTable];
+
+  const items: MenuItems =
+    hoveredNode == null
+      ? []
+      : filterOutFalsy([
+          {
+            key: 'expand-recursive',
+            label: 'Expand recursively',
+            icon: <MenuUnfoldOutlined />,
+            onClick: () => {
+              onExpandRecursively(hoveredNode.id);
+              onSelectNode(hoveredNode.id, 'context-menu');
+              tracker.track('context-menu-expand-recursive', {});
+            },
+          },
+          {
+            key: 'collapse-recursive',
+            label: 'Collapse recurisvely',
+            icon: <MenuFoldOutlined />,
+            onClick: () => {
+              onCollapseRecursively(hoveredNode.id);
+              onSelectNode(hoveredNode.id, 'context-menu');
+              tracker.track('context-menu-collapse-recursive', {});
+            },
+          },
+          {
+            key: 'collapse-non-ancestors',
+            label: 'Collapse non ancestors',
+            icon: <NodeExpandOutlined />,
+            onClick: () => {
+              onCollapseNonAncestors(hoveredNode.id);
+              onSelectNode(hoveredNode.id, 'context-menu');
+              tracker.track('context-menu-collapse-non-ancestors', {});
+            },
+          },
+          {type: 'divider'},
+          ...focusItems,
+          focusItems.length > 0 && {type: 'divider'},
+          {
+            key: 'Copy Element name',
+            label: 'Copy Element name',
+            icon: <CopyOutlined />,
+            onClick: () => {
+              tracker.track('context-menu-name-copied', {
+                name: hoveredNode.name,
+              });
+              getFlipperLib().writeTextToClipboard(hoveredNode.name);
+            },
+          },
+          ...Object.entries(hoveredNode.inlineAttributes).map(
+            ([key, value]) => ({
+              key: key,
+              label: `Copy ${key}`,
+              icon: <SnippetsOutlined />,
+              onClick: () => {
+                tracker.track('context-menu-copied', {
+                  name: hoveredNode.name,
+                  key,
+                  value,
+                });
+                getFlipperLib().writeTextToClipboard(value);
+              },
+            }),
+          ),
+          ...(bigGrepContextMenuItems(hoveredNode) || []),
+          ...(ideContextMenuItems(hoveredNode, () =>
+            setIdeItemsRerender((value) => value + 1),
+          ) || []),
+        ]);
 
   return (
     <Dropdown
-      onVisibleChange={(visible) => {
+      onOpenChange={(visible) => {
         onContextMenuOpen(visible);
       }}
-      overlay={() => {
-        return (
-          <Menu>
-            {treeCollapseItems}
-            {focus}
-            {removeFocus}
-            {frameworkEventsTable}
-            {(focus || removeFocus || frameworkEventsTable) && (
-              <Menu.Divider key="divider-focus" />
-            )}
-            {copyItems}
-
-            {hoveredNode && (
-              <IDEContextMenuItems key="ide" node={hoveredNode} />
-            )}
-          </Menu>
-        );
+      menu={{
+        items,
+        onClick: () => {
+          onContextMenuOpen(false);
+        },
       }}
       trigger={['contextMenu']}>
       {children}
