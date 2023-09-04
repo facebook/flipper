@@ -11,6 +11,23 @@ import cp from 'child_process';
 import fs from 'fs-extra';
 import semver from 'semver';
 
+/**
+ * Lists all dependencies that DO NOT have to match their type declaration package major versions
+ *
+ * Leave a comment for packages that you list here
+ */
+const IGNORED_TYPES = new Set(
+  [
+    // node is not an installed package
+    'node',
+
+    // we are useing experimental versions of these packages
+    'react',
+    'react-dom',
+    'react-test-renderer',
+  ].map((x) => `@types/${x}`),
+);
+
 type UnmatchedLibType = {
   types: readonly [string, string];
   lib: readonly [string, string];
@@ -29,7 +46,7 @@ function validatePackageJson(filepath: string): PackageJsonResult {
     const typesPackages: Array<[string, string]> = [
       ...Object.entries(deps).filter(([k, v]) => k.startsWith('@types/')),
       ...Object.entries(devDeps).filter(([k, v]) => k.startsWith('@types/')),
-    ];
+    ].filter((x) => !IGNORED_TYPES.has(x[0]));
 
     const unmatchedTypesPackages: UnmatchedLibType[] = typesPackages
       .map(([rawName, rawVersion]) => {
