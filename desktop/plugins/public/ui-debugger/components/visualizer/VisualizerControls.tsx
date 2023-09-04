@@ -21,7 +21,6 @@ import {
 import {tracker} from '../../utils/tracker';
 import {debounce} from 'lodash';
 import {WireFrameMode} from '../../DesktopTypes';
-import {SelectableDropDownItem} from '../shared/SelectableDropDownItem';
 export type TargetModeState =
   | {
       state: 'selected';
@@ -34,6 +33,16 @@ export type TargetModeState =
   | {
       state: 'disabled';
     };
+
+function createItem(wireframeMode: WireFrameMode, label: string) {
+  return {key: wireframeMode, label: label};
+}
+
+const wireFrameModeDropDownItems = [
+  createItem('All', 'All'),
+  createItem('SelectedAndChildren', 'Selected and children'),
+  createItem('SelectedOnly', 'Selected only'),
+];
 
 export function VisualiserControls({
   targetMode,
@@ -98,28 +107,14 @@ export function VisualiserControls({
 
       <Layout.Horizontal gap="medium" center>
         <Dropdown
-          overlay={
-            <Menu>
-              <SelectableDropDownItem
-                onSelect={onSetWireFrameMode}
-                text="All"
-                selectedValue={wireFrameMode}
-                value="All"
-              />
-              <SelectableDropDownItem
-                onSelect={onSetWireFrameMode}
-                text="Selected and children"
-                selectedValue={wireFrameMode}
-                value="SelectedAndChildren"
-              />
-              <SelectableDropDownItem
-                onSelect={onSetWireFrameMode}
-                text="Selected only"
-                selectedValue={wireFrameMode}
-                value="SelectedOnly"
-              />
-            </Menu>
-          }>
+          menu={{
+            selectable: true,
+            selectedKeys: [wireFrameMode],
+            items: wireFrameModeDropDownItems,
+            onSelect: (event) => {
+              onSetWireFrameMode(event.selectedKeys[0] as WireFrameMode);
+            },
+          }}>
           <Tooltip title="Wireframe Mode">
             <Button shape="circle">
               <PicCenterOutlined />
