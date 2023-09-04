@@ -4378,13 +4378,12 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
   integrity sha512-ewFXqrQHlFsgc09MK5jP5iR7vumV/BYayNC6PgJO2LPe8vrnNFyjQjSppfEngITi0qvfKtzFvgKymGheFM9UOA==
 
-"@types/react-color@^3.0.6":
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-3.0.6.tgz#602fed023802b2424e7cd6ff3594ccd3d5055f9a"
-  integrity sha512-OzPIO5AyRmLA7PlOyISlgabpYUa3En74LP8mTMa0veCA719SvYQov4WLMsHvCgXP+L+KI9yGhYnqZafVGG0P4w==
+"@types/react-color@2.13.5":
+  version "2.13.5"
+  resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-2.13.5.tgz#38a5bcbb00c5de85d696a3f5adcd619256a57083"
+  integrity sha512-MShVbkZSUs/IJiaYDvZ7gubK1+T2CEGSFwImtOAc3PVLqvR5aQdbwaGZ1hYkKmQAC55eCoQ9BQTHJASyNWjvjw==
   dependencies:
     "@types/react" "*"
-    "@types/reactcss" "*"
 
 "@types/react-dom@<18.0.0":
   version "17.0.17"
@@ -4400,10 +4399,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-is@^17.0.3":
-  version "17.0.3"
-  resolved "https://registry.yarnpkg.com/@types/react-is/-/react-is-17.0.3.tgz#2d855ba575f2fc8d17ef9861f084acc4b90a137a"
-  integrity sha512-aBTIWg1emtu95bLTLx0cpkxwGW3ueZv71nE2YFBpL8k/z5czEW8yYpOo8Dp+UUAFAtKwNaOsh/ioSeQnWlZcfw==
+"@types/react-is@^18.2.1":
+  version "18.2.1"
+  resolved "https://registry.yarnpkg.com/@types/react-is/-/react-is-18.2.1.tgz#61d01c2a6fc089a53520c0b66996d458fdc46863"
+  integrity sha512-wyUkmaaSZEzFZivD8F2ftSyAfk6L+DfFliVj/mYdOXbVjRcS87fQJLTnhk6dRZPuJjI+9g6RZJO4PNCngUrmyw==
   dependencies:
     "@types/react" "*"
 
@@ -4455,13 +4454,6 @@
     "@types/prop-types" "*"
     "@types/scheduler" "*"
     csstype "^3.0.2"
-
-"@types/reactcss@*":
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/@types/reactcss/-/reactcss-1.2.6.tgz#133c1e7e896f2726370d1d5a26bf06a30a038bcc"
-  integrity sha512-qaIzpCuXNWomGR1Xq8SCFTtF4v8V27Y6f+b9+bzHiv087MylI/nTCqqdChNeWS7tslgROmYB7yeiruWX7WnqNg==
-  dependencies:
-    "@types/react" "*"
 
 "@types/recursive-readdir@^2.2.1":
   version "2.2.1"
@@ -4537,10 +4529,10 @@
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
 
-"@types/split2@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@types/split2/-/split2-3.2.1.tgz#97c42b560a1b41064d46cd728cf1267d5755ee34"
-  integrity sha512-7uz3yU+LooBq4yNOzlZD9PU9/1Eu0rTD1MjQ6apOVEoHsPrMUrFw7W8XrvWtesm2vK67SBK9AyJcOXtMpl9bgQ==
+"@types/split2@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@types/split2/-/split2-4.2.0.tgz#8c2d336676391cf45166f52c56e4fd3ba924644a"
+  integrity sha512-rwV0tC3XGQvQ8zdeYDZ+dLn4CJLKnYPBrSU8dRXvzMVLUPMsYTsy3/ZbE4OlejsT2D7MTGP8ePk05C98xl2seQ==
   dependencies:
     "@types/node" "*"
 

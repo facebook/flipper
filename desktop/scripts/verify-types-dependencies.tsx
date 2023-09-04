@@ -25,6 +25,14 @@ const IGNORED_TYPES = new Set(
     'react',
     'react-dom',
     'react-test-renderer',
+
+    // these packages do not have new major versions
+    'async',
+    'dateformat',
+    'deep-equal',
+    'inquirer',
+    'mock-fs',
+    'npm-packlist',
   ].map((x) => `@types/${x}`),
 );
 
