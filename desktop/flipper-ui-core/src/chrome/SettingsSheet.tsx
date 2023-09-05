@@ -372,7 +372,7 @@ class SettingsSheet extends Component<Props, State> {
               });
             }}>
             <URLConfigField
-              label="Martkeplace URL"
+              label="Marketplace URL"
               defaultValue={
                 marketplaceURL || 'http://plugin-marketplace.local/get-plugins'
               }
