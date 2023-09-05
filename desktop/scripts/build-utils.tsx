@@ -57,7 +57,6 @@ export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
       `⚙️  Copying the provided default plugins dir "${forcedDefaultPluginsDir}"...`,
     );
     await fs.copy(forcedDefaultPluginsDir, defaultPluginsDir, {
-      recursive: true,
       overwrite: true,
       dereference: true,
     });

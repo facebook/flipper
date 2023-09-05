@@ -30,21 +30,28 @@ const validPackageJson = {
   },
 };
 
-beforeEach(() => {
-  jest.mock('fs-extra', () => jest.fn());
-  fs.pathExists = jest.fn().mockResolvedValue(true);
-  fs.pathExistsSync = jest.fn().mockReturnValue(true);
-  // Required by some inconsistent node types for rw access.
-  (fs.lstatSync as any) = jest.fn().mockReturnValue({
-    isFile: function () {
-      return true;
-    },
-  });
+jest.mock('fs-extra', () => {
+  const mod = {
+    ...jest.requireActual('fs-extra'),
+    readFile: jest.fn(),
+    pathExists: jest.fn().mockResolvedValue(true),
+    pathExistsSync: jest.fn().mockResolvedValue(true),
+    lstatSync: jest.fn().mockReturnValue({
+      isFile: function () {
+        return true;
+      },
+    }),
+  };
+
+  return {
+    ...mod,
+    default: mod,
+  };
 });
 
 test('valid package json', async () => {
   const json = JSON.stringify(validPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toBe(null);
 });
@@ -53,7 +60,7 @@ test('valid scoped package json', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
   testPackageJson.name = '@test/flipper-plugin-package';
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toBe(null);
 });
@@ -63,7 +70,7 @@ test('$schema field is required', async () => {
   // @ts-ignore cannot delete non-optional fields
   delete testPackageJson.$schema;
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
     [
@@ -82,7 +89,7 @@ test('supported schema is required', async () => {
   testPackageJson.$schema =
     'https://fbflipper.com/schemas/plugin-package/v1.json';
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
     [
@@ -97,7 +104,7 @@ test('name is required', async () => {
   // @ts-ignore cannot delete non-optional fields
   delete testPackageJson.name;
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
     [
@@ -110,7 +117,7 @@ test('name must start with "flipper-plugin-"', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
   testPackageJson.name = 'test-plugin';
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
     [
@@ -123,7 +130,7 @@ test('keywords must contain "flipper-plugin"', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
   testPackageJson.keywords = ['flipper', 'network'];
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
     [
@@ -135,13 +142,11 @@ test('keywords must contain "flipper-plugin"', async () => {
 test('flippeBundlerEntry must point to an existing file', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
   testPackageJson.flipperBundlerEntry = 'unexisting/file';
-  fs.pathExistsSync = jest
-    .fn()
-    .mockImplementation(
-      (filePath) => !filePath.includes(path.join('unexisting', 'file')),
-    );
+  (fs.pathExistsSync as any as jest.Mock).mockImplementation(
+    (filePath) => !filePath.includes(path.join('unexisting', 'file')),
+  );
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
     [
@@ -156,7 +161,7 @@ test('multiple validation errors reported', async () => {
   // @ts-ignore cannot delete non-optional fields
   delete testPackageJson.flipperBundlerEntry;
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
     [

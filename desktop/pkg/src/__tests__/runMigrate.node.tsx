@@ -10,25 +10,6 @@
 import runMigrate from '../utils/runMigrate';
 import fs from 'fs-extra';
 
-const packageJsonV1 = {
-  name: 'Fresco',
-  version: '1.0.0',
-  main: 'index.tsx',
-  license: 'MIT',
-  keywords: ['images'],
-  dependencies: {
-    flipper: 'latest',
-  },
-  scripts: {
-    prepack: 'yarn reset && yarn build',
-  },
-  title: 'Images',
-  icon: 'profile',
-  bugs: {
-    email: 'example@test.com',
-  },
-};
-
 const packageJsonV2 = {
   $schema: 'https://fbflipper.com/schemas/plugin-package/v2.json',
   name: 'flipper-plugin-network',
@@ -53,18 +34,52 @@ const packageJsonV2 = {
 
 let convertedPackageJsonString: string | undefined;
 
+jest.mock('fs-extra', () => {
+  const packageJsonV1 = {
+    name: 'Fresco',
+    version: '1.0.0',
+    main: 'index.tsx',
+    license: 'MIT',
+    keywords: ['images'],
+    dependencies: {
+      flipper: 'latest',
+    },
+    scripts: {
+      prepack: 'yarn reset && yarn build',
+    },
+    title: 'Images',
+    icon: 'profile',
+    bugs: {
+      email: 'example@test.com',
+    },
+  };
+
+  const mod = {
+    ...jest.requireActual('fs-extra'),
+    readFile: jest
+      .fn()
+      .mockResolvedValue(new Buffer(JSON.stringify(packageJsonV1))),
+    pathExists: jest.fn().mockResolvedValue(true),
+    pathExistsSync: jest.fn().mockResolvedValue(true),
+    readJson: jest.fn().mockResolvedValue(packageJsonV1),
+    writeFile: jest.fn(async (_path, content) => {
+      convertedPackageJsonString = content;
+    }),
+    lstatSync: jest.fn().mockReturnValue({
+      isFile: function () {
+        return true;
+      },
+    }),
+  };
+
+  return {
+    ...mod,
+    default: mod,
+  };
+});
+
 beforeEach(() => {
-  jest.mock('fs-extra', () => jest.fn());
-  fs.pathExists = jest.fn().mockResolvedValue(true);
-  fs.pathExistsSync = jest.fn().mockReturnValue(true);
-  fs.readJson = jest.fn().mockResolvedValue(packageJsonV1);
-  fs.readFile = jest
-    .fn()
-    .mockResolvedValue(new Buffer(JSON.stringify(packageJsonV1)));
   convertedPackageJsonString = undefined;
-  fs.writeFile = jest.fn().mockImplementation(async (_path, content) => {
-    convertedPackageJsonString = content;
-  });
 });
 
 test('converts package.json and adds dependencies', async () => {
@@ -134,10 +149,9 @@ test('converts package.json without changing dependencies', async () => {
 });
 
 test('does not migrate already migrated packages', async () => {
-  fs.readJson = jest.fn().mockResolvedValue(packageJsonV2);
-  fs.readFile = jest
-    .fn()
-    .mockResolvedValue(new Buffer(JSON.stringify(packageJsonV2)));
+  (fs.readFile as any as jest.Mock).mockResolvedValue(
+    new Buffer(JSON.stringify(packageJsonV2)),
+  );
   const error = await runMigrate('dir');
   expect(error).toBeUndefined();
   expect(convertedPackageJsonString).toBeUndefined();

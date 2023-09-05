@@ -31,6 +31,7 @@ test('getPluginDetailsV1', async () => {
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
+  // @ts-expect-error this is read only and it is fine, this is a test
   fs.readJson = jest.fn().mockImplementation(() => pluginV1);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -74,6 +75,7 @@ test('getPluginDetailsV2', async () => {
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
+  // @ts-expect-error this is read only and it is fine, this is a test
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -121,6 +123,7 @@ test('id used as title if the latter omited', async () => {
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
+  // @ts-expect-error this is read only and it is fine, this is a test
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -167,6 +170,7 @@ test('name without "flipper-plugin-" prefix is used as title if the latter omite
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
+  // @ts-expect-error this is read only and it is fine, this is a test
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -216,6 +220,7 @@ test('flipper-plugin-version is parsed', async () => {
       'flipper-plugin': '^0.45',
     },
   };
+  // @ts-expect-error this is read only and it is fine, this is a test
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -269,6 +274,7 @@ test('plugin type and supported devices parsed', async () => {
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
+  // @ts-expect-error this is read only and it is fine, this is a test
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -338,6 +344,7 @@ test('plugin type and supported apps parsed', async () => {
     description: 'Description of Test Plugin',
     gatekeeper: 'GK_flipper_plugin_test',
   };
+  // @ts-expect-error this is read only and it is fine, this is a test
   fs.readJson = jest.fn().mockImplementation(() => pluginV2);
   const details = await getInstalledPluginDetails(pluginPath);
   details.dir = normalizePath(details.dir);
@@ -417,7 +424,7 @@ test('can merge two package.json files', async () => {
     },
   };
   const mockedFs = jest.mocked(fs);
-  mockedFs.readJson.mockImplementation((file) => {
+  mockedFs.readJson.mockImplementation((file): any => {
     if (file === path.join(pluginPath, 'package.json')) {
       return pluginBase;
     } else if (file === path.join(pluginPath, 'fb', 'package.json')) {

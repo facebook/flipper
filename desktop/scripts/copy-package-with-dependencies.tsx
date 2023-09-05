@@ -59,7 +59,6 @@ async function copyPackageWithDependenciesRecursive(
     .then((l: Array<string>) => ignore().add(DEFAULT_BUILD_IGNORES.concat(l)));
   await fs.copy(packageDir, targetDir, {
     dereference: true,
-    recursive: true,
     filter: (src) => {
       const relativePath = path.relative(packageDir, src);
       return relativePath === '' || !ignores.ignores(relativePath);
