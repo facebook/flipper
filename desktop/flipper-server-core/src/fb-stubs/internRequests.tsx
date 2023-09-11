@@ -21,6 +21,7 @@ export async function internGraphPOSTAPIRequest(
     timeout?: number;
     internGraphUrl?: string;
     headers?: Record<string, string | number | boolean>;
+    vpnMode?: 'vpn' | 'vpnless';
   },
   token: string,
 ): Promise<GraphResponse> {
@@ -36,6 +37,7 @@ export async function internGraphGETAPIRequest(
     timeout?: number;
     internGraphUrl?: string;
     headers?: Record<string, string | number | boolean>;
+    vpnMode?: 'vpn' | 'vpnless';
   },
   token: string,
 ): Promise<GraphResponse> {

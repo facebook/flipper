@@ -361,6 +361,7 @@ export type FlipperServerCommands = {
       timeout?: number;
       internGraphUrl?: string;
       headers?: Record<string, string | number | boolean>;
+      vpnMode?: 'vpn' | 'vpnless';
     },
   ) => Promise<GraphResponse>;
   'intern-graph-get': (
