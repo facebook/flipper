@@ -51,11 +51,23 @@
   _context.connection = connection;
 
   [[UIDTreeObserverManager shared] startWithContext:_context];
+
+  NSSet<id<UIDConnectionListener>>* connectionListeners =
+      _context.connectionListeners;
+  for (id<UIDConnectionListener> listener in connectionListeners) {
+    [listener onDidConnect];
+  }
 }
 
 - (void)didDisconnect {
   _context.connection = nil;
   [[UIDTreeObserverManager shared] stop];
+
+  NSSet<id<UIDConnectionListener>>* connectionListeners =
+      _context.connectionListeners;
+  for (id<UIDConnectionListener> listener in connectionListeners) {
+    [listener onDidDisconnect];
+  }
 }
 
 @end
