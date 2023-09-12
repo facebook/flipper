@@ -56,9 +56,17 @@ import {Module} from 'module';
 Module.prototype.require = wrapRequire(Module.prototype.require);
 enableMapSet();
 
-async function getKeytarModule(staticPath: string): Promise<KeytarModule> {
+async function getKeytarModule(
+  staticPath: string,
+): Promise<KeytarModule | undefined> {
   let keytar: any = undefined;
   try {
+    if (process.env.FLIPPER_DISABLE_KEYTAR) {
+      console.log(
+        'Using keytar in-memory implementation as per FLIPPER_DISABLE_KEYTAR env var.',
+      );
+      return undefined;
+    }
     if (!isTest()) {
       const keytarPath = path.join(
         staticPath,
@@ -112,7 +120,7 @@ async function getFlipperServer(
     isProduction,
     false,
   );
-  const keytar: KeytarModule = await getKeytarModule(staticPath);
+  const keytar: KeytarModule | undefined = await getKeytarModule(staticPath);
   const gatekeepers = getGatekeepers(environmentInfo.os.unixname);
 
   const serverUsageEnabled = gatekeepers['flipper_desktop_use_server'];

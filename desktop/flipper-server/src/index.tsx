@@ -164,7 +164,11 @@ async function start() {
 
   let keytar: any = undefined;
   try {
-    if (!isTest()) {
+    if (process.env.FLIPPER_DISABLE_KEYTAR) {
+      console.log(
+        '[flipper-server][bootstrap] Using keytar in-memory implementation as per FLIPPER_DISABLE_KEYTAR env var.',
+      );
+    } else if (!isTest()) {
       const keytarPath = path.join(
         staticPath,
         'native-modules',
