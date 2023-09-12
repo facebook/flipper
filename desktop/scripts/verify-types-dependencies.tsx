@@ -46,15 +46,22 @@ type PackageJsonResult = {
   unmatchedTypesPackages: UnmatchedLibType[];
 };
 
-function validatePackageJson(filepath: string): PackageJsonResult {
+function isValidTypesPackageName(x: [name: string, version: string]): boolean {
+  return x[0].startsWith('@types/') && !IGNORED_TYPES.has(x[0]);
+}
+
+async function validatePackageJson(
+  filepath: string,
+): Promise<PackageJsonResult> {
   try {
-    const json = JSON.parse(fs.readFileSync(filepath).toString());
+    const jsonBuf = await fs.promises.readFile(filepath);
+    const json = JSON.parse(jsonBuf.toString());
     const deps: Record<string, string> = json.dependencies || {};
     const devDeps: Record<string, string> = json.devDependencies || {};
     const typesPackages: Array<[string, string]> = [
-      ...Object.entries(deps).filter(([k, v]) => k.startsWith('@types/')),
-      ...Object.entries(devDeps).filter(([k, v]) => k.startsWith('@types/')),
-    ].filter((x) => !IGNORED_TYPES.has(x[0]));
+      ...Object.entries(deps).filter(isValidTypesPackageName),
+      ...Object.entries(devDeps).filter(isValidTypesPackageName),
+    ];
 
     const unmatchedTypesPackages: UnmatchedLibType[] = typesPackages
       .map(([rawName, rawVersion]) => {
@@ -106,9 +113,9 @@ async function main() {
 
   const packageJsons = out.toString().trim().split('\n');
 
-  const unmatched = packageJsons
-    .map(validatePackageJson)
-    .filter((x) => x.unmatchedTypesPackages.length > 0);
+  const unmatched = await Promise.all(
+    packageJsons.map(validatePackageJson),
+  ).then((x) => x.filter((x) => x.unmatchedTypesPackages.length > 0));
 
   if (unmatched.length === 0) {
     console.log('No issues found');
