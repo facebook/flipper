@@ -42,7 +42,7 @@
     "react-player": "^2.11.0",
     "react-redux": "^7.2.6",
     "react-test-renderer": "^0.0.0-experimental-2bf7c02f0-20220314",
-    "react-virtualized-auto-sizer": "1.0.7",
+    "react-virtualized-auto-sizer": "1.0.20",
     "react-window": "^1.8.9",
     "redux": "^4.2.1",
     "redux-persist": "^6.0.0",
