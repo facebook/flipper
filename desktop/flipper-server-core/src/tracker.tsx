@@ -32,6 +32,7 @@ type ServerBootstrapPerformancePayload = {
   appServerStartedMS: number;
   developmentServerAttachedMS: number;
   serverStartedMS: number;
+  launchedMS: number;
 };
 
 type TrackerEvents = {

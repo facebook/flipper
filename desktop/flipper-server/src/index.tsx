@@ -219,9 +219,6 @@ async function start() {
     `[flipper-server][bootstrap] HTTP server started (${httpServerStartedMS} ms)`,
   );
 
-  // At this point, the HTTP server is ready and listening.
-  launch();
-
   const flipperServer = await startFlipperServer(
     rootPath,
     staticPath,
@@ -238,14 +235,20 @@ async function start() {
     `[flipper-server][bootstrap] FlipperServer created (${serverCreatedMS} ms)`,
   );
 
+  // At this point, the HTTP server is ready and configuration is set.
+  await launch();
+
+  const t6 = performance.now();
+  const launchedMS = t6 - t5;
+
   exitHook(async () => {
     await flipperServer.close();
   });
 
   const companionEnv = await initCompanionEnv(flipperServer);
 
-  const t6 = performance.now();
-  const companionEnvironmentInitializedMS = t6 - t5;
+  const t7 = performance.now();
+  const companionEnvironmentInitializedMS = t7 - t6;
 
   console.info(
     `[flipper-server][bootstrap] Companion environment initialised (${companionEnvironmentInitializedMS} ms)`,
@@ -263,8 +266,8 @@ async function start() {
   }
   await flipperServer.connect();
 
-  const t7 = performance.now();
-  const appServerStartedMS = t7 - t6;
+  const t8 = performance.now();
+  const appServerStartedMS = t8 - t7;
   console.info(
     `[flipper-server][bootstrap] Ready for app connections (${appServerStartedMS} ms)`,
   );
@@ -273,15 +276,15 @@ async function start() {
     await attachDevServer(app, server, socket, rootPath);
   }
 
-  const t8 = performance.now();
-  const developmentServerAttachedMS = t8 - t7;
+  const t9 = performance.now();
+  const developmentServerAttachedMS = t9 - t8;
   console.info(
     `[flipper-server][bootstrap] Development server attached (${developmentServerAttachedMS} ms)`,
   );
   readyForIncomingConnections(flipperServer, companionEnv);
 
-  const t9 = performance.now();
-  const serverStartedMS = t9 - t8;
+  const t10 = performance.now();
+  const serverStartedMS = t10 - t9;
   console.info(
     `[flipper-server][bootstrap] Listening at port ${chalk.green(
       argv.port,
@@ -298,10 +301,12 @@ async function start() {
     appServerStartedMS,
     developmentServerAttachedMS,
     serverStartedMS,
+    launchedMS,
   });
 }
 
 async function launch() {
+  console.info('[flipper-server] Launch UI');
   const token = await getAuthToken();
 
   const searchParams = new URLSearchParams({token: token ?? ''});
