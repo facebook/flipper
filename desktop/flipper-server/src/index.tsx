@@ -235,9 +235,6 @@ async function start() {
     `[flipper-server][bootstrap] FlipperServer created (${serverCreatedMS} ms)`,
   );
 
-  // At this point, the HTTP server is ready and configuration is set.
-  await launch();
-
   const t6 = performance.now();
   const launchedMS = t6 - t5;
 
@@ -265,6 +262,9 @@ async function start() {
     });
   }
   await flipperServer.connect();
+
+  // At this point, the HTTP server is ready and configuration is set.
+  await launch();
 
   const t8 = performance.now();
   const appServerStartedMS = t8 - t7;
