@@ -302,15 +302,11 @@ async function start() {
 }
 
 async function launch() {
-  let token: string | undefined;
-  if (await hasAuthToken()) {
-    token = await getAuthToken();
-  }
+  const token = await getAuthToken();
 
   const searchParams = new URLSearchParams({token: token ?? ''});
   const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
 
-  console.log('Go to: ' + chalk.green(chalk.bold(url)));
   if (!argv.open) {
     return;
   }
