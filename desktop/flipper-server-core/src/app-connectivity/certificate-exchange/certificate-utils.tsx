@@ -81,7 +81,7 @@ export const loadSecureServerConfig = async (): Promise<SecureServerConfig> => {
 
   await ensureOpenSSLIsAvailable();
   await certificateSetup();
-  await generateAuthToken();
+
   const [key, cert, ca] = await Promise.all([
     fs.readFile(serverKey),
     fs.readFile(serverCert),
@@ -158,12 +158,20 @@ const ensureServerCertExists = async (): Promise<void> => {
     fs.pathExists(serverCert),
     fs.pathExists(caCert),
   ]).then((exist) => exist.every(Boolean));
+
   if (!allExist) {
-    return generateServerCertificate();
+    console.info('No certificates were found, generating new ones');
+
+    await generateServerCertificate();
+    await generateAuthToken();
+
+    return;
   }
 
   try {
+    console.info('Checking for certificates validity');
     await checkCertIsValid(serverCert);
+    console.info('Checking certificate was issued by current CA');
     await verifyServerCertWasIssuedByCA();
   } catch (e) {
     console.warn('Not all certs are valid, generating new ones', e);
@@ -174,7 +182,7 @@ const ensureServerCertExists = async (): Promise<void> => {
 
 const generateServerCertificate = async (): Promise<void> => {
   await ensureCertificateAuthorityExists();
-  console.warn('Creating new server cert', logTag);
+  console.warn('Creating new server certificate');
   await openssl('genrsa', {out: serverKey, '2048': false});
   await openssl('req', {
     new: true,
@@ -300,6 +308,7 @@ const exportTokenToManifest = async (
 };
 
 export const generateAuthToken = async () => {
+  console.info('Generate client authentication token');
   const config = getFlipperServerConfig();
 
   const privateKey = await fs.readFile(serverKey);
@@ -310,7 +319,9 @@ export const generateAuthToken = async () => {
 
   await fs.writeFile(serverAuthToken, token);
 
+  console.info('Token generated and saved to disk');
   if (config.environmentInfo.isHeadlessBuild) {
+    console.info('Token exported to manifest');
     await exportTokenToManifest(config, token);
   }
 
