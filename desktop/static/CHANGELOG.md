@@ -1,3 +1,9 @@
+# 0.217.0 (13/9/2023)
+
+ * [D46859213](https://github.com/facebook/flipper/search?q=D46859213&type=Commits) -  UI Debugger is now available for Litho in Open Source
+ * [D49183501](https://github.com/facebook/flipper/search?q=D49183501&type=Commits) -  FLIPPER_DISABLE_KEYTAR env var can be used to force in-memory implementation
+
+
 # 0.214.0 (30/8/2023)
 
  * [D48777923](https://github.com/facebook/flipper/search?q=D48777923&type=Commits) -  Show the iOS version of simulators in the launcher window
