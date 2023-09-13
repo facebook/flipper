@@ -31,7 +31,7 @@ export default function BlocklistSettingButton(props: {
       />
       <Modal
         title="Notification Setting"
-        visible={showModal}
+        open={showModal}
         width={650}
         footer={null}
         onCancel={() => setShowModal(false)}>

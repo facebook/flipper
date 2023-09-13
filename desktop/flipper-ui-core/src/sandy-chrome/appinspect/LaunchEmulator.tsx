@@ -60,7 +60,7 @@ function NoSDKsEnabledAlert({onClose}: {onClose: () => void}) {
   return (
     <>
       <Modal
-        visible
+        open
         centered
         onCancel={onClose}
         title="No Mobile SDKs Enabled"
@@ -252,7 +252,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
 
     return (
       <Modal
-        visible
+        open
         centered
         onCancel={onClose}
         title="Launch Virtual device"

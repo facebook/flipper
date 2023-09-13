@@ -353,7 +353,7 @@ const DelayedHoveredToolTip: React.FC<{
 
   return (
     <Tooltip
-      visible={isVisible}
+      open={isVisible}
       key={nodeId}
       placement="top"
       zIndex={100}

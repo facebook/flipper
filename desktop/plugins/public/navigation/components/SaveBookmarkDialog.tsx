@@ -56,7 +56,7 @@ export function SaveBookmarkDialog(props: Props) {
     return null;
   } else {
     return (
-      <Modal visible footer={null} onCancel={onHide}>
+      <Modal open footer={null} onCancel={onHide}>
         {(onHide: () => void) => {
           return (
             <Container>

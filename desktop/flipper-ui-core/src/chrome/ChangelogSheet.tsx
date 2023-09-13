@@ -57,11 +57,7 @@ class ChangelogSheet extends Component<Props, {}> {
 
   render() {
     return this.props.changelog ? (
-      <Modal
-        visible
-        title="Changelog"
-        onCancel={this.props.onHide}
-        footer={null}>
+      <Modal open title="Changelog" onCancel={this.props.onHide} footer={null}>
         <Markdown
           source={
             this.props.recent

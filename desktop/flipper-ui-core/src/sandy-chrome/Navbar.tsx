@@ -197,7 +197,7 @@ function ExportEverythingEverywhereAllAtOnceStatusModal({
 
   return (
     <Modal
-      visible={!!status}
+      open={!!status}
       centered
       onCancel={() => {
         setStatus(undefined);
@@ -230,7 +230,7 @@ function NotificationButton() {
         }}
       />
       <Modal
-        visible={isOpen}
+        open={isOpen}
         onCancel={() =>
           store.dispatch({type: 'isNotificationModalOpen', payload: false})
         }
@@ -537,7 +537,7 @@ function TroubleshootingModal() {
   );
   return (
     <Modal
-      visible={isOpen}
+      open={isOpen}
       onCancel={() => store.dispatch(toggleConnectivityModal())}
       width="100%"
       footer={null}
@@ -561,7 +561,7 @@ function FlipperDevToolsModal({
 }) {
   return (
     <Modal
-      visible={isOpen}
+      open={isOpen}
       onCancel={onClose}
       width="100%"
       footer={null}

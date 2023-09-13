@@ -110,7 +110,7 @@ export default function WelcomeScreen({
     <Modal
       centered
       closable={false}
-      visible={visible}
+      open={visible}
       footer={
         <WelcomeFooter
           onClose={onClose}
