@@ -194,7 +194,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
         .value(),
 
       iosEmulators.length > 0 ? (
-        <Title key="android-title" name="iOS Simulators" />
+        <Title key="ios-title" name="iOS Simulators" />
       ) : null,
       ...chain(iosEmulators)
         .map((device) => ({
