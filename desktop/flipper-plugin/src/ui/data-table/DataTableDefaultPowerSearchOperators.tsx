@@ -93,6 +93,12 @@ export const dataTablePowerSearchOperators = {
     valueType: 'ENUM',
     enumLabels,
   }),
+  enum_is_not: (enumLabels: Record<string, string>) => ({
+    label: 'is not',
+    key: 'enum_is_not',
+    valueType: 'ENUM',
+    enumLabels,
+  }),
   enum_set_is_any_of: (enumLabels: Record<string, string>) => ({
     label: 'is any of',
     key: 'enum_set_is_any_of',
@@ -157,6 +163,8 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     value <= searchValue,
   enum_is: (_operator, searchValue: string, value: string) =>
     searchValue === value,
+  enum_is_not: (_operator, searchValue: string, value: string) =>
+    searchValue !== value,
   enum_set_is_any_of: (_operator, searchValue: string[], value: string) =>
     searchValue.some((item) => value === item),
   enum_set_is_none_of: (_operator, searchValue: string[], value: string) =>
