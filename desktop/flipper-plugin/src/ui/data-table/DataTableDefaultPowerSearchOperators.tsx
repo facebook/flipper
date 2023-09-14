@@ -21,6 +21,11 @@ export const dataTablePowerSearchOperators = {
     key: 'string_contains',
     valueType: 'STRING',
   }),
+  string_not_contains: () => ({
+    label: 'does not contain',
+    key: 'string_not_contains',
+    valueType: 'STRING',
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -32,6 +37,10 @@ export type PowerSearchOperatorProcessorConfig = {
 export const dataTablePowerSearchOperatorProcessorConfig = {
   string_contains: (operator, searchValue, value) =>
     (value as string)
+      .toLowerCase()
+      .includes((searchValue as string).toLowerCase()),
+  string_not_contains: (operator, searchValue, value) =>
+    !(value as string)
       .toLowerCase()
       .includes((searchValue as string).toLowerCase()),
 } satisfies PowerSearchOperatorProcessorConfig;
