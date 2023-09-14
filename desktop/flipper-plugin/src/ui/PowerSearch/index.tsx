@@ -9,7 +9,11 @@
 
 import * as React from 'react';
 import {Space} from 'antd';
-import {PowerSearchConfig} from './PowerSearchConfig';
+import {
+  PowerSearchConfig,
+  FieldConfig,
+  OperatorConfig,
+} from './PowerSearchConfig';
 import {PowerSearchContainer} from './PowerSearchContainer';
 import {
   PowerSearchTermFinder,
@@ -25,7 +29,7 @@ import {useLatestRef} from '../../utils/useLatestRef';
 import {useUpdateEffect} from 'react-use';
 import {theme} from '../theme';
 
-export {PowerSearchConfig};
+export {PowerSearchConfig, OperatorConfig, FieldConfig, SearchExpressionTerm};
 
 type PowerSearchProps = {
   config: PowerSearchConfig;

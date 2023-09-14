@@ -57,7 +57,7 @@ import {
 } from 'flipper-plugin-core';
 import {HighlightProvider} from '../Highlight';
 import {useLatestRef} from '../../utils/useLatestRef';
-import {PowerSearch} from '../PowerSearch';
+import {PowerSearch, OperatorConfig} from '../PowerSearch';
 import {powerSearchExampleConfig} from '../PowerSearch/PowerSearchExampleConfig';
 
 type DataTableBaseProps<T = any> = {
@@ -115,16 +115,9 @@ export type DataTableColumn<T = any> = {
   wrap?: boolean;
   align?: 'left' | 'right' | 'center';
   visible?: boolean;
-  filters?: {
-    label: string;
-    value: string;
-    enabled: boolean;
-    predefined?: boolean;
-    strict?: boolean;
-    exact?: boolean;
-  }[];
   inversed?: boolean;
   sortable?: boolean;
+  powerSearchConfig?: {[key: string]: OperatorConfig};
 };
 
 export interface TableRowRenderContext<T = any> {
