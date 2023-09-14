@@ -84,7 +84,7 @@ object UIDebuggerLithoSupport {
             val duration = event.attributeOrNull<Duration>(DebugEventAttribute.duration)
 
             val attributes = mutableMapOf<String, String>()
-            val source = event.attributeOrNull<String>(DebugEventAttribute.source)
+            val source = event.attributeOrNull<String>("source")
             if (source != null) {
               attributes["source"] = source
             }
