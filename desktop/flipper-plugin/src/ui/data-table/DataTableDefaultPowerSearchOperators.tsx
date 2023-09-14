@@ -8,6 +8,7 @@
  */
 
 import {OperatorConfig} from '../PowerSearch';
+import {FloatOperatorConfig} from '../PowerSearch/PowerSearchConfig';
 
 export type PowerSearchOperatorProcessor = (
   powerSearchOperatorConfig: OperatorConfig,
@@ -70,6 +71,12 @@ export const dataTablePowerSearchOperators = {
     label: '<=',
     key: 'int_less_or_equal',
     valueType: 'INTEGER',
+  }),
+  float_equals: (precision: number) => ({
+    label: '=',
+    key: 'float_equals',
+    valueType: 'FLOAT',
+    precision,
   }),
   float_greater_than: () => ({
     label: '>',
@@ -165,6 +172,10 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     value < searchValue,
   int_less_or_equal: (_operator, searchValue: number, value: number) =>
     value <= searchValue,
+  float_equals: (operator, searchValue: number, value: number) => {
+    const precision = (operator as FloatOperatorConfig).precision ?? 0.01;
+    return value <= searchValue + precision && value >= searchValue - precision;
+  },
   float_greater_than: (_operator, searchValue: number, value: number) =>
     value > searchValue,
   float_greater_or_equal: (_operator, searchValue: number, value: number) =>

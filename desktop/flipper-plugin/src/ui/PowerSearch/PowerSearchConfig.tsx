@@ -12,9 +12,10 @@
 export type SimpleFilterValueType =
   | 'NO_VALUE'
   | 'INTEGER'
-  | 'FLOAT'
   | 'STRING'
   | 'STRING_SET';
+
+export type FloatFilterValueType = 'FLOAT';
 
 export type EnumFilterValueType = 'ENUM' | 'ENUM_SET';
 
@@ -24,6 +25,13 @@ export type SimpleOperatorConfig = {
   valueType: SimpleFilterValueType;
   key: string;
   label: string;
+};
+
+export type FloatOperatorConfig = {
+  valueType: FloatFilterValueType;
+  key: string;
+  label: string;
+  precision?: number;
 };
 
 export type EnumOperatorConfig = {
@@ -44,6 +52,7 @@ export type AbsoluteDateOperatorConfig = {
 
 export type OperatorConfig =
   | SimpleOperatorConfig
+  | FloatOperatorConfig
   | EnumOperatorConfig
   | AbsoluteDateOperatorConfig;
 
