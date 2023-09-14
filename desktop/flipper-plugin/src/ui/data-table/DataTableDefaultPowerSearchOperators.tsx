@@ -7,6 +7,7 @@
  * @format
  */
 
+import dayjs from 'dayjs';
 import {OperatorConfig} from '../PowerSearch';
 import {FloatOperatorConfig} from '../PowerSearch/PowerSearchConfig';
 
@@ -128,6 +129,12 @@ export const dataTablePowerSearchOperators = {
     key: 'is_nullish',
     valueType: 'NO_VALUE',
   }),
+  newer_than_absolute_date: () => ({
+    key: 'newer_than_absolute_date',
+    label: 'is after',
+    valueType: 'ABSOLUTE_DATE',
+    dateOnly: false,
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -193,4 +200,9 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
   enum_set_is_none_of: (_operator, searchValue: string[], value: string) =>
     !searchValue.some((item) => value === item),
   is_nullish: (_operator, _searchValue, value) => value == null,
+  // See PowerSearchAbsoluteDateTerm
+  newer_than_absolute_date: (_operator, searchValue: Date, value: any) => {
+    const valueNormalized = dayjs(value);
+    return valueNormalized.isAfter(searchValue);
+  },
 } satisfies PowerSearchOperatorProcessorConfig;
