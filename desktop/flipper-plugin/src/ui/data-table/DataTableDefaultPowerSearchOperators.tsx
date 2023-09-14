@@ -147,6 +147,12 @@ export const dataTablePowerSearchOperators = {
     valueType: 'ABSOLUTE_DATE',
     dateOnly: false,
   }),
+  older_than_absolute_date_no_time: () => ({
+    key: 'older_than_absolute_date_no_time',
+    label: 'is before the day',
+    valueType: 'ABSOLUTE_DATE',
+    dateOnly: true,
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -226,6 +232,14 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     return valueNormalized.isAfter(searchValue);
   },
   older_than_absolute_date: (_operator, searchValue: Date, value: any) => {
+    const valueNormalized = dayjs(value);
+    return valueNormalized.isBefore(searchValue);
+  },
+  older_than_absolute_date_no_time: (
+    _operator,
+    searchValue: Date,
+    value: any,
+  ) => {
     const valueNormalized = dayjs(value);
     return valueNormalized.isBefore(searchValue);
   },
