@@ -82,6 +82,7 @@ export const loadSecureServerConfig = async (): Promise<SecureServerConfig> => {
 
   await ensureOpenSSLIsAvailable();
   await certificateSetup();
+  await generateAuthToken();
 
   const [key, cert, ca] = await Promise.all([
     fs.readFile(serverKey),
@@ -171,6 +172,7 @@ const ensureServerCertExists = async (): Promise<void> => {
         await checkCertIsValid(serverCert);
         console.info('Checking certificate was issued by current CA');
         await verifyServerCertWasIssuedByCA();
+        console.info('Current certificates are valid');
       } catch (e) {
         console.warn('Not all certificates are valid, generating new ones', e);
         await generateServerCertificate();

@@ -22,7 +22,6 @@ import {initCompanionEnv} from 'flipper-server-companion';
 import {
   checkPortInUse,
   getEnvironmentInfo,
-  hasAuthToken,
   startFlipperServer,
   startServer,
   tracker,
@@ -107,7 +106,6 @@ const staticPath = path.join(rootPath, 'static');
 
 async function connectToRunningServer(url: URL) {
   console.info(`[flipper-server] Obtain connection to existing server.`);
-  console.info(`[flipper-server] URL: ${url}`);
   const options = {
     WebSocket: class WSWithUnixDomainSocketSupport extends WS {
       constructor(url: string, protocols: string | string[]) {
@@ -128,13 +126,11 @@ async function connectToRunningServer(url: URL) {
 async function shutdown() {
   console.info('[flipper-server] Attempt to shutdown.');
 
-  let token: string | undefined;
-  if (await hasAuthToken()) {
-    token = await getAuthToken();
-  }
+  const token = await getAuthToken();
 
   const searchParams = new URLSearchParams(token ? {token} : {});
   const url = new URL(`ws://localhost:${argv.port}?${searchParams}`);
+
   const server = await connectToRunningServer(url);
   await server.exec('shutdown').catch(() => {
     /** shutdown will ultimately make this request fail, ignore error. */
@@ -307,31 +303,35 @@ async function start() {
 
 async function launch() {
   console.info('[flipper-server] Launch UI');
-  const token = await getAuthToken();
-
-  console.info('[flipper-server] Token is available: ' + token !== undefined);
-
-  const searchParams = new URLSearchParams({token: token ?? ''});
-  const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
 
   if (!argv.open) {
     return;
   }
 
-  const openInBrowser = () => {
+  const openInBrowser = async () => {
+    console.info('[flipper-server] Open in browser');
+    const token = await getAuthToken();
+
+    console.info('[flipper-server] Token is available: ' + token !== undefined);
+
+    const searchParams = new URLSearchParams({token: token ?? ''});
+    const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
+
     open(url.toString(), {app: {name: open.apps.chrome}});
   };
 
   if (argv.bundler) {
-    openInBrowser();
+    await openInBrowser();
   } else {
     const path = await findInstallation();
     if (path) {
       open(path);
     } else {
-      openInBrowser();
+      await openInBrowser();
     }
   }
+
+  console.info('[flipper-server] Launch UI completed');
 }
 
 process.on('uncaughtException', (error) => {
