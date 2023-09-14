@@ -111,6 +111,11 @@ export const dataTablePowerSearchOperators = {
     valueType: 'ENUM_SET',
     enumLabels,
   }),
+  is_nullish: () => ({
+    label: 'is nullish',
+    key: 'is_nullish',
+    valueType: 'NO_VALUE',
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -169,4 +174,5 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     searchValue.some((item) => value === item),
   enum_set_is_none_of: (_operator, searchValue: string[], value: string) =>
     !searchValue.some((item) => value === item),
+  is_nullish: (_operator, _searchValue, value) => value == null,
 } satisfies PowerSearchOperatorProcessorConfig;
