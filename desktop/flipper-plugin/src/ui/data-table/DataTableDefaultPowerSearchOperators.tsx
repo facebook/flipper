@@ -99,6 +99,12 @@ export const dataTablePowerSearchOperators = {
     valueType: 'ENUM_SET',
     enumLabels,
   }),
+  enum_set_is_none_of: (enumLabels: Record<string, string>) => ({
+    label: 'is none of',
+    key: 'enum_set_is_none_of',
+    valueType: 'ENUM_SET',
+    enumLabels,
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -153,4 +159,6 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     searchValue === value,
   enum_set_is_any_of: (_operator, searchValue: string[], value: string) =>
     searchValue.some((item) => value === item),
+  enum_set_is_none_of: (_operator, searchValue: string[], value: string) =>
+    !searchValue.some((item) => value === item),
 } satisfies PowerSearchOperatorProcessorConfig;
