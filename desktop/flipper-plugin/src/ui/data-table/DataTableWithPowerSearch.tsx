@@ -39,10 +39,10 @@ import {
   getSelectedItem,
   getSelectedItems,
   savePreferences,
-} from './DataTableManager';
+} from './DataTableWithPowerSearchManager';
 import styled from '@emotion/styled';
 import {theme} from '../theme';
-import {tableContextMenuFactory} from './TableContextMenu';
+import {tableContextMenuFactory} from './PowerSearchTableContextMenu';
 import {Menu, Switch, InputRef, Typography} from 'antd';
 import {CoffeeOutlined, SearchOutlined, PushpinFilled} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
@@ -55,7 +55,6 @@ import {
   DataSource,
   _DataSourceView,
 } from 'flipper-plugin-core';
-import {HighlightProvider} from '../Highlight';
 import {useLatestRef} from '../../utils/useLatestRef';
 import {PowerSearch, OperatorConfig} from '../PowerSearch';
 import {powerSearchExampleConfig} from '../PowerSearch/PowerSearchExampleConfig';
@@ -193,7 +192,7 @@ export function DataTable<T extends object>(
     (props.tableManagerRef as MutableRefObject<any>).current = tableManager;
   }
 
-  const {columns, selection, sorting} = tableState;
+  const {columns, selection, searchExpression, sorting} = tableState;
 
   const latestSelectionRef = useLatestRef(selection);
   const latestOnSelectRef = useLatestRef(onSelect);
@@ -349,19 +348,9 @@ export function DataTable<T extends object>(
         case 'Escape':
           tableManager.clearSelection();
           break;
-        case 't':
-          if (controlPressed) {
-            tableManager.toggleSearchValue();
-          }
-          break;
-        case 'H':
-          tableManager.toggleHighlightSearch();
-          break;
         case 'f':
           if (controlPressed && searchInputRef?.current) {
             searchInputRef?.current.focus();
-            tableManager.showSearchDropdown(true);
-            tableManager.setShowNumberedHistory(true);
           }
           break;
         default:
@@ -380,13 +369,7 @@ export function DataTable<T extends object>(
       tableState.selection.current >= 0
         ? dataView.getEntry(tableState.selection.current)
         : null;
-    dataView.setFilter(
-      computeDataTableFilter(
-        tableState.searchValue,
-        tableState.useRegex,
-        tableState.columns,
-      ),
-    );
+    dataView.setFilter(computeDataTableFilter(tableState.searchExpression, {}));
     dataView.setFilterExpections(
       tableState.filterExceptions as T[keyof T][] | undefined,
     );
@@ -431,8 +414,7 @@ export function DataTable<T extends object>(
     // We pass entire state.columns to computeDataTableFilter, but only changes in the filter are a valid cause to compute a new filter function
     // eslint-disable-next-line
     [
-      tableState.searchValue,
-      tableState.useRegex,
+      tableState.searchExpression,
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ...tableState.columns.map((c) => c.filters),
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -549,10 +531,8 @@ export function DataTable<T extends object>(
         () =>
           tableContextMenuFactory(
             dataView,
-            dispatch,
+            dispatch as any,
             selection,
-            tableState.highlightSearchSetting,
-            tableState.filterSearchHistory,
             tableState.columns,
             visibleColumns,
             onCopyRows,
@@ -562,8 +542,6 @@ export function DataTable<T extends object>(
         [
           dataView,
           selection,
-          tableState.highlightSearchSetting,
-          tableState.filterSearchHistory,
           tableState.columns,
           visibleColumns,
           onCopyRows,
@@ -600,21 +578,12 @@ export function DataTable<T extends object>(
   const header = (
     <Layout.Container>
       {props.enableSearchbar && (
-        // <TableSearch
-        //   searchValue={searchValue}
-        //   useRegex={tableState.useRegex}
-        //   filterSearchHistory={tableState.filterSearchHistory}
-        //   showHistory={tableState.showSearchHistory}
-        //   showNumbered={tableState.showNumberedHistory}
-        //   dispatch={dispatch as any}
-        //   searchHistory={tableState.searchHistory}
-        //   contextMenu={props.enableContextMenu ? contexMenu : undefined}
-        //   extraActions={!props.viewId ? props.extraActions : undefined}
-        //   searchInputRef={searchInputRef}
-        // />
         <PowerSearch
           config={powerSearchExampleConfig}
-          onSearchExpressionChange={() => {}}
+          initialSearchExpression={searchExpression}
+          onSearchExpressionChange={(newSearchExpression) => {
+            tableManager.setSearchExpression(newSearchExpression);
+          }}
         />
       )}
     </Layout.Container>
@@ -698,18 +667,6 @@ export function DataTable<T extends object>(
   }
   const mainPanel = (
     <Layout.Container grow={props.scrollable} style={{position: 'relative'}}>
-      <HighlightProvider
-        text={
-          tableState.highlightSearchSetting.highlightEnabled
-            ? tableState.searchValue
-            : ''
-        }
-        highlightColor={
-          tableState.highlightSearchSetting.color ||
-          theme.searchHighlightBackground.yellow
-        }>
-        {mainSection}
-      </HighlightProvider>
       {props.enableAutoScroll && (
         <AutoScroller>
           <PushpinFilled
