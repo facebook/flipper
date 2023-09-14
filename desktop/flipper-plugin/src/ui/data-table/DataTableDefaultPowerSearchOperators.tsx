@@ -31,6 +31,11 @@ export const dataTablePowerSearchOperators = {
     key: 'string_matches_exactly',
     valueType: 'STRING',
   }),
+  string_not_matches_exactly: () => ({
+    label: 'is not',
+    key: 'string_not_matches_exactly',
+    valueType: 'STRING',
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -50,4 +55,6 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
       .includes((searchValue as string).toLowerCase()),
   string_matches_exactly: (operator, searchValue, value) =>
     value === searchValue,
+  string_not_matches_exactly: (operator, searchValue, value) =>
+    value !== searchValue,
 } satisfies PowerSearchOperatorProcessorConfig;
