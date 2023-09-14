@@ -46,6 +46,11 @@ export const dataTablePowerSearchOperators = {
     key: 'string_set_contains_none_of',
     valueType: 'STRING_SET',
   }),
+  int_equals: () => ({
+    label: '=',
+    key: 'int_equals',
+    valueType: 'INTEGER',
+  }),
   int_greater_than: () => ({
     label: '>',
     key: 'int_greater_than',
@@ -150,6 +155,8 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     !searchValue.some((item) =>
       value.toLowerCase().includes(item.toLowerCase()),
     ),
+  int_equals: (_operator, searchValue: number, value: number) =>
+    value === searchValue,
   int_greater_than: (_operator, searchValue: number, value: number) =>
     value > searchValue,
   int_greater_or_equal: (_operator, searchValue: number, value: number) =>
