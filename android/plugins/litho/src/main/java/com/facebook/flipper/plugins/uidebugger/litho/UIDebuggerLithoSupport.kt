@@ -78,7 +78,7 @@ object UIDebuggerLithoSupport {
             val treeId = event.renderStateId.toIntOrNull() ?: -1
 
             val globalKey =
-                event.attributeOrNull<String>(DebugEventAttribute.GlobalKey)?.let {
+                event.attributeOrNull<String>("Key")?.let {
                   DebugComponent.generateGlobalKey(treeId, it).hashCode()
                 }
             val duration = event.attributeOrNull<Duration>(DebugEventAttribute.duration)
