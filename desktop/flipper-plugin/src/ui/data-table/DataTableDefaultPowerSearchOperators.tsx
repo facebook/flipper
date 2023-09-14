@@ -81,6 +81,11 @@ export const dataTablePowerSearchOperators = {
     key: 'float_less_than',
     valueType: 'FLOAT',
   }),
+  float_less_or_equal: () => ({
+    label: '<=',
+    key: 'float_less_or_equal',
+    valueType: 'FLOAT',
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -129,4 +134,6 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     value >= searchValue,
   float_less_than: (_operator, searchValue: number, value: number) =>
     value < searchValue,
+  float_less_or_equal: (_operator, searchValue: number, value: number) =>
+    value <= searchValue,
 } satisfies PowerSearchOperatorProcessorConfig;
