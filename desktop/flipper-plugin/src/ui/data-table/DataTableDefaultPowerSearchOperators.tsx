@@ -153,6 +153,12 @@ export const dataTablePowerSearchOperators = {
     valueType: 'ABSOLUTE_DATE',
     dateOnly: true,
   }),
+  same_as_absolute_date_no_time: () => ({
+    key: 'same_as_absolute_date_no_time',
+    label: 'is',
+    valueType: 'ABSOLUTE_DATE',
+    dateOnly: true,
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -242,5 +248,9 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
   ) => {
     const valueNormalized = dayjs(value);
     return valueNormalized.isBefore(searchValue);
+  },
+  same_as_absolute_date_no_time: (_operator, searchValue: Date, value: any) => {
+    const valueNormalized = dayjs(value);
+    return valueNormalized.isSame(searchValue, 'day');
   },
 } satisfies PowerSearchOperatorProcessorConfig;
