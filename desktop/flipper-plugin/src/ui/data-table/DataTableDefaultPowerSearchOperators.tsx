@@ -11,16 +11,27 @@ import {OperatorConfig} from '../PowerSearch';
 
 export type PowerSearchOperatorProcessor = (
   powerSearchOperatorConfig: OperatorConfig,
+  searchValue: any,
   value: any,
 ) => boolean;
 
-export type PowerSearchOperatorProcessorConfig = {
-  [key: string]: PowerSearchOperatorProcessor;
-};
-
-export const dataTablePowerSearchOperators = {} satisfies {
+export const dataTablePowerSearchOperators = {
+  string_contains: () => ({
+    label: 'contains',
+    key: 'string_contains',
+    valueType: 'STRING',
+  }),
+} satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
 
-export const dataTablePowerSearchOperatorProcessorConfig =
-  {} satisfies PowerSearchOperatorProcessorConfig;
+export type PowerSearchOperatorProcessorConfig = {
+  [K in keyof typeof dataTablePowerSearchOperators]: PowerSearchOperatorProcessor;
+};
+
+export const dataTablePowerSearchOperatorProcessorConfig = {
+  string_contains: (operator, searchValue, value) =>
+    (value as string)
+      .toLowerCase()
+      .includes((searchValue as string).toLowerCase()),
+} satisfies PowerSearchOperatorProcessorConfig;

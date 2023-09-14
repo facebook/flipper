@@ -494,7 +494,10 @@ export function computeDataTableFilter(
         return true;
       }
 
-      const processor = powerSearchProcessors[searchTerm.operator.key];
+      const processor =
+        powerSearchProcessors[
+          searchTerm.operator.key as keyof typeof powerSearchProcessors
+        ];
       if (!processor) {
         console.warn(
           'computeDataTableFilter -> processor at searchTerm.operator.key is not recognized',
@@ -504,7 +507,7 @@ export function computeDataTableFilter(
         return true;
       }
 
-      return processor(searchTerm.operator, value);
+      return processor(searchTerm.operator, searchTerm.searchValue, value);
     });
   };
 }
