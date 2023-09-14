@@ -58,6 +58,10 @@ import {
 import {useLatestRef} from '../../utils/useLatestRef';
 import {PowerSearch, OperatorConfig} from '../PowerSearch';
 import {powerSearchExampleConfig} from '../PowerSearch/PowerSearchExampleConfig';
+import {
+  dataTablePowerSearchOperatorProcessorConfig,
+  dataTablePowerSearchOperators,
+} from './DataTableDefaultPowerSearchOperators';
 
 type DataTableBaseProps<T = any> = {
   columns: DataTableColumn<T>[];
@@ -116,7 +120,11 @@ export type DataTableColumn<T = any> = {
   visible?: boolean;
   inversed?: boolean;
   sortable?: boolean;
-  powerSearchConfig?: {[key: string]: OperatorConfig};
+  powerSearchConfig?: {
+    [K in keyof typeof dataTablePowerSearchOperators]: ReturnType<
+      (typeof dataTablePowerSearchOperators)[K]
+    >;
+  };
 };
 
 export interface TableRowRenderContext<T = any> {
@@ -369,7 +377,12 @@ export function DataTable<T extends object>(
       tableState.selection.current >= 0
         ? dataView.getEntry(tableState.selection.current)
         : null;
-    dataView.setFilter(computeDataTableFilter(tableState.searchExpression, {}));
+    dataView.setFilter(
+      computeDataTableFilter(
+        tableState.searchExpression,
+        dataTablePowerSearchOperatorProcessorConfig,
+      ),
+    );
     dataView.setFilterExpections(
       tableState.filterExceptions as T[keyof T][] | undefined,
     );

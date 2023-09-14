@@ -17,3 +17,10 @@ export type PowerSearchOperatorProcessor = (
 export type PowerSearchOperatorProcessorConfig = {
   [key: string]: PowerSearchOperatorProcessor;
 };
+
+export const dataTablePowerSearchOperators = {} satisfies {
+  [key: string]: (...args: any[]) => OperatorConfig;
+};
+
+export const dataTablePowerSearchOperatorProcessorConfig =
+  {} satisfies PowerSearchOperatorProcessorConfig;
