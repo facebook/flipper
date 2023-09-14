@@ -235,6 +235,9 @@ async function start() {
     `[flipper-server][bootstrap] FlipperServer created (${serverCreatedMS} ms)`,
   );
 
+  // At this point, the HTTP server is ready and configuration is set.
+  await launch();
+
   const t6 = performance.now();
   const launchedMS = t6 - t5;
 
@@ -262,9 +265,6 @@ async function start() {
     });
   }
   await flipperServer.connect();
-
-  // At this point, the HTTP server is ready and configuration is set.
-  await launch();
 
   const t8 = performance.now();
   const appServerStartedMS = t8 - t7;
@@ -308,6 +308,8 @@ async function start() {
 async function launch() {
   console.info('[flipper-server] Launch UI');
   const token = await getAuthToken();
+
+  console.info('[flipper-server] Token is available: ' + token !== undefined);
 
   const searchParams = new URLSearchParams({token: token ?? ''});
   const url = new URL(`http://localhost:${argv.port}?${searchParams}`);

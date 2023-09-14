@@ -21,6 +21,7 @@ import {isTest} from 'flipper-common';
 import {flipperDataFolder} from '../../utils/paths';
 import * as jwt from 'jsonwebtoken';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
+import {Mutex} from 'async-mutex';
 
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,
@@ -152,32 +153,30 @@ const certificateSetup = async () => {
   }
 };
 
+const mutex = new Mutex();
 const ensureServerCertExists = async (): Promise<void> => {
-  const allExist = await Promise.all([
-    fs.pathExists(serverKey),
-    fs.pathExists(serverCert),
-    fs.pathExists(caCert),
-  ]).then((exist) => exist.every(Boolean));
+  return mutex.runExclusive(async () => {
+    const allExist = await Promise.all([
+      fs.pathExists(serverKey),
+      fs.pathExists(serverCert),
+      fs.pathExists(caCert),
+    ]).then((exist) => exist.every(Boolean));
 
-  if (!allExist) {
-    console.info('No certificates were found, generating new ones');
-
-    await generateServerCertificate();
-    await generateAuthToken();
-
-    return;
-  }
-
-  try {
-    console.info('Checking for certificates validity');
-    await checkCertIsValid(serverCert);
-    console.info('Checking certificate was issued by current CA');
-    await verifyServerCertWasIssuedByCA();
-  } catch (e) {
-    console.warn('Not all certs are valid, generating new ones', e);
-    await generateServerCertificate();
-    await generateAuthToken();
-  }
+    if (!allExist) {
+      console.info('No certificates were found, generating new ones');
+      await generateServerCertificate();
+    } else {
+      try {
+        console.info('Checking for certificates validity');
+        await checkCertIsValid(serverCert);
+        console.info('Checking certificate was issued by current CA');
+        await verifyServerCertWasIssuedByCA();
+      } catch (e) {
+        console.warn('Not all certificates are valid, generating new ones', e);
+        await generateServerCertificate();
+      }
+    }
+  });
 };
 
 const generateServerCertificate = async (): Promise<void> => {
@@ -309,6 +308,9 @@ const exportTokenToManifest = async (
 
 export const generateAuthToken = async () => {
   console.info('Generate client authentication token');
+
+  await ensureServerCertExists();
+
   const config = getFlipperServerConfig();
 
   const privateKey = await fs.readFile(serverKey);

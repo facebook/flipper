@@ -41,6 +41,8 @@ async function start() {
     token = manifest.token;
   }
 
+  console.info('Token is available: ' + token !== undefined && token?.length);
+
   const openPlugin = params.get('open-plugin');
   if (openPlugin) {
     function removePrefix(input: string, prefix: string): string {
