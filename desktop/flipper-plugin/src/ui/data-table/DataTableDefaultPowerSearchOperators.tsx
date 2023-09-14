@@ -41,6 +41,11 @@ export const dataTablePowerSearchOperators = {
     key: 'string_set_contains_any_of',
     valueType: 'STRING_SET',
   }),
+  string_set_contains_none_of: () => ({
+    label: 'contains none of',
+    key: 'string_set_contains_none_of',
+    valueType: 'STRING_SET',
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -65,4 +70,6 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
   // See PowerSearchStringSetTerm
   string_set_contains_any_of: (operator, searchValue: string[], value) =>
     searchValue.some((item) => (value as string).toLowerCase().includes(item)),
+  string_set_contains_none_of: (operator, searchValue: string[], value) =>
+    !searchValue.some((item) => (value as string).toLowerCase().includes(item)),
 } satisfies PowerSearchOperatorProcessorConfig;
