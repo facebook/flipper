@@ -86,6 +86,13 @@ export const dataTablePowerSearchOperators = {
     key: 'float_less_or_equal',
     valueType: 'FLOAT',
   }),
+  // { [enumValue]: enumLabel }
+  enum_is: (enumLabels: Record<string, string>) => ({
+    label: 'is',
+    key: 'enum_is',
+    valueType: 'ENUM',
+    enumLabels,
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -136,4 +143,6 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     value < searchValue,
   float_less_or_equal: (_operator, searchValue: number, value: number) =>
     value <= searchValue,
+  enum_is: (_operator, searchValue: string, value: string) =>
+    searchValue === value,
 } satisfies PowerSearchOperatorProcessorConfig;
