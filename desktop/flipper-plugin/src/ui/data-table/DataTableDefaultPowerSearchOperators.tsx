@@ -46,6 +46,11 @@ export const dataTablePowerSearchOperators = {
     key: 'string_set_contains_none_of',
     valueType: 'STRING_SET',
   }),
+  int_greater_than: () => ({
+    label: '>',
+    key: 'int_greater_than',
+    valueType: 'INTEGER',
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -55,21 +60,31 @@ export type PowerSearchOperatorProcessorConfig = {
 };
 
 export const dataTablePowerSearchOperatorProcessorConfig = {
-  string_contains: (operator, searchValue, value) =>
-    (value as string)
-      .toLowerCase()
-      .includes((searchValue as string).toLowerCase()),
-  string_not_contains: (operator, searchValue, value) =>
-    !(value as string)
-      .toLowerCase()
-      .includes((searchValue as string).toLowerCase()),
-  string_matches_exactly: (operator, searchValue, value) =>
+  string_contains: (_operator, searchValue: string, value: string) =>
+    value.toLowerCase().includes(searchValue.toLowerCase()),
+  string_not_contains: (_operator, searchValue: string, value: string) =>
+    !value.toLowerCase().includes(searchValue.toLowerCase()),
+  string_matches_exactly: (_operator, searchValue: string, value: string) =>
     value === searchValue,
-  string_not_matches_exactly: (operator, searchValue, value) =>
+  string_not_matches_exactly: (_operator, searchValue: string, value: string) =>
     value !== searchValue,
   // See PowerSearchStringSetTerm
-  string_set_contains_any_of: (operator, searchValue: string[], value) =>
-    searchValue.some((item) => (value as string).toLowerCase().includes(item)),
-  string_set_contains_none_of: (operator, searchValue: string[], value) =>
-    !searchValue.some((item) => (value as string).toLowerCase().includes(item)),
+  string_set_contains_any_of: (
+    _operator,
+    searchValue: string[],
+    value: string,
+  ) =>
+    searchValue.some((item) =>
+      value.toLowerCase().includes(item.toLowerCase()),
+    ),
+  string_set_contains_none_of: (
+    _operator,
+    searchValue: string[],
+    value: string,
+  ) =>
+    !searchValue.some((item) =>
+      value.toLowerCase().includes(item.toLowerCase()),
+    ),
+  int_greater_than: (_operator, searchValue: number, value: number) =>
+    value > searchValue,
 } satisfies PowerSearchOperatorProcessorConfig;
