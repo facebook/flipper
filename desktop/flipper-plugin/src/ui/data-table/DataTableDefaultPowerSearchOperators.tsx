@@ -61,6 +61,11 @@ export const dataTablePowerSearchOperators = {
     key: 'int_less_than',
     valueType: 'INTEGER',
   }),
+  int_less_or_equal: () => ({
+    label: '<=',
+    key: 'int_less_or_equal',
+    valueType: 'INTEGER',
+  }),
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
@@ -101,4 +106,6 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     value >= searchValue,
   int_less_than: (_operator, searchValue: number, value: number) =>
     value < searchValue,
+  int_less_or_equal: (_operator, searchValue: number, value: number) =>
+    value <= searchValue,
 } satisfies PowerSearchOperatorProcessorConfig;
