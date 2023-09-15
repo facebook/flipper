@@ -188,51 +188,9 @@ async function startHTTPServer(config: Config): Promise<{
  * incoming connections origin.
  * @returns Returns the created WS.
  */
-function attachWS(server: http.Server, config: Config) {
-  const localhost = 'localhost';
-  const localhostIPV4 = `localhost:${config.port}`;
-  const localhostIPV6 = `[::1]:${config.port}`;
-  const localhostIPV6NoBrackets = `::1:${config.port}`;
-  const localhostIPV4Electron = 'localhost:3000';
-
-  const possibleHosts = [
-    localhost,
-    localhostIPV4,
-    localhostIPV6,
-    localhostIPV6NoBrackets,
-    localhostIPV4Electron,
-  ];
-  const possibleOrigins = possibleHosts
-    .map((host) => `http://${host}`)
-    .concat(['file://']);
-
-  const verifyClient: VerifyClientCallbackSync = ({origin, req}) => {
-    const noOriginHeader = origin === undefined;
-    if (
-      (noOriginHeader || possibleOrigins.includes(origin)) &&
-      req.headers.host &&
-      possibleHosts.includes(req.headers.host)
-    ) {
-      // No origin header? The request is not originating from a browser, so should be OK to pass through
-      // If origin matches our own address, it means we are serving the page.
-
-      return process.env.SKIP_TOKEN_VERIFICATION ? true : verifyAuthToken(req);
-    } else {
-      // For now we don't allow cross origin request, so that an arbitrary website cannot try to
-      // connect a socket to localhost:serverport, and try to use the all powerful Flipper APIs to read
-      // for example files.
-      // Potentially in the future we do want to allow this, e.g. if we want to connect to a local flipper-server
-      // directly from intern. But before that, we should either authenticate the request somehow,
-      // and discuss security impact and for example scope the files that can be read by Flipper.
-      console.warn(
-        `Refused socket connection from cross domain request, origin: ${origin}, host: ${
-          req.headers.host
-        }. Expected origins: ${possibleOrigins.join(
-          ' or ',
-        )}. Expected hosts: ${possibleHosts.join(' or ')}`,
-      );
-      return false;
-    }
+function attachWS(server: http.Server, _config: Config) {
+  const verifyClient: VerifyClientCallbackSync = ({req}) => {
+    return process.env.SKIP_TOKEN_VERIFICATION ? true : verifyAuthToken(req);
   };
 
   const options: ServerOptions = {
