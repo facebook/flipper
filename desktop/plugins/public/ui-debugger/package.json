@@ -20,10 +20,12 @@
     "async": "2.3.0",
     "@tanstack/react-virtual": "3.0.0-beta.54",
     "ts-retry-promise": "^0.7.0",
-    "memoize-weak": "^1.0.2"
+    "memoize-weak": "^1.0.2",
+    "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
-    "@types/async": "3.2.20"
+    "@types/async": "3.2.20",
+    "typed-emitter": "^2.1.0"
   },
   "bugs": {
     "url": "https://github.com/facebook/flipper/issues"

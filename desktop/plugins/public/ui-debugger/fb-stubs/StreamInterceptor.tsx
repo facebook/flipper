@@ -8,25 +8,21 @@
  */
 
 import {DeviceOS} from 'flipper-plugin';
-import {Id, Metadata, ClientNode} from '../ClientTypes';
-import {StreamInterceptor} from '../DesktopTypes';
+import {StreamInterceptorEventEmitter} from '../DesktopTypes';
 
-export function getStreamInterceptor(_: DeviceOS): StreamInterceptor {
-  return new NoOpStreamInterceptor();
-}
+/**
+ * Stream inteceptors have the change to modify the frame or metata early in the pipeline
+ */
+export function addInterceptors(
+  _deviceOS: DeviceOS,
+  eventEmitter: StreamInterceptorEventEmitter,
+) {
+  //no-op impmentation for open source
+  eventEmitter.on('frameReceived', async (frame) => {
+    eventEmitter.emit('frameUpdated', frame);
+  });
 
-class NoOpStreamInterceptor implements StreamInterceptor {
-  init() {
-    return null;
-  }
-
-  async transformNodes(
-    nodes: Map<Id, ClientNode>,
-  ): Promise<[Map<Id, ClientNode>, Metadata[]]> {
-    return [nodes, []];
-  }
-
-  async transformMetadata(metadata: Metadata): Promise<Metadata> {
-    return metadata;
-  }
+  eventEmitter.on('metadataReceived', async (metadata) => {
+    eventEmitter.emit('metadataUpdated', metadata);
+  });
 }
