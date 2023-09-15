@@ -128,6 +128,11 @@ async function startHTTPServer(config: Config): Promise<{
     });
   });
 
+  app.get('/ready', (_req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({isReady}));
+  });
+
   app.get('/health', (_req, res) => {
     res.end('flipper-ok');
   });

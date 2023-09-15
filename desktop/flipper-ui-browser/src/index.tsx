@@ -41,7 +41,10 @@ async function start() {
     token = manifest.token;
   }
 
-  console.info('Token is available: ' + token !== undefined && token?.length);
+  console.info(
+    '[flipper-client][ui-browser] Token is available: ',
+    token?.length,
+  );
 
   const openPlugin = params.get('open-plugin');
   if (openPlugin) {

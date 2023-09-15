@@ -52,10 +52,14 @@
     // the actual entry point instead of this page.
     async function checkAndReload() {
       try {
-        const response = await fetch('.');
-        if (response.status >= 200 && response.status < 500) {
-          window.location.reload();
-          return;
+        const response = await fetch('/ready');
+        if (response.status >= 200 && response.status < 300) {
+          const data = await response.text();
+          const {isReady} = JSON.parse(data);
+          if (isReady) {
+            window.location.reload();
+            return;
+          }
         }
       } catch {
       }
