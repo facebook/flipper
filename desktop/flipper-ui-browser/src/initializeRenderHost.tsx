@@ -170,7 +170,7 @@ export function initializeRenderHost(
     },
     restartFlipper() {
       window.flipperShowMessage?.(
-        'Flipper settings have changed, please restart flipper server for the changes to take effect',
+        'Flipper settings have changed, please quit and wait for 30 seconds before re-launching for the changes to take effect',
       );
     },
     serverConfig: flipperServerConfig,
