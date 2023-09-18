@@ -130,6 +130,7 @@
     "build:tsc": "tsc -b tsc-root/tsconfig.json && ./ts-node ./scripts/compute-package-checksum.tsx -d ./babel-transformer -o ./lib/checksum.txt",
     "bump-versions": "./ts-node scripts/bump-versions.tsx",
     "bundle-all-plugins": "./ts-node scripts/bundle-all-plugins.tsx",
+    "dev-server": "cross-env NODE_ENV=development ./ts-node scripts/start-dev-server.tsx",
     "docs": "cd ../website && yarn start",
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
     "flipper-server": "cross-env NODE_ENV=development ./ts-node scripts/start-flipper-server-dev.tsx",
