@@ -1,3 +1,8 @@
+# 0.220.0 (18/9/2023)
+
+ * [D49371369](https://github.com/facebook/flipper/search?q=D49371369&type=Commits) -  `yarn start` now launches the in-browser version of Flipper. Use `yarn start-electron` for the old behaviour.
+
+
 # 0.217.0 (13/9/2023)
 
  * [D46859213](https://github.com/facebook/flipper/search?q=D46859213&type=Commits) -  UI Debugger is now available for Litho in Open Source
