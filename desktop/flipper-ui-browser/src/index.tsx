@@ -19,6 +19,7 @@ if (loadingContainer) {
 let cachedFile: {name: string; data: string} | undefined;
 let cachedDeepLinkURL: string | undefined;
 
+let once: boolean = false;
 async function start() {
   // @ts-ignore
   electronRequire = function (path: string) {
@@ -75,7 +76,11 @@ async function start() {
           window.flipperShowMessage?.('Connecting to server...');
           break;
         case FlipperServerState.CONNECTED:
-          window?.flipperHideMessage?.();
+          if (once) {
+            return window.location.reload();
+          }
+          once = true;
+          window.flipperHideMessage?.();
           break;
         case FlipperServerState.DISCONNECTED:
           window?.flipperShowNoConnection?.();
