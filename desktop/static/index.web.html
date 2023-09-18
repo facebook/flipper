@@ -153,12 +153,17 @@
           window.location.reload();
         });
 
-        function showNoConnection() {
+        function toggleUI(main) {
           const root = document.getElementById('root');
-          root.remove();
-
           const troubleshoot = document.getElementById('troubleshoot');
-          troubleshoot.style.display = 'flex';
+          
+          if (main) {
+            root.style.display = 'block';
+            troubleshoot.style.display = 'none';
+          } else {
+            root.style.display = 'none';
+            troubleshoot.style.display = 'flex';
+          }
         }
 
         function showMessage(text) {
@@ -178,10 +183,14 @@
           }
         }
         window.flipperShowMessage = showMessage;
-        window.flipperShowNoConnection = showNoConnection;
+        window.flipperShowNoConnection = () => {
+          toggleUI(false);
+        };
         window.flipperHideMessage = () => {
           const box = document.querySelector('.__infinity-dev-box-error');
           box.setAttribute('hidden', true);
+
+          toggleUI(true);
         }
 
         const closeButton = document.createElement('button');

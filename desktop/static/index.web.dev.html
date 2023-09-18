@@ -143,12 +143,17 @@
           window.location.reload();
         });
 
-        function showNoConnection(reload) {
+        function toggleUI(main) {
           const root = document.getElementById('root');
-          root.remove();
-
           const troubleshoot = document.getElementById('troubleshoot');
-          troubleshoot.style.display = 'flex';
+          
+          if (main) {
+            root.style.display = 'block';
+            troubleshoot.style.display = 'none';
+          } else {
+            root.style.display = 'none';
+            troubleshoot.style.display = 'flex';
+          }
         }
 
         const params = new URL(location.href).searchParams;
@@ -208,8 +213,14 @@
             box.textContent = text;
           }
         }
+
         window.flipperShowMessage = showMessage;
-        window.flipperShowNoConnection = showNoConnection;
+        window.flipperShowNoConnection = () => {
+          toggleUI(false);
+        };
+        window.flipperHideMessage = () => {
+          toggleUI(true);
+        }
 
         // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
         try {
