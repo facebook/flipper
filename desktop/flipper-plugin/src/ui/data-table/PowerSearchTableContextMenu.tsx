@@ -180,16 +180,6 @@ export function tableContextMenuFactory<T extends object>(
         }}>
         Reset view
       </Menu.Item>
-
-      <SubMenu title="Search Options" key="search options">
-        <Menu.Item
-          key="clear history"
-          onClick={() => {
-            dispatch({type: 'clearSearchHistory'});
-          }}>
-          Clear search history
-        </Menu.Item>
-      </SubMenu>
       {sideBySideOption}
     </Menu>
   );
