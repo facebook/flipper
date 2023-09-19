@@ -84,16 +84,13 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
     return groupedOptions;
   }, [config.fields]);
 
-  const lastSearchTermHasSearchValue =
-    searchExpression.length > 0
-      ? searchExpression[searchExpression.length - 1].searchValue !== undefined
-      : false;
-
   const searchTermFinderRef = React.useRef<{
     focus: () => void;
     blur: () => void;
     scrollTo: () => void;
   }>(null);
+
+  console.log('searchExpression', searchExpression);
 
   return (
     <PowerSearchContainer>
@@ -106,15 +103,10 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
           }}
         />
         {searchExpression.map((searchTerm, i) => {
-          const isLastTerm = i === searchExpression.length - 1;
-
           return (
             <PowerSearchTerm
               key={i.toString()}
               searchTerm={searchTerm}
-              searchValueRenderer={
-                lastSearchTermHasSearchValue || !isLastTerm ? 'button' : 'input'
-              }
               onCancel={() => {
                 setSearchExpression((prevSearchExpression) => {
                   if (prevSearchExpression[i]) {

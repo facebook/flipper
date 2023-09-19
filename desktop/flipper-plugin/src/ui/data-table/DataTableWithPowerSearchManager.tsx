@@ -339,6 +339,11 @@ export function createInitialState<T>(
     });
   }
 
+  let searchExpression = config.initialSearchExpression;
+  if (prefs?.searchExpression?.length) {
+    searchExpression = prefs.searchExpression;
+  }
+
   const res: DataManagerState<T> = {
     config,
     storageKey,
@@ -352,7 +357,7 @@ export function createInitialState<T>(
           items: new Set(prefs!.selection.items),
         }
       : emptySelection,
-    searchExpression: prefs?.searchExpression ?? config.initialSearchExpression,
+    searchExpression,
     filterExceptions: undefined,
     autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
     sideBySide: false,
@@ -473,7 +478,7 @@ export function computeDataTableFilter(
     if (!searchExpression || !searchExpression.length) {
       return true;
     }
-    return searchExpression.some((searchTerm) => {
+    return searchExpression.every((searchTerm) => {
       const value = getValueAtPath(item, searchTerm.field.key);
       if (!value) {
         console.warn(

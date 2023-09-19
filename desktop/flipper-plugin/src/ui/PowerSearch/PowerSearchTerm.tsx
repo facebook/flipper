@@ -33,19 +33,19 @@ export type SearchExpressionTerm = Required<IncompleteSearchExpressionTerm>;
 
 type PowerSearchTermProps = {
   searchTerm: IncompleteSearchExpressionTerm;
-  searchValueRenderer: 'input' | 'button';
   onCancel: () => void;
   onFinalize: (completeSearchTerm: SearchExpressionTerm) => void;
 };
 
 export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
   searchTerm,
-  searchValueRenderer,
   onCancel,
   onFinalize,
 }) => {
+  const hasValue = searchTerm.searchValue != null;
+
   let searchValueComponent: React.ReactNode = null;
-  if (searchValueRenderer === 'input') {
+  if (!hasValue) {
     switch (searchTerm.operator.valueType) {
       case 'STRING': {
         searchValueComponent = (
@@ -183,6 +183,7 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
               });
             }}
             enumLabels={searchTerm.operator.enumLabels}
+            defaultValue={searchTerm.searchValue}
           />
         );
         break;
@@ -197,6 +198,7 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
                 searchValue: newValue,
               });
             }}
+            defaultValue={searchTerm.searchValue}
           />
         );
         break;
