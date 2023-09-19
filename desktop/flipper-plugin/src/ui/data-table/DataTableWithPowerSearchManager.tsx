@@ -469,7 +469,7 @@ export function computeDataTableFilter(
   powerSearchProcessors: PowerSearchOperatorProcessorConfig,
 ) {
   return function dataTableFilter(item: any) {
-    if (!searchExpression) {
+    if (!searchExpression || !searchExpression.length) {
       return true;
     }
     return searchExpression.some((searchTerm) => {
