@@ -43,8 +43,13 @@ import {
 import styled from '@emotion/styled';
 import {theme} from '../theme';
 import {tableContextMenuFactory} from './PowerSearchTableContextMenu';
-import {Menu, Switch, InputRef, Typography} from 'antd';
-import {CoffeeOutlined, SearchOutlined, PushpinFilled} from '@ant-design/icons';
+import {Menu, Switch, InputRef, Typography, Dropdown, Button} from 'antd';
+import {
+  CoffeeOutlined,
+  SearchOutlined,
+  PushpinFilled,
+  MenuOutlined,
+} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
 import {Formatter} from '../DataFormatter';
 import {usePluginInstanceMaybe} from '../../plugin/PluginContext';
@@ -142,6 +147,21 @@ export interface TableRowRenderContext<T = any> {
   onRowStyle?(item: T): React.CSSProperties | undefined;
   onContextMenu?(): React.ReactElement;
 }
+
+const Searchbar = styled(Layout.Horizontal)({
+  backgroundColor: theme.backgroundWash,
+  padding: theme.space.small,
+  '.ant-input-affix-wrapper': {
+    height: 32,
+  },
+  '.ant-btn': {
+    padding: `${theme.space.tiny}px ${theme.space.small}px`,
+    background: 'transparent',
+  },
+  '> .ant-select': {
+    flex: 1,
+  },
+});
 
 export type DataTableProps<T> = DataTableInput<T> & DataTableBaseProps<T>;
 
@@ -591,13 +611,23 @@ export function DataTable<T extends object>(
   const header = (
     <Layout.Container>
       {props.enableSearchbar && (
-        <PowerSearch
-          config={powerSearchExampleConfig}
-          initialSearchExpression={searchExpression}
-          onSearchExpressionChange={(newSearchExpression) => {
-            tableManager.setSearchExpression(newSearchExpression);
-          }}
-        />
+        <Searchbar gap>
+          <PowerSearch
+            config={powerSearchExampleConfig}
+            initialSearchExpression={searchExpression}
+            onSearchExpressionChange={(newSearchExpression) => {
+              tableManager.setSearchExpression(newSearchExpression);
+            }}
+          />
+          {props.extraActions}
+          {contexMenu && (
+            <Dropdown overlay={contexMenu} placement="bottomRight">
+              <Button type="text" size="small" style={{height: '100%'}}>
+                <MenuOutlined />
+              </Button>
+            </Dropdown>
+          )}
+        </Searchbar>
       )}
     </Layout.Container>
   );

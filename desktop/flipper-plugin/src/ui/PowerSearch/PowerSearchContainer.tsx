@@ -12,6 +12,8 @@ import {css} from '@emotion/css';
 import {theme} from '../theme';
 
 const containerStyle = css`
+  flex: 1 0 auto;
+  background-color: ${theme.white};
   display: flex;
   flex-direction: row;
   border-radius: ${theme.borderRadius};
