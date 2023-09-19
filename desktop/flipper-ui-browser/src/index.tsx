@@ -41,6 +41,11 @@ async function start() {
     token = manifest.token;
   }
 
+  console.info(
+    '[flipper-client][ui-browser] Token is available: ',
+    token?.length,
+  );
+
   const openPlugin = params.get('open-plugin');
   if (openPlugin) {
     function removePrefix(input: string, prefix: string): string {
@@ -70,7 +75,7 @@ async function start() {
           window.flipperShowMessage?.('Connecting to server...');
           break;
         case FlipperServerState.CONNECTED:
-          window?.flipperHideMessage?.();
+          window.flipperHideMessage?.();
           break;
         case FlipperServerState.DISCONNECTED:
           window?.flipperShowNoConnection?.();

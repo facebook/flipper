@@ -59,7 +59,7 @@ export const Dialog = {
           return (
             <Modal
               title={opts.title}
-              visible
+              open
               okText={opts.okText}
               cancelText={opts.cancelText}
               onOk={async () => {
@@ -280,7 +280,7 @@ export const Dialog = {
           return (
             <Modal
               title={title ?? 'Loading...'}
-              visible
+              open
               footer={null}
               width={width ?? defaultWidth}
               closable={false}>

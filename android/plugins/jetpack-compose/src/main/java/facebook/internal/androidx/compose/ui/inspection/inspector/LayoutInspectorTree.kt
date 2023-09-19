@@ -539,8 +539,7 @@ class LayoutInspectorTree {
             .map { it.extra }
             .filterIsInstance<GraphicLayerInfo>()
             .map { it.layerId }
-            .firstOrNull()
-            ?: UNDEFINED_ID
+            .firstOrNull() ?: UNDEFINED_ID
 
     return node
   }

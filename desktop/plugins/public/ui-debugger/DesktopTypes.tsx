@@ -19,6 +19,7 @@ import {
   Metadata,
   SnapshotInfo,
 } from './ClientTypes';
+import TypedEmitter from 'typed-emitter';
 
 export type LiveClientState = {
   snapshotInfo: SnapshotInfo | null;
@@ -127,13 +128,22 @@ export type StreamState =
       clearCallBack: () => Promise<void>;
     };
 
-export interface StreamInterceptor {
-  transformNodes(
-    nodes: Map<Id, ClientNode>,
-  ): Promise<[Map<Id, ClientNode>, Metadata[]]>;
+export type DesktopFrame = {
+  nodes: Map<Id, ClientNode>;
+  snapshot?: SnapshotInfo;
+  frameTime: number;
+};
 
-  transformMetadata(metadata: Metadata): Promise<Metadata>;
-}
+export type StreamInterceptorEventEmitter = TypedEmitter<{
+  /* one of these event will be emitted when frame comes from client */
+  frameReceived: (frame: DesktopFrame) => void;
+  /* at leat one these events will be emitted in reponse to frame received from client */
+  frameUpdated: (frame: DesktopFrame) => void;
+  /* one of these events will be emitted when metadata comes from client */
+  metadataReceived: (metadata: Metadata[]) => void;
+  /* at leat one these events will be emitted in reponse to frame received from client */
+  metadataUpdated: (metadata: Metadata[]) => void;
+}>;
 
 export class StreamInterceptorError extends Error {
   title: string;

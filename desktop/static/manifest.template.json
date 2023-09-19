@@ -15,6 +15,9 @@
         "sizes": "256x256"
       }
     ],
+    "launch_handler": {
+      "client_mode": "focus-existing"
+    },
     "file_handlers": [
       {
           "action": "/",

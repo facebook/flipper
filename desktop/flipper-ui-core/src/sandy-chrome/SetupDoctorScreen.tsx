@@ -276,7 +276,7 @@ export default function SetupDoctorScreen({
       centered
       width={570}
       title="Setup Doctor"
-      visible={visible}
+      open={visible}
       destroyOnClose
       footer={
         <SetupDoctorFooter

@@ -23,29 +23,27 @@ import {
 import {
   UIState,
   NodeSelection,
-  StreamInterceptorError,
   StreamState,
   ReadOnlyUIState,
   LiveClientState,
   WireFrameMode,
   AugmentedFrameworkEvent,
+  StreamInterceptorEventEmitter,
 } from './DesktopTypes';
-import {getStreamInterceptor} from './fb-stubs/StreamInterceptor';
+import EventEmitter from 'eventemitter3';
+import {addInterceptors} from './fb-stubs/StreamInterceptor';
 import {prefetchSourceFileLocation} from './components/fb-stubs/IDEContextMenu';
 import {checkFocusedNodeStillActive} from './plugin/ClientDataUtils';
 import {uiActions} from './plugin/uiActions';
 import {first} from 'lodash';
 import {getNode} from './utils/map';
 
-type PendingData = {
-  metadata: Record<MetadataId, Metadata>;
-  frame: FrameScanEvent | null;
-};
-
 export function plugin(client: PluginClient<Events>) {
   const rootId = createState<Id | undefined>(undefined);
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
-  const streamInterceptor = getStreamInterceptor(client.device.os);
+
+  const streamInterceptor = new EventEmitter() as StreamInterceptorEventEmitter;
+  addInterceptors(client.device.os, streamInterceptor);
   const snapshot = createState<SnapshotInfo | null>(null);
   const nodesAtom = createState<Map<Id, ClientNode>>(new Map());
   const frameworkEvents = createDataSource<AugmentedFrameworkEvent>([], {
@@ -67,16 +65,19 @@ export function plugin(client: PluginClient<Events>) {
     nodes: new Map(),
   };
 
+  let lastProcessedFrameTime = 0;
+
+  const _uiActions = uiActions(
+    uiState,
+    nodesAtom,
+    snapshot,
+    mutableLiveClientData,
+  );
+
   const perfEvents = createDataSource<PerformanceStatsEvent, 'txId'>([], {
     key: 'txId',
     limit: 10 * 1024,
   });
-
-  //this holds pending any pending data that needs to be applied in the event of a stream interceptor error
-  //while in the error state more metadata or a more recent frame may come in so both cases need to apply the same darta
-  const pendingData: PendingData = {frame: null, metadata: {}};
-
-  let lastFrameTime = 0;
 
   client.onMessage('init', (event) => {
     console.log('[ui-debugger] init');
@@ -103,82 +104,20 @@ export function plugin(client: PluginClient<Events>) {
     console.log('[ui-debugger] disconnected');
   });
 
-  async function processMetadata(
-    incomingMetadata: Record<MetadataId, Metadata>,
-  ) {
-    try {
-      const mappedMeta = await Promise.all(
-        Object.values(incomingMetadata).map((metadata) =>
-          streamInterceptor.transformMetadata(metadata),
-        ),
-      );
-
-      metadata.update((draft) => {
-        for (const metadata of mappedMeta) {
-          draft.set(metadata.id, metadata);
-        }
-      });
-      return true;
-    } catch (error) {
-      for (const metadata of Object.values(incomingMetadata)) {
-        pendingData.metadata[metadata.id] = metadata;
-      }
-      handleStreamError('Metadata', error);
-      return false;
-    }
-  }
-
-  function handleStreamError(source: 'Frame' | 'Metadata', error: any) {
-    if (error instanceof StreamInterceptorError) {
-      const retryCallback = async () => {
-        uiState.streamState.set({state: 'RetryingAfterError'});
-
-        if (!(await processMetadata(pendingData.metadata))) {
-          //back into error state, dont proceed
-          return;
-        }
-        if (pendingData.frame != null) {
-          if (!(await processFrame(pendingData.frame))) {
-            //back into error state, dont proceed
-            return;
-          }
-        }
-
-        uiState.streamState.set({state: 'Ok'});
-        pendingData.frame = null;
-        pendingData.metadata = {};
-      };
-
-      uiState.streamState.set({
-        state: 'StreamInterceptorRetryableError',
-        retryCallback: retryCallback,
-        error: error,
-      });
-    } else {
-      console.error(
-        `[ui-debugger] Unexpected Error processing ${source}`,
-        error,
-      );
-
-      uiState.streamState.set({
-        state: 'FatalError',
-        error: error,
-        clearCallBack: async () => {
-          uiState.streamState.set({state: 'Ok'});
-          nodesAtom.set(new Map());
-          frameworkEvents.clear();
-          snapshot.set(null);
-        },
-      });
-    }
-  }
-
   client.onMessage('metadataUpdate', async (event) => {
     if (!event.attributeMetadata) {
       return;
     }
+    const metadata = Object.values(event.attributeMetadata);
+    streamInterceptor.emit('metadataReceived', metadata);
+  });
 
-    await processMetadata(event.attributeMetadata);
+  streamInterceptor.on('metadataUpdated', (updatedMetadata) => {
+    metadata.update((draft) => {
+      for (const meta of updatedMetadata) {
+        draft.set(meta.id, meta);
+      }
+    });
   });
 
   /**
@@ -209,36 +148,25 @@ export function plugin(client: PluginClient<Events>) {
   });
 
   const processFrame = async (frameScan: FrameScanEvent) => {
-    try {
-      const nodes = new Map(
-        frameScan.nodes.map((node) => [node.id, {...node}]),
-      );
-      if (frameScan.frameTime > lastFrameTime) {
-        applyFrameData(nodes, frameScan.snapshot);
-        lastFrameTime = frameScan.frameTime;
-      }
-      applyFrameworkEvents(frameScan, nodes);
-      lastFrameTime = frameScan.frameTime;
+    const nodes = new Map(frameScan.nodes.map((node) => [node.id, {...node}]));
 
-      const [processedNodes, additionalMetadata] =
-        await streamInterceptor.transformNodes(nodes);
-
-      metadata.update((draft) => {
-        for (const metadata of additionalMetadata) {
-          draft.set(metadata.id, metadata);
-        }
-      });
-
-      if (frameScan.frameTime >= lastFrameTime) {
-        applyFrameData(processedNodes, frameScan.snapshot);
-        lastFrameTime = frameScan.frameTime;
-      }
-    } catch (error) {
-      pendingData.frame = frameScan;
-      handleStreamError('Frame', error);
-      return false;
-    }
+    streamInterceptor.emit('frameReceived', {
+      frameTime: frameScan.frameTime,
+      snapshot: frameScan.snapshot,
+      nodes: nodes,
+    });
+    applyFrameworkEvents(frameScan, nodes);
   };
+
+  streamInterceptor.on('frameUpdated', (frame) => {
+    if (frame.frameTime > lastProcessedFrameTime) {
+      applyFrameData(frame.nodes, frame.snapshot);
+      lastProcessedFrameTime = frame.frameTime;
+      const selectedNode = uiState.selectedNode.get();
+      if (selectedNode != null)
+        _uiActions.ensureAncestorsExpanded(selectedNode.id);
+    }
+  });
 
   function applyFrameworkEvents(
     frameScan: FrameScanEvent,
@@ -295,7 +223,6 @@ export function plugin(client: PluginClient<Events>) {
     }, HighlightTime);
   }
 
-  //todo deal with racecondition, where bloks screen is fetching, takes time then you go back get more recent frame then bloks screen comes and overrites it
   function applyFrameData(
     nodes: Map<Id, ClientNode>,
     snapshotInfo: SnapshotInfo | undefined,
@@ -318,6 +245,7 @@ export function plugin(client: PluginClient<Events>) {
       }
     }, 0);
   }
+
   client.onMessage('subtreeUpdate', (subtreeUpdate) => {
     processFrame({
       frameTime: subtreeUpdate.txId,
@@ -331,7 +259,7 @@ export function plugin(client: PluginClient<Events>) {
   return {
     rootId,
     uiState: uiState as ReadOnlyUIState,
-    uiActions: uiActions(uiState, nodesAtom, snapshot, mutableLiveClientData),
+    uiActions: _uiActions,
     nodes: nodesAtom,
     frameworkEvents,
     frameworkEventMetadata,

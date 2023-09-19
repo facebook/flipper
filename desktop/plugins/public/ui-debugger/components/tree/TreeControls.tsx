@@ -141,7 +141,7 @@ function FrameworkEventsMonitoringModal({
   return (
     <Modal
       title="Framework event monitoring"
-      visible={visible}
+      open={visible}
       footer={null}
       onCancel={onCancel}>
       <Space direction="vertical" size="large">

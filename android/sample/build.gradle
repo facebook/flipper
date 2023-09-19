@@ -90,6 +90,7 @@ dependencies {
     implementation deps.frescoUiCommon
     implementation deps.frescoVito
     implementation deps.frescoVitoLitho
+    implementation deps.inferAnnotations
     debugImplementation deps.flipperFrescoPlugin
 
     // Integration test

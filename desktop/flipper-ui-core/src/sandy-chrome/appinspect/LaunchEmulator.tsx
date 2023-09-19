@@ -60,7 +60,7 @@ function NoSDKsEnabledAlert({onClose}: {onClose: () => void}) {
   return (
     <>
       <Modal
-        visible
+        open
         centered
         onCancel={onClose}
         title="No Mobile SDKs Enabled"
@@ -194,7 +194,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
         .value(),
 
       iosEmulators.length > 0 ? (
-        <Title key="android-title" name="iOS Simulators" />
+        <Title key="ios-title" name="iOS Simulators" />
       ) : null,
       ...chain(iosEmulators)
         .map((device) => ({
@@ -252,7 +252,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
 
     return (
       <Modal
-        visible
+        open
         centered
         onCancel={onClose}
         title="Launch Virtual device"

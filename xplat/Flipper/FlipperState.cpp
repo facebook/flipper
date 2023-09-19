@@ -9,12 +9,9 @@
 #include <vector>
 #include "FlipperStateUpdateListener.h"
 #include "FlipperStep.h"
+#include "Log.h"
 
 #define FLIPPER_LOGS_CAPACITY 4096
-
-#if FLIPPER_DEBUG_LOG
-#include "Log.h"
-#endif
 
 using namespace facebook::flipper;
 
@@ -33,9 +30,9 @@ void FlipperState::started(std::string step) {
   std::shared_ptr<FlipperStateUpdateListener> localListener;
   {
     std::lock_guard<std::mutex> lock(mutex);
-#if FLIPPER_DEBUG_LOG
-    log("[started] " + step);
-#endif
+
+    DEBUG_LOG("[step] [started] " + step);
+
     if (stateMap.find(step) == stateMap.end()) {
       insertOrder.push_back(step);
     }
@@ -53,7 +50,7 @@ void FlipperState::ensureLogsCapacity() {
   if (logs.tellp() > FLIPPER_LOGS_CAPACITY) {
     logs.str("");
     logs.clear();
-    logs << "[Truncated]" << std::endl;
+    logs << "[truncated]" << std::endl;
   }
 }
 
@@ -61,10 +58,10 @@ void FlipperState::success(std::string step) {
   std::shared_ptr<FlipperStateUpdateListener> localListener;
   {
     std::lock_guard<std::mutex> lock(mutex);
-    std::string message = "[Success] " + step;
-#if FLIPPER_DEBUG_LOG
-    log(message);
-#endif
+    std::string message = "[step] [success] " + step;
+
+    DEBUG_LOG(message);
+
     ensureLogsCapacity();
     logs << message << std::endl;
 
@@ -82,10 +79,10 @@ void FlipperState::failed(std::string step, std::string errorMessage) {
   std::shared_ptr<FlipperStateUpdateListener> localListener;
   {
     std::lock_guard<std::mutex> lock(mutex);
-    std::string message = "[Failed] " + step + ": " + errorMessage;
-#if FLIPPER_DEBUG_LOG
-    log(message);
-#endif
+    std::string message = "[step] [failed] " + step + ": " + errorMessage;
+
+    DEBUG_LOG(message);
+
     ensureLogsCapacity();
     logs << message << std::endl;
     stateMap[step] = State::failed;
@@ -98,7 +95,7 @@ void FlipperState::failed(std::string step, std::string errorMessage) {
   }
 }
 
-// TODO: Currently returns string, but should really provide a better
+// Currently returns string, but should really provide a better
 // representation of the current state so the UI can show it in a more intuitive
 // way
 std::string FlipperState::getState() {

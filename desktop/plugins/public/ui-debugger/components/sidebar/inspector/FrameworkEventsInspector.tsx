@@ -98,15 +98,15 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
           {(showEventTypesSection || showThreadsSection) && (
             <Dropdown
               overlayStyle={{minWidth: 200}}
-              onVisibleChange={(visible) => {
-                if (visible) {
+              onOpenChange={(open) => {
+                if (open) {
                   tracker.track(
                     'framework-event-timeline-filters-adjusted',
                     {},
                   );
                 }
               }}
-              overlay={
+              dropdownRender={() => (
                 <Layout.Container
                   gap="small"
                   pad="small"
@@ -165,7 +165,7 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
                     </>
                   )}
                 </Layout.Container>
-              }>
+              )}>
               <Button
                 shape="circle"
                 icon={

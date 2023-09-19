@@ -38,7 +38,7 @@ export async function startFlipperServer(
   staticPath: string,
   settingsString: string,
   enableLauncherSettings: boolean,
-  keytarModule: KeytarModule,
+  keytarModule: KeytarModule | undefined,
   type: FlipperServerType,
   environmentInfo: EnvironmentInfo,
 ): Promise<FlipperServerImpl> {

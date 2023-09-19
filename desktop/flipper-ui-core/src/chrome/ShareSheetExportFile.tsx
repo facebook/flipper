@@ -200,7 +200,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
 
   render() {
     return (
-      <Modal visible onCancel={this.cancelAndHide} footer={null}>
+      <Modal open onCancel={this.cancelAndHide} footer={null}>
         {this.renderStatus()}
       </Modal>
     );

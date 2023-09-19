@@ -31,15 +31,13 @@ class FragmentFrameworkDescriptor(val register: DescriptorRegister) :
     return node.view?.let {
       val descriptor = register.descriptorForClassUnsafe(it.javaClass)
       return descriptor.getBounds(it)
-    }
-        ?: Bounds(0, 0, 0, 0)
+    } ?: Bounds(0, 0, 0, 0)
   }
 
   override fun onGetChildren(node: android.app.Fragment): List<Any> =
       node.view?.let { view ->
         listOf(OffsetChild.zero(view, register.descriptorForClassUnsafe(view.javaClass)))
-      }
-          ?: listOf()
+      } ?: listOf()
 
   override fun onGetAttributes(
       node: android.app.Fragment,

@@ -477,7 +477,7 @@ function showCustomColumnDialog(
     return (
       <Modal
         title="Add custom column"
-        visible
+        open
         onOk={() => {
           const header = form.getFieldValue('header');
           const type = form.getFieldValue('type');
@@ -614,7 +614,7 @@ export function Component() {
           }
         />
         <Modal
-          visible={showMockResponseDialog}
+          open={showMockResponseDialog}
           onCancel={instance.onCloseButtonPressed}
           footer={null}
           title="Mock Network Responses"

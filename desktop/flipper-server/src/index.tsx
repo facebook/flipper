@@ -22,7 +22,6 @@ import {initCompanionEnv} from 'flipper-server-companion';
 import {
   checkPortInUse,
   getEnvironmentInfo,
-  hasAuthToken,
   startFlipperServer,
   startServer,
   tracker,
@@ -107,7 +106,6 @@ const staticPath = path.join(rootPath, 'static');
 
 async function connectToRunningServer(url: URL) {
   console.info(`[flipper-server] Obtain connection to existing server.`);
-  console.info(`[flipper-server] URL: ${url}`);
   const options = {
     WebSocket: class WSWithUnixDomainSocketSupport extends WS {
       constructor(url: string, protocols: string | string[]) {
@@ -128,13 +126,11 @@ async function connectToRunningServer(url: URL) {
 async function shutdown() {
   console.info('[flipper-server] Attempt to shutdown.');
 
-  let token: string | undefined;
-  if (await hasAuthToken()) {
-    token = await getAuthToken();
-  }
+  const token = await getAuthToken();
 
   const searchParams = new URLSearchParams(token ? {token} : {});
   const url = new URL(`ws://localhost:${argv.port}?${searchParams}`);
+
   const server = await connectToRunningServer(url);
   await server.exec('shutdown').catch(() => {
     /** shutdown will ultimately make this request fail, ignore error. */
@@ -164,7 +160,11 @@ async function start() {
 
   let keytar: any = undefined;
   try {
-    if (!isTest()) {
+    if (process.env.FLIPPER_DISABLE_KEYTAR) {
+      console.log(
+        '[flipper-server][bootstrap] Using keytar in-memory implementation as per FLIPPER_DISABLE_KEYTAR env var.',
+      );
+    } else if (!isTest()) {
       const keytarPath = path.join(
         staticPath,
         'native-modules',
@@ -215,9 +215,6 @@ async function start() {
     `[flipper-server][bootstrap] HTTP server started (${httpServerStartedMS} ms)`,
   );
 
-  // At this point, the HTTP server is ready and listening.
-  launch();
-
   const flipperServer = await startFlipperServer(
     rootPath,
     staticPath,
@@ -234,14 +231,20 @@ async function start() {
     `[flipper-server][bootstrap] FlipperServer created (${serverCreatedMS} ms)`,
   );
 
+  // At this point, the HTTP server is ready and configuration is set.
+  await launch();
+
+  const t6 = performance.now();
+  const launchedMS = t6 - t5;
+
   exitHook(async () => {
     await flipperServer.close();
   });
 
   const companionEnv = await initCompanionEnv(flipperServer);
 
-  const t6 = performance.now();
-  const companionEnvironmentInitializedMS = t6 - t5;
+  const t7 = performance.now();
+  const companionEnvironmentInitializedMS = t7 - t6;
 
   console.info(
     `[flipper-server][bootstrap] Companion environment initialised (${companionEnvironmentInitializedMS} ms)`,
@@ -259,8 +262,8 @@ async function start() {
   }
   await flipperServer.connect();
 
-  const t7 = performance.now();
-  const appServerStartedMS = t7 - t6;
+  const t8 = performance.now();
+  const appServerStartedMS = t8 - t7;
   console.info(
     `[flipper-server][bootstrap] Ready for app connections (${appServerStartedMS} ms)`,
   );
@@ -269,15 +272,15 @@ async function start() {
     await attachDevServer(app, server, socket, rootPath);
   }
 
-  const t8 = performance.now();
-  const developmentServerAttachedMS = t8 - t7;
+  const t9 = performance.now();
+  const developmentServerAttachedMS = t9 - t8;
   console.info(
     `[flipper-server][bootstrap] Development server attached (${developmentServerAttachedMS} ms)`,
   );
   readyForIncomingConnections(flipperServer, companionEnv);
 
-  const t9 = performance.now();
-  const serverStartedMS = t9 - t8;
+  const t10 = performance.now();
+  const serverStartedMS = t10 - t9;
   console.info(
     `[flipper-server][bootstrap] Listening at port ${chalk.green(
       argv.port,
@@ -294,37 +297,41 @@ async function start() {
     appServerStartedMS,
     developmentServerAttachedMS,
     serverStartedMS,
+    launchedMS,
   });
 }
 
 async function launch() {
-  let token: string | undefined;
-  if (await hasAuthToken()) {
-    token = await getAuthToken();
-  }
+  console.info('[flipper-server] Launch UI');
 
-  const searchParams = new URLSearchParams({token: token ?? ''});
-  const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
-
-  console.log('Go to: ' + chalk.green(chalk.bold(url)));
   if (!argv.open) {
     return;
   }
 
-  const openInBrowser = () => {
+  const openInBrowser = async () => {
+    console.info('[flipper-server] Open in browser');
+    const token = await getAuthToken();
+
+    console.info('[flipper-server] Token is available: ' + token !== undefined);
+
+    const searchParams = new URLSearchParams({token: token ?? ''});
+    const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
+
     open(url.toString(), {app: {name: open.apps.chrome}});
   };
 
   if (argv.bundler) {
-    openInBrowser();
+    await openInBrowser();
   } else {
     const path = await findInstallation();
     if (path) {
       open(path);
     } else {
-      openInBrowser();
+      await openInBrowser();
     }
   }
+
+  console.info('[flipper-server] Launch UI completed');
 }
 
 process.on('uncaughtException', (error) => {

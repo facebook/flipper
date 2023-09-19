@@ -29,6 +29,7 @@ import {Tree2} from './tree/Tree';
 import {StreamInterceptorErrorView} from './StreamInterceptorErrorView';
 import {queryClient} from '../utils/reactQuery';
 import {FrameworkEventsTable} from './FrameworkEventsTable';
+import {Centered} from './shared/Centered';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -172,16 +173,6 @@ export function Component() {
         )}
       </Layout.Container>
     </QueryClientProvider>
-  );
-}
-
-export function Centered(props: {children: React.ReactNode}) {
-  return (
-    <Layout.Horizontal center grow>
-      <Layout.Container center grow>
-        {props.children}
-      </Layout.Container>
-    </Layout.Horizontal>
   );
 }
 

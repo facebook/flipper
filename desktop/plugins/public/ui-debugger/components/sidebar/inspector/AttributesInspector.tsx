@@ -72,17 +72,16 @@ const ObjectAttributeInspector: React.FC<{
   return (
     <div style={RowStyle}>
       {name}
-      {Object.keys(fields).map(function (key, _) {
+      {Object.entries(fields).map(([key, value]) => {
         const metadataId: number = Number(key);
-        const inspectableValue = fields[metadataId];
-        const attributeName = metadata.get(metadataId)?.name ?? '';
+        const attributeName = metadata.get(metadataId)?.name ?? key;
         return (
           <ObjectContainer
             key={metadataId}
             style={{
               paddingLeft: level,
             }}>
-            {create(metadata, attributeName, inspectableValue, level + 5)}
+            {create(metadata, attributeName, value, level + 5)}
           </ObjectContainer>
         );
       })}
@@ -122,7 +121,7 @@ function create(
   inspectable: Inspectable,
   level: number = 2,
 ) {
-  switch (inspectable.type) {
+  switch (inspectable?.type) {
     case 'boolean':
       return (
         <NamedAttributeInspector name={displayableName(name)}>

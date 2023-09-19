@@ -119,24 +119,32 @@ function collectFileContent(
   }
 }
 
-describe('pluginInstaller', () => {
-  let readJson: any;
-  beforeEach(() => {
-    mockfs(installedPluginFiles);
-    readJson = fs.readJson;
-    fs.readJson = (file: string) => {
+jest.mock('fs-extra', () => {
+  const mod = {
+    ...jest.requireActual('fs-extra'),
+    readJson: jest.fn((file: string) => {
       const content = fileContent.get(normalizePath(file));
       if (content) {
         return Promise.resolve(JSON.parse(content));
       } else {
         return Promise.resolve(undefined);
       }
-    };
+    }),
+  };
+
+  return {
+    ...mod,
+    default: mod,
+  };
+});
+
+describe('pluginInstaller', () => {
+  beforeEach(() => {
+    mockfs(installedPluginFiles);
   });
 
   afterEach(() => {
     mockfs.restore();
-    fs.readJson = readJson;
   });
 
   test('getInstalledPlugins', async () => {

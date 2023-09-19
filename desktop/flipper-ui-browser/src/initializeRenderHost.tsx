@@ -169,9 +169,7 @@ export function initializeRenderHost(
       );
     },
     restartFlipper() {
-      window.flipperShowMessage?.(
-        'Flipper settings have changed, please restart flipper server for the changes to take effect',
-      );
+      flipperServer.exec('shutdown');
     },
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {

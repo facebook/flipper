@@ -14,7 +14,7 @@
     "@emotion/react": "^11.8.2",
     "@reach/observe-rect": "^1.2.0",
     "@types/react": "17.0.39",
-    "@types/react-color": "^3.0.6",
+    "@types/react-color": "2.13.5",
     "@types/react-dom": "^17.0.13",
     "dayjs": "^1.11.9",
     "eventemitter3": "^4.0.7",

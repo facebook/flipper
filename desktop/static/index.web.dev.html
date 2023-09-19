@@ -143,30 +143,17 @@
           window.location.reload();
         });
 
-        // Check if the server is responding & reload the page if it is.
-        // This handles the case when the device is online, but the server
-        // is offline or misbehaving.
-        async function checkNetworkAndReload() {
-          try {
-            const response = await fetch('.');
-            if (response.status >= 200 && response.status < 500) {
-              window.location.reload();
-              return;
-            }
-          } catch {
-            // Unable to connect to the server, ignore.
-          }
-          window.setTimeout(checkNetworkAndReload, 2500);
-        }
-
-        function showNoConnection() {
+        function toggleUI(main) {
           const root = document.getElementById('root');
-          root.remove();
-
           const troubleshoot = document.getElementById('troubleshoot');
-          troubleshoot.style.display = 'flex';
-
-          checkNetworkAndReload();
+          
+          if (main) {
+            root.style.display = 'block';
+            troubleshoot.style.display = 'none';
+          } else {
+            root.style.display = 'none';
+            troubleshoot.style.display = 'flex';
+          }
         }
 
         const params = new URL(location.href).searchParams;
@@ -226,8 +213,14 @@
             box.textContent = text;
           }
         }
+
         window.flipperShowMessage = showMessage;
-        window.flipperShowNoConnection = showNoConnection;
+        window.flipperShowNoConnection = () => {
+          toggleUI(false);
+        };
+        window.flipperHideMessage = () => {
+          toggleUI(true);
+        }
 
         // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
         try {

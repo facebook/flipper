@@ -6,7 +6,7 @@
     "lib": ["ES2021"],
     "noEmit": true,
     "esModuleInterop": true,
-    "types": ["jest"]
+    "types": ["jest", "node"]
   },
   "references": [
     {
