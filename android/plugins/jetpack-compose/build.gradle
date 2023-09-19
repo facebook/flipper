@@ -27,7 +27,7 @@ android {
         implementation project(':android')
         implementation 'androidx.compose.ui:ui:1.4.3'
         implementation 'androidx.compose.ui:ui-tooling:1.4.3'
-        implementation 'org.jetbrains.kotlin:kotlin-reflect:1.9.0'
+        implementation 'org.jetbrains.kotlin:kotlin-reflect:1.9.10'
     }
 }
 
