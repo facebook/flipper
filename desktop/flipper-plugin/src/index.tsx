@@ -61,7 +61,7 @@ export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
 export {DataTableManager} from './ui/data-table/DataTableManager';
 export {
   DataTable as _DataTableWithPowerSearch,
-  DataTableColumn as _DataColumnWithPowerSearch,
+  DataTableColumn as _DataTableColumnWithPowerSearch,
 } from './ui/data-table/DataTableWithPowerSearch';
 export {DataTableManager as _DataTableWithPowerSearchManager} from './ui/data-table/DataTableWithPowerSearchManager';
 export {DataList} from './ui/DataList';

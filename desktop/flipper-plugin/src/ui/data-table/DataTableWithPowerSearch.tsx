@@ -61,7 +61,12 @@ import {
   _DataSourceView,
 } from 'flipper-plugin-core';
 import {useLatestRef} from '../../utils/useLatestRef';
-import {PowerSearch, PowerSearchConfig, FieldConfig} from '../PowerSearch';
+import {
+  PowerSearch,
+  PowerSearchConfig,
+  FieldConfig,
+  OperatorConfig,
+} from '../PowerSearch';
 import {
   dataTablePowerSearchOperatorProcessorConfig,
   dataTablePowerSearchOperators,
@@ -124,13 +129,7 @@ export type DataTableColumn<T = any> = {
   visible?: boolean;
   inversed?: boolean;
   sortable?: boolean;
-  powerSearchConfig?:
-    | {
-        [K in keyof typeof dataTablePowerSearchOperators]: ReturnType<
-          (typeof dataTablePowerSearchOperators)[K]
-        >;
-      }
-    | false;
+  powerSearchConfig?: OperatorConfig[] | false;
 };
 
 export interface TableRowRenderContext<T = any> {
@@ -249,7 +248,10 @@ export function DataTable<T extends object>(
         label: column.title ?? column.key,
         key: column.key,
         // If no power search config provided we treat every input as a string
-        operators: column.powerSearchConfig ?? {
+        operators: column.powerSearchConfig?.reduce((res, operatorConfig) => {
+          res[operatorConfig.key] = operatorConfig;
+          return res;
+        }, {} as Record<string, OperatorConfig>) ?? {
           string_contains: dataTablePowerSearchOperators.string_contains(),
           string_not_contains:
             dataTablePowerSearchOperators.string_not_contains(),
