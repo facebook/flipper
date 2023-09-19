@@ -210,6 +210,7 @@ export function MasterDetailWithPowerSearch<T extends object>({
         <>
           {connected && isPaused && (
             <Button
+              size="small"
               title={`Click to ${pausedState ? 'resume' : 'pause'} the stream`}
               danger={pausedState}
               onClick={handleTogglePause}>
@@ -217,7 +218,7 @@ export function MasterDetailWithPowerSearch<T extends object>({
             </Button>
           )}
           {connected && enableClear && (
-            <Button title="Clear records" onClick={handleClear}>
+            <Button size="small" title="Clear records" onClick={handleClear}>
               <DeleteOutlined />
             </Button>
           )}

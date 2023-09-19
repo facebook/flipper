@@ -640,7 +640,6 @@ export function DataTable<T extends object>(
               tableManager.setSearchExpression(newSearchExpression);
             }}
           />
-          {props.extraActions}
           {contexMenu && (
             <Dropdown overlay={contexMenu} placement="bottomRight">
               <Button type="text" size="small" style={{height: '100%'}}>
@@ -652,6 +651,11 @@ export function DataTable<T extends object>(
       )}
     </Layout.Container>
   );
+  const footer = props.extraActions ? (
+    <Layout.Container>
+      <Searchbar gap>{props.extraActions}</Searchbar>
+    </Layout.Container>
+  ) : null;
   const columnHeaders = (
     <Layout.Container>
       {props.enableColumnHeaders && (
@@ -730,7 +734,7 @@ export function DataTable<T extends object>(
       </Layout.Container>
     );
   }
-  const mainPanel = (
+  let mainPanel = (
     <Layout.Container grow={props.scrollable} style={{position: 'relative'}}>
       {mainSection}
       {props.enableAutoScroll && (
@@ -748,6 +752,14 @@ export function DataTable<T extends object>(
       {range && !isUnitTest && <RangeFinder>{range}</RangeFinder>}
     </Layout.Container>
   );
+  if (footer) {
+    mainPanel = (
+      <Layout.Bottom>
+        {mainPanel}
+        {footer}
+      </Layout.Bottom>
+    );
+  }
   return props.enableMultiPanels && tableState.sideBySide ? (
     //TODO: Make the panels resizable by having a dynamic maxWidth for Layout.Right/Left possibly?
     <Layout.Horizontal style={{height: '100%'}}>
