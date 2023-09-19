@@ -151,16 +151,6 @@ export interface TableRowRenderContext<T = any> {
 const Searchbar = styled(Layout.Horizontal)({
   backgroundColor: theme.backgroundWash,
   padding: theme.space.small,
-  '.ant-input-affix-wrapper': {
-    height: 32,
-  },
-  '.ant-btn': {
-    padding: `${theme.space.tiny}px ${theme.space.small}px`,
-    background: 'transparent',
-  },
-  '> .ant-select': {
-    flex: 1,
-  },
 });
 
 export type DataTableProps<T> = DataTableInput<T> & DataTableBaseProps<T>;
