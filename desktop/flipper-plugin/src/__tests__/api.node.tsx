@@ -60,6 +60,7 @@ test('Correct top level API exposed', () => {
       "createDataSource",
       "createState",
       "createTablePlugin",
+      "dataTablePowerSearchOperators",
       "getFlipperLib",
       "isAtom",
       "path",

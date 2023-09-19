@@ -63,6 +63,7 @@ export {
   DataTable as _DataTableWithPowerSearch,
   DataTableColumn as _DataTableColumnWithPowerSearch,
 } from './ui/data-table/DataTableWithPowerSearch';
+export {dataTablePowerSearchOperators} from './ui/data-table/DataTableDefaultPowerSearchOperators';
 export {DataTableManager as _DataTableWithPowerSearchManager} from './ui/data-table/DataTableWithPowerSearchManager';
 export {DataList} from './ui/DataList';
 export {Spinner} from './ui/Spinner';
