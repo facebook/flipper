@@ -38,6 +38,7 @@ export {Sidebar as _Sidebar} from './ui/Sidebar';
 export {DetailSidebar} from './ui/DetailSidebar';
 export {Toolbar} from './ui/Toolbar';
 export {MasterDetail} from './ui/MasterDetail';
+export {MasterDetailWithPowerSearch as _MasterDetailWithPowerSearch} from './ui/MasterDetailWithPowerSearch';
 export {CodeBlock} from './ui/CodeBlock';
 
 export {renderReactRoot, _PortalsManager} from './utils/renderReactRoot';
