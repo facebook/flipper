@@ -106,6 +106,12 @@ export const dataTablePowerSearchOperators = {
     valueType: 'ENUM',
     enumLabels,
   }),
+  enum_is_nullish_or: (enumLabels: Record<string, string>) => ({
+    label: 'is nullish or',
+    key: 'enum_is_nullish_or',
+    valueType: 'ENUM',
+    enumLabels,
+  }),
   enum_is_not: (enumLabels: Record<string, string>) => ({
     label: 'is not',
     key: 'enum_is_not',
@@ -224,6 +230,8 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     value <= searchValue,
   enum_is: (_operator, searchValue: string, value: string) =>
     searchValue === value,
+  enum_is_nullish_or: (_operator, searchValue: string, value?: string | null) =>
+    value == null || searchValue === value,
   enum_is_not: (_operator, searchValue: string, value: string) =>
     searchValue !== value,
   enum_set_is_nullish_or_any_of: (
