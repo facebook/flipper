@@ -680,6 +680,7 @@ export function DataTable<T extends object>(
   }
   const mainPanel = (
     <Layout.Container grow={props.scrollable} style={{position: 'relative'}}>
+      {mainSection}
       {props.enableAutoScroll && (
         <AutoScroller>
           <PushpinFilled
