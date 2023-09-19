@@ -125,11 +125,11 @@ public class RootComponentSpec {
                     .textSizeSp(20)
                     .clickHandler(RootComponent.triggerCrash(c)))
             .child(
-                FrescoVitoImage2.create(c)
+                displayImage ? FrescoVitoImage2.create(c)
                     .uri(Uri.parse("https://fbflipper.com/img/icon.png"))
                     .marginDip(YogaEdge.ALL, 10)
                     .widthDip(150)
-                    .heightDip(150))
+                    .heightDip(150) : null)
             .build();
 
     return VerticalScroll.create(c).childComponent(col).build();
