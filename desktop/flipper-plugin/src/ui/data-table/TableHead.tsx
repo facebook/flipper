@@ -135,11 +135,13 @@ function TableHeadColumn({
   isResizable,
   sorted,
   dispatch,
+  isFilterable,
 }: {
   column: DataTableColumn<any>;
   sorted: SortDirection;
   isResizable: boolean;
   dispatch: DataTableDispatch;
+  isFilterable: boolean;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -222,7 +224,7 @@ function TableHeadColumn({
           ) : null}
         </Text>
       </div>
-      <FilterIcon column={column} dispatch={dispatch} />
+      {isFilterable ? <FilterIcon column={column} dispatch={dispatch} /> : null}
     </Layout.Right>
   );
 
@@ -250,11 +252,13 @@ export const TableHead = memo(function TableHead({
   dispatch,
   sorting,
   scrollbarSize,
+  isFilterable = true,
 }: {
   dispatch: DataTableDispatch<any>;
   visibleColumns: DataTableColumn<any>[];
   sorting: Sorting | undefined;
   scrollbarSize: number;
+  isFilterable?: boolean;
 }) {
   return (
     <TableHeadContainer scrollbarSize={scrollbarSize}>
@@ -265,6 +269,7 @@ export const TableHead = memo(function TableHead({
           isResizable={i < visibleColumns.length - 1}
           dispatch={dispatch}
           sorted={sorting?.key === column.key ? sorting!.direction : undefined}
+          isFilterable={isFilterable}
         />
       ))}
     </TableHeadContainer>
