@@ -50,20 +50,20 @@ FlipperClient* FlipperClient::instance() {
 void FlipperClient::setStateListener(
     std::shared_ptr<FlipperStateUpdateListener> stateListener) {
   performAndReportError([this, &stateListener]() {
-    log("Setting state listener");
+    log("[client] Set state listener");
     flipperState_->setUpdateListener(stateListener);
   });
 }
 
 void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
   performAndReportError([this, plugin]() {
-    log("FlipperClient::addPlugin " + plugin->identifier());
+    log("[client] Add plugin " + plugin->identifier());
     auto step = flipperState_->start("Add plugin " + plugin->identifier());
     auto needs_refresh = false;
 
     std::lock_guard<std::mutex> lock(mutex_);
     if (plugins_.find(plugin->identifier()) != plugins_.end()) {
-      log("plugin " + plugin->identifier() + " already added.");
+      log("[client] Plugin " + plugin->identifier() + " already added");
     } else {
       plugins_[plugin->identifier()] = plugin;
       needs_refresh = true;
@@ -78,7 +78,6 @@ void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
 void FlipperClient::setCertificateProvider(
     const std::shared_ptr<FlipperCertificateProvider> provider) {
   socket_->setCertificateProvider(provider);
-  log("cpp setCertificateProvider called");
 }
 
 std::shared_ptr<FlipperCertificateProvider>
@@ -88,11 +87,11 @@ FlipperClient::getCertificateProvider() {
 
 void FlipperClient::removePlugin(std::shared_ptr<FlipperPlugin> plugin) {
   performAndReportError([this, plugin]() {
-    log("FlipperClient::removePlugin " + plugin->identifier());
+    log("[client] Remove plugin: " + plugin->identifier());
 
     std::lock_guard<std::mutex> lock(mutex_);
     if (plugins_.find(plugin->identifier()) == plugins_.end()) {
-      log("plugin " + plugin->identifier() + " not added.");
+      log("[client] Plugin " + plugin->identifier() + " not added");
       return;
     }
     disconnect(plugin);
@@ -143,7 +142,7 @@ void FlipperClient::refreshPlugins() {
 
 void FlipperClient::onConnected() {
   performAndReportError([this]() {
-    log("FlipperClient::onConnected");
+    log("[client] connected");
 
     std::lock_guard<std::mutex> lock(mutex_);
     connected_ = true;
@@ -152,7 +151,7 @@ void FlipperClient::onConnected() {
 
 void FlipperClient::onDisconnected() {
   performAndReportError([this]() {
-    log("FlipperClient::onDisconnected");
+    log("[client] disconnected");
     auto step = flipperState_->start("Trigger onDisconnected callbacks");
     std::lock_guard<std::mutex> lock(mutex_);
     connected_ = false;
@@ -280,7 +279,7 @@ void FlipperClient::onMessageReceived(
           "stacktrace", callstack())("name", e.what()));
     }
   } catch (...) {
-    log("Unknown error suppressed in FlipperClient");
+    log("[client] Unknown error suppressed");
     if (responder) {
       responder->error(dynamic::object(
           "message",
@@ -333,7 +332,7 @@ void FlipperClient::performAndReportError(const std::function<void()>& func) {
   } catch (...) {
     // Generic catch block for the exception of type not belonging to
     // std::exception
-    log("Unknown error suppressed in FlipperClient");
+    log("[client] Unknown error suppressed");
   }
 #endif
 }
@@ -347,7 +346,7 @@ void FlipperClient::handleError(std::exception& e) {
             "name", e.what()));
     socket_->sendMessage(message);
   } else {
-    log("Error: " + std::string(e.what()));
+    log("[client] Error: " + std::string(e.what()));
   }
 }
 
