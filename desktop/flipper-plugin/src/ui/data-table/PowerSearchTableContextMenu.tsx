@@ -21,7 +21,7 @@ import {
   _tryGetFlipperLibImplementation,
   _DataSourceView,
 } from 'flipper-plugin-core';
-import {DataTableColumn} from './DataTable';
+import {DataTableColumn} from './DataTableWithPowerSearch';
 import {toFirstUpper} from '../../utils/toFirstUpper';
 import {renderColumnValue} from './TableRow';
 import {textContent} from '../../utils/textContent';

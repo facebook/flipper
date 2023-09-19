@@ -7,7 +7,7 @@
  * @format
  */
 
-import type {DataTableColumn} from './DataTable';
+import type {DataTableColumn} from './DataTableWithPowerSearch';
 import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer, RefObject} from 'react';
 import {DataSourceVirtualizer} from '../../data-source/index';
@@ -43,10 +43,7 @@ type PersistedState = {
   /** The currently applicable sorting, if any */
   sorting: Sorting | undefined;
   /** The default columns, but normalized */
-  columns: Pick<
-    DataTableColumn,
-    'key' | 'width' | 'filters' | 'visible' | 'inversed'
-  >[];
+  columns: Pick<DataTableColumn, 'key' | 'width' | 'visible' | 'inversed'>[];
   scrollOffset: number;
   autoScroll: boolean;
 };
@@ -143,9 +140,6 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'resetFilters': {
-      draft.columns.forEach((c) =>
-        c.filters?.forEach((f) => (f.enabled = false)),
-      );
       draft.searchExpression = undefined;
       draft.filterExceptions = undefined;
       break;
@@ -446,11 +440,6 @@ function computeInitialColumns(
       (columnsWithoutWidth > 1
         ? `${Math.floor(100 / visibleColumnCount)}%`
         : undefined),
-    filters:
-      c.filters?.map((f) => ({
-        ...f,
-        predefined: true,
-      })) ?? [],
     visible: c.visible !== false,
   }));
 }

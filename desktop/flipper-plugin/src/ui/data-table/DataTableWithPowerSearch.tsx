@@ -61,8 +61,7 @@ import {
   _DataSourceView,
 } from 'flipper-plugin-core';
 import {useLatestRef} from '../../utils/useLatestRef';
-import {PowerSearch, OperatorConfig} from '../PowerSearch';
-import {powerSearchExampleConfig} from '../PowerSearch/PowerSearchExampleConfig';
+import {PowerSearch, PowerSearchConfig, FieldConfig} from '../PowerSearch';
 import {
   dataTablePowerSearchOperatorProcessorConfig,
   dataTablePowerSearchOperators,
@@ -236,6 +235,30 @@ export function DataTable<T extends object>(
     () => columns.filter((column) => column.visible),
     [columns],
   );
+
+  const powerSearchConfig: PowerSearchConfig = useMemo(() => {
+    const res: PowerSearchConfig = {fields: {}};
+
+    for (const column of columns) {
+      const columnFieldConfig: FieldConfig = {
+        label: column.title ?? column.key,
+        key: column.key,
+        // If no power search config provided we treat every input as a string
+        operators: column.powerSearchConfig ?? {
+          string_contains: dataTablePowerSearchOperators.string_contains(),
+          string_not_contains:
+            dataTablePowerSearchOperators.string_not_contains(),
+          string_matches_exactly:
+            dataTablePowerSearchOperators.string_matches_exactly(),
+          string_not_matches_exactly:
+            dataTablePowerSearchOperators.string_not_matches_exactly(),
+        },
+      };
+      res.fields[column.key] = columnFieldConfig;
+    }
+
+    return res;
+  }, [columns]);
 
   const renderingConfig = useMemo<TableRowRenderContext<T>>(() => {
     let startIndex = 0;
@@ -439,8 +462,6 @@ export function DataTable<T extends object>(
     [
       tableState.searchExpression,
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      ...tableState.columns.map((c) => c.filters),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       ...tableState.columns.map((c) => c.inversed),
       tableState.filterExceptions,
     ],
@@ -603,7 +624,7 @@ export function DataTable<T extends object>(
       {props.enableSearchbar && (
         <Searchbar gap>
           <PowerSearch
-            config={powerSearchExampleConfig}
+            config={powerSearchConfig}
             initialSearchExpression={searchExpression}
             onSearchExpressionChange={(newSearchExpression) => {
               tableManager.setSearchExpression(newSearchExpression);

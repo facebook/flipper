@@ -104,7 +104,6 @@ const operators = {
 } satisfies {[key: string]: OperatorConfig};
 
 export const powerSearchExampleConfig: PowerSearchConfig = {
-  name: 'FlipperPowerSearchExampleConfig',
   fields: {
     title: {
       key: 'title',
