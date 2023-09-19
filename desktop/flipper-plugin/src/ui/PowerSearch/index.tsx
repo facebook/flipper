@@ -28,6 +28,7 @@ import {
 import {useLatestRef} from '../../utils/useLatestRef';
 import {useUpdateEffect} from 'react-use';
 import {theme} from '../theme';
+import {SearchOutlined} from '@ant-design/icons';
 
 export {PowerSearchConfig, OperatorConfig, FieldConfig, SearchExpressionTerm};
 
@@ -97,6 +98,13 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
   return (
     <PowerSearchContainer>
       <Space size={[theme.space.tiny, 0]}>
+        <SearchOutlined
+          style={{
+            marginLeft: theme.space.tiny,
+            marginRight: theme.space.tiny,
+            color: theme.textColorSecondary,
+          }}
+        />
         {searchExpression.map((searchTerm, i) => {
           const isLastTerm = i === searchExpression.length - 1;
 
