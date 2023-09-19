@@ -25,7 +25,7 @@ import {PowerSearchStringSetTerm} from './PowerSearchStringSetTerm';
 import {PowerSearchStringTerm} from './PowerSearchStringTerm';
 
 export type IncompleteSearchExpressionTerm = {
-  field: FieldConfig;
+  field: {key: string; label: string};
   operator: OperatorConfig;
   searchValue?: any;
 };
