@@ -613,6 +613,7 @@ export function DataTable<T extends object>(
               ? 0
               : 15 /* width on MacOS: TODO, determine dynamically */
           }
+          isFilterable={false}
         />
       )}
     </Layout.Container>
