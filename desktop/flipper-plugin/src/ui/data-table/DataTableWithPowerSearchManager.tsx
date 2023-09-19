@@ -103,6 +103,7 @@ type DataManagerConfig<T> = {
   virtualizerRef: MutableRefObject<DataSourceVirtualizer | undefined>;
   autoScroll?: boolean;
   enablePersistSettings?: boolean;
+  initialSearchExpression?: SearchExpressionTerm[];
 };
 
 export type DataManagerState<T> = {
@@ -351,7 +352,7 @@ export function createInitialState<T>(
           items: new Set(prefs!.selection.items),
         }
       : emptySelection,
-    searchExpression: prefs?.searchExpression,
+    searchExpression: prefs?.searchExpression ?? config.initialSearchExpression,
     filterExceptions: undefined,
     autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
     sideBySide: false,

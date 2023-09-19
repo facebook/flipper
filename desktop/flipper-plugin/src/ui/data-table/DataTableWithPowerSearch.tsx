@@ -66,6 +66,7 @@ import {
   PowerSearchConfig,
   FieldConfig,
   OperatorConfig,
+  SearchExpressionTerm,
 } from '../PowerSearch';
 import {
   dataTablePowerSearchOperatorProcessorConfig,
@@ -94,6 +95,7 @@ type DataTableBaseProps<T = any> = {
   onRenderEmpty?:
     | null
     | ((dataView?: _DataSourceView<T, T[keyof T]>) => React.ReactElement);
+  powerSearchInitialState?: SearchExpressionTerm[];
 };
 
 export type ItemRenderer<T> = (
@@ -193,6 +195,7 @@ export function DataTable<T extends object>(
         virtualizerRef,
         autoScroll: props.enableAutoScroll,
         enablePersistSettings: props.enablePersistSettings,
+        initialSearchExpression: props.powerSearchInitialState,
       }),
   );
 
