@@ -124,11 +124,13 @@ export type DataTableColumn<T = any> = {
   visible?: boolean;
   inversed?: boolean;
   sortable?: boolean;
-  powerSearchConfig?: {
-    [K in keyof typeof dataTablePowerSearchOperators]: ReturnType<
-      (typeof dataTablePowerSearchOperators)[K]
-    >;
-  };
+  powerSearchConfig?:
+    | {
+        [K in keyof typeof dataTablePowerSearchOperators]: ReturnType<
+          (typeof dataTablePowerSearchOperators)[K]
+        >;
+      }
+    | false;
 };
 
 export interface TableRowRenderContext<T = any> {
@@ -240,6 +242,9 @@ export function DataTable<T extends object>(
     const res: PowerSearchConfig = {fields: {}};
 
     for (const column of columns) {
+      if (column.powerSearchConfig === false) {
+        continue;
+      }
       const columnFieldConfig: FieldConfig = {
         label: column.title ?? column.key,
         key: column.key,
