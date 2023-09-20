@@ -7,8 +7,12 @@
  * @format
  */
 
-import {DatePicker, DatePickerProps} from 'antd';
+import {Button, DatePicker, DatePickerProps} from 'antd';
+import dayjs from 'dayjs';
 import React from 'react';
+// Use this exact version of moment to match what antd has
+// eslint-disable-next-line no-restricted-imports
+import moment from 'antd/node_modules/moment';
 
 type PowerSearchAbsoluteTermProps = {
   onCancel: () => void;
@@ -16,6 +20,7 @@ type PowerSearchAbsoluteTermProps = {
   dateOnly?: boolean;
   minValue?: Date;
   maxValue?: Date;
+  defaultValue?: Date;
 };
 
 export const DATE_ONLY_FORMAT = 'YYYY-MM-DD';
@@ -23,7 +28,9 @@ export const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 export const PowerSearchAbsoluteDateTerm: React.FC<
   PowerSearchAbsoluteTermProps
-> = ({onCancel, onChange, dateOnly, minValue, maxValue}) => {
+> = ({onCancel, onChange, dateOnly, minValue, maxValue, defaultValue}) => {
+  const [editing, setEditing] = React.useState(!defaultValue);
+
   const disabledDate: DatePickerProps['disabledDate'] = React.useCallback(
     (date) => {
       if (minValue !== undefined && date < minValue) {
@@ -40,36 +47,51 @@ export const PowerSearchAbsoluteDateTerm: React.FC<
   const format = dateOnly ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss';
 
   const valueRef = React.useRef<Date>();
+  if (defaultValue && !valueRef.current) {
+    valueRef.current = defaultValue;
+  }
+
+  if (editing) {
+    return (
+      <DatePicker
+        autoFocus
+        style={{width: 100}}
+        placeholder="..."
+        format={format}
+        onChange={(newValue) => {
+          if (!newValue) {
+            onCancel();
+            return;
+          }
+
+          const newDate = newValue.toDate();
+          valueRef.current = newDate;
+          onChange(newDate);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') {
+            onCancel();
+          }
+        }}
+        onBlur={() => {
+          if (!valueRef.current) {
+            onCancel();
+          }
+          setEditing(false);
+        }}
+        disabledDate={disabledDate}
+        showTime={!dateOnly}
+        defaultOpen
+        defaultValue={defaultValue ? moment(defaultValue) : undefined}
+      />
+    );
+  }
 
   return (
-    <DatePicker
-      autoFocus
-      style={{width: 100}}
-      placeholder="..."
-      format={format}
-      onChange={(newValue) => {
-        if (!newValue) {
-          onCancel();
-          return;
-        }
-
-        const newDate = newValue.toDate();
-        valueRef.current = newDate;
-        onChange(newDate);
-      }}
-      onKeyDown={(event) => {
-        if (event.key === 'Escape') {
-          onCancel();
-        }
-      }}
-      onBlur={() => {
-        if (!valueRef.current) {
-          onCancel();
-        }
-      }}
-      disabledDate={disabledDate}
-      showTime={!dateOnly}
-      defaultOpen
-    />
+    <Button onClick={() => setEditing(true)}>
+      {dateOnly
+        ? dayjs(defaultValue).format(DATE_ONLY_FORMAT)
+        : dayjs(defaultValue).format(DATE_TIME_FORMAT)}
+    </Button>
   );
 };

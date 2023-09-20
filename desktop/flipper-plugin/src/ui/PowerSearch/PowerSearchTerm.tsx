@@ -155,6 +155,7 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
             minValue={searchTerm.operator.minValue}
             maxValue={searchTerm.operator.maxValue}
             dateOnly={searchTerm.operator.dateOnly}
+            defaultValue={searchTerm.searchValue}
           />
         );
         break;
@@ -262,11 +263,19 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
       }
       case 'ABSOLUTE_DATE': {
         searchValueComponent = (
-          <Button>
-            {searchTerm.operator.dateOnly
-              ? dayjs(searchTerm.searchValue).format(DATE_ONLY_FORMAT)
-              : dayjs(searchTerm.searchValue).format(DATE_TIME_FORMAT)}
-          </Button>
+          <PowerSearchAbsoluteDateTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+            minValue={searchTerm.operator.minValue}
+            maxValue={searchTerm.operator.maxValue}
+            dateOnly={searchTerm.operator.dateOnly}
+            defaultValue={searchTerm.searchValue}
+          />
         );
         break;
       }
