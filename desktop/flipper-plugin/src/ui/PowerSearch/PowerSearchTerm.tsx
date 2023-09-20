@@ -167,9 +167,13 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
 
   return (
     <Space.Compact block size="small">
-      <Button>{searchTerm.field.label}</Button>
+      <Button tabIndex={-1} style={{pointerEvents: 'none'}}>
+        {searchTerm.field.label}
+      </Button>
       {searchTerm.operator.label ? (
-        <Button>{searchTerm.operator.label}</Button>
+        <Button tabIndex={-1} style={{pointerEvents: 'none'}}>
+          {searchTerm.operator.label}
+        </Button>
       ) : null}
       {searchValueComponent}
       <Button
