@@ -23,6 +23,7 @@ import {
 import {
   UIState,
   NodeSelection,
+  TraversalMode,
   StreamState,
   ReadOnlyUIState,
   LiveClientState,
@@ -38,7 +39,15 @@ import {uiActions} from './plugin/uiActions';
 import {first} from 'lodash';
 import {getNode} from './utils/map';
 
-export function plugin(client: PluginClient<Events>) {
+type TraversalModeChangeEvent = {
+  mode: TraversalMode;
+};
+
+export type Methods = {
+  onTraversalModeChange(params: TraversalModeChangeEvent): Promise<void>;
+};
+
+export function plugin(client: PluginClient<Events, Methods>) {
   const rootId = createState<Id | undefined>(undefined);
   const metadata = createState<Map<MetadataId, Metadata>>(new Map());
 
@@ -87,6 +96,22 @@ export function plugin(client: PluginClient<Events>) {
         draft.set(frameworkEventMeta.type, false);
       });
     });
+    if (
+      event.supportedTraversalModes &&
+      event.supportedTraversalModes.length > 1
+    ) {
+      uiState.supportedTraversalModes.set(event.supportedTraversalModes);
+    }
+    if (
+      event.currentTraversalMode &&
+      uiState.supportedTraversalModes.get().includes(event.currentTraversalMode)
+    ) {
+      uiState.currentTraversalMode.set(event.currentTraversalMode);
+      console.log(
+        `[ui-debugger] Unsupported debugger mode ${event.currentTraversalMode}.`,
+      );
+    }
+
     frameworkEventMetadata.update((draft) => {
       event.frameworkEventMetadata?.forEach((frameworkEventMeta) => {
         draft.set(frameworkEventMeta.type, frameworkEventMeta);
@@ -256,6 +281,9 @@ export function plugin(client: PluginClient<Events>) {
   });
   client.onMessage('frameScan', processFrame);
 
+  const onTraversalModeChange = async (mode: TraversalMode) =>
+    client.send('onTraversalModeChange', {mode});
+
   return {
     rootId,
     uiState: uiState as ReadOnlyUIState,
@@ -268,6 +296,7 @@ export function plugin(client: PluginClient<Events>) {
     metadata,
     perfEvents,
     os: client.device.os,
+    onTraversalModeChange,
   };
 }
 
@@ -308,5 +337,9 @@ function createUIState(): UIState {
     focusedNode: createState<Id | undefined>(undefined),
     expandedNodes: createState<Set<Id>>(new Set()),
     wireFrameMode: createState<WireFrameMode>('All'),
+
+    // view-hierarchy is the default state so we start with it until we fetch supported modes from the client
+    supportedTraversalModes: createState<TraversalMode[]>(['view-hierarchy']),
+    currentTraversalMode: createState<TraversalMode>('view-hierarchy'),
   };
 }

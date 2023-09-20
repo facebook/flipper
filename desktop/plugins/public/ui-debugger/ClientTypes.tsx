@@ -7,6 +7,8 @@
  * @format
  */
 
+import {TraversalMode} from './DesktopTypes';
+
 export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
@@ -14,6 +16,11 @@ export type Events = {
   perfStats: PerfStatsEvent;
   performanceStats: PerformanceStatsEvent;
   metadataUpdate: UpdateMetadataEvent;
+  setTraversalMode: SetTraversalModeEvent;
+};
+
+export type SetTraversalModeEvent = {
+  mode: TraversalMode;
 };
 
 export type FrameScanEvent = {
@@ -69,6 +76,8 @@ export type FrameworkEvent = {
 export type InitEvent = {
   rootId: Id;
   frameworkEventMetadata?: FrameworkEventMetadata[];
+  supportedTraversalModes?: TraversalMode[];
+  currentTraversalMode?: TraversalMode;
 };
 
 /**
@@ -108,6 +117,10 @@ export type DynamicPerformanceStatsEvent = PerformanceStatsEvent & {
 
 export type UpdateMetadataEvent = {
   attributeMetadata: Record<MetadataId, Metadata>;
+};
+
+export type UpdateAvailableTraversalModeEvent = {
+  modes: TraversalMode[];
 };
 
 export type ClientNode = {

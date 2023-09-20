@@ -42,6 +42,9 @@ export type UIState = {
   visualiserWidth: Atom<number>;
   frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
   filterMainThreadMonitoring: Atom<boolean>;
+
+  supportedTraversalModes: Atom<TraversalMode[]>;
+  currentTraversalMode: Atom<TraversalMode>;
 };
 
 //enumerates the keys of input type and casts each to ReadOnlyAtom, this is so we only expose read only atoms to the UI
@@ -65,6 +68,8 @@ export type NestedNode = {
   tags: Tag[];
   activeChildIdx?: number;
 };
+
+export type TraversalMode = 'view-hierarchy' | 'accessibility-hierarchy';
 
 export type ViewMode =
   | {mode: 'default'}
@@ -106,6 +111,7 @@ export type UIActions = {
   onCollapseAllNonAncestors: (nodeId: Id) => void;
   onCollapseAllRecursively: (nodeId: Id) => void;
   ensureAncestorsExpanded: (nodeId: Id) => void;
+  setCurrentTraversalMode: (mode: TraversalMode) => void;
 };
 
 export type SelectionSource =

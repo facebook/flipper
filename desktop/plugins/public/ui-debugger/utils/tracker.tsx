@@ -10,7 +10,7 @@
 import {getFlipperLib} from 'flipper-plugin';
 
 import {FrameworkEventType, Tag} from '../ClientTypes';
-import {SelectionSource} from '../DesktopTypes';
+import {TraversalMode, SelectionSource} from '../DesktopTypes';
 
 const UI_DEBUGGER_IDENTIFIER = 'ui-debugger';
 
@@ -67,6 +67,7 @@ type TrackerEvents = {
   'context-menu-expand-recursive': {};
   'context-menu-collapse-recursive': {};
   'context-menu-collapse-non-ancestors': {};
+  'traversal-mode-updated': {mode: TraversalMode};
 };
 
 export interface Tracker {

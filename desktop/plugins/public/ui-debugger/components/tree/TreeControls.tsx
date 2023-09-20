@@ -18,10 +18,12 @@ import {
   Space,
   Switch,
   Badge,
+  Dropdown,
 } from 'antd';
 import {
   EyeOutlined,
   PauseCircleOutlined,
+  AppstoreOutlined,
   PlayCircleOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
@@ -31,6 +33,7 @@ import {
   buildTreeSelectData,
   FrameworkEventsTreeSelect,
 } from '../shared/FrameworkEventsTreeSelect';
+import {TraversalMode} from '../../DesktopTypes';
 
 export const TreeControls: React.FC = () => {
   const instance = usePlugin(plugin);
@@ -44,13 +47,50 @@ export const TreeControls: React.FC = () => {
     instance.uiState.frameworkEventMonitoring,
   );
 
-  const frameworkEventMetadata = useValue(instance.frameworkEventMetadata);
-
   const [showFrameworkEventsModal, setShowFrameworkEventsModal] =
     useState(false);
 
+  const frameworkEventMetadata = useValue(instance.frameworkEventMetadata);
+
+  const currentTraversalMode = useValue(instance.uiState.currentTraversalMode);
+  const supportedTraversalModes = useValue(
+    instance.uiState.supportedTraversalModes,
+  );
+  const labelForMode = (mode: TraversalMode) => {
+    switch (mode) {
+      case 'view-hierarchy':
+        return 'UI Hierarchy';
+      case 'accessibility-hierarchy':
+        return 'Accessibility Hierarchy';
+    }
+  };
+
+  const menus = supportedTraversalModes.map((mode) => ({
+    key: mode,
+    label: labelForMode(mode),
+  }));
+
   return (
     <Layout.Horizontal gap="medium" pad="medium">
+      {supportedTraversalModes.length > 1 ? (
+        <Dropdown
+          menu={{
+            selectable: true,
+            selectedKeys: [currentTraversalMode],
+            items: menus,
+            onSelect: async (event) => {
+              const mode = event.selectedKeys[0] as TraversalMode;
+              instance.uiActions.setCurrentTraversalMode(mode); // update UI
+              await instance.onTraversalModeChange(mode); // update mobile client
+            },
+          }}>
+          <Tooltip title="Debugger Mode">
+            <Button shape="circle">
+              <AppstoreOutlined />
+            </Button>
+          </Tooltip>
+        </Dropdown>
+      ) : null}
       <Input
         value={searchTerm}
         onChange={(e) => {

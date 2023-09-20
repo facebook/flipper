@@ -11,6 +11,7 @@ import {Atom} from 'flipper-plugin';
 import {debounce} from 'lodash';
 import {ClientNode, FrameworkEventType, Id, SnapshotInfo} from '../ClientTypes';
 import {
+  TraversalMode,
   LiveClientState,
   SelectionSource,
   UIActions,
@@ -189,6 +190,11 @@ export function uiActions(
     searchTermUpdatedDebounced(searchTerm);
   };
 
+  const setCurrentTraversalMode = (mode: TraversalMode) => {
+    tracker.track('traversal-mode-updated', {mode});
+    uiState.currentTraversalMode.set(mode);
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
@@ -207,5 +213,6 @@ export function uiActions(
     onExpandAllRecursively,
     onCollapseAllRecursively,
     ensureAncestorsExpanded,
+    setCurrentTraversalMode,
   };
 }
