@@ -10,6 +10,7 @@
 #import "UIDDescriptorRegister.h"
 #import <objc/runtime.h>
 #import "UIDChainedDescriptor.h"
+#import "UIDUIAccessibilityElementDescriptor.h"
 #import "UIDUIApplicationDescriptor.h"
 #import "UIDUILabelDescriptor.h"
 #import "UIDUINavigationControllerDescriptor.h"
@@ -53,6 +54,9 @@
                                forClass:[UIView class]];
     [defaultRegister registerDescriptor:[UIDUILabelDescriptor new]
                                forClass:[UILabel class]];
+    [defaultRegister
+        registerDescriptor:[UIDUIAccessibilityElementDescriptor new]
+                  forClass:[UIAccessibilityElement class]];
   });
 
   return defaultRegister;

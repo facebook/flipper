@@ -17,11 +17,11 @@ FB_LINKABLE(UIDNode_Foundation)
 - (id)toFoundation {
   NSMutableDictionary* data = [NSMutableDictionary dictionaryWithDictionary:@{
     @"id" : [NSNumber numberWithUnsignedInt:self.identifier],
-    @"qualifiedName" : self.qualifiedName,
+    @"qualifiedName" : self.qualifiedName ?: @"",
     @"name" : self.name,
     @"bounds" : [self.bounds toFoundation],
-    @"tags" : self.tags.allObjects,
-    @"inlineAttributes" : self.inlineAttributes,
+    @"tags" : self.tags ? self.tags.allObjects : @[],
+    @"inlineAttributes" : self.inlineAttributes ?: @{},
     @"children" : self.children,
   }];
 

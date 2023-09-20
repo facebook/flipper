@@ -60,6 +60,8 @@
     return;
   }
 
+  _rootObserver.traversalMode = _traversalMode = traversalMode;
+
   // trigger another pass
   dispatch_async(dispatch_get_main_queue(), ^{
     [self->_rootObserver processNode:self->_context.application

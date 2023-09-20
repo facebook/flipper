@@ -7,6 +7,7 @@
 
 #if FB_SONARKIT_ENABLED
 
+#import <FlipperKitUIDebuggerPlugin/UIDTraversalMode.h>
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong)
     NSMutableDictionary<NSNumber*, UIDTreeObserver<T>*>* children;
 @property(nonatomic, strong) NSString* type;
+
+@property(nonatomic, assign) UIDTraversalMode traversalMode;
 
 - (void)subscribe:(nullable T)node;
 - (void)unsubscribe;
