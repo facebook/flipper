@@ -57,6 +57,7 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
                 searchValue: newValue,
               });
             }}
+            defaultValue={searchTerm.searchValue}
           />
         );
         break;
@@ -164,6 +165,21 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
     }
   } else {
     switch (searchTerm.operator.valueType) {
+      case 'STRING': {
+        searchValueComponent = (
+          <PowerSearchStringTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+            defaultValue={searchTerm.searchValue}
+          />
+        );
+        break;
+      }
       case 'ENUM': {
         searchValueComponent = (
           <Button>

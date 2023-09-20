@@ -7,38 +7,49 @@
  * @format
  */
 
-import {Input} from 'antd';
+import {Button, Input} from 'antd';
 import React from 'react';
 
 type PowerSearchStringTermProps = {
   onCancel: () => void;
   onChange: (value: string) => void;
+  defaultValue?: string;
 };
 
 export const PowerSearchStringTerm: React.FC<PowerSearchStringTermProps> = ({
   onCancel,
   onChange,
+  defaultValue,
 }) => {
-  return (
-    <Input
-      autoFocus
-      style={{width: 100}}
-      placeholder="..."
-      onBlur={(event) => {
-        const newValue = event.target.value;
+  const [editing, setEditing] = React.useState(!defaultValue);
 
-        if (!newValue) {
-          onCancel();
-          return;
-        }
+  if (editing) {
+    return (
+      <Input
+        autoFocus
+        style={{width: 100}}
+        placeholder="..."
+        onBlur={(event) => {
+          const newValue = event.target.value;
 
-        onChange(newValue);
-      }}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === 'Escape') {
-          event.currentTarget.blur();
-        }
-      }}
-    />
-  );
+          setEditing(false);
+
+          if (!newValue) {
+            onCancel();
+            return;
+          }
+
+          onChange(newValue);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === 'Escape') {
+            event.currentTarget.blur();
+          }
+        }}
+        defaultValue={defaultValue}
+      />
+    );
+  }
+
+  return <Button onClick={() => setEditing(true)}>{defaultValue}</Button>;
 };
