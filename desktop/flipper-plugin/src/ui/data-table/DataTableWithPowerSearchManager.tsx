@@ -7,7 +7,7 @@
  * @format
  */
 
-import type {DataTableColumn} from './DataTable';
+import type {DataTableColumn} from './DataTableWithPowerSearch';
 import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer, RefObject} from 'react';
 import {DataSourceVirtualizer} from '../../data-source/index';
@@ -43,10 +43,7 @@ type PersistedState = {
   /** The currently applicable sorting, if any */
   sorting: Sorting | undefined;
   /** The default columns, but normalized */
-  columns: Pick<
-    DataTableColumn,
-    'key' | 'width' | 'filters' | 'visible' | 'inversed'
-  >[];
+  columns: Pick<DataTableColumn, 'key' | 'width' | 'visible' | 'inversed'>[];
   scrollOffset: number;
   autoScroll: boolean;
 };
@@ -106,6 +103,7 @@ type DataManagerConfig<T> = {
   virtualizerRef: MutableRefObject<DataSourceVirtualizer | undefined>;
   autoScroll?: boolean;
   enablePersistSettings?: boolean;
+  initialSearchExpression?: SearchExpressionTerm[];
 };
 
 export type DataManagerState<T> = {
@@ -143,9 +141,6 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'resetFilters': {
-      draft.columns.forEach((c) =>
-        c.filters?.forEach((f) => (f.enabled = false)),
-      );
       draft.searchExpression = undefined;
       draft.filterExceptions = undefined;
       break;
@@ -344,6 +339,11 @@ export function createInitialState<T>(
     });
   }
 
+  let searchExpression = config.initialSearchExpression;
+  if (prefs?.searchExpression?.length) {
+    searchExpression = prefs.searchExpression;
+  }
+
   const res: DataManagerState<T> = {
     config,
     storageKey,
@@ -357,7 +357,7 @@ export function createInitialState<T>(
           items: new Set(prefs!.selection.items),
         }
       : emptySelection,
-    searchExpression: prefs?.searchExpression,
+    searchExpression,
     filterExceptions: undefined,
     autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
     sideBySide: false,
@@ -446,11 +446,6 @@ function computeInitialColumns(
       (columnsWithoutWidth > 1
         ? `${Math.floor(100 / visibleColumnCount)}%`
         : undefined),
-    filters:
-      c.filters?.map((f) => ({
-        ...f,
-        predefined: true,
-      })) ?? [],
     visible: c.visible !== false,
   }));
 }
@@ -480,10 +475,10 @@ export function computeDataTableFilter(
   powerSearchProcessors: PowerSearchOperatorProcessorConfig,
 ) {
   return function dataTableFilter(item: any) {
-    if (!searchExpression) {
+    if (!searchExpression || !searchExpression.length) {
       return true;
     }
-    return searchExpression.some((searchTerm) => {
+    return searchExpression.every((searchTerm) => {
       const value = getValueAtPath(item, searchTerm.field.key);
       if (!value) {
         console.warn(

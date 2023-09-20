@@ -63,6 +63,5 @@ export type FieldConfig = {
 };
 
 export type PowerSearchConfig = {
-  name: string;
   fields: {[key: string]: FieldConfig};
 };

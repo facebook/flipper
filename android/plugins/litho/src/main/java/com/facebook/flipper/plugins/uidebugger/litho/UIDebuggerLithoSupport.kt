@@ -20,6 +20,7 @@ import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.widget.TextDrawable
 import com.facebook.rendercore.debug.DebugEvent
+import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventBus
 import com.facebook.rendercore.debug.DebugEventSubscriber
 import com.facebook.rendercore.debug.DebugMarkerEvent
@@ -77,13 +78,13 @@ object UIDebuggerLithoSupport {
             val treeId = event.renderStateId.toIntOrNull() ?: -1
 
             val globalKey =
-                event.attributeOrNull<String>("Key")?.let {
+                event.attributeOrNull<String>(DebugEventAttribute.Key)?.let {
                   DebugComponent.generateGlobalKey(treeId, it).hashCode()
                 }
-            val duration = event.attributeOrNull<Duration>("duration")
+            val duration = event.attributeOrNull<Duration>(DebugEventAttribute.Duration)
 
             val attributes = mutableMapOf<String, String>()
-            val source = event.attributeOrNull<String>("source")
+            val source = event.attributeOrNull<String>(DebugEventAttribute.Source)
             if (source != null) {
               attributes["source"] = source
             }

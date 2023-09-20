@@ -106,10 +106,23 @@ export const dataTablePowerSearchOperators = {
     valueType: 'ENUM',
     enumLabels,
   }),
+  enum_is_nullish_or: (enumLabels: Record<string, string>) => ({
+    label: 'is nullish or',
+    key: 'enum_is_nullish_or',
+    valueType: 'ENUM',
+    enumLabels,
+  }),
   enum_is_not: (enumLabels: Record<string, string>) => ({
     label: 'is not',
     key: 'enum_is_not',
     valueType: 'ENUM',
+    enumLabels,
+  }),
+  // TODO: Support logical operations (AND, OR, NOT) to combine primitive operators instead of adding new complex operators!
+  enum_set_is_nullish_or_any_of: (enumLabels: Record<string, string>) => ({
+    label: 'is nullish or any of',
+    key: 'enum_set_is_nullish_or_any_of',
+    valueType: 'ENUM_SET',
     enumLabels,
   }),
   enum_set_is_any_of: (enumLabels: Record<string, string>) => ({
@@ -217,8 +230,15 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     value <= searchValue,
   enum_is: (_operator, searchValue: string, value: string) =>
     searchValue === value,
+  enum_is_nullish_or: (_operator, searchValue: string, value?: string | null) =>
+    value == null || searchValue === value,
   enum_is_not: (_operator, searchValue: string, value: string) =>
     searchValue !== value,
+  enum_set_is_nullish_or_any_of: (
+    _operator,
+    searchValue: string[],
+    value?: string | null,
+  ) => value == null || searchValue.some((item) => value === item),
   enum_set_is_any_of: (_operator, searchValue: string[], value: string) =>
     searchValue.some((item) => value === item),
   enum_set_is_none_of: (_operator, searchValue: string[], value: string) =>

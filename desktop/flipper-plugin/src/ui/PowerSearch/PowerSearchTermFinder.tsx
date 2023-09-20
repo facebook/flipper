@@ -44,7 +44,7 @@ export const PowerSearchTermFinder = React.forwardRef<
           scrollTo: () => void;
         }>
       }
-      style={{flex: '1'}}
+      style={{flex: '1', minWidth: 200}}
       options={options}
       bordered={false}
       onSelect={(_: string, selectedOption: PowerSearchTermFinderOption) => {

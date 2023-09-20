@@ -13,19 +13,24 @@ import React from 'react';
 type PowerSearchStringSetTermProps = {
   onCancel: () => void;
   onChange: (value: string[]) => void;
+  defaultValue?: string[];
 };
 
 export const PowerSearchStringSetTerm: React.FC<
   PowerSearchStringSetTermProps
-> = ({onCancel, onChange}) => {
+> = ({onCancel, onChange, defaultValue}) => {
   const selectValueRef = React.useRef<string[]>();
+  if (defaultValue && !selectValueRef.current) {
+    selectValueRef.current = defaultValue;
+  }
 
   return (
     <Select
       mode="tags"
-      autoFocus
+      autoFocus={!defaultValue}
       style={{minWidth: 100}}
       placeholder="..."
+      defaultValue={defaultValue}
       onBlur={() => {
         if (!selectValueRef.current?.length) {
           onCancel();

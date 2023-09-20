@@ -14,12 +14,14 @@ type PowerSearchEnumSetTermProps = {
   onCancel: () => void;
   onChange: (value: string[]) => void;
   enumLabels: {[key: string]: string};
+  defaultValue?: string[];
 };
 
 export const PowerSearchEnumSetTerm: React.FC<PowerSearchEnumSetTermProps> = ({
   onCancel,
   onChange,
   enumLabels,
+  defaultValue,
 }) => {
   const options = React.useMemo(() => {
     return Object.entries(enumLabels).map(([key, label]) => ({
@@ -29,15 +31,19 @@ export const PowerSearchEnumSetTerm: React.FC<PowerSearchEnumSetTermProps> = ({
   }, [enumLabels]);
 
   const selectValueRef = React.useRef<string[]>();
+  if (defaultValue && !selectValueRef.current) {
+    selectValueRef.current = defaultValue;
+  }
 
   return (
     <Select
       mode="multiple"
-      autoFocus
+      autoFocus={!defaultValue}
       style={{minWidth: 100}}
       placeholder="..."
       options={options}
-      defaultOpen
+      defaultOpen={!defaultValue}
+      defaultValue={defaultValue}
       onBlur={() => {
         if (!selectValueRef.current?.length) {
           onCancel();

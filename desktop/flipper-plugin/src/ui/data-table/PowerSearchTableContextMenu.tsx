@@ -21,7 +21,7 @@ import {
   _tryGetFlipperLibImplementation,
   _DataSourceView,
 } from 'flipper-plugin-core';
-import {DataTableColumn} from './DataTable';
+import {DataTableColumn} from './DataTableWithPowerSearch';
 import {toFirstUpper} from '../../utils/toFirstUpper';
 import {renderColumnValue} from './TableRow';
 import {textContent} from '../../utils/textContent';
@@ -180,16 +180,6 @@ export function tableContextMenuFactory<T extends object>(
         }}>
         Reset view
       </Menu.Item>
-
-      <SubMenu title="Search Options" key="search options">
-        <Menu.Item
-          key="clear history"
-          onClick={() => {
-            dispatch({type: 'clearSearchHistory'});
-          }}>
-          Clear search history
-        </Menu.Item>
-      </SubMenu>
       {sideBySideOption}
     </Menu>
   );

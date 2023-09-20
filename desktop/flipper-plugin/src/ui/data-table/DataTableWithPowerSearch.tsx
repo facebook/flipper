@@ -43,8 +43,13 @@ import {
 import styled from '@emotion/styled';
 import {theme} from '../theme';
 import {tableContextMenuFactory} from './PowerSearchTableContextMenu';
-import {Menu, Switch, InputRef, Typography} from 'antd';
-import {CoffeeOutlined, SearchOutlined, PushpinFilled} from '@ant-design/icons';
+import {Menu, Switch, InputRef, Typography, Dropdown, Button} from 'antd';
+import {
+  CoffeeOutlined,
+  SearchOutlined,
+  PushpinFilled,
+  MenuOutlined,
+} from '@ant-design/icons';
 import {useAssertStableRef} from '../../utils/useAssertStableRef';
 import {Formatter} from '../DataFormatter';
 import {usePluginInstanceMaybe} from '../../plugin/PluginContext';
@@ -56,8 +61,13 @@ import {
   _DataSourceView,
 } from 'flipper-plugin-core';
 import {useLatestRef} from '../../utils/useLatestRef';
-import {PowerSearch, OperatorConfig} from '../PowerSearch';
-import {powerSearchExampleConfig} from '../PowerSearch/PowerSearchExampleConfig';
+import {
+  PowerSearch,
+  PowerSearchConfig,
+  FieldConfig,
+  OperatorConfig,
+  SearchExpressionTerm,
+} from '../PowerSearch';
 import {
   dataTablePowerSearchOperatorProcessorConfig,
   dataTablePowerSearchOperators,
@@ -85,6 +95,7 @@ type DataTableBaseProps<T = any> = {
   onRenderEmpty?:
     | null
     | ((dataView?: _DataSourceView<T, T[keyof T]>) => React.ReactElement);
+  powerSearchInitialState?: SearchExpressionTerm[];
 };
 
 export type ItemRenderer<T> = (
@@ -120,11 +131,7 @@ export type DataTableColumn<T = any> = {
   visible?: boolean;
   inversed?: boolean;
   sortable?: boolean;
-  powerSearchConfig?: {
-    [K in keyof typeof dataTablePowerSearchOperators]: ReturnType<
-      (typeof dataTablePowerSearchOperators)[K]
-    >;
-  };
+  powerSearchConfig?: OperatorConfig[] | false;
 };
 
 export interface TableRowRenderContext<T = any> {
@@ -142,6 +149,11 @@ export interface TableRowRenderContext<T = any> {
   onRowStyle?(item: T): React.CSSProperties | undefined;
   onContextMenu?(): React.ReactElement;
 }
+
+const Searchbar = styled(Layout.Horizontal)({
+  backgroundColor: theme.backgroundWash,
+  padding: theme.space.small,
+});
 
 export type DataTableProps<T> = DataTableInput<T> & DataTableBaseProps<T>;
 
@@ -183,6 +195,7 @@ export function DataTable<T extends object>(
         virtualizerRef,
         autoScroll: props.enableAutoScroll,
         enablePersistSettings: props.enablePersistSettings,
+        initialSearchExpression: props.powerSearchInitialState,
       }),
   );
 
@@ -226,6 +239,36 @@ export function DataTable<T extends object>(
     () => columns.filter((column) => column.visible),
     [columns],
   );
+
+  const powerSearchConfig: PowerSearchConfig = useMemo(() => {
+    const res: PowerSearchConfig = {fields: {}};
+
+    for (const column of columns) {
+      if (column.powerSearchConfig === false) {
+        continue;
+      }
+      const columnFieldConfig: FieldConfig = {
+        label: column.title ?? column.key,
+        key: column.key,
+        // If no power search config provided we treat every input as a string
+        operators: column.powerSearchConfig?.reduce((res, operatorConfig) => {
+          res[operatorConfig.key] = operatorConfig;
+          return res;
+        }, {} as Record<string, OperatorConfig>) ?? {
+          string_contains: dataTablePowerSearchOperators.string_contains(),
+          string_not_contains:
+            dataTablePowerSearchOperators.string_not_contains(),
+          string_matches_exactly:
+            dataTablePowerSearchOperators.string_matches_exactly(),
+          string_not_matches_exactly:
+            dataTablePowerSearchOperators.string_not_matches_exactly(),
+        },
+      };
+      res.fields[column.key] = columnFieldConfig;
+    }
+
+    return res;
+  }, [columns]);
 
   const renderingConfig = useMemo<TableRowRenderContext<T>>(() => {
     let startIndex = 0;
@@ -429,8 +472,6 @@ export function DataTable<T extends object>(
     [
       tableState.searchExpression,
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      ...tableState.columns.map((c) => c.filters),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       ...tableState.columns.map((c) => c.inversed),
       tableState.filterExceptions,
     ],
@@ -591,16 +632,30 @@ export function DataTable<T extends object>(
   const header = (
     <Layout.Container>
       {props.enableSearchbar && (
-        <PowerSearch
-          config={powerSearchExampleConfig}
-          initialSearchExpression={searchExpression}
-          onSearchExpressionChange={(newSearchExpression) => {
-            tableManager.setSearchExpression(newSearchExpression);
-          }}
-        />
+        <Searchbar gap>
+          <PowerSearch
+            config={powerSearchConfig}
+            initialSearchExpression={searchExpression}
+            onSearchExpressionChange={(newSearchExpression) => {
+              tableManager.setSearchExpression(newSearchExpression);
+            }}
+          />
+          {contexMenu && (
+            <Dropdown overlay={contexMenu} placement="bottomRight">
+              <Button type="text" size="small" style={{height: '100%'}}>
+                <MenuOutlined />
+              </Button>
+            </Dropdown>
+          )}
+        </Searchbar>
       )}
     </Layout.Container>
   );
+  const footer = props.extraActions ? (
+    <Layout.Container>
+      <Searchbar gap>{props.extraActions}</Searchbar>
+    </Layout.Container>
+  ) : null;
   const columnHeaders = (
     <Layout.Container>
       {props.enableColumnHeaders && (
@@ -613,6 +668,7 @@ export function DataTable<T extends object>(
               ? 0
               : 15 /* width on MacOS: TODO, determine dynamically */
           }
+          isFilterable={false}
         />
       )}
     </Layout.Container>
@@ -678,8 +734,9 @@ export function DataTable<T extends object>(
       </Layout.Container>
     );
   }
-  const mainPanel = (
+  let mainPanel = (
     <Layout.Container grow={props.scrollable} style={{position: 'relative'}}>
+      {mainSection}
       {props.enableAutoScroll && (
         <AutoScroller>
           <PushpinFilled
@@ -695,6 +752,14 @@ export function DataTable<T extends object>(
       {range && !isUnitTest && <RangeFinder>{range}</RangeFinder>}
     </Layout.Container>
   );
+  if (footer) {
+    mainPanel = (
+      <Layout.Bottom>
+        {mainPanel}
+        {footer}
+      </Layout.Bottom>
+    );
+  }
   return props.enableMultiPanels && tableState.sideBySide ? (
     //TODO: Make the panels resizable by having a dynamic maxWidth for Layout.Right/Left possibly?
     <Layout.Horizontal style={{height: '100%'}}>

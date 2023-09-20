@@ -38,6 +38,7 @@ export {Sidebar as _Sidebar} from './ui/Sidebar';
 export {DetailSidebar} from './ui/DetailSidebar';
 export {Toolbar} from './ui/Toolbar';
 export {MasterDetail} from './ui/MasterDetail';
+export {MasterDetailWithPowerSearch as _MasterDetailWithPowerSearch} from './ui/MasterDetailWithPowerSearch';
 export {CodeBlock} from './ui/CodeBlock';
 
 export {renderReactRoot, _PortalsManager} from './utils/renderReactRoot';
@@ -58,6 +59,12 @@ export {useLogger, _LoggerContext} from './utils/useLogger';
 
 export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
 export {DataTableManager} from './ui/data-table/DataTableManager';
+export {
+  DataTable as _DataTableWithPowerSearch,
+  DataTableColumn as _DataTableColumnWithPowerSearch,
+} from './ui/data-table/DataTableWithPowerSearch';
+export {dataTablePowerSearchOperators} from './ui/data-table/DataTableDefaultPowerSearchOperators';
+export {DataTableManager as _DataTableWithPowerSearchManager} from './ui/data-table/DataTableWithPowerSearchManager';
 export {DataList} from './ui/DataList';
 export {Spinner} from './ui/Spinner';
 export * from './ui/PowerSearch';
