@@ -85,6 +85,7 @@ FlipperConnectionManagerImpl::~FlipperConnectionManagerImpl() {
 
 void FlipperConnectionManagerImpl::setCertificateProvider(
     const std::shared_ptr<FlipperCertificateProvider> provider) {
+  DEBUG_LOG("[conn] Set certificate provider");
   certificateProvider_ = provider;
 };
 
@@ -98,6 +99,7 @@ void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
   scheduler_->schedule([this, event]() {
     switch (event) {
       case SocketEvent::OPEN:
+        DEBUG_LOG("[conn] Socket event: open");
         isConnected_ = true;
         if (isConnectionTrusted_) {
           failedConnectionAttempts_ = 0;
@@ -107,11 +109,13 @@ void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
         }
         break;
       case SocketEvent::SSL_ERROR:
+        DEBUG_LOG("[conn] Socket event: SSL error");
         failedConnectionAttempts_++;
         reconnect();
         break;
       case SocketEvent::CLOSE:
       case SocketEvent::ERROR:
+        DEBUG_LOG("[conn] Socket event: close or error");
         if (!isConnected_) {
           reconnect();
           return;
@@ -132,13 +136,15 @@ void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
 }
 
 void FlipperConnectionManagerImpl::start() {
+  DEBUG_LOG("[conn] Start");
+
   if (!FlipperSocketProvider::hasProvider()) {
-    log("No socket provider has been set, unable to start");
+    log("[conn] No socket provider has been set, unable to start");
     return;
   }
 
   if (started_) {
-    log("Already started");
+    log("[conn] Already started");
     return;
   }
   started_ = true;
@@ -152,8 +158,10 @@ void FlipperConnectionManagerImpl::start() {
 }
 
 void FlipperConnectionManagerImpl::startSync() {
+  DEBUG_LOG("[conn] Start sync");
+
   if (!started_) {
-    log("Not started");
+    log("[conn] Not started");
     return;
   }
   if (!isRunningInOwnThread()) {
@@ -161,7 +169,7 @@ void FlipperConnectionManagerImpl::startSync() {
     return;
   }
   if (isConnected()) {
-    log("Already connected");
+    log("[conn] Already connected");
     return;
   }
 
@@ -180,6 +188,7 @@ void FlipperConnectionManagerImpl::startSync() {
 }
 
 void FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
+  DEBUG_LOG("[conn] Connect and exchange certificate");
   auto port = insecurePort;
   auto endpoint = FlipperConnectionEndpoint(deviceData_.host, port, false);
 
@@ -208,6 +217,7 @@ void FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
 }
 
 void FlipperConnectionManagerImpl::connectSecurely() {
+  DEBUG_LOG("[conn] Connect securely");
   auto port = securePort;
   auto endpoint = FlipperConnectionEndpoint(deviceData_.host, port, true);
 
@@ -258,8 +268,9 @@ void FlipperConnectionManagerImpl::connectSecurely() {
 }
 
 void FlipperConnectionManagerImpl::reconnect() {
+  DEBUG_LOG("[conn] Reconnect");
   if (!started_) {
-    log("Not started");
+    log("[conn] Not started");
     return;
   }
   scheduler_->scheduleAfter(
@@ -267,12 +278,13 @@ void FlipperConnectionManagerImpl::reconnect() {
 }
 
 void FlipperConnectionManagerImpl::stop() {
+  DEBUG_LOG("[conn] Stop");
   if (certificateProvider_ &&
       certificateProvider_->shouldResetCertificateFolder()) {
     store_->resetState();
   }
   if (!started_) {
-    log("Not started");
+    log("[conn] Not started");
     return;
   }
   started_ = false;
@@ -331,6 +343,7 @@ void FlipperConnectionManagerImpl::onMessageReceived(
 }
 
 bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
+  DEBUG_LOG("[conn] Certificate exchange needed verification");
   if (failedConnectionAttempts_ >= 2) {
     return true;
   }
@@ -362,6 +375,7 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
     std::shared_ptr<FlipperStep> gettingCert,
     std::string response,
     bool isError) {
+  DEBUG_LOG("[conn] Process signed certificate response");
   if (isError) {
     auto error =
         "Flipper failed to provide certificates. Error from Flipper Desktop:\n" +
@@ -404,7 +418,7 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
         gettingCert->fail("Exception thrown from Certificate Provider");
       }
     }
-    log("Certificate exchange complete.");
+    log("[conn] Certificate exchange complete");
     gettingCert->complete();
   }
 
@@ -413,6 +427,7 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
 }
 
 void FlipperConnectionManagerImpl::requestSignedCertificate() {
+  DEBUG_LOG("[conn] Request signed certificate");
   auto resettingState = state_->start("Reset connection store state");
   store_->resetState();
   resettingState->complete();
