@@ -120,6 +120,7 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
               });
             }}
             enumLabels={searchTerm.operator.enumLabels}
+            defaultValue={searchTerm.searchValue}
           />
         );
         break;
@@ -182,9 +183,17 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
       }
       case 'ENUM': {
         searchValueComponent = (
-          <Button>
-            {searchTerm.operator.enumLabels[searchTerm.searchValue]}
-          </Button>
+          <PowerSearchEnumTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+            enumLabels={searchTerm.operator.enumLabels}
+            defaultValue={searchTerm.searchValue}
+          />
         );
         break;
       }
