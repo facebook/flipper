@@ -29,6 +29,7 @@ import {useLatestRef} from '../../utils/useLatestRef';
 import {useUpdateEffect} from 'react-use';
 import {theme} from '../theme';
 import {SearchOutlined} from '@ant-design/icons';
+import {getFlipperLib} from 'flipper-plugin-core';
 
 export {PowerSearchConfig, OperatorConfig, FieldConfig, SearchExpressionTerm};
 
@@ -56,6 +57,10 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
     if (searchExpression.every((term) => term.searchValue !== undefined)) {
       onSearchExpressionChangeLatestRef.current(
         searchExpression as SearchExpressionTerm[],
+      );
+      getFlipperLib().logger.track(
+        'usage',
+        'power-search:search-expression-finalize',
       );
     }
   }, [searchExpression, onSearchExpressionChangeLatestRef]);

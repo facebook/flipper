@@ -167,6 +167,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'setSearchExpression': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:power-search');
       draft.searchExpression = action.searchExpression;
       draft.filterExceptions = undefined;
       break;
