@@ -123,7 +123,6 @@ async function getFlipperServer(
   const keytar: KeytarModule | undefined = await getKeytarModule(staticPath);
   const gatekeepers = getGatekeepers(environmentInfo.os.unixname);
 
-  const serverUsageEnabled = gatekeepers['flipper_desktop_use_server'];
   const settings = await loadSettings();
   const port = 52342;
   /**
@@ -166,66 +165,29 @@ async function getFlipperServer(
     await shutdown(TCPconnectionURL);
   }
 
-  const [homePath, tempPath, desktopPath] = await Promise.all([
-    electronIpcClient.send('getPath', 'home'),
-    electronIpcClient.send('getPath', 'temp'),
-    electronIpcClient.send('getPath', 'desktop'),
-  ]);
+  console.info('flipper-server: not running/listening, start');
 
-  const getEmbeddedServer = async () => {
-    const server = new FlipperServerImpl(
-      {
-        sessionId,
-        environmentInfo,
-        env: parseEnvironmentVariables(env),
-        gatekeepers: gatekeepers,
-        paths: {
-          appPath,
-          homePath,
-          execPath,
-          staticPath,
-          tempPath,
-          desktopPath,
-        },
-        launcherSettings: await loadLauncherSettings(),
-        processConfig: loadProcessConfig(env),
-        settings,
-        validWebSocketOrigins:
-          constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
-      },
-      logger,
-      keytar,
-    );
+  const {readyForIncomingConnections} = await startServer({
+    staticPath,
+    entry: 'index.web.dev.html',
+    port,
+  });
 
-    return server;
-  };
+  const server = await startFlipperServer(
+    appPath,
+    staticPath,
+    '',
+    false,
+    keytar,
+    'embedded',
+    environmentInfo,
+  );
 
-  if (serverUsageEnabled && (!settings.server || settings.server.enabled)) {
-    console.info('flipper-server: not running/listening, start');
+  const companionEnv = await initCompanionEnv(server);
+  await server.connect();
+  await readyForIncomingConnections(server, companionEnv);
 
-    const {readyForIncomingConnections} = await startServer({
-      staticPath,
-      entry: 'index.web.dev.html',
-      port,
-    });
-
-    const server = await startFlipperServer(
-      appPath,
-      staticPath,
-      '',
-      false,
-      keytar,
-      'embedded',
-      environmentInfo,
-    );
-
-    const companionEnv = await initCompanionEnv(server);
-    await server.connect();
-    await readyForIncomingConnections(server, companionEnv);
-
-    return getExternalServer(TCPconnectionURL);
-  }
-  return getEmbeddedServer();
+  return getExternalServer(TCPconnectionURL);
 }
 
 async function start() {

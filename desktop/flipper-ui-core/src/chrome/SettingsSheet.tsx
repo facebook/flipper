@@ -131,14 +131,7 @@ class SettingsSheet extends Component<Props, State> {
       enablePluginMarketplace,
       enablePluginMarketplaceAutoUpdate,
       marketplaceURL,
-      server,
     } = this.state.updatedSettings;
-
-    const serverUsageEnabled = getRenderHostInstance().GK(
-      'flipper_desktop_use_server',
-    );
-    const serverType = getRenderHostInstance().serverConfig.type;
-
     const settingsPristine =
       isEqual(this.props.settings, this.state.updatedSettings) &&
       isEqual(this.props.launcherSettings, this.state.updatedLauncherSettings);
@@ -400,54 +393,6 @@ class SettingsSheet extends Component<Props, State> {
             />
           </ToggledSection>
         </NUX>
-        <ToggledSection
-          label="Server (Experimental)"
-          toggled={(serverUsageEnabled && (!server || server.enabled)) ?? false}
-          frozen={!serverUsageEnabled}
-          onChange={(v) => {
-            this.setState((prevState) => ({
-              updatedSettings: {
-                ...prevState.updatedSettings,
-                server: {enabled: v},
-              },
-            }));
-          }}>
-          {serverUsageEnabled ? (
-            <>
-              <ConfigText
-                content={
-                  "For changes to take effect, click on 'Apply and Restart'"
-                }
-              />
-              {serverType ? (
-                <>
-                  <ConfigText
-                    content={`Flipper is currently using an '${serverType}' server.`}
-                  />
-                  {serverType === 'external' ? (
-                    <>
-                      <br />
-                      <span>
-                        To stop the server, it may be necessary to kill the
-                        process listening at port <b>52342</b>. See below:
-                      </span>
-                      <br />
-                      <code>sudo kill $(lsof -t -i :52342)</code>
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                </>
-              ) : (
-                <></>
-              )}
-            </>
-          ) : (
-            <ConfigText
-              content={'The usage of flipperd (server) is currently disabled.'}
-            />
-          )}
-        </ToggledSection>
         <Layout.Right center>
           <span>Reset all new user tooltips</span>
           <ResetTooltips />
