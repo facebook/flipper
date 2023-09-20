@@ -153,16 +153,16 @@
           window.location.reload();
         });
 
-        function toggleUI(main) {
+        function toggleTroubleshoot(troubleshootOn) {
           const root = document.getElementById('root');
           const troubleshoot = document.getElementById('troubleshoot');
           
-          if (main) {
-            root.style.display = 'block';
-            troubleshoot.style.display = 'none';
-          } else {
+          if (troubleshootOn) {
             root.style.display = 'none';
             troubleshoot.style.display = 'flex';
+          } else {
+            root.style.display = 'block';
+            troubleshoot.style.display = 'none';
           }
         }
 
@@ -184,13 +184,13 @@
         }
         window.flipperShowMessage = showMessage;
         window.flipperShowNoConnection = () => {
-          toggleUI(false);
+          toggleTroubleshoot(true);
         };
         window.flipperHideMessage = () => {
           const box = document.querySelector('.__infinity-dev-box-error');
           box.setAttribute('hidden', true);
 
-          toggleUI(true);
+          toggleTroubleshoot(false);
         }
 
         const closeButton = document.createElement('button');

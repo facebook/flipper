@@ -143,16 +143,16 @@
           window.location.reload();
         });
 
-        function toggleUI(main) {
+        function toggleTroubleshoot(troubleshootOn) {
           const root = document.getElementById('root');
           const troubleshoot = document.getElementById('troubleshoot');
           
-          if (main) {
-            root.style.display = 'block';
-            troubleshoot.style.display = 'none';
-          } else {
+          if (troubleshootOn) {
             root.style.display = 'none';
             troubleshoot.style.display = 'flex';
+          } else {
+            root.style.display = 'block';
+            troubleshoot.style.display = 'none';
           }
         }
 
@@ -216,10 +216,10 @@
 
         window.flipperShowMessage = showMessage;
         window.flipperShowNoConnection = () => {
-          toggleUI(false);
+          toggleTroubleshoot(true);
         };
         window.flipperHideMessage = () => {
-          toggleUI(true);
+          toggleTroubleshoot(false);
         }
 
         // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
