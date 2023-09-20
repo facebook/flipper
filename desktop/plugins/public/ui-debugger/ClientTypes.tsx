@@ -187,7 +187,8 @@ export type Tag =
   | 'iOS'
   | 'BloksBoundTree'
   | 'BloksDerived'
-  | 'TreeRoot';
+  | 'TreeRoot'
+  | 'Warning';
 
 export type Inspectable =
   | InspectableObject

@@ -10,6 +10,7 @@
 import {Id, ClientNode} from '../../ClientTypes';
 import {OnSelectNode} from '../../DesktopTypes';
 import React, {
+  CSSProperties,
   Ref,
   RefObject,
   useEffect,
@@ -35,7 +36,7 @@ import {useVirtualizer} from '@tanstack/react-virtual';
 import {ContextMenu} from './ContextMenu';
 import {MillisSinceEpoch, useKeyboardControls} from './useKeyboardControls';
 import {toTreeList} from './toTreeList';
-import {CaretDownOutlined} from '@ant-design/icons';
+import {CaretDownOutlined, WarningOutlined} from '@ant-design/icons';
 
 const {Text} = Typography;
 
@@ -584,6 +585,10 @@ function nodeIcon(node: TreeNode) {
     return <NodeIconImage src="facebook/bloks-logo-orange.png" />;
   } else if (node.tags.includes('BloksDerived')) {
     return <NodeIconImage src="facebook/bloks-logo-blue.png" />;
+  } else if (node.tags.includes('Warning')) {
+    return (
+      <WarningOutlined style={{...nodeiconStyle, color: theme.errorColor}} />
+    );
   } else {
     return (
       <div
@@ -599,12 +604,13 @@ function nodeIcon(node: TreeNode) {
 
 const NodeIconSize = 14;
 const IconRightMargin = '4px';
-const NodeIconImage = styled.img({
+const nodeiconStyle: CSSProperties = {
   height: NodeIconSize,
   width: NodeIconSize,
   marginRight: IconRightMargin,
   userSelect: 'none',
-});
+};
+const NodeIconImage = styled.img({...nodeiconStyle});
 
 const renderDepthOffset = 12;
 
