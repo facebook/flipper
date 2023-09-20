@@ -101,6 +101,7 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
                 searchValue: newValue,
               });
             }}
+            defaultValue={searchTerm.searchValue}
           />
         );
         break;
@@ -185,6 +186,21 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
       case 'INTEGER': {
         searchValueComponent = (
           <PowerSearchIntegerTerm
+            onCancel={onCancel}
+            onChange={(newValue) => {
+              onFinalize({
+                ...searchTerm,
+                searchValue: newValue,
+              });
+            }}
+            defaultValue={searchTerm.searchValue}
+          />
+        );
+        break;
+      }
+      case 'FLOAT': {
+        searchValueComponent = (
+          <PowerSearchFloatTerm
             onCancel={onCancel}
             onChange={(newValue) => {
               onFinalize({

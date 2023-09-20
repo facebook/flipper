@@ -73,7 +73,7 @@ export const dataTablePowerSearchOperators = {
     key: 'int_less_or_equal',
     valueType: 'INTEGER',
   }),
-  float_equals: (precision: number) => ({
+  float_equals: (precision?: number) => ({
     label: '=',
     key: 'float_equals',
     valueType: 'FLOAT',
