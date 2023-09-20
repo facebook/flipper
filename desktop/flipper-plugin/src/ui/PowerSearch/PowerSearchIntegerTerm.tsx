@@ -7,50 +7,61 @@
  * @format
  */
 
-import {Input} from 'antd';
+import {Button, Input} from 'antd';
 import React from 'react';
 
 type PowerSearchIntegerTermProps = {
   onCancel: () => void;
   onChange: (value: number) => void;
+  defaultValue?: number;
 };
 
 export const PowerSearchIntegerTerm: React.FC<PowerSearchIntegerTermProps> = ({
   onCancel,
   onChange,
+  defaultValue,
 }) => {
-  return (
-    <Input
-      autoFocus
-      style={{width: 100}}
-      placeholder="..."
-      onChange={(event) => {
-        const newValue = event.target.value;
+  const [editing, setEditing] = React.useState(!defaultValue);
 
-        const normalizedValue = parseInt(newValue, 10);
+  if (editing) {
+    return (
+      <Input
+        autoFocus
+        style={{width: 100}}
+        placeholder="..."
+        onChange={(event) => {
+          const newValue = event.target.value;
 
-        if (normalizedValue.toString() !== newValue) {
-          event.target.value = normalizedValue.toString();
-        }
-      }}
-      onBlur={(event) => {
-        const newValue = event.target.value;
+          const normalizedValue = parseInt(newValue, 10);
 
-        if (!newValue) {
-          onCancel();
-          return;
-        }
+          if (normalizedValue.toString() !== newValue) {
+            event.target.value = normalizedValue.toString();
+          }
+        }}
+        onBlur={(event) => {
+          const newValue = event.target.value;
 
-        const normalizedValue = parseInt(newValue, 10);
-        onChange(normalizedValue);
-      }}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === 'Escape') {
-          event.currentTarget.blur();
-        }
-      }}
-      type="number"
-      step={1}
-    />
-  );
+          setEditing(false);
+
+          if (!newValue) {
+            onCancel();
+            return;
+          }
+
+          const normalizedValue = parseInt(newValue, 10);
+          onChange(normalizedValue);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === 'Escape') {
+            event.currentTarget.blur();
+          }
+        }}
+        type="number"
+        step={1}
+        defaultValue={defaultValue}
+      />
+    );
+  }
+
+  return <Button onClick={() => setEditing(true)}>{defaultValue}</Button>;
 };
