@@ -27,6 +27,7 @@ class DescriptorRegister {
     fun withDefaults(): DescriptorRegister {
       val mapping = DescriptorRegister()
       mapping.register(Any::class.java, ObjectDescriptor)
+      mapping.register(WarningMessage::class.java, WarningMessageDescriptor)
       mapping.register(ApplicationRef::class.java, ApplicationRefDescriptor)
       mapping.register(Activity::class.java, ActivityDescriptor)
       mapping.register(Window::class.java, WindowDescriptor)

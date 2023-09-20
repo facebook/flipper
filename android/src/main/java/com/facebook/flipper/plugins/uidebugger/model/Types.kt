@@ -16,6 +16,8 @@ data class Bounds(val x: Int, val y: Int, val width: Int, val height: Int) {
     fun fromRect(rect: Rect): Bounds {
       return Bounds(rect.left, rect.top, rect.width(), rect.height())
     }
+
+    fun zero() = Bounds(0, 0, 0, 0)
   }
 }
 
