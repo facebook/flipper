@@ -7,6 +7,7 @@
 
 #if FB_SONARKIT_ENABLED
 
+#import <FlipperKitUIDebuggerPlugin/UIDTraversalMode.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIDTreeObserverManager : NSObject
 
 + (instancetype)shared;
+
+@property(nonatomic, assign) UIDTraversalMode traversalMode;
 
 - (void)startWithContext:(UIDContext*)context;
 - (void)stop;

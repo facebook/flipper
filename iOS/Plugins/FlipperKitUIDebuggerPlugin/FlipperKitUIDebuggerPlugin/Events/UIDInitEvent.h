@@ -8,6 +8,7 @@
 #if FB_SONARKIT_ENABLED
 
 #import <Foundation/Foundation.h>
+#import "UIDTraversalMode.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIDInitEvent : NSObject
 
 @property(nonatomic) NSUInteger rootId;
+@property(nonatomic) UIDTraversalMode currentTraversalMode;
 @property(nonatomic, strong)
     NSArray<UIDFrameworkEventMetadata*>* frameworkEventMetadata;
 

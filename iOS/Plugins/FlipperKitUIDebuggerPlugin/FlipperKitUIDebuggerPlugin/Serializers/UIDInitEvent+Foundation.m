@@ -9,6 +9,7 @@
 
 #import "NSArray+Foundation.h"
 #import "UIDInitEvent+Foundation.h"
+#import "UIDTraversalMode.h"
 
 FB_LINKABLE(UIDInitEvent_Foundation)
 @implementation UIDInitEvent (Foundation)
@@ -19,6 +20,12 @@ FB_LINKABLE(UIDInitEvent_Foundation)
     @"frameworkEventMetadata" : self.frameworkEventMetadata
         ? [self.frameworkEventMetadata toFoundation]
         : @[],
+    @"supportedTraversalModes" : @[
+      NSStringFromUIDTraversalMode(UIDTraversalModeViewHierarchy),
+      NSStringFromUIDTraversalMode(UIDTraversalModeAccessibilityHierarchy),
+    ],
+    @"currentTraversalMode" :
+        NSStringFromUIDTraversalMode(self.currentTraversalMode),
   };
 }
 

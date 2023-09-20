@@ -39,6 +39,7 @@
     _queue =
         dispatch_queue_create("ui-debugger.background", DISPATCH_QUEUE_SERIAL);
     _context = nil;
+    _traversalMode = UIDTraversalModeViewHierarchy;
   }
   return self;
 }
@@ -52,6 +53,19 @@
   });
 
   return instance;
+}
+
+- (void)setTraversalMode:(UIDTraversalMode)traversalMode {
+  if (_traversalMode == traversalMode) {
+    return;
+  }
+
+  // trigger another pass
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self->_rootObserver processNode:self->_context.application
+                        withSnapshot:YES
+                         withContext:self->_context];
+  });
 }
 
 - (void)startWithContext:(UIDContext*)context {
@@ -69,6 +83,18 @@
   [_rootObserver subscribe:_context.application];
 
   [_context.frameworkEventManager enable];
+
+  __weak __typeof(self) weakSelf = self;
+  [_context.connection
+        receive:@"onTraversalModeChange"
+      withBlock:^(NSDictionary* data, id<FlipperResponder> responder) {
+        NSString* _Nullable maybeMode =
+            [data[@"mode"] isKindOfClass:NSString.class] ? data[@"mode"] : nil;
+        if (maybeMode == nil) {
+          return;
+        }
+        weakSelf.traversalMode = UIDTraversalModeFromString(maybeMode);
+      }];
 }
 
 - (void)stop {
@@ -86,6 +112,7 @@
   UIDInitEvent* init = [UIDInitEvent new];
   init.rootId = [descriptor identifierForNode:_context.application];
   init.frameworkEventMetadata = [_context.frameworkEventManager eventsMetadata];
+  init.currentTraversalMode = _traversalMode;
 
   [_context.connection send:[UIDInitEvent name] withRawParams:UID_toJSON(init)];
 }
