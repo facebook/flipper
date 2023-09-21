@@ -26,6 +26,8 @@ export type LiveClientState = {
   nodes: Map<Id, ClientNode>;
 };
 
+export type Color = string;
+
 export type UIState = {
   viewMode: Atom<ViewMode>;
   wireFrameMode: Atom<WireFrameMode>;
@@ -36,7 +38,7 @@ export type UIState = {
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
   selectedNode: Atom<NodeSelection | undefined>;
-  highlightedNodes: Atom<Set<Id>>;
+  highlightedNodes: Atom<Map<Id, Color>>;
   focusedNode: Atom<Id | undefined>;
   expandedNodes: Atom<Set<Id>>;
   visualiserWidth: Atom<number>;

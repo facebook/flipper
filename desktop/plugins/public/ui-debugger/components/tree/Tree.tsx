@@ -8,7 +8,7 @@
  */
 
 import {Id, ClientNode} from '../../ClientTypes';
-import {OnSelectNode} from '../../DesktopTypes';
+import {Color, OnSelectNode} from '../../DesktopTypes';
 import React, {
   CSSProperties,
   Ref,
@@ -373,7 +373,7 @@ function TreeNodeRow({
   transform: string;
   innerRef: Ref<any>;
   treeNode: TreeNode;
-  highlightedNodes: Set<Id>;
+  highlightedNodes: Map<Id, Color>;
   selectedNode?: Id;
   hoveredNode?: Id;
   isUsingKBToScroll: RefObject<MillisSinceEpoch>;
@@ -410,7 +410,7 @@ function TreeNodeRow({
       />
 
       <TreeNodeContent
-        isHighlighted={highlightedNodes.has(treeNode.id)}
+        highlightColor={highlightedNodes.get(treeNode.id)}
         isSelected={isSelected}
         isHovered={hoveredNode === treeNode.id}
         onMouseEnter={() => {
@@ -501,8 +501,8 @@ const TreeNodeContent = styled.li<{
   item: TreeNode;
   isHovered: boolean;
   isSelected: boolean;
-  isHighlighted: boolean;
-}>(({item, isHovered, isSelected, isHighlighted}) => ({
+  highlightColor?: string;
+}>(({item, isHovered, isSelected, highlightColor}) => ({
   display: 'flex',
   alignItems: 'center',
   height: TreeItemHeight,
@@ -513,13 +513,15 @@ const TreeNodeContent = styled.li<{
   borderStyle: 'solid',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
-  backgroundColor: isHighlighted
-    ? 'rgba(255,0,0,.3)'
-    : isSelected
-    ? theme.selectionBackgroundColor
-    : isHovered
-    ? theme.backgroundWash
-    : theme.backgroundDefault,
+  opacity: highlightColor != null ? 0.6 : 1,
+  backgroundColor:
+    highlightColor != null
+      ? highlightColor
+      : isSelected
+      ? theme.selectionBackgroundColor
+      : isHovered
+      ? theme.backgroundWash
+      : theme.backgroundDefault,
 }));
 
 function ExpandedIconOrSpace(props: {

@@ -30,6 +30,7 @@ import {
   WireFrameMode,
   AugmentedFrameworkEvent,
   StreamInterceptorEventEmitter,
+  Color,
 } from './DesktopTypes';
 import EventEmitter from 'eventemitter3';
 import {addInterceptors} from './fb-stubs/StreamInterceptor';
@@ -235,7 +236,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
     uiState.highlightedNodes.update((draft) => {
       for (const node of nodesToHighlight) {
-        draft.add(node);
+        draft.set(
+          node,
+          `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+        );
       }
     });
 
@@ -300,8 +304,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   };
 }
 
-const HighlightTime = 300;
-
+const HighlightTime = 1500;
 export {Component} from './components/main';
 export * from './ClientTypes';
 
@@ -317,7 +320,7 @@ function createUIState(): UIState {
     streamState: createState<StreamState>({state: 'Ok'}),
     visualiserWidth: createState(Math.min(window.innerWidth / 4.5, 500)),
 
-    highlightedNodes: createState(new Set<Id>()),
+    highlightedNodes: createState(new Map<Id, Color>()),
 
     selectedNode: createState<NodeSelection | undefined>(undefined),
     //used to indicate whether we will higher the visualizer / tree when a matching event comes in

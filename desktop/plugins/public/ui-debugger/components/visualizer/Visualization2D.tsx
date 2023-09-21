@@ -324,7 +324,7 @@ function Visualization2DNode({
     />
   ));
 
-  const isHighlighted = useValue(instance.uiState.highlightedNodes).has(
+  const highLightColor = useValue(instance.uiState.highlightedNodes).get(
     node.id,
   );
 
@@ -346,8 +346,8 @@ function Visualization2DNode({
         top: toPx(node.bounds.y),
         width: toPx(node.bounds.width),
         height: toPx(node.bounds.height),
-        opacity: isHighlighted ? 0.3 : 1,
-        backgroundColor: isHighlighted ? 'red' : 'transparent',
+        opacity: highLightColor != null ? 0.7 : 1,
+        backgroundColor: highLightColor,
       }}>
       {showBorder && <NodeBorder />}
 
