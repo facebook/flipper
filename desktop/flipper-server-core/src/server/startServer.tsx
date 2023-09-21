@@ -151,7 +151,7 @@ async function startHTTPServer(config: Config): Promise<{
   const socket = attachWS(server, config);
 
   exitHook(() => {
-    console.log('Shutdown server');
+    console.log('[flipper-server] Shutdown HTTP server');
     server.close();
   });
 

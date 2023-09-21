@@ -20,15 +20,9 @@ import {
 } from 'flipper-server-client';
 import {
   checkPortInUse,
-  FlipperServerImpl,
   getAuthToken,
   getEnvironmentInfo,
-  getGatekeepers,
   hasAuthToken,
-  loadLauncherSettings,
-  loadProcessConfig,
-  loadSettings,
-  sessionId,
   setupPrefetcher,
   startFlipperServer,
   startServer,
@@ -38,11 +32,9 @@ import {
   getLogger,
   isTest,
   Logger,
-  parseEnvironmentVariables,
   setLoggerInstance,
   wrapRequire,
 } from 'flipper-common';
-import constants from './fb-stubs/constants';
 import {initializeElectron} from './electron/initializeElectron';
 import path from 'path';
 import fs from 'fs-extra';
@@ -106,7 +98,6 @@ async function getExternalServer(url: URL) {
 }
 
 async function getFlipperServer(
-  logger: Logger,
   electronIpcClient: ElectronIpcClientRenderer,
 ): Promise<FlipperServer> {
   const execPath =
@@ -114,16 +105,12 @@ async function getFlipperServer(
   const appPath = await electronIpcClient.send('getPath', 'app');
   const staticPath = getStaticPath(appPath);
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
-  const env = process.env;
   const environmentInfo = await getEnvironmentInfo(
     staticPath,
     isProduction,
     false,
   );
   const keytar: KeytarModule | undefined = await getKeytarModule(staticPath);
-  const gatekeepers = getGatekeepers(environmentInfo.os.unixname);
-
-  const settings = await loadSettings();
   const port = 52342;
   /**
    * Only attempt to use the auth token if one is available. Otherwise,
@@ -135,22 +122,21 @@ async function getFlipperServer(
   if (await hasAuthToken()) {
     token = await getAuthToken();
   }
-  // check first with the actual TCP socket
+
   const searchParams = new URLSearchParams(token ? {token} : {});
   const TCPconnectionURL = new URL(`ws://localhost:${port}?${searchParams}`);
 
-  /**
-   * Attempt to shutdown a running instance of Flipper server.
-   * @param url The URL used for connection.
-   */
-  async function shutdown(url: URL) {
+  async function shutdown(): Promise<boolean> {
     console.info('[flipper-server] Attempt to shutdown.');
 
-    const server = await getExternalServer(url);
-    await server.exec('shutdown').catch(() => {
-      /** shutdown will ultimately make this request fail, ignore error. */
-      console.info('[flipper-server] Shutdown may have succeeded');
-    });
+    try {
+      const response = await fetch(`http://localhost:${port}/shutdown`);
+      const json = await response.json();
+
+      return json?.success;
+    } catch {}
+
+    return false;
   }
 
   /**
@@ -162,10 +148,11 @@ async function getFlipperServer(
    */
   if (await checkPortInUse(port)) {
     console.warn(`[flipper-server] TCP port ${port} is already in use.`);
-    await shutdown(TCPconnectionURL);
+    const success = await shutdown();
+    console.info(`[flipper-server] Shutdown: ${success}`);
   }
 
-  console.info('flipper-server: not running/listening, start');
+  console.info('[flipper-server] Not running/listening, start');
 
   const {readyForIncomingConnections} = await startServer({
     staticPath,
@@ -197,7 +184,6 @@ async function start() {
   const electronIpcClient = new ElectronIpcClientRenderer();
 
   const flipperServer: FlipperServer = await getFlipperServer(
-    logger,
     electronIpcClient,
   );
   const flipperServerConfig = await flipperServer.exec('get-config');
