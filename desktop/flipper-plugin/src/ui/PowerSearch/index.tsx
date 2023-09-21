@@ -95,8 +95,6 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
     scrollTo: () => void;
   }>(null);
 
-  console.log('searchExpression', searchExpression);
-
   return (
     <PowerSearchContainer>
       <Space size={[theme.space.tiny, 0]}>
