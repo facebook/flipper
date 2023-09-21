@@ -62,7 +62,7 @@ export function initLogTailer() {
 function transformLogLevel(level: LoggerTypes, message: string) {
   if (level === 'error') {
     // Error comes from one of our dependencies and is not actionable
-    if (message.includes('ResizeObserver loop limit exceeded')) {
+    if (message.includes('ResizeObserver loop')) {
       return 'warn';
     }
     // Axios will create rather unhelpful error messages which
