@@ -133,6 +133,14 @@ async function startHTTPServer(config: Config): Promise<{
     res.end(JSON.stringify({isReady}));
   });
 
+  app.get('/shutdown', (_req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({success: true}));
+
+    // Just exit the process, this will trigger the shutdown hooks.
+    process.exit(0);
+  });
+
   app.get('/health', (_req, res) => {
     res.end('flipper-ok');
   });
