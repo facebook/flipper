@@ -67,7 +67,7 @@ export function shouldShowPWAInstallationWizard(): boolean {
   try {
     neverAskAgain = window.localStorage.getItem(neverAskAgainKey);
   } catch (e) {}
-  if (neverAskAgain !== undefined) {
+  if (neverAskAgain !== undefined && neverAskAgain !== null) {
     return false;
   }
 
@@ -167,6 +167,17 @@ export default function PWAInstallationWizard(props: Props) {
           be found at the right-side of the search bar next to the bookmarks
           icon.{' '}
         </p>
+        {getFlipperLib().isFB && (
+          <p>
+            Installation instructions can also be found{' '}
+            <a
+              target="_blank"
+              href="https://fb.workplace.com/groups/flipperfyi/permalink/1485547228878234/">
+              here
+            </a>
+            .
+          </p>
+        )}
       </Layout.Container>
     </Layout.Container>
   );
