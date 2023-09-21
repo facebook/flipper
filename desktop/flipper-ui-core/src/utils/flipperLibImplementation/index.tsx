@@ -17,7 +17,12 @@ import {addNotification} from '../../reducers/notifications';
 import {deconstructPluginKey} from 'flipper-common';
 import {RenderHost} from 'flipper-frontend-core';
 import {setMenuEntries} from '../../reducers/connections';
-import {currentUser, isConnected} from '../../fb-stubs/user';
+import {
+  currentUser,
+  internGraphGETAPIRequest,
+  internGraphPOSTAPIRequest,
+  isConnected,
+} from '../../fb-stubs/user';
 
 export function initializeFlipperLibImplementation(
   renderHost: RenderHost,
@@ -29,6 +34,8 @@ export function initializeFlipperLibImplementation(
     ...base,
     intern: {
       ...base.intern,
+      graphGet: internGraphGETAPIRequest,
+      graphPost: internGraphPOSTAPIRequest,
       currentUser,
       isConnected,
     },
