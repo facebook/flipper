@@ -27,6 +27,13 @@
   UIDDescriptorRegister* _descriptorRegister;
 }
 
++ (BOOL)isSupported {
+  return _loadAccessibilityFramework() &&
+      [UIApplication.sharedApplication
+             respondsToSelector:@selector
+             (_accessibilityLeafDescendantsWithOptions:)];
+}
+
 - (instancetype)initWithDescriptorRegister:
     (UIDDescriptorRegister*)descriptorRegister {
   self = [super init];
@@ -41,10 +48,18 @@
     return @[];
   }
 
+  if (!_loadAccessibilityFramework()) {
+    return @[];
+  }
+
   // create voice over representation of the app
   id options = [NSClassFromString(@"UIAccessibilityElementTraversalOptions")
       voiceOverOptionsIncludingElementsFromOpaqueProviders:YES
                                               honorsGroups:NO];
+  if (![application respondsToSelector:@selector
+                    (_accessibilityLeafDescendantsWithOptions:)]) {
+    return @[];
+  }
   NSArray<NSObject*>* const allyNodes = [[application
       _accessibilityLeafDescendantsWithOptions:options] mutableCopy];
 
@@ -76,6 +91,27 @@
                     tags:[descriptor tagsForNode:node]];
   uidNode.attributes = _atrtibutesForNode(node);
   return uidNode;
+}
+
+static BOOL _loadAccessibilityFramework(void) {
+  static BOOL isAccessibilityFrameworkLoaded;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSURL* const knownFrameworkUrl =
+        [NSBundle bundleForClass:UIApplication.class].bundleURL;
+    if (!knownFrameworkUrl) {
+      isAccessibilityFrameworkLoaded = NO;
+    } else {
+      NSURL* const accessibilityFrameworkUrl =
+          [knownFrameworkUrl.URLByDeletingLastPathComponent
+                  .URLByDeletingLastPathComponent
+              URLByAppendingPathComponent:
+                  @"PrivateFrameworks/UIAccessibility.framework"];
+      isAccessibilityFrameworkLoaded =
+          [[NSBundle bundleWithURL:accessibilityFrameworkUrl] load];
+    }
+  });
+  return isAccessibilityFrameworkLoaded;
 }
 
 static NSString* _nameForNode(NSObject* node) {

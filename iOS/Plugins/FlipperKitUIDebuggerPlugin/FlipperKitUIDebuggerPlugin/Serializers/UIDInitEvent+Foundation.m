@@ -8,6 +8,7 @@
 #if FB_SONARKIT_ENABLED
 
 #import "NSArray+Foundation.h"
+#import "UIDAllyTraversal.h"
 #import "UIDInitEvent+Foundation.h"
 #import "UIDTraversalMode.h"
 
@@ -20,12 +21,15 @@ FB_LINKABLE(UIDInitEvent_Foundation)
     @"frameworkEventMetadata" : self.frameworkEventMetadata
         ? [self.frameworkEventMetadata toFoundation]
         : @[],
-    @"supportedTraversalModes" : @[
+    @"supportedTraversalModes" : UIDAllyTraversal.isSupported ? @[
       NSStringFromUIDTraversalMode(UIDTraversalModeViewHierarchy),
       NSStringFromUIDTraversalMode(UIDTraversalModeAccessibilityHierarchy),
+    ] : @[
+      NSStringFromUIDTraversalMode(UIDTraversalModeViewHierarchy),
     ],
-    @"currentTraversalMode" :
-        NSStringFromUIDTraversalMode(self.currentTraversalMode),
+    @"currentTraversalMode" : NSStringFromUIDTraversalMode(
+        UIDAllyTraversal.isSupported ? self.currentTraversalMode
+                                     : UIDTraversalModeViewHierarchy),
   };
 }
 
