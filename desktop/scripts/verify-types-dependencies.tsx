@@ -7,9 +7,9 @@
  * @format
  */
 
-import cp from 'child_process';
 import fs from 'fs-extra';
 import semver from 'semver';
+import fg from 'fast-glob';
 
 /**
  * Lists all dependencies that DO NOT have to match their type declaration package major versions
@@ -107,11 +107,9 @@ async function validatePackageJson(
 }
 
 async function main() {
-  const out = cp.execSync(
-    'find . -name "package.json" -not -path "*/node_modules/*"',
-  );
-
-  const packageJsons = out.toString().trim().split('\n');
+  const packageJsons = await fg('**/package.json', {
+    ignore: ['**/node_modules'],
+  });
 
   const unmatched = await Promise.all(
     packageJsons.map(validatePackageJson),
