@@ -19,8 +19,8 @@ import {RenderHost} from 'flipper-frontend-core';
 import {setMenuEntries} from '../../reducers/connections';
 import {
   currentUser,
-  internGraphGETAPIRequest,
-  internGraphPOSTAPIRequest,
+  internGraphGETAPIRequestRaw,
+  internGraphPOSTAPIRequestRaw,
   isConnected,
 } from '../../fb-stubs/user';
 
@@ -34,8 +34,8 @@ export function initializeFlipperLibImplementation(
     ...base,
     intern: {
       ...base.intern,
-      graphGet: internGraphGETAPIRequest,
-      graphPost: internGraphPOSTAPIRequest,
+      graphGet: internGraphGETAPIRequestRaw,
+      graphPost: internGraphPOSTAPIRequestRaw,
       currentUser,
       isConnected,
     },
