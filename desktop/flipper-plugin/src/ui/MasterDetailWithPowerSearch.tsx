@@ -84,7 +84,7 @@ export function MasterDetailWithPowerSearch<T extends object>({
   sidebarPosition,
   sidebarSize,
   onSelect,
-  extraActions,
+  actionsTop,
   enableMenuEntries,
   enableClear,
   isPaused,
@@ -206,11 +206,13 @@ export function MasterDetailWithPowerSearch<T extends object>({
       records={records!}
       tableManagerRef={tableManagerRef}
       onSelect={handleSelect}
-      extraActions={
+      actionsRight={
         <>
           {connected && isPaused && (
             <Button
               size="small"
+              type="text"
+              style={{height: '100%'}}
               title={`Click to ${pausedState ? 'resume' : 'pause'} the stream`}
               danger={pausedState}
               onClick={handleTogglePause}>
@@ -218,13 +220,18 @@ export function MasterDetailWithPowerSearch<T extends object>({
             </Button>
           )}
           {connected && enableClear && (
-            <Button size="small" title="Clear records" onClick={handleClear}>
+            <Button
+              size="small"
+              type="text"
+              title="Clear records"
+              onClick={handleClear}
+              style={{height: '100%'}}>
               <DeleteOutlined />
             </Button>
           )}
-          {extraActions}
         </>
       }
+      actionsTop={actionsTop}
     />
   );
 

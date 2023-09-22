@@ -85,7 +85,8 @@ type DataTableBaseProps<T = any> = {
   enableMultiPanels?: boolean;
   // if set (the default) will grow and become scrollable. Otherwise will use natural size
   scrollable?: boolean;
-  extraActions?: React.ReactElement;
+  actionsRight?: React.ReactElement;
+  actionsTop?: React.ReactElement;
   onSelect?(record: T | undefined, records: T[]): void;
   onRowStyle?(record: T): CSSProperties | undefined;
   tableManagerRef?: RefObject<DataTableManager<T> | undefined>; // Actually we want a MutableRefObject, but that is not what React.createRef() returns, and we don't want to put the burden on the plugin dev to cast it...
@@ -631,6 +632,7 @@ export function DataTable<T extends object>(
 
   const header = (
     <Layout.Container>
+      {props.actionsTop ? <Searchbar gap>{props.actionsTop}</Searchbar> : null}
       {props.enableSearchbar && (
         <Searchbar gap>
           <PowerSearch
@@ -647,15 +649,11 @@ export function DataTable<T extends object>(
               </Button>
             </Dropdown>
           )}
+          {props.actionsRight}
         </Searchbar>
       )}
     </Layout.Container>
   );
-  const footer = props.extraActions ? (
-    <Layout.Container>
-      <Searchbar gap>{props.extraActions}</Searchbar>
-    </Layout.Container>
-  ) : null;
   const columnHeaders = (
     <Layout.Container>
       {props.enableColumnHeaders && (
@@ -734,7 +732,7 @@ export function DataTable<T extends object>(
       </Layout.Container>
     );
   }
-  let mainPanel = (
+  const mainPanel = (
     <Layout.Container grow={props.scrollable} style={{position: 'relative'}}>
       {mainSection}
       {props.enableAutoScroll && (
@@ -752,14 +750,6 @@ export function DataTable<T extends object>(
       {range && !isUnitTest && <RangeFinder>{range}</RangeFinder>}
     </Layout.Container>
   );
-  if (footer) {
-    mainPanel = (
-      <Layout.Bottom>
-        {mainPanel}
-        {footer}
-      </Layout.Bottom>
-    );
-  }
   return props.enableMultiPanels && tableState.sideBySide ? (
     //TODO: Make the panels resizable by having a dynamic maxWidth for Layout.Right/Left possibly?
     <Layout.Horizontal style={{height: '100%'}}>
