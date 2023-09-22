@@ -136,18 +136,15 @@ async function startHTTPServer(
   });
 
   app.get('/ready', (_req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({isReady}));
+    res.json({isReady});
   });
 
   app.get('/info', (_req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(environmentInfo));
+    res.json(environmentInfo);
   });
 
   app.get('/shutdown', (_req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({success: true}));
+    res.json({success: true});
 
     // Just exit the process, this will trigger the shutdown hooks.
     process.exit(0);
