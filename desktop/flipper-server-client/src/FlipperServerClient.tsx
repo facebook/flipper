@@ -96,7 +96,6 @@ export function createFlipperServerWithSocket(
 
         switch (event) {
           case 'exec-response': {
-            console.debug('flipper-server: exec <<<', payload);
             const entry = pendingRequests.get(payload.id);
             if (!entry) {
               console.warn(`Unknown request id `, payload.id);
@@ -108,12 +107,6 @@ export function createFlipperServerWithSocket(
             break;
           }
           case 'exec-response-error': {
-            // TODO: Deserialize error
-            console.debug(
-              'flipper-server: exec <<< [SERVER ERROR]',
-              payload.id,
-              payload.data,
-            );
             const entry = pendingRequests.get(payload.id);
             if (!entry) {
               console.warn(`flipper-server: Unknown request id `, payload.id);
@@ -170,13 +163,6 @@ export function createFlipperServerWithSocket(
         if (connected) {
           const id = ++requestId;
           return new Promise<any>((resolve, reject) => {
-            console.debug(
-              'flipper-server: exec >>>',
-              id,
-              command,
-              command === 'intern-upload-scribe-logs' ? undefined : args,
-            );
-
             pendingRequests.set(id, {
               resolve,
               reject,
