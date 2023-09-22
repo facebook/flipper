@@ -30,3 +30,9 @@ export {
 } from './app-connectivity/certificate-exchange/certificate-utils';
 
 export {sessionId} from './sessionId';
+import dns from 'dns';
+
+// The default on node16 is to prefer ipv4 results which causes issues
+// in some setups.
+// @ts-ignore: Not in our node typings yet
+dns.setDefaultResultOrder('verbatim');
