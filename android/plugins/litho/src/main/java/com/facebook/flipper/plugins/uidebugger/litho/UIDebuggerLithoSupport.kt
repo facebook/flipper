@@ -86,7 +86,7 @@ object UIDebuggerLithoSupport {
             val source =
                 event.attributeOrNull<String>(
                     "source") // todo replace magic strings with DebugEventAttribute.Source once
-                              // litho open source is released
+            // litho open source is released
             if (source != null) {
               attributes["source"] = source
             }
