@@ -39,7 +39,6 @@ const safe = (f: () => void) => {
 };
 
 let numberOfConnectedClients = 0;
-let disconnectTimeout: NodeJS.Timeout | undefined;
 
 /**
  * Attach and handle incoming messages from clients.
@@ -236,21 +235,13 @@ export function attachSocketServer(
       server.offAny(onServerEvent);
       flipperServerCompanion?.destroyAll();
 
-      if (getFlipperServerConfig().environmentInfo.isHeadlessBuild) {
-        if (disconnectTimeout) {
-          clearTimeout(disconnectTimeout);
-        }
-
-        if (closeOnIdle) {
-          /**
-           * If, after 60 seconds, there are no more connected clients, we exit the process.
-           */
-          disconnectTimeout = setTimeout(() => {
-            if (numberOfConnectedClients === 0 && isProduction()) {
-              console.info('Shutdown as no clients are currently connected');
-              process.exit(0);
-            }
-          }, 60 * 1000);
+      if (
+        getFlipperServerConfig().environmentInfo.isHeadlessBuild &&
+        closeOnIdle
+      ) {
+        if (numberOfConnectedClients === 0 && isProduction()) {
+          console.info('Shutdown as no clients are currently connected');
+          process.exit(0);
         }
       }
     }
