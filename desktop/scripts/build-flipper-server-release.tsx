@@ -35,6 +35,7 @@ import {downloadIcons} from './build-icons';
 import {spawn} from 'promisify-child-process';
 import {homedir} from 'os';
 import {need as pkgFetch} from 'pkg-fetch';
+import {exec} from 'child_process';
 
 // This needs to be tested individually. As of 2022Q2, node17 is not supported.
 const SUPPORTED_NODE_PLATFORM = 'node16';
@@ -141,6 +142,11 @@ const argv = yargs
     },
     linux: {
       describe: 'Build a platform-specific bundle for Linux.',
+    },
+    dmg: {
+      describe: 'Package built server as a DMG file (Only for a MacOS build).',
+      type: 'boolean',
+      default: false,
     },
   })
   .help()
@@ -601,6 +607,46 @@ async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
   await fs.chmod(outputPath, 0o755);
 }
 
+async function createMacDMG(
+  platform: BuildPlatform,
+  outputPath: string,
+  destPath: string,
+) {
+  console.log(`⚙️  Create macOS DMG from: ${outputPath}`);
+
+  const name = `Flipper-${platform}.dmg`;
+  const temporaryDirectory = os.tmpdir();
+
+  const dmgOutputPath = path.resolve(temporaryDirectory, name);
+
+  await fs.remove(dmgOutputPath);
+
+  const dmgPath = path.resolve(destPath, name);
+
+  // const dmgPath = `${destPath}/${name}`;
+  const cmd = `hdiutil create -format UDZO -srcfolder "${outputPath}/" -volname "Flipper" ${dmgOutputPath}`;
+
+  return new Promise<void>((resolve, reject) => {
+    exec(cmd, async (error, _stdout, stderr) => {
+      if (error) {
+        console.error(`❌  Failed to create DMG with error: ${error.message}`);
+        return reject(error);
+      }
+
+      if (stderr) {
+        console.error(`❌  Failed to create DMG with error: ${stderr}`);
+        return reject(new Error(stderr));
+      }
+
+      await fs.move(dmgOutputPath, dmgPath);
+      await fs.remove(outputPath);
+
+      console.log(`✅  DMG successfully created ${dmgPath}`);
+      resolve();
+    });
+  });
+}
+
 async function setUpLinuxBundle(outputDir: string) {
   console.log(`⚙️  Creating Linux startup script in ${outputDir}/flipper`);
   await fs.writeFile(path.join(outputDir, 'flipper'), LINUX_STARTUP_SCRIPT);
@@ -691,6 +737,14 @@ async function bundleServerReleaseForPlatform(
 
   console.log(`⚙️  Downloading compatible node version`);
   await installNodeBinary(outputPaths.nodePath, platform);
+
+  if (
+    argv.dmg &&
+    (platform === BuildPlatform.MAC_X64 ||
+      platform === BuildPlatform.MAC_AARCH64)
+  ) {
+    await createMacDMG(platform, outputDir, distDir);
+  }
 
   console.log(`✅  Wrote ${platform}-specific server version to ${outputDir}`);
 }
