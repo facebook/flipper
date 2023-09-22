@@ -20,6 +20,7 @@ import {FlipperServerImpl} from '../FlipperServerImpl';
 import {FlipperServerCompanionEnv} from 'flipper-server-companion';
 import {validateAuthToken} from '../app-connectivity/certificate-exchange/certificate-utils';
 import {tracker} from '../tracker';
+import {EnvironmentInfo} from 'flipper-common';
 
 type Config = {
   port: number;
@@ -89,13 +90,16 @@ let isReadyWaitable: Promise<void> | undefined;
  * @param config Server configuration.
  * @returns Returns a promise to the created server, proxy and WS server.
  */
-export async function startServer(config: Config): Promise<{
+export async function startServer(
+  config: Config,
+  environmentInfo: EnvironmentInfo,
+): Promise<{
   app: Express;
   server: http.Server;
   socket: WebSocketServer;
   readyForIncomingConnections: ReadyForConnections;
 }> {
-  return await startHTTPServer(config);
+  return await startHTTPServer(config, environmentInfo);
 }
 
 /**
@@ -104,7 +108,10 @@ export async function startServer(config: Config): Promise<{
  * @param config Server configuration.
  * @returns A promise to both app and HTTP server.
  */
-async function startHTTPServer(config: Config): Promise<{
+async function startHTTPServer(
+  config: Config,
+  environmentInfo: EnvironmentInfo,
+): Promise<{
   app: Express;
   server: http.Server;
   socket: WebSocketServer;
@@ -131,6 +138,11 @@ async function startHTTPServer(config: Config): Promise<{
   app.get('/ready', (_req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({isReady}));
+  });
+
+  app.get('/info', (_req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(environmentInfo));
   });
 
   app.get('/shutdown', (_req, res) => {

@@ -175,11 +175,14 @@ async function start() {
     `[flipper-server][bootstrap] Check for running instances completed (${runningInstanceShutdownMS} ms)`,
   );
 
-  const {app, server, socket, readyForIncomingConnections} = await startServer({
-    staticPath,
-    entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
-    port: argv.port,
-  });
+  const {app, server, socket, readyForIncomingConnections} = await startServer(
+    {
+      staticPath,
+      entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
+      port: argv.port,
+    },
+    environmentInfo,
+  );
 
   const t4 = performance.now();
   const httpServerStartedMS = t4 - t3;

@@ -154,11 +154,14 @@ async function getFlipperServer(
 
   console.info('[flipper-server] Not running/listening, start');
 
-  const {readyForIncomingConnections} = await startServer({
-    staticPath,
-    entry: 'index.web.dev.html',
-    port,
-  });
+  const {readyForIncomingConnections} = await startServer(
+    {
+      staticPath,
+      entry: 'index.web.dev.html',
+      port,
+    },
+    environmentInfo,
+  );
 
   const server = await startFlipperServer(
     appPath,
