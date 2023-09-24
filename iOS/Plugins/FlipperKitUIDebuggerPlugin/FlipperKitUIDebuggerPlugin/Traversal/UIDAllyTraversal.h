@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIDAllyTraversal : NSObject
 
++ (void)setVoiceOverServiceEnabled:(BOOL)enabled;
+
 @property(nonatomic, class, readonly, getter=isSupported) BOOL supported;
 
 - (instancetype)initWithDescriptorRegister:

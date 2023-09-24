@@ -8,6 +8,7 @@
 #if FB_SONARKIT_ENABLED
 
 #import "UIDAllyTraversal.h"
+#import <dlfcn.h>
 #import "UIDDescriptorRegister.h"
 #import "UIDMetadataRegister.h"
 #import "UIDNode.h"
@@ -32,6 +33,12 @@
       [UIApplication.sharedApplication
              respondsToSelector:@selector
              (_accessibilityLeafDescendantsWithOptions:)];
+}
+
++ (void)setVoiceOverServiceEnabled:(BOOL)enabled {
+  if (self.isSupported) {
+    _setVoiceOver(enabled);
+  }
 }
 
 - (instancetype)initWithDescriptorRegister:
@@ -112,6 +119,25 @@ static BOOL _loadAccessibilityFramework(void) {
     }
   });
   return isAccessibilityFrameworkLoaded;
+}
+
+static void _setVoiceOver(BOOL enabled) {
+  NSString* const accessibilityUtilitiesPath =
+      [[NSBundle bundleForClass:UIApplication.class]
+              .bundleURL.URLByDeletingLastPathComponent
+              .URLByDeletingLastPathComponent
+          URLByAppendingPathComponent:
+              @"PrivateFrameworks/AccessibilityUtilities.framework/AccessibilityUtilities"]
+          .relativePath;
+  void* handler = dlopen(
+      [accessibilityUtilitiesPath cStringUsingEncoding:NSUTF8StringEncoding],
+      RTLD_NOW);
+  if (!handler) {
+    return;
+  }
+  void (*_AXSVoiceOverTouchSetEnabled)(BOOL) =
+      dlsym(handler, "_AXSVoiceOverTouchSetEnabled");
+  _AXSVoiceOverTouchSetEnabled(enabled);
 }
 
 static NSString* _nameForNode(NSObject* node) {

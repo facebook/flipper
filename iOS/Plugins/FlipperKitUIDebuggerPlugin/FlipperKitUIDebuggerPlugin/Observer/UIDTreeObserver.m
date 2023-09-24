@@ -33,6 +33,15 @@
   [self processNode:node withSnapshot:false withContext:context];
 }
 
+- (void)setTraversalMode:(UIDTraversalMode)traversalMode {
+  if (_traversalMode == traversalMode) {
+    return;
+  }
+  _traversalMode = traversalMode;
+  [UIDAllyTraversal setVoiceOverServiceEnabled:traversalMode ==
+                    UIDTraversalModeAccessibilityHierarchy];
+}
+
 - (void)processNode:(id)node
        withSnapshot:(BOOL)snapshot
         withContext:(UIDContext*)context {
