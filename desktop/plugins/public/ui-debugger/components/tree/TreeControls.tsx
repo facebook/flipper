@@ -18,22 +18,20 @@ import {
   Space,
   Switch,
   Badge,
-  Dropdown,
 } from 'antd';
+import {Glyph} from 'flipper';
 import {
   EyeOutlined,
   PauseCircleOutlined,
-  AppstoreOutlined,
   PlayCircleOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
-import {usePlugin, useValue, Layout} from 'flipper-plugin';
+import {usePlugin, useValue, Layout, theme} from 'flipper-plugin';
 import {FrameworkEventMetadata, FrameworkEventType} from '../../ClientTypes';
 import {
   buildTreeSelectData,
   FrameworkEventsTreeSelect,
 } from '../shared/FrameworkEventsTreeSelect';
-import {TraversalMode} from '../../DesktopTypes';
 
 export const TreeControls: React.FC = () => {
   const instance = usePlugin(plugin);
@@ -56,43 +54,11 @@ export const TreeControls: React.FC = () => {
   const supportedTraversalModes = useValue(
     instance.uiState.supportedTraversalModes,
   );
-  const labelForMode = (mode: TraversalMode) => {
-    switch (mode) {
-      case 'view-hierarchy':
-        return 'UI Hierarchy';
-      case 'accessibility-hierarchy':
-        return 'Accessibility Hierarchy';
-    }
-  };
 
   const isConnected = useValue(instance.uiState.isConnected);
 
-  const menus = supportedTraversalModes.map((mode) => ({
-    key: mode,
-    label: labelForMode(mode),
-  }));
-
   return (
     <Layout.Horizontal gap="medium" pad="medium">
-      {supportedTraversalModes.length > 1 ? (
-        <Dropdown
-          disabled={!isConnected}
-          menu={{
-            selectable: true,
-            selectedKeys: [currentTraversalMode],
-            items: menus,
-            onSelect: async (event) => {
-              const mode = event.selectedKeys[0] as TraversalMode;
-              instance.uiActions.onSetTraversalMode(mode); // update UI
-            },
-          }}>
-          <Tooltip title={isConnected ? 'Debugger Mode' : 'App disconnected'}>
-            <Button disabled={!isConnected} shape="circle">
-              <AppstoreOutlined />
-            </Button>
-          </Tooltip>
-        </Dropdown>
-      ) : null}
       <Input
         value={searchTerm}
         onChange={(e) => {
@@ -111,6 +77,33 @@ export const TreeControls: React.FC = () => {
             {isPaused ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
           </Tooltip>
         }></Button>
+      {supportedTraversalModes.length > 1 &&
+        supportedTraversalModes.includes('accessibility-hierarchy') && (
+          <Tooltip title="Accessibility mode">
+            <Button
+              disabled={!isConnected}
+              shape="circle"
+              onClick={() => {
+                if (currentTraversalMode === 'accessibility-hierarchy') {
+                  instance.uiActions.onSetTraversalMode('view-hierarchy');
+                } else {
+                  instance.uiActions.onSetTraversalMode(
+                    'accessibility-hierarchy',
+                  );
+                }
+              }}>
+              <Glyph
+                name={'accessibility'}
+                size={16}
+                color={
+                  currentTraversalMode === 'accessibility-hierarchy'
+                    ? theme.primaryColor
+                    : theme.textColorPrimary
+                }
+              />
+            </Button>
+          </Tooltip>
+        )}
       {frameworkEventMonitoring.size > 0 && (
         <>
           <Badge
