@@ -19,6 +19,7 @@ import {
   SnapshotInfo,
   ClientNode,
   FrameworkEventMetadata,
+  Methods,
 } from './ClientTypes';
 import {
   UIState,
@@ -39,14 +40,6 @@ import {checkFocusedNodeStillActive} from './plugin/ClientDataUtils';
 import {uiActions} from './plugin/uiActions';
 import {first} from 'lodash';
 import {getNode} from './utils/map';
-
-type TraversalModeChangeEvent = {
-  mode: TraversalMode;
-};
-
-export type Methods = {
-  onTraversalModeChange(params: TraversalModeChangeEvent): Promise<void>;
-};
 
 export function plugin(client: PluginClient<Events, Methods>) {
   const rootId = createState<Id | undefined>(undefined);
@@ -82,6 +75,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     nodesAtom,
     snapshot,
     mutableLiveClientData,
+    client,
   );
 
   const perfEvents = createDataSource<PerformanceStatsEvent, 'txId'>([], {
@@ -107,7 +101,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
       event.currentTraversalMode &&
       uiState.supportedTraversalModes.get().includes(event.currentTraversalMode)
     ) {
-      uiState.currentTraversalMode.set(event.currentTraversalMode);
+      uiState.traversalMode.set(event.currentTraversalMode);
       console.log(
         `[ui-debugger] Unsupported debugger mode ${event.currentTraversalMode}.`,
       );
@@ -285,9 +279,6 @@ export function plugin(client: PluginClient<Events, Methods>) {
   });
   client.onMessage('frameScan', processFrame);
 
-  const onTraversalModeChange = async (mode: TraversalMode) =>
-    client.send('onTraversalModeChange', {mode});
-
   return {
     rootId,
     uiState: uiState as ReadOnlyUIState,
@@ -300,7 +291,6 @@ export function plugin(client: PluginClient<Events, Methods>) {
     metadata,
     perfEvents,
     os: client.device.os,
-    onTraversalModeChange,
   };
 }
 
@@ -343,6 +333,6 @@ function createUIState(): UIState {
 
     // view-hierarchy is the default state so we start with it until we fetch supported modes from the client
     supportedTraversalModes: createState<TraversalMode[]>(['view-hierarchy']),
-    currentTraversalMode: createState<TraversalMode>('view-hierarchy'),
+    traversalMode: createState<TraversalMode>('view-hierarchy'),
   };
 }

@@ -52,7 +52,7 @@ export const TreeControls: React.FC = () => {
 
   const frameworkEventMetadata = useValue(instance.frameworkEventMetadata);
 
-  const currentTraversalMode = useValue(instance.uiState.currentTraversalMode);
+  const currentTraversalMode = useValue(instance.uiState.traversalMode);
   const supportedTraversalModes = useValue(
     instance.uiState.supportedTraversalModes,
   );
@@ -65,6 +65,8 @@ export const TreeControls: React.FC = () => {
     }
   };
 
+  const isConnected = useValue(instance.uiState.isConnected);
+
   const menus = supportedTraversalModes.map((mode) => ({
     key: mode,
     label: labelForMode(mode),
@@ -74,18 +76,18 @@ export const TreeControls: React.FC = () => {
     <Layout.Horizontal gap="medium" pad="medium">
       {supportedTraversalModes.length > 1 ? (
         <Dropdown
+          disabled={!isConnected}
           menu={{
             selectable: true,
             selectedKeys: [currentTraversalMode],
             items: menus,
             onSelect: async (event) => {
               const mode = event.selectedKeys[0] as TraversalMode;
-              instance.uiActions.setCurrentTraversalMode(mode); // update UI
-              await instance.onTraversalModeChange(mode); // update mobile client
+              instance.uiActions.onSetTraversalMode(mode); // update UI
             },
           }}>
-          <Tooltip title="Debugger Mode">
-            <Button shape="circle">
+          <Tooltip title={isConnected ? 'Debugger Mode' : 'App disconnected'}>
+            <Button disabled={!isConnected} shape="circle">
               <AppstoreOutlined />
             </Button>
           </Tooltip>

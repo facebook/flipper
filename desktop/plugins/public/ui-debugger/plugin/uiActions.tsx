@@ -7,9 +7,16 @@
  * @format
  */
 
-import {Atom} from 'flipper-plugin';
+import {Atom, PluginClient} from 'flipper-plugin';
 import {debounce} from 'lodash';
-import {ClientNode, FrameworkEventType, Id, SnapshotInfo} from '../ClientTypes';
+import {
+  ClientNode,
+  Events,
+  FrameworkEventType,
+  Id,
+  Methods,
+  SnapshotInfo,
+} from '../ClientTypes';
 import {
   TraversalMode,
   LiveClientState,
@@ -27,6 +34,7 @@ export function uiActions(
   nodes: Atom<Map<Id, ClientNode>>,
   snapshot: Atom<SnapshotInfo | null>,
   liveClientData: LiveClientState,
+  client: PluginClient<Events, Methods>,
 ): UIActions {
   const onExpandNode = (node: Id) => {
     uiState.expandedNodes.update((draft) => {
@@ -190,9 +198,17 @@ export function uiActions(
     searchTermUpdatedDebounced(searchTerm);
   };
 
-  const setCurrentTraversalMode = (mode: TraversalMode) => {
-    tracker.track('traversal-mode-updated', {mode});
-    uiState.currentTraversalMode.set(mode);
+  const onSetTraversalMode = (newMode: TraversalMode) => {
+    tracker.track('traversal-mode-updated', {mode: newMode});
+    const currentMode = uiState.traversalMode.get();
+    uiState.traversalMode.set(newMode);
+
+    try {
+      client.send('onTraversalModeChange', {mode: newMode});
+    } catch (err) {
+      console.warn('[ui-debugger] Unable to set traversal mode', err);
+      uiState.traversalMode.set(currentMode);
+    }
   };
 
   return {
@@ -213,6 +229,6 @@ export function uiActions(
     onExpandAllRecursively,
     onCollapseAllRecursively,
     ensureAncestorsExpanded,
-    setCurrentTraversalMode,
+    onSetTraversalMode,
   };
 }

@@ -51,7 +51,7 @@ export const Visualization2D: React.FC<
   const hoveredNodes = useValue(instance.uiState.hoveredNodes);
   const hoveredNodeId = head(hoveredNodes);
   const wireFrameMode = useValue(instance.uiState.wireFrameMode);
-  const traversalMode = useValue(instance.uiState.currentTraversalMode);
+  const traversalMode = useValue(instance.uiState.traversalMode);
 
   const [targetMode, setTargetMode] = useState<TargetModeState>({
     state: 'disabled',

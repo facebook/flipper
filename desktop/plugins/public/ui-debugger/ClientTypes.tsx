@@ -19,6 +19,10 @@ export type Events = {
   setTraversalMode: SetTraversalModeEvent;
 };
 
+export type Methods = {
+  onTraversalModeChange(params: {mode: TraversalMode}): Promise<void>;
+};
+
 export type SetTraversalModeEvent = {
   mode: TraversalMode;
 };

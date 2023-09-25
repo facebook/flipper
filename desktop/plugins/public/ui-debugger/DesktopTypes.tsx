@@ -46,7 +46,7 @@ export type UIState = {
   filterMainThreadMonitoring: Atom<boolean>;
 
   supportedTraversalModes: Atom<TraversalMode[]>;
-  currentTraversalMode: Atom<TraversalMode>;
+  traversalMode: Atom<TraversalMode>;
 };
 
 //enumerates the keys of input type and casts each to ReadOnlyAtom, this is so we only expose read only atoms to the UI
@@ -113,7 +113,7 @@ export type UIActions = {
   onCollapseAllNonAncestors: (nodeId: Id) => void;
   onCollapseAllRecursively: (nodeId: Id) => void;
   ensureAncestorsExpanded: (nodeId: Id) => void;
-  setCurrentTraversalMode: (mode: TraversalMode) => void;
+  onSetTraversalMode: (mode: TraversalMode) => void;
 };
 
 export type SelectionSource =
