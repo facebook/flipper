@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag-version-commit.outputs.tag }}
-      
+
     steps:
       - uses: passy/extract-version-commit@v1.0.0
         id: extract-version-commit
@@ -76,6 +76,41 @@ jobs:
       with:
         name: 'Flipper-mac.dmg'
         path: 'dist/Flipper-mac.dmg'
+
+  build-server-mac:
+    needs:
+      - release
+    runs-on: macos-latest
+    env:
+      desktop-directory: ./desktop
+
+    steps:
+    - uses: actions/checkout@v3.5.3
+      with:
+        ref: ${{ needs.release.outputs.tag }}
+    - uses: actions/setup-node@v3.6.0
+      with:
+        node-version: '18.x'
+    - name: Install
+      uses: nick-invision/retry@v2.0.0
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        command: cd ${{env.desktop-directory}} && yarn
+    - name: Build
+      run: cd ${{env.desktop-directory}} && yarn build:flipper-server --mac --dmg
+    - name: List dist artifacts
+      run: ls -l dist/
+    - name: Upload x86-64
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: 'Flipper-server-mac-x64.dmg'
+        path: 'dist/Flipper-server-mac-x64.dmg'
+    - name: Upload aarch64
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: 'Flipper-server-mac-aarch64.dmg'
+        path: 'dist/Flipper-server-mac-aarch64.dmg'
 
   build-linux:
     needs:
@@ -178,6 +213,7 @@ jobs:
       - build-win
       - build-linux
       - build-mac
+      - build-server-mac
       - build-flipper-server
       - release
     runs-on: ubuntu-latest
@@ -192,6 +228,18 @@ jobs:
       with:
         name: 'Flipper-mac.dmg'
         path: 'Flipper-mac.dmg'
+    - name: Download Flipper Server x86-64
+      if: ${{ needs.release.outputs.tag != '' }}
+      uses: actions/download-artifact@v1
+      with:
+        name: 'Flipper-server-mac-x64.dmg'
+        path: 'Flipper-server-mac-x64.dmg'
+    - name: Download Flipper Server aarch64
+      if: ${{ needs.release.outputs.tag != '' }}
+      uses: actions/download-artifact@v1
+      with:
+        name: 'Flipper-server-mac-aarch64.dmg'
+        path: 'Flipper-server-mac-aarch64.dmg'
     - name: Download Linux
       if: ${{ needs.release.outputs.tag != '' }}
       uses: actions/download-artifact@v1
@@ -217,7 +265,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         created_tag: ${{ needs.release.outputs.tag }}
-        args: Flipper-mac.dmg/Flipper-mac.dmg Flipper-linux.zip/Flipper-linux.zip Flipper-win.zip/Flipper-win.zip flipper-server.tgz/flipper-server.tgz
+        args: Flipper-mac.dmg/Flipper-mac.dmg Flipper-linux.zip/Flipper-linux.zip Flipper-win.zip/Flipper-win.zip flipper-server.tgz/flipper-server.tgz Flipper-server-mac-x64.dmg/Flipper-server-mac-x64.dmg Flipper-server-mac-aarch64.dmg/Flipper-server-mac-aarch64.dmg
     - name: Set up npm token
       run: echo "//registry.yarnpkg.com/:_authToken=${{ secrets.FLIPPER_NPM_TOKEN }}" >> ~/.npmrc
     - name: Publish flipper-server on NPM
@@ -236,7 +284,7 @@ jobs:
         WORKFLOW_NAME: "Publish"
       with:
         filename: .github/action-failure-template.md
-        
+
   dispatch:
     needs:
       - release

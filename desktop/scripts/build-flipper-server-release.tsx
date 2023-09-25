@@ -614,7 +614,7 @@ async function createMacDMG(
 ) {
   console.log(`⚙️  Create macOS DMG from: ${outputPath}`);
 
-  const name = `Flipper-${platform}.dmg`;
+  const name = `Flipper-server-${platform}.dmg`;
   const temporaryDirectory = os.tmpdir();
 
   const dmgOutputPath = path.resolve(temporaryDirectory, name);
@@ -623,7 +623,6 @@ async function createMacDMG(
 
   const dmgPath = path.resolve(destPath, name);
 
-  // const dmgPath = `${destPath}/${name}`;
   const cmd = `hdiutil create -format UDZO -srcfolder "${outputPath}/" -volname "Flipper" ${dmgOutputPath}`;
 
   return new Promise<void>((resolve, reject) => {
