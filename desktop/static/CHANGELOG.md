@@ -1,3 +1,9 @@
+# 0.222.0 (25/9/2023)
+
+ * [D49501954](https://github.com/facebook/flipper/search?q=D49501954&type=Commits) -  UIDebugger event debugger - increased highlight time. Nodes get random highlight color
+ * [D49547952](https://github.com/facebook/flipper/search?q=D49547952&type=Commits) -  UIDebugger accessibility mode for iOS launched, look for icon to the right of the search bar
+
+
 # 0.220.0 (18/9/2023)
 
  * [D49371369](https://github.com/facebook/flipper/search?q=D49371369&type=Commits) -  `yarn start` now launches the in-browser version of Flipper. Use `yarn start-electron` for the old behaviour.
