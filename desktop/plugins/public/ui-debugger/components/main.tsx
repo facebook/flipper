@@ -134,6 +134,7 @@ export function Component() {
                 bottomPanel != null ? bottomPanelHeight : 0
               }
               nodes={nodes}
+              metadata={metadata}
               rootId={rootId}
             />
           </Layout.Container>

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Id, ClientNode} from '../../ClientTypes';
+import {Id, ClientNode, MetadataId, Metadata} from '../../ClientTypes';
 import {Color, OnSelectNode} from '../../DesktopTypes';
 import React, {
   CSSProperties,
@@ -55,11 +55,13 @@ export type TreeNode = ClientNode & {
 };
 export function Tree2({
   nodes,
+  metadata,
   rootId,
   additionalHeightOffset,
 }: {
   additionalHeightOffset: number;
   nodes: Map<Id, ClientNode>;
+  metadata: Map<MetadataId, Metadata>;
   rootId: Id;
 }) {
   const instance = usePlugin(plugin);
@@ -216,6 +218,7 @@ export function Tree2({
       text={searchTerm}
       highlightColor={theme.searchHighlightBackground.yellow}>
       <ContextMenu
+        metadata={metadata}
         frameworkEvents={instance.frameworkEvents}
         focusedNodeId={focusedNode}
         hoveredNodeId={hoveredNode}

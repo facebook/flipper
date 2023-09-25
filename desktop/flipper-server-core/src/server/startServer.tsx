@@ -178,7 +178,9 @@ async function startHTTPServer(
   });
 
   return new Promise((resolve) => {
-    console.log(`Starting server on http://localhost:${config.port}`);
+    console.info(
+      `[flipper-server] Starting server on http://localhost:${config.port}`,
+    );
     const readyForIncomingConnections = (
       serverImpl: FlipperServerImpl,
       companionEnv: FlipperServerCompanionEnv,

@@ -8,6 +8,8 @@
  */
 
 import {
+  ClientNode,
+  Id,
   Inspectable,
   InspectableObject,
   Metadata,
@@ -72,4 +74,35 @@ export function transform(
     object[meta.name] = transformObject(metadata, inspectable);
   });
   return object;
+}
+
+export function exportNode(
+  node: ClientNode,
+  metadata: Map<MetadataId, Metadata>,
+  nodes: Map<Id, ClientNode>,
+  recursive: boolean = false,
+): any {
+  const rawExport: any = (
+    node: ClientNode,
+    metadata: Map<MetadataId, Metadata>,
+    nodes: Map<Id, ClientNode>,
+    recursive: boolean = false,
+  ) => {
+    return {
+      ...node,
+      attributes: transform(node.attributes, metadata),
+      children: recursive
+        ? node.children.map((child) => {
+            const childNode = nodes.get(child);
+            if (childNode == null) {
+              throw new Error(`Node ${child} not found`);
+            }
+
+            return rawExport(childNode, metadata, nodes, recursive);
+          })
+        : [],
+    };
+  };
+
+  return JSON.stringify(rawExport(node, metadata, nodes, recursive), null, 2);
 }

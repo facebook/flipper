@@ -7,19 +7,25 @@
  * @format
  */
 
-import {FrameworkEvent, Id, ClientNode} from '../../ClientTypes';
+import {
+  FrameworkEvent,
+  Id,
+  ClientNode,
+  MetadataId,
+  Metadata,
+} from '../../ClientTypes';
 import {OnSelectNode, ViewMode} from '../../DesktopTypes';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {DataSource, getFlipperLib} from 'flipper-plugin';
-import {Dropdown, MenuProps} from 'antd';
+import {Dropdown, MenuProps, message} from 'antd';
 import {tracker} from '../../utils/tracker';
 import {
   bigGrepContextMenuItems,
   ideContextMenuItems,
 } from '../fb-stubs/IDEContextMenu';
 import {
-  CopyFilled,
   CopyOutlined,
+  ExportOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
   MenuFoldOutlined,
@@ -29,12 +35,14 @@ import {
   TableOutlined,
 } from '@ant-design/icons';
 import {filterOutFalsy} from '../../utils/array';
+import {exportNode} from '../../utils/dataTransform';
 
 type MenuItems = MenuProps['items'];
 
 export const ContextMenu: React.FC<{
   frameworkEvents: DataSource<FrameworkEvent>;
   nodes: Map<Id, ClientNode>;
+  metadata: Map<MetadataId, Metadata>;
   hoveredNodeId?: Id;
   focusedNodeId?: Id;
   onFocusNode: (id?: Id) => void;
@@ -57,6 +65,7 @@ export const ContextMenu: React.FC<{
   onCollapseRecursively,
   onCollapseNonAncestors,
   onSelectNode,
+  metadata,
 }) => {
   const [_, setIdeItemsRerender] = useState(0);
   const hoveredNode = nodes.get(hoveredNodeId ?? Number.MAX_SAFE_INTEGER);
@@ -166,6 +175,30 @@ export const ContextMenu: React.FC<{
               },
             }),
           ),
+          {type: 'divider'},
+          {
+            key: 'export-node',
+            label: 'Export',
+            icon: <ExportOutlined />,
+            onClick: () => {
+              getFlipperLib().writeTextToClipboard(
+                exportNode(hoveredNode, metadata, nodes),
+              );
+              message.success('Exported');
+            },
+          },
+          {
+            key: 'export-node-recursive',
+            label: 'Export with children',
+            icon: <ExportOutlined />,
+            onClick: () => {
+              getFlipperLib().writeTextToClipboard(
+                exportNode(hoveredNode, metadata, nodes, true),
+              );
+              message.success('Exported');
+            },
+          },
+          {type: 'divider'},
           ...(bigGrepContextMenuItems(hoveredNode) || []),
           ...(ideContextMenuItems(hoveredNode, () =>
             setIdeItemsRerender((value) => value + 1),
