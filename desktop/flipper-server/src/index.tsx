@@ -20,8 +20,10 @@ import open from 'open';
 import os from 'os';
 import {initCompanionEnv} from 'flipper-server-companion';
 import {
-  checkPortInUse,
+  checkServerRunning,
+  compareServerVersion,
   getEnvironmentInfo,
+  shutdownRunningInstance,
   startFlipperServer,
   startServer,
   tracker,
@@ -98,19 +100,6 @@ const rootPath = argv.bundler
   : path.resolve(__dirname, '..'); // in pre packaged versions of the server, static is copied inside the package
 const staticPath = path.join(rootPath, 'static');
 
-async function shutdown(): Promise<boolean> {
-  console.info('[flipper-server] Attempt to shutdown.');
-
-  try {
-    const response = await fetch(`http://localhost:${argv.port}/shutdown`);
-    const json = await response.json();
-
-    return json?.success;
-  } catch {}
-
-  return false;
-}
-
 async function start() {
   const t0 = performance.now();
 
@@ -159,14 +148,25 @@ async function start() {
     `[flipper-server][bootstrap] Keytar loaded (${keytarLoadedMS} ms)`,
   );
 
-  if (await checkPortInUse(argv.port)) {
-    console.warn(`[flipper-server] Port ${argv.port} is already in use`);
-    if (!argv.replace) {
-      console.info(`[flipper-server] Not replacing existing instance, exiting`);
-      return;
+  let launchAndFinish = false;
+
+  console.info('[flipper-server] Check for running instances');
+  const existingRunningInstanceVersion = await checkServerRunning(argv.port);
+  if (existingRunningInstanceVersion) {
+    console.info(
+      `[flipper-server] Running instance found with version: ${existingRunningInstanceVersion}, current version: ${environmentInfo.appVersion}`,
+    );
+    if (
+      compareServerVersion(
+        environmentInfo.appVersion,
+        existingRunningInstanceVersion,
+      ) > 0
+    ) {
+      console.info(`[flipper-server] Shutdown running instance`);
+      await shutdownRunningInstance(argv.port);
+    } else {
+      launchAndFinish = true;
     }
-    const success = await shutdown();
-    console.info(`[flipper-server] Shutdown: ${success}`);
   }
 
   const t3 = performance.now();
@@ -174,6 +174,10 @@ async function start() {
   console.info(
     `[flipper-server][bootstrap] Check for running instances completed (${runningInstanceShutdownMS} ms)`,
   );
+
+  if (launchAndFinish) {
+    return await launch();
+  }
 
   const {app, server, socket, readyForIncomingConnections} = await startServer(
     {
