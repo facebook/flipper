@@ -293,7 +293,7 @@ async function launch() {
     console.info('[flipper-server] Open in browser');
     const token = await getAuthToken();
 
-    console.info('[flipper-server] Token is available: ' + token !== undefined);
+    console.info('[flipper-server] Token is available:', token !== undefined);
 
     const searchParams = new URLSearchParams({token: token ?? ''});
     const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
