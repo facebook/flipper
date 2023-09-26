@@ -82,12 +82,7 @@ export function exportNode(
   nodes: Map<Id, ClientNode>,
   recursive: boolean = false,
 ): any {
-  const rawExport: any = (
-    node: ClientNode,
-    metadata: Map<MetadataId, Metadata>,
-    nodes: Map<Id, ClientNode>,
-    recursive: boolean = false,
-  ) => {
+  const rawExport: any = (node: ClientNode) => {
     return {
       ...node,
       attributes: transform(node.attributes, metadata),
@@ -98,11 +93,11 @@ export function exportNode(
               throw new Error(`Node ${child} not found`);
             }
 
-            return rawExport(childNode, metadata, nodes, recursive);
+            return rawExport(childNode);
           })
         : [],
     };
   };
 
-  return JSON.stringify(rawExport(node, metadata, nodes, recursive), null, 2);
+  return JSON.stringify(rawExport(node), null, 2);
 }
