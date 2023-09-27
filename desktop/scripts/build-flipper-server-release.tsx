@@ -499,6 +499,7 @@ async function download(url: string, dest: string): Promise<void> {
         });
       })
       .on('error', (error: Error) => {
+        console.log(`❌  Download failed ${url}. Error: ${error}`);
         fs.unlink(dest);
         reject(error);
       });
@@ -530,7 +531,7 @@ async function unpack(source: string, destination: string) {
     console.log(`✅  Extraction completed.`);
   } catch (error) {
     console.error(
-      `⚙️  Error found whilst trying to extract '${source}'. Found: ${error}`,
+      `❌  Error found whilst trying to extract '${source}'. Found: ${error}`,
     );
   }
 }
