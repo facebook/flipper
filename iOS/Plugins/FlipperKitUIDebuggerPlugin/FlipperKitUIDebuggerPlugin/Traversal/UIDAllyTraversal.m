@@ -171,6 +171,7 @@ static UIDAttributes* _atrtibutesForNode(NSObject* node) {
   static UIDMetadataId AccessibilityTraitsAttributeId;
   static UIDMetadataId AccessibilityViewIsModalAttributeId;
   static UIDMetadataId ShouldGroupAccessibilityChildrenAttributeId;
+  static UIDMetadataId AccessibilityCustomActions;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     UIDMetadataRegister* const metadataRegister = [UIDMetadataRegister shared];
@@ -227,6 +228,11 @@ static UIDAttributes* _atrtibutesForNode(NSObject* node) {
                             name:@"shouldGroupAccessibilityChildren"
                        isMutable:false
                        definedBy:AccessibilityAttributeId];
+    AccessibilityCustomActions = [[UIDMetadataRegister shared]
+        registerMetadataWithType:UIDEBUGGER_METADATA_TYPE_ATTRIBUTE
+                            name:@"accessibilityCustomActions"
+                       isMutable:false
+                       definedBy:AccessibilityAttributeId];
   });
 
   NSMutableDictionary* const accessibilityAttributes =
@@ -258,10 +264,44 @@ static UIDAttributes* _atrtibutesForNode(NSObject* node) {
       [UIDInspectableBoolean fromBoolean:node.shouldGroupAccessibilityChildren];
   accessibilityAttributes[AccessibilityTraitsAttributeId] = [UIDInspectableText
       fromText:_descriptionFromTraits(node.accessibilityTraits, NO)];
+  accessibilityAttributes[AccessibilityCustomActions] =
+      _accessibilityCustomActionsDescription(node.accessibilityCustomActions);
+
   return @{
     AccessibilityAttributeId :
         [UIDInspectableObject fromFields:accessibilityAttributes]
   };
+}
+
+static UIDInspectable* _accessibilityCustomActionsDescription(
+    NSArray<UIAccessibilityCustomAction*>* actions) {
+  NSMutableArray<UIDInspectable*>* const descriptions = [NSMutableArray new];
+  for (UIAccessibilityCustomAction* action in actions) {
+    [descriptions
+        addObject:[UIDInspectableText fromText:_descriptionFromAction(action)]];
+  }
+  if (descriptions.count == 0) {
+    return [UIDInspectableUnknown null];
+  } else {
+    return [UIDInspectableArray fromItems:descriptions];
+  }
+}
+
+static NSString* _descriptionFromAction(UIAccessibilityCustomAction* action) {
+  if (@available(iOS 13.0, *)) {
+    if (action.actionHandler) {
+      return @"(handled in block)";
+    }
+  }
+
+  Class cls = [action.target class];
+  return [NSString
+      stringWithFormat:@"%@ -[%@ (%p) %@]",
+                       (action.attributedName.string ?: action.name),
+                       cls ? NSStringFromClass(cls) : @"UNKNOWN_CLASS",
+                       action.target ? action.target : @"NO_TARGET",
+                       action.selector ? NSStringFromSelector(action.selector)
+                                       : @"NO_SELECTOR"];
 }
 
 static NSString* _Nullable _descriptionFromTraits(
