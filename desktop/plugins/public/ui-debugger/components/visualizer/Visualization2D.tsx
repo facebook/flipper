@@ -252,6 +252,7 @@ export const Visualization2D: React.FC<
             node={focusState.focusedRoot}
             onSelectNode={onSelectNode}
             traversalMode={traversalMode}
+            runThroughIndex={0}
           />
         </div>
       </div>
@@ -356,8 +357,6 @@ function Visualization2DNode({
         <div
           style={{
             position: 'relative',
-            left: '-10px',
-            top: '-7px',
             width: '20px',
             height: '14px',
             fontFamily: 'monospace',
