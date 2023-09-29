@@ -26,6 +26,7 @@ import {Tooltip} from 'antd';
 import {NoData} from './inspector/NoData';
 import {plugin} from '../../index';
 import {FrameworkEventsInspector} from './inspector/FrameworkEventsInspector';
+import {DashboardOutlined} from '@ant-design/icons';
 
 type Props = {
   os: DeviceOS;
@@ -114,10 +115,8 @@ export const Inspector: React.FC<Props> = ({
             tab={
               <Tooltip title="Events">
                 <Layout.Horizontal center>
-                  <Glyph
-                    name="weather-thunder"
-                    size={16}
-                    color={theme.primaryColor}
+                  <DashboardOutlined
+                    style={{color: theme.primaryColor, fontSize: 16}}
                   />
                 </Layout.Horizontal>
               </Tooltip>
