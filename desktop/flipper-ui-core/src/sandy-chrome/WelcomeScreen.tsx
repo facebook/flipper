@@ -28,6 +28,7 @@ import {getAppVersion} from '../utils/info';
 import {getFlipperLib} from 'flipper-plugin';
 import {ReleaseChannel} from 'flipper-common';
 import {showChangelog} from '../chrome/ChangelogSheet';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 const RowContainer = styled(Layout.Horizontal)({
   alignItems: 'flex-start',
@@ -142,6 +143,8 @@ export function WelcomeScreenStaticView() {
 }
 
 function WelcomeScreenContent() {
+  const isHeadlessBuild =
+    getRenderHostInstance().serverConfig.environmentInfo.isHeadlessBuild;
   const isInsidersChannel =
     config.getReleaseChannel() === ReleaseChannel.INSIDERS;
 
@@ -157,7 +160,7 @@ function WelcomeScreenContent() {
           }}
           width={125}
           height={125}
-          src="./icon.png"
+          src={isHeadlessBuild ? './icon.png' : './icon-rn-only.png'}
           preview={false}
         />
         <Title level={1}>Welcome to Flipper</Title>
