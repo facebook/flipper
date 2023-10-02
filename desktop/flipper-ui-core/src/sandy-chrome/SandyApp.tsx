@@ -15,31 +15,32 @@ import {
   Layout,
   Dialog,
   _PortalsManager,
+  getFlipperLib,
+  styled,
 } from 'flipper-plugin';
-import {Link, styled} from '../ui';
 import {theme} from 'flipper-plugin';
-import {Logger} from 'flipper-common';
-
+import {isProduction, Logger} from 'flipper-common';
 import {Navbar} from './Navbar';
 import {useStore} from '../utils/useStore';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
-import {showChangelog} from '../chrome/ChangelogSheet';
 import PlatformSelectWizard, {
   hasPlatformWizardBeenDone,
 } from '../chrome/PlatformSelectWizard';
-import PWAInstallationWizard, {
-  shouldShowPWAInstallationWizard,
-} from '../chrome/PWAppInstallationWizard';
 import {getVersionString} from '../utils/versionString';
 import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
-import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
-import {notification} from 'antd';
-import isProduction from '../utils/isProduction';
+import {Button, Modal, notification} from 'antd';
 import {getRenderHostInstance} from 'flipper-frontend-core';
+import {WarningOutlined} from '@ant-design/icons';
+import PWAInstallationWizard, {
+  shouldShowPWAInstallationWizard,
+} from '../chrome/PWAppInstallationWizard';
+import {showChangelog} from '../chrome/ChangelogSheet';
+import {Link} from '../ui';
+import fbConfig from '../fb-stubs/config';
 
 export function SandyApp() {
   const logger = useLogger();
@@ -48,10 +49,17 @@ export function SandyApp() {
   );
   const staticView = useStore((state) => state.connections.staticView);
 
+  const serverConfig = getRenderHostInstance().serverConfig;
+
   useEffect(() => {
-    document.title = `Flipper (${getVersionString()}${
+    let title = `Flipper (${getVersionString()}${
       config.isFBBuild ? '@FB' : ''
     })`;
+    if (!serverConfig.environmentInfo.isHeadlessBuild) {
+      title += ' (Unsupported)';
+    }
+
+    document.title = title;
 
     registerStartupTime(logger);
 
@@ -71,17 +79,55 @@ export function SandyApp() {
       Dialog.showModal((onHide) => <PWAInstallationWizard onHide={onHide} />);
     }
 
-    showChangelog(true);
+    if (serverConfig.environmentInfo.isHeadlessBuild) {
+      showChangelog(true);
+    }
 
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    if (fbConfig.warnFBEmployees && isProduction()) {
-      isFBEmployee()
-        .then((isEmployee) => {
-          if (isEmployee) {
+    isFBEmployee()
+      .then((isEmployee) => {
+        if (isEmployee) {
+          if (!serverConfig.environmentInfo.isHeadlessBuild) {
+            Dialog.showModal((onHide) => (
+              <Modal
+                closable={false}
+                keyboard={false} // Don't allow escape to close modal
+                maskClosable={false} // Don't allow clicking away
+                open
+                centered
+                onCancel={() => onHide()}
+                width={570}
+                title={
+                  <>
+                    <WarningOutlined /> This Version of Flipper is Unsupported
+                  </>
+                }
+                footer={
+                  <>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        getFlipperLib().openLink('munki://detail-Flipper');
+                        onHide();
+                      }}>
+                      Open Flipper Stable instead
+                    </Button>
+                    <Button type="ghost" onClick={() => onHide()}>
+                      I understand
+                    </Button>
+                  </>
+                }>
+                This version is only meant to be used for React Native
+                debugging. It is not maintained and it doesn't receive updates.
+                Instead, you should be using the main Flipper version from
+                Managed Software Center for all other purposes.
+              </Modal>
+            ));
+          } else if (fbConfig.warnFBEmployees && isProduction()) {
             notification.warning({
               placement: 'bottomLeft',
               message: 'Please use Flipper@FB',
@@ -98,11 +144,11 @@ export function SandyApp() {
               duration: null,
             });
           }
-        })
-        .catch((e) => {
-          console.warn('Failed to check if user is employee', e);
-        });
-    }
+        }
+      })
+      .catch((e) => {
+        console.warn('Failed to check if user is employee', e);
+      });
   }, []);
 
   return (
