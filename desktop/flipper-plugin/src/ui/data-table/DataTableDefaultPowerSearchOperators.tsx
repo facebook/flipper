@@ -46,6 +46,16 @@ export const dataTablePowerSearchOperators = {
     valueType: 'STRING',
     handleUnknownValues,
   }),
+  searializable_object_contains: () => ({
+    label: 'contains',
+    key: 'searializable_object_contains',
+    valueType: 'STRING',
+  }),
+  searializable_object_not_contains: () => ({
+    label: 'does not contain',
+    key: 'searializable_object_not_contains',
+    valueType: 'STRING',
+  }),
   string_set_contains_any_of: () => ({
     label: 'contains any of',
     key: 'string_set_contains_any_of',
@@ -231,6 +241,16 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     )
       ?.toLowerCase()
       .includes(searchValue.toLowerCase()),
+  searializable_object_contains: (
+    _operator,
+    searchValue: string,
+    value: object,
+  ) => JSON.stringify(value).toLowerCase().includes(searchValue.toLowerCase()),
+  searializable_object_not_contains: (
+    _operator,
+    searchValue: string,
+    value: object,
+  ) => !JSON.stringify(value).toLowerCase().includes(searchValue.toLowerCase()),
   string_matches_exactly: (operator, searchValue: string, value: string) =>
     ((operator as StringOperatorConfig).handleUnknownValues &&
     getFlipperLib().GK('flipper_power_search_auto_json_stringify')
