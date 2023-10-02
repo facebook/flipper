@@ -84,6 +84,7 @@ export type FieldConfig = {
   key: string;
   label: string;
   operators: {[key: string]: OperatorConfig};
+  useWholeRow?: boolean;
 };
 
 export type PowerSearchConfig = {

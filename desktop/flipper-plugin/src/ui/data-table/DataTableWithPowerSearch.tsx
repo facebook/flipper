@@ -132,7 +132,10 @@ export type DataTableColumn<T = any> = {
   visible?: boolean;
   inversed?: boolean;
   sortable?: boolean;
-  powerSearchConfig?: OperatorConfig[] | false;
+  powerSearchConfig?:
+    | OperatorConfig[]
+    | false
+    | {operators: OperatorConfig[]; useWholeRow?: boolean};
 };
 
 export interface TableRowRenderContext<T = any> {
@@ -248,22 +251,32 @@ export function DataTable<T extends object>(
       if (column.powerSearchConfig === false) {
         continue;
       }
+
+      let useWholeRow = false;
+      let columnPowerSearchOperators: OperatorConfig[];
+      // If no power search config provided we treat every input as a string
+      if (!column.powerSearchConfig) {
+        columnPowerSearchOperators = [
+          dataTablePowerSearchOperators.string_contains(true),
+          dataTablePowerSearchOperators.string_not_contains(true),
+          dataTablePowerSearchOperators.string_matches_exactly(true),
+          dataTablePowerSearchOperators.string_not_matches_exactly(true),
+        ];
+      } else if (Array.isArray(column.powerSearchConfig)) {
+        columnPowerSearchOperators = column.powerSearchConfig;
+      } else {
+        columnPowerSearchOperators = column.powerSearchConfig.operators;
+        useWholeRow = true;
+      }
+
       const columnFieldConfig: FieldConfig = {
         label: column.title || column.key,
         key: column.key,
-        // If no power search config provided we treat every input as a string
-        operators: column.powerSearchConfig?.reduce((res, operatorConfig) => {
+        operators: columnPowerSearchOperators.reduce((res, operatorConfig) => {
           res[operatorConfig.key] = operatorConfig;
           return res;
-        }, {} as Record<string, OperatorConfig>) ?? {
-          string_contains: dataTablePowerSearchOperators.string_contains(true),
-          string_not_contains:
-            dataTablePowerSearchOperators.string_not_contains(true),
-          string_matches_exactly:
-            dataTablePowerSearchOperators.string_matches_exactly(true),
-          string_not_matches_exactly:
-            dataTablePowerSearchOperators.string_not_matches_exactly(true),
-        },
+        }, {} as Record<string, OperatorConfig>),
+        useWholeRow,
       };
       res.fields[column.key] = columnFieldConfig;
     }

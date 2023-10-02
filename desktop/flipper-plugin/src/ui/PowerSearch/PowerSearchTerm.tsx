@@ -20,7 +20,7 @@ import {PowerSearchStringSetTerm} from './PowerSearchStringSetTerm';
 import {PowerSearchStringTerm} from './PowerSearchStringTerm';
 
 export type IncompleteSearchExpressionTerm = {
-  field: {key: string; label: string};
+  field: {key: string; label: string; useWholeRow?: boolean};
   operator: OperatorConfig;
   searchValue?: any;
 };

@@ -480,7 +480,9 @@ export function computeDataTableFilter(
       return true;
     }
     return searchExpression.every((searchTerm) => {
-      const value = getValueAtPath(item, searchTerm.field.key);
+      const value = searchTerm.field.useWholeRow
+        ? item
+        : getValueAtPath(item, searchTerm.field.key);
       if (!value) {
         console.warn(
           'computeDataTableFilter -> value at searchTerm.field.key is not recognized',
