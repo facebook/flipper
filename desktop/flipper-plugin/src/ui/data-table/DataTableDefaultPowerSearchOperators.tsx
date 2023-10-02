@@ -8,6 +8,7 @@
  */
 
 import dayjs from 'dayjs';
+import {getFlipperLib} from 'flipper-plugin-core';
 import {OperatorConfig} from '../PowerSearch';
 import {
   FloatOperatorConfig,
@@ -214,7 +215,8 @@ const tryConvertingUnknownToString = (value: unknown): string | null => {
 export const dataTablePowerSearchOperatorProcessorConfig = {
   string_contains: (operator, searchValue: string, value: string) =>
     !!(
-      (operator as StringOperatorConfig).handleUnknownValues
+      (operator as StringOperatorConfig).handleUnknownValues &&
+      getFlipperLib().GK('flipper_power_search_auto_json_stringify')
         ? tryConvertingUnknownToString(value)
         : value
     )
@@ -222,18 +224,21 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
       .includes(searchValue.toLowerCase()),
   string_not_contains: (operator, searchValue: string, value: string) =>
     !(
-      (operator as StringOperatorConfig).handleUnknownValues
+      (operator as StringOperatorConfig).handleUnknownValues &&
+      getFlipperLib().GK('flipper_power_search_auto_json_stringify')
         ? tryConvertingUnknownToString(value)
         : value
     )
       ?.toLowerCase()
       .includes(searchValue.toLowerCase()),
   string_matches_exactly: (operator, searchValue: string, value: string) =>
-    ((operator as StringOperatorConfig).handleUnknownValues
+    ((operator as StringOperatorConfig).handleUnknownValues &&
+    getFlipperLib().GK('flipper_power_search_auto_json_stringify')
       ? tryConvertingUnknownToString(value)
       : value) === searchValue,
   string_not_matches_exactly: (operator, searchValue: string, value: string) =>
-    ((operator as StringOperatorConfig).handleUnknownValues
+    ((operator as StringOperatorConfig).handleUnknownValues &&
+    getFlipperLib().GK('flipper_power_search_auto_json_stringify')
       ? tryConvertingUnknownToString(value)
       : value) !== searchValue,
   // See PowerSearchStringSetTerm
