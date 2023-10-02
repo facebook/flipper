@@ -9,11 +9,13 @@
 
 // Mostly matches https://www.internalfb.com/code/www/html/intern/js/ui/PowerSearch/PowerSearchExampleConfig.js
 
-export type SimpleFilterValueType =
-  | 'NO_VALUE'
-  | 'INTEGER'
-  | 'STRING'
-  | 'STRING_SET';
+export type NullishFilterValueType = 'NO_VALUE';
+
+export type StringFilterValueType = 'STRING';
+
+export type StringSetFilterValueType = 'STRING_SET';
+
+export type IntegerFilterValueType = 'INTEGER';
 
 export type FloatFilterValueType = 'FLOAT';
 
@@ -21,8 +23,27 @@ export type EnumFilterValueType = 'ENUM' | 'ENUM_SET';
 
 export type AbsoluteDateFilterValueType = 'ABSOLUTE_DATE';
 
-export type SimpleOperatorConfig = {
-  valueType: SimpleFilterValueType;
+export type NullishOperatorConfig = {
+  valueType: NullishFilterValueType;
+  key: string;
+  label: string;
+};
+
+export type StringOperatorConfig = {
+  valueType: StringFilterValueType;
+  key: string;
+  label: string;
+  handleUnknownValues?: boolean;
+};
+
+export type StringSetOperatorConfig = {
+  valueType: StringSetFilterValueType;
+  key: string;
+  label: string;
+};
+
+export type IntegerOperatorConfig = {
+  valueType: IntegerFilterValueType;
   key: string;
   label: string;
 };
@@ -51,7 +72,10 @@ export type AbsoluteDateOperatorConfig = {
 };
 
 export type OperatorConfig =
-  | SimpleOperatorConfig
+  | NullishOperatorConfig
+  | StringOperatorConfig
+  | StringSetOperatorConfig
+  | IntegerOperatorConfig
   | FloatOperatorConfig
   | EnumOperatorConfig
   | AbsoluteDateOperatorConfig;
