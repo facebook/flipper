@@ -104,13 +104,22 @@ class UIPluginInitializer extends AbstractPluginInitializer {
 
 let uiPluginInitializer: UIPluginInitializer;
 export default async (store: Store, _logger: Logger) => {
+  let FlipperPlugin = FlipperPluginSDK;
+  if (getRenderHostInstance().GK('flipper_power_search')) {
+    FlipperPlugin = {
+      ...FlipperPlugin,
+      MasterDetail: FlipperPlugin._MasterDetailWithPowerSearch as any,
+      DataTable: FlipperPlugin._DataTableWithPowerSearch as any,
+    };
+  }
+
   setGlobalObject({
     React,
     ReactDOM,
     ReactDOMClient,
     ReactIs,
     Flipper: deprecatedExports,
-    FlipperPlugin: FlipperPluginSDK,
+    FlipperPlugin,
     Immer,
     antd,
     emotion_styled,
