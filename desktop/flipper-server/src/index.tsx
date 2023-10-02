@@ -20,6 +20,7 @@ import open from 'open';
 import os from 'os';
 import {initCompanionEnv} from 'flipper-server-companion';
 import {
+  checkPortInUse,
   checkServerRunning,
   compareServerVersion,
   getEnvironmentInfo,
@@ -166,6 +167,11 @@ async function start() {
       await shutdownRunningInstance(argv.port);
     } else {
       launchAndFinish = true;
+    }
+  } else {
+    if (await checkPortInUse(argv.port)) {
+      console.info('[flipper-server] Checking if port is in use');
+      await shutdownRunningInstance(argv.port);
     }
   }
 
