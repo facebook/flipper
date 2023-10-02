@@ -256,13 +256,13 @@ export function DataTable<T extends object>(
           res[operatorConfig.key] = operatorConfig;
           return res;
         }, {} as Record<string, OperatorConfig>) ?? {
-          string_contains: dataTablePowerSearchOperators.string_contains(),
+          string_contains: dataTablePowerSearchOperators.string_contains(true),
           string_not_contains:
-            dataTablePowerSearchOperators.string_not_contains(),
+            dataTablePowerSearchOperators.string_not_contains(true),
           string_matches_exactly:
-            dataTablePowerSearchOperators.string_matches_exactly(),
+            dataTablePowerSearchOperators.string_matches_exactly(true),
           string_not_matches_exactly:
-            dataTablePowerSearchOperators.string_not_matches_exactly(),
+            dataTablePowerSearchOperators.string_not_matches_exactly(true),
         },
       };
       res.fields[column.key] = columnFieldConfig;
