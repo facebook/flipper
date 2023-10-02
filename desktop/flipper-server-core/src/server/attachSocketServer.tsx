@@ -247,6 +247,7 @@ export function attachSocketServer(
     }
 
     client.on('close', (code, _reason) => {
+      console.info('[flipper-server] Client close with code', code);
       /**
        * The socket will close as the endpoint is terminating
        * the connection. Status code 1000 and 1001 are used for normal
