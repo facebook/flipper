@@ -18,25 +18,29 @@ export type PowerSearchOperatorProcessor = (
 ) => boolean;
 
 export const dataTablePowerSearchOperators = {
-  string_contains: () => ({
+  string_contains: (handleUnknownValues?: boolean) => ({
     label: 'contains',
     key: 'string_contains',
     valueType: 'STRING',
+    handleUnknownValues,
   }),
-  string_not_contains: () => ({
+  string_not_contains: (handleUnknownValues?: boolean) => ({
     label: 'does not contain',
     key: 'string_not_contains',
     valueType: 'STRING',
+    handleUnknownValues,
   }),
-  string_matches_exactly: () => ({
+  string_matches_exactly: (handleUnknownValues?: boolean) => ({
     label: 'is',
     key: 'string_matches_exactly',
     valueType: 'STRING',
+    handleUnknownValues,
   }),
-  string_not_matches_exactly: () => ({
+  string_not_matches_exactly: (handleUnknownValues?: boolean) => ({
     label: 'is not',
     key: 'string_not_matches_exactly',
     valueType: 'STRING',
+    handleUnknownValues,
   }),
   string_set_contains_any_of: () => ({
     label: 'contains any of',
