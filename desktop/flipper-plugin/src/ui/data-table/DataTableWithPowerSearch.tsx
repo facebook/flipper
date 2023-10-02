@@ -249,7 +249,7 @@ export function DataTable<T extends object>(
         continue;
       }
       const columnFieldConfig: FieldConfig = {
-        label: column.title ?? column.key,
+        label: column.title || column.key,
         key: column.key,
         // If no power search config provided we treat every input as a string
         operators: column.powerSearchConfig?.reduce((res, operatorConfig) => {
