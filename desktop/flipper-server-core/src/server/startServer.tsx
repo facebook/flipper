@@ -164,6 +164,10 @@ async function startHTTPServer(
     server.close();
   });
 
+  server.on('error', (e: Error) => {
+    console.warn('[flipper-server] HTTP server error: ', e);
+  });
+
   server.listen(config.port);
 
   /**
