@@ -9,7 +9,10 @@
 
 import dayjs from 'dayjs';
 import {OperatorConfig} from '../PowerSearch';
-import {FloatOperatorConfig} from '../PowerSearch/PowerSearchConfig';
+import {
+  FloatOperatorConfig,
+  StringOperatorConfig,
+} from '../PowerSearch/PowerSearchConfig';
 
 export type PowerSearchOperatorProcessor = (
   powerSearchOperatorConfig: OperatorConfig,
@@ -184,15 +187,55 @@ export type PowerSearchOperatorProcessorConfig = {
   [K in keyof typeof dataTablePowerSearchOperators]: PowerSearchOperatorProcessor;
 };
 
+const tryConvertingUnknownToString = (value: unknown): string | null => {
+  try {
+    if (value == null) {
+      return null;
+    }
+    if (typeof value === 'object') {
+      return JSON.stringify(value);
+    }
+    if (typeof value === 'number') {
+      return value.toString();
+    }
+    if (typeof value === 'string') {
+      return value;
+    }
+    throw value;
+  } catch (e) {
+    console.warn(
+      'tryConvertingUnknownToString -> you tried to use power search for some weird data type. Please, configure your MasterDetail component to handle it correctly. See https://fburl.com/workplace/i2n0z6sm',
+      e,
+    );
+    return null;
+  }
+};
+
 export const dataTablePowerSearchOperatorProcessorConfig = {
-  string_contains: (_operator, searchValue: string, value: string) =>
-    value.toLowerCase().includes(searchValue.toLowerCase()),
-  string_not_contains: (_operator, searchValue: string, value: string) =>
-    !value.toLowerCase().includes(searchValue.toLowerCase()),
-  string_matches_exactly: (_operator, searchValue: string, value: string) =>
-    value === searchValue,
-  string_not_matches_exactly: (_operator, searchValue: string, value: string) =>
-    value !== searchValue,
+  string_contains: (operator, searchValue: string, value: string) =>
+    !!(
+      (operator as StringOperatorConfig).handleUnknownValues
+        ? tryConvertingUnknownToString(value)
+        : value
+    )
+      ?.toLowerCase()
+      .includes(searchValue.toLowerCase()),
+  string_not_contains: (operator, searchValue: string, value: string) =>
+    !(
+      (operator as StringOperatorConfig).handleUnknownValues
+        ? tryConvertingUnknownToString(value)
+        : value
+    )
+      ?.toLowerCase()
+      .includes(searchValue.toLowerCase()),
+  string_matches_exactly: (operator, searchValue: string, value: string) =>
+    ((operator as StringOperatorConfig).handleUnknownValues
+      ? tryConvertingUnknownToString(value)
+      : value) === searchValue,
+  string_not_matches_exactly: (operator, searchValue: string, value: string) =>
+    ((operator as StringOperatorConfig).handleUnknownValues
+      ? tryConvertingUnknownToString(value)
+      : value) !== searchValue,
   // See PowerSearchStringSetTerm
   string_set_contains_any_of: (
     _operator,
