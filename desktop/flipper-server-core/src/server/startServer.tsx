@@ -140,10 +140,14 @@ async function startHTTPServer(
   });
 
   app.get('/info', (_req, res) => {
+    console.info('[flipper-server] Received info request');
     res.json(environmentInfo);
   });
 
   app.get('/shutdown', (_req, res) => {
+    console.info(
+      '[flipper-server] Received shutdown request, process will terminate',
+    );
     res.json({success: true});
 
     // Just exit the process, this will trigger the shutdown hooks.
