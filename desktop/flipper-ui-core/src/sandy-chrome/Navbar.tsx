@@ -103,8 +103,8 @@ export const Navbar = withTrackingScope(function Navbar() {
         <TroubleshootMenu />
         <ExtrasMenu />
         <RightSidebarToggleButton />
-
-        <UpdateIndicator />
+        {getRenderHostInstance().serverConfig.environmentInfo
+          .isHeadlessBuild && <UpdateIndicator />}
       </Layout.Horizontal>
     </Layout.Horizontal>
   );
