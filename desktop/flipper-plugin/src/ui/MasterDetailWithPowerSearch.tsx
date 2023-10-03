@@ -85,6 +85,7 @@ export function MasterDetailWithPowerSearch<T extends object>({
   sidebarSize,
   onSelect,
   actionsTop,
+  extraActions,
   enableMenuEntries,
   enableClear,
   isPaused,
@@ -232,6 +233,7 @@ export function MasterDetailWithPowerSearch<T extends object>({
         </>
       }
       actionsTop={actionsTop}
+      extraActions={extraActions}
     />
   );
 

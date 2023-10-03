@@ -87,6 +87,8 @@ type DataTableBaseProps<T = any> = {
   scrollable?: boolean;
   actionsRight?: React.ReactElement;
   actionsTop?: React.ReactElement;
+  /** @deprecated **/
+  extraActions?: React.ReactElement;
   onSelect?(record: T | undefined, records: T[]): void;
   onRowStyle?(record: T): CSSProperties | undefined;
   tableManagerRef?: RefObject<DataTableManager<T> | undefined>; // Actually we want a MutableRefObject, but that is not what React.createRef() returns, and we don't want to put the burden on the plugin dev to cast it...
@@ -663,6 +665,7 @@ export function DataTable<T extends object>(
             </Dropdown>
           )}
           {props.actionsRight}
+          {props.extraActions}
         </Searchbar>
       )}
     </Layout.Container>
