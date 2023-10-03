@@ -1,3 +1,9 @@
+# 0.223.0 (2/10/2023)
+
+ * [D49704398](https://github.com/facebook/flipper/search?q=D49704398&type=Commits) -  UIDebugger: improvements to iOS Accessibility mode
+ * [D49780805](https://github.com/facebook/flipper/search?q=D49780805&type=Commits) -  UIDebugger fix icon for litho event timeline tab
+
+
 # 0.222.0 (25/9/2023)
 
  * [D49501954](https://github.com/facebook/flipper/search?q=D49501954&type=Commits) -  UIDebugger event debugger - increased highlight time. Nodes get random highlight color
