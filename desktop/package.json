@@ -67,7 +67,7 @@
   "category": "facebook-intern",
   "description": "Mobile development tool",
   "devDependencies": {
-    "@babel/eslint-parser": "^7.22.10",
+    "@babel/eslint-parser": "^7.22.15",
     "@jest-runner/electron": "^3.0.1",
     "@testing-library/react": "^12.1.4",
     "@types/jest": "^29.5.3",
