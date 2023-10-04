@@ -169,8 +169,9 @@ async function start() {
       launchAndFinish = true;
     }
   } else {
+    console.info('[flipper-server] Checking if port is in use (TCP)');
     if (await checkPortInUse(argv.port)) {
-      console.info('[flipper-server] Checking if port is in use');
+      console.info(`[flipper-server] Shutdown running instance`);
       await shutdownRunningInstance(argv.port);
     }
   }
