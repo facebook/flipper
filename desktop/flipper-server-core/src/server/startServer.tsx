@@ -168,8 +168,14 @@ async function startHTTPServer(
     server.close();
   });
 
-  server.on('error', (e: Error) => {
-    console.warn('[flipper-server] HTTP server error: ', e);
+  server.on('error', (e: NodeJS.ErrnoException) => {
+    console.warn('[flipper-server] HTTP server error: ', e.code);
+    if (e.code === 'EADDRINUSE') {
+      console.warn(
+        `[flipper-server] Unable to listen at port: ${config.port}, is already in use`,
+      );
+      process.exit(1);
+    }
   });
 
   server.listen(config.port);
