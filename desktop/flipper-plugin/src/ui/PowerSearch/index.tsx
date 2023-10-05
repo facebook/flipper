@@ -37,6 +37,9 @@ type PowerSearchProps = {
   config: PowerSearchConfig;
   initialSearchExpression?: SearchExpressionTerm[];
   onSearchExpressionChange: (searchExpression: SearchExpressionTerm[]) => void;
+  onConfirmUnknownOption?: (
+    searchString: string,
+  ) => SearchExpressionTerm | undefined;
 };
 
 const OPTION_KEY_DELIMITER = '::';
@@ -45,6 +48,7 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
   config,
   initialSearchExpression,
   onSearchExpressionChange,
+  onConfirmUnknownOption,
 }) => {
   const [searchExpression, setSearchExpression] = React.useState<
     IncompleteSearchExpressionTerm[]
@@ -162,6 +166,21 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
             );
           });
         }}
+        onConfirmUnknownOption={
+          onConfirmUnknownOption
+            ? (searchString) => {
+                const searchExpressionTerm =
+                  onConfirmUnknownOption(searchString);
+
+                if (searchExpressionTerm) {
+                  setSearchExpression((prevSearchExpression) => [
+                    ...prevSearchExpression,
+                    searchExpressionTerm,
+                  ]);
+                }
+              }
+            : undefined
+        }
       />
     </PowerSearchContainer>
   );

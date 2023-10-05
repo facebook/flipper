@@ -25,48 +25,59 @@ type PowerSearchTermFinderProps = {
   options: PowerSearchTermFinderOptionGroup[];
   onSelect: (selectedOption: PowerSearchTermFinderOption) => void;
   onBackspacePressWhileEmpty: () => void;
+  onConfirmUnknownOption?: (searchString: string) => void;
 };
 
 export const PowerSearchTermFinder = React.forwardRef<
   PowerSearchTermFinderRef,
   PowerSearchTermFinderProps
->(({options, onSelect, onBackspacePressWhileEmpty}, ref) => {
-  const [searchTermFinderValue, setSearchTermFinderValue] = React.useState<
-    string | null
-  >(null);
+>(
+  (
+    {options, onSelect, onBackspacePressWhileEmpty, onConfirmUnknownOption},
+    ref,
+  ) => {
+    const [searchTermFinderValue, setSearchTermFinderValue] = React.useState<
+      string | null
+    >(null);
 
-  return (
-    <AutoComplete<string, PowerSearchTermFinderOption>
-      ref={
-        ref as React.Ref<{
-          focus: () => void;
-          blur: () => void;
-          scrollTo: () => void;
-        }>
-      }
-      style={{flex: '1', minWidth: 200}}
-      options={options}
-      bordered={false}
-      onSelect={(_: string, selectedOption: PowerSearchTermFinderOption) => {
-        onSelect(selectedOption);
-        setSearchTermFinderValue(null);
-      }}
-      filterOption={(inputValue, option) => {
-        return !!option?.label.toLowerCase().includes(inputValue.toLowerCase());
-      }}
-      value={searchTermFinderValue}
-      onChange={setSearchTermFinderValue}
-      onBlur={() => {
-        setSearchTermFinderValue(null);
-      }}
-      onInputKeyDown={(event) => {
-        if (event.key === 'Enter') {
+    return (
+      <AutoComplete<string, PowerSearchTermFinderOption>
+        ref={
+          ref as React.Ref<{
+            focus: () => void;
+            blur: () => void;
+            scrollTo: () => void;
+          }>
+        }
+        style={{flex: '1', minWidth: 200}}
+        options={options}
+        bordered={false}
+        onSelect={(_: string, selectedOption: PowerSearchTermFinderOption) => {
+          onSelect(selectedOption);
           setSearchTermFinderValue(null);
-        }
-        if (event.key === 'Backspace' && !searchTermFinderValue) {
-          onBackspacePressWhileEmpty();
-        }
-      }}
-    />
-  );
-});
+        }}
+        filterOption={(inputValue, option) => {
+          return !!option?.label
+            .toLowerCase()
+            .includes(inputValue.toLowerCase());
+        }}
+        value={searchTermFinderValue}
+        onChange={setSearchTermFinderValue}
+        onBlur={() => {
+          setSearchTermFinderValue(null);
+        }}
+        onInputKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            if (searchTermFinderValue && onConfirmUnknownOption) {
+              onConfirmUnknownOption(searchTermFinderValue);
+            }
+            setSearchTermFinderValue(null);
+          }
+          if (event.key === 'Backspace' && !searchTermFinderValue) {
+            onBackspacePressWhileEmpty();
+          }
+        }}
+      />
+    );
+  },
+);
