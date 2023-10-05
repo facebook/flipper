@@ -44,7 +44,6 @@ type TrackerEvents = {
     error?: string;
   };
   'server-socket-already-in-use': {};
-  'server-proxy-error': {error: string};
   'app-connection-created': AppConnectionPayload;
   'app-connection-secure-attempt': AppConnectionPayload;
   'app-connection-insecure-attempt': AppConnectionPayload;
