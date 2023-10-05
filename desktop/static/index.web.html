@@ -144,7 +144,6 @@
       (function () {
         // FIXME: needed to make Metro work
         window.global = window;
-        let suppressErrors = false;
 
         // Listen to changes in the network state, reload when online.
         // This handles the case when the device is completely offline
@@ -167,9 +166,8 @@
         }
 
         function showMessage(text) {
-          if (suppressErrors) {
-            return;
-          }
+          // Dismiss the troubleshoot as otherwise no other message is shown.
+          toggleTroubleshoot(false);
 
           let box = document.getElementById('loading');
           if (box) {

@@ -204,6 +204,9 @@
         })
 
         function showMessage(text) {
+          // Dismiss the troubleshoot as otherwise no other message is shown.
+          toggleTroubleshoot(false);
+
           if (suppressErrors) {
             return;
           }
