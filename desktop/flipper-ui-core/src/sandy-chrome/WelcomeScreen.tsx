@@ -160,7 +160,7 @@ function WelcomeScreenContent() {
           }}
           width={125}
           height={125}
-          src={isHeadlessBuild ? './icon.png' : './icon-rn-only.png'}
+          src={isHeadlessBuild ? './icon.png' : './icon.png'}
           preview={false}
         />
         <Title level={1}>Welcome to Flipper</Title>

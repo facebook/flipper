@@ -265,7 +265,6 @@ async function buildDist(buildFolder: string) {
         },
         mac: {
           bundleVersion: FIX_RELEASE_VERSION,
-          icon: path.resolve(buildFolder, 'icon-rn-only.icns'),
         },
         win: {
           signAndEditExecutable: !isFB,
