@@ -174,6 +174,7 @@ async function startHTTPServer(
       console.warn(
         `[flipper-server] Unable to listen at port: ${config.port}, is already in use`,
       );
+      tracker.track('server-socket-already-in-use', {});
       process.exit(1);
     }
   });
