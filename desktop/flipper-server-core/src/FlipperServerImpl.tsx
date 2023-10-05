@@ -199,13 +199,17 @@ export class FlipperServerImpl implements FlipperServer {
       await this.createFolders();
       await this.server.init();
       await this.pluginManager.start();
-      await this.startDeviceListeners();
+
+      this.startDeviceListeners();
+
       this.setServerState('started');
     } catch (e) {
       if (!isHandledStartupError(e)) {
         console.error('Failed to start FlipperServer', e);
       }
       this.setServerState('error', e);
+
+      throw e;
     }
   }
 
