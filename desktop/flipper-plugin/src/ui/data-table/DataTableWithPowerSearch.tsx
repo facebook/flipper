@@ -106,6 +106,18 @@ type DataTableBaseProps<T = any> = {
   enablePowerSearchWholeRowSearch?: boolean;
 };
 
+const powerSearchConfigEntireRow: FieldConfig = {
+  label: 'Row',
+  key: 'entireRow',
+  operators: {
+    searializable_object_contains:
+      dataTablePowerSearchOperators.searializable_object_contains(),
+    searializable_object_not_contains:
+      dataTablePowerSearchOperators.searializable_object_not_contains(),
+  },
+  useWholeRow: true,
+};
+
 export type ItemRenderer<T> = (
   item: T,
   selected: boolean,
@@ -255,17 +267,7 @@ export function DataTable<T extends object>(
     const res: PowerSearchConfig = {fields: {}};
 
     if (props.enablePowerSearchWholeRowSearch) {
-      res.fields.entireRow = {
-        label: 'Row',
-        key: 'entireRow',
-        operators: {
-          searializable_object_contains:
-            dataTablePowerSearchOperators.searializable_object_contains(),
-          searializable_object_not_contains:
-            dataTablePowerSearchOperators.searializable_object_not_contains(),
-        },
-        useWholeRow: true,
-      };
+      res.fields.entireRow = powerSearchConfigEntireRow;
     }
 
     for (const column of columns) {
@@ -675,6 +677,16 @@ export function DataTable<T extends object>(
             onSearchExpressionChange={(newSearchExpression) => {
               tableManager.setSearchExpression(newSearchExpression);
             }}
+            onConfirmUnknownOption={
+              props.enablePowerSearchWholeRowSearch
+                ? (searchValue) => ({
+                    field: powerSearchConfigEntireRow,
+                    operator:
+                      dataTablePowerSearchOperators.searializable_object_contains(),
+                    searchValue,
+                  })
+                : undefined
+            }
           />
           {contexMenu && (
             <Dropdown overlay={contexMenu} placement="bottomRight">
