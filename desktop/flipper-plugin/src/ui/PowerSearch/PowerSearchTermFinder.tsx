@@ -7,7 +7,7 @@
  * @format
  */
 
-import {AutoComplete} from 'antd';
+import {AutoComplete, Input} from 'antd';
 import * as React from 'react';
 
 export type PowerSearchTermFinderOption = {label: string; value: string};
@@ -76,8 +76,22 @@ export const PowerSearchTermFinder = React.forwardRef<
           if (event.key === 'Backspace' && !searchTermFinderValue) {
             onBackspacePressWhileEmpty();
           }
-        }}
-      />
+        }}>
+        <Input
+          bordered={false}
+          onPasteCapture={(event) => {
+            const text = event.clipboardData.getData('text/plain');
+
+            if (text && onConfirmUnknownOption) {
+              event.stopPropagation();
+              event.preventDefault();
+
+              onConfirmUnknownOption(text);
+              setSearchTermFinderValue(null);
+            }
+          }}
+        />
+      </AutoComplete>
     );
   },
 );
