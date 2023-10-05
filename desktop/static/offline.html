@@ -94,8 +94,8 @@
       <b>Flipper is not running in the background</b>
 
       <p>It can be started by clicking the button below.</p>
-      <form action="flipper-launcher://start-server">
-        <input type="submit" value="Start" />
+      <form action="flipper-launcher://start-server" onSubmit="document.getElementById('submit').disabled=true;">
+        <input id="submit" type="submit" value="Start" onclick="event.target.value='Starting...';" />
       </form>
 
       <p>
