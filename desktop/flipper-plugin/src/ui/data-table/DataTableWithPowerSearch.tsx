@@ -99,6 +99,11 @@ type DataTableBaseProps<T = any> = {
     | null
     | ((dataView?: _DataSourceView<T, T[keyof T]>) => React.ReactElement);
   powerSearchInitialState?: SearchExpressionTerm[];
+  /**
+   * Adds a special power search entry to search through the entire row (mathching a substring in it after stringifying it as a JSON)
+   * @default true
+   */
+  enablePowerSearchWholeRowSearch?: boolean;
 };
 
 export type ItemRenderer<T> = (
@@ -249,6 +254,20 @@ export function DataTable<T extends object>(
   const powerSearchConfig: PowerSearchConfig = useMemo(() => {
     const res: PowerSearchConfig = {fields: {}};
 
+    if (props.enablePowerSearchWholeRowSearch) {
+      res.fields.entireRow = {
+        label: 'Row',
+        key: 'entireRow',
+        operators: {
+          searializable_object_contains:
+            dataTablePowerSearchOperators.searializable_object_contains(),
+          searializable_object_not_contains:
+            dataTablePowerSearchOperators.searializable_object_not_contains(),
+        },
+        useWholeRow: true,
+      };
+    }
+
     for (const column of columns) {
       if (column.powerSearchConfig === false) {
         continue;
@@ -268,7 +287,7 @@ export function DataTable<T extends object>(
         columnPowerSearchOperators = column.powerSearchConfig;
       } else {
         columnPowerSearchOperators = column.powerSearchConfig.operators;
-        useWholeRow = true;
+        useWholeRow = !!column.powerSearchConfig.useWholeRow;
       }
 
       const columnFieldConfig: FieldConfig = {
@@ -284,7 +303,7 @@ export function DataTable<T extends object>(
     }
 
     return res;
-  }, [columns]);
+  }, [columns, props.enablePowerSearchWholeRowSearch]);
 
   const renderingConfig = useMemo<TableRowRenderContext<T>>(() => {
     let startIndex = 0;
@@ -787,6 +806,7 @@ DataTable.defaultProps = {
   enableContextMenu: true,
   enablePersistSettings: true,
   onRenderEmpty: undefined,
+  enablePowerSearchWholeRowSearch: true,
 } as Partial<DataTableProps<any>>;
 
 /* eslint-disable react-hooks/rules-of-hooks */
