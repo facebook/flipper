@@ -19,6 +19,5 @@ declare global {
 
     flipperShowMessage?(message: string): void;
     flipperHideMessage?(): void;
-    flipperShowNoConnection?(): void;
   }
 }

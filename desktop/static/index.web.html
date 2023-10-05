@@ -39,98 +39,15 @@
       text-align: center;
     }
 
-    .console {
-      font-family: 'Fira Mono';
-      width: 600px;
-      height: 250px;
-      box-sizing: border-box;
-      margin: auto;
-    }
-
-    .console header {
-      border-top-left-radius: 15px;
-      border-top-right-radius: 15px;
-      background-color: #9254de;
-      height: 45px;
-      line-height: 45px;
-      text-align: center;
-      color: white;
-    }
-
-    .console .consolebody {
-      border-bottom-left-radius: 15px;
-      border-bottom-right-radius: 15px;
-      box-sizing: border-box;
-      padding: 0px 10px;
-      height: calc(100% - 40px);
-      overflow: scroll;
-      background-color: #000;
-      color: white;
-      text-align: left;
-    }
-
-    input[type="submit"] {
-      background-color: #9254de;
-      color: white;
-      font-family: system-ui;
-      font-size: 15px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    input[type="submit"]:hover {
-      background-color: #722ed1;
-    }
-
-    input[type="submit"]:active {
-      background-color: #722ed1;
-    }
-
     #troubleshoot {
       display: none;
       background-color: white;
     }
-
-    .__infinity-dev-box-error {
-      background-color: red;
-      font-family: monospace;
-      font-size: 12px;
-      z-index: 10;
-      bottom: 0;
-      left: 0;
-      position: absolute;
-    }
-
   </style>
 </head>
 
 <body>
   <div id="troubleshoot" class="message">
-    <div>
-      <b>Flipper is not running in the background</b>
-
-      <p>It can be started by clicking the button below.</p>
-      <form action="flipper-launcher://start-server">
-        <input type="submit" value="Start" />
-      </form>
-      <br />
-      <p>
-        Flipper will automatically reload once the connection is re-established.
-      </p>
-      <p>If is taking a bit longer than it should, you can manually start Flipper.</p>
-      <p>From the terminal, please run:</p>
-
-      <div class="console">
-        <header>
-          <p>shell</p>
-        </header>
-        <div class="consolebody">
-          <p>> open -a 'Flipper' --args '--server'</p>
-        </div>
-      </div>
-    </div>
   </div>
 
   <div id="root">
@@ -139,7 +56,6 @@
     </div>
   </div>
 
-  <div class="__infinity-dev-box __infinity-dev-box-error" hidden></div>
   <script>
       (function () {
         // FIXME: needed to make Metro work
@@ -152,48 +68,23 @@
           window.location.reload();
         });
 
-        function toggleTroubleshoot(troubleshootOn) {
-          const root = document.getElementById('root');
-          const troubleshoot = document.getElementById('troubleshoot');
-          
-          if (troubleshootOn) {
-            root.style.display = 'none';
-            troubleshoot.style.display = 'flex';
-          } else {
-            root.style.display = 'block';
-            troubleshoot.style.display = 'none';
-          }
-        }
-
+        const root = document.getElementById('root');
+        const troubleshootBox = document.getElementById('troubleshoot');
+        
         function showMessage(text) {
-          // Dismiss the troubleshoot as otherwise no other message is shown.
-          toggleTroubleshoot(false);
+          troubleshootBox.innerText = text;
 
-          let box = document.getElementById('loading');
-          if (box) {
-            box.innerText = text;
-          }
-          else {
-            box = document.querySelector('.__infinity-dev-box-error');
-            box.removeAttribute('hidden');
-            box.innerText = text;
-            box.appendChild(closeButton);
-          }
+          root.style.display = 'none';
+          troubleshootBox.style.display = 'flex';
         }
+
+        function hideMessage() {
+          root.style.display = 'block';
+          troubleshootBox.style.display = 'none';
+        }
+
         window.flipperShowMessage = showMessage;
-        window.flipperShowNoConnection = () => {
-          toggleTroubleshoot(true);
-        };
-        window.flipperHideMessage = () => {
-          const box = document.querySelector('.__infinity-dev-box-error');
-          box.setAttribute('hidden', true);
-
-          toggleTroubleshoot(false);
-        }
-
-        const closeButton = document.createElement('button');
-        closeButton.addEventListener('click', window.flipperHideMessage);
-        closeButton.textContent = 'X';
+        window.flipperHideMessage = hideMessage;
 
         // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
         try {
@@ -212,7 +103,7 @@
           script.src = window.flipperConfig.entryPoint;
 
           script.onerror = (e) => {
-            showMessage('Script failure. Check Chrome console for more info.');
+            showMessage('Script failure. Check Chrome Dev Tools console for more info.');
           };
 
           document.body.appendChild(script);

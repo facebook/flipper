@@ -98,29 +98,6 @@
 
 <body>
   <div id="troubleshoot" class="message">
-    <div>
-      <b>Flipper is not running in the background</b>
-
-      <p>It can be started by clicking the button below.</p>
-      <form action="flipper-launcher://start-server">
-        <input type="submit" value="Start" />
-      </form>
-      <br />
-      <p>
-        Flipper will automatically reload once the connection is re-established.
-      </p>
-      <p>If is taking a bit longer than it should, you can manually start Flipper.</p>
-      <p>From the terminal, please run:</p>
-
-      <div class="console">
-        <header>
-          <p>shell</p>
-        </header>
-        <div class="consolebody">
-          <p>> open -a 'Flipper' --args '--server'</p>
-        </div>
-      </div>
-    </div>
   </div>
 
   <div id="root">
@@ -133,7 +110,6 @@
       (async function () {
         // Line below needed to make Metro work. Alternatives could be considered.
         window.global = window;
-        let suppressErrors = false;
         let connected = false;
 
         // Listen to changes in the network state, reload when online.
@@ -143,18 +119,23 @@
           window.location.reload();
         });
 
-        function toggleTroubleshoot(troubleshootOn) {
-          const root = document.getElementById('root');
-          const troubleshoot = document.getElementById('troubleshoot');
-          
-          if (troubleshootOn) {
-            root.style.display = 'none';
-            troubleshoot.style.display = 'flex';
-          } else {
-            root.style.display = 'block';
-            troubleshoot.style.display = 'none';
-          }
+        const root = document.getElementById('root');
+        const troubleshootBox = document.getElementById('troubleshoot');
+
+        function showMessage(text, centered) {
+          troubleshootBox.innerText = text;
+
+          root.style.display = 'none';
+          troubleshootBox.style.display = 'flex';
         }
+
+        function hideMessage() {
+          root.style.display = 'block';
+          troubleshootBox.style.display = 'none';
+        }
+
+        window.flipperShowMessage = showMessage;
+        window.flipperHideMessage = hideMessage;
 
         const params = new URL(location.href).searchParams;
         let token = params.get('token');
@@ -173,8 +154,7 @@
           if (typeof message.event === 'string') {
             switch (message.event) {
               case 'hasErrors': {
-                showMessage(message.payload);
-                suppressErrors = true;
+                console.warn('Error message received'. message.payload);
                 break;
               }
               case 'plugins-source-updated': {
@@ -190,40 +170,16 @@
 
         socket.addEventListener('error', (e) => {
           if (!connected) {
-            showMessage('Socket failed to connect. Is the server running? Have you provided a valid authentication token?');
+            console.warn('Socket failed to connect. Is the server running? Have you provided a valid authentication token?');
           }
           else {
-            showMessage('Socket failed with error.');
+            console.warn('Socket failed with error.', e);
           }
-
-          suppressErrors = true;
         });
 
         socket.addEventListener('open', () => {
           connected = true;
         })
-
-        function showMessage(text) {
-          // Dismiss the troubleshoot as otherwise no other message is shown.
-          toggleTroubleshoot(false);
-
-          if (suppressErrors) {
-            return;
-          }
-
-          const box = document.getElementById('loading');
-          if (box) {
-            box.textContent = text;
-          }
-        }
-
-        window.flipperShowMessage = showMessage;
-        window.flipperShowNoConnection = () => {
-          toggleTroubleshoot(true);
-        };
-        window.flipperHideMessage = () => {
-          toggleTroubleshoot(false);
-        }
 
         // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
         try {
@@ -242,7 +198,7 @@
           script.src = window.flipperConfig.entryPoint;
 
           script.onerror = (e) => {
-            showMessage('Failed to load entry point. Check Chrome console for more info.');
+            showMessage('Failed to load entry point. Check Chrome Dev Tools console for more info.');
           };
 
           document.body.appendChild(script);

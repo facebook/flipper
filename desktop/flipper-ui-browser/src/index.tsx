@@ -78,7 +78,7 @@ async function start() {
           window.flipperHideMessage?.();
           break;
         case FlipperServerState.DISCONNECTED:
-          window?.flipperShowNoConnection?.();
+          window.flipperShowMessage?.('Waiting for server...');
           break;
       }
     },
@@ -98,13 +98,6 @@ async function start() {
   initializeRenderHost(flipperServer, flipperServerConfig);
   initializePWA();
 
-  // By turning this in a require, we force the JS that the body of this module (init) has completed (initializeElectron),
-  // before starting the rest of the Flipper process.
-  // This prevent issues where the render host is referred at module initialisation level,
-  // but not set yet, which might happen when using normal imports.
-  // TODO: remove
-  window.flipperShowMessage?.('Connected to Flipper Server successfully');
-
   // @ts-ignore
   // eslint-disable-next-line import/no-commonjs
   require('flipper-ui-core').startFlipperDesktop(flipperServer);
@@ -113,7 +106,7 @@ async function start() {
 
 start().catch((e) => {
   console.error('Failed to start flipper-ui-browser', e);
-  window.flipperShowMessage?.('Failed to start flipper-ui-browser: ' + e);
+  window.flipperShowMessage?.('Failed to start UI with error: ' + e);
 });
 
 async function initializePWA() {
