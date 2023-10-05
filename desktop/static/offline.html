@@ -85,6 +85,12 @@
       background-color: #722ed1;
     }
 
+    input[type="submit"]:disabled {
+      background-color: gray;
+      color: lightgray;
+      cursor: not-allowed;
+    }
+
   </style>
 </head>
 
@@ -94,8 +100,8 @@
       <b>Flipper is not running in the background</b>
 
       <p>It can be started by clicking the button below.</p>
-      <form action="flipper-launcher://start-server" onSubmit="document.getElementById('submit').disabled=true;">
-        <input id="submit" type="submit" value="Start" onclick="event.target.value='Starting...';" />
+      <form action="flipper-launcher://start-server"  onSubmit="serverStart();">
+        <input id="submit" type="submit" value="Start" />
       </form>
 
       <p>
@@ -117,6 +123,24 @@
   </div>
 
   <script>
+    function serverStart() {
+      const button = document.getElementById('submit');
+      if (!button) {
+        return;
+      }
+      button.disabled = true;
+      button.value = 'Starting...';
+
+      // Set a timeout to disable the start button for
+      // a period of 30 seconds. If after 30 seconds, the server
+      // has not loaded, then re-enable it.
+      setTimeout(() => {
+        button.disabled = false;
+        button.value = 'Start';
+
+      }, 30 * 10000);
+    }
+
     // Listen to changes in the network state, reload when online.
     // This handles the case when the device is completely offline
     // i.e. no network connection.
