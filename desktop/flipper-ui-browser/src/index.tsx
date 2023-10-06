@@ -36,6 +36,9 @@ async function start() {
   const params = new URL(location.href).searchParams;
   let token = params.get('token');
   if (!token) {
+    console.info(
+      '[flipper-client][ui-browser] Get token from manifest instead',
+    );
     const manifestResponse = await fetch('manifest.json');
     const manifest = await manifestResponse.json();
     token = manifest.token;
