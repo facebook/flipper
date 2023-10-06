@@ -20,7 +20,7 @@ import {FlipperServerImpl} from '../FlipperServerImpl';
 import {FlipperServerCompanionEnv} from 'flipper-server-companion';
 import {validateAuthToken} from '../app-connectivity/certificate-exchange/certificate-utils';
 import {tracker} from '../tracker';
-import {EnvironmentInfo} from 'flipper-common';
+import {EnvironmentInfo, isProduction} from 'flipper-common';
 
 type Config = {
   port: number;
@@ -86,6 +86,13 @@ let isReady = false;
 let isReadyWaitable: Promise<void> | undefined;
 
 /**
+ * Time to wait until server becomes ready to accept incoming connections.
+ * If within 30 seconds it is not ready, the server is considered unresponsive
+ * and must be terminated.
+ */
+const timeoutSeconds = 30;
+
+/**
  * Orchestrates the creation of the HTTP server, proxy, and WS server.
  * @param config Server configuration.
  * @returns Returns a promise to the created server, proxy and WS server.
@@ -99,6 +106,15 @@ export async function startServer(
   socket: WebSocketServer;
   readyForIncomingConnections: ReadyForConnections;
 }> {
+  setTimeout(() => {
+    if (!isReady && isProduction()) {
+      console.error(
+        `[flipper-server] Unable to become ready within ${timeoutSeconds} seconds, exit`,
+      );
+      process.exit(1);
+    }
+  }, timeoutSeconds * 1000);
+
   return await startHTTPServer(config, environmentInfo);
 }
 
