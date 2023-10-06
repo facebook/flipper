@@ -69,19 +69,21 @@ export function createFlipperServerWithSocket(
     let connected = false;
 
     socket.addEventListener('open', () => {
+      connected = true;
+      onStateChange(FlipperServerState.CONNECTED);
+
       if (initialConnectionTimeout) {
-        resolve(flipperServer);
         clearTimeout(initialConnectionTimeout);
         initialConnectionTimeout = undefined;
-      }
 
-      onStateChange(FlipperServerState.CONNECTED);
-      connected = true;
+        resolve(flipperServer);
+      }
     });
 
     socket.addEventListener('close', () => {
-      onStateChange(FlipperServerState.DISCONNECTED);
       connected = false;
+      onStateChange(FlipperServerState.DISCONNECTED);
+
       pendingRequests.forEach((r) =>
         r.reject(new Error('flipper-server disconnected')),
       );

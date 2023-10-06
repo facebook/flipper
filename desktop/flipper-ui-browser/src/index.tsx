@@ -43,7 +43,7 @@ async function start() {
 
   console.info(
     '[flipper-client][ui-browser] Token is available: ',
-    token?.length,
+    token?.length != 0,
   );
 
   const openPlugin = params.get('open-plugin');
@@ -65,6 +65,7 @@ async function start() {
 
   const searchParams = new URLSearchParams({token: token ?? ''});
 
+  console.info('[flipper-client][ui-browser] Create WS client');
   const flipperServer = await createFlipperServer(
     location.hostname,
     parseInt(location.port, 10),
@@ -72,17 +73,22 @@ async function start() {
     (state: FlipperServerState) => {
       switch (state) {
         case FlipperServerState.CONNECTING:
+          console.info('[flipper-client] Connecting to server');
           window.flipperShowMessage?.('Connecting to server...');
           break;
         case FlipperServerState.CONNECTED:
+          console.info('[flipper-client] Connection established with server');
           window.flipperHideMessage?.();
           break;
         case FlipperServerState.DISCONNECTED:
+          console.info('[flipper-client] Disconnected from server');
           window.flipperShowMessage?.('Waiting for server...');
           break;
       }
     },
   );
+
+  console.info('[flipper-client][ui-browser] WS client connected');
 
   flipperServer.on('server-log', (logEntry) => {
     console[logEntry.type](
@@ -92,8 +98,16 @@ async function start() {
     );
   });
 
+  console.info('[flipper-client][ui-browser] Waiting for server connection');
   await flipperServer.connect();
+  console.info(
+    '[flipper-client][ui-browser] Connected to server, get configuration',
+  );
   const flipperServerConfig = await flipperServer.exec('get-config');
+
+  console.info(
+    '[flipper-client][ui-browser] Configuration obtained, initialise render host',
+  );
 
   initializeRenderHost(flipperServer, flipperServerConfig);
   initializePWA();
@@ -102,6 +116,8 @@ async function start() {
   // eslint-disable-next-line import/no-commonjs
   require('flipper-ui-core').startFlipperDesktop(flipperServer);
   window.flipperHideMessage?.();
+
+  console.info('[flipper-client][ui-browser] UI initialised');
 }
 
 start().catch((e) => {
