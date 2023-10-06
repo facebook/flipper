@@ -275,6 +275,8 @@ async function start() {
     )} (${serverStartedMS} ms)`,
   );
 
+  const startupMS = t10 - t0;
+
   tracker.track('server-bootstrap-performance', {
     loggerInitializedMS,
     keytarLoadedMS,
@@ -286,6 +288,7 @@ async function start() {
     developmentServerAttachedMS,
     serverStartedMS,
     launchedMS,
+    startupMS,
   });
 }
 
