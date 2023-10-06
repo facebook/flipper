@@ -152,11 +152,12 @@ async function startHTTPServer(
   });
 
   app.get('/ready', (_req, res) => {
+    tracker.track('server-endpoint-hit', {name: 'ready'});
     res.json({isReady});
   });
 
   app.get('/info', (_req, res) => {
-    console.info('[flipper-server] Received info request');
+    tracker.track('server-endpoint-hit', {name: 'info'});
     res.json(environmentInfo);
   });
 
@@ -164,6 +165,7 @@ async function startHTTPServer(
     console.info(
       '[flipper-server] Received shutdown request, process will terminate',
     );
+    tracker.track('server-endpoint-hit', {name: 'shutdown'});
     res.json({success: true});
 
     // Just exit the process, this will trigger the shutdown hooks.
@@ -171,6 +173,7 @@ async function startHTTPServer(
   });
 
   app.get('/health', (_req, res) => {
+    tracker.track('server-endpoint-hit', {name: 'health'});
     res.end('flipper-ok');
   });
 
@@ -186,6 +189,8 @@ async function startHTTPServer(
 
   server.on('error', (e: NodeJS.ErrnoException) => {
     console.warn('[flipper-server] HTTP server error: ', e.code);
+    tracker.track('server-error', {code: e.code, message: e.message});
+
     if (e.code === 'EADDRINUSE') {
       console.warn(
         `[flipper-server] Unable to listen at port: ${config.port}, is already in use`,
