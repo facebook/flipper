@@ -93,7 +93,7 @@ if (os.platform() !== 'win32') {
 
 const rootPath = argv.bundler
   ? path.resolve(__dirname, '..', '..')
-  : path.resolve(__dirname, '..'); // in pre packaged versions of the server, static is copied inside the package
+  : path.resolve(__dirname, '..'); // In pre-packaged versions of the server, static is copied inside the package.
 const staticPath = path.join(rootPath, 'static');
 
 async function start() {
