@@ -70,11 +70,6 @@ const argv = yargs
       type: 'boolean',
       default: true,
     },
-    replace: {
-      describe: 'Replaces any running instance, if any.',
-      type: 'boolean',
-      default: true,
-    },
   })
   .version('DEV')
   .help()
