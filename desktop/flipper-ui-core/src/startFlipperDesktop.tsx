@@ -159,6 +159,10 @@ function init(flipperServer: FlipperServer) {
     await dispatcher(store, logger);
     getRenderHostInstance().sendIpcEvent('storeRehydrated');
     uiPerfTracker.track('ui-perf-store-rehydrated');
+    // We could potentially merge ui-perf-store-rehydrated and ui-perf-everything-finally-loaded-jeeeez,
+    // but what if at some point in the future we relalize that store rehydration is not actually the last event?
+    // Keep it separate for the time being (evil laugh as there is nothing more permanent than temporary stuff)
+    uiPerfTracker.track('ui-perf-everything-finally-loaded-jeeeez');
   });
 
   setPersistor(persistor);
