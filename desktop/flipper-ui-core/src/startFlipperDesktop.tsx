@@ -44,6 +44,7 @@ import {loadTheme} from './utils/loadTheme';
 import {connectFlipperServerToStore} from './dispatcher/flipperServer';
 import {enableConnectivityHook} from './chrome/ConnectivityLogs';
 import ReactDOM from 'react-dom';
+import {uiPerfTracker} from './utils/UIPerfTracker';
 
 class AppFrame extends React.Component<
   {logger: Logger; persistor: Persistor},
@@ -142,6 +143,7 @@ function init(flipperServer: FlipperServer) {
   initLogTailer();
 
   const logger = initLogger(store);
+  uiPerfTracker._init();
 
   setLoggerInstance(logger);
   startGlobalErrorHandling();
