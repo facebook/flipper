@@ -154,6 +154,7 @@ function init(flipperServer: FlipperServer) {
     // Make sure process state is set before dispatchers run
     await dispatcher(store, logger);
     getRenderHostInstance().sendIpcEvent('storeRehydrated');
+    uiPerfTracker.track('ui-perf-store-rehydrated');
   });
 
   setPersistor(persistor);

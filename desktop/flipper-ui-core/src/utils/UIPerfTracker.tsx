@@ -9,7 +9,9 @@
 
 import {getLogger} from 'flipper-common';
 
-type UIPerfEvents = 'ui-perf-everything-finally-loaded-jeeeez';
+type UIPerfEvents =
+  | 'ui-perf-store-rehydrated'
+  | 'ui-perf-everything-finally-loaded-jeeeez';
 
 class UIPerfTracker {
   private t0!: number;
