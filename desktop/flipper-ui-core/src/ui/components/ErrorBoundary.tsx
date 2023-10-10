@@ -14,6 +14,7 @@ import Button from './Button';
 import View from './View';
 import styled from '@emotion/styled';
 import React from 'react';
+import StackTrace from 'stacktrace-js';
 
 const ErrorBoundaryContainer = styled(View)({
   overflow: 'auto',
@@ -40,6 +41,7 @@ type ErrorBoundaryProps = {
 
 type ErrorBoundaryState = {
   error: Error | null | undefined;
+  mappedStack: string | null;
 };
 
 /**
@@ -51,17 +53,26 @@ export default class ErrorBoundary extends Component<
 > {
   constructor(props: ErrorBoundaryProps, context: Object) {
     super(props, context);
-    this.state = {error: null};
+    this.state = {error: null, mappedStack: null};
   }
 
   componentDidCatch(err: Error, errorInfo: ErrorInfo) {
     // eslint-disable-next-line flipper/no-console-error-without-context
     console.error(err, errorInfo.componentStack, 'ErrorBoundary');
     this.setState({error: err});
+    // eslint-disable-next-line promise/no-promise-in-callback
+    StackTrace.fromError(err)
+      .then((frames) => {
+        const mappedStack = frames.map((frame) => frame.toString()).join('\n');
+        this.setState({error: err, mappedStack});
+      })
+      .catch((e) => {
+        console.log('[stacktrace-js] failed to extract stack trace', e);
+      });
   }
 
   clearError = () => {
-    this.setState({error: null});
+    this.setState({error: null, mappedStack: null});
   };
 
   render() {
@@ -79,9 +90,11 @@ export default class ErrorBoundary extends Component<
       return (
         <ErrorBoundaryContainer grow>
           <Heading>{heading}</Heading>
-          {this.props.showStack !== false &&
-            'Look in the console for correct stack traces.'}
-          <br />
+          {this.props.showStack !== false && (
+            <ErrorBoundaryStack>
+              {this.state.mappedStack ?? 'Loading stack trace...'}
+            </ErrorBoundaryStack>
+          )}
           <Button onClick={this.clearError}>Clear error and try again</Button>
         </ErrorBoundaryContainer>
       );

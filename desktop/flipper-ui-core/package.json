@@ -48,6 +48,7 @@
     "redux-persist": "^6.0.0",
     "reselect": "^4.1.8",
     "semver": "^7.5.4",
+    "stacktrace-js": "2.0.2",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
