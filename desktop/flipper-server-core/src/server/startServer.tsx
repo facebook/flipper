@@ -177,6 +177,13 @@ async function startHTTPServer(
     res.end('flipper-ok');
   });
 
+  // In dev plugins are served with paths from their location on disk
+  if (process.env.NODE_ENV !== 'production') {
+    app.use(
+      express.static(config.staticPath.split('/').slice(0, -1).join('/')),
+    );
+  }
+
   app.use(express.static(config.staticPath));
 
   const server = http.createServer(app);
