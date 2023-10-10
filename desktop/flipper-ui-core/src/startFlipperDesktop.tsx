@@ -123,6 +123,10 @@ class AppFrame extends React.Component<
     );
   }
 
+  componentDidMount(): void {
+    uiPerfTracker.track('ui-perf-root-rendered');
+  }
+
   componentDidCatch(error: any, errorInfo: any) {
     console.error(
       `Flipper chrome crash: ${error}`,

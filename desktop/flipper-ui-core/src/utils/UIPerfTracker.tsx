@@ -11,6 +11,7 @@ import {getLogger} from 'flipper-common';
 
 type UIPerfEvents =
   | 'ui-perf-store-rehydrated'
+  | 'ui-perf-root-rendered'
   | 'ui-perf-everything-finally-loaded-jeeeez';
 
 class UIPerfTracker {
