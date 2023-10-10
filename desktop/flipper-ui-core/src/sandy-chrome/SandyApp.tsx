@@ -40,6 +40,7 @@ import {isFBEmployee} from '../utils/fbEmployee';
 import {notification} from 'antd';
 import isProduction from '../utils/isProduction';
 import {getRenderHostInstance} from 'flipper-frontend-core';
+import {uiPerfTracker} from '../utils/UIPerfTracker';
 
 export function SandyApp() {
   const logger = useLogger();
@@ -54,6 +55,7 @@ export function SandyApp() {
     })`;
 
     registerStartupTime(logger);
+    uiPerfTracker.track('ui-perf-sandy-container-rendered');
 
     if (hasPlatformWizardBeenDone(window.localStorage)) {
       Dialog.showModal((onHide) => (
