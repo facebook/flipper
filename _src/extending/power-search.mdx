@@ -1,0 +1,13 @@
+---
+id: power-search
+title: Power Search
+sidebar_label: Power Search
+---
+
+By default, your [table](../tutorial/js-table.mdx) has a power search bar. It allows to search through the entire row as a serialized string or through individual columns. Based on the column type, power search provides different search operators for columns. 
+For instance, for string values it can check if a string contains a substring or even matches some other string exactly. At the same time, for dates Flipper can filter out records after or before a certain date.
+Since Flipper does not have a way of identifying the column type in advance, it always assumes that every column is a string. If you want you can tell Flipper how to handle a column and what power search operators should be available.
+
+You can see a live example of how you can provide the power search config [here](https://fburl.com/code/rrxj86e5). 
+
+You can find the complete list of supported operators [here](https://github.com/facebook/flipper/blob/main/desktop/flipper-plugin/src/ui/data-table/DataTableDefaultPowerSearchOperators.tsx).
