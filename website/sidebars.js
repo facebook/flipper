@@ -124,6 +124,7 @@ module.exports = {
       {
         'Desktop Plugin APIs': [
           'extending/flipper-plugin',
+          'extending/power-search',
           'extending/styling-components',
           'extending/style-guide',
           'extending/deeplinks',
