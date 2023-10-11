@@ -122,7 +122,7 @@ export default async (store: Store, _logger: Logger) => {
     FlipperPlugin,
     Immer,
     antd,
-    emotion_styled: emotion_styled.default,
+    emotion_styled,
     emotion_css,
     antdesign_icons,
     ReactJsxRuntime,

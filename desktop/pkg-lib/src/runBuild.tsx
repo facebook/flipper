@@ -28,53 +28,6 @@ const resolveFbStubsToFbPlugin: Plugin = {
   },
 };
 
-const globalFallbackPlugin: Plugin = {
-  name: 'global-fallback',
-  setup(build) {
-    const pluginExternalModules: Record<string, string> = {
-      flipper: 'Flipper',
-      'flipper-plugin': 'FlipperPlugin',
-      react: 'React',
-      'react-dom': 'ReactDOM',
-      'react-dom/client': 'ReactDOMClient',
-      'react-is': 'ReactIs',
-      antd: 'antd',
-      immer: 'Immer',
-      '@emotion/styled': 'emotion_styled',
-      '@emotion/css': 'emotion_css',
-      '@ant-design/icons': 'antdesign_icons',
-      'react/jsx-runtime': 'ReactJsxRuntime',
-    };
-
-    // Filter and modify the resolution of certain paths
-    build.onResolve(
-      {
-        filter: new RegExp(
-          `^(${Object.keys(pluginExternalModules).join('|')})$`,
-        ),
-      },
-      (args) => {
-        return {
-          path: args.path,
-          namespace: 'global-fallback',
-        };
-      },
-    );
-
-    // Load the module using the global fallback
-    build.onLoad({filter: /.*/, namespace: 'global-fallback'}, (args) => {
-      const globalName = pluginExternalModules[args.path];
-      return {
-        // contents: `export default window["${globalName}"];`,
-        contents: `const mod = window["${globalName}"];
-          for (const key in mod) {
-            exports[key] = mod[key];
-          }`,
-      };
-    });
-  },
-};
-
 interface RunBuildConfig {
   pluginDir: string;
   entry: string;
@@ -99,7 +52,7 @@ async function runBuild({
     bundle: true,
     outfile: out,
     platform: node ? 'node' : 'browser',
-    format: 'esm',
+    format: 'cjs',
     // This list should match `dispatcher/plugins.tsx` and `builtInModules` in `desktop/.eslintrc.js`
     external: [
       'flipper',
@@ -120,10 +73,7 @@ async function runBuild({
     ],
     sourcemap: dev ? 'inline' : 'external',
     minify: !dev,
-    plugins: [
-      ...(intern ? [resolveFbStubsToFbPlugin] : []),
-      globalFallbackPlugin,
-    ],
+    plugins: intern ? [resolveFbStubsToFbPlugin] : undefined,
     loader: {
       '.ttf': 'dataurl',
     },
