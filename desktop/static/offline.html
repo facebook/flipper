@@ -137,7 +137,6 @@
       setTimeout(() => {
         button.disabled = false;
         button.value = 'Start';
-
       }, 30 * 10000);
     }
 
@@ -148,18 +147,24 @@
       window.location.reload();
     });
 
+    let autoStarted = false;
+
     // Check if the server is responding & reload the page if it is.
     // This handles the case when the device is online, but the server
     // is offline or misbehaving.
     async function checkNetworkAndReload() {
       try {
         const response = await fetch('.');
-        if (response.status >= 200 && response.status < 500) {
+        if (response.status === 200) {
           window.location.reload();
           return;
         }
       } catch {
-        // Unable to connect to the server, ignore.
+        // trigger submit button automatically, but only once
+        if (!autoStarted) {
+          autoStarted = true;
+          document.getElementById("submit").click();
+        }
       }
       window.setTimeout(checkNetworkAndReload, 2500);
     }
