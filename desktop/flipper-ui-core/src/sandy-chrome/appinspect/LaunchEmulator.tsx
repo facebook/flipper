@@ -94,6 +94,9 @@ export const LaunchEmulatorDialog = withTrackingScope(
     const [waitingForAndroid, setWaitingForAndroid] = useState(androidEnabled);
     const waitingForResults = waitingForIos || waitingForAndroid;
 
+    const [iOSMessage, setiOSMessage] = useState<string>('Loading...');
+    const [androidMessage, setAndroidMessage] = useState<string>('Loading...');
+
     const [favoriteVirtualDevices, setFavoriteVirtualDevices] =
       useLocalStorageState<string[]>('favourite-virtual-devices', []);
 
@@ -106,33 +109,48 @@ export const LaunchEmulatorDialog = withTrackingScope(
     };
 
     useEffect(() => {
-      if (!iosEnabled) {
-        return;
-      }
-      getRenderHostInstance()
-        .flipperServer.exec('ios-get-simulators', false)
-        .then((emulators) => {
+      const getiOSSimulators = async () => {
+        if (!iosEnabled) {
+          return;
+        }
+        setWaitingForIos(true);
+        try {
+          const simulators = await getRenderHostInstance().flipperServer.exec(
+            'ios-get-simulators',
+            false,
+          );
           setWaitingForIos(false);
-          setIosEmulators(emulators);
-        })
-        .catch((e) => {
-          console.warn('Failed to find simulators', e);
-        });
+          setIosEmulators(simulators);
+        } catch (error) {
+          console.warn('Failed to find iOS simulators', error);
+          setiOSMessage(`Error: ${error.message} \nRetrying...`);
+          setTimeout(getiOSSimulators, 1000);
+        }
+      };
+
+      getiOSSimulators();
     }, [iosEnabled]);
 
     useEffect(() => {
-      if (!androidEnabled) {
-        return;
-      }
-      getRenderHostInstance()
-        .flipperServer.exec('android-get-emulators')
-        .then((emulators) => {
+      const getAndroidEmulators = async () => {
+        if (!androidEnabled) {
+          return;
+        }
+        setWaitingForAndroid(true);
+        try {
+          const emulators = await getRenderHostInstance().flipperServer.exec(
+            'android-get-emulators',
+          );
           setWaitingForAndroid(false);
           setAndroidEmulators(emulators);
-        })
-        .catch((e) => {
-          console.warn('Failed to find emulators', e);
-        });
+        } catch (error) {
+          console.warn('Failed to find Android emulators', error);
+          setAndroidMessage(`Error: ${error.message} \nRetrying...`);
+          setTimeout(getAndroidEmulators, 1000);
+        }
+      };
+
+      getAndroidEmulators();
     }, [androidEnabled]);
 
     if (!iosEnabled && !androidEnabled) {
@@ -140,8 +158,11 @@ export const LaunchEmulatorDialog = withTrackingScope(
     }
 
     const items = [
-      androidEmulators.length > 0 ? (
-        <Title key="android-title" name="Android emulators" />
+      <Title key="android-title" name="Android emulators" />,
+      androidEmulators.length == 0 ? (
+        <Typography.Paragraph style={{textAlign: 'center'}}>
+          {androidMessage}
+        </Typography.Paragraph>
       ) : null,
       ...chain(
         androidEmulators.map((name) => ({
@@ -193,8 +214,11 @@ export const LaunchEmulatorDialog = withTrackingScope(
         })
         .value(),
 
-      iosEmulators.length > 0 ? (
-        <Title key="ios-title" name="iOS Simulators" />
+      <Title key="ios-title" name="iOS Simulators" />,
+      iosEmulators.length == 0 ? (
+        <Typography.Paragraph style={{textAlign: 'center'}}>
+          {iOSMessage}
+        </Typography.Paragraph>
       ) : null,
       ...chain(iosEmulators)
         .map((device) => ({

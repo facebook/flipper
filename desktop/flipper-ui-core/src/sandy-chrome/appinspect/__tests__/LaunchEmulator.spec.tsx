@@ -44,20 +44,21 @@ test('Can render and launch android apps - no emulators', async () => {
     </Provider>,
   );
 
-  expect(await renderer.findByText(/No virtual devices/))
-    .toMatchInlineSnapshot(`
-    <div
-      class="ant-alert-message"
-    >
-      No virtual devices available.
-      <br />
-      <a
+  expect(await renderer.findAllByText(/Loading/)).toMatchInlineSnapshot(`
+    [
+      <div
         class="ant-typography"
-        href="http://fbflipper.com/docs/getting-started/troubleshooting/general/#i-see-no-emulators-available"
+        style="text-align: center;"
       >
-        Learn more
-      </a>
-    </div>
+        Loading...
+      </div>,
+      <div
+        class="ant-typography"
+        style="text-align: center;"
+      >
+        Loading...
+      </div>,
+    ]
   `);
 });
 
