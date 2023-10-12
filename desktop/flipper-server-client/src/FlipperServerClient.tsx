@@ -30,10 +30,15 @@ export type {FlipperServer, FlipperServerCommands, FlipperServerExecOptions};
 export function createFlipperServer(
   host: string,
   port: number,
-  args: URLSearchParams,
+  tokenProvider: () => Promise<string | null | undefined>,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
-  const socket = new ReconnectingWebSocket(`ws://${host}:${port}?${args}`);
+  const URLProvider = async () => {
+    const token = await tokenProvider();
+    return `ws://${host}:${port}?token=${token}`;
+  };
+
+  const socket = new ReconnectingWebSocket(URLProvider);
   return createFlipperServerWithSocket(socket as WebSocket, onStateChange);
 }
 
@@ -49,7 +54,7 @@ export function createFlipperServerWithSocket(
         reject(
           new Error(
             `Failed to connect to the server in a timely manner.
-             It may be unresponsive. Run the following from the terminal 
+             It may be unresponsive. Run the following from the terminal
              'sudo kill -9 $(lsof -t -i :52342)' as to kill any existing running instance, if any.`,
           ),
         );

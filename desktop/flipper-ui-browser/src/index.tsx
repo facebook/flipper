@@ -34,20 +34,26 @@ async function start() {
   setLoggerInstance(logger);
 
   const params = new URL(location.href).searchParams;
-  let token = params.get('token');
-  if (!token) {
-    console.info(
-      '[flipper-client][ui-browser] Get token from manifest instead',
-    );
-    const manifestResponse = await fetch('manifest.json');
-    const manifest = await manifestResponse.json();
-    token = manifest.token;
-  }
 
-  console.info(
-    '[flipper-client][ui-browser] Token is available: ',
-    token?.length != 0,
-  );
+  const tokenProvider = async () => {
+    const providerParams = new URL(location.href).searchParams;
+    let token = providerParams.get('token');
+    if (!token) {
+      console.info(
+        '[flipper-client][ui-browser] Get token from manifest instead',
+      );
+      const manifestResponse = await fetch('manifest.json');
+      const manifest = await manifestResponse.json();
+      token = manifest.token;
+    }
+
+    console.info(
+      '[flipper-client][ui-browser] Token is available: ',
+      token?.length != 0,
+    );
+
+    return token;
+  };
 
   const openPlugin = params.get('open-plugin');
   if (openPlugin) {
@@ -66,13 +72,11 @@ async function start() {
     cachedDeepLinkURL = deeplinkURL.toString();
   }
 
-  const searchParams = new URLSearchParams({token: token ?? ''});
-
   console.info('[flipper-client][ui-browser] Create WS client');
   const flipperServer = await createFlipperServer(
     location.hostname,
     parseInt(location.port, 10),
-    searchParams,
+    tokenProvider,
     (state: FlipperServerState) => {
       switch (state) {
         case FlipperServerState.CONNECTING:
@@ -213,7 +217,7 @@ async function initializePWA() {
 // getLogger() is not  yet created when the electron app starts.
 // we can't create it here yet, as the real logger is wired up to
 // the redux store and the rest of the world. So we create a delegating logger
-// that uses a simple implementation until the real one comes available
+// that uses a simple implementation until the real one comes available.
 function createDelegatedLogger(): Logger {
   const naiveLogger: Logger = {
     track(...args: [any, any, any?, any?]) {
