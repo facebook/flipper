@@ -47,6 +47,10 @@ type TrackerEvents = {
     error?: string;
   };
   'server-socket-already-in-use': {};
+  'browser-connection-created': {
+    successful: boolean;
+    timeMS: number;
+  };
   'app-connection-created': AppConnectionPayload;
   'app-connection-secure-attempt': AppConnectionPayload;
   'app-connection-insecure-attempt': AppConnectionPayload;

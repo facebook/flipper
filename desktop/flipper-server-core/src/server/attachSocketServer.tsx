@@ -27,6 +27,8 @@ import {
 } from 'flipper-server-companion';
 import {URLSearchParams} from 'url';
 import {getFlipperServerConfig} from '../FlipperServerConfig';
+import {tracker} from '../tracker';
+import {performance} from 'perf_hooks';
 
 const safe = (f: () => void) => {
   try {
@@ -50,6 +52,14 @@ export function attachSocketServer(
   server: FlipperServerImpl,
   companionEnv: FlipperServerCompanionEnv,
 ) {
+  const t0 = performance.now();
+  const browserConnectionTimeout = setTimeout(() => {
+    tracker.track('browser-connection-created', {
+      successful: false,
+      timeMS: performance.now() - t0,
+    });
+  }, 20000);
+
   socket.on('connection', (client, req) => {
     const clientAddress =
       (req.socket.remoteAddress &&
@@ -58,6 +68,12 @@ export function attachSocketServer(
 
     console.log('Client connected', clientAddress);
     numberOfConnectedClients++;
+
+    clearTimeout(browserConnectionTimeout);
+    tracker.track('browser-connection-created', {
+      successful: true,
+      timeMS: performance.now() - t0,
+    });
 
     let connected = true;
 
