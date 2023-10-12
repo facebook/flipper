@@ -54,20 +54,14 @@ export async function initializeLogger(
 
   addLogTailer((level: LoggerTypes, ...data: Array<any>) => {
     const logInfo = LoggerFormat(level, ...data);
-    logStream?.write(`${JSON.stringify(logInfo)}\n`);
+    logStream?.write(`[${logInfo.time}][${logInfo.type}] ${logInfo.msg}\n`);
 
     if (level === 'error') {
       const {
-        message,
-        error: {stack, interaction, name},
+        error: {stack, name},
       } = LoggerExtractError(data);
-      const logInfo = LoggerFormat(level, {
-        name,
-        stack,
-        interaction,
-        message,
-      });
-      logStream?.write(`${JSON.stringify(logInfo)}\n`);
+
+      logStream?.write(`${name}: \n${stack}\n`);
     }
   });
 }
