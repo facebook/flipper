@@ -53,14 +53,14 @@ enum BuildPlatform {
 const LINUX_STARTUP_SCRIPT = `#!/bin/sh
 THIS_DIR="$( cd "$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"
 cd "$THIS_DIR"
-./node ./server "$@"
+./flipper-runtime ./server "$@"
 `;
 
 const WINDOWS_STARTUP_SCRIPT = `@echo off
 setlocal
 set "THIS_DIR=%~dp0"
 cd /d "%THIS_DIR%"
-node server %*
+flipper-runtime server %*
 `;
 
 const argv = yargs
@@ -697,7 +697,7 @@ async function setUpMacBundle(
     'Flipper.app',
     'Contents',
     'MacOS',
-    'node',
+    'flipper-runtime',
   );
   return {resourcesPath: resourcesOutputDir, nodePath: nodeOutputPath};
 }
@@ -715,7 +715,7 @@ async function bundleServerReleaseForPlatform(
   await fs.mkdirp(outputDir);
 
   let outputPaths = {
-    nodePath: path.join(outputDir, 'node'),
+    nodePath: path.join(outputDir, 'flipper-runtime'),
     resourcesPath: outputDir,
   };
 
