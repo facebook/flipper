@@ -9,7 +9,6 @@
 
 const dotenv = require('dotenv').config();
 import path from 'path';
-import https from 'https';
 import os from 'os';
 import tar from 'tar';
 import {
@@ -36,6 +35,7 @@ import {spawn} from 'promisify-child-process';
 import {homedir} from 'os';
 import {need as pkgFetch} from 'pkg-fetch';
 import {exec} from 'child_process';
+import fetch from '@adobe/node-fetch-retry';
 
 // This needs to be tested individually. As of 2022Q2, node17 is not supported.
 const SUPPORTED_NODE_PLATFORM = 'node16';
@@ -489,16 +489,19 @@ async function download(url: string, dest: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     // Then, download the file and save it to the destination path.
     const file: fs.WriteStream = fs.createWriteStream(dest);
-    https
-      .get(url, (response) => {
-        response.pipe(file);
+    fetch(url)
+      .then((response) => {
+        response.body.pipe(file);
+        response.body.on('error', (err) => {
+          throw err;
+        });
         file.on('finish', () => {
           file.close();
-          console.log(`✅  Download successful ${url}.`);
+          console.log(`✅  Download successful ${url} to ${dest}.`);
           resolve();
         });
       })
-      .on('error', (error: Error) => {
+      .catch((error: Error) => {
         console.log(`❌  Download failed ${url}. Error: ${error}`);
         fs.unlink(dest);
         reject(error);
