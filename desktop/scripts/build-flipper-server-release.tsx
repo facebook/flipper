@@ -31,7 +31,7 @@ import isFB from './isFB';
 import yargs from 'yargs';
 import fs from 'fs-extra';
 import {downloadIcons} from './build-icons';
-import {spawn} from 'promisify-child-process';
+import {spawn, exec as execAsync} from 'promisify-child-process';
 import {homedir} from 'os';
 import {need as pkgFetch} from 'pkg-fetch';
 import {exec} from 'child_process';
@@ -515,7 +515,7 @@ async function download(url: string, dest: string): Promise<void> {
  * @param dest - Destination directory for the extracted contents.
  */
 async function unpack(source: string, destination: string) {
-  console.log(`⚙️  Extracting ${source}.`);
+  console.log(`⚙️  Extracting ${source} to ${destination}.`);
 
   try {
     await fs.access(destination, fs.constants.F_OK);
@@ -553,6 +553,40 @@ function nodePlatformFromBuildPlatform(platform: BuildPlatform): string {
   }
 }
 
+async function setRuntimeAppIcon(binaryPath: string): Promise<void> {
+  console.log(`⚙️  Updating runtime icon for MacOS in ${binaryPath}.`);
+  const iconPath = path.join(staticDir, 'icon.png');
+  const tempRsrcPath = path.join(os.tmpdir(), 'icon.rsrc');
+  const deRezCmd = `DeRez -only icns ${iconPath} > ${tempRsrcPath}`;
+  try {
+    await execAsync(deRezCmd);
+  } catch (err) {
+    console.error(
+      `❌  Error while extracting icon with '${deRezCmd}'. Error: ${err}`,
+    );
+    throw err;
+  }
+  const rezCmd = `Rez -append ${tempRsrcPath} -o ${binaryPath}`;
+  try {
+    await execAsync(rezCmd);
+  } catch (err) {
+    console.error(
+      `❌  Error while setting icon on executable ${binaryPath}. Error: ${err}`,
+    );
+    throw err;
+  }
+  const updateCmd = `SetFile -a C ${binaryPath}`;
+  try {
+    await execAsync(updateCmd);
+  } catch (err) {
+    console.error(
+      `❌  Error while changing icon visibility on ${binaryPath}. Error: ${err}`,
+    );
+    throw err;
+  }
+  console.log(`✅  Updated flipper-runtime icon.`);
+}
+
 async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
   /**
    * Below is a temporary patch that doesn't use pkg-fetch to
@@ -584,8 +618,15 @@ async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
     } catch (err) {}
     if (!cached) {
       // Download node tarball from the distribution site.
+      // If this is not present (due to a node update) follow these steps:
+      // - Update the download URL to `https://nodejs.org/dist/${NODE_VERSION}/${name}.tar.gz`
+      // - Ensure the Xcode developer tools are installed
+      // - Build a full MacOS server release locally using `yarn build:flipper-server --mac`
+      // - Enter the dist folder: dist/flipper-server-mac-aarch64/Flipper.app/Contents/MacOS
+      // - `mkdir bin && cp flipper-runtime bin/node && tar -czvf node-${NODE_VERSION}-darwin-arm64.tar.gz bin`
+      // - Upload the resulting tar ball to the Flipper release page as a new tag: https://github.com/facebook/flipper/releases
       await download(
-        `https://nodejs.org/dist/${NODE_VERSION}/${name}.tar.gz`,
+        `https://github.com/facebook/flipper/releases/download/node-${NODE_VERSION}/${name}.tar.gz`,
         downloadOutputPath,
       );
       // Finally, unpack the tarball to a local folder i.e. outputPath.
@@ -605,6 +646,17 @@ async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
 
     console.log(`⚙️  Copying node binary from ${nodePath} to ${outputPath}`);
     await fs.copyFile(nodePath, outputPath);
+  }
+
+  if (
+    platform === BuildPlatform.MAC_AARCH64 ||
+    platform === BuildPlatform.MAC_X64
+  ) {
+    if (process.platform === 'darwin') {
+      await setRuntimeAppIcon(outputPath);
+    } else {
+      console.warn("⚠️  Skipping icon update as it's only supported on macOS.");
+    }
   }
 
   // Set +x on the binary as copyFile doesn't maintain the bit.

@@ -58,9 +58,9 @@ server-linux:
   files:
     frameworks:
       - '!*'
-      - node
+      - flipper-runtime
     core:
-      - '!node'
+      - '!flipper-runtime
       - '!static'
     static:
       - '!*'
