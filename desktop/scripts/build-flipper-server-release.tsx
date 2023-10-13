@@ -733,7 +733,10 @@ async function bundleServerReleaseForPlatform(
   }
 
   console.log(`⚙️  Copying from ${dir} to ${outputPaths.resourcesPath}`);
-  await fs.copy(dir, outputPaths.resourcesPath);
+  await fs.copy(dir, outputPaths.resourcesPath, {
+    overwrite: true,
+    dereference: true,
+  });
 
   console.log(`⚙️  Downloading compatible node version`);
   await installNodeBinary(outputPaths.nodePath, platform);
