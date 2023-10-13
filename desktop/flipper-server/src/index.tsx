@@ -243,7 +243,9 @@ async function start() {
       }
     });
   }
-  await flipperServer.connect();
+  await flipperServer
+    .connect()
+    .catch((e) => console.warn('Flipper Server failed to initialize', e));
 
   const t8 = performance.now();
   const appServerStartedMS = t8 - t7;
