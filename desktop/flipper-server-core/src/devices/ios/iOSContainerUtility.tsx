@@ -15,7 +15,6 @@ import memoize from 'lodash.memoize';
 import {promisify} from 'util';
 import child_process from 'child_process';
 import fs from 'fs-extra';
-import path from 'path';
 import {recorder} from '../../recorder';
 const exec = promisify(child_process.exec);
 
@@ -178,7 +177,8 @@ async function queryTargetsWithIdb(
     Run 'idb kill' from terminal.`;
 
   try {
-    const {stdout} = await safeExec(cmd);
+    const {stdout} = await unsafeExec(cmd);
+
     if (!stdout) {
       recorder.event('cmd', {
         cmd,
