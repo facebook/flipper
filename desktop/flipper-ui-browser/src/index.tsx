@@ -42,9 +42,16 @@ async function start() {
       console.info(
         '[flipper-client][ui-browser] Get token from manifest instead',
       );
-      const manifestResponse = await fetch('manifest.json');
-      const manifest = await manifestResponse.json();
-      token = manifest.token;
+      try {
+        const manifestResponse = await fetch('manifest.json');
+        const manifest = await manifestResponse.json();
+        token = manifest.token;
+      } catch (e) {
+        console.warn(
+          '[flipper-client][ui-browser] Failed to get token from manifest. Error:',
+          e.message,
+        );
+      }
     }
 
     console.info(
