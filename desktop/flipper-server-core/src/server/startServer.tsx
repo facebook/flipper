@@ -21,6 +21,7 @@ import {FlipperServerCompanionEnv} from 'flipper-server-companion';
 import {validateAuthToken} from '../app-connectivity/certificate-exchange/certificate-utils';
 import {tracker} from '../tracker';
 import {EnvironmentInfo, isProduction} from 'flipper-common';
+import {GRAPH_SECRET} from '../fb-stubs/constants';
 
 type Config = {
   port: number;
@@ -147,7 +148,11 @@ async function startHTTPServer(
       ? path.join(config.staticPath, config.entry)
       : path.join(config.staticPath, 'loading.html');
     fs.readFile(resource, (_err, content) => {
-      res.end(content);
+      const processedContent = content
+        .toString()
+        .replace('GRAPH_SECRET_REPLACE_ME', GRAPH_SECRET)
+        .replace('FLIPPER_APP_VERSION_REPLACE_ME', environmentInfo.appVersion);
+      res.end(processedContent);
     });
   });
 

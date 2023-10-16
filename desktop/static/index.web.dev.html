@@ -137,6 +137,9 @@
         window.flipperShowMessage = showMessage;
         window.flipperHideMessage = hideMessage;
 
+        window.GRAPH_SECRET = 'GRAPH_SECRET_REPLACE_ME';
+        window.FLIPPER_APP_VERSION = 'FLIPPER_APP_VERSION_REPLACE_ME';
+
         const params = new URL(location.href).searchParams;
         let token = params.get('token');
         if (!token) {

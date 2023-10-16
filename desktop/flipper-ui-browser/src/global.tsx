@@ -16,6 +16,8 @@ declare global {
       entryPoint: string;
       debug: boolean;
     };
+    GRAPH_SECRET: string;
+    FLIPPER_APP_VERSION: string;
 
     flipperShowMessage?(message: string): void;
     flipperHideMessage?(): void;

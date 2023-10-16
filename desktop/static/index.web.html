@@ -70,7 +70,7 @@
 
         const root = document.getElementById('root');
         const troubleshootBox = document.getElementById('troubleshoot');
-        
+
         function showMessage(text) {
           troubleshootBox.innerText = text;
 
@@ -85,6 +85,9 @@
 
         window.flipperShowMessage = showMessage;
         window.flipperHideMessage = hideMessage;
+
+        window.GRAPH_SECRET = 'GRAPH_SECRET_REPLACE_ME';
+        window.FLIPPER_APP_VERSION = 'FLIPPER_APP_VERSION_REPLACE_ME';
 
         // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
         try {

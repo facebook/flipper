@@ -7,7 +7,12 @@
  * @format
  */
 
-import {getLogger, Logger, setLoggerInstance} from 'flipper-common';
+import {
+  getLogger,
+  getStringFromErrorLike,
+  setLoggerInstance,
+} from 'flipper-common';
+import {init as initLogger} from './fb-stubs/Logger';
 import {initializeRenderHost} from './initializeRenderHost';
 import {createFlipperServer, FlipperServerState} from 'flipper-server-client';
 
@@ -18,6 +23,8 @@ if (loadingContainer) {
 
 let cachedFile: {name: string; data: string} | undefined;
 let cachedDeepLinkURL: string | undefined;
+
+const logger = initLogger();
 
 async function start() {
   // @ts-ignore
@@ -30,7 +37,6 @@ async function start() {
     };
   };
 
-  const logger = createDelegatedLogger();
   setLoggerInstance(logger);
 
   const params = new URL(location.href).searchParams;
@@ -54,7 +60,7 @@ async function start() {
       }
     }
 
-    console.info(
+    getLogger().info(
       '[flipper-client][ui-browser] Token is available: ',
       token?.length != 0,
     );
@@ -79,7 +85,8 @@ async function start() {
     cachedDeepLinkURL = deeplinkURL.toString();
   }
 
-  console.info('[flipper-client][ui-browser] Create WS client');
+  getLogger().info('[flipper-client][ui-browser] Create WS client');
+
   const flipperServer = await createFlipperServer(
     location.hostname,
     parseInt(location.port, 10),
@@ -87,39 +94,43 @@ async function start() {
     (state: FlipperServerState) => {
       switch (state) {
         case FlipperServerState.CONNECTING:
-          console.info('[flipper-client] Connecting to server');
+          getLogger().info('[flipper-client] Connecting to server');
           window.flipperShowMessage?.('Connecting to server...');
           break;
         case FlipperServerState.CONNECTED:
-          console.info('[flipper-client] Connection established with server');
+          getLogger().info(
+            '[flipper-client] Connection established with server',
+          );
           window.flipperHideMessage?.();
           break;
         case FlipperServerState.DISCONNECTED:
-          console.info('[flipper-client] Disconnected from server');
+          getLogger().info('[flipper-client] Disconnected from server');
           window.flipperShowMessage?.('Waiting for server...');
           break;
       }
     },
   );
 
-  console.info('[flipper-client][ui-browser] WS client connected');
+  getLogger().info('[flipper-client][ui-browser] WS client connected');
 
   flipperServer.on('server-log', (logEntry) => {
-    console[logEntry.type](
+    getLogger()[logEntry.type](
       `[${logEntry.namespace}] (${new Date(
         logEntry.time,
       ).toLocaleTimeString()}): ${logEntry.msg}`,
     );
   });
 
-  console.info('[flipper-client][ui-browser] Waiting for server connection');
+  getLogger().info(
+    '[flipper-client][ui-browser] Waiting for server connection',
+  );
   await flipperServer.connect();
-  console.info(
+  getLogger().info(
     '[flipper-client][ui-browser] Connected to server, get configuration',
   );
   const flipperServerConfig = await flipperServer.exec('get-config');
 
-  console.info(
+  getLogger().info(
     '[flipper-client][ui-browser] Configuration obtained, initialise render host',
   );
 
@@ -131,16 +142,21 @@ async function start() {
   require('flipper-ui-core').startFlipperDesktop(flipperServer);
   window.flipperHideMessage?.();
 
-  console.info('[flipper-client][ui-browser] UI initialised');
+  getLogger().info('[flipper-client][ui-browser] UI initialised');
+  logger.track('success-rate', 'flipper-ui-browser-started', {value: 1});
 }
 
 start().catch((e) => {
-  console.error('Failed to start flipper-ui-browser', e);
+  getLogger().error('Failed to start flipper-ui-browser', e);
+  logger.track('success-rate', 'flipper-ui-browser-started', {
+    value: 0,
+    error: getStringFromErrorLike(e),
+  });
   window.flipperShowMessage?.('Failed to start UI with error: ' + e);
 });
 
 async function initializePWA() {
-  console.log('[PWA] Initialization');
+  getLogger().info('[PWA] Initialization');
 
   let rehydrated = false;
   const openFileIfAny = () => {
@@ -171,22 +187,22 @@ async function initializePWA() {
     navigator.serviceWorker
       .register('/service-worker.js')
       .then(() => {
-        console.log('[PWA] Service Worker has been registered');
+        getLogger().info('[PWA] Service Worker has been registered');
       })
       .catch((e) => {
-        console.error('[PWA] failed to register Service Worker', e);
+        getLogger().error('[PWA] failed to register Service Worker', e);
       });
   }
 
   if ('launchQueue' in window) {
-    console.log('[PWA] File Handling API is supported');
+    getLogger().debug('[PWA] File Handling API is supported');
 
     // @ts-ignore
     window.launchQueue.setConsumer(async (launchParams) => {
       if (!launchParams || !launchParams.files) {
         return;
       }
-      console.log('[PWA] Attempt to to open a file');
+      getLogger().debug('[PWA] Attempt to to open a file');
       for (const file of launchParams.files) {
         const blob = await file.getFile();
         blob.handle = file;
@@ -203,72 +219,20 @@ async function initializePWA() {
     console.warn('[PWA] File Handling API is not supported');
   }
 
-  console.log('[PWA] Add before install prompt listener');
+  getLogger().debug('[PWA] Add before install prompt listener');
   window.addEventListener('beforeinstallprompt', (e) => {
     // Prevent Chrome 67 and earlier from automatically showing the prompt.
     e.preventDefault();
     // Stash the event so it can be triggered later.
     // @ts-ignore
     global.PWAppInstallationEvent = e;
-    console.log('[PWA] Installation event has been captured');
+    getLogger().info('[PWA] Installation event has been captured');
   });
 
   window.addEventListener('storeRehydrated', () => {
-    console.info('[PWA] Store is rehydrated');
+    getLogger().info('[PWA] Store is rehydrated');
     rehydrated = true;
     openFileIfAny();
     openURLIfAny();
   });
-}
-
-// getLogger() is not  yet created when the electron app starts.
-// we can't create it here yet, as the real logger is wired up to
-// the redux store and the rest of the world. So we create a delegating logger
-// that uses a simple implementation until the real one comes available.
-function createDelegatedLogger(): Logger {
-  const naiveLogger: Logger = {
-    track(...args: [any, any, any?, any?]) {
-      console.warn('(skipper track)', args);
-    },
-    trackTimeSince(...args: [any, any, any?]) {
-      console.warn('(skipped trackTimeSince)', args);
-    },
-    debug(...args: any[]) {
-      console.debug(...args);
-    },
-    error(...args: any[]) {
-      console.error(...args);
-      console.warn('(skipped error reporting)');
-    },
-    warn(...args: any[]) {
-      console.warn(...args);
-      console.warn('(skipped error reporting)');
-    },
-    info(...args: any[]) {
-      console.info(...args);
-    },
-  };
-  // will be overwrittingen later
-  setLoggerInstance(naiveLogger);
-
-  return {
-    track() {
-      // noop
-    },
-    trackTimeSince() {
-      // noop
-    },
-    debug(...args: any[]) {
-      getLogger().debug(...args);
-    },
-    error(...args: any[]) {
-      getLogger().error(...args);
-    },
-    warn(...args: any[]) {
-      getLogger().warn(...args);
-    },
-    info(...args: any[]) {
-      getLogger().info(...args);
-    },
-  };
 }
