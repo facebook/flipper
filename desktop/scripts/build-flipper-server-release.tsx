@@ -36,6 +36,7 @@ import {homedir} from 'os';
 import {need as pkgFetch} from 'pkg-fetch';
 import {exec} from 'child_process';
 import fetch from '@adobe/node-fetch-retry';
+import plist from 'simple-plist';
 
 // This needs to be tested individually. As of 2022Q2, node17 is not supported.
 const SUPPORTED_NODE_PLATFORM = 'node16';
@@ -458,11 +459,13 @@ async function buildServerRelease() {
     platforms.push(BuildPlatform.WINDOWS);
   }
 
-  await Promise.all(
-    platforms.map((platform) =>
-      bundleServerReleaseForPlatform(dir, versionNumber, platform),
-    ),
-  );
+  // Instead of parallel builds, these have to be done sequential.
+  // As we are building a native app, the resulting binary will be
+  // different per platform meaning that there's a risk of overriding
+  // intermediate artefacts if done in parallel.
+  for (const platform of platforms) {
+    await bundleServerReleaseForPlatform(dir, versionNumber, platform);
+  }
 }
 
 function nodeArchFromBuildPlatform(platform: BuildPlatform): string {
@@ -653,9 +656,11 @@ async function installNodeBinary(outputPath: string, platform: BuildPlatform) {
     platform === BuildPlatform.MAC_X64
   ) {
     if (process.platform === 'darwin') {
-      await setRuntimeAppIcon(outputPath);
+      await setRuntimeAppIcon(outputPath).catch(() => {
+        console.warn('⚠️  Unable to update runtime icon');
+      });
     } else {
-      console.warn("⚠️  Skipping icon update as it's only supported on macOS.");
+      console.warn("⚠️  Skipping icon update as it's only supported on macOS");
     }
   }
 
@@ -721,24 +726,62 @@ async function setUpWindowsBundle(outputDir: string) {
 
 async function setUpMacBundle(
   outputDir: string,
+  platform: BuildPlatform,
   versionNumber: string,
 ): Promise<{nodePath: string; resourcesPath: string}> {
   console.log(`⚙️  Creating Mac bundle in ${outputDir}`);
-  await fs.copy(path.join(staticDir, 'flipper-server-app-template'), outputDir);
+
+  let appTemplate = path.join(staticDir, 'flipper-server-app-template');
+  if (isFB) {
+    appTemplate = path.join(
+      staticDir,
+      'facebook',
+      'flipper-server-app-template',
+      platform,
+    );
+    console.info('⚙️  Using internal template from: ' + appTemplate);
+  }
+
+  await fs.copy(appTemplate, outputDir);
+
+  function replacePropertyValue(
+    obj: any,
+    targetValue: string,
+    replacementValue: string,
+  ): any {
+    if (typeof obj === 'object' && !Array.isArray(obj) && obj !== null) {
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          obj[key] = replacePropertyValue(
+            obj[key],
+            targetValue,
+            replacementValue,
+          );
+        }
+      }
+    } else if (typeof obj === 'string' && obj === targetValue) {
+      obj = replacementValue;
+    }
+    return obj;
+  }
 
   console.log(`⚙️  Writing plist`);
-  const pListPath = path.join(
+  const plistPath = path.join(
     outputDir,
     'Flipper.app',
     'Contents',
     'Info.plist',
   );
-  const pListContents = await fs.readFile(pListPath, 'utf-8');
-  const updatedPlistContents = pListContents.replace(
+
+  /* eslint-disable node/no-sync*/
+  const pListContents: Record<any, any> = plist.readFileSync(plistPath);
+  replacePropertyValue(
+    pListContents,
     '{flipper-server-version}',
     versionNumber,
   );
-  await fs.writeFile(pListPath, updatedPlistContents, 'utf-8');
+  plist.writeBinaryFileSync(plistPath, pListContents);
+  /* eslint-enable node/no-sync*/
 
   const resourcesOutputDir = path.join(
     outputDir,
@@ -747,6 +790,10 @@ async function setUpMacBundle(
     'Resources',
     'server',
   );
+
+  if (!(await fs.exists(resourcesOutputDir))) {
+    await fs.mkdir(resourcesOutputDir);
+  }
   const nodeOutputPath = path.join(
     outputDir,
     'Flipper.app',
@@ -780,7 +827,7 @@ async function bundleServerReleaseForPlatform(
     platform === BuildPlatform.MAC_X64 ||
     platform === BuildPlatform.MAC_AARCH64
   ) {
-    outputPaths = await setUpMacBundle(outputDir, versionNumber);
+    outputPaths = await setUpMacBundle(outputDir, platform, versionNumber);
   } else if (platform === BuildPlatform.LINUX) {
     await setUpLinuxBundle(outputDir);
   } else if (platform === BuildPlatform.WINDOWS) {
