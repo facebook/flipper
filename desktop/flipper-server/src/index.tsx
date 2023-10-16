@@ -29,7 +29,7 @@ import {
   startServer,
   tracker,
 } from 'flipper-server-core';
-import {isTest} from 'flipper-common';
+import {addLogTailer, isTest, LoggerFormat} from 'flipper-common';
 import exitHook from 'exit-hook';
 import {getAuthToken} from 'flipper-server-core';
 import {findInstallation} from './findInstallation';
@@ -215,6 +215,12 @@ async function start() {
 
   // At this point, the HTTP server is ready and configuration is set.
   await launch();
+
+  if (!isProduction) {
+    addLogTailer((level, ...data) => {
+      flipperServer.emit('server-log', LoggerFormat(level, ...data));
+    });
+  }
 
   const t6 = performance.now();
   const launchedMS = t6 - t5;
