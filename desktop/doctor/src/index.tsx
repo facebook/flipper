@@ -18,6 +18,7 @@ import * as path from 'path';
 import type {FlipperDoctor} from 'flipper-common';
 import * as fs_extra from 'fs-extra';
 import {getIdbInstallationInstructions} from './fb-stubs/idbInstallationInstructions';
+import {validateSelectedXcodeVersion} from './fb-stubs/validateSelectedXcodeVersion';
 
 export function getHealthchecks(): FlipperDoctor.Healthchecks {
   return {
@@ -195,6 +196,11 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                       hasProblem: true,
                       message: `xcode-select has path of ${selectedXcode}, however this path does not exist on disk. Run "sudo xcode-select --switch" with a valid Xcode.app path.`,
                     };
+                  }
+                  const validatedXcodeVersion =
+                    await validateSelectedXcodeVersion(selectedXcode);
+                  if (validatedXcodeVersion.hasProblem) {
+                    return validatedXcodeVersion;
                   }
                   return {
                     hasProblem: false,
