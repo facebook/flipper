@@ -32,6 +32,7 @@ import SettingsSheet from '../../chrome/SettingsSheet';
 import {Link} from '../../ui';
 import {chain, uniq, without} from 'lodash';
 import {ReactNode} from 'react-markdown';
+import {produce} from 'immer';
 
 const COLD_BOOT = 'cold-boot';
 
@@ -108,6 +109,8 @@ export const LaunchEmulatorDialog = withTrackingScope(
       setFavoriteVirtualDevices(without(favoriteVirtualDevices, deviceName));
     };
 
+    const [pendingEmulators, setPendingEmulators] = useState(new Set<string>());
+
     useEffect(() => {
       const getiOSSimulators = async () => {
         if (!iosEnabled) {
@@ -172,14 +175,29 @@ export const LaunchEmulatorDialog = withTrackingScope(
       )
         .sortBy((item) => [!item.isFavorite, item.name])
         .map(({name, isFavorite}) => {
-          const launch = (coldBoot: boolean) => {
-            getRenderHostInstance()
-              .flipperServer.exec('android-launch-emulator', name, coldBoot)
-              .then(onClose)
-              .catch((e) => {
-                console.error('Failed to start emulator: ', e);
-                message.error('Failed to start emulator: ' + e);
-              });
+          const launch = async (coldBoot: boolean) => {
+            try {
+              setPendingEmulators(
+                produce((draft) => {
+                  draft.add(name);
+                }),
+              );
+              await getRenderHostInstance().flipperServer.exec(
+                'android-launch-emulator',
+                name,
+                coldBoot,
+              );
+              onClose();
+            } catch (e) {
+              console.error('Failed to start emulator: ', e);
+              message.error('Failed to start emulator: ' + e);
+            } finally {
+              setPendingEmulators(
+                produce((draft) => {
+                  draft.delete(name);
+                }),
+              );
+            }
           };
           const menu = (
             <Menu
@@ -206,6 +224,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
               <Dropdown.Button
                 overlay={menu}
                 icon={<MoreOutlined />}
+                loading={pendingEmulators.has(name)}
                 onClick={() => launch(false)}>
                 {name}
               </Dropdown.Button>
@@ -237,15 +256,30 @@ export const LaunchEmulatorDialog = withTrackingScope(
               type="default"
               key={device.udid}
               style={{width: '100%'}}
-              onClick={() =>
-                getRenderHostInstance()
-                  .flipperServer.exec('ios-launch-simulator', device.udid)
-                  .catch((e) => {
-                    console.warn('Failed to start simulator: ', e);
-                    message.error('Failed to start simulator: ' + e);
-                  })
-                  .then(onClose)
-              }>
+              loading={pendingEmulators.has(device.udid)}
+              onClick={async () => {
+                try {
+                  setPendingEmulators(
+                    produce((draft) => {
+                      draft.add(device.udid);
+                    }),
+                  );
+                  await getRenderHostInstance().flipperServer.exec(
+                    'ios-launch-simulator',
+                    device.udid,
+                  );
+                  onClose();
+                } catch (e) {
+                  console.warn('Failed to start simulator: ', e);
+                  message.error('Failed to start simulator: ' + e);
+                } finally {
+                  setPendingEmulators(
+                    produce((draft) => {
+                      draft.delete(device.udid);
+                    }),
+                  );
+                }
+              }}>
               {device.name}
               {device.osVersion ? ` (${device.osVersion})` : ''}
             </Button>
