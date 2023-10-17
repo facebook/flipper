@@ -6,6 +6,8 @@
  */
 
 #pragma once
+#ifndef _FLIPPERSOCKETPROVIDER_H_
+#define _FLIPPERSOCKETPROVIDER_H_
 
 #include <memory>
 #include "FlipperScheduler.h"
@@ -76,3 +78,4 @@ class FlipperSocketProvider {
 
 } // namespace flipper
 } // namespace facebook
+#endif
