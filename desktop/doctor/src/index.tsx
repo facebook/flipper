@@ -183,7 +183,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                       message: `Xcode version is not selected. You can select it using command "sudo xcode-select -switch <path/to/>Xcode.app". ${result.message}.`,
                     };
                   }
-                  const selectedXcode = result.stdout!.toString().trim();
+                  const selectedXcode = result.stdout.toString().trim();
                   if (selectedXcode == '/Library/Developer/CommandLineTools') {
                     return {
                       hasProblem: true,
