@@ -22,6 +22,7 @@ import {validateAuthToken} from '../app-connectivity/certificate-exchange/certif
 import {tracker} from '../tracker';
 import {EnvironmentInfo, isProduction} from 'flipper-common';
 import {GRAPH_SECRET} from '../fb-stubs/constants';
+import {sessionId} from '../sessionId';
 
 type Config = {
   port: number;
@@ -151,7 +152,9 @@ async function startHTTPServer(
       const processedContent = content
         .toString()
         .replace('GRAPH_SECRET_REPLACE_ME', GRAPH_SECRET)
-        .replace('FLIPPER_APP_VERSION_REPLACE_ME', environmentInfo.appVersion);
+        .replace('FLIPPER_APP_VERSION_REPLACE_ME', environmentInfo.appVersion)
+        .replace('FLIPPER_UNIXNAME_REPLACE_ME', environmentInfo.os.unixname)
+        .replace('FLIPPER_SESSION_ID_REPLACE_ME', sessionId);
       res.end(processedContent);
     });
   });

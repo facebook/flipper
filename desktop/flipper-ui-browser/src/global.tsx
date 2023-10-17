@@ -18,6 +18,8 @@ declare global {
     };
     GRAPH_SECRET: string;
     FLIPPER_APP_VERSION: string;
+    FLIPPER_SESSION_ID: string;
+    FLIPPER_UNIXNAME: string;
 
     flipperShowMessage?(message: string): void;
     flipperHideMessage?(): void;
