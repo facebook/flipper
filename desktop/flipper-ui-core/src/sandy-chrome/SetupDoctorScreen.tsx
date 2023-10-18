@@ -13,6 +13,7 @@ import {
   Typography,
   Collapse,
   Button,
+  List,
   Modal,
   Checkbox,
   Alert,
@@ -133,6 +134,25 @@ function CollapsableCategory(props: {
           header={check.label}
           extra={<CheckIcon status={check.result.status} />}>
           <Paragraph>{check.result.message}</Paragraph>
+          {check.result.commands && (
+            <List>
+              {check.result.commands.map(({title, command}, i) => (
+                <List.Item key={i}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      marginBottom: 8,
+                    }}>
+                    <Typography.Text type="secondary">{title}</Typography.Text>
+                    <Typography.Text code copyable>
+                      {command}
+                    </Typography.Text>
+                  </div>
+                </List.Item>
+              ))}
+            </List>
+          )}
         </Collapse.Panel>
       ))}
     </Collapse>
@@ -274,7 +294,7 @@ export default function SetupDoctorScreen({
   return modal ? (
     <Modal
       centered
-      width={570}
+      width={620}
       title="Setup Doctor"
       open={visible}
       destroyOnClose
