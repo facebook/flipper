@@ -178,23 +178,32 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 isRequired: true,
                 run: async (_: FlipperDoctor.EnvironmentInfo) => {
                   const result = await tryExecuteCommand('xcode-select -p');
+                  const selectXcodeCommands = [
+                    {
+                      title: 'Select Xcode version',
+                      command: `sudo xcode-select -switch <path/to/>Xcode.app`,
+                    },
+                  ];
                   if (result.hasProblem) {
                     return {
                       hasProblem: true,
-                      message: `Xcode version is not selected. You can select it using command "sudo xcode-select -switch <path/to/>Xcode.app". ${result.message}.`,
+                      message: `Xcode version is not selected. ${result.message}.`,
+                      commands: selectXcodeCommands,
                     };
                   }
                   const selectedXcode = result.stdout.toString().trim();
                   if (selectedXcode == '/Library/Developer/CommandLineTools') {
                     return {
                       hasProblem: true,
-                      message: `xcode-select has no Xcode selected, You can select it using command "sudo xcode-select -switch <path/to/>Xcode.app".`,
+                      message: `xcode-select has no Xcode selected.`,
+                      commands: selectXcodeCommands,
                     };
                   }
                   if ((await fs_extra.pathExists(selectedXcode)) == false) {
                     return {
                       hasProblem: true,
-                      message: `xcode-select has path of ${selectedXcode}, however this path does not exist on disk. Run "sudo xcode-select --switch" with a valid Xcode.app path.`,
+                      message: `xcode-select has path of ${selectedXcode}, however this path does not exist on disk.`,
+                      commands: selectXcodeCommands,
                     };
                   }
                   const validatedXcodeVersion =
