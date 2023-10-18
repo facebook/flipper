@@ -25,7 +25,7 @@ export function Tabs({
   localStorageKeyOverride, //set this if you need to have a dynamic number of tabs, you do *not* need to namespace with the plugin name
   ...baseProps
 }: {grow?: boolean; localStorageKeyOverride?: string} & TabsProps) {
-  const keys: string[] = [];
+  const keys: string[] = baseProps.items?.map((item) => item.key) ?? [];
   const keyedChildren = Children.map(children, (child: any, idx) => {
     if (!child || typeof child !== 'object') {
       return;
@@ -53,7 +53,7 @@ export function Tabs({
   });
 
   const [activeTab, setActiveTab] = useLocalStorageState<string | undefined>(
-    'Tabs:' + localStorageKeyOverride ?? keys.join(','),
+    'Tabs:' + (localStorageKeyOverride ?? keys.join(',')),
     undefined,
   );
 
