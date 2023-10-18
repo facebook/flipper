@@ -332,6 +332,18 @@ export const generateAuthToken = async () => {
   return token;
 };
 
+/**
+ * Gets the client authentication token. If there is no existing token,
+ * it generates one, export it to the manifest file and returns it.
+ *
+ * Additionally, it must check the token's validity before returning it.
+ * If the token is invalid, it regenerates it and exports it to the manifest file.
+ *
+ * Finally, the token is also exported to the manifest, on every get as to
+ * ensure it is always up to date.
+ *
+ * @returns
+ */
 export const getAuthToken = async (): Promise<string> => {
   if (!(await hasAuthToken())) {
     return generateAuthToken();
@@ -347,6 +359,12 @@ export const getAuthToken = async (): Promise<string> => {
   } catch (_) {
     console.warn('Either token has expired or is invalid');
     return generateAuthToken();
+  }
+
+  const config = getFlipperServerConfig();
+  if (config.environmentInfo.isHeadlessBuild) {
+    console.info('Token exported to manifest');
+    await exportTokenToManifest(config, token.toString());
   }
 
   return token.toString();
