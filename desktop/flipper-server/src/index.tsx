@@ -309,9 +309,9 @@ async function launch() {
 
   const openInBrowser = async () => {
     console.info('[flipper-server] Open in browser');
+    const url = new URL(`http://localhost:${argv.port}`);
 
-    const searchParams = new URLSearchParams({token: token ?? ''});
-    const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
+    console.info(`[flipper-server] Go to: ${chalk.blue(url.toString())}`);
 
     open(url.toString(), {app: {name: open.apps.chrome}});
   };
