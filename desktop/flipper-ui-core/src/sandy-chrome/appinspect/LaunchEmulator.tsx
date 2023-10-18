@@ -160,133 +160,140 @@ export const LaunchEmulatorDialog = withTrackingScope(
       return <NoSDKsEnabledAlert onClose={onClose} />;
     }
 
-    const items = [
-      <Title key="android-title" name="Android emulators" />,
-      androidEmulators.length == 0 ? (
-        <Typography.Paragraph style={{textAlign: 'center'}}>
-          {androidMessage}
-        </Typography.Paragraph>
-      ) : null,
-      ...chain(
-        androidEmulators.map((name) => ({
-          name,
-          isFavorite: favoriteVirtualDevices.includes(name),
-        })),
-      )
-        .sortBy((item) => [!item.isFavorite, item.name])
-        .map(({name, isFavorite}) => {
-          const launch = async (coldBoot: boolean) => {
-            try {
-              setPendingEmulators(
-                produce((draft) => {
-                  draft.add(name);
-                }),
-              );
-              await getRenderHostInstance().flipperServer.exec(
-                'android-launch-emulator',
-                name,
-                coldBoot,
-              );
-              onClose();
-            } catch (e) {
-              console.error('Failed to start emulator: ', e);
-              message.error('Failed to start emulator: ' + e);
-            } finally {
-              setPendingEmulators(
-                produce((draft) => {
-                  draft.delete(name);
-                }),
-              );
-            }
-          };
-          const menu = (
-            <Menu
-              onClick={({key}) => {
-                switch (key) {
-                  case COLD_BOOT: {
-                    launch(true);
-                    break;
+    let items: (JSX.Element | null)[] = [];
+    if (androidEnabled) {
+      items.push(
+        <Title key="android-title" name="Android emulators" />,
+        androidEmulators.length == 0 ? (
+          <Typography.Paragraph style={{textAlign: 'center'}}>
+            {androidMessage}
+          </Typography.Paragraph>
+        ) : null,
+        ...chain(
+          androidEmulators.map((name) => ({
+            name,
+            isFavorite: favoriteVirtualDevices.includes(name),
+          })),
+        )
+          .sortBy((item) => [!item.isFavorite, item.name])
+          .map(({name, isFavorite}) => {
+            const launch = async (coldBoot: boolean) => {
+              try {
+                setPendingEmulators(
+                  produce((draft) => {
+                    draft.add(name);
+                  }),
+                );
+                await getRenderHostInstance().flipperServer.exec(
+                  'android-launch-emulator',
+                  name,
+                  coldBoot,
+                );
+                onClose();
+              } catch (e) {
+                console.error('Failed to start emulator: ', e);
+                message.error('Failed to start emulator: ' + e);
+              } finally {
+                setPendingEmulators(
+                  produce((draft) => {
+                    draft.delete(name);
+                  }),
+                );
+              }
+            };
+            const menu = (
+              <Menu
+                onClick={({key}) => {
+                  switch (key) {
+                    case COLD_BOOT: {
+                      launch(true);
+                      break;
+                    }
                   }
-                }
-              }}>
-              <Menu.Item key={COLD_BOOT} icon={<PoweroffOutlined />}>
-                Cold Boot
-              </Menu.Item>
-            </Menu>
-          );
-          return (
+                }}>
+                <Menu.Item key={COLD_BOOT} icon={<PoweroffOutlined />}>
+                  Cold Boot
+                </Menu.Item>
+              </Menu>
+            );
+            return (
+              <VirtualDeviceRow
+                key={name}
+                addToFavorites={addToFavorites}
+                removeFromFavorites={removeFromFavorites}
+                isFavorite={isFavorite}
+                name={name}>
+                <Dropdown.Button
+                  overlay={menu}
+                  icon={<MoreOutlined />}
+                  loading={pendingEmulators.has(name)}
+                  onClick={() => launch(false)}>
+                  {name}
+                </Dropdown.Button>
+              </VirtualDeviceRow>
+            );
+          })
+          .value(),
+      );
+    }
+    if (iosEnabled) {
+      items.push(
+        <Title key="ios-title" name="iOS Simulators" />,
+        iosEmulators.length == 0 ? (
+          <Typography.Paragraph style={{textAlign: 'center'}}>
+            {iOSMessage}
+          </Typography.Paragraph>
+        ) : null,
+        ...chain(iosEmulators)
+          .map((device) => ({
+            device,
+            isFavorite: favoriteVirtualDevices.includes(device.name),
+          }))
+          .sortBy((item) => [!item.isFavorite, item.device.name])
+          .map(({device, isFavorite}) => (
             <VirtualDeviceRow
-              key={name}
+              key={device.udid}
               addToFavorites={addToFavorites}
               removeFromFavorites={removeFromFavorites}
               isFavorite={isFavorite}
-              name={name}>
-              <Dropdown.Button
-                overlay={menu}
-                icon={<MoreOutlined />}
-                loading={pendingEmulators.has(name)}
-                onClick={() => launch(false)}>
-                {name}
-              </Dropdown.Button>
+              name={device.name}>
+              <Button
+                type="default"
+                key={device.udid}
+                style={{width: '100%'}}
+                loading={pendingEmulators.has(device.udid)}
+                onClick={async () => {
+                  try {
+                    setPendingEmulators(
+                      produce((draft) => {
+                        draft.add(device.udid);
+                      }),
+                    );
+                    await getRenderHostInstance().flipperServer.exec(
+                      'ios-launch-simulator',
+                      device.udid,
+                    );
+                    onClose();
+                  } catch (e) {
+                    console.warn('Failed to start simulator: ', e);
+                    message.error('Failed to start simulator: ' + e);
+                  } finally {
+                    setPendingEmulators(
+                      produce((draft) => {
+                        draft.delete(device.udid);
+                      }),
+                    );
+                  }
+                }}>
+                {device.name}
+                {device.osVersion ? ` (${device.osVersion})` : ''}
+              </Button>
             </VirtualDeviceRow>
-          );
-        })
-        .value(),
-
-      <Title key="ios-title" name="iOS Simulators" />,
-      iosEmulators.length == 0 ? (
-        <Typography.Paragraph style={{textAlign: 'center'}}>
-          {iOSMessage}
-        </Typography.Paragraph>
-      ) : null,
-      ...chain(iosEmulators)
-        .map((device) => ({
-          device,
-          isFavorite: favoriteVirtualDevices.includes(device.name),
-        }))
-        .sortBy((item) => [!item.isFavorite, item.device.name])
-        .map(({device, isFavorite}) => (
-          <VirtualDeviceRow
-            key={device.udid}
-            addToFavorites={addToFavorites}
-            removeFromFavorites={removeFromFavorites}
-            isFavorite={isFavorite}
-            name={device.name}>
-            <Button
-              type="default"
-              key={device.udid}
-              style={{width: '100%'}}
-              loading={pendingEmulators.has(device.udid)}
-              onClick={async () => {
-                try {
-                  setPendingEmulators(
-                    produce((draft) => {
-                      draft.add(device.udid);
-                    }),
-                  );
-                  await getRenderHostInstance().flipperServer.exec(
-                    'ios-launch-simulator',
-                    device.udid,
-                  );
-                  onClose();
-                } catch (e) {
-                  console.warn('Failed to start simulator: ', e);
-                  message.error('Failed to start simulator: ' + e);
-                } finally {
-                  setPendingEmulators(
-                    produce((draft) => {
-                      draft.delete(device.udid);
-                    }),
-                  );
-                }
-              }}>
-              {device.name}
-              {device.osVersion ? ` (${device.osVersion})` : ''}
-            </Button>
-          </VirtualDeviceRow>
-        ))
-        .value(),
-    ].filter((item) => item != null);
+          ))
+          .value(),
+      );
+    }
+    items = items.filter((item) => item != null);
 
     const loadingSpinner = (
       <>
