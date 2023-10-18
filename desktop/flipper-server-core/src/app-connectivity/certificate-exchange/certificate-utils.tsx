@@ -338,6 +338,17 @@ export const getAuthToken = async (): Promise<string> => {
   }
 
   const token = await fs.readFile(serverAuthToken);
+
+  try {
+    console.info('Verify authentication token');
+    const serverCertificate = await fs.readFile(serverCert);
+    jwt.verify(token.toString(), serverCertificate);
+    console.info('Token verification succeeded');
+  } catch (_) {
+    console.warn('Either token has expired or is invalid');
+    return generateAuthToken();
+  }
+
   return token.toString();
 };
 
