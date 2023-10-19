@@ -286,10 +286,21 @@ const getManifestPath = (config: FlipperServerConfig): string => {
   return path.resolve(config.paths.staticPath, manifestFilename);
 };
 
-const exportTokenToManifest = async (
-  config: FlipperServerConfig,
-  token: string,
-) => {
+const exportTokenToManifest = async (token: string) => {
+  console.info('Export token to manifest');
+  let config: FlipperServerConfig | undefined;
+  try {
+    config = getFlipperServerConfig();
+  } catch {
+    console.warn(
+      'Unable to obtain server configuration whilst exporting token to manifest',
+    );
+  }
+
+  if (!config || !config.environmentInfo.isHeadlessBuild) {
+    return;
+  }
+
   const manifestPath = getManifestPath(config);
   try {
     const manifestData = await fs.readFile(manifestPath, {
@@ -313,8 +324,6 @@ export const generateAuthToken = async () => {
 
   await ensureServerCertExists();
 
-  const config = getFlipperServerConfig();
-
   const privateKey = await fs.readFile(serverKey);
   const token = jwt.sign({unixname: os.userInfo().username}, privateKey, {
     algorithm: 'RS256',
@@ -323,11 +332,7 @@ export const generateAuthToken = async () => {
 
   await fs.writeFile(serverAuthToken, token);
 
-  console.info('Token generated and saved to disk');
-  if (config.environmentInfo.isHeadlessBuild) {
-    console.info('Token exported to manifest');
-    await exportTokenToManifest(config, token);
-  }
+  await exportTokenToManifest(token);
 
   return token;
 };
@@ -349,25 +354,22 @@ export const getAuthToken = async (): Promise<string> => {
     return generateAuthToken();
   }
 
-  const token = await fs.readFile(serverAuthToken);
+  const tokenBuffer = await fs.readFile(serverAuthToken);
+  const token = tokenBuffer.toString();
 
   try {
     console.info('Verify authentication token');
     const serverCertificate = await fs.readFile(serverCert);
-    jwt.verify(token.toString(), serverCertificate);
+    jwt.verify(token, serverCertificate);
     console.info('Token verification succeeded');
   } catch (_) {
     console.warn('Either token has expired or is invalid');
     return generateAuthToken();
   }
 
-  const config = getFlipperServerConfig();
-  if (config.environmentInfo.isHeadlessBuild) {
-    console.info('Token exported to manifest');
-    await exportTokenToManifest(config, token.toString());
-  }
+  await exportTokenToManifest(token);
 
-  return token.toString();
+  return token;
 };
 
 export const hasAuthToken = async (): Promise<boolean> => {
