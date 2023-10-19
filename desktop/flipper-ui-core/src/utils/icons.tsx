@@ -11,7 +11,7 @@ import {getRenderHostInstance} from 'flipper-frontend-core';
 import {IconSize} from '../ui/components/Glyph';
 
 const AVAILABLE_SIZES: IconSize[] = [8, 10, 12, 16, 18, 20, 24, 28, 32];
-const DENSITIES = [1, 1.5, 2, 3, 4];
+const DENSITIES = [1, 2, 3];
 
 export type Icon = {
   name: string;

@@ -44,6 +44,7 @@ export async function downloadIcons(buildFolder: string) {
         // get icons in @1x and @2x
         ...sizes.map((size) => ({name, variant, size, density: 1})),
         ...sizes.map((size) => ({name, variant, size, density: 2})),
+        ...sizes.map((size) => ({name, variant, size, density: 3})),
       );
       return acc;
     },
