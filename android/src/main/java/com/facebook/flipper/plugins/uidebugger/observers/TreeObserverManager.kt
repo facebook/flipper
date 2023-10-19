@@ -25,6 +25,7 @@ import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.PerfStatsEvent
 import com.facebook.flipper.plugins.uidebugger.model.Snapshot
+import com.facebook.flipper.plugins.uidebugger.model.TraversalError
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.atomic.AtomicInteger
@@ -107,7 +108,19 @@ class TreeObserverManager(val context: UIDContext) {
 
     val workerThreadStartTimestamp = System.currentTimeMillis()
 
-    val nodes = batchedUpdate.updates.flatMap { it.deferredNodes.map { it.value() } }
+    val nodes =
+        try {
+          batchedUpdate.updates.flatMap { it.deferredNodes.map { it.value() } }
+        } catch (exception: Exception) {
+          context.onError(
+              TraversalError(
+                  "DeferredProcessing",
+                  exception.javaClass.simpleName,
+                  exception.message ?: "",
+                  exception.stackTraceToString()))
+          return
+        }
+
     val frameworkEvents = context.extractPendingFrameworkEvents()
     val snapshotUpdate = batchedUpdate.updates.find { it.snapshot != null }
     val deferredComputationEndTimestamp = System.currentTimeMillis()

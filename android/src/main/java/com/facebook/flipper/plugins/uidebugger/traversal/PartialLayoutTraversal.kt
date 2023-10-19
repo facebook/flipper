@@ -9,11 +9,11 @@ package com.facebook.flipper.plugins.uidebugger.traversal
 
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.model.Node
-import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
+import com.facebook.flipper.plugins.uidebugger.model.TraversalError
 import com.facebook.flipper.plugins.uidebugger.util.Immediate
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 
@@ -24,12 +24,11 @@ import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
  * - The second item are any observable roots discovered.
  */
 class PartialLayoutTraversal(
-    private val descriptorRegister: DescriptorRegister,
-    private val treeObserverFactory: TreeObserverFactory,
+    private val context: UIDContext,
 ) {
 
   @Suppress("unchecked_cast")
-  internal fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
+  private fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
 
   fun traverse(root: Any, parentId: Id?): Pair<List<MaybeDeferred<Node>>, List<Pair<Any, Id?>>> {
 
@@ -47,12 +46,13 @@ class PartialLayoutTraversal(
 
       try {
         // If we encounter a node that has it own observer, don't traverse
-        if (node != root && treeObserverFactory.hasObserverFor(node)) {
+        if (node != root && context.observerFactory.hasObserverFor(node)) {
           observableRoots.add((node to parentId))
           continue
         }
 
-        val descriptor = descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
+        val descriptor =
+            context.descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
 
         val curId = descriptor.getId(node)
         if (shallow.contains(node)) {
@@ -82,13 +82,13 @@ class PartialLayoutTraversal(
         var activeChildId: Id? = null
         if (activeChild != null) {
           val activeChildDescriptor =
-              descriptorRegister.descriptorForClassUnsafe(activeChild.javaClass)
+              context.descriptorRegister.descriptorForClassUnsafe(activeChild.javaClass)
           activeChildId = activeChildDescriptor.getId(activeChild)
         }
 
         val childrenIds = mutableListOf<Id>()
         children.forEach { child ->
-          val childDescriptor = descriptorRegister.descriptorForClassUnsafe(child.javaClass)
+          val childDescriptor = context.descriptorRegister.descriptorForClassUnsafe(child.javaClass)
           childrenIds.add(childDescriptor.getId(child))
           stack.add(Pair(child, curId))
           // If there is an active child then don't traverse it
@@ -117,6 +117,12 @@ class PartialLayoutTraversal(
             })
       } catch (exception: Exception) {
         Log.e(LogTag, "Error while processing node ${node.javaClass.name} $node", exception)
+        context.onError(
+            TraversalError(
+                node.javaClass.simpleName,
+                exception.javaClass.simpleName,
+                exception.message ?: "",
+                exception.stackTraceToString()))
       }
     }
 

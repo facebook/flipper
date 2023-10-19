@@ -22,7 +22,7 @@ data class Bounds(val x: Int, val y: Int, val width: Int, val height: Int) {
 }
 
 @kotlinx.serialization.Serializable
-data class SpaceBox(val top: Int, val right: Int, val bottom: Int, val left: Int) {
+class SpaceBox(val top: Int, val right: Int, val bottom: Int, val left: Int) {
   companion object {
     fun fromRect(rect: Rect): SpaceBox {
       return SpaceBox(rect.top, rect.right, rect.bottom, rect.left)
@@ -31,7 +31,7 @@ data class SpaceBox(val top: Int, val right: Int, val bottom: Int, val left: Int
 }
 
 @kotlinx.serialization.Serializable
-data class Color(val r: Int, val g: Int, val b: Int, val a: Int) {
+class Color(val r: Int, val g: Int, val b: Int, val a: Int) {
   companion object {
     fun fromColor(color: Int): Color {
       val alpha: Int = (color shr 24) and 0xFF / 255
@@ -48,20 +48,20 @@ data class Color(val r: Int, val g: Int, val b: Int, val a: Int) {
 }
 
 @kotlinx.serialization.Serializable
-data class Coordinate(
+class Coordinate(
     @Serializable(with = NumberSerializer::class) val x: Number,
     @Serializable(with = NumberSerializer::class) val y: Number
 ) {}
 
 @kotlinx.serialization.Serializable
-data class Coordinate3D(
+class Coordinate3D(
     @Serializable(with = NumberSerializer::class) val x: Number,
     @Serializable(with = NumberSerializer::class) val y: Number,
     @Serializable(with = NumberSerializer::class) val z: Number
 ) {}
 
 @kotlinx.serialization.Serializable
-data class Size(
+class Size(
     @Serializable(with = NumberSerializer::class) val width: Number,
     @Serializable(with = NumberSerializer::class) val height: Number
 ) {}

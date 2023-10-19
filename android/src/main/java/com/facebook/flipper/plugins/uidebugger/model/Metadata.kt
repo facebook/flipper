@@ -17,7 +17,7 @@ typealias MetadataId = Int
  * identity, attributes, layout, documentation, or a custom type.
  */
 @kotlinx.serialization.Serializable
-data class Metadata(
+class Metadata(
     val id: MetadataId,
     val type: String,
     val namespace: String,

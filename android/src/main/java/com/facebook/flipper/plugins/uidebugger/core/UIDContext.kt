@@ -13,10 +13,12 @@ import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.flipper.plugins.uidebugger.model.FrameworkEvent
 import com.facebook.flipper.plugins.uidebugger.model.FrameworkEventMetadata
+import com.facebook.flipper.plugins.uidebugger.model.TraversalError
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory
 import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverManager
 import com.facebook.flipper.plugins.uidebugger.scheduler.SharedThrottle
 import com.facebook.flipper.plugins.uidebugger.traversal.PartialLayoutTraversal
+import kotlinx.serialization.json.Json
 
 interface ConnectionListener {
   fun onConnect()
@@ -34,8 +36,7 @@ class UIDContext(
     private val pendingFrameworkEvents: MutableList<FrameworkEvent>
 ) {
 
-  val layoutTraversal: PartialLayoutTraversal =
-      PartialLayoutTraversal(descriptorRegister, observerFactory)
+  val layoutTraversal: PartialLayoutTraversal = PartialLayoutTraversal(this)
 
   val treeObserverManager = TreeObserverManager(this)
   val sharedThrottle: SharedThrottle = SharedThrottle()
@@ -43,6 +44,11 @@ class UIDContext(
 
   fun addFrameworkEvent(frameworkEvent: FrameworkEvent) {
     synchronized(pendingFrameworkEvents) { pendingFrameworkEvents.add(frameworkEvent) }
+  }
+
+  fun onError(traversalError: TraversalError) {
+    connectionRef.connection?.send(
+        TraversalError.name, Json.encodeToString(TraversalError.serializer(), traversalError))
   }
 
   fun extractPendingFrameworkEvents(): List<FrameworkEvent> {

@@ -10,13 +10,13 @@ package com.facebook.flipper.plugins.uidebugger.model
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 
 @kotlinx.serialization.Serializable
-data class FrameworkEventMetadata(
+class FrameworkEventMetadata(
     val type: String,
     val documentation: String,
 )
 
 @kotlinx.serialization.Serializable
-data class FrameworkEvent(
+class FrameworkEvent(
     val treeId: Id,
     val nodeId: Id,
     val type: String,
