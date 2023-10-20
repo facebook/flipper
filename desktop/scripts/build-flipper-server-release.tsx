@@ -132,7 +132,12 @@ const argv = yargs
       default: false,
     },
     mac: {
-      describe: 'Build a platform-specific bundle for MacOS.',
+      describe: 'Build arm64 and x64 bundles for MacOS.',
+      type: 'boolean',
+      default: false,
+    },
+    'mac-local': {
+      describe: 'Build local architecture bundle for MacOS.',
       type: 'boolean',
       default: false,
     },
@@ -454,6 +459,15 @@ async function buildServerRelease() {
   if (argv.mac) {
     platforms.push(BuildPlatform.MAC_X64);
     platforms.push(BuildPlatform.MAC_AARCH64);
+  }
+  if (argv.macLocal) {
+    const architecture = os.arch();
+    console.log(`⚙️  Local architecture: ${architecture}`);
+    if (architecture == 'arm64') {
+      platforms.push(BuildPlatform.MAC_AARCH64);
+    } else {
+      platforms.push(BuildPlatform.MAC_X64);
+    }
   }
   if (argv.win) {
     platforms.push(BuildPlatform.WINDOWS);
