@@ -7,15 +7,9 @@
  * @format
  */
 
-import React, {CSSProperties, forwardRef} from 'react';
+import React, {CSSProperties} from 'react';
 import styled from '@emotion/styled';
-import {
-  normalizePadding,
-  normalizeSpace,
-  PaddingProps,
-  Spacing,
-  theme,
-} from './theme';
+import {normalizeSpace, Spacing, theme} from './theme';
 
 import type {SplitLayoutProps} from './Layout';
 import {Sidebar} from './Sidebar';

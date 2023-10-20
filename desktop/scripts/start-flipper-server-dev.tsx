@@ -102,7 +102,7 @@ async function copyStaticResources() {
 
 async function restartServer() {
   try {
-    await compileServerMain(true);
+    await compileServerMain();
     await launchServer(true, ++startCount === 1); // only open on the first time
   } catch (e) {
     console.error(

@@ -7,10 +7,7 @@
  * @format
  */
 
-import os from 'os';
-import xdgBasedir from 'xdg-basedir';
 import net from 'net';
-import fs from 'fs-extra';
 import fetch from 'node-fetch';
 import {EnvironmentInfo} from 'flipper-common';
 import semver from 'semver';

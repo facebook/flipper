@@ -19,7 +19,7 @@ import {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {PluginDefinition} from '../plugin';
 import {startPluginDownload} from '../reducers/pluginDownloads';
-import {loadPlugin, switchPlugin} from '../reducers/pluginManager';
+import {switchPlugin} from '../reducers/pluginManager';
 import {
   getActiveClient,
   getPluginDownloadStatusMap,

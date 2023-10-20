@@ -279,7 +279,7 @@ export function genMercurialRevision(): Promise<string | null> {
     .catch(() => null);
 }
 
-export async function compileServerMain(dev: boolean) {
+export async function compileServerMain() {
   console.log('⚙️  Compiling server sources...');
   await exec(`cd ${serverDir} && yarn build`);
   console.log('✅  Compiled server sources.');

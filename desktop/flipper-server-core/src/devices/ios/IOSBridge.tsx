@@ -27,7 +27,7 @@ export const ERR_NO_IDB_OR_XCODE_AVAILABLE =
 export const ERR_PHYSICAL_DEVICE_LOGS_WITHOUT_IDB =
   'Cannot provide logs from a physical device without idb.';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
   availability?: string;

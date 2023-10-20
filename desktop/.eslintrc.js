@@ -204,7 +204,7 @@ module.exports = {
         'no-dupe-class-members': 0,
         '@typescript-eslint/no-redeclare': 1,
         '@typescript-eslint/no-unused-vars': [
-          1,
+          2,
           {
             ignoreRestSiblings: true,
             varsIgnorePattern: '^_',

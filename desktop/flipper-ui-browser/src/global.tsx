@@ -7,6 +7,8 @@
  * @format
  */
 
+// otherwise there is an error with `declare global`
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type {RenderHost} from 'flipper-ui-core';
 
 declare global {

@@ -437,7 +437,7 @@ async function buildServerRelease() {
   await fs.mkdirp(path.join(dir, 'static', 'defaultPlugins'));
 
   await prepareDefaultPlugins(argv.channel === 'insiders');
-  await compileServerMain(false);
+  await compileServerMain();
   await copyStaticResources(dir, versionNumber);
   await linkLocalDeps(dir);
   await downloadIcons(path.join(dir, 'static'));

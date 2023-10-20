@@ -27,13 +27,6 @@ type Props = {
   color: Color;
 };
 
-const DefaultColor: Color = {
-  r: 255,
-  g: 255,
-  b: 255,
-  a: 1,
-};
-
 const CenteredContentContainer = styled.div(AutoMarginStyle);
 const ObjectContainer = styled.div(ObjectContainerStyle);
 const NumberValue = styled.span(NumberAttributeValueStyle);

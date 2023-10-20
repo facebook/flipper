@@ -22,7 +22,6 @@ import {
   checkPortInUse,
   getAuthToken,
   getEnvironmentInfo,
-  hasAuthToken,
   setupPrefetcher,
   startFlipperServer,
   startServer,

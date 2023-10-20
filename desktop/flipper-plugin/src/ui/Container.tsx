@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {CSSProperties, forwardRef} from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import {
   normalizePadding,
