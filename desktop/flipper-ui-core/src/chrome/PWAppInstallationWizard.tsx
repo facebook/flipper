@@ -132,6 +132,7 @@ async function install(event: any) {
       if (choiceResult.outcome === 'accepted') {
         tracker.track('pwa-install-outcome', {installed: true});
         console.log('PWA installation, user accepted the prompt.');
+        return getRenderHostInstance().flipperServer.exec('move-pwa');
       } else {
         tracker.track('pwa-install-outcome', {installed: false});
         console.log('PWA installation, user dismissed the prompt.');

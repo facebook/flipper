@@ -31,8 +31,7 @@ import {
 } from 'flipper-server-core';
 import {addLogTailer, isTest, LoggerFormat} from 'flipper-common';
 import exitHook from 'exit-hook';
-import {getAuthToken} from 'flipper-server-core';
-import {findInstallation} from './findInstallation';
+import {getAuthToken, findInstallation} from 'flipper-server-core';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')

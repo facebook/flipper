@@ -58,6 +58,7 @@ import {flipperDataFolder, flipperSettingsFolder} from './utils/paths';
 import {DebuggableDevice} from './devices/DebuggableDevice';
 import {jfUpload} from './fb-stubs/jf';
 import path from 'path';
+import {movePWA} from './utils/findInstallation';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
@@ -596,6 +597,9 @@ export class FlipperServerImpl implements FlipperServer {
     },
     'environment-info': async () => {
       return this.config.environmentInfo;
+    },
+    'move-pwa': async () => {
+      await movePWA();
     },
   };
 

@@ -380,6 +380,7 @@ export type FlipperServerCommands = {
   shutdown: () => Promise<void>;
   'is-logged-in': () => Promise<boolean>;
   'environment-info': () => Promise<EnvironmentInfo>;
+  'move-pwa': () => Promise<void>;
 };
 
 export type GraphResponse = {
