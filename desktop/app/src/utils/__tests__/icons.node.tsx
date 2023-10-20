@@ -19,7 +19,6 @@ test('filled icons get correct local path', () => {
     name: 'star',
     variant: 'filled',
     size: 12,
-    density: 2,
   });
   expect(iconPath).toBe(path.join('icons', 'star-filled_d.png'));
 });
@@ -29,7 +28,6 @@ test('outline icons get correct local path', () => {
     name: 'star',
     variant: 'outline',
     size: 12,
-    density: 2,
   });
   expect(iconPath).toBe(path.join('icons', 'star-outline_d.png'));
 });
@@ -39,11 +37,10 @@ test('filled icons get correct URL', async () => {
     name: 'star',
     variant: 'filled',
     size: 12,
-    density: 2,
   } as const;
   const iconUrl = getPublicIconUrl(icon);
   expect(iconUrl).toBe(
-    'https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/star_filled_12.png', // TODO: support density?
+    'https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/star_filled_12.png',
   );
   const staticPath = getRenderHostInstance().serverConfig.paths.staticPath;
   const localUrl = getLocalIconUrl(icon, iconUrl, staticPath, false);

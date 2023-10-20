@@ -65,7 +65,7 @@ function tryRegisterIcon(icon: Icon, url: string, staticPath: string) {
           if (res.status !== 200) {
             throw new Error(
               // eslint-disable-next-line prettier/prettier
-              `Trying to use icon '${entryName}' with size ${size} and density ${icon.density}, however the icon doesn't seem to exists at ${url}: ${res.status}`,
+              `Trying to use icon '${entryName}' with size ${size}, however the icon doesn't seem to exists at ${url}: ${res.status}`,
             );
           }
           if (!existing.includes(size)) {

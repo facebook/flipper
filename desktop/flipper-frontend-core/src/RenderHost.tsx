@@ -20,7 +20,6 @@ type Icon = {
   name: string;
   variant: 'outline' | 'filled';
   size: number;
-  density: number;
 };
 
 interface NotificationAction {
