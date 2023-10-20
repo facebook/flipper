@@ -112,19 +112,6 @@ async function getFlipperServer(
   );
   const keytar: KeytarModule | undefined = await getKeytarModule(staticPath);
   const port = 52342;
-  /**
-   * Only attempt to use the auth token if one is available. Otherwise,
-   * trying to get the auth token will try to generate one if it does not exist.
-   * At this state, it would be impossible to generate it as our certificates
-   * may not be available yet.
-   */
-  let token: string | undefined;
-  if (await hasAuthToken()) {
-    token = await getAuthToken();
-  }
-
-  const searchParams = new URLSearchParams(token ? {token} : {});
-  const TCPconnectionURL = new URL(`ws://localhost:${port}?${searchParams}`);
 
   async function shutdown(): Promise<boolean> {
     console.info('[flipper-server] Attempt to shutdown.');
@@ -172,6 +159,10 @@ async function getFlipperServer(
     'embedded',
     environmentInfo,
   );
+
+  const token: string = await getAuthToken();
+  const searchParams = new URLSearchParams({token});
+  const TCPconnectionURL = new URL(`ws://localhost:${port}?${searchParams}`);
 
   const companionEnv = await initCompanionEnv(server);
   await server.connect();
