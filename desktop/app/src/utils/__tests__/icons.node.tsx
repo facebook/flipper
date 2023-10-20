@@ -21,7 +21,7 @@ test('filled icons get correct local path', () => {
     size: 12,
     density: 2,
   });
-  expect(iconPath).toBe(path.join('icons', 'star-filled-12@2x.png'));
+  expect(iconPath).toBe(path.join('icons', 'star-filled_d.png'));
 });
 
 test('outline icons get correct local path', () => {
@@ -31,7 +31,7 @@ test('outline icons get correct local path', () => {
     size: 12,
     density: 2,
   });
-  expect(iconPath).toBe(path.join('icons', 'star-outline-12@2x.png'));
+  expect(iconPath).toBe(path.join('icons', 'star-outline_d.png'));
 });
 
 test('filled icons get correct URL', async () => {
@@ -51,7 +51,7 @@ test('filled icons get correct URL', async () => {
   expect(localUrl).toBe(iconUrl);
 
   // ... let's mock a file
-  const iconPath = path.join(staticPath, 'icons', 'star-filled-12@2x.png');
+  const iconPath = path.join(staticPath, 'icons', 'star-filled_d.png');
   try {
     await fs.promises.writeFile(
       iconPath,

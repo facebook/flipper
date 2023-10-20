@@ -10,8 +10,8 @@
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {IconSize} from '../ui/components/Glyph';
 
-const AVAILABLE_SIZES: IconSize[] = [8, 10, 12, 16, 18, 20, 24, 28, 32];
-const DENSITIES = [1, 2, 3];
+const AVAILABLE_SIZES: IconSize[] = [8, 10, 12, 16, 18, 20, 24, 28, 32, 48];
+const DENSITIES = [1, 1.5, 2, 3, 4];
 
 export type Icon = {
   name: string;
@@ -58,7 +58,7 @@ function normalizeIcon(icon: Icon): Icon {
   };
 }
 
-export function getPublicIconUrl({name, variant, size, density}: Icon) {
+export function getPublicIconUrl({name, variant, size}: Icon) {
   return `https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/${name}_${variant}_${size}.png`;
 }
 

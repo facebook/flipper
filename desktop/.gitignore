@@ -12,3 +12,4 @@ tsc-error.log
 /flipper-server/static/
 /static/flipper-server-log*
 /static/.audit.json
+/static/icons/*_d.png

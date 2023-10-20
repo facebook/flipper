@@ -203,7 +203,7 @@ export function initializeRenderHost(
     },
     getLocalIconUrl(icon, url) {
       if (isProduction()) {
-        return `icons/${icon.name}-${icon.variant}-${icon.size}@${icon.density}x.png`;
+        return `icons/${icon.name}-${icon.variant}_d.png`;
       }
       return url;
     },

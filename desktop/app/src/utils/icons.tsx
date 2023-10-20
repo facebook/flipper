@@ -23,7 +23,7 @@ let _icons: Icons | undefined;
 
 function getIconsSync(staticPath: string): Icons {
   return (
-    _icons! ??
+    _icons ??
     (_icons = JSON.parse(
       fs.readFileSync(path.join(staticPath, 'icons.json'), {encoding: 'utf8'}),
     ))
@@ -31,10 +31,7 @@ function getIconsSync(staticPath: string): Icons {
 }
 
 export function buildLocalIconPath(icon: Icon) {
-  return path.join(
-    'icons',
-    `${icon.name}-${icon.variant}-${icon.size}@${icon.density}x.png`,
-  );
+  return path.join('icons', `${icon.name}-${icon.variant}_d.png`);
 }
 
 export function getLocalIconUrl(

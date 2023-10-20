@@ -11,7 +11,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import {getIconURL} from '../../utils/icons';
 
-export type IconSize = 8 | 10 | 12 | 16 | 18 | 20 | 24 | 28 | 32;
+export type IconSize = 8 | 10 | 12 | 16 | 18 | 20 | 24 | 28 | 32 | 48;
 
 const ColoredIconBlack = styled.img<{size: number}>(({size}) => ({
   height: size,
