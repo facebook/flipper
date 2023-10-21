@@ -414,7 +414,7 @@ mod test {
             .join("src")
             .join("__fixtures__")
             .join("archive_a.tar");
-        let tmp_dir = tempdir::TempDir::new("manifest_test")?;
+        let tmp_dir = tempfile::TempDir::with_prefix("manifest_test.")?;
 
         let archive_paths = &[(&PackType::new("core"), artifact_path)];
         let path = manifest(archive_paths, &None, tmp_dir.path())?;
