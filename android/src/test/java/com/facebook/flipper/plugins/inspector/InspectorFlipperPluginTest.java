@@ -42,7 +42,7 @@ import org.robolectric.annotation.LooperMode;
 
 @LooperMode(LEGACY)
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 16)
+@Config(sdk = 19)
 public class InspectorFlipperPluginTest {
 
   private MockApplicationDescriptor mApplicationDescriptor;
