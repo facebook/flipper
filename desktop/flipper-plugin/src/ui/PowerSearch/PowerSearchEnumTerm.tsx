@@ -32,6 +32,37 @@ export const PowerSearchEnumTerm: React.FC<PowerSearchEnumTermProps> = ({
     }));
   }, [enumLabels]);
 
+  const width = React.useMemo(() => {
+    const minWidth = 100;
+    const maxWidth = 250;
+
+    let longestOptionLabelWidth = 0;
+    Object.values(enumLabels).forEach((label) => {
+      if (label.length > longestOptionLabelWidth) {
+        longestOptionLabelWidth = label.length;
+      }
+    });
+
+    // 10px is an emperically calculated multiplier.
+    // A proper way to do it is to actually render the longest option and measure it
+    // But then we will have to render top X longest options,
+    // because, potentially, a string with X reeeeally wide chars could be longer than X+1 narrow chars.
+    // Anyhow, it seems too complex for such a simple thing a detecting the width of the select and teh dropdown
+    // (the dropdown is the one that actually matters from the UX perspective - users use it to select the option they want)
+    // Feel to increase 10 to any other value if necessary (11?)
+    const longestOptionsLabelWidthPx = longestOptionLabelWidth * 10;
+
+    if (longestOptionsLabelWidthPx < minWidth) {
+      return minWidth;
+    }
+
+    if (longestOptionsLabelWidthPx > maxWidth) {
+      return maxWidth;
+    }
+
+    return longestOptionsLabelWidthPx;
+  }, [enumLabels]);
+
   const selectValueRef = React.useRef<string>();
   if (defaultValue && !selectValueRef.current) {
     selectValueRef.current = defaultValue;
@@ -41,7 +72,7 @@ export const PowerSearchEnumTerm: React.FC<PowerSearchEnumTermProps> = ({
     return (
       <Select
         autoFocus
-        style={{width: 100}}
+        style={{width}}
         placeholder="..."
         options={options}
         defaultOpen
