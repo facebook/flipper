@@ -22,10 +22,11 @@ class UIPerfTracker {
     this.t0 = performance.now();
   }
 
-  track(event: UIPerfEvents) {
+  track(event: UIPerfEvents, data?: any) {
     const tx = performance.now();
     getLogger().track('performance', event, {
       time: tx - this.t0,
+      data,
     });
   }
 }

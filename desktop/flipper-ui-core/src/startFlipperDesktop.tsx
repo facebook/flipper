@@ -162,7 +162,11 @@ function init(flipperServer: FlipperServer) {
     // We could potentially merge ui-perf-store-rehydrated and ui-perf-everything-finally-loaded-jeeeez,
     // but what if at some point in the future we relalize that store rehydration is not actually the last event?
     // Keep it separate for the time being (evil laugh as there is nothing more permanent than temporary stuff)
-    uiPerfTracker.track('ui-perf-everything-finally-loaded-jeeeez');
+    uiPerfTracker.track('ui-perf-everything-finally-loaded-jeeeez', {
+      numberOfPlugins:
+        store.getState().plugins.clientPlugins.size +
+        store.getState().plugins.devicePlugins.size,
+    });
   });
 
   setPersistor(persistor);
