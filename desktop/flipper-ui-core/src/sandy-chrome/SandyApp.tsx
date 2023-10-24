@@ -48,11 +48,17 @@ export function SandyApp() {
     (state) => state.application.leftSidebarVisible,
   );
   const staticView = useStore((state) => state.connections.staticView);
+  const serverConfig = getRenderHostInstance().serverConfig;
 
   useEffect(() => {
-    document.title = `Flipper (${getVersionString()}${
+    let title = `Flipper (${getVersionString()}${
       config.isFBBuild ? '@FB' : ''
     })`;
+    if (!serverConfig.environmentInfo.isHeadlessBuild) {
+      title += ' (Unsupported)';
+    }
+
+    document.title = title;
 
     registerStartupTime(logger);
     uiPerfTracker.track('ui-perf-sandy-container-rendered');
