@@ -276,6 +276,9 @@ async function buildDist(buildFolder: string) {
         },
         mac: {
           bundleVersion: FIX_RELEASE_VERSION,
+          icon: process.env.FLIPPER_REACT_NATIVE_ONLY
+            ? path.resolve(buildFolder, 'icon-rn-only.icns')
+            : path.resolve(buildFolder, 'icon.icns'),
         },
         win: {
           signAndEditExecutable: !isFB,
