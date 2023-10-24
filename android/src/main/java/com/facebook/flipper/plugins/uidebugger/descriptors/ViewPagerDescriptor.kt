@@ -23,6 +23,9 @@ object ViewPagerDescriptor : ChainedDescriptor<ViewPager>() {
 
   override fun onGetActiveChild(node: ViewPager): Any? {
     val child = node.getChildAt(node.currentItem)
+    if (child == null) {
+      return null
+    }
     val fragment = FragmentTracker.getFragment(child)
     if (fragment != null) {
       return fragment
