@@ -15,6 +15,7 @@ import {
   Layout,
   Dialog,
   _PortalsManager,
+  getFlipperLib,
 } from 'flipper-plugin';
 import {Link, styled} from '../ui';
 import {theme} from 'flipper-plugin';
@@ -37,10 +38,11 @@ import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
 import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
-import {notification} from 'antd';
+import {Button, Modal, notification} from 'antd';
 import isProduction from '../utils/isProduction';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {uiPerfTracker} from '../utils/UIPerfTracker';
+import {WarningOutlined} from '@ant-design/icons';
 
 export function SandyApp() {
   const logger = useLogger();
@@ -88,10 +90,46 @@ export function SandyApp() {
   }, []);
 
   useEffect(() => {
-    if (fbConfig.warnFBEmployees && isProduction()) {
-      isFBEmployee()
-        .then((isEmployee) => {
-          if (isEmployee) {
+    isFBEmployee()
+      .then((isEmployee) => {
+        if (isEmployee) {
+          if (process.env.FLIPPER_REACT_NATIVE_ONLY) {
+            Dialog.showModal((onHide) => (
+              <Modal
+                closable={false}
+                keyboard={false}
+                maskClosable={false}
+                open
+                centered
+                onCancel={() => onHide()}
+                width={570}
+                title={
+                  <>
+                    <WarningOutlined /> This Version of Flipper is Unsupported
+                  </>
+                }
+                footer={
+                  <>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        getFlipperLib().openLink('munki://detail-Flipper');
+                        onHide();
+                      }}>
+                      Open Flipper Stable instead
+                    </Button>
+                    <Button type="ghost" onClick={() => onHide()}>
+                      I understand
+                    </Button>
+                  </>
+                }>
+                This version is only meant to be used for React Native
+                debugging. It is not maintained and it doesn't receive updates.
+                Instead, you should be using the main Flipper version from
+                Managed Software Center for all other purposes.
+              </Modal>
+            ));
+          } else if (fbConfig.warnFBEmployees && isProduction()) {
             notification.warning({
               placement: 'bottomLeft',
               message: 'Please use Flipper@FB',
@@ -108,11 +146,11 @@ export function SandyApp() {
               duration: null,
             });
           }
-        })
-        .catch((e) => {
-          console.warn('Failed to check if user is employee', e);
-        });
-    }
+        }
+      })
+      .catch((e) => {
+        console.warn('Failed to check if user is employee', e);
+      });
   }, []);
 
   return (
