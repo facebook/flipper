@@ -28,7 +28,6 @@ import fixPath from 'fix-path';
 import {exec} from 'child_process';
 import setup, {Config, configPath} from './setup';
 import isFB from './fb-stubs/isFB';
-import delegateToLauncher from './launcher';
 import yargs from 'yargs';
 import {promisify} from 'util';
 import process from 'process';
@@ -174,58 +173,50 @@ app.on('ready', async () => {
   const config = await setup(argv);
   processConfig(config);
 
-  // If we delegate to the launcher, shut down this instance of the app.
-  delegateToLauncher(argv)
-    .then(async (hasLauncherInvoked: boolean) => {
-      if (hasLauncherInvoked) {
-        app.quit();
-        return;
-      }
-      appReady = true;
-      app.commandLine.appendSwitch('scroll-bounce');
-      configureSession();
-      createWindow(config);
+  appReady = true;
 
-      // if in development install the react devtools extension
-      if (process.env.NODE_ENV === 'development') {
-        const {
-          default: installExtension,
-          REACT_DEVELOPER_TOOLS,
-        } = require('electron-devtools-installer');
-        // if set, try to download a newever version of the dev tools
-        const forceDownload = process.env.FLIPPER_UPDATE_DEV_TOOLS === 'true';
-        if (forceDownload) {
-          console.log('Force updating DevTools');
-        }
-        // React
-        // Fix for extension loading (see D27685981)
-        // Work around per https://github.com/electron/electron/issues/23662#issuecomment-787420799
-        const reactDevToolsPath = `${os.homedir()}/Library/Application Support/Electron/extensions/${
-          REACT_DEVELOPER_TOOLS.id
-        }`;
-        if (await promisify(fs.exists)(reactDevToolsPath)) {
-          console.log('Loading React devtools from disk ' + reactDevToolsPath);
-          try {
-            await session.defaultSession.loadExtension(
-              reactDevToolsPath,
-              // @ts-ignore only supported (and needed) in Electron 12
-              {allowFileAccess: true},
-            );
-          } catch (e) {
-            console.error('Failed to load React devtools from disk: ', e);
-          }
-        } else {
-          try {
-            await installExtension(REACT_DEVELOPER_TOOLS.id, {
-              loadExtensionOptions: {allowFileAccess: true, forceDownload},
-            });
-          } catch (e) {
-            console.error('Failed to install React devtools extension', e);
-          }
-        }
+  app.commandLine.appendSwitch('scroll-bounce');
+  configureSession();
+  createWindow(config);
+
+  // if in development install the react devtools extension
+  if (process.env.NODE_ENV === 'development') {
+    const {
+      default: installExtension,
+      REACT_DEVELOPER_TOOLS,
+    } = require('electron-devtools-installer');
+    // if set, try to download a newever version of the dev tools
+    const forceDownload = process.env.FLIPPER_UPDATE_DEV_TOOLS === 'true';
+    if (forceDownload) {
+      console.log('Force updating DevTools');
+    }
+    // React
+    // Fix for extension loading (see D27685981)
+    // Work around per https://github.com/electron/electron/issues/23662#issuecomment-787420799
+    const reactDevToolsPath = `${os.homedir()}/Library/Application Support/Electron/extensions/${
+      REACT_DEVELOPER_TOOLS.id
+    }`;
+    if (await promisify(fs.exists)(reactDevToolsPath)) {
+      console.log('Loading React devtools from disk ' + reactDevToolsPath);
+      try {
+        await session.defaultSession.loadExtension(
+          reactDevToolsPath,
+          // @ts-ignore only supported (and needed) in Electron 12
+          {allowFileAccess: true},
+        );
+      } catch (e) {
+        console.error('Failed to load React devtools from disk: ', e);
       }
-    })
-    .catch((e: any) => console.error('Error while delegating app launch', e));
+    } else {
+      try {
+        await installExtension(REACT_DEVELOPER_TOOLS.id, {
+          loadExtensionOptions: {allowFileAccess: true, forceDownload},
+        });
+      } catch (e) {
+        console.error('Failed to install React devtools extension', e);
+      }
+    }
+  }
 });
 
 app.on('web-contents-created', (_event, contents) => {
