@@ -40,6 +40,7 @@ import {checkFocusedNodeStillActive} from './plugin/ClientDataUtils';
 import {uiActions} from './plugin/uiActions';
 import {first} from 'lodash';
 import {getNode} from './utils/map';
+import {handleTraversalError} from './plugin/traversalError';
 
 export function plugin(client: PluginClient<Events, Methods>) {
   const rootId = createState<Id | undefined>(undefined);
@@ -113,6 +114,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
       });
     });
   });
+
+  handleTraversalError(client);
 
   client.onConnect(() => {
     uiState.isConnected.set(true);

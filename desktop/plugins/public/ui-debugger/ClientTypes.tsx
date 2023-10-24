@@ -13,6 +13,7 @@ export type Events = {
   init: InitEvent;
   subtreeUpdate: SubtreeUpdateEvent;
   frameScan: FrameScanEvent;
+  traversalError: TraversalErrorEvent;
   perfStats: PerfStatsEvent;
   performanceStats: PerformanceStatsEvent;
   metadataUpdate: UpdateMetadataEvent;
@@ -32,6 +33,13 @@ export type FrameScanEvent = {
   nodes: ClientNode[];
   snapshot?: SnapshotInfo;
   frameworkEvents?: FrameworkEvent[];
+};
+
+export type TraversalErrorEvent = {
+  nodeName: String;
+  errorType: String;
+  errorMessage: String;
+  stack: String;
 };
 
 /**
