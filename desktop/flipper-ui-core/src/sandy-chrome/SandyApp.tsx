@@ -79,7 +79,9 @@ export function SandyApp() {
       Dialog.showModal((onHide) => <PWAInstallationWizard onHide={onHide} />);
     }
 
-    showChangelog(true);
+    if (serverConfig.environmentInfo.isHeadlessBuild) {
+      showChangelog(true);
+    }
 
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line
