@@ -70,6 +70,10 @@ const argv = yargs
         '[FB-internal only] Will yield `true` on any GK. Disabled by default. Setting env var FLIPPER_ENABLE_ALL_GKS is equivalent',
       type: 'boolean',
     },
+    'react-native-only': {
+      description: '[FB-internal only] React Native only build',
+      type: 'boolean',
+    },
     channel: {
       describe:
         '[FB-internal only] Release channel. "stable" by default. Setting env var "FLIPPER_RELEASE_CHANNEL" is equivalent.',
@@ -146,6 +150,10 @@ if (argv['enabled-plugins'] !== undefined) {
 
 if (argv.channel !== undefined) {
   process.env.FLIPPER_RELEASE_CHANNEL = argv.channel;
+}
+
+if (argv['react-native-only'] === true) {
+  process.env.FLIPPER_REACT_NATIVE_ONLY = 'true';
 }
 
 if (argv['force-version']) {

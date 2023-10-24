@@ -73,6 +73,11 @@ const argv = yargs
         'Unique build identifier to be used as the version patch part for the build',
       type: 'number',
     },
+    'react-native-only': {
+      description: 'React Native only build',
+      type: 'boolean',
+      default: false,
+    },
     channel: {
       description: 'Release channel for the build',
       choices: ['stable', 'insiders'],
@@ -115,6 +120,10 @@ if (argv['default-plugins-dir']) {
   process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];
 }
 
+if (argv['react-native-only']) {
+  process.env.FLIPPER_REACT_NATIVE_ONLY = 'true';
+}
+
 async function generateManifest(versionNumber: string) {
   await fs.writeFile(
     path.join(distDir, 'manifest.json'),
@@ -130,6 +139,7 @@ async function modifyPackageManifest(
   versionNumber: string,
   hgRevision: string | null,
   channel: string,
+  reactNativeOnly: boolean,
 ) {
   // eslint-disable-next-line no-console
   console.log('Creating package.json manifest');
@@ -148,6 +158,7 @@ async function modifyPackageManifest(
     manifest.revision = hgRevision;
   }
   manifest.releaseChannel = channel;
+  manifest.reactNativeOnly = reactNativeOnly;
   await fs.writeFile(
     path.join(buildFolder, 'package.json'),
     JSON.stringify(manifest, null, '  '),
@@ -299,7 +310,13 @@ async function copyStaticFolder(buildFolder: string) {
   await moveSourceMaps(dir, argv['source-map-dir']);
   const versionNumber = getVersionNumber(argv.version);
   const hgRevision = await genMercurialRevision();
-  await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
+  await modifyPackageManifest(
+    dir,
+    versionNumber,
+    hgRevision,
+    argv.channel,
+    argv['react-native-only'],
+  );
   await fs.ensureDir(distDir);
   await generateManifest(versionNumber);
   await buildDist(dir);
