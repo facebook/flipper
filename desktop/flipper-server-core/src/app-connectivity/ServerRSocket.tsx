@@ -47,37 +47,41 @@ class ServerRSocket extends ServerWebSocketBase {
   start(port: number, sslConfig?: SecureServerConfig): Promise<number> {
     const self = this;
     return new Promise((resolve, reject) => {
-      // eslint-disable-next-line prefer-const
-      let rawServer: RSocketServer<any, any> | undefined;
-      const serverFactory = (onConnect: (socket: Socket) => void) => {
-        const transportServer = sslConfig
-          ? tls.createServer(sslConfig, (socket) => {
-              onConnect(socket);
-            })
-          : net.createServer(onConnect);
-        transportServer.on('error', reject).on('listening', () => {
-          console.debug(
-            `${
-              sslConfig ? 'Secure' : 'Certificate'
-            } server started on port ${port}`,
-            'server',
-          );
-          self.listener.onListening(port);
-          self.rawServer_ = rawServer;
-          resolve((transportServer.address() as AddressInfo).port);
+      try {
+        // eslint-disable-next-line prefer-const
+        let rawServer: RSocketServer<any, any> | undefined;
+        const serverFactory = (onConnect: (socket: Socket) => void) => {
+          const transportServer = sslConfig
+            ? tls.createServer(sslConfig, (socket) => {
+                onConnect(socket);
+              })
+            : net.createServer(onConnect);
+          transportServer.on('error', reject).on('listening', () => {
+            console.debug(
+              `${
+                sslConfig ? 'Secure' : 'Certificate'
+              } server started on port ${port}`,
+              'server',
+            );
+            self.listener.onListening(port);
+            self.rawServer_ = rawServer;
+            resolve((transportServer.address() as AddressInfo).port);
+          });
+          return transportServer;
+        };
+        rawServer = new RSocketServer({
+          getRequestHandler: sslConfig
+            ? this._trustedRequestHandler
+            : this._untrustedRequestHandler,
+          transport: new RSocketTCPServer({
+            port: port,
+            serverFactory: serverFactory,
+          }),
         });
-        return transportServer;
-      };
-      rawServer = new RSocketServer({
-        getRequestHandler: sslConfig
-          ? this._trustedRequestHandler
-          : this._untrustedRequestHandler,
-        transport: new RSocketTCPServer({
-          port: port,
-          serverFactory: serverFactory,
-        }),
-      });
-      rawServer.start();
+        rawServer.start();
+      } catch (e) {
+        reject(e);
+      }
     });
   }
 

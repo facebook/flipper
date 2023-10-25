@@ -49,46 +49,50 @@ class ServerWebSocket extends ServerWebSocketBase {
 
   async start(port: number, sslConfig?: SecureServerConfig): Promise<number> {
     const assignedPort = await new Promise<number>((resolve, reject) => {
-      const server = sslConfig
-        ? createHttpsServer(sslConfig)
-        : createHttpServer();
+      try {
+        const server = sslConfig
+          ? createHttpsServer(sslConfig)
+          : createHttpServer();
 
-      const wsServer = new WSServer({
-        server,
-        verifyClient: this.verifyClient(),
-        maxPayload: WEBSOCKET_MAX_MESSAGE_SIZE,
-      });
+        const wsServer = new WSServer({
+          server,
+          verifyClient: this.verifyClient(),
+          maxPayload: WEBSOCKET_MAX_MESSAGE_SIZE,
+        });
 
-      // We do not need to listen to http server's `error` because it is propagated to WS
-      // https://github.com/websockets/ws/blob/a3a22e4ed39c1a3be8e727e9c630dd440edc61dd/lib/websocket-server.js#L109
-      const onConnectionError = (error: Error) => {
-        reject(
-          new Error(
-            `Unable to start server at port ${port} due to ${JSON.stringify(
-              serializeError(error),
-            )}`,
-          ),
-        );
-      };
-      wsServer.once('error', onConnectionError);
-      server.listen(port, () => {
-        console.debug(
-          `[ws] ${
-            sslConfig ? 'Secure' : 'Insecure'
-          } server started on port ${port}`,
-          'server',
-        );
+        // We do not need to listen to http server's `error` because it is propagated to WS
+        // https://github.com/websockets/ws/blob/a3a22e4ed39c1a3be8e727e9c630dd440edc61dd/lib/websocket-server.js#L109
+        const onConnectionError = (error: Error) => {
+          reject(
+            new Error(
+              `Unable to start server at port ${port} due to ${JSON.stringify(
+                serializeError(error),
+              )}`,
+            ),
+          );
+        };
+        wsServer.once('error', onConnectionError);
+        server.listen(port, () => {
+          console.debug(
+            `[ws] ${
+              sslConfig ? 'Secure' : 'Insecure'
+            } server started on port ${port}`,
+            'server',
+          );
 
-        // Unsubscribe connection error listener.
-        // We'll attach a permanent error listener later.
-        wsServer.off('error', onConnectionError);
+          // Unsubscribe connection error listener.
+          // We'll attach a permanent error listener later.
+          wsServer.off('error', onConnectionError);
 
-        this.listener.onListening(port);
-        this.wsServer = wsServer;
-        this.httpServer = server;
+          this.listener.onListening(port);
+          this.wsServer = wsServer;
+          this.httpServer = server;
 
-        resolve((server.address() as AddressInfo).port);
-      });
+          resolve((server.address() as AddressInfo).port);
+        });
+      } catch (e) {
+        reject(e);
+      }
     });
 
     assertNotNull(this.wsServer);
