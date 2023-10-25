@@ -22,6 +22,7 @@ import {flipperDataFolder} from '../../utils/paths';
 import * as jwt from 'jsonwebtoken';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import {Mutex} from 'async-mutex';
+import {createSecureContext} from 'tls';
 
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,
@@ -157,13 +158,13 @@ const certificateSetup = async () => {
 const mutex = new Mutex();
 const ensureServerCertExists = async (): Promise<void> => {
   return mutex.runExclusive(async () => {
-    const allExist = await Promise.all([
-      fs.pathExists(serverKey),
-      fs.pathExists(serverCert),
-      fs.pathExists(caCert),
-    ]).then((exist) => exist.every(Boolean));
+    const certs = await Promise.all([
+      fs.readFile(serverKey).catch(() => ''),
+      fs.readFile(serverCert).catch(() => ''),
+      fs.readFile(caCert).catch(() => ''),
+    ]);
 
-    if (!allExist) {
+    if (!certs.every(Boolean)) {
       console.info('No certificates were found, generating new ones');
       await generateServerCertificate();
     } else {
@@ -172,6 +173,13 @@ const ensureServerCertExists = async (): Promise<void> => {
         await checkCertIsValid(serverCert);
         console.info('Checking certificate was issued by current CA');
         await verifyServerCertWasIssuedByCA();
+        console.info('Checking certs can be used for TLS');
+        // https://fb.workplace.com/groups/flippersupport/posts/1712654405881877/
+        createSecureContext({
+          key: certs[0],
+          cert: certs[1],
+          ca: certs[2],
+        });
         console.info('Current certificates are valid');
       } catch (e) {
         console.warn('Not all certificates are valid, generating new ones', e);
