@@ -7,9 +7,9 @@
  * @format
  */
 
-import {Divider, Input, Typography} from 'antd';
-import {Panel, theme, Layout, styled} from 'flipper-plugin';
-import React from 'react';
+import {Button, Divider, Input, Modal, Typography} from 'antd';
+import {DataInspector, Panel, theme, Layout, styled} from 'flipper-plugin';
+import React, {useState} from 'react';
 import {
   ClientNode,
   Color,
@@ -23,6 +23,12 @@ import {css, cx} from '@emotion/css';
 import {upperFirst, sortBy} from 'lodash';
 import {any} from 'lodash/fp';
 import {InspectableColor} from '../../ClientTypes';
+import {transformAny} from '../../utils/dataTransform';
+
+type ModalData = {
+  data: unknown;
+  title: string;
+};
 
 export function AttributesInspector({
   node,
@@ -31,11 +37,21 @@ export function AttributesInspector({
   node: ClientNode;
   metadata: MetadataMap;
 }) {
+  const [modalData, setModalData] = useState<ModalData | null>(null);
+
+  const showComplexTypeModal = (modaldata: ModalData) => {
+    setModalData(modaldata);
+  };
+
+  const handleCancel = () => {
+    setModalData(null);
+  };
+
   const keys = Object.keys(node.attributes);
   const sections = keys
     .map((key, _) => {
       /**
-       * The node top-level attributes refer to the displayable panels.
+       * The node top-level attributes refer to the displayable panels aka sections.
        * The panel name is obtained by querying the metadata.
        * The inspectable contains the actual attributes belonging to each panel.
        */
@@ -52,6 +68,7 @@ export function AttributesInspector({
         metadata,
         sectionMetadata.name,
         sectionAttributes,
+        showComplexTypeModal,
       );
     })
     .filter((section) => section != null);
@@ -59,13 +76,28 @@ export function AttributesInspector({
   if (sections.length === 0) {
     return <NoData message="No data available for this element" />;
   }
-  return <>{sections}</>;
+  return (
+    <>
+      {modalData != null && (
+        <Modal
+          title={modalData.title}
+          open
+          onOk={handleCancel}
+          onCancel={handleCancel}
+          footer={null}>
+          <DataInspector data={modalData} />
+        </Modal>
+      )}
+      {sections}
+    </>
+  );
 }
 
 function AttributeSection(
   metadataMap: MetadataMap,
   name: string,
   inspectable: InspectableObject,
+  onDisplayModal: (modaldata: ModalData) => void,
 ) {
   const attributesOrSubSubsections = Object.entries(inspectable.fields).map(
     ([fieldKey, attributeValue]) => {
@@ -108,6 +140,7 @@ function AttributeSection(
         if (attributeValue.type === 'object') {
           return (
             <SubSection
+              onDisplayModal={onDisplayModal}
               attributeName={attributeName}
               inspectableObject={attributeValue}
               metadataMap={metadataMap}
@@ -119,6 +152,7 @@ function AttributeSection(
       return (
         <NamedAttribute
           attributeMetadata={attributeMetadata}
+          onDisplayModal={onDisplayModal}
           key={attributeName}
           metadataMap={metadataMap}
           name={attributeName}
@@ -145,10 +179,12 @@ function SubSection({
   attributeName,
   inspectableObject,
   metadataMap,
+  onDisplayModal,
 }: {
   attributeName: string;
   inspectableObject: InspectableObject;
   metadataMap: MetadataMap;
+  onDisplayModal: (modaldata: ModalData) => void;
 }) {
   return (
     <Layout.Container gap="small" padv="small">
@@ -166,6 +202,7 @@ function SubSection({
         return (
           <NamedAttribute
             key={key}
+            onDisplayModal={onDisplayModal}
             name={attributeName}
             value={value}
             attributeMetadata={attributeMetadata}
@@ -183,12 +220,14 @@ function NamedAttribute({
   value,
   metadataMap,
   attributeMetadata,
+  onDisplayModal,
 }: {
   name: string;
   value: Inspectable;
   attributeMetadata: Metadata;
   metadataMap: MetadataMap;
   key: string;
+  onDisplayModal: (modaldata: ModalData) => void;
 }) {
   return (
     <Layout.Horizontal key={key} gap="small">
@@ -205,11 +244,11 @@ function NamedAttribute({
 
       <Layout.Container style={{flex: '1 1 auto'}}>
         <AttributeValue
+          onDisplayModal={onDisplayModal}
           name={name}
           attributeMetadata={attributeMetadata}
           metadataMap={metadataMap}
           inspectable={value}
-          level={1}
         />
       </Layout.Container>
     </Layout.Horizontal>
@@ -320,13 +359,16 @@ function NumberGroup({values}: {values: NumberGroupValue[]}) {
 }
 
 function AttributeValue({
+  metadataMap,
+  name,
+  onDisplayModal,
   inspectable,
 }: {
+  onDisplayModal: (modaldata: ModalData) => void;
   attributeMetadata: Metadata;
   metadataMap: MetadataMap;
   name: string;
   inspectable: Inspectable;
-  level: number;
 }) {
   switch (inspectable.type) {
     case 'boolean':
@@ -416,6 +458,24 @@ function AttributeValue({
 
     case 'color':
       return <ColorInspector inspectable={inspectable as InspectableColor} />;
+    case 'array':
+    case 'object':
+      return (
+        <Button
+          onClick={() => {
+            onDisplayModal({
+              title: name,
+              data: transformAny(metadataMap, inspectable),
+            });
+          }}
+          style={{height: 28}}
+          type="ghost">
+          <span
+            style={{fontFamily: 'monospace', color: theme.textColorSecondary}}>
+            {inspectable.type === 'array' ? '[...]' : '{...}'}
+          </span>
+        </Button>
+      );
   }
   return null;
 }

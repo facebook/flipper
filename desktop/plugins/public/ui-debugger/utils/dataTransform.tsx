@@ -16,7 +16,7 @@ import {
   MetadataId,
 } from '../ClientTypes';
 
-function transformAny(
+export function transformAny(
   metadata: Map<MetadataId, Metadata>,
   inspectable: Inspectable,
 ): any {
