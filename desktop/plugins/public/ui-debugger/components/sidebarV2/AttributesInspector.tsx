@@ -224,30 +224,36 @@ function SubSection({
   metadataMap: MetadataMap;
   onDisplayModal: (modaldata: ModalData) => void;
 }) {
+  const children = Object.entries(inspectableObject.fields).map(
+    ([key, value]) => {
+      const metadataId: number = Number(key);
+      const attributeMetadata = metadataMap.get(metadataId);
+      if (attributeMetadata == null) {
+        return null;
+      }
+      const attributeName =
+        upperFirst(attributeMetadata?.name) ?? String(metadataId);
+
+      return (
+        <NamedAttribute
+          key={key}
+          onDisplayModal={onDisplayModal}
+          name={attributeName}
+          value={value}
+          attributeMetadata={attributeMetadata}
+          metadataMap={metadataMap}
+        />
+      );
+    },
+  );
+  if (children.length === 0) {
+    return null;
+  }
   return (
     <Layout.Container gap="small" padv="small">
       <Divider style={{margin: 0}} />
       <Typography.Text>{attributeName}</Typography.Text>
-      {Object.entries(inspectableObject.fields).map(([key, value]) => {
-        const metadataId: number = Number(key);
-        const attributeMetadata = metadataMap.get(metadataId);
-        if (attributeMetadata == null) {
-          return null;
-        }
-        const attributeName =
-          upperFirst(attributeMetadata?.name) ?? String(metadataId);
-
-        return (
-          <NamedAttribute
-            key={key}
-            onDisplayModal={onDisplayModal}
-            name={attributeName}
-            value={value}
-            attributeMetadata={attributeMetadata}
-            metadataMap={metadataMap}
-          />
-        );
-      })}
+      {children}
     </Layout.Container>
   );
 }
