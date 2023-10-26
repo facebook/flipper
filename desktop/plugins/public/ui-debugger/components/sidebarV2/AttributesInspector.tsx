@@ -39,6 +39,17 @@ type ModalData = {
   title: string;
 };
 
+const panelCss = css`
+  & > .ant-collapse-item .ant-collapse-header {
+    background-color: ${theme.backgroundDefault};
+    padding-left: 0px;
+  }
+
+  & > .ant-collapse-item .ant-collapse-header .ant-collapse-expand-icon {
+    width: 18px;
+  }
+`;
+
 export function AttributesInspector({
   node,
   metadata,
@@ -116,7 +127,7 @@ export function AttributesInspector({
           <NoData message="No attributes match filter " />
         ) : (
           sections.concat([
-            <Panel key="Raw" title="Raw Data" collapsed>
+            <Panel key="Raw" title="Raw Data" className={panelCss} collapsed>
               <DataInspector data={omit(node, ['attributes'])} />
             </Panel>,
           ])
@@ -202,8 +213,8 @@ function AttributeSection(
 
   if (children.length > 0) {
     return (
-      <Panel key={name} title={name}>
-        <Layout.Container gap="small" padv="small">
+      <Panel className={panelCss} key={name} title={name}>
+        <Layout.Container gap="small" padv="small" style={{paddingLeft: 18}}>
           {...children}
         </Layout.Container>
       </Panel>
@@ -278,7 +289,7 @@ function NamedAttribute({
       <Typography.Text
         style={{
           marginTop: 4, //to center with top input when multiline
-          flex: '0 0 30%', //take 30% of the width
+          flex: '0 0 40%', //take 40% of the width
           color: theme.textColorSecondary,
           opacity: 0.7,
           fontWeight: 50,
