@@ -15,9 +15,6 @@ import {NoData} from '../sidebar/inspector/NoData';
 import {Tooltip} from 'antd';
 import {AttributesInspector} from './AttributesInspector';
 import {FrameworkEventsInspector} from '../sidebar/inspector/FrameworkEventsInspector';
-import {theme} from 'flipper-plugin';
-// eslint-disable-next-line rulesdir/no-restricted-imports-clone
-import {Glyph} from 'flipper';
 
 type Props = {
   selectedNode?: ClientNode;
@@ -43,14 +40,7 @@ export function SidebarV2({selectedNode, metadata, showBottomPanel}: Props) {
         grow
         centered
         key={selectedNode.id}>
-        <Tab
-          tab={
-            <Tooltip title="Attributes">
-              <Layout.Horizontal center>
-                <Glyph name="data-table" size={16} color={theme.primaryColor} />
-              </Layout.Horizontal>
-            </Tooltip>
-          }>
+        <Tab tab={<Tooltip title="Attributes">Attributes</Tooltip>}>
           <AttributesInspector node={selectedNode} metadata={metadata} />
         </Tab>
         {selectedFrameworkEvents?.length > 0 && (
@@ -58,13 +48,7 @@ export function SidebarV2({selectedNode, metadata, showBottomPanel}: Props) {
             key={'events'}
             tab={
               <Tooltip title="Events">
-                <Layout.Horizontal center>
-                  <Glyph
-                    name="weather-thunder"
-                    size={16}
-                    color={theme.primaryColor}
-                  />
-                </Layout.Horizontal>
+                <Layout.Horizontal center>Events</Layout.Horizontal>
               </Tooltip>
             }>
             <FrameworkEventsInspector
