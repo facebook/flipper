@@ -85,7 +85,7 @@ export function AttributesInspector({
           onOk={handleCancel}
           onCancel={handleCancel}
           footer={null}>
-          <DataInspector data={modalData} />
+          <DataInspector data={modalData.data} />
         </Modal>
       )}
       {sections}

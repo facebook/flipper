@@ -32,6 +32,8 @@ export function transformAny(
     case 'enum':
     case 'space':
       return inspectable.value;
+    case 'array':
+      return inspectable.items.map((value) => transformAny(metadata, value));
     case 'object':
       return transformObject(metadata, inspectable);
     default:
