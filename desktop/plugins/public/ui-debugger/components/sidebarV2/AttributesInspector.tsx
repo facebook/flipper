@@ -379,6 +379,7 @@ function AttributeValue({
           value={inspectable.value ? 'TRUE' : 'FALSE'}
         />
       );
+    case 'unknown':
     case 'text':
       return (
         <StyledTextArea
