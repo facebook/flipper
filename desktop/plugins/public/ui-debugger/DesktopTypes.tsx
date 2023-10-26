@@ -18,6 +18,7 @@ import {
   ClientNode,
   Metadata,
   SnapshotInfo,
+  MetadataId,
 } from './ClientTypes';
 import TypedEmitter from 'typed-emitter';
 
@@ -26,6 +27,7 @@ export type LiveClientState = {
   nodes: Map<Id, ClientNode>;
 };
 
+export type MetadataMap = Map<MetadataId, Metadata>;
 export type Color = string;
 
 export type UIState = {

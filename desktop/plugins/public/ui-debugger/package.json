@@ -33,6 +33,7 @@
   "peerDependencies": {
     "@ant-design/icons": "*",
     "@emotion/styled": "*",
+    "@emotion/css": "*",
     "@types/node": "*",
     "@types/react": "*",
     "@types/react-dom": "*",

@@ -42,7 +42,7 @@ import {tracker} from '../../../utils/tracker';
 type Props = {
   node: ClientNode;
   events: readonly FrameworkEvent[];
-  showExtra?: (title: string, element: ReactNode) => void;
+  showBottomPanel?: (title: string, element: ReactNode) => void;
   frameworkEventMetadata: Map<FrameworkEventType, FrameworkEventMetadata>;
   onSetViewMode: (viewMode: ViewMode) => void;
 };
@@ -50,7 +50,7 @@ type Props = {
 export const FrameworkEventsInspector: React.FC<Props> = ({
   node,
   events,
-  showExtra,
+  showBottomPanel: showExtra,
   frameworkEventMetadata,
   onSetViewMode,
 }) => {

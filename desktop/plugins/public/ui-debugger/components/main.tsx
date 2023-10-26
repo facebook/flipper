@@ -21,7 +21,6 @@ import {useHotkeys} from 'react-hotkeys-hook';
 import {Id, Metadata, MetadataId, ClientNode} from '../ClientTypes';
 import {PerfStats} from './PerfStats';
 import {Visualization2D} from './visualizer/Visualization2D';
-import {Inspector} from './sidebar/Inspector';
 import {TreeControls} from './tree/TreeControls';
 import {Button, Spin, Typography} from 'antd';
 import {QueryClientProvider} from 'react-query';
@@ -30,6 +29,8 @@ import {StreamInterceptorErrorView} from './StreamInterceptorErrorView';
 import {queryClient} from '../utils/reactQuery';
 import {FrameworkEventsTable} from './FrameworkEventsTable';
 import {Centered} from './shared/Centered';
+import {SidebarV2} from './sidebarV2/SidebarV2';
+import {getNode} from '../utils/map';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -38,6 +39,7 @@ export function Component() {
   const visualiserWidth = useValue(instance.uiState.visualiserWidth);
   const nodes: Map<Id, ClientNode> = useValue(instance.nodes);
   const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
+  const selectedNodeId = useValue(instance.uiState.selectedNode);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
 
@@ -155,11 +157,10 @@ export function Component() {
             />
           </ResizablePanel>
           <DetailSidebar width={450}>
-            <Inspector
-              os={instance.os}
+            <SidebarV2
               metadata={metadata}
-              nodes={nodes}
-              showExtra={openBottomPanelWithContent}
+              selectedNode={getNode(selectedNodeId?.id, nodes)}
+              showBottomPanel={openBottomPanelWithContent}
             />
           </DetailSidebar>
         </Layout.Horizontal>
