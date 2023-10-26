@@ -326,6 +326,11 @@ function StyledInput({
   mutable: boolean;
   rightAddon?: string;
 }) {
+  let formatted: any = value;
+  if (typeof value === 'number') {
+    //cap the number of decimal places to 5 but dont add trailing zeros
+    formatted = Number.parseFloat(value.toFixed(5));
+  }
   return (
     <Input
       size="small"
@@ -347,7 +352,7 @@ function StyledInput({
       )}
       bordered
       readOnly={!mutable}
-      value={value}
+      value={formatted}
       suffix={rightAddon}
     />
   );
