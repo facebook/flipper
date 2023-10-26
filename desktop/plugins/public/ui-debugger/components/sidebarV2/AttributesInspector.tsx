@@ -8,7 +8,15 @@
  */
 
 import {Button, Divider, Input, Modal, Typography} from 'antd';
-import {DataInspector, Panel, theme, Layout, styled} from 'flipper-plugin';
+
+import {
+  DataInspector,
+  Panel,
+  theme,
+  Layout,
+  styled,
+  useLocalStorageState,
+} from 'flipper-plugin';
 import React, {useState} from 'react';
 import {
   ClientNode,
@@ -24,6 +32,7 @@ import {upperFirst, sortBy} from 'lodash';
 import {any} from 'lodash/fp';
 import {InspectableColor} from '../../ClientTypes';
 import {transformAny} from '../../utils/dataTransform';
+import {SearchOutlined} from '@ant-design/icons';
 
 type ModalData = {
   data: unknown;
@@ -38,6 +47,11 @@ export function AttributesInspector({
   metadata: MetadataMap;
 }) {
   const [modalData, setModalData] = useState<ModalData | null>(null);
+
+  const [attributeFilter, setAttributeFilter] = useLocalStorageState(
+    'attribute-filter',
+    '',
+  );
 
   const showComplexTypeModal = (modaldata: ModalData) => {
     setModalData(modaldata);
@@ -69,13 +83,15 @@ export function AttributesInspector({
         sectionMetadata.name,
         sectionAttributes,
         showComplexTypeModal,
+        attributeFilter,
       );
     })
     .filter((section) => section != null);
 
-  if (sections.length === 0) {
+  if (sections.length === 0 && !attributeFilter) {
     return <NoData message="No data available for this element" />;
   }
+
   return (
     <>
       {modalData != null && (
@@ -88,7 +104,20 @@ export function AttributesInspector({
           <DataInspector data={modalData.data} />
         </Modal>
       )}
-      {sections}
+      <Layout.Container gap="small" padv="medium">
+        <Input
+          value={attributeFilter}
+          onChange={(e) => setAttributeFilter(e.target.value)}
+          placeholder="Filter attributes"
+          prefix={<SearchOutlined />}
+        />
+
+        {sections.length === 0 ? (
+          <NoData message="No attributes match filter " />
+        ) : (
+          sections
+        )}
+      </Layout.Container>
     </>
   );
 }
@@ -98,9 +127,10 @@ function AttributeSection(
   name: string,
   inspectable: InspectableObject,
   onDisplayModal: (modaldata: ModalData) => void,
+  attributeFilter: string,
 ) {
-  const attributesOrSubSubsections = Object.entries(inspectable.fields).map(
-    ([fieldKey, attributeValue]) => {
+  const attributesOrSubSubsections = Object.entries(inspectable.fields)
+    .map(([fieldKey, attributeValue]) => {
       const metadataId: number = Number(fieldKey);
       const attributeMetadata = metadataMap.get(metadataId);
       const attributeName =
@@ -120,8 +150,12 @@ function AttributeSection(
         attributeValue,
         metadataId,
       };
-    },
-  );
+    })
+    .filter(
+      ({attributeName}) =>
+        !attributeFilter ||
+        attributeName.toLowerCase().includes(attributeFilter),
+    );
 
   //push sub sections to the end
   const sortedAttributesOrSubsections = sortBy(
