@@ -17,7 +17,6 @@
     "@types/react-color": "2.13.5",
     "@types/react-dom": "^17.0.13",
     "dayjs": "^1.11.10",
-    "eventemitter3": "^4.0.7",
     "flipper-common": "0.0.0",
     "flipper-plugin-core": "0.0.0",
     "immer": "^9.0.18",
