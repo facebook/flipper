@@ -271,11 +271,12 @@ function NamedAttribute({
     <Layout.Horizontal key={key} gap="small">
       <Typography.Text
         style={{
-          marginTop: 3, //to center with top input when multiline
+          marginTop: 4, //to center with top input when multiline
           flex: '0 0 30%', //take 30% of the width
           color: theme.textColorSecondary,
           opacity: 0.7,
           fontWeight: 50,
+          fontSize: 'small',
         }}>
         {name}
       </Typography.Text>
@@ -297,6 +298,7 @@ function NamedAttribute({
  * disables hover and focsued states
  */
 const readOnlyInput = css`
+  font-size: small;
   :hover {
     border-color: ${theme.disabledColor} !important;
   }
@@ -501,16 +503,27 @@ function AttributeValue({
     case 'object':
       return (
         <Button
+          size="small"
           onClick={() => {
             onDisplayModal({
               title: name,
               data: transformAny(metadataMap, inspectable),
             });
           }}
-          style={{height: 28}}
+          style={{
+            height: 26,
+            boxSizing: 'border-box',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
           type="ghost">
           <span
-            style={{fontFamily: 'monospace', color: theme.textColorSecondary}}>
+            style={{
+              marginTop: 2,
+              fontFamily: 'monospace',
+              color: theme.textColorSecondary,
+              fontSize: 'small',
+            }}>
             {inspectable.type === 'array' ? '[...]' : '{...}'}
           </span>
         </Button>
@@ -518,6 +531,8 @@ function AttributeValue({
   }
   return null;
 }
+
+const rowHeight = 26;
 
 function ColorInspector({inspectable}: {inspectable: InspectableColor}) {
   return (
@@ -545,8 +560,8 @@ function ColorInspector({inspectable}: {inspectable: InspectableColor}) {
 }
 
 const ColorPreview = styled.div(({background}: {background: string}) => ({
-  width: '28px',
-  height: '28px',
+  width: rowHeight,
+  height: rowHeight,
   borderRadius: '8px',
   borderColor: theme.disabledColor,
   borderStyle: 'solid',
