@@ -28,7 +28,7 @@ import {
 import {MetadataMap} from '../../DesktopTypes';
 import {NoData} from '../sidebar/inspector/NoData';
 import {css, cx} from '@emotion/css';
-import {upperFirst, sortBy} from 'lodash';
+import {upperFirst, sortBy, omit} from 'lodash';
 import {any} from 'lodash/fp';
 import {InspectableColor} from '../../ClientTypes';
 import {transformAny} from '../../utils/dataTransform';
@@ -115,7 +115,11 @@ export function AttributesInspector({
         {sections.length === 0 ? (
           <NoData message="No attributes match filter " />
         ) : (
-          sections
+          sections.concat([
+            <Panel key="Raw" title="Raw Data" collapsed>
+              <DataInspector data={omit(node, ['attributes'])} />
+            </Panel>,
+          ])
         )}
       </Layout.Container>
     </>
