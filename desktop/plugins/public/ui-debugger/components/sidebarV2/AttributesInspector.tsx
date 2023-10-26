@@ -8,10 +8,11 @@
  */
 
 import {Divider, Input, Typography} from 'antd';
-import {Panel, theme, Layout} from 'flipper-plugin';
+import {Panel, theme, Layout, styled} from 'flipper-plugin';
 import React from 'react';
 import {
   ClientNode,
+  Color,
   Inspectable,
   InspectableObject,
   Metadata,
@@ -21,6 +22,7 @@ import {NoData} from '../sidebar/inspector/NoData';
 import {css, cx} from '@emotion/css';
 import {upperFirst, sortBy} from 'lodash';
 import {any} from 'lodash/fp';
+import {InspectableColor} from '../../ClientTypes';
 
 export function AttributesInspector({
   node,
@@ -391,38 +393,89 @@ function AttributeValue({
       );
     case 'space':
       return (
-        <Layout.Container gap="small" style={{flex: '0 1 auto'}}>
-          <NumberGroup
-            values={[
-              {value: inspectable.value.top, addonText: 'T'},
-              {value: inspectable.value.left, addonText: 'L'},
-            ]}
-          />
-          <NumberGroup
-            values={[
-              {value: inspectable.value.bottom, addonText: 'B'},
-              {value: inspectable.value.right, addonText: 'R'},
-            ]}
-          />
-        </Layout.Container>
+        <TwoByTwoNumberGroup
+          values={[
+            {value: inspectable.value.top, addonText: 'T'},
+            {value: inspectable.value.left, addonText: 'L'},
+            {value: inspectable.value.bottom, addonText: 'B'},
+            {value: inspectable.value.right, addonText: 'R'},
+          ]}
+        />
       );
     case 'bounds':
       return (
-        <Layout.Container gap="small" style={{flex: '0 1 auto'}}>
-          <NumberGroup
-            values={[
-              {value: inspectable.value.x, addonText: 'X'},
-              {value: inspectable.value.y, addonText: 'Y'},
-            ]}
-          />
-          <NumberGroup
-            values={[
-              {value: inspectable.value.width, addonText: 'W'},
-              {value: inspectable.value.height, addonText: 'H'},
-            ]}
-          />
-        </Layout.Container>
+        <TwoByTwoNumberGroup
+          values={[
+            {value: inspectable.value.x, addonText: 'X'},
+            {value: inspectable.value.y, addonText: 'Y'},
+            {value: inspectable.value.width, addonText: 'W'},
+            {value: inspectable.value.height, addonText: 'H'},
+          ]}
+        />
       );
+
+    case 'color':
+      return <ColorInspector inspectable={inspectable as InspectableColor} />;
   }
   return null;
+}
+
+function ColorInspector({inspectable}: {inspectable: InspectableColor}) {
+  return (
+    <Layout.Container gap="small">
+      <NumberGroup
+        values={[
+          {value: inspectable.value.r, addonText: 'R'},
+          {value: inspectable.value.g, addonText: 'G'},
+          {value: inspectable.value.b, addonText: 'B'},
+          {value: inspectable.value.a, addonText: 'A'},
+        ]}
+      />
+      <Layout.Horizontal gap="medium">
+        <ColorPreview
+          background={`rgba(${inspectable.value.r},${inspectable.value.g},${inspectable.value.b},${inspectable.value.a})`}
+        />
+        <StyledTextArea
+          color={stringColor}
+          mutable={false}
+          value={RGBAtoHEX(inspectable.value)}
+        />
+      </Layout.Horizontal>
+    </Layout.Container>
+  );
+}
+
+const ColorPreview = styled.div(({background}: {background: string}) => ({
+  width: '28px',
+  height: '28px',
+  borderRadius: '8px',
+  borderColor: theme.disabledColor,
+  borderStyle: 'solid',
+  boxSizing: 'border-box',
+  borderWidth: '1px',
+  backgroundColor: background,
+}));
+
+const RGBAtoHEX = (color: Color) => {
+  const hex =
+    (color.r | (1 << 8)).toString(16).slice(1) +
+    (color.g | (1 << 8)).toString(16).slice(1) +
+    (color.b | (1 << 8)).toString(16).slice(1);
+
+  return '#' + hex.toUpperCase();
+};
+
+type FourItemArray<T = any> = [T, T, T, T];
+
+function TwoByTwoNumberGroup({
+  values,
+}: {
+  values: FourItemArray<NumberGroupValue>;
+}) {
+  return (
+    <Layout.Container gap="small" style={{flex: '0 1 auto'}}>
+      <NumberGroup values={[values[0], values[1]]} />
+      <NumberGroup values={[values[2], values[3]]} />
+    </Layout.Container>
+  );
 }
