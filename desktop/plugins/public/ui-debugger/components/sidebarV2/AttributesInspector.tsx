@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Input, Typography} from 'antd';
+import {Divider, Input, Typography} from 'antd';
 import {Panel, theme, Layout} from 'flipper-plugin';
 import React from 'react';
 import {
@@ -19,7 +19,8 @@ import {
 import {MetadataMap} from '../../DesktopTypes';
 import {NoData} from '../sidebar/inspector/NoData';
 import {css, cx} from '@emotion/css';
-import {upperFirst} from 'lodash';
+import {upperFirst, sortBy} from 'lodash';
+import {any} from 'lodash/fp';
 
 export function AttributesInspector({
   node,
@@ -64,40 +65,63 @@ function AttributeSection(
   name: string,
   inspectable: InspectableObject,
 ) {
-  const children = Object.keys(inspectable.fields)
-    .map((key) => {
-      const metadataId: number = Number(key);
+  const attributesOrSubSubsections = Object.entries(inspectable.fields).map(
+    ([fieldKey, attributeValue]) => {
+      const metadataId: number = Number(fieldKey);
       const attributeMetadata = metadataMap.get(metadataId);
+      const attributeName =
+        upperFirst(attributeMetadata?.name) ?? String(metadataId);
+      //subsections are complex types that are only 1 level deep
+      const isSubSection =
+        attributeValue.type === 'object' &&
+        !any(
+          (inspectable) =>
+            inspectable.type === 'array' || inspectable.type === 'object',
+          Object.values(attributeValue.fields),
+        );
+      return {
+        attributeName,
+        attributeMetadata,
+        isSubSection,
+        attributeValue,
+        metadataId,
+      };
+    },
+  );
 
+  //push sub sections to the end
+  const sortedAttributesOrSubsections = sortBy(
+    attributesOrSubSubsections,
+    [(item) => item.isSubSection],
+    (item) => item.attributeName,
+  );
+
+  const children = sortedAttributesOrSubsections
+    .map(({isSubSection, attributeValue, attributeMetadata, attributeName}) => {
       if (attributeMetadata == null) {
         return null;
       }
-      const attributeValue = inspectable.fields[metadataId];
 
-      const attributeName =
-        upperFirst(attributeMetadata?.name) ?? String(metadataId);
-      return (
-        <Layout.Horizontal key={key} gap="small">
-          <Typography.Text
-            style={{
-              marginTop: 3, //to center with top input when multiline
-              flex: '0 0 30%', //take 30% of the width
-              color: theme.textColorSecondary,
-              fontWeight: 50,
-            }}>
-            {attributeName}
-          </Typography.Text>
-
-          <Layout.Container style={{flex: '1 1 auto'}}>
-            <AttributeValue
-              name={attributeName}
-              attributeMetadata={attributeMetadata}
+      if (isSubSection) {
+        if (attributeValue.type === 'object') {
+          return (
+            <SubSection
+              attributeName={attributeName}
+              inspectableObject={attributeValue}
               metadataMap={metadataMap}
-              inspectable={attributeValue}
-              level={1}
             />
-          </Layout.Container>
-        </Layout.Horizontal>
+          );
+        }
+      }
+
+      return (
+        <NamedAttribute
+          attributeMetadata={attributeMetadata}
+          key={attributeName}
+          metadataMap={metadataMap}
+          name={attributeName}
+          value={attributeValue}
+        />
       );
     })
     .filter((attr) => attr != null);
@@ -113,6 +137,81 @@ function AttributeSection(
   } else {
     return null;
   }
+}
+
+function SubSection({
+  attributeName,
+  inspectableObject,
+  metadataMap,
+}: {
+  attributeName: string;
+  inspectableObject: InspectableObject;
+  metadataMap: MetadataMap;
+}) {
+  return (
+    <Layout.Container gap="small" padv="small">
+      <Divider style={{margin: 0}} />
+      <Typography.Text>{attributeName}</Typography.Text>
+      {Object.entries(inspectableObject.fields).map(([key, value]) => {
+        const metadataId: number = Number(key);
+        const attributeMetadata = metadataMap.get(metadataId);
+        if (attributeMetadata == null) {
+          return null;
+        }
+        const attributeName =
+          upperFirst(attributeMetadata?.name) ?? String(metadataId);
+
+        return (
+          <NamedAttribute
+            key={key}
+            name={attributeName}
+            value={value}
+            attributeMetadata={attributeMetadata}
+            metadataMap={metadataMap}
+          />
+        );
+      })}
+    </Layout.Container>
+  );
+}
+
+function NamedAttribute({
+  key,
+  name,
+  value,
+  metadataMap,
+  attributeMetadata,
+}: {
+  name: string;
+  value: Inspectable;
+  attributeMetadata: Metadata;
+  metadataMap: MetadataMap;
+  key: string;
+}) {
+  return (
+    <Layout.Horizontal key={key} gap="small">
+      <Typography.Text
+        style={{
+          marginTop: 3, //to center with top input when multiline
+          flex: '0 0 30%', //take 30% of the width
+          color: theme.textColorSecondary,
+          opacity: 0.7,
+          fontWeight: 50,
+        }}>
+        {name}
+      </Typography.Text>
+
+      <Layout.Container style={{flex: '1 1 auto'}}>
+        <AttributeValue
+          name={name}
+          attributeMetadata={attributeMetadata}
+          metadataMap={metadataMap}
+          inspectable={value}
+          level={1}
+        />
+      </Layout.Container>
+    </Layout.Horizontal>
+  );
 }
 
 /**
