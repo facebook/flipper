@@ -7,7 +7,6 @@
 
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.ComponentDataExtractor
-import com.facebook.flipper.plugins.uidebugger.model.InspectableArray
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 import com.facebook.litho.KStateContainer
