@@ -35,6 +35,12 @@ export {PowerSearchConfig, OperatorConfig, FieldConfig, SearchExpressionTerm};
 
 type PowerSearchProps = {
   config: PowerSearchConfig;
+  // Overrides current state of the component with every update.
+  // It is the way to continuously force update the state of the power search externally.
+  // Takes prefernce over `initialSearchExpression`.
+  searchExpression?: SearchExpressionTerm[];
+  // Component stays uncontrolled and maintains its own state.
+  // It is respected only on initialization and any future updates are ignored.
   initialSearchExpression?: SearchExpressionTerm[];
   onSearchExpressionChange: (searchExpression: SearchExpressionTerm[]) => void;
   onConfirmUnknownOption?: (
@@ -46,13 +52,22 @@ const OPTION_KEY_DELIMITER = '::';
 
 export const PowerSearch: React.FC<PowerSearchProps> = ({
   config,
+  searchExpression: searchExpressionExternal,
   initialSearchExpression,
   onSearchExpressionChange,
   onConfirmUnknownOption,
 }) => {
   const [searchExpression, setSearchExpression] = React.useState<
     IncompleteSearchExpressionTerm[]
-  >(initialSearchExpression ?? []);
+  >(() => {
+    if (searchExpressionExternal) {
+      return searchExpressionExternal;
+    }
+    if (initialSearchExpression) {
+      return initialSearchExpression;
+    }
+    return [];
+  });
 
   const onSearchExpressionChangeLatestRef = useLatestRef(
     onSearchExpressionChange,
@@ -68,6 +83,12 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
       );
     }
   }, [searchExpression, onSearchExpressionChangeLatestRef]);
+
+  React.useEffect(() => {
+    if (searchExpressionExternal) {
+      setSearchExpression(searchExpressionExternal);
+    }
+  }, [searchExpressionExternal]);
 
   const options: PowerSearchTermFinderOptionGroup[] = React.useMemo(() => {
     const groupedOptions: PowerSearchTermFinderOptionGroup[] = [];
@@ -112,7 +133,7 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
         {searchExpression.map((searchTerm, i) => {
           return (
             <PowerSearchTerm
-              key={i.toString()}
+              key={JSON.stringify(searchTerm)}
               searchTerm={searchTerm}
               onCancel={() => {
                 setSearchExpression((prevSearchExpression) => {
