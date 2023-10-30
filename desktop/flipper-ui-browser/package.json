@@ -23,7 +23,7 @@
     "flipper-ui-core": "0.0.0",
     "invariant": "^2.2.4",
     "metro-runtime": "^0.70.2",
-    "pretty-format": "^27.5.0",
+    "pretty-format": "^29.6.2",
     "react-refresh": "^0.14.0"
   },
   "peerDependencies": {},

@@ -23,7 +23,7 @@
     "fs-extra": "^11.1.1",
     "invariant": "^2.2.2",
     "metro-runtime": "^0.70.2",
-    "pretty-format": "^27.5.0",
+    "pretty-format": "^29.6.2",
     "reconnecting-websocket": "^4.4.0",
     "ws": "8.13.0"
   },
