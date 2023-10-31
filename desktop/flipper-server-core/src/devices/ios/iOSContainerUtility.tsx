@@ -16,6 +16,7 @@ import {promisify} from 'util';
 import child_process from 'child_process';
 import fs from 'fs-extra';
 import {recorder} from '../../recorder';
+import {isFBBuild} from '../../fb-stubs/constants';
 const exec = promisify(child_process.exec);
 
 export type IdbConfig = {
@@ -173,8 +174,12 @@ async function queryTargetsWithIdb(
   const cmd = `${idbPath} list-targets --json`;
   const description = `Query available devices with idb. idb is aware of the companions that you have
     manually connected, as well as other iOS targets that do not yet have companions.`;
-  const troubleshoot = `Either idb is not installed or needs to be reset.
+  let troubleshoot = `Either idb is not installed or needs to be reset.
     Run 'idb kill' from terminal.`;
+  if (isFBBuild) {
+    troubleshoot += ` If the steps above do not fix the issue, try re-installing idb by running these commands on the terminal 'sudo microdnf remove fb-idb fb-idb-companion'
+and 'sudo microdnf install fb-idb fb-idb-companion'.`;
+  }
 
   try {
     const {stdout} = await unsafeExec(cmd);
