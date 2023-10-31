@@ -303,7 +303,6 @@ export function createDataTableManager<T>(
       dispatch({type: 'sortColumn', column, direction});
     },
     setSearchExpression(searchExpression) {
-      getFlipperLib().logger.track('usage', 'data-table:power-search:search');
       dispatch({type: 'setSearchExpression', searchExpression});
     },
     toggleSideBySide() {
