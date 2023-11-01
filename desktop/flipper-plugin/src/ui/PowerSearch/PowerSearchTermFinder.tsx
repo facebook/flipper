@@ -65,20 +65,20 @@ export const PowerSearchTermFinder = React.forwardRef<
         onChange={setSearchTermFinderValue}
         onBlur={() => {
           setSearchTermFinderValue(null);
-        }}
-        onInputKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            if (searchTermFinderValue && onConfirmUnknownOption) {
-              onConfirmUnknownOption(searchTermFinderValue);
-            }
-            setSearchTermFinderValue(null);
-          }
-          if (event.key === 'Backspace' && !searchTermFinderValue) {
-            onBackspacePressWhileEmpty();
-          }
         }}>
         <Input
           bordered={false}
+          onKeyUp={(event) => {
+            if (event.key === 'Enter') {
+              if (searchTermFinderValue && onConfirmUnknownOption) {
+                onConfirmUnknownOption(searchTermFinderValue);
+              }
+              setSearchTermFinderValue(null);
+            }
+            if (event.key === 'Backspace' && !searchTermFinderValue) {
+              onBackspacePressWhileEmpty();
+            }
+          }}
           onPasteCapture={(event) => {
             const text = event.clipboardData.getData('text/plain');
 
