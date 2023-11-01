@@ -19,25 +19,32 @@
 }
 
 - (IBAction)tappedGithubLitho:(UIButton*)sender {
-  [[[NSURLSession sharedSession]
-        dataTaskWithURL:
-            [NSURL
-                URLWithString:
-                    @"https://raw.githubusercontent.com/facebook/litho/main/docs/static/logo.png"]
-      completionHandler:^(
-          NSData* _Nullable data,
-          NSURLResponse* _Nullable response,
-          NSError* _Nullable error) {
-        if (error && !data) {
-          return;
-        }
-        NSLog(@"Got Image");
-      }] resume];
+  NSURL* url = [NSURL
+      URLWithString:
+          @"https://raw.githubusercontent.com/facebook/litho/main/docs/static/logo.png"];
+  if (!url) {
+    return;
+  }
+
+  [[[NSURLSession sharedSession] dataTaskWithURL:url
+                               completionHandler:^(
+                                   NSData* _Nullable data,
+                                   NSURLResponse* _Nullable response,
+                                   NSError* _Nullable error) {
+                                 if (error && !data) {
+                                   return;
+                                 }
+                                 NSLog(@"Got Image");
+                               }] resume];
 }
 
 - (IBAction)tappedPOSTAPI:(UIButton*)sender {
-  NSString* post = @"https://demo9512366.mockable.io/FlipperPost";
-  NSURL* url = [NSURL URLWithString:post];
+  NSURL* url =
+      [NSURL URLWithString:@"https://demo9512366.mockable.io/FlipperPost"];
+  if (!url) {
+    return;
+  }
+
   NSMutableURLRequest* urlRequest = [NSMutableURLRequest requestWithURL:url];
   [urlRequest addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
   [urlRequest addValue:@"application/json" forHTTPHeaderField:@"Accept"];
@@ -57,42 +64,56 @@
   [[[NSURLSession sharedSession]
       dataTaskWithRequest:urlRequest
         completionHandler:^(
-            NSData* _Nullable data,
+            NSData* data,
             NSURLResponse* _Nullable response,
             NSError* _Nullable dataTaskError) {
-          if (dataTaskError || !data) {
+          if (dataTaskError) {
             [weakSelf
                 showAlertWithMessage:@"Received error in POST API response"];
             return;
           }
-          NSDictionary* dict =
-              [NSJSONSerialization JSONObjectWithData:data
-                                              options:0
-                                                error:&dataTaskError];
-          NSLog(@"MSG-POST: %@", dict[@"msg"]);
+          if (data == nil) {
+            [weakSelf
+                showAlertWithMessage:@"No data received in POST API response"];
+          } else {
+            NSDictionary* dict =
+                [NSJSONSerialization JSONObjectWithData:data
+                                                options:0
+                                                  error:&dataTaskError];
+            NSLog(@"MSG-POST: %@", dict[@"msg"]);
 
-          [weakSelf showAlertWithMessage:@"Received response from POST API"];
+            [weakSelf showAlertWithMessage:@"Received response from POST API"];
+          }
         }] resume];
 }
 
 - (IBAction)tappedGetAPI:(UIButton*)sender {
+  NSURL* url =
+      [NSURL URLWithString:@"https://demo9512366.mockable.io/FlipperGet"];
+  if (!url) {
+    return;
+  }
   __weak NetworkViewController* weakSelf = self;
   [[[NSURLSession sharedSession]
-        dataTaskWithURL:
-            [NSURL URLWithString:@"https://demo9512366.mockable.io/FlipperGet"]
+        dataTaskWithURL:url
       completionHandler:^(
-          NSData* _Nullable data,
+          NSData* data,
           NSURLResponse* _Nullable response,
           NSError* _Nullable error) {
-        if (error || !data) {
+        if (error) {
           [weakSelf showAlertWithMessage:@"Received error in GET API response"];
           return;
         }
-        NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:data
-                                                             options:0
-                                                               error:&error];
-        NSLog(@"MSG-GET: %@", dict[@"msg"]);
-        [weakSelf showAlertWithMessage:@"Received response from GET API"];
+        if (data == nil) {
+          [weakSelf
+              showAlertWithMessage:@"No data received in GET API response"];
+        } else {
+          NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:data
+                                                               options:0
+                                                                 error:&error];
+          NSLog(@"MSG-GET: %@", dict[@"msg"]);
+          [weakSelf showAlertWithMessage:@"Received response from GET API"];
+        }
       }] resume];
 }
 

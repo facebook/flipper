@@ -16,7 +16,7 @@ import {
   MetadataId,
 } from '../ClientTypes';
 
-function transformAny(
+export function transformAny(
   metadata: Map<MetadataId, Metadata>,
   inspectable: Inspectable,
 ): any {
@@ -32,6 +32,8 @@ function transformAny(
     case 'enum':
     case 'space':
       return inspectable.value;
+    case 'array':
+      return inspectable.items.map((value) => transformAny(metadata, value));
     case 'object':
       return transformObject(metadata, inspectable);
     default:

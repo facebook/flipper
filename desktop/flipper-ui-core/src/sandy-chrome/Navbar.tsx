@@ -38,7 +38,10 @@ import {
 } from '../reducers/application';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
-import SetupDoctorScreen, {checkHasNewProblem} from './SetupDoctorScreen';
+import SetupDoctorScreen, {
+  checkHasNewProblem,
+  checkHasProblem,
+} from './SetupDoctorScreen';
 import {isProduction} from 'flipper-common';
 import FpsGraph from '../chrome/FpsGraph';
 import NetworkGraph from '../chrome/NetworkGraph';
@@ -103,7 +106,8 @@ export const Navbar = withTrackingScope(function Navbar() {
         <TroubleshootMenu />
         <ExtrasMenu />
         <RightSidebarToggleButton />
-        <UpdateIndicator />
+        {getRenderHostInstance().serverConfig.environmentInfo
+          .isHeadlessBuild && <UpdateIndicator />}
       </Layout.Horizontal>
     </Layout.Horizontal>
   );
@@ -455,12 +459,32 @@ function TroubleshootMenu() {
       ),
     [store, setStatus],
   );
-  const [isDoctorVisible, setIsDoctorVisible] = useState(false);
+
+  const flipperErrorLogCount = useValue(errorCounterAtom);
+
+  /**
+   * About Doctor. Get the healthcheck report.
+   *
+   * checkHasProblem: check if there are problems in the healthcheck report.
+   * checkHasNewProblem: check if there are new problems in the healthcheck
+   * report since the last time it was checked or acknowledged, hence the new keyword.
+   *
+   * The first time Flipper is opened, show doctor if there's any problems.
+   * After this, use hasNewProblems as a means to show Doctor if needed.
+   */
   const result = useStore(
     (state) => state.healthchecks.healthcheckReport.result,
   );
+  const hasProblem = useMemo(() => checkHasProblem(result), [result]);
   const hasNewProblem = useMemo(() => checkHasNewProblem(result), [result]);
-  const flipperErrorLogCount = useValue(errorCounterAtom);
+
+  const [isDoctorVisible, setIsDoctorVisible] = useState(hasProblem);
+
+  useEffect(() => {
+    if (hasNewProblem) {
+      setIsDoctorVisible(true);
+    }
+  }, [hasNewProblem]);
 
   const count = flipperErrorLogCount || hasNewProblem || 0;
 

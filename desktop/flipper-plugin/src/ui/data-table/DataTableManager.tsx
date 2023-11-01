@@ -223,6 +223,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'setSearchValue': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:search');
       draft.searchValue = action.value;
       draft.previousSearchValue = '';
       draft.filterExceptions = undefined;
@@ -240,6 +241,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'toggleSearchValue': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:toggle-search');
       draft.filterExceptions = undefined;
       if (draft.searchValue) {
         draft.previousSearchValue = draft.searchValue;
@@ -297,6 +299,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'addColumnFilter': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:add-column');
       draft.filterExceptions = undefined;
       addColumnFilter(
         draft.columns,
@@ -307,6 +310,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'removeColumnFilter': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:remove-column');
       draft.filterExceptions = undefined;
       const column = draft.columns.find((c) => c.key === action.column)!;
       const index =
@@ -321,6 +325,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'toggleColumnFilter': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:toggle-column');
       draft.filterExceptions = undefined;
       const column = draft.columns.find((c) => c.key === action.column)!;
       const index =
@@ -486,7 +491,6 @@ export function createDataTableManager<T>(
       dispatch({type: 'sortColumn', column, direction});
     },
     setSearchValue(value, addToHistory = false) {
-      getFlipperLib().logger.track('usage', 'data-table:filter:search');
       dispatch({type: 'setSearchValue', value, addToHistory});
     },
     toggleSearchValue() {
@@ -508,11 +512,9 @@ export function createDataTableManager<T>(
       dispatch({type: 'setShowNumberedHistory', showNumberedHistory});
     },
     addColumnFilter(column, value, options = {}) {
-      getFlipperLib().logger.track('usage', 'data-table:filter:add-column');
       dispatch({type: 'addColumnFilter', column, value, options});
     },
     removeColumnFilter(column, label) {
-      getFlipperLib().logger.track('usage', 'data-table:filter:remove-column');
       dispatch({type: 'removeColumnFilter', column, label});
     },
     setFilterExceptions(exceptions: string[] | undefined) {

@@ -71,7 +71,7 @@ const statusTypeAndMessage: {
   },
 };
 
-function checkHasProblem(result: FlipperDoctor.HealthcheckResult) {
+export function checkHasProblem(result: FlipperDoctor.HealthcheckResult) {
   return result.status === 'FAILED' || result.status === 'WARNING';
 }
 

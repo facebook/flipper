@@ -126,7 +126,7 @@ export const Inspector: React.FC<Props> = ({
               frameworkEventMetadata={frameworkEventMetadata}
               node={selectedNode}
               events={selectedFrameworkEvents}
-              showExtra={showExtra}
+              showBottomPanel={showExtra}
             />
           </Tab>
         )}

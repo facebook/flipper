@@ -39,6 +39,10 @@ export async function getEnvironmentInfo(
     process.env.FLIPPER_FORCE_VERSION ??
     (isProduction ? packageJson.version : '0.0.0');
 
+  if (packageJson.reactNativeOnly) {
+    process.env.FLIPPER_REACT_NATIVE_ONLY = 'true';
+  }
+
   return {
     processId: process.pid,
     isProduction,

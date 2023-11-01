@@ -60,7 +60,7 @@ server-linux:
       - '!*'
       - flipper-runtime
     core:
-      - '!flipper-runtime
+      - '!flipper-runtime'
       - '!static'
     static:
       - '!*'

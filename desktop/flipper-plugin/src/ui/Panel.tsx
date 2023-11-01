@@ -29,6 +29,7 @@ export const Panel: React.FC<{
   pad?: Spacing;
   gap?: Spacing;
   extraActions?: React.ReactElement | null;
+  className?: string;
 }> = (props) => {
   const [collapsed, setCollapsed] = useLocalStorageState(
     `panel:${props.title}:collapsed`,
@@ -45,6 +46,7 @@ export const Panel: React.FC<{
   return (
     <TrackingScope scope={props.title}>
       <StyledCollapse
+        className={props.className}
         bordered={false}
         activeKey={collapsed ? undefined : props.title}
         onChange={toggle}>

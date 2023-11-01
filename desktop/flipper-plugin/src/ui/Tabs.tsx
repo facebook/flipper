@@ -59,7 +59,7 @@ export function Tabs({
 
   return (
     <AntdTabs
-      activeKey={activeTab}
+      activeKey={keys.includes(activeTab ?? 'not-there') ? activeTab : keys[0]}
       onChange={(key) => {
         setActiveTab(key);
       }}

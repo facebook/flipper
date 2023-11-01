@@ -127,202 +127,70 @@ object LayoutPropExtractor {
   private val RotationId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "rotation")
 
-  private val EmptyId = MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "")
+  private val ResolvedId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "resolved")
   private val NoneId = MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "none")
   private val SizeId = MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "size")
   private val ViewOutputId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "viewOutput")
 
-  fun getInspectableBox(
-      left: YogaValue?,
-      top: YogaValue?,
-      right: YogaValue?,
-      bottom: YogaValue?,
-      horizontal: YogaValue?,
-      vertical: YogaValue?,
-      all: YogaValue?,
-      start: YogaValue?,
-      end: YogaValue?
+  /** constructs an object type containing any inputs that were provided and the resolved values */
+  private fun getInspectableBox(
+      leftInput: Inspectable?,
+      topInput: Inspectable?,
+      rightInput: Inspectable?,
+      bottomInput: Inspectable?,
+      horizontalInput: Inspectable?,
+      verticalInput: Inspectable?,
+      allInput: Inspectable?,
+      startInput: Inspectable?,
+      endInput: Inspectable?,
+      leftResolved: Float?,
+      topResolved: Float?,
+      rightResolved: Float?,
+      bottomResolved: Float?,
   ): InspectableObject {
     val props = mutableMapOf<MetadataId, Inspectable>()
 
-    var actualLeft = 0
-    var actualTop = 0
-    var actualRight = 0
-    var actualBottom = 0
+    allInput?.let { props[AllId] = it }
+    horizontalInput?.let { props[HorizontalId] = it }
+    verticalInput?.let { props[VerticalId] = it }
+    leftInput?.let { props[LeftId] = it }
+    rightInput?.let { props[RightId] = it }
+    topInput?.let { props[TopId] = it }
+    bottomInput?.let { props[BottomId] = it }
+    startInput?.let { props[StartId] = it }
+    endInput?.let { props[EndId] = it }
 
-    all?.let { yogaValue ->
-      if (yogaValue.unit != YogaUnit.UNDEFINED) {
-        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
-          val intValue = yogaValue.value.toInt()
-          actualLeft = intValue
-          actualTop = intValue
-          actualRight = intValue
-          actualBottom = intValue
-        }
-
-        props[AllId] = InspectableValue.Text(yogaValue.toString())
-      }
+    if (leftResolved != null &&
+        rightResolved != null &&
+        topResolved != null &&
+        bottomResolved != null) {
+      props[ResolvedId] =
+          InspectableValue.SpaceBox(
+              SpaceBox(
+                  left = leftResolved.toInt(),
+                  right = rightResolved.toInt(),
+                  bottom = bottomResolved.toInt(),
+                  top = topResolved.toInt()))
     }
-
-    horizontal?.let { yogaValue ->
-      if (yogaValue.unit != YogaUnit.UNDEFINED) {
-        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
-          val intValue = yogaValue.value.toInt()
-          actualLeft = intValue
-          actualRight = intValue
-        }
-
-        props[HorizontalId] = InspectableValue.Text(yogaValue.toString())
-      }
-    }
-
-    vertical?.let { yogaValue ->
-      if (yogaValue.unit != YogaUnit.UNDEFINED) {
-        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
-          val intValue = yogaValue.value.toInt()
-          actualTop = intValue
-          actualBottom = intValue
-        }
-
-        props[VerticalId] = InspectableValue.Text(yogaValue.toString())
-      }
-    }
-
-    left?.let { yogaValue ->
-      if (yogaValue.unit != YogaUnit.UNDEFINED) {
-        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
-          val intValue = yogaValue.value.toInt()
-          actualLeft = intValue
-        }
-
-        props[LeftId] = InspectableValue.Text(yogaValue.toString())
-      }
-    }
-
-    right?.let { yogaValue ->
-      if (yogaValue.unit != YogaUnit.UNDEFINED) {
-        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
-          val intValue = yogaValue.value.toInt()
-          actualRight = intValue
-        }
-
-        props[RightId] = InspectableValue.Text(yogaValue.toString())
-      }
-    }
-
-    top?.let { yogaValue ->
-      if (yogaValue.unit != YogaUnit.UNDEFINED) {
-        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
-          val intValue = yogaValue.value.toInt()
-          actualTop = intValue
-        }
-
-        props[TopId] = InspectableValue.Text(yogaValue.toString())
-      }
-    }
-
-    bottom?.let { yogaValue ->
-      if (yogaValue.unit != YogaUnit.UNDEFINED) {
-        if (yogaValue.unit == YogaUnit.POINT || yogaValue.unit == YogaUnit.PERCENT) {
-          val intValue = yogaValue.value.toInt()
-          actualBottom = intValue
-        }
-
-        props[BottomId] = InspectableValue.Text(yogaValue.toString())
-      }
-    }
-
-    props[EmptyId] =
-        InspectableValue.SpaceBox(SpaceBox(actualTop, actualRight, actualBottom, actualLeft))
 
     return InspectableObject(props)
   }
 
-  fun getInspectableBoxRaw(
-      left: Float?,
-      top: Float?,
-      right: Float?,
-      bottom: Float?,
-      horizontal: Float?,
-      vertical: Float?,
-      all: Float?,
-      start: Float?,
-      end: Float?
-  ): InspectableObject {
-    val props = mutableMapOf<MetadataId, Inspectable>()
-
-    var actualLeft = 0
-    var actualTop = 0
-    var actualRight = 0
-    var actualBottom = 0
-
-    all?.let { value ->
-      if (!value.isNaN()) {
-        val intValue = value.toInt()
-        actualLeft = intValue
-        actualTop = intValue
-        actualRight = intValue
-        actualBottom = intValue
-        props[AllId] = InspectableValue.Number(value)
+  private fun toInspectable(yogaValue: YogaValue) =
+      if (yogaValue.unit != YogaUnit.UNDEFINED) {
+        InspectableValue.Text(yogaValue.toString())
+      } else {
+        null
       }
-    }
 
-    horizontal?.let { value ->
-      if (!value.isNaN()) {
-        val intValue = value.toInt()
-        actualLeft = intValue
-        actualRight = intValue
-        props[HorizontalId] = InspectableValue.Number(value)
+  private fun toInspectable(value: Float) =
+      if (value.isNaN()) {
+        null
+      } else {
+        InspectableValue.Number(value)
       }
-    }
-
-    vertical?.let { value ->
-      if (!value.isNaN()) {
-        val intValue = value.toInt()
-        actualTop = intValue
-        actualBottom = intValue
-        props[VerticalId] = InspectableValue.Number(value)
-      }
-    }
-
-    left?.let { value ->
-      if (!value.isNaN()) {
-        val intValue = value.toInt()
-        actualLeft = intValue
-        props[LeftId] = InspectableValue.Number(value)
-      }
-    }
-
-    right?.let { value ->
-      if (!value.isNaN()) {
-        val intValue = value.toInt()
-        actualRight = intValue
-        props[RightId] = InspectableValue.Number(value)
-      }
-    }
-
-    top?.let { value ->
-      if (!value.isNaN()) {
-        val intValue = value.toInt()
-        actualTop = intValue
-        props[TopId] = InspectableValue.Number(value)
-      }
-    }
-
-    bottom?.let { value ->
-      if (!value.isNaN()) {
-        val intValue = value.toInt()
-        actualBottom = intValue
-        props[BottomId] = InspectableValue.Number(value)
-      }
-    }
-
-    props[EmptyId] =
-        InspectableValue.SpaceBox(SpaceBox(actualTop, actualRight, actualBottom, actualLeft))
-
-    return InspectableObject(props)
-  }
 
   fun getProps(component: DebugComponent): Map<MetadataId, Inspectable> {
     val props = mutableMapOf<MetadataId, Inspectable>()
@@ -366,51 +234,68 @@ object LayoutPropExtractor {
 
     props[MarginId] =
         getInspectableBox(
-            layout.getMargin(YogaEdge.LEFT),
-            layout.getMargin(YogaEdge.TOP),
-            layout.getMargin(YogaEdge.RIGHT),
-            layout.getMargin(YogaEdge.BOTTOM),
-            layout.getMargin(YogaEdge.HORIZONTAL),
-            layout.getMargin(YogaEdge.VERTICAL),
-            layout.getMargin(YogaEdge.ALL),
-            layout.getMargin(YogaEdge.START),
-            layout.getMargin(YogaEdge.END))
+            leftInput = toInspectable(layout.getMargin(YogaEdge.LEFT)),
+            topInput = toInspectable(layout.getMargin(YogaEdge.TOP)),
+            rightInput = toInspectable(layout.getMargin(YogaEdge.RIGHT)),
+            bottomInput = toInspectable(layout.getMargin(YogaEdge.BOTTOM)),
+            horizontalInput = toInspectable(layout.getMargin(YogaEdge.HORIZONTAL)),
+            verticalInput = toInspectable(layout.getMargin(YogaEdge.VERTICAL)),
+            allInput = toInspectable(layout.getMargin(YogaEdge.ALL)),
+            startInput = toInspectable(layout.getMargin(YogaEdge.START)),
+            endInput = toInspectable(layout.getMargin(YogaEdge.END)),
+            leftResolved = layout.getLayoutMargin(YogaEdge.LEFT),
+            rightResolved = layout.getLayoutMargin(YogaEdge.RIGHT),
+            topResolved = layout.getLayoutMargin(YogaEdge.TOP),
+            bottomResolved = layout.getLayoutMargin(YogaEdge.BOTTOM),
+        )
 
     props[PaddingId] =
         getInspectableBox(
-            layout.getPadding(YogaEdge.LEFT),
-            layout.getPadding(YogaEdge.TOP),
-            layout.getPadding(YogaEdge.RIGHT),
-            layout.getPadding(YogaEdge.BOTTOM),
-            layout.getPadding(YogaEdge.HORIZONTAL),
-            layout.getPadding(YogaEdge.VERTICAL),
-            layout.getPadding(YogaEdge.ALL),
-            layout.getPadding(YogaEdge.START),
-            layout.getPadding(YogaEdge.END))
+            leftInput = toInspectable(layout.getPadding(YogaEdge.LEFT)),
+            topInput = toInspectable(layout.getPadding(YogaEdge.TOP)),
+            rightInput = toInspectable(layout.getPadding(YogaEdge.RIGHT)),
+            bottomInput = toInspectable(layout.getPadding(YogaEdge.BOTTOM)),
+            horizontalInput = toInspectable(layout.getPadding(YogaEdge.HORIZONTAL)),
+            verticalInput = toInspectable(layout.getPadding(YogaEdge.VERTICAL)),
+            allInput = toInspectable(layout.getPadding(YogaEdge.ALL)),
+            startInput = toInspectable(layout.getPadding(YogaEdge.START)),
+            endInput = toInspectable(layout.getPadding(YogaEdge.END)),
+            leftResolved = layout.getLayoutPadding(YogaEdge.LEFT),
+            rightResolved = layout.getLayoutPadding(YogaEdge.RIGHT),
+            topResolved = layout.getLayoutPadding(YogaEdge.TOP),
+            bottomResolved = layout.getLayoutPadding(YogaEdge.BOTTOM))
 
     props[BorderId] =
-        getInspectableBoxRaw(
-            layout.getBorderWidth(YogaEdge.LEFT),
-            layout.getBorderWidth(YogaEdge.TOP),
-            layout.getBorderWidth(YogaEdge.RIGHT),
-            layout.getBorderWidth(YogaEdge.BOTTOM),
-            layout.getBorderWidth(YogaEdge.HORIZONTAL),
-            layout.getBorderWidth(YogaEdge.VERTICAL),
-            layout.getBorderWidth(YogaEdge.ALL),
-            layout.getBorderWidth(YogaEdge.START),
-            layout.getBorderWidth(YogaEdge.END))
+        getInspectableBox(
+            toInspectable(layout.getBorderWidth(YogaEdge.LEFT)),
+            toInspectable(layout.getBorderWidth(YogaEdge.TOP)),
+            toInspectable(layout.getBorderWidth(YogaEdge.RIGHT)),
+            toInspectable(layout.getBorderWidth(YogaEdge.BOTTOM)),
+            toInspectable(layout.getBorderWidth(YogaEdge.HORIZONTAL)),
+            toInspectable(layout.getBorderWidth(YogaEdge.VERTICAL)),
+            toInspectable(layout.getBorderWidth(YogaEdge.ALL)),
+            toInspectable(layout.getBorderWidth(YogaEdge.START)),
+            toInspectable(layout.getBorderWidth(YogaEdge.END)),
+            null, // todo expose layout border from litho
+            null,
+            null,
+            null)
 
     props[PositionId] =
         getInspectableBox(
-            layout.getPosition(YogaEdge.LEFT),
-            layout.getPosition(YogaEdge.TOP),
-            layout.getPosition(YogaEdge.RIGHT),
-            layout.getPosition(YogaEdge.BOTTOM),
-            layout.getPosition(YogaEdge.HORIZONTAL),
-            layout.getPosition(YogaEdge.VERTICAL),
-            layout.getPosition(YogaEdge.ALL),
-            layout.getPosition(YogaEdge.START),
-            layout.getPosition(YogaEdge.END))
+            toInspectable(layout.getPosition(YogaEdge.LEFT)),
+            toInspectable(layout.getPosition(YogaEdge.TOP)),
+            toInspectable(layout.getPosition(YogaEdge.RIGHT)),
+            toInspectable(layout.getPosition(YogaEdge.BOTTOM)),
+            toInspectable(layout.getPosition(YogaEdge.HORIZONTAL)),
+            toInspectable(layout.getPosition(YogaEdge.VERTICAL)),
+            toInspectable(layout.getPosition(YogaEdge.ALL)),
+            toInspectable(layout.getPosition(YogaEdge.START)),
+            toInspectable(layout.getPosition(YogaEdge.END)),
+            null,
+            null,
+            null,
+            null)
 
     val viewOutput: MutableMap<MetadataId, Inspectable> = mutableMapOf()
     viewOutput[HasViewOutputId] = InspectableValue.Boolean(layout.hasViewOutput())

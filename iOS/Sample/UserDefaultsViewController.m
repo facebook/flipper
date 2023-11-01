@@ -23,8 +23,11 @@
 }
 
 - (IBAction)tappedSave:(id)sender {
-  [self.userDefaults setObject:self.valueTextField.text
-                        forKey:self.keyTextField.text];
+  NSString* key = self.keyTextField.text;
+  NSString* value = self.valueTextField.text;
+  if (key != nil) {
+    [self.userDefaults setObject:value forKey:key];
+  }
 }
 
 @end

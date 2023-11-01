@@ -673,7 +673,7 @@ export function DataTable<T extends object>(
         <Searchbar gap>
           <PowerSearch
             config={powerSearchConfig}
-            initialSearchExpression={searchExpression}
+            searchExpression={searchExpression}
             onSearchExpressionChange={(newSearchExpression) => {
               tableManager.setSearchExpression(newSearchExpression);
             }}

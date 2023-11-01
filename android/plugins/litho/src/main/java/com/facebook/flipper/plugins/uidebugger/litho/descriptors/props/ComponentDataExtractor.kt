@@ -99,7 +99,19 @@ object ComponentDataExtractor {
         val id = getMetadataId(componentName, field.name)
         val editorValue: EditorValue? = EditorRegistry.read(field.type, field, stateContainer)
         if (editorValue != null) {
-          stateFields[id] = toInspectable(field.name, editorValue)
+
+          val inspectable = toInspectable(field.name, editorValue)
+
+          if (inspectable is InspectableArray) {
+            inspectable.items.forEachIndexed { idx, item ->
+              val metadataId =
+                  MetadataRegister.register(
+                      MetadataRegister.TYPE_ATTRIBUTE, "kstate", idx.toString())
+              stateFields[metadataId] = item
+            }
+          } else {
+            stateFields[id] = toInspectable(field.name, editorValue)
+          }
         }
       }
     }

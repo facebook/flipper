@@ -201,9 +201,19 @@
         function init() {
           const script = document.createElement('script');
           script.src = window.flipperConfig.entryPoint;
-
           script.onerror = (e) => {
-            showMessage('Failed to load entry point. Check Chrome Dev Tools console for more info.');
+            const retry = (retries) => {
+              showMessage(`Failed to load entry point. Check Chrome Dev Tools console for more info. Retrying in: ${retries}`);
+              retries -= 1;
+              if (retries < 0) {
+                window.location.reload();
+              }
+              else {
+                setTimeout(() => retry(retries), 1000);
+              }
+            }
+            
+            retry(3);
           };
 
           document.body.appendChild(script);
