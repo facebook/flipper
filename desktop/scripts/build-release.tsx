@@ -211,15 +211,20 @@ async function buildDist(buildFolder: string) {
   const postBuildCallbacks: (() => void)[] = [];
 
   if (argv.mac || argv['mac-dmg']) {
-    targetsRaw.push(Platform.MAC.createTarget(['dir']));
-    // You can build mac apps on Linux but can't build dmgs, so we separate those.
-    if (argv['mac-dmg']) {
-      targetsRaw.push(Platform.MAC.createTarget(['dmg']));
-    }
-    const macPath = path.join(
+    let macPath = path.join(
       distDir,
       process.arch === 'arm64' ? 'mac-arm64' : 'mac',
     );
+    if (argv['react-native-only']) {
+      targetsRaw.push(Platform.MAC.createTarget(['pkg'], Arch.x64));
+      macPath = path.join(distDir, 'mac');
+    } else {
+      targetsRaw.push(Platform.MAC.createTarget(['dir']));
+      // You can build mac apps on Linux but can't build dmgs, so we separate those.
+      if (argv['mac-dmg']) {
+        targetsRaw.push(Platform.MAC.createTarget(['dmg']));
+      }
+    }
     postBuildCallbacks.push(() =>
       spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
         cwd: macPath,
