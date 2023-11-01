@@ -7,10 +7,6 @@
  * @format
  */
 
-export {RenderHost, getRenderHostInstance} from 'flipper-frontend-core';
-
-export {startFlipperDesktop} from './startFlipperDesktop';
-
-export {Icon} from './utils/icons';
-
-export {isPWA} from './utils/pwa';
+export const isPWA = () => {
+  return window.matchMedia('(display-mode: standalone)').matches;
+};
