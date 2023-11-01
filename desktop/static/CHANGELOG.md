@@ -1,3 +1,9 @@
+# 0.234.0 (1/11/2023)
+
+ * [D50595987](https://github.com/facebook/flipper/search?q=D50595987&type=Commits) -  UIDebugger, new sidebar design
+ * [D50599215](https://github.com/facebook/flipper/search?q=D50599215&type=Commits) -  Android SDK is now built against SDK 34
+
+
 # 0.223.0 (2/10/2023)
 
  * [D49704398](https://github.com/facebook/flipper/search?q=D49704398&type=Commits) -  UIDebugger: improvements to iOS Accessibility mode
