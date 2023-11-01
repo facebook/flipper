@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.uidebugger.litho.descriptors
 
-import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
@@ -102,10 +101,13 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
   override fun getAttributes(
       node: DebugComponent
   ): MaybeDeferred<Map<MetadataId, InspectableObject>> {
+
+    // this accesses the litho view so do this on the main thread
+    val mountingData = getMountingData(node)
+
     return Deferred {
       val attributeSections = mutableMapOf<MetadataId, InspectableObject>()
 
-      val mountingData = getMountingData(node)
       attributeSections[MountingDataId] = InspectableObject(mountingData)
 
       val layoutProps = LayoutPropExtractor.getProps(node)
@@ -138,9 +140,7 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
     }
     return tags
   }
-
-  override fun getSnapshot(node: DebugComponent, bitmap: Bitmap?): Bitmap? = null
-
+  
   override fun getInlineAttributes(node: DebugComponent): Map<String, String> {
     val attributes = mutableMapOf<String, String>()
     val key = node.key
