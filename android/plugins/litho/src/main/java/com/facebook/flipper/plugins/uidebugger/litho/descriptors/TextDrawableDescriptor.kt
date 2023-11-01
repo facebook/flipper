@@ -31,7 +31,8 @@ object TextDrawableDescriptor : ChainedDescriptor<TextDrawable>() {
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
     val props =
-        mapOf<Int, Inspectable>(TextAttributeId to InspectableValue.Text(node.text.toString()))
+        mapOf<Int, Inspectable>(
+            TextAttributeId to InspectableValue.Text(node.text?.toString() ?: "null"))
 
     attributeSections[SectionId] = InspectableObject(props)
   }
