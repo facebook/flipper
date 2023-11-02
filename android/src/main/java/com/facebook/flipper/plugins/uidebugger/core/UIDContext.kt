@@ -9,7 +9,9 @@ package com.facebook.flipper.plugins.uidebugger.core
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import com.facebook.flipper.core.FlipperConnection
+import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.flipper.plugins.uidebugger.model.FrameworkEvent
@@ -35,15 +37,20 @@ class UIDContext(
   val bitmapPool = BitmapPool()
   private val canvasSnapshotter = CanvasSnapshotter(bitmapPool)
 
-  val snapshotter =
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+  private val snapshotter =
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        ModernPixelCopySnapshotter(bitmapPool, canvasSnapshotter)
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         PixelCopySnapshotter(bitmapPool, applicationRef, canvasSnapshotter)
       } else {
+        Log.w(
+            LogTag,
+            "Using legacy snapshot mode, use device with API level >=26 to for pixel copy snapshot ")
         canvasSnapshotter
       }
 
-  val decorViewTracker = DecorViewTracker(this, snapshotter)
-  val updateQueue = UpdateQueue(this)
+  val decorViewTracker: DecorViewTracker = DecorViewTracker(this, snapshotter)
+  val updateQueue: UpdateQueue = UpdateQueue(this)
   val layoutTraversal: LayoutTraversal = LayoutTraversal(this)
 
   fun addFrameworkEvent(frameworkEvent: FrameworkEvent) {
