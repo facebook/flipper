@@ -81,13 +81,14 @@ class DecorViewTracker(private val context: UIDContext, private val snapshotter:
     preDrawListener = null
   }
 
-  private fun traverseSnapshotAndSend(decorView: View) {
+  private suspend fun traverseSnapshotAndSend(decorView: View) {
 
     val startTimestamp = System.currentTimeMillis()
+
     val (nodes, traversalTime) =
         StopWatch.time { context.layoutTraversal.traverse(context.applicationRef) }
 
-    val (reusableBitmap, snapshotMs) = StopWatch.time { snapshotter.takeSnapshot(decorView) }
+    val (reusableBitmap, snapshotMs) = StopWatch.timeSuspend { snapshotter.takeSnapshot(decorView) }
 
     context.updateQueue.enqueueUpdate(
         Update(

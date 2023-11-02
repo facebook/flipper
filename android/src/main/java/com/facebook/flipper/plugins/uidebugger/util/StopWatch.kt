@@ -21,6 +21,14 @@ class StopWatch() {
   companion object {
 
     fun <T> time(fn: () -> T): Pair<T, Long> {
+
+      val start = System.currentTimeMillis()
+      val result = fn()
+      val elapsed = System.currentTimeMillis() - start
+      return Pair(result, elapsed)
+    }
+
+    suspend fun <T> timeSuspend(fn: suspend () -> T): Pair<T, Long> {
       val start = System.currentTimeMillis()
       val result = fn()
       val elapsed = System.currentTimeMillis() - start

@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
  * This class will throttle calls into a callback. E.g if interval is 500ms and you receive triggers
  * at t=0, 100, 300 400, the callback will only be triggered at t=500
  */
-class Throttler<T>(private val intervalMs: Long, val callback: () -> T) {
+class Throttler<T>(private val intervalMs: Long, val callback: suspend () -> T) {
 
   private val executionScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
   private var throttleJob: Job? = null

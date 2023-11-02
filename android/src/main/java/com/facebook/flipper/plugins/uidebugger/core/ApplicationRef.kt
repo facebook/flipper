@@ -21,7 +21,7 @@ class ApplicationRef(val application: Application) {
   // kinds of custom overlays
   // 2. Dialog fragments
   val rootsResolver: RootViewResolver = RootViewResolver()
-
+  val windowManagerUtility = WindowManagerUtility()
   val activitiesStack: List<Activity>
     get() {
       return ActivityTracker.activitiesStack

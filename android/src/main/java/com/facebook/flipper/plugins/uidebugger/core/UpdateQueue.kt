@@ -113,7 +113,7 @@ class UpdateQueue(val context: UIDContext) {
     if (update.snapshotBitmap != null) {
       val stream = ByteArrayOutputStream()
       val base64Stream = Base64OutputStream(stream, Base64.DEFAULT)
-      update.snapshotBitmap.bitmap?.compress(Bitmap.CompressFormat.PNG, 100, base64Stream)
+      update.snapshotBitmap.bitmap.compress(Bitmap.CompressFormat.PNG, 100, base64Stream)
       snapshot = Snapshot(update.snapshotNode, stream.toString())
       update.snapshotBitmap.readyForReuse()
     }

@@ -10,12 +10,14 @@ package com.facebook.flipper.plugins.uidebugger.core
 import android.annotation.SuppressLint
 import android.os.Build
 import android.view.View
+import com.facebook.flipper.plugins.uidebugger.util.WindowManagerCommon
 import java.lang.reflect.Field
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Modifier
 
 /**
- * Provides access to all root views in an application.
+ * Provides access to all root views in an application, as well as the ability to listen to changes
+ * in root views
  *
  * 95% of the time this is unnecessary and we can operate solely on current Activity's root view as
  * indicated by getWindow().getDecorView(). However in the case of popup windows, menus, and dialogs
@@ -67,15 +69,13 @@ class RootViewResolver {
   private fun initialize() {
 
     initialized = true
-    val accessClass =
-        if (Build.VERSION.SDK_INT > 16) WINDOW_MANAGER_GLOBAL_CLAZZ else WINDOW_MANAGER_IMPL_CLAZZ
-    val instanceMethod = if (Build.VERSION.SDK_INT > 16) GET_GLOBAL_INSTANCE else GET_DEFAULT_IMPL
     try {
-      val clazz = Class.forName(accessClass)
-      val getMethod = clazz.getMethod(instanceMethod)
-      windowManagerObj = getMethod.invoke(null)
 
-      val viewsField: Field = clazz.getDeclaredField(VIEWS_FIELD)
+      val (windowManager, windowManagerClas) =
+          WindowManagerCommon.getGlobalWindowManager() ?: return
+      windowManagerObj = windowManager
+
+      val viewsField: Field = windowManagerClas.getDeclaredField(VIEWS_FIELD)
 
       viewsField.let { vf ->
         vf.isAccessible = true
@@ -98,11 +98,7 @@ class RootViewResolver {
   }
 
   companion object {
-    private const val WINDOW_MANAGER_IMPL_CLAZZ = "android.view.WindowManagerImpl"
-    private const val WINDOW_MANAGER_GLOBAL_CLAZZ = "android.view.WindowManagerGlobal"
     private const val VIEWS_FIELD = "mViews"
-    private const val GET_DEFAULT_IMPL = "getDefault"
-    private const val GET_GLOBAL_INSTANCE = "getInstance"
   }
 
   class ObservableViewArrayList : ArrayList<View>() {

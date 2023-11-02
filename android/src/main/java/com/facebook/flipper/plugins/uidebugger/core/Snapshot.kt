@@ -11,6 +11,7 @@ import android.app.Activity
 import android.graphics.Canvas
 import android.os.Build
 import android.os.Handler
+import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
 import android.view.PixelCopy
@@ -18,19 +19,22 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 interface Snapshotter {
-  fun takeSnapshot(view: View): BitmapPool.ReusableBitmap?
+  suspend fun takeSnapshot(view: View): BitmapPool.ReusableBitmap?
 }
 
 /**
  * Takes a snapshot by redrawing the view into a bitmap backed canvas, Since this is software
  * rendering there can be discrepancies between the real image and the snapshot:
  * 1. It can be unreliable when snapshotting views that are added directly to window manager
- * 2. It doesnt include certain types of content (video / images)
+ * 2. It doesn't include certain types of content (video / images)
  */
 class CanvasSnapshotter(private val bitmapPool: BitmapPool) : Snapshotter {
-  override fun takeSnapshot(view: View): BitmapPool.ReusableBitmap? {
+  override suspend fun takeSnapshot(view: View): BitmapPool.ReusableBitmap? {
 
     if (view.width <= 0 || view.height <= 0) {
       return null
@@ -54,8 +58,9 @@ class PixelCopySnapshotter(
     private val applicationRef: ApplicationRef,
     private val fallback: Snapshotter
 ) : Snapshotter {
+  private var handler = Handler(Looper.getMainLooper())
 
-  override fun takeSnapshot(view: View): BitmapPool.ReusableBitmap? {
+  override suspend fun takeSnapshot(view: View): BitmapPool.ReusableBitmap? {
 
     if (view.width <= 0 || view.height <= 0) {
       return null
@@ -63,34 +68,58 @@ class PixelCopySnapshotter(
 
     val bitmap = bitmapPool.getBitmap(view.width, view.height)
     try {
-
-      val decorViewToActivity: Map<View, Activity> =
-          applicationRef.activitiesStack.toList().associateBy { it.window.decorView }
-
-      val activity = decorViewToActivity[view]
-
-      // if this view belongs to an activity prefer this as it doesn't require private api hacks
-      if (activity != null) {
-        PixelCopy.request(
-            activity.window,
-            bitmap.bitmap,
-            {
-              // no-op this this api is actually synchronous despite how it looks
-            },
-            Handler(Looper.getMainLooper()))
+      if (tryCopyViaActivityWindow(view, bitmap)) {
+        // if this view belongs to an activity prefer this as it doesn't require private api hacks
+        return bitmap
+      } else if (tryCopyViaInternalSurface(view, bitmap)) {
         return bitmap
       }
     } catch (e: OutOfMemoryError) {
       Log.e(LogTag, "OOM when taking snapshot")
-      null
     } catch (e: Exception) {
       // there was some problem with the pixel copy, fall back to canvas impl
       Log.e(LogTag, "Exception when taking snapshot", e)
-      Log.i(LogTag, "Using fallback snapshot", e)
-      bitmap.readyForReuse()
-      fallback.takeSnapshot(view)
     }
 
-    return null
+    // something went wrong, use fallback
+    Log.i(LogTag, "Using fallback snapshot method")
+    bitmap.readyForReuse()
+    return fallback.takeSnapshot(view)
+  }
+
+  private suspend fun tryCopyViaActivityWindow(
+      view: View,
+      bitmap: BitmapPool.ReusableBitmap
+  ): Boolean {
+
+    val decorViewToActivity: Map<View, Activity> =
+        applicationRef.activitiesStack.toList().associateBy { it.window.decorView }
+
+    val activityForDecorView = decorViewToActivity[view] ?: return false
+
+    return suspendCoroutine { continuation ->
+      PixelCopy.request(
+          activityForDecorView.window, bitmap.bitmap, pixelCopyCallback(continuation), handler)
+    }
+  }
+
+  private suspend fun tryCopyViaInternalSurface(
+      view: View,
+      bitmap: BitmapPool.ReusableBitmap
+  ): Boolean {
+    val surface = applicationRef.windowManagerUtility.surfaceForRootView(view) ?: return false
+
+    return suspendCoroutine { continuation ->
+      PixelCopy.request(surface, bitmap.bitmap, pixelCopyCallback(continuation), handler)
+    }
+  }
+
+  private fun pixelCopyCallback(continuation: Continuation<Boolean>) = { result: Int ->
+    if (result == PixelCopy.SUCCESS) {
+      continuation.resume(true)
+    } else {
+      Log.w(LogTag, "Pixel copy failed, code $result")
+      continuation.resume(false)
+    }
   }
 }
