@@ -110,6 +110,7 @@ export async function startServer(
 }> {
   setTimeout(() => {
     if (!isReady && isProduction()) {
+      tracker.track('server-ready-timeout', {timeout: timeoutSeconds});
       console.error(
         `[flipper-server] Unable to become ready within ${timeoutSeconds} seconds, exit`,
       );
