@@ -11,15 +11,30 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import com.facebook.flipper.plugins.uidebugger.LogTag
+import com.facebook.flipper.plugins.uidebugger.descriptors.ApplicationRefDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.ViewDescriptor
 import com.facebook.flipper.plugins.uidebugger.util.StopWatch
 import com.facebook.flipper.plugins.uidebugger.util.Throttler
 import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
 
 /**
- * The responsibility of this class is to find the top most decor view and add a pre draw observer
- * to it This predraw observer triggers a full traversal of the UI. There should only ever be one
- * active predraw listener at once
+ * The UIDebugger does 3 things:
+ * 1. Observe changes
+ * 2. Traverse UI hierarchy, gathering tree
+ * 3. Generate snapshot
+ *
+ * All 3 of these stages need to work on the same view else there will be major inconsistencies
+ *
+ * The first responsibility of this class is to track changes to root views, find the top most decor
+ * view and add a pre draw observer to it. There should only ever be one active predraw listener at
+ * once.
+ *
+ * This pre-draw observer triggers a full traversal of the UI, the traversal of the hierarchy might
+ * skip some branches (active child) so its essential that both the active child decision and top
+ * root decision match.
+ *
+ * The observer also triggers a snapshot, again its essential the same root view as we do for
+ * traversal and observation
  */
 class DecorViewTracker(private val context: UIDContext, private val snapshotter: Snapshotter) {
 
@@ -42,11 +57,13 @@ class DecorViewTracker(private val context: UIDContext, private val snapshotter:
             // remove predraw listen from current view as its going away or will be covered
             currentDecorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
 
-            // setup new listener on top most view
-            val topView = rootViews.lastOrNull()
-            val throttler = Throttler(500) { currentDecorView?.let { traverseSnapshotAndSend(it) } }
+            // setup new listener on top most view, that will be the active child in traversal
+            val topView = rootViews.lastOrNull(ApplicationRefDescriptor::isUsefulRoot)
 
             if (topView != null) {
+              val throttler =
+                  Throttler(500) { currentDecorView?.let { traverseSnapshotAndSend(it) } }
+
               preDrawListener =
                   ViewTreeObserver.OnPreDrawListener {
                     throttler.trigger()
@@ -60,8 +77,6 @@ class DecorViewTracker(private val context: UIDContext, private val snapshotter:
 
               // schedule traversal immediately when we detect a new decor view
               throttler.trigger()
-            } else {
-              Log.i(LogTag, "Stack is empty")
             }
           }
         }

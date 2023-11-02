@@ -18,15 +18,7 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
 
   override fun onGetActiveChild(node: ApplicationRef): Any? {
     val children = onGetChildren(node)
-    if (children.isNotEmpty()) {
-      val last = children.last()
-      if (last.javaClass.simpleName.contains("OverlayHandlerView")) {
-        return children.getOrNull(children.size - 2)
-      }
-      return last
-    }
-
-    return null
+    return children.lastOrNull(ApplicationRefDescriptor::isUsefulRoot)
   }
 
   override fun onGetBounds(node: ApplicationRef): Bounds = DisplayMetrics.getDisplayBounds()
@@ -48,19 +40,30 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
 
     for (root in activeRoots) {
       // if there is an activity for this root view use that,
-      // if not just return the mystery floating decor view
+      // if not just return the root view that was added directly to the window manager
       val activity = decorViewToActivity[root]
       if (activity != null) {
         children.add(activity)
       } else {
-        if (root is ViewGroup && root.childCount > 0) {
-          // sometimes there is a root view on top that has no children and we dont want to add
-          // these as they will become active
-          children.add(root)
-        }
+        children.add(root)
       }
     }
 
     return children
+  }
+
+  fun isUsefulRoot(obj: Any): Boolean {
+    if (obj is Activity) {
+      return true
+    }
+    val isFoldableOverlayInfraView = javaClass.simpleName.contains("OverlayHandlerView")
+    return if (isFoldableOverlayInfraView) {
+      false
+    } else if (obj is ViewGroup) {
+      // sometimes there is a root view on top that has no children that isn't useful to inspect
+      obj.childCount > 0
+    } else {
+      false
+    }
   }
 }
