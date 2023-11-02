@@ -104,8 +104,8 @@ class PixelCopySnapshotter(
       bitmap: BitmapPool.ReusableBitmap
   ): Boolean {
 
-    val decorViewToActivity: Map<View, Activity> =
-        applicationRef.activitiesStack.toList().associateBy { it.window.decorView }
+    
+    val decorViewToActivity: Map<View, Activity> = ActivityTracker.decorViewToActivityMap     
 
     val activityForDecorView = decorViewToActivity[view] ?: return false
 

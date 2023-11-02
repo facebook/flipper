@@ -12,6 +12,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import java.lang.ref.WeakReference
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -101,6 +102,11 @@ object ActivityTracker : Application.ActivityLifecycleCallbacks {
         }
       }
       return stack
+    }
+
+  val decorViewToActivityMap: Map<View, Activity>
+    get() {
+      return activitiesStack.toList().associateBy { it.window.decorView }
     }
 
   /**

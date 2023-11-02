@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.uidebugger.core
 
+import android.app.Activity
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
@@ -58,7 +59,14 @@ class DecorViewTracker(private val context: UIDContext, private val snapshotter:
             currentDecorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
 
             // setup new listener on top most view, that will be the active child in traversal
-            val topView = rootViews.lastOrNull(ApplicationRefDescriptor::isUsefulRoot)
+
+            val decorViewToActivity: Map<View, Activity> = ActivityTracker.decorViewToActivityMap
+
+            val topView =
+                rootViews.lastOrNull { view ->
+                  val activityOrView = decorViewToActivity[view] ?: view
+                  ApplicationRefDescriptor.isUsefulRoot(activityOrView)
+                }
 
             if (topView != null) {
               val throttler =

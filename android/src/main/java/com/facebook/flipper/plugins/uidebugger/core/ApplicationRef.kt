@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.core
 
 import android.app.Activity
 import android.app.Application
+import android.view.View
 
 class ApplicationRef(val application: Application) {
   init {
