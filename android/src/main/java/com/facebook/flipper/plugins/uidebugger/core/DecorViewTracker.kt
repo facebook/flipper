@@ -43,7 +43,6 @@ class DecorViewTracker(private val context: UIDContext, private val snapshotter:
   private val mStopWatch = StopWatch()
 
   fun start() {
-    Log.i(LogTag, "Subscribing activity / root view changes")
 
     val applicationRef = context.applicationRef
 
@@ -55,6 +54,7 @@ class DecorViewTracker(private val context: UIDContext, private val snapshotter:
 
           override fun onRootViewsChanged(rootViews: List<View>) {
             // remove predraw listen from current view as its going away or will be covered
+            Log.i(LogTag, "Removing pre draw listener from ${currentDecorView?.objectIdentity()}")
             currentDecorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
 
             // setup new listener on top most view, that will be the active child in traversal
@@ -85,8 +85,9 @@ class DecorViewTracker(private val context: UIDContext, private val snapshotter:
     // On subscribe, trigger a traversal on whatever roots we have
     rootViewListener.onRootViewsChanged(applicationRef.rootsResolver.rootViews())
 
-    Log.i(LogTag, "${context.applicationRef.rootsResolver.rootViews().size} root views")
-    Log.i(LogTag, "${context.applicationRef.activitiesStack.size} activities")
+    Log.i(
+        LogTag,
+        "Starting tracking root views, currently ${context.applicationRef.rootsResolver.rootViews().size} root views")
   }
 
   fun stop() {

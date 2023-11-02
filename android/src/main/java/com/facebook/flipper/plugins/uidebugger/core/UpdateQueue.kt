@@ -131,8 +131,6 @@ class UpdateQueue(val context: UIDContext) {
     val (_, sendTimeMs) =
         StopWatch.time { context.connectionRef.connection?.send(FrameScanEvent.name, serialized) }
 
-    Log.i(LogTag, "Sent frame with nodes  ${nodes.size}")
-
     // Note about payload size:
     // Payload size is an approximation as it assumes all characters
     // are ASCII encodable, this should be true for most of the payload content.

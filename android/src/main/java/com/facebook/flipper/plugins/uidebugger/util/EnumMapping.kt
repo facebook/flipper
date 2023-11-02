@@ -7,8 +7,6 @@
 
 package com.facebook.flipper.plugins.uidebugger.util
 
-import android.util.Log
-import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 
 // Maintains 2 way mapping between some enum value and a readable string representation
@@ -19,9 +17,6 @@ open class EnumMapping<T>(private val mapping: Map<String, T>) {
     return if (entry != null) {
       entry.key
     } else {
-      Log.v(
-          LogTag,
-          "Could not convert enum value ${enumValue.toString()} to string, known values ${mapping.entries}")
       NoMapping
     }
   }
