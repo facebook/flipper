@@ -313,6 +313,11 @@ async function launch() {
     console.info(`[flipper-server] Go to: ${chalk.blue(url.toString())}`);
 
     open(url.toString(), {app: {name: open.apps.chrome}});
+
+    tracker.track('server-open-ui', {
+      browser: true,
+      hasToken: token?.length != 0,
+    });
   };
 
   if (argv.bundler) {
@@ -320,6 +325,10 @@ async function launch() {
   } else {
     const path = await findInstallation();
     if (path) {
+      tracker.track('server-open-ui', {
+        browser: false,
+        hasToken: token?.length != 0,
+      });
       open(path);
     } else {
       await openInBrowser();
