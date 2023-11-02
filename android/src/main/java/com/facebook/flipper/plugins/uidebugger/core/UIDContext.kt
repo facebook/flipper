@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.uidebugger.core
 
 import android.app.Application
+import android.os.Build
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
@@ -32,7 +33,16 @@ class UIDContext(
 ) {
 
   val bitmapPool = BitmapPool()
-  val decorViewTracker = DecorViewTracker(this, CanvasSnapshotter(bitmapPool))
+  private val canvasSnapshotter = CanvasSnapshotter(bitmapPool)
+
+  val snapshotter =
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        PixelCopySnapshotter(bitmapPool, applicationRef, canvasSnapshotter)
+      } else {
+        canvasSnapshotter
+      }
+
+  val decorViewTracker = DecorViewTracker(this, snapshotter)
   val updateQueue = UpdateQueue(this)
   val layoutTraversal: LayoutTraversal = LayoutTraversal(this)
 

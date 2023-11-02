@@ -10,7 +10,6 @@ package com.facebook.flipper.plugins.uidebugger.common
 import android.graphics.Bitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /** BitmapPool is intended to be used on the main thread. In other words, it is not thread-safe. */
 class BitmapPool(private val config: Bitmap.Config = Bitmap.Config.RGB_565) {
@@ -57,7 +56,7 @@ class BitmapPool(private val config: Bitmap.Config = Bitmap.Config.RGB_565) {
     override fun readyForReuse() {
       val key = generateKey(bitmap.width, bitmap.height)
 
-      mainScope.launch {
+      synchronized(this@BitmapPool) {
         if (isRecycled) {
           bitmap.recycle()
         } else {

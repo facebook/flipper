@@ -44,7 +44,7 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
     val activeRoots = node.rootsResolver.rootViews()
 
     val decorViewToActivity: Map<View, Activity> =
-        node.activitiesStack.toList().map { it.window.decorView to it }.toMap()
+        node.activitiesStack.toList().associateBy { it.window.decorView }
 
     for (root in activeRoots) {
       // if there is an activity for this root view use that,
