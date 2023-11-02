@@ -140,7 +140,7 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
     }
     return tags
   }
-  
+
   override fun getInlineAttributes(node: DebugComponent): Map<String, String> {
     val attributes = mutableMapOf<String, String>()
     val key = node.key
