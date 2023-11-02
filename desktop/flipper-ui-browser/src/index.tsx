@@ -28,6 +28,16 @@ let cachedDeepLinkURL: string | undefined;
 const logger = initLogger();
 
 async function start() {
+  /**
+   * The following is used to ensure only one instance of Flipper is running at a time.
+   * The event will not be fired for the current tab.
+   */
+  window.addEventListener('storage', function (event) {
+    if (event.key === 'flipper-kill-window') {
+      window.close();
+    }
+  });
+
   // @ts-ignore
   electronRequire = function (path: string) {
     console.error(
@@ -142,6 +152,12 @@ async function start() {
   // eslint-disable-next-line import/no-commonjs
   require('flipper-ui-core').startFlipperDesktop(flipperServer);
   window.flipperHideMessage?.();
+
+  /**
+   * At this stage, the current client has established a connection with the server.
+   * So, it is safe to 'set' into local storage so that other clients close.
+   */
+  localStorage.setItem('flipper-kill-window', Date.now().toString());
 
   getLogger().info('[flipper-client][ui-browser] UI initialised');
   logger.track('success-rate', 'flipper-ui-browser-started', {value: 1});
