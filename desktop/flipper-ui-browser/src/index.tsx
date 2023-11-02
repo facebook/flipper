@@ -15,7 +15,6 @@ import {
 import {init as initLogger} from './fb-stubs/Logger';
 import {initializeRenderHost} from './initializeRenderHost';
 import {createFlipperServer, FlipperServerState} from 'flipper-server-client';
-import {isPWA} from 'flipper-ui-core';
 
 const loadingContainer = document.getElementById('loading');
 if (loadingContainer) {
@@ -168,7 +167,7 @@ start().catch((e) => {
   logger.track('success-rate', 'flipper-ui-browser-started', {
     value: 0,
     error: getStringFromErrorLike(e),
-    pwa: isPWA(),
+    pwa: window.matchMedia('(display-mode: standalone)').matches,
   });
   window.flipperShowMessage?.('Failed to start UI with error: ' + e);
 });

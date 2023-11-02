@@ -12,7 +12,6 @@ import {Image, Modal, Button} from 'antd';
 import {getFlipperLib, Layout, _NuxManagerContext} from 'flipper-plugin';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import isProduction from '../utils/isProduction';
-import {isPWA} from '../utils/pwa';
 
 type Props = {
   onHide: () => void;
@@ -56,7 +55,7 @@ export function shouldShowPWAInstallationWizard(): boolean {
     return false;
   }
 
-  if (isPWA()) {
+  if (window.matchMedia('(display-mode: standalone)').matches) {
     tracker.track('pwa-installation-wizard-should-show', {
       show: false,
       reason: 'Display mode is standalone, seems is already running as PWA',
