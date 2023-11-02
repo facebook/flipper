@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
-import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
@@ -57,13 +56,6 @@ interface NodeDescriptor<T> {
 
   /** The children this node exposes in the inspector. */
   fun getChildren(node: T): List<Any>
-
-  /**
-   * Get a snapshot of the node. Bitmaps are not cheap to create, so accept one as an optional
-   * parameter. If a bitmap is provided, it will be used by the canvas to draw on it. Otherwise, a
-   * bitmap will be created.
-   */
-  fun getSnapshot(node: T, bitmap: Bitmap?): Bitmap? = null
 
   /**
    * If you have overlapping children this indicates which child is active / on top, we will only

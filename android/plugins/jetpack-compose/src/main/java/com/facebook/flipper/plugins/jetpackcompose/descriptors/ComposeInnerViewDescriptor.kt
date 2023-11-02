@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.jetpackcompose.descriptors
 
-import android.graphics.Bitmap
 import android.view.ViewGroup
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeInnerViewNode
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
@@ -47,13 +46,6 @@ object ComposeInnerViewDescriptor : NodeDescriptor<ComposeInnerViewNode> {
       return ViewGroupDescriptor.getChildren(node.view)
     }
     return ViewDescriptor.getChildren(node.view)
-  }
-
-  override fun getSnapshot(node: ComposeInnerViewNode, bitmap: Bitmap?): Bitmap? {
-    if (node.view is ViewGroup) {
-      return ViewGroupDescriptor.getSnapshot(node.view, bitmap)
-    }
-    return ViewDescriptor.getSnapshot(node.view, bitmap)
   }
 
   override fun getActiveChild(node: ComposeInnerViewNode): Any? {

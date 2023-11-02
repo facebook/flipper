@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
-import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
@@ -132,15 +131,6 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
    * own section
    */
   open fun onGetAttributes(node: T, attributeSections: MutableMap<MetadataId, InspectableObject>) {}
-
-  /** Get a snapshot of the node. */
-  final override fun getSnapshot(node: T, bitmap: Bitmap?): Bitmap? {
-    return onGetSnapshot(node, bitmap) ?: mSuper?.onGetSnapshot(node, bitmap)
-  }
-
-  open fun onGetSnapshot(node: T, bitmap: Bitmap?): Bitmap? {
-    return null
-  }
 
   final override fun getInlineAttributes(node: T): Map<String, String> {
 

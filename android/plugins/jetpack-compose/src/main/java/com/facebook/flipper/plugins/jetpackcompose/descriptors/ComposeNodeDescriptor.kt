@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.jetpackcompose.descriptors
 
-import android.graphics.Bitmap
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
 import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
@@ -129,8 +128,6 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
   }
 
   override fun getQualifiedName(node: ComposeNode): String = node.inspectorNode.name
-
-  override fun getSnapshot(node: ComposeNode, bitmap: Bitmap?): Bitmap? = null
 
   override fun getActiveChild(node: ComposeNode): Any? = null
 

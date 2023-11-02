@@ -31,11 +31,10 @@ class UIDContext(
     private val pendingFrameworkEvents: MutableList<FrameworkEvent>
 ) {
 
-  val decorViewTracker = DecorViewTracker(this)
+  val bitmapPool = BitmapPool()
+  val decorViewTracker = DecorViewTracker(this, CanvasSnapshotter(bitmapPool))
   val updateQueue = UpdateQueue(this)
   val layoutTraversal: LayoutTraversal = LayoutTraversal(this)
-
-  val bitmapPool = BitmapPool()
 
   fun addFrameworkEvent(frameworkEvent: FrameworkEvent) {
     synchronized(pendingFrameworkEvents) { pendingFrameworkEvents.add(frameworkEvent) }

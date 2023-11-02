@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
-import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
@@ -42,7 +41,4 @@ object OffsetChildDescriptor : NodeDescriptor<OffsetChild> {
       node.descriptor.getAttributes(node.child)
 
   override fun getTags(node: OffsetChild): Set<String> = node.descriptor.getTags(node.child)
-
-  override fun getSnapshot(node: OffsetChild, bitmap: Bitmap?): Bitmap? =
-      node.descriptor.getSnapshot(node.child, bitmap)
 }

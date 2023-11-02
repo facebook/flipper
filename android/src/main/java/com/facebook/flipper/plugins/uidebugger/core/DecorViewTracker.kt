@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import com.facebook.flipper.plugins.uidebugger.descriptors.ViewDescriptor
 import com.facebook.flipper.plugins.uidebugger.util.StopWatch
 import com.facebook.flipper.plugins.uidebugger.util.Throttler
@@ -22,7 +21,7 @@ import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
  * to it This predraw observer triggers a full traversal of the UI. There should only ever be one
  * active predraw listener at once
  */
-class DecorViewTracker(val context: UIDContext) {
+class DecorViewTracker(private val context: UIDContext, private val snapshotter: Snapshotter) {
 
   private var currentDecorView: View? = null
   private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
@@ -88,18 +87,7 @@ class DecorViewTracker(val context: UIDContext) {
     val (nodes, traversalTime) =
         StopWatch.time { context.layoutTraversal.traverse(context.applicationRef) }
 
-    mStopWatch.start()
-    var snapshotBitmap: BitmapPool.ReusableBitmap? = null
-    if (decorView.width > 0 && decorView.height > 0) {
-      snapshotBitmap = context.bitmapPool.getBitmap(decorView.width, decorView.height)
-      context.bitmapPool.getBitmap(decorView.width, decorView.height)
-      Log.i(
-          LogTag,
-          "Snapshotting view ${ViewDescriptor.getId(decorView)}",
-      )
-      ViewDescriptor.getSnapshot(decorView, snapshotBitmap.bitmap)
-    }
-    val snapshotTime = mStopWatch.stop()
+    val (reusableBitmap, snapshotMs) = StopWatch.time { snapshotter.takeSnapshot(decorView) }
 
     context.updateQueue.enqueueUpdate(
         Update(
@@ -107,8 +95,8 @@ class DecorViewTracker(val context: UIDContext) {
             nodes,
             startTimestamp,
             traversalTime,
-            snapshotTime,
+            snapshotMs,
             System.currentTimeMillis(),
-            snapshotBitmap))
+            reusableBitmap))
   }
 }
