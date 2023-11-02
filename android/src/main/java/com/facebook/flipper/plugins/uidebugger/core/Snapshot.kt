@@ -55,17 +55,22 @@ class ModernPixelCopySnapshotter(
 
   override suspend fun takeSnapshot(view: View): BitmapPool.ReusableBitmap? {
 
-    return SnapshotCommon.doSnapshotWithErrorHandling(bitmapPool, view, fallback) { reusableBitmap
-      ->
-      suspendCoroutine { continuation ->
-        // Since android U this api is actually async
-        val request =
-            PixelCopy.Request.Builder.ofWindow(view)
-                .setDestinationBitmap(reusableBitmap.bitmap)
-                .build()
-        PixelCopy.request(
-            request, { handler.post(it) }, { continuation.resume(it.status == PixelCopy.SUCCESS) })
+    return if (view.isHardwareAccelerated) {
+      SnapshotCommon.doSnapshotWithErrorHandling(bitmapPool, view, fallback) { reusableBitmap ->
+        suspendCoroutine { continuation ->
+          // Since android U this api is actually async
+          val request =
+              PixelCopy.Request.Builder.ofWindow(view)
+                  .setDestinationBitmap(reusableBitmap.bitmap)
+                  .build()
+          PixelCopy.request(
+              request,
+              { handler.post(it) },
+              { continuation.resume(it.status == PixelCopy.SUCCESS) })
+        }
       }
+    } else {
+      fallback.takeSnapshot(view)
     }
   }
 }
@@ -85,8 +90,12 @@ class PixelCopySnapshotter(
 
   override suspend fun takeSnapshot(view: View): BitmapPool.ReusableBitmap? {
 
-    return SnapshotCommon.doSnapshotWithErrorHandling(bitmapPool, view, fallback) {
-      tryCopyViaActivityWindow(view, it) || tryCopyViaInternalSurface(view, it)
+    return if (view.isHardwareAccelerated) {
+      SnapshotCommon.doSnapshotWithErrorHandling(bitmapPool, view, fallback) {
+        tryCopyViaActivityWindow(view, it) || tryCopyViaInternalSurface(view, it)
+      }
+    } else {
+      fallback.takeSnapshot(view)
     }
   }
 
