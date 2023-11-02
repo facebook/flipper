@@ -29,6 +29,7 @@ import {Server} from 'net';
 import {serializeError} from 'serialize-error';
 import {WSCloseCode} from '../utils/WSCloseCode';
 import {recorder} from '../recorder';
+import {tracker} from '../tracker';
 
 export interface ConnectionCtx {
   clientQuery?: ClientQuery;
@@ -63,11 +64,11 @@ class ServerWebSocket extends ServerWebSocketBase {
         // We do not need to listen to http server's `error` because it is propagated to WS
         // https://github.com/websockets/ws/blob/a3a22e4ed39c1a3be8e727e9c630dd440edc61dd/lib/websocket-server.js#L109
         const onConnectionError = (error: Error) => {
+          const message = JSON.stringify(serializeError(error));
+          tracker.track('server-ws-server-error', {port, error: message});
           reject(
             new Error(
-              `Unable to start server at port ${port} due to ${JSON.stringify(
-                serializeError(error),
-              )}`,
+              `Unable to start server at port ${port} due to ${message}`,
             ),
           );
         };
