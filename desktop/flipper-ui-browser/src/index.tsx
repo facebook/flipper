@@ -97,11 +97,18 @@ async function start() {
 
   getLogger().info('[flipper-client][ui-browser] Create WS client');
 
+  let lastStateChangeMS = performance.now();
   const flipperServer = await createFlipperServer(
     location.hostname,
     parseInt(location.port, 10),
     tokenProvider,
     (state: FlipperServerState) => {
+      const timestamp = performance.now();
+      getLogger().track('usage', 'browser-server-state-changed', {
+        state,
+        timeElapsedMS: timestamp - lastStateChangeMS,
+      });
+      lastStateChangeMS = timestamp;
       switch (state) {
         case FlipperServerState.CONNECTING:
           getLogger().info('[flipper-client] Connecting to server');
