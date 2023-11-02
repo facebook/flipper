@@ -53,7 +53,6 @@ class TraversalError(
 @kotlinx.serialization.Serializable
 class PerfStatsEvent(
     val txId: Long,
-    val observerType: String,
     val nodesCount: Int,
     val start: Long,
     val traversalMS: Long,

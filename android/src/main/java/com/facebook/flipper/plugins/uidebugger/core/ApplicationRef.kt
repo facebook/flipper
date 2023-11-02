@@ -17,7 +17,8 @@ class ApplicationRef(val application: Application) {
 
   // the root view resolver will contain all root views 100% It is needed for 2 cases:
   // 1. In some cases an activity will not be picked up by the activity tracker,
-  // the root view resolver will at least find the decor view
+  // the root view resolver will at least find the decor view, this is the case for various
+  // kinds of custom overlays
   // 2. Dialog fragments
   val rootsResolver: RootViewResolver = RootViewResolver()
 

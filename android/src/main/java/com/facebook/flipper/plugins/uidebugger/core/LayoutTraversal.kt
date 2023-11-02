@@ -5,11 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.plugins.uidebugger.traversal
+package com.facebook.flipper.plugins.uidebugger.core
 
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.model.Node
@@ -23,21 +22,20 @@ import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
  * - The first item in the pair is the visited nodes.
  * - The second item are any observable roots discovered.
  */
-class PartialLayoutTraversal(
+class LayoutTraversal(
     private val context: UIDContext,
 ) {
 
   @Suppress("unchecked_cast")
   private fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
 
-  fun traverse(root: Any, parentId: Id?): Pair<List<MaybeDeferred<Node>>, List<Pair<Any, Id?>>> {
+  fun traverse(root: Any): MutableList<MaybeDeferred<Node>> {
 
     val visited = mutableListOf<MaybeDeferred<Node>>()
-    val observableRoots = mutableListOf<Pair<Any, Id?>>()
 
     // cur and parent Id
     val stack = mutableListOf<Pair<Any, Id?>>()
-    stack.add(Pair(root, parentId))
+    stack.add(Pair(root, null))
 
     val shallow = mutableSetOf<Any>()
 
@@ -45,11 +43,6 @@ class PartialLayoutTraversal(
       val (node, parentId) = stack.removeLast()
 
       try {
-        // If we encounter a node that has it own observer, don't traverse
-        if (node != root && context.observerFactory.hasObserverFor(node)) {
-          observableRoots.add((node to parentId))
-          continue
-        }
 
         val descriptor =
             context.descriptorRegister.descriptorForClassUnsafe(node::class.java).asAny()
@@ -126,6 +119,6 @@ class PartialLayoutTraversal(
       }
     }
 
-    return Pair(visited, observableRoots)
+    return visited
   }
 }
