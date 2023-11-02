@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.plugins.uidebugger.common
+package com.facebook.flipper.plugins.uidebugger.util
 
 import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.flipper.plugins.uidebugger.common
+package com.facebook.flipper.plugins.uidebugger.core
 
 import android.graphics.Bitmap
 import kotlinx.coroutines.CoroutineScope

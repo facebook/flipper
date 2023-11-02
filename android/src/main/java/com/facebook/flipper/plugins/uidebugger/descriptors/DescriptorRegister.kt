@@ -16,8 +16,8 @@ import android.view.Window
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.viewpager.widget.ViewPager
-import com.facebook.flipper.plugins.uidebugger.common.UIDebuggerException
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
+import com.facebook.flipper.plugins.uidebugger.util.UIDebuggerException
 
 class DescriptorRegister {
   private val register: MutableMap<Class<*>, NodeDescriptor<*>> = HashMap()

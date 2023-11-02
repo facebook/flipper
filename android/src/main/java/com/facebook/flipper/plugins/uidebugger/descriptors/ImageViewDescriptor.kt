@@ -9,12 +9,12 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
-import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
-import com.facebook.flipper.plugins.uidebugger.common.enumMapping
-import com.facebook.flipper.plugins.uidebugger.common.enumToInspectableSet
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
+import com.facebook.flipper.plugins.uidebugger.util.EnumMapping
+import com.facebook.flipper.plugins.uidebugger.util.enumMapping
+import com.facebook.flipper.plugins.uidebugger.util.enumToInspectableSet
 
 object ImageViewDescriptor : ChainedDescriptor<ImageView>() {
 

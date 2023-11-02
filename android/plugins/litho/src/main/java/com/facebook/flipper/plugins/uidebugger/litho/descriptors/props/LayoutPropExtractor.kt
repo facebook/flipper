@@ -9,9 +9,9 @@ package com.facebook.flipper.plugins.uidebugger.litho.descriptors.props
 
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import com.facebook.flipper.plugins.uidebugger.common.enumToInspectableSet
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.*
+import com.facebook.flipper.plugins.uidebugger.util.enumToInspectableSet
 import com.facebook.litho.DebugComponent
 import com.facebook.yoga.*
 

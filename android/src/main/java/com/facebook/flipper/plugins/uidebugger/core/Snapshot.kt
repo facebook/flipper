@@ -17,7 +17,6 @@ import android.view.PixelCopy
 import android.view.View
 import androidx.annotation.RequiresApi
 import com.facebook.flipper.plugins.uidebugger.LogTag
-import com.facebook.flipper.plugins.uidebugger.common.BitmapPool
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
