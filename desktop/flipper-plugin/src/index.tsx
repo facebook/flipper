@@ -37,7 +37,9 @@ export {
 export {Sidebar as _Sidebar} from './ui/Sidebar';
 export {DetailSidebar} from './ui/DetailSidebar';
 export {Toolbar} from './ui/Toolbar';
+
 export {MasterDetail} from './ui/MasterDetail';
+export {MasterDetail as MasterDetailLegacy} from './ui/MasterDetail';
 export {MasterDetailWithPowerSearch as _MasterDetailWithPowerSearch} from './ui/MasterDetailWithPowerSearch';
 export {CodeBlock} from './ui/CodeBlock';
 
@@ -58,7 +60,12 @@ export {DataFormatter} from './ui/DataFormatter';
 export {useLogger, _LoggerContext} from './utils/useLogger';
 
 export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
+export {
+  DataTable as DataTableLegacy,
+  DataTableColumn as DataTableColumnLegacy,
+} from './ui/data-table/DataTable';
 export {DataTableManager} from './ui/data-table/DataTableManager';
+export {DataTableManager as DataTableManagerLegacy} from './ui/data-table/DataTableManager';
 export {
   DataTable as _DataTableWithPowerSearch,
   DataTableColumn as _DataTableColumnWithPowerSearch,
