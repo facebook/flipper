@@ -7,7 +7,11 @@
  * @format
  */
 
-import {Atom, DataTableManager, getFlipperLib} from 'flipper-plugin';
+import {
+  Atom,
+  DataTableManagerLegacy as DataTableManager,
+  getFlipperLib,
+} from 'flipper-plugin';
 import {createContext} from 'react';
 import {Header, Request} from '../types';
 
