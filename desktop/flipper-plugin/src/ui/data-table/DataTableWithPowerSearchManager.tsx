@@ -15,6 +15,7 @@ import produce, {castDraft, immerable, original} from 'immer';
 import {DataSource, getFlipperLib, _DataSourceView} from 'flipper-plugin-core';
 import {SearchExpressionTerm} from '../PowerSearch';
 import {PowerSearchOperatorProcessorConfig} from './DataTableDefaultPowerSearchOperators';
+import {DataTableManager as DataTableManagerLegacy} from './DataTableManager';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting<T = any> = {
@@ -259,6 +260,16 @@ export type DataTableManager<T> = {
   stateRef: RefObject<Readonly<DataManagerState<T>>>;
   toggleSideBySide(): void;
   setFilterExceptions(exceptions: string[] | undefined): void;
+} & Omit<DataTableManagerLegacy<T>, 'stateRef'>;
+
+const showPowerSearchMigrationWarning = () => {
+  console.warn(
+    'Flipper is migrating to the new power search (see https://fburl.com/workplace/eewxik3o). Your plugin uses tableManagerRef which is partially incompatible with the new API. THIS API CALL DOES NOTHING AT THIS POINT! Please, migrate to the new API by explicitly using _MasterDetailWithPowerSearch, _DataTableWithPowerSearch, _DataTableWithPowerSearchManager (see https://fburl.com/code/dpawdt69). As a temporary workaround, feel free to use legacy MasterDetailLegacy, DataTableLegacy, DataTableManagerLegacy components to force the usage of the old search.',
+  );
+  getFlipperLib().logger.track(
+    'usage',
+    'data-table:filter:power-search-legacy-api-access',
+  );
 };
 
 export function createDataTableManager<T>(
@@ -313,6 +324,30 @@ export function createDataTableManager<T>(
     },
     dataView,
     stateRef,
+    showSearchDropdown() {
+      showPowerSearchMigrationWarning();
+    },
+    setSearchValue() {
+      showPowerSearchMigrationWarning();
+    },
+    setSearchHighlightColor() {
+      showPowerSearchMigrationWarning();
+    },
+    setShowNumberedHistory() {
+      showPowerSearchMigrationWarning();
+    },
+    toggleSearchValue() {
+      showPowerSearchMigrationWarning();
+    },
+    toggleHighlightSearch() {
+      showPowerSearchMigrationWarning();
+    },
+    addColumnFilter() {
+      showPowerSearchMigrationWarning();
+    },
+    removeColumnFilter() {
+      showPowerSearchMigrationWarning();
+    },
   };
 }
 
