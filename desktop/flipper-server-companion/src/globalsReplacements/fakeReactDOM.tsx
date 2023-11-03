@@ -7,6 +7,7 @@
  * @format
  */
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const unstable_batchedUpdates = (cb: () => void) => {
   return cb();
 };
