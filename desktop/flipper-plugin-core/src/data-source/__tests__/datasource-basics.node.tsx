@@ -912,6 +912,13 @@ test('secondary keys - lookup by single key', () => {
     indices: [['id'], ['title'], ['done']],
   });
 
+  expect(ds.secondaryIndicesKeys()).toEqual(['id', 'title', 'done']);
+  expect(ds.getAllIndexValues(['id'])).toEqual([
+    JSON.stringify({id: 'cookie'}),
+    JSON.stringify({id: 'coffee'}),
+    JSON.stringify({id: 'bug'}),
+  ]);
+
   expect(
     ds.getAllRecordsByIndex({
       title: 'eat a cookie',
@@ -938,12 +945,25 @@ test('secondary keys - lookup by single key', () => {
     }),
   ).toEqual(submitBug);
 
+  expect(ds.getAllIndexValues(['id'])).toEqual([
+    JSON.stringify({id: 'cookie'}),
+    JSON.stringify({id: 'coffee'}),
+    JSON.stringify({id: 'bug'}),
+  ]);
+
   ds.delete(0); // eat Cookie
   expect(
     ds.getAllRecordsByIndex({
       title: 'eat a cookie',
     }),
   ).toEqual([cookie2]);
+
+  // We do not remove empty index values (for now)
+  expect(ds.getAllIndexValues(['id'])).toEqual([
+    JSON.stringify({id: 'cookie'}),
+    JSON.stringify({id: 'coffee'}),
+    JSON.stringify({id: 'bug'}),
+  ]);
 
   // replace submit Bug
   const n = {
@@ -972,6 +992,12 @@ test('secondary keys - lookup by single key', () => {
       title: 'eat a cookie',
     }),
   ).toEqual([cookie2]);
+
+  expect(ds.getAllIndexValues(['id'])).toEqual([
+    JSON.stringify({id: 'cookie'}),
+    JSON.stringify({id: 'coffee'}),
+    JSON.stringify({id: 'bug'}),
+  ]);
 });
 
 test('secondary keys - lookup by combined keys', () => {
@@ -982,6 +1008,13 @@ test('secondary keys - lookup by combined keys', () => {
       ['title', 'done'],
     ],
   });
+
+  expect(ds.secondaryIndicesKeys()).toEqual(['id:title', 'done:title']);
+  expect(ds.getAllIndexValues(['id', 'title'])).toEqual([
+    JSON.stringify({id: 'cookie', title: 'eat a cookie'}),
+    JSON.stringify({id: 'coffee', title: 'drink coffee'}),
+    JSON.stringify({id: 'bug', title: 'submit a bug'}),
+  ]);
 
   expect(
     ds.getAllRecordsByIndex({
@@ -1014,6 +1047,13 @@ test('secondary keys - lookup by combined keys', () => {
     }),
   ).toEqual([eatCookie, cookie2]);
 
+  expect(ds.getAllIndexValues(['id', 'title'])).toEqual([
+    JSON.stringify({id: 'cookie', title: 'eat a cookie'}),
+    JSON.stringify({id: 'coffee', title: 'drink coffee'}),
+    JSON.stringify({id: 'bug', title: 'submit a bug'}),
+    JSON.stringify({id: 'cookie2', title: 'eat a cookie'}),
+  ]);
+
   const upsertedCookie = {
     id: 'cookie',
     title: 'eat a cookie',
@@ -1041,6 +1081,16 @@ test('secondary keys - lookup by combined keys', () => {
     }),
   ).toEqual(undefined);
 
+  expect(ds.getAllIndexValues(['id', 'title'])).toEqual([
+    JSON.stringify({id: 'cookie', title: 'eat a cookie'}),
+    JSON.stringify({id: 'coffee', title: 'drink coffee'}),
+    JSON.stringify({id: 'bug', title: 'submit a bug'}),
+    JSON.stringify({id: 'cookie2', title: 'eat a cookie'}),
+  ]);
+
+  const clearSub = jest.fn();
+  ds.addDataListener('clear', clearSub);
+
   ds.clear();
   expect(
     ds.getAllRecordsByIndex({
@@ -1049,6 +1099,12 @@ test('secondary keys - lookup by combined keys', () => {
     }),
   ).toEqual([]);
 
+  expect(ds.getAllIndexValues(['id', 'title'])).toEqual([]);
+  expect(clearSub).toBeCalledTimes(1);
+
+  const newIndexValueSub = jest.fn();
+  ds.addDataListener('siNewIndexValue', newIndexValueSub);
+
   ds.append(cookie2);
   expect(
     ds.getAllRecordsByIndex({
@@ -1056,4 +1112,23 @@ test('secondary keys - lookup by combined keys', () => {
       title: 'eat a cookie',
     }),
   ).toEqual([cookie2]);
+
+  expect(ds.getAllIndexValues(['id', 'title'])).toEqual([
+    JSON.stringify({id: 'cookie2', title: 'eat a cookie'}),
+  ]);
+
+  // Because we have 2 indecies
+  expect(newIndexValueSub).toBeCalledTimes(2);
+  expect(newIndexValueSub).toBeCalledWith({
+    type: 'siNewIndexValue',
+    indexKey: JSON.stringify({id: 'cookie2', title: 'eat a cookie'}),
+    firstOfKind: true,
+    value: cookie2,
+  });
+  expect(newIndexValueSub).toBeCalledWith({
+    type: 'siNewIndexValue',
+    indexKey: JSON.stringify({done: 'true', title: 'eat a cookie'}),
+    firstOfKind: true,
+    value: cookie2,
+  });
 });

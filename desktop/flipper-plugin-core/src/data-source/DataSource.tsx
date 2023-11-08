@@ -46,12 +46,23 @@ type ShiftEvent<T> = {
   entries: Entry<T>[];
   amount: number;
 };
+type SINewIndexValueEvent<T> = {
+  type: 'siNewIndexValue';
+  indexKey: string;
+  value: T;
+  firstOfKind: boolean;
+};
+type ClearEvent = {
+  type: 'clear';
+};
 
 type DataEvent<T> =
   | AppendEvent<T>
   | UpdateEvent<T>
   | RemoveEvent<T>
-  | ShiftEvent<T>;
+  | ShiftEvent<T>
+  | SINewIndexValueEvent<T>
+  | ClearEvent;
 
 type Entry<T> = {
   value: T;
@@ -181,7 +192,7 @@ export class DataSource<T extends any, KeyType = never> {
     [viewId: string]: DataSourceView<T, KeyType>;
   };
 
-  public readonly outputEventEmitter = new EventEmitter();
+  private readonly outputEventEmitter = new EventEmitter();
 
   constructor(
     keyAttribute: keyof T | undefined,
@@ -260,6 +271,10 @@ export class DataSource<T extends any, KeyType = never> {
         return this;
       },
     };
+  }
+
+  public secondaryIndicesKeys(): string[] {
+    return [...this._secondaryIndices.keys()];
   }
 
   /**
@@ -469,6 +484,7 @@ export class DataSource<T extends any, KeyType = never> {
     this.shiftOffset = 0;
     this.idToIndex.clear();
     this.rebuild();
+    this.emitDataEvent({type: 'clear'});
   }
 
   /**
@@ -522,6 +538,16 @@ export class DataSource<T extends any, KeyType = never> {
     }
   }
 
+  public addDataListener<E extends DataEvent<T>['type']>(
+    event: E,
+    cb: (data: Extract<DataEvent<T>, {type: E}>) => void,
+  ) {
+    this.outputEventEmitter.addListener(event, cb);
+    return () => {
+      this.outputEventEmitter.removeListener(event, cb);
+    };
+  }
+
   private assertKeySet() {
     if (!this.keyAttribute) {
       throw new Error(
@@ -571,6 +597,12 @@ export class DataSource<T extends any, KeyType = never> {
       } else {
         a.push(value);
       }
+      this.emitDataEvent({
+        type: 'siNewIndexValue',
+        indexKey: indexValue,
+        value,
+        firstOfKind: !a,
+      });
     }
   }
 
@@ -631,11 +663,21 @@ export class DataSource<T extends any, KeyType = never> {
     return this.getAllRecordsByIndex(indexQuery)[0];
   }
 
+  public getAllIndexValues(index: IndexDefinition<T>) {
+    const sortedKeys = index.slice().sort();
+    const indexKey = sortedKeys.join(':');
+    const recordsByIndex = this._recordsBySecondaryIndex.get(indexKey);
+    if (!recordsByIndex) {
+      return;
+    }
+    return [...recordsByIndex.keys()];
+  }
+
   private getSecondaryIndexValueFromRecord(
     record: T,
     // assumes keys is already ordered
     keys: IndexDefinition<T>,
-  ): any {
+  ): string {
     return JSON.stringify(
       Object.fromEntries(keys.map((k) => [k, String(record[k])])),
     );
@@ -991,6 +1033,10 @@ export class DataSourceView<T, KeyType> {
             this.processRemoveEvent(i, event.entries[i]);
           }
         }
+        break;
+      }
+      case 'clear':
+      case 'siNewIndexValue': {
         break;
       }
       default:
