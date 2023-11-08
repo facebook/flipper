@@ -48,6 +48,7 @@ type TrackerEvents = {
   };
   'server-socket-already-in-use': {};
   'server-open-ui': {browser: boolean; hasToken: boolean};
+  'server-client-close': {code?: number; error?: string};
   'server-ws-server-error': {port: number; error: string};
   'server-ready-timeout': {timeout: number};
   'browser-connection-created': {

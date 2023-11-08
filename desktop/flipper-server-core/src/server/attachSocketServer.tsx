@@ -17,7 +17,6 @@ import {
   SystemError,
   getLogger,
   CompanionEventWebSocketMessage,
-  isProduction,
 } from 'flipper-common';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {RawData, WebSocketServer} from 'ws';
@@ -26,7 +25,6 @@ import {
   FlipperServerCompanionEnv,
 } from 'flipper-server-companion';
 import {URLSearchParams} from 'url';
-import {getFlipperServerConfig} from '../FlipperServerConfig';
 import {tracker} from '../tracker';
 import {performance} from 'perf_hooks';
 
@@ -40,6 +38,7 @@ const safe = (f: () => void) => {
   }
 };
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 let numberOfConnectedClients = 0;
 
 /**
@@ -242,7 +241,7 @@ export function attachSocketServer(
       safe(() => onClientMessage(data));
     });
 
-    async function onClientClose(closeOnIdle: boolean) {
+    async function onClientClose(code?: number, error?: string) {
       console.log(`Client disconnected ${clientAddress}`);
 
       numberOfConnectedClients--;
@@ -251,29 +250,15 @@ export function attachSocketServer(
       server.offAny(onServerEvent);
       flipperServerCompanion?.destroyAll();
 
-      if (
-        getFlipperServerConfig().environmentInfo.isHeadlessBuild &&
-        closeOnIdle
-      ) {
-        if (numberOfConnectedClients === 0 && isProduction()) {
-          console.info('Shutdown as no clients are currently connected');
-          process.exit(0);
-        }
-      }
+      tracker.track('server-client-close', {
+        code,
+        error,
+      });
     }
 
     client.on('close', (code, _reason) => {
       console.info('[flipper-server] Client close with code', code);
-      /**
-       * The socket will close as the endpoint is terminating
-       * the connection. Status code 1000 and 1001 are used for normal
-       * closures. Either the connection is no longer needed or the
-       * endpoint is going away i.e. browser navigating away from the
-       * current page.
-       * WS RFC: https://www.rfc-editor.org/rfc/rfc6455
-       */
-      const closeOnIdle = code === 1000 || code === 1001;
-      safe(() => onClientClose(closeOnIdle));
+      safe(() => onClientClose(code));
     });
 
     client.on('error', (error) => {
@@ -283,7 +268,7 @@ export function attachSocketServer(
          * do not close on idle as there's a high probability the
          * client will attempt to connect again.
          */
-        onClientClose(false);
+        onClientClose(undefined, error.message);
         console.error('Client disconnected with error', error);
       });
     });
