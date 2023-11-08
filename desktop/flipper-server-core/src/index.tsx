@@ -13,13 +13,13 @@ export * from './tracker';
 export {loadLauncherSettings} from './utils/launcherSettings';
 export {loadProcessConfig} from './utils/processConfig';
 export {getEnvironmentInfo} from './utils/environmentInfo';
-export {findInstallation} from './utils/findInstallation';
 export {getGatekeepers} from './gk';
 export {setupPrefetcher} from './fb-stubs/Prefetcher';
 export * from './server/attachSocketServer';
 export * from './server/startFlipperServer';
 export * from './server/startServer';
 export * from './server/utilities';
+export * from './utils/openUI';
 export {isFBBuild} from './fb-stubs/constants';
 export {initializeLogger} from './fb-stubs/Logger';
 

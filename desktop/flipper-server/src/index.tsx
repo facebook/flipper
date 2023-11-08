@@ -16,22 +16,22 @@ import {attachDevServer} from './attachDevServer';
 import {initializeLogger} from './logger';
 import fs from 'fs-extra';
 import yargs from 'yargs';
-import open from 'open';
 import os from 'os';
 import {initCompanionEnv} from 'flipper-server-companion';
 import {
+  UIPreference,
   checkPortInUse,
   checkServerRunning,
   compareServerVersion,
   getEnvironmentInfo,
+  openUI,
   shutdownRunningInstance,
   startFlipperServer,
   startServer,
   tracker,
 } from 'flipper-server-core';
-import {addLogTailer, isTest, LoggerFormat} from 'flipper-common';
+import {addLogTailer, isProduction, isTest, LoggerFormat} from 'flipper-common';
 import exitHook from 'exit-hook';
-import {getAuthToken, findInstallation} from 'flipper-server-core';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -295,47 +295,15 @@ async function start() {
 }
 
 async function launch() {
-  console.info('[flipper-server] Launch UI');
-
-  const token = await getAuthToken();
-  console.info(
-    `[flipper-server] Get authentication token: ${token?.length != 0}`,
-  );
-
   if (!argv.open) {
+    console.warn(
+      '[flipper-server] Not opening UI, --open flag was not provided',
+    );
     return;
   }
 
-  const openInBrowser = async () => {
-    console.info('[flipper-server] Open in browser');
-    const url = new URL(`http://localhost:${argv.port}`);
-
-    console.info(`[flipper-server] Go to: ${chalk.blue(url.toString())}`);
-
-    open(url.toString(), {app: {name: open.apps.chrome}});
-
-    tracker.track('server-open-ui', {
-      browser: true,
-      hasToken: token?.length != 0,
-    });
-  };
-
-  if (argv.bundler) {
-    await openInBrowser();
-  } else {
-    const path = await findInstallation();
-    if (path) {
-      tracker.track('server-open-ui', {
-        browser: false,
-        hasToken: token?.length != 0,
-      });
-      open(path);
-    } else {
-      await openInBrowser();
-    }
-  }
-
-  console.info('[flipper-server] Launch UI completed');
+  const preference = isProduction() ? UIPreference.PWA : UIPreference.Browser;
+  openUI(preference, argv.port);
 }
 
 process.on('uncaughtException', (error) => {
