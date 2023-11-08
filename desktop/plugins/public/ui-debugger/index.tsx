@@ -51,7 +51,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
   const snapshot = createState<SnapshotInfo | null>(null);
   const nodesAtom = createState<Map<Id, ClientNode>>(new Map());
   const frameworkEvents = createDataSource<AugmentedFrameworkEvent>([], {
-    indices: [['nodeId']],
+    indices: [
+      ['nodeId'],
+      ['type'], //for inferred values
+    ],
     limit: 10000,
   });
   const frameworkEventsCustomColumns = createState<Set<string>>(new Set());

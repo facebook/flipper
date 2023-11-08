@@ -9,11 +9,13 @@
 
 import {DeleteOutlined, PartitionOutlined} from '@ant-design/icons';
 import {
-  DataTable,
+  _DataTableWithPowerSearch as DataTable,
   DataTableColumn,
-  DataTableManager,
   DetailSidebar,
   Layout,
+  _DataTableColumnWithPowerSearch,
+  _DataTableWithPowerSearchManager,
+  dataTablePowerSearchOperators,
   usePlugin,
   useValue,
 } from 'flipper-plugin';
@@ -41,9 +43,11 @@ export function FrameworkEventsTable({
   const instance = usePlugin(plugin);
 
   const focusedNode = useValue(instance.uiState.focusedNode);
-  const managerRef = useRef<DataTableManager<AugmentedFrameworkEvent> | null>(
-    null,
-  );
+
+  const managerRef =
+    useRef<_DataTableWithPowerSearchManager<AugmentedFrameworkEvent> | null>(
+      null,
+    );
 
   useEffect(() => {
     tracker.track('framework-event-table-opened', {});
@@ -51,13 +55,31 @@ export function FrameworkEventsTable({
     if (nodeId != null) {
       managerRef.current?.resetFilters();
       if (isTree) {
-        managerRef.current?.addColumnFilter('treeId', nodeId as string, {
-          exact: true,
-        });
+        managerRef.current?.setSearchExpression([
+          {
+            field: {
+              key: 'treeId',
+              label: 'TreeId',
+            },
+            operator: {
+              ...dataTablePowerSearchOperators.int_equals(),
+            },
+            searchValue: nodeId,
+          },
+        ]);
       } else {
-        managerRef.current?.addColumnFilter('nodeId', nodeId as string, {
-          exact: true,
-        });
+        managerRef.current?.setSearchExpression([
+          {
+            field: {
+              key: 'nodeId',
+              label: 'NodeId',
+            },
+            operator: {
+              ...dataTablePowerSearchOperators.int_equals(),
+            },
+            searchValue: nodeId,
+          },
+        ]);
       }
     }
   }, [instance.uiActions, isTree, nodeId]);
@@ -71,6 +93,7 @@ export function FrameworkEventsTable({
           key: customKey,
           title: startCase(customKey),
           onRender: (row: AugmentedFrameworkEvent) => row.payload?.[customKey],
+          powerSearchConfig: enumLikeString,
         } as DataTableColumn<AugmentedFrameworkEvent>),
     );
 
@@ -135,42 +158,98 @@ export function FrameworkEventsTable({
   );
 }
 
-const staticColumns: DataTableColumn<AugmentedFrameworkEvent>[] = [
-  {
-    key: 'timestamp',
-    onRender: (row: FrameworkEvent) => formatTimestampMillis(row.timestamp),
-    title: 'Timestamp',
-  },
-  {
-    key: 'type',
-    title: 'Event type',
-    onRender: (row: FrameworkEvent) => eventTypeToName(row.type),
-  },
-  {
-    key: 'duration',
-    title: 'Duration',
-    onRender: (row: FrameworkEvent) =>
-      row.duration != null ? formatDuration(row.duration) : null,
-  },
-  {
-    key: 'treeId',
-    title: 'TreeId',
-  },
-  {
-    key: 'rootComponentName',
-    title: 'Root component name',
-  },
-  {
-    key: 'nodeId',
-    title: 'Component ID',
-  },
-  {
-    key: 'nodeName',
-    title: 'Component name',
-  },
-  {
-    key: 'thread',
-    title: 'Thread',
-    onRender: (row: FrameworkEvent) => startCase(row.thread),
-  },
+const MonoSpace = (t: any) => (
+  <span style={{fontFamily: 'monospace'}}>{t}</span>
+);
+
+const stringConfig = [
+  dataTablePowerSearchOperators.string_contains(),
+  dataTablePowerSearchOperators.string_not_contains(),
+  dataTablePowerSearchOperators.string_matches_exactly(),
 ];
+const idConfig = [dataTablePowerSearchOperators.int_equals()];
+
+//todo replace with auto mode
+const enumLikeString = [
+  dataTablePowerSearchOperators.string_matches_exactly(true),
+  dataTablePowerSearchOperators.string_not_matches_exactly(true),
+];
+
+const inferredEnum = [
+  dataTablePowerSearchOperators.enum_set_is_any_of({}),
+  dataTablePowerSearchOperators.enum_is({}),
+  dataTablePowerSearchOperators.enum_set_is_none_of({}),
+  dataTablePowerSearchOperators.enum_is_not({}),
+];
+
+const staticColumns: _DataTableColumnWithPowerSearch<AugmentedFrameworkEvent>[] =
+  [
+    {
+      key: 'timestamp',
+      sortable: true,
+      onRender: (row: FrameworkEvent) => formatTimestampMillis(row.timestamp),
+      title: 'Timestamp',
+      formatters: MonoSpace,
+
+      powerSearchConfig: [
+        dataTablePowerSearchOperators.newer_than_absolute_date(),
+        dataTablePowerSearchOperators.older_than_absolute_date(),
+      ],
+    },
+    {
+      key: 'type',
+      title: 'Event type',
+      onRender: (row: FrameworkEvent) => eventTypeToName(row.type),
+      powerSearchConfig: {
+        inferEnumOptionsFromData: true,
+        operators: inferredEnum,
+      },
+    },
+    {
+      key: 'duration',
+      title: 'Duration (Nanos)',
+      onRender: (row: FrameworkEvent) =>
+        row.duration != null ? formatDuration(row.duration) : null,
+      formatters: MonoSpace,
+
+      powerSearchConfig: [
+        dataTablePowerSearchOperators.int_greater_or_equal(),
+        dataTablePowerSearchOperators.int_greater_than(),
+        dataTablePowerSearchOperators.int_equals(),
+        dataTablePowerSearchOperators.int_less_or_equal(),
+        dataTablePowerSearchOperators.int_less_than(),
+      ],
+    },
+    {
+      key: 'treeId',
+      title: 'TreeId',
+      powerSearchConfig: idConfig,
+
+      formatters: MonoSpace,
+    },
+    {
+      key: 'rootComponentName',
+      title: 'Root component name',
+      powerSearchConfig: stringConfig,
+      formatters: MonoSpace,
+    },
+    {
+      key: 'nodeId',
+      title: 'Component ID',
+      powerSearchConfig: idConfig,
+      formatters: MonoSpace,
+    },
+    {
+      key: 'nodeName',
+      title: 'Component name',
+      powerSearchConfig: stringConfig,
+      formatters: MonoSpace,
+    },
+    {
+      key: 'thread',
+      title: 'Thread',
+      onRender: (row: FrameworkEvent) => startCase(row.thread),
+      powerSearchConfig: stringConfig,
+      formatters: MonoSpace,
+    },
+  ];
