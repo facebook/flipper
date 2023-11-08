@@ -210,6 +210,13 @@ async function buildDist(buildFolder: string) {
   const targetsRaw: Map<Platform, Map<Arch, string[]>>[] = [];
   const postBuildCallbacks: (() => void)[] = [];
 
+  const productName = process.env.FLIPPER_REACT_NATIVE_ONLY
+    ? 'Flipper-Electron'
+    : 'Flipper';
+  const appId = process.env.FLIPPER_REACT_NATIVE_ONLY
+    ? 'com.facebook.sonar-electron'
+    : `com.facebook.sonar`;
+
   if (argv.mac || argv['mac-dmg']) {
     let macPath = path.join(
       distDir,
@@ -226,10 +233,14 @@ async function buildDist(buildFolder: string) {
       }
     }
     postBuildCallbacks.push(() =>
-      spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
-        cwd: macPath,
-        encoding: 'utf-8',
-      }),
+      spawn(
+        'zip',
+        ['-qyr9', `../${productName}-mac.zip`, `${productName}.app`],
+        {
+          cwd: macPath,
+          encoding: 'utf-8',
+        },
+      ),
     );
   }
   if (argv.linux || argv['linux-deb'] || argv['linux-snap']) {
@@ -268,8 +279,8 @@ async function buildDist(buildFolder: string) {
     await build({
       publish: 'never',
       config: {
-        appId: `com.facebook.sonar`,
-        productName: 'Flipper',
+        appId,
+        productName,
         directories: {
           buildResources: buildFolder,
           output: distDir,
