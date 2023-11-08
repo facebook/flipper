@@ -11,6 +11,7 @@ import sortedIndexBy from 'lodash/sortedIndexBy';
 import sortedLastIndexBy from 'lodash/sortedLastIndexBy';
 import property from 'lodash/property';
 import lodashSort from 'lodash/sortBy';
+import EventEmitter from 'eventemitter3';
 
 // If the dataSource becomes to large, after how many records will we start to drop items?
 const dropFactor = 0.1;
@@ -179,6 +180,8 @@ export class DataSource<T extends any, KeyType = never> {
   public readonly additionalViews: {
     [viewId: string]: DataSourceView<T, KeyType>;
   };
+
+  public readonly outputEventEmitter = new EventEmitter();
 
   constructor(
     keyAttribute: keyof T | undefined,
@@ -550,6 +553,7 @@ export class DataSource<T extends any, KeyType = never> {
     Object.entries(this.additionalViews).forEach(([, dataView]) => {
       dataView.processEvent(event);
     });
+    this.outputEventEmitter.emit(event.type, event);
   }
 
   private storeSecondaryIndices(value: T) {
