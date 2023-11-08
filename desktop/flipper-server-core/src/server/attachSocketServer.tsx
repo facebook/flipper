@@ -17,6 +17,7 @@ import {
   SystemError,
   getLogger,
   CompanionEventWebSocketMessage,
+  isProduction,
 } from 'flipper-common';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {RawData, WebSocketServer} from 'ws';
@@ -27,6 +28,7 @@ import {
 import {URLSearchParams} from 'url';
 import {tracker} from '../tracker';
 import {performance} from 'perf_hooks';
+import {getFlipperServerConfig} from '../FlipperServerConfig';
 
 const safe = (f: () => void) => {
   try {
@@ -38,8 +40,8 @@ const safe = (f: () => void) => {
   }
 };
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 let numberOfConnectedClients = 0;
+let disconnectTimeout: NodeJS.Timeout | undefined;
 
 /**
  * Attach and handle incoming messages from clients.
@@ -67,6 +69,10 @@ export function attachSocketServer(
 
     console.log('Client connected', clientAddress);
     numberOfConnectedClients++;
+
+    if (disconnectTimeout) {
+      clearTimeout(disconnectTimeout);
+    }
 
     clearTimeout(browserConnectionTimeout);
     tracker.track('browser-connection-created', {
@@ -254,6 +260,25 @@ export function attachSocketServer(
         code,
         error,
       });
+
+      if (
+        getFlipperServerConfig().environmentInfo.isHeadlessBuild &&
+        isProduction()
+      ) {
+        const FIVE_HOURS = 5 * 60 * 60 * 1000;
+        if (disconnectTimeout) {
+          clearTimeout(disconnectTimeout);
+        }
+
+        disconnectTimeout = setTimeout(() => {
+          if (numberOfConnectedClients === 0) {
+            console.info(
+              '[flipper-server] Shutdown as no clients are currently connected',
+            );
+            process.exit(0);
+          }
+        }, FIVE_HOURS);
+      }
     }
 
     client.on('close', (code, _reason) => {
