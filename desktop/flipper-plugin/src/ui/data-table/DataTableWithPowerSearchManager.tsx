@@ -508,6 +508,7 @@ export function getValueAtPath(obj: Record<string, any>, keyPath: string): any {
 export function computeDataTableFilter(
   searchExpression: SearchExpressionTerm[] | undefined,
   powerSearchProcessors: PowerSearchOperatorProcessorConfig,
+  treatUndefinedValuesAsMatchingFiltering: boolean = false,
 ) {
   return function dataTableFilter(item: any) {
     if (!searchExpression || !searchExpression.length) {
@@ -518,12 +519,7 @@ export function computeDataTableFilter(
         ? item
         : getValueAtPath(item, searchTerm.field.key);
       if (!value) {
-        console.warn(
-          'computeDataTableFilter -> value at searchTerm.field.key is not recognized',
-          searchTerm,
-          item,
-        );
-        return true;
+        return treatUndefinedValuesAsMatchingFiltering;
       }
 
       const processor =

@@ -105,6 +105,10 @@ type DataTableBaseProps<T = any> = {
    * @default true
    */
   enablePowerSearchWholeRowSearch?: boolean;
+  /** If set to `true` and row[columnKey] is undefined, then it is going to pass filtering (search).
+   * @default false
+   */
+  treatUndefinedValuesAsMatchingFiltering?: boolean;
 };
 
 const powerSearchConfigEntireRow: FieldConfig = {
@@ -556,6 +560,7 @@ export function DataTable<T extends object>(
       computeDataTableFilter(
         tableState.searchExpression,
         dataTablePowerSearchOperatorProcessorConfig,
+        props.treatUndefinedValuesAsMatchingFiltering,
       ),
     );
     dataView.setFilterExpections(
@@ -914,6 +919,7 @@ DataTable.defaultProps = {
   enablePersistSettings: true,
   onRenderEmpty: undefined,
   enablePowerSearchWholeRowSearch: true,
+  treatUndefinedValuesAsMatchingFiltering: false,
 } as Partial<DataTableProps<any>>;
 
 /* eslint-disable react-hooks/rules-of-hooks */
