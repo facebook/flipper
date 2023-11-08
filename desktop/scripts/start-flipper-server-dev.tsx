@@ -49,6 +49,11 @@ const argv = yargs
       choices: ['stable', 'insiders'],
       default: 'stable',
     },
+    open: {
+      describe: 'Open Flipper in the default browser after starting',
+      type: 'boolean',
+      default: true,
+    },
   })
   .version('DEV')
   .help()
@@ -103,7 +108,9 @@ async function copyStaticResources() {
 async function restartServer() {
   try {
     await compileServerMain();
-    await launchServer(true, ++startCount === 1); // only open on the first time
+    // Only open the UI the first time it runs. Subsequent runs, likely triggered after
+    // saving changes, should just reload the existing UI.
+    await launchServer(true, argv.open && ++startCount === 1);
   } catch (e) {
     console.error(
       chalk.red(
