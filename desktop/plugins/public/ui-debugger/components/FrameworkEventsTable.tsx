@@ -90,10 +90,9 @@ export function FrameworkEventsTable({
     const customColumns = [...customColumnKeys].map(
       (customKey: string) =>
         ({
-          key: customKey,
+          key: `payload.${customKey}` as any,
           title: startCase(customKey),
-          onRender: (row: AugmentedFrameworkEvent) => row.payload?.[customKey],
-          powerSearchConfig: enumLikeString,
+          powerSearchConfig: stringConfig,
         } as DataTableColumn<AugmentedFrameworkEvent>),
     );
 
@@ -168,12 +167,6 @@ const stringConfig = [
   dataTablePowerSearchOperators.string_matches_exactly(),
 ];
 const idConfig = [dataTablePowerSearchOperators.int_equals()];
-
-//todo replace with auto mode
-const enumLikeString = [
-  dataTablePowerSearchOperators.string_matches_exactly(true),
-  dataTablePowerSearchOperators.string_not_matches_exactly(true),
-];
 
 const inferredEnum = [
   dataTablePowerSearchOperators.enum_set_is_any_of({}),
