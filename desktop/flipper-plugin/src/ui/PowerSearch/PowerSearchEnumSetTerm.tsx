@@ -45,6 +45,7 @@ export const PowerSearchEnumSetTerm: React.FC<PowerSearchEnumSetTermProps> = ({
       options={options}
       defaultOpen={!defaultValue}
       defaultValue={defaultValue}
+      dropdownMatchSelectWidth={false}
       onBlur={() => {
         if (!selectValueRef.current?.length) {
           onCancel();
