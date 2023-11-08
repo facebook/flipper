@@ -13,6 +13,7 @@ import {
   PowerSearchConfig,
   FieldConfig,
   OperatorConfig,
+  EnumLabels,
 } from './PowerSearchConfig';
 import {PowerSearchContainer} from './PowerSearchContainer';
 import {
@@ -31,7 +32,13 @@ import {theme} from '../theme';
 import {SearchOutlined} from '@ant-design/icons';
 import {getFlipperLib} from 'flipper-plugin-core';
 
-export {PowerSearchConfig, OperatorConfig, FieldConfig, SearchExpressionTerm};
+export {
+  PowerSearchConfig,
+  EnumLabels,
+  OperatorConfig,
+  FieldConfig,
+  SearchExpressionTerm,
+};
 
 type PowerSearchProps = {
   config: PowerSearchConfig;

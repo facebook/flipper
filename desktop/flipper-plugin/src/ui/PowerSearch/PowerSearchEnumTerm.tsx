@@ -9,11 +9,12 @@
 
 import {Button, Select} from 'antd';
 import React from 'react';
+import {EnumLabels} from './PowerSearchConfig';
 
 type PowerSearchEnumTermProps = {
   onCancel: () => void;
   onChange: (value: string) => void;
-  enumLabels: {[key: string]: string};
+  enumLabels: EnumLabels;
   defaultValue?: string;
 };
 
@@ -38,8 +39,8 @@ export const PowerSearchEnumTerm: React.FC<PowerSearchEnumTermProps> = ({
 
     let longestOptionLabelWidth = 0;
     Object.values(enumLabels).forEach((label) => {
-      if (label.length > longestOptionLabelWidth) {
-        longestOptionLabelWidth = label.length;
+      if (label.toString().length > longestOptionLabelWidth) {
+        longestOptionLabelWidth = label.toString().length;
       }
     });
 

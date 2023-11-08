@@ -9,11 +9,12 @@
 
 import {Select} from 'antd';
 import React from 'react';
+import {EnumLabels} from './PowerSearchConfig';
 
 type PowerSearchEnumSetTermProps = {
   onCancel: () => void;
   onChange: (value: string[]) => void;
-  enumLabels: {[key: string]: string};
+  enumLabels: EnumLabels;
   defaultValue?: string[];
 };
 

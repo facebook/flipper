@@ -67,6 +67,7 @@ import {
   FieldConfig,
   OperatorConfig,
   SearchExpressionTerm,
+  EnumLabels,
 } from '../PowerSearch';
 import {
   dataTablePowerSearchOperatorProcessorConfig,
@@ -154,7 +155,16 @@ export type DataTableColumn<T = any> = {
   powerSearchConfig?:
     | OperatorConfig[]
     | false
-    | {operators: OperatorConfig[]; useWholeRow?: boolean};
+    | {
+        operators: OperatorConfig[];
+        useWholeRow?: boolean;
+        /**
+         * Auto-generate enum options based on the data.
+         * Requires the column to be set as a secondary "index" (single column, not a compound multi-column index).
+         * See https://fburl.com/code/0waicx6p
+         */
+        inferEnumOptionsFromData?: boolean;
+      };
 };
 
 export interface TableRowRenderContext<T = any> {
@@ -263,6 +273,73 @@ export function DataTable<T extends object>(
     [columns],
   );
 
+  // Collecting a hashmap of unique values for every column we infer the power search enum labels for (hashmap of hashmaps).
+  // It could be a hashmap of sets, but then we would need to convert a set to a hashpmap when rendering enum power search term, so it is just more convenient to make it a hashmap of hashmaps
+  const [inferredPowerSearchEnumLabels, setInferredPowerSearchEnumLabels] =
+    React.useState<Record<DataTableColumn['key'], EnumLabels>>({});
+  React.useEffect(() => {
+    const columnKeysToInferOptionsFor: string[] = [];
+    const secondaryIndeciesKeys = new Set(dataSource.secondaryIndicesKeys());
+
+    for (const column of columns) {
+      if (
+        typeof column.powerSearchConfig === 'object' &&
+        !Array.isArray(column.powerSearchConfig) &&
+        column.powerSearchConfig.inferEnumOptionsFromData
+      ) {
+        if (!secondaryIndeciesKeys.has(column.key)) {
+          console.warn(
+            'inferEnumOptionsFromData work only if the same column key is specified as a DataSource secondary index! See https://fburl.com/code/0waicx6p. Missing index definition!',
+            column.key,
+          );
+          continue;
+        }
+        columnKeysToInferOptionsFor.push(column.key);
+      }
+    }
+
+    if (columnKeysToInferOptionsFor.length > 0) {
+      const getInferredLabels = () => {
+        const newInferredLabels: Record<DataTableColumn['key'], EnumLabels> =
+          {};
+
+        for (const key of columnKeysToInferOptionsFor) {
+          newInferredLabels[key] = {};
+          for (const indexValue of dataSource.getAllIndexValues([
+            key as keyof T,
+          ]) ?? []) {
+            // `indexValue` is a stringified JSON in a format of { key: value }
+            const value = Object.values(JSON.parse(indexValue))[0] as string;
+            newInferredLabels[key][value] = value;
+          }
+        }
+
+        return newInferredLabels;
+      };
+      setInferredPowerSearchEnumLabels(getInferredLabels());
+
+      const unsubscribeIndexUpdates = dataSource.addDataListener(
+        'siNewIndexValue',
+        ({firstOfKind}) => {
+          if (firstOfKind) {
+            setInferredPowerSearchEnumLabels(getInferredLabels());
+          }
+        },
+      );
+      const unsubscribeDataSourceClear = dataSource.addDataListener(
+        'clear',
+        () => {
+          setInferredPowerSearchEnumLabels(getInferredLabels());
+        },
+      );
+
+      return () => {
+        unsubscribeIndexUpdates();
+        unsubscribeDataSourceClear();
+      };
+    }
+  }, [columns, dataSource]);
+
   const powerSearchConfig: PowerSearchConfig = useMemo(() => {
     const res: PowerSearchConfig = {fields: {}};
 
@@ -290,6 +367,20 @@ export function DataTable<T extends object>(
       } else {
         columnPowerSearchOperators = column.powerSearchConfig.operators;
         useWholeRow = !!column.powerSearchConfig.useWholeRow;
+
+        const inferredPowerSearchEnumLabelsForColumn =
+          inferredPowerSearchEnumLabels[column.key];
+        if (
+          inferredPowerSearchEnumLabelsForColumn &&
+          column.powerSearchConfig.inferEnumOptionsFromData
+        ) {
+          columnPowerSearchOperators = columnPowerSearchOperators.map(
+            (operator) => ({
+              ...operator,
+              enumLabels: inferredPowerSearchEnumLabelsForColumn,
+            }),
+          );
+        }
       }
 
       const columnFieldConfig: FieldConfig = {
@@ -305,7 +396,11 @@ export function DataTable<T extends object>(
     }
 
     return res;
-  }, [columns, props.enablePowerSearchWholeRowSearch]);
+  }, [
+    columns,
+    props.enablePowerSearchWholeRowSearch,
+    inferredPowerSearchEnumLabels,
+  ]);
 
   const renderingConfig = useMemo<TableRowRenderContext<T>>(() => {
     let startIndex = 0;

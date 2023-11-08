@@ -121,6 +121,7 @@ test('Correct top level API exposed', () => {
       "ElementSearchResultSet",
       "ElementsInspectorElement",
       "ElementsInspectorProps",
+      "EnumLabels",
       "FieldConfig",
       "FileDescriptor",
       "FileEncoding",

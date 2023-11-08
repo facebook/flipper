@@ -55,11 +55,16 @@ export type FloatOperatorConfig = {
   precision?: number;
 };
 
+/**
+ * { value: label }
+ */
+export type EnumLabels = {[key: string | number]: string | number};
+
 export type EnumOperatorConfig = {
   valueType: EnumFilterValueType;
   key: string;
   label: string;
-  enumLabels: {[key: string]: string};
+  enumLabels: EnumLabels;
 };
 
 export type AbsoluteDateOperatorConfig = {
