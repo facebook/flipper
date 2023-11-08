@@ -23,6 +23,7 @@ import {tracker} from '../tracker';
 import {EnvironmentInfo, isProduction} from 'flipper-common';
 import {GRAPH_SECRET} from '../fb-stubs/constants';
 import {sessionId} from '../sessionId';
+import {UIPreference, openUI} from '../utils/openUI';
 
 type Config = {
   port: number;
@@ -184,6 +185,13 @@ async function startHTTPServer(
   app.get('/health', (_req, res) => {
     tracker.track('server-endpoint-hit', {name: 'health'});
     res.end('flipper-ok');
+  });
+
+  app.get('/open-ui', (_req, res) => {
+    tracker.track('server-endpoint-hit', {name: 'open-ui'});
+    const preference = isProduction() ? UIPreference.PWA : UIPreference.Browser;
+    openUI(preference, config.port);
+    res.json({success: true});
   });
 
   app.use(express.static(config.staticPath));
