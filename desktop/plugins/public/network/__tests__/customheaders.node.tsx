@@ -113,7 +113,7 @@ test('Can handle custom headers', async () => {
       responseIsMock: false,
       responseLength: 0,
       'response_header_second-test-header': 'dolphins',
-      status: 200,
+      status: '200',
       url: 'http://www.fbflipper.com',
     },
   ]);

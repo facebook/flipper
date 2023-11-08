@@ -268,10 +268,6 @@ export function formatBytes(count: number | undefined): string {
   return count + ' B';
 }
 
-export function formatStatus(status: number | undefined) {
-  return status ? '' + status : '';
-}
-
 export function formatOperationName(requestData: string): string {
   try {
     const parsedData = JSON.parse(requestData);

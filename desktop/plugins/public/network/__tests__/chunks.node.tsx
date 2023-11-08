@@ -180,7 +180,7 @@ test('Reducer correctly combines initial response and followup chunk', () => {
     responseHeaders: [{key: 'Content-Type', value: 'text/plain'}],
     responseIsMock: false,
     responseLength: 5,
-    status: 200,
+    status: '200',
     url: 'http://test.com',
   });
 });

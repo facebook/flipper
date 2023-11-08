@@ -9,7 +9,7 @@
 
 import {
   Atom,
-  DataTableManagerLegacy as DataTableManager,
+  _DataTableWithPowerSearchManager as DataTableManager,
   getFlipperLib,
 } from 'flipper-plugin';
 import {createContext} from 'react';

@@ -233,7 +233,7 @@ test('binary data gets serialized correctly', async () => {
         ],
         responseIsMock: false,
         responseLength: 24838,
-        status: 200,
+        status: '200',
         url: 'http://www.fbflipper.com',
       },
     ],
@@ -265,7 +265,7 @@ test('binary data gets serialized correctly', async () => {
     ],
     responseIsMock: false,
     responseLength: 24838,
-    status: 200,
+    status: '200',
     url: 'http://www.fbflipper.com',
   });
 });

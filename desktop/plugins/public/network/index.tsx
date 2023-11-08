@@ -28,12 +28,13 @@ import {
   usePlugin,
   useValue,
   createDataSource,
-  DataTableLegacy as DataTable,
-  DataTableColumnLegacy as DataTableColumn,
-  DataTableManagerLegacy as DataTableManager,
+  _DataTableWithPowerSearch as DataTable,
+  _DataTableColumnWithPowerSearch as DataTableColumn,
+  _DataTableWithPowerSearchManager as DataTableManager,
   theme,
   renderReactRoot,
   batch,
+  dataTablePowerSearchOperators,
 } from 'flipper-plugin';
 import {
   Request,
@@ -50,7 +51,6 @@ import {
   getHeaderValue,
   getResponseLength,
   getRequestLength,
-  formatStatus,
   formatBytes,
   formatDuration,
   requestsToText,
@@ -118,6 +118,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   );
   const requests = createDataSource<Request, 'id'>([], {
     key: 'id',
+    indices: [['method'], ['status']],
   });
   const selectedId = createState<string | undefined>(undefined);
   const tableManagerRef = createRef<undefined | DataTableManager<Request>>();
@@ -136,11 +137,16 @@ export function plugin(client: PluginClient<Events, Methods>) {
       return;
     } else if (payload.startsWith(searchTermDelim)) {
       tableManagerRef.current?.clearSelection();
-      tableManagerRef.current?.setSearchValue(
-        payload.slice(searchTermDelim.length),
-      );
+      tableManagerRef.current?.setSearchExpression([
+        {
+          field: {label: 'Row', key: 'entireRow', useWholeRow: true},
+          operator:
+            dataTablePowerSearchOperators.searializable_object_contains(),
+          searchValue: payload.slice(searchTermDelim.length),
+        },
+      ]);
     } else {
-      tableManagerRef.current?.setSearchValue('');
+      tableManagerRef.current?.setSearchExpression([]);
       tableManagerRef.current?.selectItemById(payload);
     }
   });
@@ -537,6 +543,7 @@ function createRequestFromRequestInfo(
     domain,
     requestHeaders: data.headers,
     requestData: decodeBody(data.headers, data.data),
+    status: '...',
   };
   customColumns
     .filter((c) => c.type === 'request')
@@ -557,7 +564,7 @@ function updateRequestWithResponseInfo(
   const res = {
     ...request,
     responseTime: new Date(response.timestamp),
-    status: response.status,
+    status: response.status.toString(),
     reason: response.reason,
     responseHeaders: response.headers,
     responseData: decodeBody(response.headers, response.data),
@@ -659,12 +666,20 @@ const baseColumns: DataTableColumn<Request>[] = [
     key: 'requestTime',
     title: 'Request Time',
     width: 120,
+    powerSearchConfig: [
+      dataTablePowerSearchOperators.older_than_absolute_date(),
+      dataTablePowerSearchOperators.newer_than_absolute_date(),
+    ],
   },
   {
     key: 'responseTime',
     title: 'Response Time',
     width: 120,
     visible: false,
+    powerSearchConfig: [
+      dataTablePowerSearchOperators.older_than_absolute_date(),
+      dataTablePowerSearchOperators.newer_than_absolute_date(),
+    ],
   },
   {
     key: 'requestData',
@@ -672,26 +687,55 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 120,
     visible: false,
     formatters: formatOperationName,
+    powerSearchConfig: [
+      dataTablePowerSearchOperators.searializable_object_contains(),
+      dataTablePowerSearchOperators.searializable_object_not_contains(),
+    ],
   },
   {
     key: 'domain',
+    powerSearchConfig: [
+      dataTablePowerSearchOperators.string_contains(),
+      dataTablePowerSearchOperators.string_not_contains(),
+      dataTablePowerSearchOperators.string_matches_exactly(),
+      dataTablePowerSearchOperators.string_not_matches_exactly(),
+    ],
   },
   {
     key: 'url',
     title: 'Full URL',
     visible: false,
+    powerSearchConfig: [
+      dataTablePowerSearchOperators.string_contains(),
+      dataTablePowerSearchOperators.string_not_contains(),
+      dataTablePowerSearchOperators.string_matches_exactly(),
+      dataTablePowerSearchOperators.string_not_matches_exactly(),
+    ],
   },
   {
     key: 'method',
     title: 'Method',
     width: 70,
+    powerSearchConfig: {
+      operators: [
+        dataTablePowerSearchOperators.enum_set_is_any_of({}),
+        dataTablePowerSearchOperators.enum_set_is_none_of({}),
+      ],
+      inferEnumOptionsFromData: true,
+    },
   },
   {
     key: 'status',
     title: 'Status',
     width: 70,
-    formatters: formatStatus,
     align: 'right',
+    powerSearchConfig: {
+      operators: [
+        dataTablePowerSearchOperators.enum_set_is_any_of({}),
+        dataTablePowerSearchOperators.enum_set_is_none_of({}),
+      ],
+      inferEnumOptionsFromData: true,
+    },
   },
   {
     key: 'requestLength',
@@ -699,6 +743,13 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 100,
     formatters: formatBytes,
     align: 'right',
+    powerSearchConfig: [
+      dataTablePowerSearchOperators.float_equals(),
+      dataTablePowerSearchOperators.float_greater_than(),
+      dataTablePowerSearchOperators.float_less_than(),
+      dataTablePowerSearchOperators.float_greater_or_equal(),
+      dataTablePowerSearchOperators.float_less_or_equal(),
+    ],
   },
   {
     key: 'responseLength',
@@ -706,6 +757,13 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 100,
     formatters: formatBytes,
     align: 'right',
+    powerSearchConfig: [
+      dataTablePowerSearchOperators.float_equals(),
+      dataTablePowerSearchOperators.float_greater_than(),
+      dataTablePowerSearchOperators.float_less_than(),
+      dataTablePowerSearchOperators.float_greater_or_equal(),
+      dataTablePowerSearchOperators.float_less_or_equal(),
+    ],
   },
   {
     key: 'duration',
@@ -713,6 +771,13 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 100,
     formatters: formatDuration,
     align: 'right',
+    powerSearchConfig: [
+      dataTablePowerSearchOperators.float_equals(),
+      dataTablePowerSearchOperators.float_greater_than(),
+      dataTablePowerSearchOperators.float_less_than(),
+      dataTablePowerSearchOperators.float_greater_or_equal(),
+      dataTablePowerSearchOperators.float_less_or_equal(),
+    ],
   },
 ];
 
@@ -727,7 +792,10 @@ const errorStyle = {
 function getRowStyle(row: Request) {
   return row.responseIsMock
     ? mockingStyle
-    : row.status && row.status >= 400 && row.status < 600
+    : row.status &&
+      row.status !== '...' &&
+      parseInt(row.status, 10) >= 400 &&
+      parseInt(row.status, 10) < 600
     ? errorStyle
     : undefined;
 }
