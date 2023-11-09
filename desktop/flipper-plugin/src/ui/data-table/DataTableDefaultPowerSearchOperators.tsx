@@ -8,12 +8,8 @@
  */
 
 import dayjs from 'dayjs';
-import {getFlipperLib} from 'flipper-plugin-core';
 import {OperatorConfig} from '../PowerSearch';
-import {
-  FloatOperatorConfig,
-  StringOperatorConfig,
-} from '../PowerSearch/PowerSearchConfig';
+import {FloatOperatorConfig} from '../PowerSearch/PowerSearchConfig';
 
 export type PowerSearchOperatorProcessor = (
   powerSearchOperatorConfig: OperatorConfig,
@@ -22,29 +18,25 @@ export type PowerSearchOperatorProcessor = (
 ) => boolean;
 
 export const dataTablePowerSearchOperators = {
-  string_contains: (handleUnknownValues?: boolean) => ({
+  string_contains: () => ({
     label: 'contains',
     key: 'string_contains',
     valueType: 'STRING',
-    handleUnknownValues,
   }),
-  string_not_contains: (handleUnknownValues?: boolean) => ({
+  string_not_contains: () => ({
     label: 'does not contain',
     key: 'string_not_contains',
     valueType: 'STRING',
-    handleUnknownValues,
   }),
-  string_matches_exactly: (handleUnknownValues?: boolean) => ({
+  string_matches_exactly: () => ({
     label: 'is',
     key: 'string_matches_exactly',
     valueType: 'STRING',
-    handleUnknownValues,
   }),
-  string_not_matches_exactly: (handleUnknownValues?: boolean) => ({
+  string_not_matches_exactly: () => ({
     label: 'is not',
     key: 'string_not_matches_exactly',
     valueType: 'STRING',
-    handleUnknownValues,
   }),
   searializable_object_contains: () => ({
     label: 'contains',
@@ -223,22 +215,12 @@ const tryConvertingUnknownToString = (value: unknown): string | null => {
 };
 
 export const dataTablePowerSearchOperatorProcessorConfig = {
-  string_contains: (operator, searchValue: string, value: string) =>
-    !!(
-      (operator as StringOperatorConfig).handleUnknownValues &&
-      getFlipperLib().GK('flipper_power_search_auto_json_stringify')
-        ? tryConvertingUnknownToString(value)
-        : value
-    )
+  string_contains: (_operator, searchValue: string, value: string) =>
+    !!tryConvertingUnknownToString(value)
       ?.toLowerCase()
       .includes(searchValue.toLowerCase()),
-  string_not_contains: (operator, searchValue: string, value: string) =>
-    !(
-      (operator as StringOperatorConfig).handleUnknownValues &&
-      getFlipperLib().GK('flipper_power_search_auto_json_stringify')
-        ? tryConvertingUnknownToString(value)
-        : value
-    )
+  string_not_contains: (_operator, searchValue: string, value: string) =>
+    !tryConvertingUnknownToString(value)
       ?.toLowerCase()
       .includes(searchValue.toLowerCase()),
   searializable_object_contains: (
@@ -251,16 +233,10 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     searchValue: string,
     value: object,
   ) => !JSON.stringify(value).toLowerCase().includes(searchValue.toLowerCase()),
-  string_matches_exactly: (operator, searchValue: string, value: string) =>
-    ((operator as StringOperatorConfig).handleUnknownValues &&
-    getFlipperLib().GK('flipper_power_search_auto_json_stringify')
-      ? tryConvertingUnknownToString(value)
-      : value) === searchValue,
-  string_not_matches_exactly: (operator, searchValue: string, value: string) =>
-    ((operator as StringOperatorConfig).handleUnknownValues &&
-    getFlipperLib().GK('flipper_power_search_auto_json_stringify')
-      ? tryConvertingUnknownToString(value)
-      : value) !== searchValue,
+  string_matches_exactly: (_operator, searchValue: string, value: string) =>
+    tryConvertingUnknownToString(value) === searchValue,
+  string_not_matches_exactly: (_operator, searchValue: string, value: string) =>
+    tryConvertingUnknownToString(value) !== searchValue,
   // See PowerSearchStringSetTerm
   string_set_contains_any_of: (
     _operator,
@@ -268,7 +244,9 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     value: string,
   ) =>
     searchValue.some((item) =>
-      value.toLowerCase().includes(item.toLowerCase()),
+      tryConvertingUnknownToString(value)
+        ?.toLowerCase()
+        .includes(item.toLowerCase()),
     ),
   string_set_contains_none_of: (
     _operator,
@@ -276,7 +254,9 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     value: string,
   ) =>
     !searchValue.some((item) =>
-      value.toLowerCase().includes(item.toLowerCase()),
+      tryConvertingUnknownToString(value)
+        ?.toLowerCase()
+        .includes(item.toLowerCase()),
     ),
   int_equals: (_operator, searchValue: number, value: number) =>
     value === searchValue,

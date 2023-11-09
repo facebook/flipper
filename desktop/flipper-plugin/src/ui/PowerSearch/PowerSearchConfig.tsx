@@ -33,7 +33,6 @@ export type StringOperatorConfig = {
   valueType: StringFilterValueType;
   key: string;
   label: string;
-  handleUnknownValues?: boolean;
 };
 
 export type StringSetOperatorConfig = {

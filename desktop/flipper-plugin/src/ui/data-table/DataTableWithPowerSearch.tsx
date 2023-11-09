@@ -361,10 +361,12 @@ export function DataTable<T extends object>(
       // If no power search config provided we treat every input as a string
       if (!column.powerSearchConfig) {
         columnPowerSearchOperators = [
-          dataTablePowerSearchOperators.string_contains(true),
-          dataTablePowerSearchOperators.string_not_contains(true),
-          dataTablePowerSearchOperators.string_matches_exactly(true),
-          dataTablePowerSearchOperators.string_not_matches_exactly(true),
+          dataTablePowerSearchOperators.string_contains(),
+          dataTablePowerSearchOperators.string_not_contains(),
+          dataTablePowerSearchOperators.string_matches_exactly(),
+          dataTablePowerSearchOperators.string_not_matches_exactly(),
+          dataTablePowerSearchOperators.string_set_contains_any_of(),
+          dataTablePowerSearchOperators.string_set_contains_none_of(),
         ];
       } else if (Array.isArray(column.powerSearchConfig)) {
         columnPowerSearchOperators = column.powerSearchConfig;
