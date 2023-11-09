@@ -118,9 +118,7 @@ export class FlipperServerImpl implements FlipperServer {
     keytarModule?: KeytarModule,
   ) {
     setFlipperServerConfig(config);
-    console.log(
-      'Loaded flipper config, paths: ' + JSON.stringify(config.paths, null, 2),
-    );
+    console.info('Loaded flipper config: ' + JSON.stringify(config, null, 2));
 
     setProcessState(config.settings);
     const server = (this.server = new ServerController(this));

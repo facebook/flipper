@@ -311,6 +311,7 @@ const exportTokenToManifest = async (token: string) => {
 
   const manifestPath = getManifestPath(config);
   try {
+    console.info('Reading manifest at path', manifestPath);
     const manifestData = await fs.readFile(manifestPath, {
       encoding: 'utf-8',
     });
@@ -319,10 +320,12 @@ const exportTokenToManifest = async (token: string) => {
 
     const newManifestData = JSON.stringify(manifest, null, 4);
 
+    console.info('Export token to manifest at path', manifestPath);
     await fs.writeFile(manifestPath, newManifestData);
   } catch (e) {
     console.error(
       'Unable to export authentication token to manifest, may be non existent.',
+      e,
     );
   }
 };
