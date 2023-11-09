@@ -54,6 +54,7 @@ type TrackerEvents = {
   'browser-connection-created': {
     successful: boolean;
     timeMS: number;
+    timedOut: boolean;
   };
   'app-connection-created': AppConnectionPayload;
   'app-connection-secure-attempt': AppConnectionPayload;

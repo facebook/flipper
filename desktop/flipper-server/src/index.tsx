@@ -95,9 +95,25 @@ const rootPath = argv.bundler
   : path.resolve(__dirname, '..'); // In pre-packaged versions of the server, static is copied inside the package.
 const staticPath = path.join(rootPath, 'static');
 
-async function start() {
-  const t0 = performance.now();
+const t0 = performance.now();
 
+const browserConnectionTimeout = setTimeout(() => {
+  tracker.track('browser-connection-created', {
+    successful: false,
+    timeMS: performance.now() - t0,
+    timedOut: true,
+  });
+}, 10000);
+const reportBrowserConnection = (successful: boolean) => {
+  clearTimeout(browserConnectionTimeout);
+  tracker.track('browser-connection-created', {
+    successful,
+    timeMS: performance.now() - t0,
+    timedOut: false,
+  });
+};
+
+async function start() {
   const isProduction =
     process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
   const environmentInfo = await getEnvironmentInfo(
@@ -206,6 +222,10 @@ async function start() {
     environmentInfo,
   );
 
+  flipperServer.once('browser-connection-created', () => {
+    reportBrowserConnection(true);
+  });
+
   const t5 = performance.now();
   const serverCreatedMS = t5 - t4;
   console.info(
@@ -311,6 +331,7 @@ process.on('uncaughtException', (error) => {
     '[flipper-server] uncaught exception, process will exit.',
     error,
   );
+  reportBrowserConnection(false);
   process.exit(1);
 });
 
@@ -325,5 +346,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
 start().catch((e) => {
   console.error(chalk.red('Server startup error: '), e);
+  reportBrowserConnection(false);
   process.exit(1);
 });

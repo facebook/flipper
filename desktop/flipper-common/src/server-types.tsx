@@ -168,6 +168,7 @@ export type FlipperServerEvents = {
   'plugins-server-add-on-message': ExecuteMessage;
   'download-file-update': DownloadFileUpdate;
   'server-log': LoggerInfo;
+  'browser-connection-created': {};
 };
 
 export type OS =
