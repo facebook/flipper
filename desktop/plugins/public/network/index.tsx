@@ -666,20 +666,14 @@ const baseColumns: DataTableColumn<Request>[] = [
     key: 'requestTime',
     title: 'Request Time',
     width: 120,
-    powerSearchConfig: [
-      dataTablePowerSearchOperators.older_than_absolute_date(),
-      dataTablePowerSearchOperators.newer_than_absolute_date(),
-    ],
+    powerSearchConfig: {type: 'dateTime'},
   },
   {
     key: 'responseTime',
     title: 'Response Time',
     width: 120,
     visible: false,
-    powerSearchConfig: [
-      dataTablePowerSearchOperators.older_than_absolute_date(),
-      dataTablePowerSearchOperators.newer_than_absolute_date(),
-    ],
+    powerSearchConfig: {type: 'dateTime'},
   },
   {
     key: 'requestData',
@@ -687,30 +681,17 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 120,
     visible: false,
     formatters: formatOperationName,
-    powerSearchConfig: [
-      dataTablePowerSearchOperators.searializable_object_contains(),
-      dataTablePowerSearchOperators.searializable_object_not_contains(),
-    ],
+    powerSearchConfig: {type: 'object'},
   },
   {
     key: 'domain',
-    powerSearchConfig: [
-      dataTablePowerSearchOperators.string_contains(),
-      dataTablePowerSearchOperators.string_not_contains(),
-      dataTablePowerSearchOperators.string_matches_exactly(),
-      dataTablePowerSearchOperators.string_not_matches_exactly(),
-    ],
+    powerSearchConfig: {type: 'string'},
   },
   {
     key: 'url',
     title: 'Full URL',
     visible: false,
-    powerSearchConfig: [
-      dataTablePowerSearchOperators.string_contains(),
-      dataTablePowerSearchOperators.string_not_contains(),
-      dataTablePowerSearchOperators.string_matches_exactly(),
-      dataTablePowerSearchOperators.string_not_matches_exactly(),
-    ],
+    powerSearchConfig: {type: 'string'},
   },
   {
     key: 'method',
@@ -718,6 +699,8 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 70,
     powerSearchConfig: {
       operators: [
+        dataTablePowerSearchOperators.enum_is({}),
+        dataTablePowerSearchOperators.enum_is_not({}),
         dataTablePowerSearchOperators.enum_set_is_any_of({}),
         dataTablePowerSearchOperators.enum_set_is_none_of({}),
       ],
@@ -731,6 +714,8 @@ const baseColumns: DataTableColumn<Request>[] = [
     align: 'right',
     powerSearchConfig: {
       operators: [
+        dataTablePowerSearchOperators.enum_is({}),
+        dataTablePowerSearchOperators.enum_is_not({}),
         dataTablePowerSearchOperators.enum_set_is_any_of({}),
         dataTablePowerSearchOperators.enum_set_is_none_of({}),
       ],
@@ -743,13 +728,7 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 100,
     formatters: formatBytes,
     align: 'right',
-    powerSearchConfig: [
-      dataTablePowerSearchOperators.float_equals(),
-      dataTablePowerSearchOperators.float_greater_than(),
-      dataTablePowerSearchOperators.float_less_than(),
-      dataTablePowerSearchOperators.float_greater_or_equal(),
-      dataTablePowerSearchOperators.float_less_or_equal(),
-    ],
+    powerSearchConfig: {type: 'float'},
   },
   {
     key: 'responseLength',
@@ -757,13 +736,7 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 100,
     formatters: formatBytes,
     align: 'right',
-    powerSearchConfig: [
-      dataTablePowerSearchOperators.float_equals(),
-      dataTablePowerSearchOperators.float_greater_than(),
-      dataTablePowerSearchOperators.float_less_than(),
-      dataTablePowerSearchOperators.float_greater_or_equal(),
-      dataTablePowerSearchOperators.float_less_or_equal(),
-    ],
+    powerSearchConfig: {type: 'float'},
   },
   {
     key: 'duration',
@@ -771,13 +744,7 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 100,
     formatters: formatDuration,
     align: 'right',
-    powerSearchConfig: [
-      dataTablePowerSearchOperators.float_equals(),
-      dataTablePowerSearchOperators.float_greater_than(),
-      dataTablePowerSearchOperators.float_less_than(),
-      dataTablePowerSearchOperators.float_greater_or_equal(),
-      dataTablePowerSearchOperators.float_less_or_equal(),
-    ],
+    powerSearchConfig: {type: 'float'},
   },
 ];
 
