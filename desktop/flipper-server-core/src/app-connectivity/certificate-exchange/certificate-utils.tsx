@@ -306,6 +306,10 @@ const exportTokenToManifest = async (token: string) => {
   }
 
   if (!config || !config.environmentInfo.isHeadlessBuild) {
+    console.warn(
+      'No configuration or not headless build detected, skipping exporting token to manifest',
+      config,
+    );
     return;
   }
 
