@@ -141,13 +141,12 @@
         window.FLIPPER_APP_VERSION = 'FLIPPER_APP_VERSION_REPLACE_ME';
         window.FLIPPER_SESSION_ID = 'FLIPPER_SESSION_ID_REPLACE_ME';
         window.FLIPPER_UNIXNAME = 'FLIPPER_UNIXNAME_REPLACE_ME';
+        window.FLIPPER_AUTH_TOKEN = 'FLIPPER_AUTH_TOKEN_REPLACE_ME';
 
         const params = new URL(location.href).searchParams;
         let token = params.get('token');
         if (!token) {
-          const manifestResponse = await fetch('manifest.json');
-          const manifest = await manifestResponse.json();
-          token = manifest.token;
+          token = window.FLIPPER_AUTH_TOKEN
         }
 
         const socket = new WebSocket(`ws://${location.host}?token=${token}`);
@@ -212,7 +211,7 @@
                 setTimeout(() => retry(retries), 1000);
               }
             }
-            
+
             retry(3);
           };
 

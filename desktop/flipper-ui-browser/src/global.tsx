@@ -22,6 +22,7 @@ declare global {
     FLIPPER_APP_VERSION: string;
     FLIPPER_SESSION_ID: string;
     FLIPPER_UNIXNAME: string;
+    FLIPPER_AUTH_TOKEN: string;
 
     flipperShowMessage?(message: string): void;
     flipperHideMessage?(): void;

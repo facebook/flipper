@@ -55,17 +55,12 @@ async function start() {
     const providerParams = new URL(location.href).searchParams;
     let token = providerParams.get('token');
     if (!token) {
-      console.info(
-        '[flipper-client][ui-browser] Get token from manifest instead',
-      );
-      try {
-        const manifestResponse = await fetch('manifest.json');
-        const manifest = await manifestResponse.json();
-        token = manifest.token;
-      } catch (e) {
+      console.info('[flipper-client][ui-browser] Get token from HTML instead');
+      token = window.FLIPPER_AUTH_TOKEN;
+      if (!token || token === 'FLIPPER_AUTH_TOKEN_REPLACE_ME') {
         console.warn(
-          '[flipper-client][ui-browser] Failed to get token from manifest. Error:',
-          e.message,
+          '[flipper-client][ui-browser] Failed to get token from HTML',
+          token,
         );
       }
     }
@@ -73,6 +68,7 @@ async function start() {
     getLogger().info(
       '[flipper-client][ui-browser] Token is available: ',
       token?.length != 0,
+      token?.length === 460,
     );
 
     return token;

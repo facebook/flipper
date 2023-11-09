@@ -16,11 +16,10 @@ import {
 } from './openssl-wrapper-with-promises';
 import path from 'path';
 import tmp, {FileOptions} from 'tmp';
-import {FlipperServerConfig, reportPlatformFailures} from 'flipper-common';
+import {reportPlatformFailures} from 'flipper-common';
 import {isTest} from 'flipper-common';
 import {flipperDataFolder} from '../../utils/paths';
 import * as jwt from 'jsonwebtoken';
-import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import {Mutex} from 'async-mutex';
 import {createSecureContext} from 'tls';
 
@@ -288,52 +287,6 @@ const writeToTempFile = async (content: string): Promise<string> => {
   await fs.writeFile(path, content);
   return path;
 };
-
-const manifestFilename = 'manifest.json';
-const getManifestPath = (config: FlipperServerConfig): string => {
-  return path.resolve(config.paths.staticPath, manifestFilename);
-};
-
-const exportTokenToManifest = async (token: string) => {
-  console.info('Export token to manifest');
-  let config: FlipperServerConfig | undefined;
-  try {
-    config = getFlipperServerConfig();
-  } catch {
-    console.warn(
-      'Unable to obtain server configuration whilst exporting token to manifest',
-    );
-  }
-
-  if (!config || !config.environmentInfo.isHeadlessBuild) {
-    console.warn(
-      'No configuration or not headless build detected, skipping exporting token to manifest',
-      config,
-    );
-    return;
-  }
-
-  const manifestPath = getManifestPath(config);
-  try {
-    console.info('Reading manifest at path', manifestPath);
-    const manifestData = await fs.readFile(manifestPath, {
-      encoding: 'utf-8',
-    });
-    const manifest = JSON.parse(manifestData);
-    manifest.token = token;
-
-    const newManifestData = JSON.stringify(manifest, null, 4);
-
-    console.info('Export token to manifest at path', manifestPath);
-    await fs.writeFile(manifestPath, newManifestData);
-  } catch (e) {
-    console.error(
-      'Unable to export authentication token to manifest, may be non existent.',
-      e,
-    );
-  }
-};
-
 export const generateAuthToken = async () => {
   console.info('Generate client authentication token');
 
@@ -346,8 +299,6 @@ export const generateAuthToken = async () => {
   });
 
   await fs.writeFile(serverAuthToken, token);
-
-  await exportTokenToManifest(token);
 
   return token;
 };
@@ -381,8 +332,6 @@ export const getAuthToken = async (): Promise<string> => {
     console.warn('Either token has expired or is invalid');
     return generateAuthToken();
   }
-
-  await exportTokenToManifest(token);
 
   return token;
 };

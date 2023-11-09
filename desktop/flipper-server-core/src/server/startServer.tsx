@@ -18,7 +18,10 @@ import exitHook from 'exit-hook';
 import {attachSocketServer} from './attachSocketServer';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {FlipperServerCompanionEnv} from 'flipper-server-companion';
-import {validateAuthToken} from '../app-connectivity/certificate-exchange/certificate-utils';
+import {
+  getAuthToken,
+  validateAuthToken,
+} from '../app-connectivity/certificate-exchange/certificate-utils';
 import {tracker} from '../tracker';
 import {EnvironmentInfo, isProduction} from 'flipper-common';
 import {GRAPH_SECRET} from '../fb-stubs/constants';
@@ -38,6 +41,7 @@ type ReadyForConnections = (
 
 const verifyAuthToken = (req: http.IncomingMessage): boolean => {
   let token: string | null = null;
+
   if (req.url) {
     const url = new URL(req.url, `http://${req.headers.host}`);
     token = url.searchParams.get('token');
@@ -45,6 +49,10 @@ const verifyAuthToken = (req: http.IncomingMessage): boolean => {
 
   if (!token && req.headers['x-access-token']) {
     token = req.headers['x-access-token'] as string;
+  }
+
+  if (!isProduction()) {
+    console.info('[conn] verifyAuthToken -> token', token);
   }
 
   if (!token) {
@@ -146,16 +154,18 @@ async function startHTTPServer(
     next();
   });
 
-  app.get('/', (_req, res) => {
+  app.get('/', async (_req, res) => {
     const resource = isReady
       ? path.join(config.staticPath, config.entry)
       : path.join(config.staticPath, 'loading.html');
+    const token = await getAuthToken();
     fs.readFile(resource, (_err, content) => {
       const processedContent = content
         .toString()
         .replace('GRAPH_SECRET_REPLACE_ME', GRAPH_SECRET)
         .replace('FLIPPER_APP_VERSION_REPLACE_ME', environmentInfo.appVersion)
         .replace('FLIPPER_UNIXNAME_REPLACE_ME', environmentInfo.os.unixname)
+        .replace('FLIPPER_AUTH_TOKEN_REPLACE_ME', token)
         .replace('FLIPPER_SESSION_ID_REPLACE_ME', sessionId);
       res.end(processedContent);
     });
