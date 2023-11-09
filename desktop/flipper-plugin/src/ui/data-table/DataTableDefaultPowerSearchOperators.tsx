@@ -9,7 +9,10 @@
 
 import dayjs from 'dayjs';
 import {OperatorConfig} from '../PowerSearch';
-import {FloatOperatorConfig} from '../PowerSearch/PowerSearchConfig';
+import {
+  EnumLabels,
+  FloatOperatorConfig,
+} from '../PowerSearch/PowerSearchConfig';
 
 export type PowerSearchOperatorProcessor = (
   powerSearchOperatorConfig: OperatorConfig,
@@ -110,38 +113,38 @@ export const dataTablePowerSearchOperators = {
     valueType: 'FLOAT',
   }),
   // { [enumValue]: enumLabel }
-  enum_is: (enumLabels: Record<string, string>) => ({
+  enum_is: (enumLabels: EnumLabels) => ({
     label: 'is',
     key: 'enum_is',
     valueType: 'ENUM',
     enumLabels,
   }),
-  enum_is_nullish_or: (enumLabels: Record<string, string>) => ({
+  enum_is_nullish_or: (enumLabels: EnumLabels) => ({
     label: 'is nullish or',
     key: 'enum_is_nullish_or',
     valueType: 'ENUM',
     enumLabels,
   }),
-  enum_is_not: (enumLabels: Record<string, string>) => ({
+  enum_is_not: (enumLabels: EnumLabels) => ({
     label: 'is not',
     key: 'enum_is_not',
     valueType: 'ENUM',
     enumLabels,
   }),
   // TODO: Support logical operations (AND, OR, NOT) to combine primitive operators instead of adding new complex operators!
-  enum_set_is_nullish_or_any_of: (enumLabels: Record<string, string>) => ({
+  enum_set_is_nullish_or_any_of: (enumLabels: EnumLabels) => ({
     label: 'is nullish or any of',
     key: 'enum_set_is_nullish_or_any_of',
     valueType: 'ENUM_SET',
     enumLabels,
   }),
-  enum_set_is_any_of: (enumLabels: Record<string, string>) => ({
+  enum_set_is_any_of: (enumLabels: EnumLabels) => ({
     label: 'is any of',
     key: 'enum_set_is_any_of',
     valueType: 'ENUM_SET',
     enumLabels,
   }),
-  enum_set_is_none_of: (enumLabels: Record<string, string>) => ({
+  enum_set_is_none_of: (enumLabels: EnumLabels) => ({
     label: 'is none of',
     key: 'enum_set_is_none_of',
     valueType: 'ENUM_SET',

@@ -143,6 +143,36 @@ type DataTableInput<T = any> =
       dataSource?: undefined;
     };
 
+type PowerSearchSimplifiedConfig =
+  | {type: 'enum'; enumLabels: EnumLabels}
+  | {type: 'int'}
+  | {type: 'float'}
+  | {type: 'string'}
+  | {type: 'date'}
+  | {type: 'dateTime'}
+  | {type: 'object'};
+type PowerSearchExtendedConfig = {
+  operators: OperatorConfig[];
+  useWholeRow?: boolean;
+  /**
+   * Auto-generate enum options based on the data.
+   * Requires the column to be set as a secondary "index" (single column, not a compound multi-column index).
+   * See https://fburl.com/code/0waicx6p
+   */
+  inferEnumOptionsFromData?: boolean;
+};
+
+const powerSearchConfigIsExtendedConfig = (
+  powerSearchConfig:
+    | undefined
+    | PowerSearchSimplifiedConfig
+    | OperatorConfig[]
+    | false
+    | PowerSearchExtendedConfig,
+): powerSearchConfig is PowerSearchExtendedConfig =>
+  !!powerSearchConfig &&
+  Array.isArray((powerSearchConfig as PowerSearchExtendedConfig).operators);
+
 export type DataTableColumn<T = any> = {
   //this can be a dotted path into a nest objects. e.g foo.bar
   key: keyof T & string;
@@ -157,18 +187,10 @@ export type DataTableColumn<T = any> = {
   inversed?: boolean;
   sortable?: boolean;
   powerSearchConfig?:
+    | PowerSearchSimplifiedConfig
     | OperatorConfig[]
     | false
-    | {
-        operators: OperatorConfig[];
-        useWholeRow?: boolean;
-        /**
-         * Auto-generate enum options based on the data.
-         * Requires the column to be set as a secondary "index" (single column, not a compound multi-column index).
-         * See https://fburl.com/code/0waicx6p
-         */
-        inferEnumOptionsFromData?: boolean;
-      };
+    | PowerSearchExtendedConfig;
 };
 
 export interface TableRowRenderContext<T = any> {
@@ -287,8 +309,7 @@ export function DataTable<T extends object>(
 
     for (const column of columns) {
       if (
-        typeof column.powerSearchConfig === 'object' &&
-        !Array.isArray(column.powerSearchConfig) &&
+        powerSearchConfigIsExtendedConfig(column.powerSearchConfig) &&
         column.powerSearchConfig.inferEnumOptionsFromData
       ) {
         if (!secondaryIndeciesKeys.has(column.key)) {
@@ -370,7 +391,7 @@ export function DataTable<T extends object>(
         ];
       } else if (Array.isArray(column.powerSearchConfig)) {
         columnPowerSearchOperators = column.powerSearchConfig;
-      } else {
+      } else if (powerSearchConfigIsExtendedConfig(column.powerSearchConfig)) {
         columnPowerSearchOperators = column.powerSearchConfig.operators;
         useWholeRow = !!column.powerSearchConfig.useWholeRow;
 
@@ -386,6 +407,92 @@ export function DataTable<T extends object>(
               enumLabels: inferredPowerSearchEnumLabelsForColumn,
             }),
           );
+        }
+      } else {
+        switch (column.powerSearchConfig.type) {
+          case 'date': {
+            columnPowerSearchOperators = [
+              dataTablePowerSearchOperators.same_as_absolute_date_no_time(),
+              dataTablePowerSearchOperators.older_than_absolute_date_no_time(),
+              dataTablePowerSearchOperators.newer_than_absolute_date_no_time(),
+            ];
+            break;
+          }
+          case 'dateTime': {
+            columnPowerSearchOperators = [
+              dataTablePowerSearchOperators.older_than_absolute_date(),
+              dataTablePowerSearchOperators.newer_than_absolute_date(),
+            ];
+            break;
+          }
+          case 'string': {
+            columnPowerSearchOperators = [
+              dataTablePowerSearchOperators.string_contains(),
+              dataTablePowerSearchOperators.string_not_contains(),
+              dataTablePowerSearchOperators.string_matches_exactly(),
+              dataTablePowerSearchOperators.string_not_matches_exactly(),
+              dataTablePowerSearchOperators.string_set_contains_any_of(),
+              dataTablePowerSearchOperators.string_set_contains_none_of(),
+            ];
+            break;
+          }
+          case 'int': {
+            columnPowerSearchOperators = [
+              dataTablePowerSearchOperators.int_equals(),
+              dataTablePowerSearchOperators.int_greater_or_equal(),
+              dataTablePowerSearchOperators.int_greater_than(),
+              dataTablePowerSearchOperators.int_less_or_equal(),
+              dataTablePowerSearchOperators.int_less_than(),
+            ];
+            break;
+          }
+          case 'float': {
+            columnPowerSearchOperators = [
+              dataTablePowerSearchOperators.float_equals(),
+              dataTablePowerSearchOperators.float_greater_or_equal(),
+              dataTablePowerSearchOperators.float_greater_than(),
+              dataTablePowerSearchOperators.float_less_or_equal(),
+              dataTablePowerSearchOperators.float_less_than(),
+            ];
+            break;
+          }
+          case 'enum': {
+            columnPowerSearchOperators = [
+              dataTablePowerSearchOperators.enum_is(
+                column.powerSearchConfig.enumLabels,
+              ),
+              dataTablePowerSearchOperators.enum_is_not(
+                column.powerSearchConfig.enumLabels,
+              ),
+              dataTablePowerSearchOperators.enum_is_nullish_or(
+                column.powerSearchConfig.enumLabels,
+              ),
+              dataTablePowerSearchOperators.enum_set_is_any_of(
+                column.powerSearchConfig.enumLabels,
+              ),
+              dataTablePowerSearchOperators.enum_set_is_none_of(
+                column.powerSearchConfig.enumLabels,
+              ),
+              dataTablePowerSearchOperators.enum_set_is_nullish_or_any_of(
+                column.powerSearchConfig.enumLabels,
+              ),
+            ];
+            break;
+          }
+          case 'object': {
+            columnPowerSearchOperators = [
+              dataTablePowerSearchOperators.searializable_object_contains(),
+              dataTablePowerSearchOperators.searializable_object_not_contains(),
+            ];
+            break;
+          }
+          default: {
+            throw new Error(
+              `Unknown power search config type ${JSON.stringify(
+                column.powerSearchConfig,
+              )}`,
+            );
+          }
         }
       }
 
