@@ -28,6 +28,7 @@ import {
 import {URLSearchParams} from 'url';
 import {tracker} from '../tracker';
 import {getFlipperServerConfig} from '../FlipperServerConfig';
+import {performance} from 'perf_hooks';
 
 const safe = (f: () => void) => {
   try {
@@ -53,6 +54,8 @@ export function attachSocketServer(
   companionEnv: FlipperServerCompanionEnv,
 ) {
   socket.on('connection', (client, req) => {
+    const t0 = performance.now();
+
     const clientAddress =
       (req.socket.remoteAddress &&
         ` ${req.socket.remoteAddress}:${req.socket.remotePort}`) ||
@@ -246,6 +249,7 @@ export function attachSocketServer(
       tracker.track('server-client-close', {
         code,
         error,
+        sessionLength: performance.now() - t0,
       });
 
       if (
