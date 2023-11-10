@@ -184,9 +184,6 @@ function createStubRenderHost(): RenderHost {
       enablePhysicalIOS: false,
       enablePrefetching: Tristate.False,
       idbPath: `/dev/null`,
-      reactNative: {
-        shortcuts: {enabled: false, openDevMenu: '', reload: ''},
-      },
       showWelcomeAtStartup: false,
       suppressPluginErrors: false,
       persistDeviceData: false,
