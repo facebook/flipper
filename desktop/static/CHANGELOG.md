@@ -1,3 +1,8 @@
+# 0.237.0 (10/11/2023)
+
+ * [D51113095](https://github.com/facebook/flipper/search?q=D51113095&type=Commits) -  UIdebugger added powersearch operators to Framework event table
+
+
 # 0.234.0 (1/11/2023)
 
  * [D50595987](https://github.com/facebook/flipper/search?q=D50595987&type=Commits) -  UIDebugger, new sidebar design
