@@ -146,7 +146,8 @@ type DataTableInput<T = any> =
     };
 
 type PowerSearchSimplifiedConfig =
-  | {type: 'enum'; enumLabels: EnumLabels}
+  | {type: 'enum'; enumLabels: EnumLabels; inferEnumOptionsFromData?: false}
+  | {type: 'enum'; enumLabels?: never; inferEnumOptionsFromData: true}
   | {type: 'int'}
   | {type: 'float'}
   | {type: 'string'}
@@ -174,6 +175,17 @@ const powerSearchConfigIsExtendedConfig = (
 ): powerSearchConfig is PowerSearchExtendedConfig =>
   !!powerSearchConfig &&
   Array.isArray((powerSearchConfig as PowerSearchExtendedConfig).operators);
+
+const powerSearchConfigIsSimplifiedConfig = (
+  powerSearchConfig:
+    | undefined
+    | PowerSearchSimplifiedConfig
+    | OperatorConfig[]
+    | false
+    | PowerSearchExtendedConfig,
+): powerSearchConfig is PowerSearchSimplifiedConfig =>
+  !!powerSearchConfig &&
+  typeof (powerSearchConfig as PowerSearchSimplifiedConfig).type === 'string';
 
 export type DataTableColumn<T = any> = {
   //this can be a dotted path into a nest objects. e.g foo.bar
@@ -311,7 +323,9 @@ export function DataTable<T extends object>(
 
     for (const column of columns) {
       if (
-        powerSearchConfigIsExtendedConfig(column.powerSearchConfig) &&
+        (powerSearchConfigIsExtendedConfig(column.powerSearchConfig) ||
+          (powerSearchConfigIsSimplifiedConfig(column.powerSearchConfig) &&
+            column.powerSearchConfig.type === 'enum')) &&
         column.powerSearchConfig.inferEnumOptionsFromData
       ) {
         if (!secondaryIndeciesKeys.has(column.key)) {
@@ -461,24 +475,22 @@ export function DataTable<T extends object>(
             break;
           }
           case 'enum': {
+            let enumLabels: EnumLabels;
+
+            if (column.powerSearchConfig.inferEnumOptionsFromData) {
+              enumLabels = inferredPowerSearchEnumLabels[column.key] ?? {};
+            } else {
+              enumLabels = column.powerSearchConfig.enumLabels;
+            }
+
             columnPowerSearchOperators = [
-              dataTablePowerSearchOperators.enum_is(
-                column.powerSearchConfig.enumLabels,
-              ),
-              dataTablePowerSearchOperators.enum_is_not(
-                column.powerSearchConfig.enumLabels,
-              ),
-              dataTablePowerSearchOperators.enum_is_nullish_or(
-                column.powerSearchConfig.enumLabels,
-              ),
-              dataTablePowerSearchOperators.enum_set_is_any_of(
-                column.powerSearchConfig.enumLabels,
-              ),
-              dataTablePowerSearchOperators.enum_set_is_none_of(
-                column.powerSearchConfig.enumLabels,
-              ),
+              dataTablePowerSearchOperators.enum_is(enumLabels),
+              dataTablePowerSearchOperators.enum_is_not(enumLabels),
+              dataTablePowerSearchOperators.enum_is_nullish_or(enumLabels),
+              dataTablePowerSearchOperators.enum_set_is_any_of(enumLabels),
+              dataTablePowerSearchOperators.enum_set_is_none_of(enumLabels),
               dataTablePowerSearchOperators.enum_set_is_nullish_or_any_of(
-                column.powerSearchConfig.enumLabels,
+                enumLabels,
               ),
             ];
             break;
