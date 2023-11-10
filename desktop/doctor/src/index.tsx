@@ -138,26 +138,6 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             isSkipped: false,
             healthchecks: [
               {
-                key: 'ios.sdk',
-                label: 'SDK Installed',
-                isRequired: true,
-                run: async (e: FlipperDoctor.EnvironmentInfo) => {
-                  const hasProblem =
-                    !e.SDKs['iOS SDK'] ||
-                    !e.SDKs['iOS SDK'].Platforms ||
-                    !e.SDKs['iOS SDK'].Platforms.length;
-                  const message = hasProblem
-                    ? 'iOS SDK is not installed. You can install it using Xcode (https://developer.apple.com/xcode/).'
-                    : `iOS SDK is installed for the following platforms: ${JSON.stringify(
-                        e.SDKs['iOS SDK'].Platforms,
-                      )}.`;
-                  return {
-                    hasProblem,
-                    message,
-                  };
-                },
-              },
-              {
                 key: 'ios.xcode',
                 label: 'XCode Installed',
                 isRequired: true,
@@ -214,6 +194,26 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   return {
                     hasProblem: false,
                     message: `xcode-select has path of ${selectedXcode}.`,
+                  };
+                },
+              },
+              {
+                key: 'ios.sdk',
+                label: 'SDK Installed',
+                isRequired: true,
+                run: async (e: FlipperDoctor.EnvironmentInfo) => {
+                  const hasProblem =
+                    !e.SDKs['iOS SDK'] ||
+                    !e.SDKs['iOS SDK'].Platforms ||
+                    !e.SDKs['iOS SDK'].Platforms.length;
+                  const message = hasProblem
+                    ? 'iOS SDK is not installed. You can install it using Xcode (https://developer.apple.com/xcode/).'
+                    : `iOS SDK is installed for the following platforms: ${JSON.stringify(
+                        e.SDKs['iOS SDK'].Platforms,
+                      )}.`;
+                  return {
+                    hasProblem,
+                    message,
                   };
                 },
               },
