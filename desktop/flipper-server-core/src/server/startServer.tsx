@@ -7,7 +7,7 @@
  * @format
  */
 
-import express, {Express} from 'express';
+import express, {Express, RequestHandler} from 'express';
 import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
@@ -154,7 +154,7 @@ async function startHTTPServer(
     next();
   });
 
-  app.get('/', async (_req, res) => {
+  const serveRoot: RequestHandler = async (_req, res) => {
     const resource = isReady
       ? path.join(config.staticPath, config.entry)
       : path.join(config.staticPath, 'loading.html');
@@ -169,7 +169,10 @@ async function startHTTPServer(
         .replace('FLIPPER_SESSION_ID_REPLACE_ME', sessionId);
       res.end(processedContent);
     });
-  });
+  };
+  app.get('/', serveRoot);
+  app.get('/index.web.html', serveRoot);
+  app.get('/index.web.dev.html', serveRoot);
 
   app.get('/ready', (_req, res) => {
     tracker.track('server-endpoint-hit', {name: 'ready'});
