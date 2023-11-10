@@ -126,7 +126,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
           setIosEmulators(simulators);
         } catch (error) {
           console.warn('Failed to find iOS simulators', error);
-          setiOSMessage(`Error: ${error.message} \nRetrying...`);
+          setiOSMessage(`Error: ${error.message ?? error} \nRetrying...`);
           setTimeout(getiOSSimulators, 1000);
         }
       };
@@ -148,7 +148,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
           setAndroidEmulators(emulators);
         } catch (error) {
           console.warn('Failed to find Android emulators', error);
-          setAndroidMessage(`Error: ${error.message} \nRetrying...`);
+          setAndroidMessage(`Error: ${error.message ?? error} \nRetrying...`);
           setTimeout(getAndroidEmulators, 1000);
         }
       };
