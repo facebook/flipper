@@ -698,12 +698,7 @@ const baseColumns: DataTableColumn<Request>[] = [
     title: 'Method',
     width: 70,
     powerSearchConfig: {
-      operators: [
-        dataTablePowerSearchOperators.enum_is({}),
-        dataTablePowerSearchOperators.enum_is_not({}),
-        dataTablePowerSearchOperators.enum_set_is_any_of({}),
-        dataTablePowerSearchOperators.enum_set_is_none_of({}),
-      ],
+      type: 'enum',
       inferEnumOptionsFromData: true,
     },
   },
@@ -713,12 +708,7 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 70,
     align: 'right',
     powerSearchConfig: {
-      operators: [
-        dataTablePowerSearchOperators.enum_is({}),
-        dataTablePowerSearchOperators.enum_is_not({}),
-        dataTablePowerSearchOperators.enum_set_is_any_of({}),
-        dataTablePowerSearchOperators.enum_set_is_none_of({}),
-      ],
+      type: 'enum',
       inferEnumOptionsFromData: true,
     },
   },
