@@ -8,6 +8,7 @@
  */
 
 import os from 'os';
+import fs from 'fs-extra';
 import {resolve} from 'path';
 import {Settings, Tristate} from 'flipper-common';
 import {readFile, writeFile, pathExists, mkdirp} from 'fs-extra';
@@ -18,7 +19,7 @@ export async function loadSettings(
 ): Promise<Settings> {
   if (settingsString !== '') {
     try {
-      return replaceDefaultSettings(JSON.parse(settingsString));
+      return await replaceDefaultSettings(JSON.parse(settingsString));
     } catch (e) {
       throw new Error("couldn't read the user settingsString");
     }
@@ -48,9 +49,9 @@ function getSettingsFile() {
 
 export const DEFAULT_ANDROID_SDK_PATH = getDefaultAndroidSdkPath();
 
-function getDefaultSettings(): Settings {
+async function getDefaultSettings(): Promise<Settings> {
   return {
-    androidHome: getDefaultAndroidSdkPath(),
+    androidHome: await getDefaultAndroidSdkPath(),
     enableAndroid: true,
     enableIOS: os.platform() === 'darwin',
     enablePhysicalIOS: os.platform() === 'darwin',
@@ -69,14 +70,24 @@ function getDefaultSettings(): Settings {
   };
 }
 
-function getDefaultAndroidSdkPath() {
-  return os.platform() === 'win32' ? getWindowsSdkPath() : '/opt/android_sdk';
+async function getDefaultAndroidSdkPath() {
+  if (os.platform() === 'win32') {
+    return `${os.homedir()}\\AppData\\Local\\android\\sdk`;
+  }
+
+  // non windows platforms
+
+  // created when created a project in Android Studio
+  const androidStudioSdkPath = `${os.homedir()}/Library/Android/sdk`;
+  if (await fs.exists(androidStudioSdkPath)) {
+    return androidStudioSdkPath;
+  }
+
+  return '/opt/android_sdk';
 }
 
-function getWindowsSdkPath() {
-  return `${os.homedir()}\\AppData\\Local\\android\\sdk`;
-}
-
-function replaceDefaultSettings(userSettings: Partial<Settings>): Settings {
-  return {...getDefaultSettings(), ...userSettings};
+async function replaceDefaultSettings(
+  userSettings: Partial<Settings>,
+): Promise<Settings> {
+  return {...(await getDefaultSettings()), ...userSettings};
 }
