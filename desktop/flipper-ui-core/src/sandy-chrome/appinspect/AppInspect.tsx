@@ -13,7 +13,6 @@ import {LeftSidebar, SidebarTitle} from '../LeftSidebar';
 import {Layout, styled} from '../../ui';
 import {theme, useValue} from 'flipper-plugin';
 import {PluginList} from './PluginList';
-import MetroButton from '../../chrome/MetroButton';
 import {BookmarkSection} from './BookmarkSection';
 import Client from '../../Client';
 import {BaseDevice} from 'flipper-frontend-core';
@@ -47,11 +46,6 @@ export function AppInspect() {
           </Toolbar>
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
             {isDeviceConnected && isAppConnected && <BookmarkSection />}
-            {isDeviceConnected && activeDevice && (
-              <Toolbar gap>
-                <MetroButton />
-              </Toolbar>
-            )}
           </Layout.Container>
         </Layout.Container>
         <Layout.ScrollContainer vertical padv={theme.space.large}>
