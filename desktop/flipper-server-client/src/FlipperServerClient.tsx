@@ -30,11 +30,11 @@ export type {FlipperServer, FlipperServerCommands, FlipperServerExecOptions};
 export function createFlipperServer(
   host: string,
   port: number,
-  tokenProvider: () => Promise<string | null | undefined>,
+  tokenProvider: () => string | null | undefined,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
-  const URLProvider = async () => {
-    const token = await tokenProvider();
+  const URLProvider = () => {
+    const token = tokenProvider();
     return `ws://${host}:${port}?token=${token}`;
   };
 

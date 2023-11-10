@@ -32,11 +32,16 @@
       padding: 50px;
       overflow: auto;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       font-size: 20px;
       color: #525252;
       text-align: center;
+    }
+
+    .message p {
+      font-size: 12px;
     }
 
     .console {
@@ -98,6 +103,8 @@
 
 <body>
   <div id="troubleshoot" class="message">
+    <h1 id="tourbleshoot_title"></h1>
+    <p id="tourbleshoot_details"></p>
   </div>
 
   <div id="root">
@@ -121,9 +128,18 @@
 
         const root = document.getElementById('root');
         const troubleshootBox = document.getElementById('troubleshoot');
+        const troubleshootBoxTitle = document.getElementById('tourbleshoot_title');
+        const troubleshootBoxDetails = document.getElementById('tourbleshoot_details');
 
-        function showMessage(text, centered) {
-          troubleshootBox.innerText = text;
+        function showMessage({ title, detail }) {
+          if (title) {
+            troubleshootBoxTitle.innerText = title
+          }
+          if (detail) {
+            const newMessage = document.createElement('p')
+            newMessage.innerText = detail;
+            troubleshootBoxDetails.appendChild(newMessage)
+          }
 
           root.style.display = 'none';
           troubleshootBox.style.display = 'flex';
@@ -132,6 +148,8 @@
         function hideMessage() {
           root.style.display = 'block';
           troubleshootBox.style.display = 'none';
+          troubleshootBoxTitle.innerHTML = ''
+          troubleshootBoxDetails.innerHTML = ''
         }
 
         window.flipperShowMessage = showMessage;

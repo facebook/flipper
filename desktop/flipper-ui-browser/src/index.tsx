@@ -51,7 +51,7 @@ async function start() {
 
   const params = new URL(location.href).searchParams;
 
-  const tokenProvider = async () => {
+  const tokenProvider = () => {
     const providerParams = new URL(location.href).searchParams;
     let token = providerParams.get('token');
     if (!token) {
@@ -62,6 +62,11 @@ async function start() {
           '[flipper-client][ui-browser] Failed to get token from HTML',
           token,
         );
+        window.flipperShowMessage?.({
+          detail:
+            '[flipper-client][ui-browser] Failed to get token from HTML: ' +
+            token,
+        });
       }
     }
 
@@ -108,7 +113,7 @@ async function start() {
       switch (state) {
         case FlipperServerState.CONNECTING:
           getLogger().info('[flipper-client] Connecting to server');
-          window.flipperShowMessage?.('Connecting to server...');
+          window.flipperShowMessage?.({title: 'Connecting to server...'});
           break;
         case FlipperServerState.CONNECTED:
           getLogger().info(
@@ -118,7 +123,7 @@ async function start() {
           break;
         case FlipperServerState.DISCONNECTED:
           getLogger().info('[flipper-client] Disconnected from server');
-          window.flipperShowMessage?.('Waiting for server...');
+          window.flipperShowMessage?.({title: 'Waiting for server...'});
           break;
       }
     },
@@ -172,7 +177,7 @@ start().catch((e) => {
     error: getStringFromErrorLike(e),
     pwa: window.matchMedia('(display-mode: standalone)').matches,
   });
-  window.flipperShowMessage?.('Failed to start UI with error: ' + e);
+  window.flipperShowMessage?.({detail: 'Failed to start UI with error: ' + e});
 });
 
 async function initializePWA() {

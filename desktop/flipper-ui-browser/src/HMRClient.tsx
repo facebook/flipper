@@ -270,7 +270,7 @@ function showCompileError() {
   // Symbolicating compile errors is wasted effort
   // because the stack trace is meaningless:
   (error as any).preventSymbolication = true;
-  window.flipperShowMessage?.(message);
+  window.flipperShowMessage?.({detail: message});
   throw error;
 }
 

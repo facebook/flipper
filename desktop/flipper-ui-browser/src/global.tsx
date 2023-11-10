@@ -24,7 +24,7 @@ declare global {
     FLIPPER_UNIXNAME: string;
     FLIPPER_AUTH_TOKEN: string;
 
-    flipperShowMessage?(message: string): void;
+    flipperShowMessage?(message: {title?: string; detail?: string}): void;
     flipperHideMessage?(): void;
   }
 }
