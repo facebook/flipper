@@ -21,6 +21,11 @@ export type PowerSearchOperatorProcessor = (
 ) => boolean;
 
 export const dataTablePowerSearchOperators = {
+  string_matches_regex: () => ({
+    label: 'matches regex',
+    key: 'string_matches_regex',
+    valueType: 'STRING',
+  }),
   string_contains: () => ({
     label: 'contains',
     key: 'string_contains',
@@ -44,6 +49,11 @@ export const dataTablePowerSearchOperators = {
   searializable_object_contains: () => ({
     label: 'contains',
     key: 'searializable_object_contains',
+    valueType: 'STRING',
+  }),
+  searializable_object_matches_regex: () => ({
+    label: 'matches regex',
+    key: 'searializable_object_matches_regex',
     valueType: 'STRING',
   }),
   searializable_object_not_contains: () => ({
@@ -217,7 +227,23 @@ const tryConvertingUnknownToString = (value: unknown): string | null => {
   }
 };
 
+const regexCache: Record<string, RegExp> = {};
+function safeCreateRegExp(source: string): RegExp | undefined {
+  try {
+    if (!regexCache[source]) {
+      regexCache[source] = new RegExp(source);
+    }
+    return regexCache[source];
+  } catch (_e) {
+    return undefined;
+  }
+}
+
 export const dataTablePowerSearchOperatorProcessorConfig = {
+  string_matches_regex: (_operator, searchValue: string, value: string) =>
+    !!safeCreateRegExp(searchValue)?.test(
+      tryConvertingUnknownToString(value) ?? '',
+    ),
   string_contains: (_operator, searchValue: string, value: string) =>
     !!tryConvertingUnknownToString(value)
       ?.toLowerCase()
@@ -226,6 +252,11 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     !tryConvertingUnknownToString(value)
       ?.toLowerCase()
       .includes(searchValue.toLowerCase()),
+  searializable_object_matches_regex: (
+    _operator,
+    searchValue: string,
+    value: object,
+  ) => !!safeCreateRegExp(searchValue)?.test(JSON.stringify(value)),
   searializable_object_contains: (
     _operator,
     searchValue: string,

@@ -119,6 +119,8 @@ const powerSearchConfigEntireRow: FieldConfig = {
       dataTablePowerSearchOperators.searializable_object_contains(),
     searializable_object_not_contains:
       dataTablePowerSearchOperators.searializable_object_not_contains(),
+    searializable_object_matches_regex:
+      dataTablePowerSearchOperators.searializable_object_matches_regex(),
   },
   useWholeRow: true,
 };
@@ -388,6 +390,7 @@ export function DataTable<T extends object>(
           dataTablePowerSearchOperators.string_not_matches_exactly(),
           dataTablePowerSearchOperators.string_set_contains_any_of(),
           dataTablePowerSearchOperators.string_set_contains_none_of(),
+          dataTablePowerSearchOperators.string_matches_regex(),
         ];
       } else if (Array.isArray(column.powerSearchConfig)) {
         columnPowerSearchOperators = column.powerSearchConfig;
@@ -433,6 +436,7 @@ export function DataTable<T extends object>(
               dataTablePowerSearchOperators.string_not_matches_exactly(),
               dataTablePowerSearchOperators.string_set_contains_any_of(),
               dataTablePowerSearchOperators.string_set_contains_none_of(),
+              dataTablePowerSearchOperators.string_matches_regex(),
             ];
             break;
           }
@@ -483,6 +487,7 @@ export function DataTable<T extends object>(
             columnPowerSearchOperators = [
               dataTablePowerSearchOperators.searializable_object_contains(),
               dataTablePowerSearchOperators.searializable_object_not_contains(),
+              dataTablePowerSearchOperators.searializable_object_matches_regex(),
             ];
             break;
           }
