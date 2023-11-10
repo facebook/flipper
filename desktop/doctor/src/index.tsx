@@ -17,7 +17,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type {FlipperDoctor} from 'flipper-common';
 import * as fs_extra from 'fs-extra';
-import {getIdbInstallationInstructions} from './fb-stubs/idbInstallationInstructions';
+import {
+  getIdbInstallationInstructions,
+  installXcode,
+  installSDK,
+} from './fb-stubs/ios';
 import {validateSelectedXcodeVersion} from './fb-stubs/validateSelectedXcodeVersion';
 
 export function getHealthchecks(): FlipperDoctor.Healthchecks {
@@ -144,7 +148,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 run: async (e: FlipperDoctor.EnvironmentInfo) => {
                   const hasProblem = e.IDEs == null || e.IDEs.Xcode == null;
                   const message = hasProblem
-                    ? 'Xcode (https://developer.apple.com/xcode/) is not installed.'
+                    ? `Xcode is not installed. ${installXcode}.`
                     : `Xcode version ${e.IDEs.Xcode.version} is installed at "${e.IDEs.Xcode.path}".`;
                   return {
                     hasProblem,
@@ -207,7 +211,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                     !e.SDKs['iOS SDK'].Platforms ||
                     !e.SDKs['iOS SDK'].Platforms.length;
                   const message = hasProblem
-                    ? 'iOS SDK is not installed. You can install it using Xcode (https://developer.apple.com/xcode/).'
+                    ? `iOS SDK is not installed. ${installSDK}`
                     : `iOS SDK is installed for the following platforms: ${JSON.stringify(
                         e.SDKs['iOS SDK'].Platforms,
                       )}.`;
