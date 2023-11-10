@@ -239,6 +239,23 @@ function safeCreateRegExp(source: string): RegExp | undefined {
   }
 }
 
+const enumPredicateForWhenValueCouldBeAStringifiedNullish = (
+  // searchValue is typed as a string here, but originally it could have been an undefined or a null and we stringified them during inference (search for `inferEnumOptionsFromData`)
+  searchValue: string,
+  value: string | null | undefined,
+): boolean => {
+  if (searchValue === value) {
+    return true;
+  }
+  if (value === null && searchValue === 'null') {
+    return true;
+  }
+  if (value === undefined && searchValue === 'undefined') {
+    return true;
+  }
+  return false;
+};
+
 export const dataTablePowerSearchOperatorProcessorConfig = {
   string_matches_regex: (_operator, searchValue: string, value: string) =>
     !!safeCreateRegExp(searchValue)?.test(
@@ -315,20 +332,29 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
   float_less_or_equal: (_operator, searchValue: number, value: number) =>
     value <= searchValue,
   enum_is: (_operator, searchValue: string, value: string) =>
-    searchValue === value,
+    enumPredicateForWhenValueCouldBeAStringifiedNullish(searchValue, value),
   enum_is_nullish_or: (_operator, searchValue: string, value?: string | null) =>
-    value == null || searchValue === value,
+    value == null ||
+    enumPredicateForWhenValueCouldBeAStringifiedNullish(searchValue, value),
   enum_is_not: (_operator, searchValue: string, value: string) =>
-    searchValue !== value,
+    !enumPredicateForWhenValueCouldBeAStringifiedNullish(searchValue, value),
   enum_set_is_nullish_or_any_of: (
     _operator,
     searchValue: string[],
     value?: string | null,
-  ) => value == null || searchValue.some((item) => value === item),
+  ) =>
+    value == null ||
+    searchValue.some((item) =>
+      enumPredicateForWhenValueCouldBeAStringifiedNullish(item, value),
+    ),
   enum_set_is_any_of: (_operator, searchValue: string[], value: string) =>
-    searchValue.some((item) => value === item),
+    searchValue.some((item) =>
+      enumPredicateForWhenValueCouldBeAStringifiedNullish(item, value),
+    ),
   enum_set_is_none_of: (_operator, searchValue: string[], value: string) =>
-    !searchValue.some((item) => value === item),
+    !searchValue.some((item) =>
+      enumPredicateForWhenValueCouldBeAStringifiedNullish(item, value),
+    ),
   is_nullish: (_operator, _searchValue, value) => value == null,
   // See PowerSearchAbsoluteDateTerm
   newer_than_absolute_date: (_operator, searchValue: Date, value: any) => {
