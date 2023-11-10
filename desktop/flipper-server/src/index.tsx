@@ -25,6 +25,7 @@ import {
   compareServerVersion,
   getEnvironmentInfo,
   openUI,
+  setupPrefetcher,
   shutdownRunningInstance,
   startFlipperServer,
   startServer,
@@ -296,6 +297,8 @@ async function start() {
       argv.port,
     )} (${serverStartedMS} ms)`,
   );
+
+  setupPrefetcher(flipperServer.config.settings);
 
   const startupMS = t10 - t0;
 
