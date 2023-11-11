@@ -27,6 +27,7 @@ import {EnvironmentInfo, isProduction} from 'flipper-common';
 import {GRAPH_SECRET} from '../fb-stubs/constants';
 import {sessionId} from '../sessionId';
 import {UIPreference, openUI} from '../utils/openUI';
+import {processExit} from '../utils/processExit';
 
 type Config = {
   port: number;
@@ -123,7 +124,7 @@ export async function startServer(
       console.error(
         `[flipper-server] Unable to become ready within ${timeoutSeconds} seconds, exit`,
       );
-      process.exit(1);
+      processExit(1);
     }
   }, timeoutSeconds * 1000);
 
@@ -192,6 +193,7 @@ async function startHTTPServer(
     res.json({success: true});
 
     // Just exit the process, this will trigger the shutdown hooks.
+    // Do not use prcoessExit util as we want the serve to shutdown immediately
     process.exit(0);
   });
 
@@ -226,7 +228,7 @@ async function startHTTPServer(
         `[flipper-server] Unable to listen at port: ${config.port}, is already in use`,
       );
       tracker.track('server-socket-already-in-use', {});
-      process.exit(1);
+      processExit(1);
     }
   });
 

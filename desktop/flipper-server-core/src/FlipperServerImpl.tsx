@@ -583,6 +583,7 @@ export class FlipperServerImpl implements FlipperServer {
       return uploadRes;
     },
     shutdown: async () => {
+      // Do not use processExit helper. We want to server immediatelly quit when this call is triggerred
       process.exit(0);
     },
     'is-logged-in': async () => {

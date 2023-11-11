@@ -29,6 +29,7 @@ import {URLSearchParams} from 'url';
 import {tracker} from '../tracker';
 import {getFlipperServerConfig} from '../FlipperServerConfig';
 import {performance} from 'perf_hooks';
+import {processExit} from '../utils/processExit';
 
 const safe = (f: () => void) => {
   try {
@@ -266,7 +267,7 @@ export function attachSocketServer(
             console.info(
               '[flipper-server] Shutdown as no clients are currently connected',
             );
-            process.exit(0);
+            processExit(0);
           }
         }, FIVE_HOURS);
       }

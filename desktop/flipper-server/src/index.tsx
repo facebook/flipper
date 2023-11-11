@@ -30,6 +30,7 @@ import {
   startFlipperServer,
   startServer,
   tracker,
+  processExit,
 } from 'flipper-server-core';
 import {addLogTailer, isProduction, isTest, LoggerFormat} from 'flipper-common';
 import exitHook from 'exit-hook';
@@ -265,7 +266,7 @@ async function start() {
         console.error(
           '[flipper-server] state changed to error, process will exit.',
         );
-        process.exit(1);
+        processExit(1);
       }
     });
   }
@@ -335,7 +336,7 @@ process.on('uncaughtException', (error) => {
     error,
   );
   reportBrowserConnection(false);
-  process.exit(1);
+  processExit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
@@ -347,8 +348,15 @@ process.on('unhandledRejection', (reason, promise) => {
   );
 });
 
-start().catch((e) => {
-  console.error(chalk.red('Server startup error: '), e);
-  reportBrowserConnection(false);
-  process.exit(1);
-});
+// Node.js process never waits for all promises to settle and exits as soon as there is not pending timers or open sockets or tasks in teh macroqueue
+const runtimeTimeout = setTimeout(() => {}, Number.MAX_SAFE_INTEGER);
+// eslint-disable-next-line promise/catch-or-return
+start()
+  .catch((e) => {
+    console.error(chalk.red('Server startup error: '), e);
+    reportBrowserConnection(false);
+    return processExit(1);
+  })
+  .finally(() => {
+    clearTimeout(runtimeTimeout);
+  });

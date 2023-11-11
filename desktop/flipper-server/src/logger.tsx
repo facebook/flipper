@@ -21,7 +21,10 @@ import fsRotator from 'file-stream-rotator';
 import {ensureFile} from 'fs-extra';
 import {access} from 'fs/promises';
 import {constants} from 'fs';
-import {initializeLogger as initLogger} from 'flipper-server-core';
+import {
+  initializeLogger as initLogger,
+  setProcessExitRoutine,
+} from 'flipper-server-core';
 
 export const loggerOutputFile = 'flipper-server-log.out';
 
@@ -64,4 +67,14 @@ export async function initializeLogger(
       logStream?.write(`${name}: \n${stack}\n`);
     }
   });
+
+  const finalizeLogger = async () => {
+    const logStreamToEnd = logStream;
+    // Prevent future writes
+    logStream = undefined;
+    await new Promise<void>((resolve) => {
+      logStreamToEnd?.end(resolve);
+    });
+  };
+  setProcessExitRoutine(finalizeLogger);
 }

@@ -13,6 +13,7 @@ export * from './tracker';
 export {loadLauncherSettings} from './utils/launcherSettings';
 export {loadProcessConfig} from './utils/processConfig';
 export {getEnvironmentInfo} from './utils/environmentInfo';
+export {processExit, setProcessExitRoutine} from './utils/processExit';
 export {getGatekeepers} from './gk';
 export {setupPrefetcher} from './fb-stubs/Prefetcher';
 export * from './server/attachSocketServer';

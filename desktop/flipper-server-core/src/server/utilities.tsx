@@ -50,7 +50,9 @@ export async function checkServerRunning(
   port: number,
 ): Promise<string | undefined> {
   try {
-    const response = await fetch(`http://localhost:${port}/info`);
+    const response = await fetch(`http://localhost:${port}/info`, {
+      timeout: 1000,
+    });
     if (response.status >= 200 && response.status < 300) {
       const environmentInfo: EnvironmentInfo = await response.json();
       return environmentInfo.appVersion;
@@ -74,7 +76,9 @@ export async function checkServerRunning(
  */
 export async function shutdownRunningInstance(port: number): Promise<boolean> {
   try {
-    const response = await fetch(`http://localhost:${port}/shutdown`);
+    const response = await fetch(`http://localhost:${port}/shutdown`, {
+      timeout: 1000,
+    });
     if (response.status >= 200 && response.status < 300) {
       const json = await response.json();
       console.info(
