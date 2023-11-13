@@ -148,7 +148,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 run: async (e: FlipperDoctor.EnvironmentInfo) => {
                   const hasProblem = e.IDEs == null || e.IDEs.Xcode == null;
                   const message = hasProblem
-                    ? `Xcode is not installed. ${installXcode}.`
+                    ? `Xcode is not installed.\n${installXcode}.`
                     : `Xcode version ${e.IDEs.Xcode.version} is installed at "${e.IDEs.Xcode.path}".`;
                   return {
                     hasProblem,

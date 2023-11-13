@@ -133,7 +133,11 @@ function CollapsableCategory(props: {
           key={check.key}
           header={check.label}
           extra={<CheckIcon status={check.result.status} />}>
-          <Paragraph>{check.result.message}</Paragraph>
+          {check.result.message?.split('\n').map((line, index) => (
+            <Paragraph key={index} style={{marginBottom: 0}}>
+              {line}
+            </Paragraph>
+          ))}
           {check.result.commands && (
             <List>
               {check.result.commands.map(({title, command}, i) => (
