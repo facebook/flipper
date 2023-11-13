@@ -444,8 +444,6 @@ export function DataTable<T extends object>(
           }
           case 'string': {
             columnPowerSearchOperators = [
-              dataTablePowerSearchOperators.string_contains(),
-              dataTablePowerSearchOperators.string_not_contains(),
               dataTablePowerSearchOperators.string_matches_exactly(),
               dataTablePowerSearchOperators.string_not_matches_exactly(),
               dataTablePowerSearchOperators.string_set_contains_any_of(),
@@ -484,9 +482,6 @@ export function DataTable<T extends object>(
             }
 
             columnPowerSearchOperators = [
-              dataTablePowerSearchOperators.enum_is(enumLabels),
-              dataTablePowerSearchOperators.enum_is_not(enumLabels),
-              dataTablePowerSearchOperators.enum_is_nullish_or(enumLabels),
               dataTablePowerSearchOperators.enum_set_is_any_of(enumLabels),
               dataTablePowerSearchOperators.enum_set_is_none_of(enumLabels),
               dataTablePowerSearchOperators.enum_set_is_nullish_or_any_of(
