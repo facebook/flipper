@@ -78,12 +78,12 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             if (!androidHome) {
               androidHomeResult = {
                 hasProblem: true,
-                message: `ANDROID_HOME is not defined. You can use Flipper Settings (File > Preferences) to point to its location.`,
+                message: `ANDROID_HOME is not defined. You can use Flipper Settings (More > Settings) to point to its location.`,
               };
             } else if (!fs.existsSync(androidHome)) {
               androidHomeResult = {
                 hasProblem: true,
-                message: `ANDROID_HOME point to a folder which does not exist: ${androidHome}. You can use Flipper Settings (File > Preferences) to point to a different location.`,
+                message: `ANDROID_HOME point to a folder which does not exist: ${androidHome}. You can use Flipper Settings (More > Settings) to point to a different location.`,
               };
             } else {
               const platformToolsDir = path.join(androidHome, 'platform-tools');
@@ -106,12 +106,12 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             if (!androidSdkRoot) {
               androidSdkRootResult = {
                 hasProblem: true,
-                message: `ANDROID_SDK_ROOT is not defined. You can use Flipper Settings (File > Preferences) to point to its location.`,
+                message: `ANDROID_SDK_ROOT is not defined. You can use Flipper Settings (More > Settings) to point to its location.`,
               };
             } else if (!fs.existsSync(androidSdkRoot)) {
               androidSdkRootResult = {
                 hasProblem: true,
-                message: `ANDROID_SDK_ROOT point to a folder which does not exist: ${androidSdkRoot}. You can use Flipper Settings (File > Preferences) to point to a different location.`,
+                message: `ANDROID_SDK_ROOT point to a folder which does not exist: ${androidSdkRoot}. You can use Flipper Settings (More > Settings) to point to a different location.`,
               };
             } else {
               const platformToolsDir = path.join(
