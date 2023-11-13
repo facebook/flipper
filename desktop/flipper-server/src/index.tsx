@@ -22,7 +22,6 @@ import {
   UIPreference,
   checkPortInUse,
   checkServerRunning,
-  compareServerVersion,
   getEnvironmentInfo,
   openUI,
   setupPrefetcher,
@@ -161,30 +160,24 @@ async function start() {
     `[flipper-server][bootstrap] Keytar loaded (${keytarLoadedMS} ms)`,
   );
 
-  let launchAndFinish = false;
-
   console.info('[flipper-server] Check for running instances');
   const existingRunningInstanceVersion = await checkServerRunning(argv.port);
   if (existingRunningInstanceVersion) {
     console.info(
       `[flipper-server] Running instance found with version: ${existingRunningInstanceVersion}, current version: ${environmentInfo.appVersion}`,
     );
-    if (
-      compareServerVersion(
-        environmentInfo.appVersion,
-        existingRunningInstanceVersion,
-      ) > 0
-    ) {
-      console.info(`[flipper-server] Shutdown running instance`);
-      await shutdownRunningInstance(argv.port);
-    } else {
-      launchAndFinish = true;
-    }
+    console.info(`[flipper-server] Shutdown running instance`);
+    const success = await shutdownRunningInstance(argv.port);
+    console.info(
+      `[flipper-server] Shutdown running instance acknowledged: ${success}`,
+    );
   } else {
     console.info('[flipper-server] Checking if port is in use (TCP)');
     if (await checkPortInUse(argv.port)) {
-      console.info(`[flipper-server] Shutdown running instance`);
-      await shutdownRunningInstance(argv.port);
+      const success = await shutdownRunningInstance(argv.port);
+      console.info(
+        `[flipper-server] Shutdown running instance acknowledged: ${success}`,
+      );
     }
   }
 
@@ -193,10 +186,6 @@ async function start() {
   console.info(
     `[flipper-server][bootstrap] Check for running instances completed (${runningInstanceShutdownMS} ms)`,
   );
-
-  if (launchAndFinish) {
-    return await launch();
-  }
 
   const {app, server, socket, readyForIncomingConnections} = await startServer(
     {
