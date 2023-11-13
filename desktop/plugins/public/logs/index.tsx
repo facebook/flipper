@@ -12,13 +12,16 @@ import {
   DeviceLogEntry,
   usePlugin,
   createDataSource,
-  DataTableColumn,
+  dataTablePowerSearchOperators,
+  _DataTableColumnWithPowerSearch,
+  _DataTableWithPowerSearch,
   theme,
-  DataTableManager,
+  _DataTableWithPowerSearchManager,
   createState,
   useValue,
   DataFormatter,
-  DataTable,
+  EnumLabels,
+  SearchExpressionTerm,
 } from 'flipper-plugin';
 import {
   PlayCircleOutlined,
@@ -32,28 +35,31 @@ import {baseRowStyle, logTypes} from './logTypes';
 
 export type ExtendedLogEntry = DeviceLogEntry & {
   count: number;
+  pidStr: string; //for the purposes of inferring (only supports string type)
 };
+
+const logLevelEnumLabels = Object.entries(logTypes).reduce(
+  (res, [key, {label}]) => {
+    res[key] = label;
+    return res;
+  },
+  {} as EnumLabels,
+);
 
 function createColumnConfig(
   _os: 'iOS' | 'Android' | 'Metro',
-): DataTableColumn<ExtendedLogEntry>[] {
+): _DataTableColumnWithPowerSearch<ExtendedLogEntry>[] {
   return [
     {
       key: 'type',
-      title: '',
+      title: 'Level',
       width: 30,
-      filters: Object.entries(logTypes).map(([value, config]) => ({
-        label: config.label,
-        value,
-        enabled: config.enabled,
-      })),
       onRender(entry) {
         return entry.count > 1 ? (
           <Badge
             count={entry.count}
             size="small"
             style={{
-              marginTop: 4,
               color: theme.white,
               background:
                 (logTypes[entry.type]?.style as any)?.color ??
@@ -64,6 +70,12 @@ function createColumnConfig(
           logTypes[entry.type]?.icon
         );
       },
+      powerSearchConfig: {
+        operators: [
+          dataTablePowerSearchOperators.enum_set_is_any_of(logLevelEnumLabels),
+          dataTablePowerSearchOperators.enum_set_is_none_of(logLevelEnumLabels),
+        ],
+      },
     },
     {
       key: 'date',
@@ -71,10 +83,11 @@ function createColumnConfig(
       width: 120,
     },
     {
-      key: 'pid',
+      key: 'pidStr',
       title: 'PID',
       width: 60,
       visible: true,
+      powerSearchConfig: enumPowerSearchConfig,
     },
     {
       key: 'tid',
@@ -86,6 +99,7 @@ function createColumnConfig(
       key: 'tag',
       title: 'Tag',
       width: 160,
+      powerSearchConfig: enumPowerSearchConfig,
     },
     {
       key: 'app',
@@ -106,22 +120,47 @@ function createColumnConfig(
   ];
 }
 
+const enumPowerSearchConfig = {
+  inferEnumOptionsFromData: true,
+
+  operators: [
+    dataTablePowerSearchOperators.enum_set_is_any_of({}),
+    dataTablePowerSearchOperators.enum_set_is_none_of({}),
+  ],
+};
+
 function getRowStyle(entry: DeviceLogEntry): CSSProperties | undefined {
   return (logTypes[entry.type]?.style as any) ?? baseRowStyle;
 }
+
+const powerSearchInitialState: SearchExpressionTerm[] = [
+  {
+    field: {
+      key: 'type',
+      label: 'Level',
+    },
+    operator:
+      dataTablePowerSearchOperators.enum_set_is_any_of(logLevelEnumLabels),
+    searchValue: Object.entries(logTypes)
+      .filter(([_, item]) => item.enabled)
+      .map(([key]) => key),
+  },
+];
 
 export function devicePlugin(client: DevicePluginClient) {
   const rows = createDataSource<ExtendedLogEntry>([], {
     limit: 200000,
     persist: 'logs',
+    indices: [['pid'], ['tag']], //there are for inferring enum types
   });
   const isPaused = createState(true);
   const tableManagerRef = createRef<
-    undefined | DataTableManager<ExtendedLogEntry>
+    undefined | _DataTableWithPowerSearchManager<ExtendedLogEntry>
   >();
 
   client.onDeepLink((payload: unknown) => {
     if (typeof payload === 'string') {
+      tableManagerRef.current?.setSearchExpression(powerSearchInitialState);
       // timeout as we want to await restoring any previous scroll positin first, then scroll to the
       setTimeout(() => {
         let hasMatch = false;
@@ -168,11 +207,13 @@ export function devicePlugin(client: DevicePluginClient) {
         ) {
           rows.update(lastIndex, {
             ...previousRow,
+            pidStr: previousRow.pid.toString(),
             count: previousRow.count + 1,
           });
         } else {
           rows.append({
             ...entry,
+            pidStr: entry.pid.toString(),
             count: 1,
           });
         }
@@ -225,7 +266,7 @@ export function Component() {
   const plugin = usePlugin(devicePlugin);
   const paused = useValue(plugin.isPaused);
   return (
-    <DataTable<ExtendedLogEntry>
+    <_DataTableWithPowerSearch<ExtendedLogEntry>
       dataSource={plugin.rows}
       columns={plugin.columns}
       enableAutoScroll
@@ -248,6 +289,7 @@ export function Component() {
         ) : undefined
       }
       tableManagerRef={plugin.tableManagerRef}
+      powerSearchInitialState={powerSearchInitialState}
     />
   );
 }

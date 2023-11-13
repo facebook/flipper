@@ -57,6 +57,7 @@ test('it will merge equal rows', () => {
         "date": 2021-01-28T17:15:12.859Z,
         "message": "test1",
         "pid": 0,
+        "pidStr": "0",
         "tag": "test",
         "tid": 1,
         "type": "error",
@@ -67,6 +68,7 @@ test('it will merge equal rows', () => {
         "date": 2021-01-28T17:15:17.859Z,
         "message": "test2",
         "pid": 2,
+        "pidStr": "2",
         "tag": "test",
         "tid": 3,
         "type": "warn",
@@ -77,6 +79,7 @@ test('it will merge equal rows', () => {
         "date": 2021-01-28T17:15:12.859Z,
         "message": "test3",
         "pid": 0,
+        "pidStr": "0",
         "tag": "test",
         "tid": 1,
         "type": "error",
@@ -103,9 +106,12 @@ test('it supports deeplink and select nodes + navigating to bottom', async () =>
 
   await sleep(1000);
 
-  expect(instance.tableManagerRef.current?.getSelectedItems()).toEqual([
+  const current = instance.tableManagerRef.current;
+  console.error('ref', current);
+  expect(current?.getSelectedItems()).toEqual([
     {
       ...entry2,
+      pidStr: '2',
       count: 1,
     },
   ]);
@@ -116,6 +122,7 @@ test('it supports deeplink and select nodes + navigating to bottom', async () =>
   expect(instance.tableManagerRef.current?.getSelectedItems()).toEqual([
     {
       ...entry3,
+      pidStr: '0',
       count: 1,
     },
   ]);
@@ -138,6 +145,7 @@ test('export / import plugin does work', async () => {
           "date": 2021-01-28T17:15:12.859Z,
           "message": "test1",
           "pid": 0,
+          "pidStr": "0",
           "tag": "test",
           "tid": 1,
           "type": "error",
@@ -148,6 +156,7 @@ test('export / import plugin does work', async () => {
           "date": 2021-01-28T17:15:17.859Z,
           "message": "test2",
           "pid": 2,
+          "pidStr": "2",
           "tag": "test",
           "tid": 3,
           "type": "warn",
