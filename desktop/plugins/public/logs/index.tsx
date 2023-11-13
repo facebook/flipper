@@ -71,23 +71,27 @@ function createColumnConfig(
         );
       },
       powerSearchConfig: {
-        operators: [
-          dataTablePowerSearchOperators.enum_set_is_any_of(logLevelEnumLabels),
-          dataTablePowerSearchOperators.enum_set_is_none_of(logLevelEnumLabels),
-        ],
+        type: 'enum',
+        inferEnumOptionsFromData: true,
       },
     },
     {
       key: 'date',
       title: 'Time',
       width: 120,
+      powerSearchConfig: {
+        type: 'dateTime',
+      },
     },
     {
       key: 'pidStr',
       title: 'PID',
       width: 60,
       visible: true,
-      powerSearchConfig: enumPowerSearchConfig,
+      powerSearchConfig: {
+        type: 'enum',
+        inferEnumOptionsFromData: true,
+      },
     },
     {
       key: 'tid',
@@ -99,7 +103,10 @@ function createColumnConfig(
       key: 'tag',
       title: 'Tag',
       width: 160,
-      powerSearchConfig: enumPowerSearchConfig,
+      powerSearchConfig: {
+        type: 'enum',
+        inferEnumOptionsFromData: true,
+      },
     },
     {
       key: 'app',
@@ -119,15 +126,6 @@ function createColumnConfig(
     },
   ];
 }
-
-const enumPowerSearchConfig = {
-  inferEnumOptionsFromData: true,
-
-  operators: [
-    dataTablePowerSearchOperators.enum_set_is_any_of({}),
-    dataTablePowerSearchOperators.enum_set_is_none_of({}),
-  ],
-};
 
 function getRowStyle(entry: DeviceLogEntry): CSSProperties | undefined {
   return (logTypes[entry.type]?.style as any) ?? baseRowStyle;
