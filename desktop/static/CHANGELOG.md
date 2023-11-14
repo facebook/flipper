@@ -1,3 +1,9 @@
+# 0.238.0 (14/11/2023)
+
+ * [D51199644](https://github.com/facebook/flipper/search?q=D51199644&type=Commits) -  [Logs] Improve power search config to populate dropdown for level, PID & Tag
+ * [D51199783](https://github.com/facebook/flipper/search?q=D51199783&type=Commits) -  [Analytics] Improve power search config to populate dropdown for low cardinality columns
+
+
 # 0.237.0 (10/11/2023)
 
  * [D51113095](https://github.com/facebook/flipper/search?q=D51113095&type=Commits) -  UIdebugger added powersearch operators to Framework event table
