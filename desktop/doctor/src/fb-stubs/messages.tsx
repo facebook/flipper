@@ -15,3 +15,8 @@ export const installXcode =
 
 export const installSDK =
   'You can install it using Xcode (https://developer.apple.com/xcode/).';
+
+export const installAndroidStudio = [
+  'Android Studio is not installed.',
+  'Install Android Studio from https://developer.android.com/studio',
+].join('\n');

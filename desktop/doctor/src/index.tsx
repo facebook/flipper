@@ -21,7 +21,8 @@ import {
   getIdbInstallationInstructions,
   installXcode,
   installSDK,
-} from './fb-stubs/ios';
+  installAndroidStudio,
+} from './fb-stubs/messages';
 import {validateSelectedXcodeVersion} from './fb-stubs/validateSelectedXcodeVersion';
 
 export function getHealthchecks(): FlipperDoctor.Healthchecks {
@@ -66,6 +67,29 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
       isRequired: false,
       isSkipped: false,
       healthchecks: [
+        ...(process.platform === 'darwin'
+          ? [
+              {
+                key: 'android.android-studio',
+                label: 'Android Studio Installed',
+                isRequired: false,
+                run: async (_: FlipperDoctor.EnvironmentInfo) => {
+                  const hasProblem = !fs.existsSync(
+                    '/Applications/Android Studio.app',
+                  );
+
+                  const message = hasProblem
+                    ? installAndroidStudio
+                    : `Android Studio is installed.`;
+
+                  return {
+                    hasProblem,
+                    message,
+                  };
+                },
+              },
+            ]
+          : []),
         {
           key: 'android.sdk',
           label: 'SDK Installed',
