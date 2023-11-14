@@ -30,7 +30,7 @@ import {
 } from 'flipper-plugin';
 import {plugin} from '../../index';
 import {head, last} from 'lodash';
-import {Badge, Typography} from 'antd';
+import {Badge, Tooltip, Typography} from 'antd';
 
 import {useVirtualizer} from '@tanstack/react-virtual';
 import {ContextMenu} from './ContextMenu';
@@ -577,33 +577,52 @@ function HighlightedText(props: {text: string}) {
 }
 
 function nodeIcon(node: TreeNode) {
+  const [icon, tooltip] = nodeData(node);
+
+  const iconComp =
+    typeof icon === 'string' ? <NodeIconImage src={icon} /> : icon;
+
+  if (tooltip == null) {
+    return iconComp;
+  } else {
+    return <Tooltip title={tooltip}>{iconComp}</Tooltip>;
+  }
+}
+
+function nodeData(node: TreeNode) {
   if (node.tags.includes('LithoMountable')) {
-    return <NodeIconImage src="icons/litho-logo-blue.png" />;
+    return ['icons/litho-logo-blue.png', 'Litho Mountable (Primitive)'];
   } else if (node.tags.includes('Litho')) {
-    return <NodeIconImage src="icons/litho-logo.png" />;
+    return ['icons/litho-logo.png', 'Litho Component'];
   } else if (node.tags.includes('CK')) {
     if (node.tags.includes('iOS')) {
-      return <NodeIconImage src="icons/ck-mounted-logo.png" />;
+      return ['icons/ck-mounted-logo.png', 'CK Mounted Component'];
     }
-    return <NodeIconImage src="icons/ck-logo.png" />;
+    return ['icons/ck-logo.png', 'CK Component'];
   } else if (node.tags.includes('BloksBoundTree')) {
-    return <NodeIconImage src="facebook/bloks-logo-orange.png" />;
+    return ['facebook/bloks-logo-orange.png', 'Bloks Bridged component'];
   } else if (node.tags.includes('BloksDerived')) {
-    return <NodeIconImage src="facebook/bloks-logo-blue.png" />;
+    return ['facebook/bloks-logo-blue.png', 'Bloks Derived (Server) component'];
   } else if (node.tags.includes('Warning')) {
-    return (
-      <WarningOutlined style={{...nodeiconStyle, color: theme.errorColor}} />
-    );
+    return [
+      <WarningOutlined
+        key="0"
+        style={{...nodeiconStyle, color: theme.errorColor}}
+      />,
+      null,
+    ];
   } else {
-    return (
+    return [
       <div
+        key="0"
         style={{
           height: NodeIconSize,
           width: 0,
           marginRight: IconRightMargin,
         }}
-      />
-    );
+      />,
+      null,
+    ];
   }
 }
 
