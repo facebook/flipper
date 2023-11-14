@@ -518,9 +518,6 @@ export function computeDataTableFilter(
       const value = searchTerm.field.useWholeRow
         ? item
         : getValueAtPath(item, searchTerm.field.key);
-      if (!value) {
-        return treatUndefinedValuesAsMatchingFiltering;
-      }
 
       const processor =
         powerSearchProcessors[
@@ -535,7 +532,21 @@ export function computeDataTableFilter(
         return true;
       }
 
-      return processor(searchTerm.operator, searchTerm.searchValue, value);
+      try {
+        const res = processor(
+          searchTerm.operator,
+          searchTerm.searchValue,
+          value,
+        );
+
+        if (!res && !value) {
+          return treatUndefinedValuesAsMatchingFiltering;
+        }
+
+        return res;
+      } catch {
+        return treatUndefinedValuesAsMatchingFiltering;
+      }
     });
   };
 }
