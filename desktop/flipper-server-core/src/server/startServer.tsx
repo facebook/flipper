@@ -185,7 +185,6 @@ async function startHTTPServer(
   };
   app.get('/', serveRoot);
   app.get('/index.web.html', serveRoot);
-  app.get('/index.web.dev.html', serveRoot);
 
   app.get('/ready', (_req, res) => {
     tracker.track('server-endpoint-hit', {name: 'ready'});

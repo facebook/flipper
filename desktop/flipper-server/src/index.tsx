@@ -190,7 +190,7 @@ async function start() {
   const {app, server, socket, readyForIncomingConnections} = await startServer(
     {
       staticPath,
-      entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
+      entry: `index.web.html`,
       port: argv.port,
     },
     environmentInfo,
