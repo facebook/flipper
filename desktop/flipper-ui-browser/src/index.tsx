@@ -10,6 +10,7 @@
 import {
   getLogger,
   getStringFromErrorLike,
+  isProduction,
   setLoggerInstance,
 } from 'flipper-common';
 import {init as initLogger} from './fb-stubs/Logger';
@@ -50,6 +51,34 @@ async function start() {
   setLoggerInstance(logger);
 
   const params = new URL(location.href).searchParams;
+
+  if (!isProduction()) {
+    let token = params.get('token');
+    if (!token) {
+      token = window.flipperConfig.authToken;
+    }
+
+    const socket = new WebSocket(`ws://${location.host}?token=${token}`);
+    socket.addEventListener('message', ({data: dataRaw}) => {
+      const message = JSON.parse(dataRaw.toString());
+
+      if (typeof message.event === 'string') {
+        switch (message.event) {
+          case 'hasErrors': {
+            console.warn('Error message received', message.payload);
+            break;
+          }
+          case 'plugins-source-updated': {
+            window.postMessage({
+              type: 'plugins-source-updated',
+              data: message.payload,
+            });
+            break;
+          }
+        }
+      }
+    });
+  }
 
   const tokenProvider = () => {
     const providerParams = new URL(location.href).searchParams;

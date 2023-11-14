@@ -101,35 +101,6 @@
         window.flipperShowMessage = showMessage;
         window.flipperHideMessage = hideMessage;
 
-        const params = new URL(location.href).searchParams;
-        let token = params.get('token');
-        if (!token) {
-          token = window.flipperConfig.authToken
-        }
-
-        const socket = new WebSocket(`ws://${location.host}?token=${token}`);
-        window.devSocket = socket;
-
-        socket.addEventListener('message', ({ data: dataRaw }) => {
-          const message = JSON.parse(dataRaw.toString())
-
-          if (typeof message.event === 'string') {
-            switch (message.event) {
-              case 'hasErrors': {
-                console.warn('Error message received'. message.payload);
-                break;
-              }
-              case 'plugins-source-updated': {
-                window.postMessage({
-                  type: 'plugins-source-updated',
-                  data: message.payload
-                })
-                break;
-              }
-            }
-          }
-        });
-
         // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
         try {
           if (window.flipperConfig.theme === 'dark') {
