@@ -18,11 +18,11 @@
       theme: 'light',
       entryPoint: 'flipper-ui-browser/src/index-fast-refresh.bundle?platform=web&dev=true&minify=false',
       debug: true,
-      GRAPH_SECRET: 'GRAPH_SECRET_REPLACE_ME',
-      FLIPPER_APP_VERSION: 'FLIPPER_APP_VERSION_REPLACE_ME',
-      FLIPPER_SESSION_ID: 'FLIPPER_SESSION_ID_REPLACE_ME',
-      FLIPPER_UNIXNAME: 'FLIPPER_UNIXNAME_REPLACE_ME',
-      FLIPPER_AUTH_TOKEN: 'FLIPPER_AUTH_TOKEN_REPLACE_ME',
+      graphSecret: 'GRAPH_SECRET_REPLACE_ME',
+      appVersion: 'FLIPPER_APP_VERSION_REPLACE_ME',
+      sessionId: 'FLIPPER_SESSION_ID_REPLACE_ME',
+      unixname: 'FLIPPER_UNIXNAME_REPLACE_ME',
+      authToken: 'FLIPPER_AUTH_TOKEN_REPLACE_ME',
     }
   </script>
   <style>
@@ -163,7 +163,7 @@
         const params = new URL(location.href).searchParams;
         let token = params.get('token');
         if (!token) {
-          token = window.flipperConfig.FLIPPER_AUTH_TOKEN
+          token = window.flipperConfig.authToken
         }
 
         const socket = new WebSocket(`ws://${location.host}?token=${token}`);
