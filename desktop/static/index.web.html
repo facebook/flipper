@@ -35,6 +35,7 @@
       color: #525252;
       text-align: center;
     }
+
     .message p {
       font-size: 12px;
     }
@@ -43,6 +44,7 @@
       display: none;
       background-color: white;
     }
+
   </style>
 </head>
 
@@ -60,7 +62,7 @@
 
   <script>
       (function () {
-        // FIXME: needed to make Metro work
+        // Line below needed to make Metro work. Alternatives could be considered.
         window.global = window;
 
         // Listen to changes in the network state, reload when online.
@@ -131,6 +133,7 @@
 
           document.body.appendChild(script);
         }
+        
         init();
       })();
   </script>
