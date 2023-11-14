@@ -29,6 +29,8 @@ import {sessionId} from '../sessionId';
 import {UIPreference, openUI} from '../utils/openUI';
 import {processExit} from '../utils/processExit';
 
+import util from 'node:util';
+
 type Config = {
   port: number;
   staticPath: string;
@@ -160,14 +162,24 @@ async function startHTTPServer(
       ? path.join(config.staticPath, config.entry)
       : path.join(config.staticPath, 'loading.html');
     const token = await getAuthToken();
+
+    const flipperConfig = {
+      theme: 'light',
+      entryPoint: isProduction()
+        ? 'bundle.js'
+        : 'flipper-ui-browser/src/index-fast-refresh.bundle?platform=web&dev=true&minify=false',
+      debug: !isProduction(),
+      graphSecret: GRAPH_SECRET,
+      appVersion: environmentInfo.appVersion,
+      sessionId: sessionId,
+      unixname: environmentInfo.os.unixname,
+      authToken: token,
+    };
+
     fs.readFile(resource, (_err, content) => {
       const processedContent = content
         .toString()
-        .replace('GRAPH_SECRET_REPLACE_ME', GRAPH_SECRET)
-        .replace('FLIPPER_APP_VERSION_REPLACE_ME', environmentInfo.appVersion)
-        .replace('FLIPPER_UNIXNAME_REPLACE_ME', environmentInfo.os.unixname)
-        .replace('FLIPPER_AUTH_TOKEN_REPLACE_ME', token)
-        .replace('FLIPPER_SESSION_ID_REPLACE_ME', sessionId);
+        .replace('FLIPPER_CONFIG_PLACEHOLDER', util.inspect(flipperConfig));
       res.end(processedContent);
     });
   };
