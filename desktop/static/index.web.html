@@ -18,6 +18,11 @@
       theme: 'light',
       entryPoint: 'bundle.js',
       debug: false,
+      GRAPH_SECRET: 'GRAPH_SECRET_REPLACE_ME',
+      FLIPPER_APP_VERSION: 'FLIPPER_APP_VERSION_REPLACE_ME',
+      FLIPPER_SESSION_ID: 'FLIPPER_SESSION_ID_REPLACE_ME',
+      FLIPPER_UNIXNAME: 'FLIPPER_UNIXNAME_REPLACE_ME',
+      FLIPPER_AUTH_TOKEN: 'FLIPPER_AUTH_TOKEN_REPLACE_ME',
     }
   </script>
   <style>
@@ -102,12 +107,6 @@
 
         window.flipperShowMessage = showMessage;
         window.flipperHideMessage = hideMessage;
-
-        window.GRAPH_SECRET = 'GRAPH_SECRET_REPLACE_ME';
-        window.FLIPPER_APP_VERSION = 'FLIPPER_APP_VERSION_REPLACE_ME';
-        window.FLIPPER_SESSION_ID = 'FLIPPER_SESSION_ID_REPLACE_ME';
-        window.FLIPPER_UNIXNAME = 'FLIPPER_UNIXNAME_REPLACE_ME';
-        window.FLIPPER_AUTH_TOKEN = 'FLIPPER_AUTH_TOKEN_REPLACE_ME';
 
         // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
         try {

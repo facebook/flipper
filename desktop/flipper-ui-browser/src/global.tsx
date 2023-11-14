@@ -17,12 +17,12 @@ declare global {
       theme: 'light' | 'dark' | 'system';
       entryPoint: string;
       debug: boolean;
+      GRAPH_SECRET: string;
+      FLIPPER_APP_VERSION: string;
+      FLIPPER_SESSION_ID: string;
+      FLIPPER_UNIXNAME: string;
+      FLIPPER_AUTH_TOKEN: string;
     };
-    GRAPH_SECRET: string;
-    FLIPPER_APP_VERSION: string;
-    FLIPPER_SESSION_ID: string;
-    FLIPPER_UNIXNAME: string;
-    FLIPPER_AUTH_TOKEN: string;
 
     flipperShowMessage?(message: {title?: string; detail?: string}): void;
     flipperHideMessage?(): void;

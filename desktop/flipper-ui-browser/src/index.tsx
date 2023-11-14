@@ -56,7 +56,7 @@ async function start() {
     let token = providerParams.get('token');
     if (!token) {
       console.info('[flipper-client][ui-browser] Get token from HTML instead');
-      token = window.FLIPPER_AUTH_TOKEN;
+      token = window.flipperConfig.FLIPPER_AUTH_TOKEN;
       if (!token || token === 'FLIPPER_AUTH_TOKEN_REPLACE_ME') {
         console.warn(
           '[flipper-client][ui-browser] Failed to get token from HTML',
