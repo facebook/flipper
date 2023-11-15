@@ -31,7 +31,7 @@ import {
   tracker,
   processExit,
 } from 'flipper-server-core';
-import {addLogTailer, isProduction, isTest, LoggerFormat} from 'flipper-common';
+import {addLogTailer, isTest, LoggerFormat} from 'flipper-common';
 import exitHook from 'exit-hook';
 
 const argv = yargs
@@ -315,8 +315,7 @@ async function launch() {
     return;
   }
 
-  const preference = isProduction() ? UIPreference.PWA : UIPreference.Browser;
-  openUI(preference, argv.port);
+  openUI(UIPreference.PWA, argv.port);
 }
 
 process.on('uncaughtException', (error) => {
