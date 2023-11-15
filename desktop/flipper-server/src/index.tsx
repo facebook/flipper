@@ -105,8 +105,13 @@ const browserConnectionTimeout = setTimeout(() => {
     timedOut: true,
   });
 }, 10000);
+let reported = false;
 const reportBrowserConnection = (successful: boolean) => {
+  if (reported) {
+    return;
+  }
   clearTimeout(browserConnectionTimeout);
+  reported = true;
   tracker.track('browser-connection-created', {
     successful,
     timeMS: performance.now() - t0,
