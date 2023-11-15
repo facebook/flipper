@@ -38,7 +38,7 @@ const emptySelection: Selection = {
 
 type PersistedState = {
   /** Active search value */
-  searchExpression?: SearchExpressionTerm[];
+  searchExpression: SearchExpressionTerm[];
   /** current selection, describes the index index in the datasources's current output (not window!) */
   selection: {current: number; items: number[]};
   /** The currently applicable sorting, if any */
@@ -116,7 +116,7 @@ export type DataManagerState<T> = {
   sorting: Sorting<T> | undefined;
   selection: Selection;
   autoScroll: boolean;
-  searchExpression?: SearchExpressionTerm[];
+  searchExpression: SearchExpressionTerm[];
   filterExceptions: string[] | undefined;
   sideBySide: boolean;
 };
@@ -136,13 +136,13 @@ export const dataTableManagerReducer = produce<
     case 'reset': {
       draft.columns = computeInitialColumns(config.defaultColumns);
       draft.sorting = undefined;
-      draft.searchExpression = undefined;
+      draft.searchExpression = [];
       draft.selection = castDraft(emptySelection);
       draft.filterExceptions = undefined;
       break;
     }
     case 'resetFilters': {
-      draft.searchExpression = undefined;
+      draft.searchExpression = [];
       draft.filterExceptions = undefined;
       break;
     }
@@ -169,7 +169,7 @@ export const dataTableManagerReducer = produce<
     }
     case 'setSearchExpression': {
       getFlipperLib().logger.track('usage', 'data-table:filter:power-search');
-      draft.searchExpression = action.searchExpression;
+      draft.searchExpression = action.searchExpression ?? [];
       draft.filterExceptions = undefined;
       break;
     }
@@ -374,7 +374,7 @@ export function createInitialState<T>(
     });
   }
 
-  let searchExpression = config.initialSearchExpression;
+  let searchExpression = config.initialSearchExpression ?? [];
   if (prefs?.searchExpression?.length) {
     searchExpression = prefs.searchExpression;
   }
@@ -506,12 +506,12 @@ export function getValueAtPath(obj: Record<string, any>, keyPath: string): any {
 }
 
 export function computeDataTableFilter(
-  searchExpression: SearchExpressionTerm[] | undefined,
+  searchExpression: SearchExpressionTerm[],
   powerSearchProcessors: PowerSearchOperatorProcessorConfig,
   treatUndefinedValuesAsMatchingFiltering: boolean = false,
 ) {
   return function dataTableFilter(item: any) {
-    if (!searchExpression || !searchExpression.length) {
+    if (!searchExpression.length) {
       return true;
     }
     return searchExpression.every((searchTerm) => {
