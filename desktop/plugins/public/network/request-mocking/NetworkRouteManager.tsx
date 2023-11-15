@@ -7,11 +7,7 @@
  * @format
  */
 
-import {
-  Atom,
-  _DataTableWithPowerSearchManager as DataTableManager,
-  getFlipperLib,
-} from 'flipper-plugin';
+import {Atom, DataTableManager, getFlipperLib} from 'flipper-plugin';
 import {createContext} from 'react';
 import {Header, Request} from '../types';
 

@@ -121,82 +121,49 @@ test('It can render rows', async () => {
     (await renderer.findByText('unique-string')).parentElement?.parentElement,
   ).toMatchInlineSnapshot(`
     <div
-      class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
+      style="position: absolute; top: 0px; left: 0px; width: 100%; height: 24px; transform: translateY(24px);"
     >
       <div
-        class="css-12luweq-TableBodyColumnContainer e1luu51r0"
-        width="14%"
+        class="ant-dropdown-trigger css-1k3kr6b-TableBodyRowContainer e1luu51r1"
       >
-        <span>
-          <span
-            style="background-color: rgb(255, 245, 102);"
-          />
+        <div
+          class="css-12luweq-TableBodyColumnContainer e1luu51r0"
+          width="14%"
+        >
           00:00:00.000
-        </span>
-      </div>
-      <div
-        class="css-12luweq-TableBodyColumnContainer e1luu51r0"
-        width="14%"
-      >
-        <span>
-          <span
-            style="background-color: rgb(255, 245, 102);"
-          />
+        </div>
+        <div
+          class="css-12luweq-TableBodyColumnContainer e1luu51r0"
+          width="14%"
+        >
           Android Phone
-        </span>
-      </div>
-      <div
-        class="css-12luweq-TableBodyColumnContainer e1luu51r0"
-        width="14%"
-      >
-        <span>
-          <span
-            style="background-color: rgb(255, 245, 102);"
-          />
+        </div>
+        <div
+          class="css-12luweq-TableBodyColumnContainer e1luu51r0"
+          width="14%"
+        >
           FB4A
-        </span>
-      </div>
-      <div
-        class="css-12luweq-TableBodyColumnContainer e1luu51r0"
-        width="14%"
-      >
-        <span>
-          <span
-            style="background-color: rgb(255, 245, 102);"
-          />
+        </div>
+        <div
+          class="css-12luweq-TableBodyColumnContainer e1luu51r0"
+          width="14%"
+        >
           unique-string
-        </span>
-      </div>
-      <div
-        class="css-12luweq-TableBodyColumnContainer e1luu51r0"
-        width="14%"
-      >
-        <span>
-          <span
-            style="background-color: rgb(255, 245, 102);"
-          />
-        </span>
-      </div>
-      <div
-        class="css-12luweq-TableBodyColumnContainer e1luu51r0"
-        width="14%"
-      >
-        <span>
-          <span
-            style="background-color: rgb(255, 245, 102);"
-          />
-        </span>
-      </div>
-      <div
-        class="css-12luweq-TableBodyColumnContainer e1luu51r0"
-        width="14%"
-      >
-        <span>
-          <span
-            style="background-color: rgb(255, 245, 102);"
-          />
+        </div>
+        <div
+          class="css-12luweq-TableBodyColumnContainer e1luu51r0"
+          width="14%"
+        />
+        <div
+          class="css-12luweq-TableBodyColumnContainer e1luu51r0"
+          width="14%"
+        />
+        <div
+          class="css-12luweq-TableBodyColumnContainer e1luu51r0"
+          width="14%"
+        >
           toClient:send
-        </span>
+        </div>
       </div>
     </div>
   `);

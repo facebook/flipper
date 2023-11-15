@@ -105,11 +105,11 @@ class UIPluginInitializer extends AbstractPluginInitializer {
 let uiPluginInitializer: UIPluginInitializer;
 export default async (store: Store, _logger: Logger) => {
   let FlipperPlugin = FlipperPluginSDK;
-  if (getRenderHostInstance().GK('flipper_power_search')) {
+  if (!getRenderHostInstance().GK('flipper_power_search')) {
     FlipperPlugin = {
       ...FlipperPlugin,
-      MasterDetail: FlipperPlugin._MasterDetailWithPowerSearch as any,
-      DataTable: FlipperPlugin._DataTableWithPowerSearch as any,
+      MasterDetail: FlipperPlugin.MasterDetailLegacy as any,
+      DataTable: FlipperPlugin.DataTableLegacy as any,
     };
   }
 

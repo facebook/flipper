@@ -13,10 +13,10 @@ import {
   usePlugin,
   createDataSource,
   dataTablePowerSearchOperators,
-  _DataTableColumnWithPowerSearch,
-  _DataTableWithPowerSearch,
+  DataTableColumn,
+  DataTable,
   theme,
-  _DataTableWithPowerSearchManager,
+  DataTableManager,
   createState,
   useValue,
   DataFormatter,
@@ -48,7 +48,7 @@ const logLevelEnumLabels = Object.entries(logTypes).reduce(
 
 function createColumnConfig(
   _os: 'iOS' | 'Android' | 'Metro',
-): _DataTableColumnWithPowerSearch<ExtendedLogEntry>[] {
+): DataTableColumn<ExtendedLogEntry>[] {
   return [
     {
       key: 'type',
@@ -153,7 +153,7 @@ export function devicePlugin(client: DevicePluginClient) {
   });
   const isPaused = createState(true);
   const tableManagerRef = createRef<
-    undefined | _DataTableWithPowerSearchManager<ExtendedLogEntry>
+    undefined | DataTableManager<ExtendedLogEntry>
   >();
 
   client.onDeepLink((payload: unknown) => {
@@ -264,7 +264,7 @@ export function Component() {
   const plugin = usePlugin(devicePlugin);
   const paused = useValue(plugin.isPaused);
   return (
-    <_DataTableWithPowerSearch<ExtendedLogEntry>
+    <DataTable<ExtendedLogEntry>
       dataSource={plugin.rows}
       columns={plugin.columns}
       enableAutoScroll
