@@ -315,6 +315,7 @@ function NamedAttribute({
  * disables hover and focsued states
  */
 const readOnlyInput = css`
+  overflow: hidden; //stop random scrollbars from showing up
   font-size: small;
   :hover {
     border-color: ${theme.disabledColor} !important;
@@ -388,7 +389,7 @@ function StyledTextArea({
   return (
     <Input.TextArea
       autoSize
-      className={!mutable ? readOnlyInput : ''}
+      className={cx(!mutable && readOnlyInput)}
       bordered
       style={{color: color}}
       readOnly={!mutable}
