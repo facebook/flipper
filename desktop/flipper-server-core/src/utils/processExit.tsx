@@ -19,6 +19,11 @@ const resIsPromise = (res: void | Promise<void>): res is Promise<void> =>
 export const processExit = async (code: number) => {
   console.debug('processExit', code);
 
+  setTimeout(() => {
+    console.error('Process exit routines timed out');
+    process.exit(code);
+  }, 5000);
+
   // eslint-disable-next-line promise/catch-or-return
   await Promise.all(
     onBeforeExitFns.map(async (fn) => {
@@ -36,9 +41,4 @@ export const processExit = async (code: number) => {
   ).finally(() => {
     process.exit(code);
   });
-
-  setTimeout(() => {
-    console.error('Process exit routines timed out');
-    process.exit(code);
-  }, 5000);
 };
