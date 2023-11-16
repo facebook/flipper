@@ -1,3 +1,8 @@
+# 0.239.0 (16/11/2023)
+
+ * [D51346366](https://github.com/facebook/flipper/search?q=D51346366&type=Commits) -  UIDebugger fix issue with scrollbars sometimes appearing in sidebar
+
+
 # 0.238.0 (14/11/2023)
 
  * [D51199644](https://github.com/facebook/flipper/search?q=D51199644&type=Commits) -  [Logs] Improve power search config to populate dropdown for level, PID & Tag
