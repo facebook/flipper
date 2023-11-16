@@ -11,6 +11,7 @@ import {
   InstalledPluginDetails,
   tryCatchReportPluginFailuresAsync,
   notNull,
+  FlipperServerDisconnectedError,
 } from 'flipper-common';
 import {ActivatablePluginDetails, ConcretePluginDetails} from 'flipper-common';
 import {reportUsage} from 'flipper-common';
@@ -229,7 +230,15 @@ export const createRequirePluginFunction =
         return pluginDefinition;
       } catch (e) {
         failedPlugins.push([pluginDetails, e.message]);
-        console.error(`Plugin ${pluginDetails.id} failed to load`, e);
+
+        let severity: 'error' | 'warn' = 'error';
+        if (
+          e instanceof FlipperServerDisconnectedError &&
+          e.reason === 'ws-close'
+        ) {
+          severity = 'warn';
+        }
+        console[severity](`Plugin ${pluginDetails.id} failed to load`, e);
         return null;
       }
     };

@@ -14,6 +14,7 @@ import {
   FlipperServerCommands,
   FlipperServerExecOptions,
   ServerWebSocketMessage,
+  FlipperServerDisconnectedError,
 } from 'flipper-common';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
@@ -90,7 +91,7 @@ export function createFlipperServerWithSocket(
       onStateChange(FlipperServerState.DISCONNECTED);
 
       pendingRequests.forEach((r) =>
-        r.reject(new Error('flipper-server disconnected')),
+        r.reject(new FlipperServerDisconnectedError('ws-close')),
       );
       pendingRequests.clear();
     });
