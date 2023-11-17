@@ -224,7 +224,6 @@ const outOfContentsContainer = (
 
 const MainContainer = styled(Layout.Container)({
   background: theme.backgroundWash,
-  padding: `0 ${theme.space.large}px ${theme.space.large}px 0`,
   overflow: 'hidden',
 });
 
