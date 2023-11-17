@@ -497,7 +497,9 @@ function InlineAttributes({attributes}: {attributes: Record<string, string>}) {
     <>
       {Object.entries(attributes ?? {}).map(([key, value]) => (
         <TreeAttributeContainer key={key}>
-          <span style={{color: theme.warningColor}}>{key}</span>
+          <span style={{color: theme.warningColor}}>
+            {highlightManager.render(key)}
+          </span>
           <span>={highlightManager.render(value)}</span>
         </TreeAttributeContainer>
       ))}
@@ -661,6 +663,9 @@ function searchPredicate(
 ): (node: ClientNode) => string | true | undefined {
   return (node: ClientNode): string | true | undefined =>
     node.name.toLowerCase().includes(searchTerm) ||
+    Object.keys(node.inlineAttributes).find((inlineAttr) =>
+      inlineAttr.toLocaleLowerCase().includes(searchTerm),
+    ) ||
     Object.values(node.inlineAttributes).find((inlineAttr) =>
       inlineAttr.toLocaleLowerCase().includes(searchTerm),
     );
