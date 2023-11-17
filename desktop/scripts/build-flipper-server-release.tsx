@@ -746,12 +746,28 @@ async function setUpMacBundle(
 
   let appTemplate = path.join(staticDir, 'flipper-server-app-template');
   if (isFB) {
+    const {BuildArchitecture, buildFlipperServer} = await import(
+      // @ts-ignore only used inside Meta
+      './fb/build-flipper-server-macos'
+    );
+
+    const architecture =
+      platform === BuildPlatform.MAC_AARCH64
+        ? BuildArchitecture.MAC_AARCH64
+        : BuildArchitecture.MAC_X64;
+    const outputPath = await buildFlipperServer(architecture);
+    console.log(
+      `⚙️  Successfully built platform: ${platform}, output: ${outputPath}`,
+    );
+
     appTemplate = path.join(
       staticDir,
       'facebook',
       'flipper-server-app-template',
       platform,
     );
+
+    await fs.copy(outputPath, path.join(appTemplate, 'Flipper.app'));
     console.info('⚙️  Using internal template from: ' + appTemplate);
   }
 
