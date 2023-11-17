@@ -16,6 +16,7 @@ import {
   Layout,
   styled,
   useLocalStorageState,
+  usePlugin,
 } from 'flipper-plugin';
 import React, {useState} from 'react';
 import {
@@ -33,6 +34,9 @@ import {any} from 'lodash/fp';
 import {InspectableColor} from '../../ClientTypes';
 import {transformAny} from '../../utils/dataTransform';
 import {SearchOutlined} from '@ant-design/icons';
+import {plugin} from '../../index';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import {Glyph} from 'flipper';
 
 type ModalData = {
   data: unknown;
@@ -433,6 +437,7 @@ function AttributeValue({
   name: string;
   inspectable: Inspectable;
 }) {
+  const instance = usePlugin(plugin);
   switch (inspectable.type) {
     case 'boolean':
       return (
@@ -549,6 +554,39 @@ function AttributeValue({
             }}>
             {inspectable.type === 'array' ? '[...]' : '{...}'}
           </span>
+        </Button>
+      );
+    case 'pluginDeeplink':
+      return (
+        <Button
+          size="small"
+          onClick={() => {
+            instance.client.selectPlugin(
+              inspectable.pluginId,
+              inspectable.deeplinkPayload,
+            );
+          }}
+          style={{
+            height: 26,
+            boxSizing: 'border-box',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          type="ghost">
+          <span
+            style={{
+              marginTop: 2,
+              fontFamily: 'monospace',
+              color: theme.textColorSecondary,
+              fontSize: 'small',
+            }}>
+            {inspectable.label}
+          </span>
+          <Glyph
+            style={{marginLeft: 8, marginBottom: 2}}
+            size={12}
+            name="share-external"
+          />
         </Button>
       );
   }

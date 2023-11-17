@@ -297,6 +297,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     metadata,
     perfEvents,
     os: client.device.os,
+    client,
   };
 }
 

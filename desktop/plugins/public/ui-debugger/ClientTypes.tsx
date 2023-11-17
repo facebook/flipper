@@ -228,6 +228,7 @@ export type Inspectable =
   | InspectableSize
   | InspectableBounds
   | InspectableSpaceBox
+  | InspectablePluginDeepLink
   | InspectableUnknown;
 
 export type InspectableText = {
@@ -283,6 +284,13 @@ export type InspectableSpaceBox = {
 export type InspectableObject = {
   type: 'object';
   fields: Record<MetadataId, Inspectable>;
+};
+
+export type InspectablePluginDeepLink = {
+  type: 'pluginDeeplink';
+  label?: string;
+  pluginId: string;
+  deeplinkPayload: unknown;
 };
 
 export type InspectableArray = {
