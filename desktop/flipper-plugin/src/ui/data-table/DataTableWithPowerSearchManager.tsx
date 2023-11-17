@@ -14,7 +14,10 @@ import {DataSourceVirtualizer} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
 import {DataSource, getFlipperLib, _DataSourceView} from 'flipper-plugin-core';
 import {SearchExpressionTerm} from '../PowerSearch';
-import {PowerSearchOperatorProcessorConfig} from './DataTableDefaultPowerSearchOperators';
+import {
+  dataTablePowerSearchOperators,
+  PowerSearchOperatorProcessorConfig,
+} from './DataTableDefaultPowerSearchOperators';
 import {DataTableManager as DataTableManagerLegacy} from './DataTableManager';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
@@ -87,6 +90,7 @@ type DataManagerActions<T> =
       }
     >
   | Action<'clearSelection', {}>
+  | Action<'setSearchExpressionFromSelection', {column: DataTableColumn<T>}>
   | Action<'setFilterExceptions', {exceptions: string[] | undefined}>
   | Action<'appliedInitialScroll'>
   | Action<'toggleAutoScroll'>
@@ -170,6 +174,34 @@ export const dataTableManagerReducer = produce<
     case 'setSearchExpression': {
       getFlipperLib().logger.track('usage', 'data-table:filter:power-search');
       draft.searchExpression = action.searchExpression ?? [];
+      draft.filterExceptions = undefined;
+      break;
+    }
+    case 'setSearchExpressionFromSelection': {
+      getFlipperLib().logger.track(
+        'usage',
+        'data-table:filter:power-search-from-selection',
+      );
+      draft.filterExceptions = undefined;
+      const items = getSelectedItems(
+        config.dataView as _DataSourceView<any, any>,
+        draft.selection,
+      );
+
+      const searchExpressionFromSelection: SearchExpressionTerm[] = [
+        {
+          field: {
+            key: action.column.key,
+            label: action.column.title ?? action.column.key,
+          },
+          operator: dataTablePowerSearchOperators.enum_set_is_any_of({}),
+          searchValue: items.map((item) =>
+            getValueAtPath(item, action.column.key),
+          ),
+        },
+      ];
+
+      draft.searchExpression = searchExpressionFromSelection;
       draft.filterExceptions = undefined;
       break;
     }

@@ -15,7 +15,7 @@ import {
   getSelectedItems,
   getValueAtPath,
   Selection,
-} from './DataTableManager';
+} from './DataTableWithPowerSearchManager';
 import React from 'react';
 import {
   _tryGetFlipperLibImplementation,
@@ -65,8 +65,8 @@ export function tableContextMenuFactory<T extends object>(
             key={column.key ?? idx}
             onClick={() => {
               dispatch({
-                type: 'setColumnFilterFromSelection',
-                column: column.key,
+                type: 'setSearchExpressionFromSelection',
+                column,
               });
             }}>
             {friendlyColumnTitle(column)}
