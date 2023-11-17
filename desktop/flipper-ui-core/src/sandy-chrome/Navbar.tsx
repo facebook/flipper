@@ -72,6 +72,7 @@ import {TroubleshootingGuide} from './appinspect/fb-stubs/TroubleshootingGuide';
 import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
 import {Notification} from './notification/Notification';
+import {SandyRatingButton} from './RatingButton';
 
 export const Navbar = withTrackingScope(function Navbar() {
   return (
@@ -104,6 +105,7 @@ export const Navbar = withTrackingScope(function Navbar() {
 
         <NotificationButton />
         <TroubleshootMenu />
+        <SandyRatingButton />
         <ExtrasMenu />
         <RightSidebarToggleButton />
         {getRenderHostInstance().serverConfig.environmentInfo
