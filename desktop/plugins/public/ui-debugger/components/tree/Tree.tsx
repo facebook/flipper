@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Id, ClientNode, MetadataId, Metadata} from '../../ClientTypes';
+import {Id, ClientNode, NodeMap, MetadataId, Metadata} from '../../ClientTypes';
 import {Color, OnSelectNode} from '../../DesktopTypes';
 import React, {
   CSSProperties,
@@ -60,7 +60,7 @@ export function Tree2({
   additionalHeightOffset,
 }: {
   additionalHeightOffset: number;
-  nodes: Map<Id, ClientNode>;
+  nodes: NodeMap;
   metadata: Map<MetadataId, Metadata>;
   rootId: Id;
 }) {
@@ -125,12 +125,21 @@ export function Tree2({
       return;
     }
     prevSearchTerm.current = searchTerm;
-    const matchingIndexes = findSearchMatchingIndexes(treeNodes, searchTerm);
+    const matchingNodesIds = findMatchingNodes(nodes, searchTerm);
 
-    if (matchingIndexes.length > 0) {
-      rowVirtualizer.scrollToIndex(matchingIndexes[0], {align: 'start'});
+    matchingNodesIds.forEach((id) => {
+      instance.uiActions.ensureAncestorsExpanded(id);
+    });
+
+    if (matchingNodesIds.length > 0) {
+      const firstTreeNode = treeNodes.find(searchPredicate(searchTerm));
+
+      const idx = firstTreeNode?.idx;
+      if (idx != null) {
+        rowVirtualizer.scrollToIndex(idx, {align: 'start'});
+      }
     }
-  }, [rowVirtualizer, searchTerm, treeNodes]);
+  }, [instance.uiActions, nodes, rowVirtualizer, searchTerm, treeNodes]);
 
   useKeyboardControls(
     treeNodes,
@@ -638,22 +647,21 @@ const NodeIconImage = styled.img({...nodeiconStyle});
 
 const renderDepthOffset = 12;
 
-//due to virtualisation the out of the box dom based scrolling doesnt work
-function findSearchMatchingIndexes(
-  treeNodes: TreeNode[],
-  searchTerm: string,
-): number[] {
+function findMatchingNodes(nodes: NodeMap, searchTerm: string): Id[] {
   if (!searchTerm) {
     return [];
   }
-  return treeNodes
-    .map((value, index) => [value, index] as [TreeNode, number])
-    .filter(
-      ([value, _]) =>
-        value.name.toLowerCase().includes(searchTerm) ||
-        Object.values(value.inlineAttributes).find((inlineAttr) =>
-          inlineAttr.toLocaleLowerCase().includes(searchTerm),
-        ),
-    )
-    .map(([_, index]) => index);
+  return [...nodes.values()]
+    .filter(searchPredicate(searchTerm))
+    .map((node) => node.id);
+}
+
+function searchPredicate(
+  searchTerm: string,
+): (node: ClientNode) => string | true | undefined {
+  return (node: ClientNode): string | true | undefined =>
+    node.name.toLowerCase().includes(searchTerm) ||
+    Object.values(node.inlineAttributes).find((inlineAttr) =>
+      inlineAttr.toLocaleLowerCase().includes(searchTerm),
+    );
 }
