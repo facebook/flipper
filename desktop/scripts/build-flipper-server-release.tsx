@@ -744,7 +744,6 @@ async function setUpMacBundle(
 ): Promise<{nodePath: string; resourcesPath: string}> {
   console.log(`⚙️  Creating Mac bundle in ${outputDir}`);
 
-  let appTemplate = path.join(staticDir, 'flipper-server-app-template');
   if (isFB) {
     const {BuildArchitecture, buildFlipperServer} = await import(
       // @ts-ignore only used inside Meta
@@ -760,18 +759,14 @@ async function setUpMacBundle(
       `⚙️  Successfully built platform: ${platform}, output: ${outputPath}`,
     );
 
-    appTemplate = path.join(
-      staticDir,
-      'facebook',
-      'flipper-server-app-template',
-      platform,
-    );
+    const appPath = path.join(outputDir, 'Flipper.app');
+    await fs.emptyDir(appPath);
 
-    await fs.copy(outputPath, path.join(appTemplate, 'Flipper.app'));
-    console.info('⚙️  Using internal template from: ' + appTemplate);
+    await fs.copy(outputPath, appPath);
+  } else {
+    const template = path.join(staticDir, 'flipper-server-app-template');
+    await fs.copy(template, outputDir);
   }
-
-  await fs.copy(appTemplate, outputDir);
 
   function replacePropertyValue(
     obj: any,
