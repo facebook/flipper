@@ -365,6 +365,9 @@ export class FlipperServerImpl implements FlipperServer {
     'device-install-app': async (serial, bundlePath) => {
       return this.devices.get(serial)?.installApp(bundlePath);
     },
+    'device-open-app': async (serial, name) => {
+      return this.devices.get(serial)?.openApp(name);
+    },
     'get-server-state': async () => ({
       state: this.state,
       error: this.stateError,

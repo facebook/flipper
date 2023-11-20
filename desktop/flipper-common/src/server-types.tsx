@@ -288,6 +288,7 @@ export type FlipperServerCommands = {
     serial: string,
     appBundlePath: string,
   ) => Promise<void>;
+  'device-open-app': (serial: string, name: string) => Promise<void>;
   'device-forward-port': (
     serial: string,
     local: string,

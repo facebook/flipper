@@ -63,6 +63,7 @@ export interface IOSBridge {
     ipaPath: string,
     tempPath: string,
   ) => Promise<void>;
+  openApp: (serial: string, name: string) => Promise<void>;
   getInstalledApps: (serial: string) => Promise<IOSInstalledAppDescriptor[]>;
   ls: (serial: string, appBundleId: string, path: string) => Promise<string[]>;
   pull: (
@@ -149,6 +150,11 @@ export class IDBBridge implements IOSBridge {
     await this._execIdb(`install ${ipaPath} --udid ${serial}`);
   }
 
+  async openApp(serial: string, name: string): Promise<void> {
+    console.log(`Opening app via IDB ${name} ${serial}`);
+    await this._execIdb(`launch ${name} --udid ${serial} -f`);
+  }
+
   async getActiveDevices(bootedOnly: boolean): Promise<DeviceTarget[]> {
     return iosUtil
       .targets(this.idbPath, this.enablePhysicalDevices, bootedOnly)
@@ -215,6 +221,10 @@ export class SimctlBridge implements IOSBridge {
     throw new Error(
       'SimctlBridge does not support ls. Install idb (https://fbidb.io/).',
     );
+  }
+
+  async openApp(): Promise<void> {
+    throw new Error('openApp is not implemented for SimctlBridge');
   }
 
   async installApp(

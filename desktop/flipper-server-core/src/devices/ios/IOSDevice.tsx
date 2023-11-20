@@ -140,6 +140,10 @@ export default class IOSDevice
     );
   }
 
+  async openApp(name: string): Promise<void> {
+    return this.iOSBridge.openApp(this.serial, name);
+  }
+
   async readFlipperFolderForAllApps(): Promise<DeviceDebugData[]> {
     console.debug('IOSDevice.readFlipperFolderForAllApps', this.info.serial);
     const installedApps = await this.iOSBridge.getInstalledApps(

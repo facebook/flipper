@@ -82,4 +82,8 @@ export abstract class ServerDevice {
   async installApp(_appBundlePath: string): Promise<void> {
     throw new Error('installApp not implemented');
   }
+
+  async openApp(_name: string): Promise<void> {
+    throw new Error('openApp not implemented');
+  }
 }
