@@ -341,8 +341,10 @@ process.on('unhandledRejection', (reason, promise) => {
   );
 });
 
+// It has to fit in 32 bit int
+const MAX_TIMEOUT = 2147483647;
 // Node.js process never waits for all promises to settle and exits as soon as there is not pending timers or open sockets or tasks in teh macroqueue
-const runtimeTimeout = setTimeout(() => {}, Number.MAX_SAFE_INTEGER);
+const runtimeTimeout = setTimeout(() => {}, MAX_TIMEOUT);
 // eslint-disable-next-line promise/catch-or-return
 start()
   .catch((e) => {
