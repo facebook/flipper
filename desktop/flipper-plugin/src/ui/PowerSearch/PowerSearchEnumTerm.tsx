@@ -16,6 +16,7 @@ type PowerSearchEnumTermProps = {
   onChange: (value: string) => void;
   enumLabels: EnumLabels;
   defaultValue?: string;
+  allowFreeform?: boolean;
 };
 
 export const PowerSearchEnumTerm: React.FC<PowerSearchEnumTermProps> = ({
@@ -23,6 +24,7 @@ export const PowerSearchEnumTerm: React.FC<PowerSearchEnumTermProps> = ({
   onChange,
   enumLabels,
   defaultValue,
+  allowFreeform,
 }) => {
   const [editing, setEditing] = React.useState(!defaultValue);
 
@@ -72,6 +74,7 @@ export const PowerSearchEnumTerm: React.FC<PowerSearchEnumTermProps> = ({
   if (editing) {
     return (
       <Select
+        mode={allowFreeform ? 'tags' : undefined}
         autoFocus
         style={{width}}
         placeholder="..."
@@ -100,7 +103,7 @@ export const PowerSearchEnumTerm: React.FC<PowerSearchEnumTermProps> = ({
   return (
     <Button onClick={() => setEditing(true)}>
       {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-      {enumLabels[defaultValue!]}
+      {enumLabels[defaultValue!] ?? defaultValue}
     </Button>
   );
 };

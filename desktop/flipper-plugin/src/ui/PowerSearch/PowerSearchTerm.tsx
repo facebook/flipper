@@ -115,6 +115,7 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
             });
           }}
           enumLabels={searchTerm.operator.enumLabels}
+          allowFreeform={searchTerm.operator.allowFreeform}
           defaultValue={searchTerm.searchValue}
         />
       );
@@ -131,6 +132,7 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
             });
           }}
           enumLabels={searchTerm.operator.enumLabels}
+          allowFreeform={searchTerm.operator.allowFreeform}
           defaultValue={searchTerm.searchValue}
         />
       );

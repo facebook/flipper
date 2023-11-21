@@ -146,8 +146,18 @@ type DataTableInput<T = any> =
     };
 
 type PowerSearchSimplifiedConfig =
-  | {type: 'enum'; enumLabels: EnumLabels; inferEnumOptionsFromData?: false}
-  | {type: 'enum'; enumLabels?: never; inferEnumOptionsFromData: true}
+  | {
+      type: 'enum';
+      enumLabels: EnumLabels;
+      inferEnumOptionsFromData?: false;
+      allowFreeform?: boolean;
+    }
+  | {
+      type: 'enum';
+      enumLabels?: never;
+      inferEnumOptionsFromData: true;
+      allowFreeform?: boolean;
+    }
   | {type: 'int'}
   | {type: 'float'}
   | {type: 'string'}
@@ -163,6 +173,12 @@ type PowerSearchExtendedConfig = {
    * See https://fburl.com/code/0waicx6p
    */
   inferEnumOptionsFromData?: boolean;
+  /**
+   * Allows freeform entries for enum column types. Makes most sense together with `inferEnumOptionsFromData`.
+   * If `inferEnumOptionsFromData=true`, then it is `true` by default.
+   * See use-case https://fburl.com/workplace/0kx6fkhm
+   */
+  allowFreeform?: boolean;
 };
 
 const powerSearchConfigIsExtendedConfig = (
@@ -418,10 +434,12 @@ export function DataTable<T extends object>(
           inferredPowerSearchEnumLabelsForColumn &&
           column.powerSearchConfig.inferEnumOptionsFromData
         ) {
+          const allowFreeform = column.powerSearchConfig.allowFreeform ?? true;
           columnPowerSearchOperators = columnPowerSearchOperators.map(
             (operator) => ({
               ...operator,
               enumLabels: inferredPowerSearchEnumLabelsForColumn,
+              allowFreeform,
             }),
           );
         }
@@ -474,18 +492,30 @@ export function DataTable<T extends object>(
           }
           case 'enum': {
             let enumLabels: EnumLabels;
+            let allowFreeform = column.powerSearchConfig.allowFreeform;
 
             if (column.powerSearchConfig.inferEnumOptionsFromData) {
               enumLabels = inferredPowerSearchEnumLabels[column.key] ?? {};
+              // Fallback to `true` by default when we use inferred labels
+              if (allowFreeform === undefined) {
+                allowFreeform = true;
+              }
             } else {
               enumLabels = column.powerSearchConfig.enumLabels;
             }
 
             columnPowerSearchOperators = [
-              dataTablePowerSearchOperators.enum_set_is_any_of(enumLabels),
-              dataTablePowerSearchOperators.enum_set_is_none_of(enumLabels),
+              dataTablePowerSearchOperators.enum_set_is_any_of(
+                enumLabels,
+                allowFreeform,
+              ),
+              dataTablePowerSearchOperators.enum_set_is_none_of(
+                enumLabels,
+                allowFreeform,
+              ),
               dataTablePowerSearchOperators.enum_set_is_nullish_or_any_of(
                 enumLabels,
+                allowFreeform,
               ),
             ];
             break;

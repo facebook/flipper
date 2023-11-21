@@ -64,6 +64,7 @@ export type EnumOperatorConfig = {
   key: string;
   label: string;
   enumLabels: EnumLabels;
+  allowFreeform?: boolean;
 };
 
 export type AbsoluteDateOperatorConfig = {

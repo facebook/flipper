@@ -16,6 +16,7 @@ type PowerSearchEnumSetTermProps = {
   onChange: (value: string[]) => void;
   enumLabels: EnumLabels;
   defaultValue?: string[];
+  allowFreeform?: boolean;
 };
 
 export const PowerSearchEnumSetTerm: React.FC<PowerSearchEnumSetTermProps> = ({
@@ -23,6 +24,7 @@ export const PowerSearchEnumSetTerm: React.FC<PowerSearchEnumSetTermProps> = ({
   onChange,
   enumLabels,
   defaultValue,
+  allowFreeform,
 }) => {
   const options = React.useMemo(() => {
     return Object.entries(enumLabels).map(([key, label]) => ({
@@ -38,7 +40,7 @@ export const PowerSearchEnumSetTerm: React.FC<PowerSearchEnumSetTermProps> = ({
 
   return (
     <Select
-      mode="multiple"
+      mode={allowFreeform ? 'tags' : 'multiple'}
       autoFocus={!defaultValue}
       style={{minWidth: 100}}
       placeholder="..."

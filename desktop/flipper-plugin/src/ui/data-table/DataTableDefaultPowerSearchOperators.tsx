@@ -123,42 +123,51 @@ export const dataTablePowerSearchOperators = {
     valueType: 'FLOAT',
   }),
   // { [enumValue]: enumLabel }
-  enum_is: (enumLabels: EnumLabels) => ({
+  enum_is: (enumLabels: EnumLabels, allowFreeform?: boolean) => ({
     label: 'is',
     key: 'enum_is',
     valueType: 'ENUM',
     enumLabels,
+    allowFreeform,
   }),
-  enum_is_nullish_or: (enumLabels: EnumLabels) => ({
+  enum_is_nullish_or: (enumLabels: EnumLabels, allowFreeform?: boolean) => ({
     label: 'is nullish or',
     key: 'enum_is_nullish_or',
     valueType: 'ENUM',
     enumLabels,
+    allowFreeform,
   }),
-  enum_is_not: (enumLabels: EnumLabels) => ({
+  enum_is_not: (enumLabels: EnumLabels, allowFreeform?: boolean) => ({
     label: 'is not',
     key: 'enum_is_not',
     valueType: 'ENUM',
     enumLabels,
+    allowFreeform,
   }),
   // TODO: Support logical operations (AND, OR, NOT) to combine primitive operators instead of adding new complex operators!
-  enum_set_is_nullish_or_any_of: (enumLabels: EnumLabels) => ({
+  enum_set_is_nullish_or_any_of: (
+    enumLabels: EnumLabels,
+    allowFreeform?: boolean,
+  ) => ({
     label: 'is nullish or any of',
     key: 'enum_set_is_nullish_or_any_of',
     valueType: 'ENUM_SET',
     enumLabels,
+    allowFreeform,
   }),
-  enum_set_is_any_of: (enumLabels: EnumLabels) => ({
+  enum_set_is_any_of: (enumLabels: EnumLabels, allowFreeform?: boolean) => ({
     label: 'is any of',
     key: 'enum_set_is_any_of',
     valueType: 'ENUM_SET',
     enumLabels,
+    allowFreeform,
   }),
-  enum_set_is_none_of: (enumLabels: EnumLabels) => ({
+  enum_set_is_none_of: (enumLabels: EnumLabels, allowFreeform?: boolean) => ({
     label: 'is none of',
     key: 'enum_set_is_none_of',
     valueType: 'ENUM_SET',
     enumLabels,
+    allowFreeform,
   }),
   is_nullish: () => ({
     label: 'is nullish',
