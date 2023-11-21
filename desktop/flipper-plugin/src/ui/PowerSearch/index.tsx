@@ -129,11 +129,10 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
 
   return (
     <PowerSearchContainer>
-      <Space size={[theme.space.tiny, 0]} wrap>
+      <Space size={0} wrap>
         <SearchOutlined
           style={{
-            marginLeft: theme.space.tiny,
-            marginRight: theme.space.tiny,
+            margin: theme.space.tiny,
             color: theme.textColorSecondary,
           }}
         />

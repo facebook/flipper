@@ -10,6 +10,7 @@
 import {CloseOutlined} from '@ant-design/icons';
 import {Button, Space} from 'antd';
 import * as React from 'react';
+import {theme} from '../theme';
 import {PowerSearchAbsoluteDateTerm} from './PowerSearchAbsoluteDateTerm';
 import {OperatorConfig} from './PowerSearchConfig';
 import {PowerSearchEnumSetTerm} from './PowerSearchEnumSetTerm';
@@ -168,7 +169,7 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
   }
 
   return (
-    <Space.Compact block size="small">
+    <Space.Compact block size="small" style={{margin: theme.space.tiny / 2}}>
       <Button tabIndex={-1} style={{pointerEvents: 'none'}}>
         {searchTerm.field.label}
       </Button>
