@@ -149,7 +149,7 @@ export function devicePlugin(client: DevicePluginClient) {
   const rows = createDataSource<ExtendedLogEntry>([], {
     limit: 200000,
     persist: 'logs',
-    indices: [['pid'], ['tag']], //there are for inferring enum types
+    indices: [['pidStr'], ['tag']], //there are for inferring enum types
   });
   const isPaused = createState(true);
   const tableManagerRef = createRef<
