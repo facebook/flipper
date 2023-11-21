@@ -30,7 +30,12 @@ export async function getPluginSourceFolders(): Promise<string[]> {
   const pluginFolders: string[] = [];
   const flipperConfigPath = path.join(homedir(), '.flipper', 'config.json');
   if (await fs.pathExists(flipperConfigPath)) {
-    const config = await fs.readJson(flipperConfigPath);
+    let config = {pluginPaths: []};
+    try {
+      config = await fs.readJson(flipperConfigPath);
+    } catch (e) {
+      console.error('Failed to read local flipper config: ', e);
+    }
     if (config.pluginPaths) {
       pluginFolders.push(...config.pluginPaths);
     }
