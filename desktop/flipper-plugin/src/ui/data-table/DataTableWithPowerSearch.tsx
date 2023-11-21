@@ -891,7 +891,7 @@ export function DataTable<T extends object>(
     <Layout.Container>
       {props.actionsTop ? <Searchbar gap>{props.actionsTop}</Searchbar> : null}
       {props.enableSearchbar && (
-        <Searchbar gap>
+        <Searchbar grow shrink gap>
           <PowerSearch
             config={powerSearchConfig}
             searchExpression={searchExpression}

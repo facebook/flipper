@@ -12,10 +12,11 @@ import {css} from '@emotion/css';
 import {theme} from '../theme';
 
 const containerStyle = css`
-  flex: 1 0 auto;
+  flex: 1 1 auto;
   background-color: ${theme.backgroundDefault};
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   border-radius: ${theme.borderRadius};
   border: 1px solid ${theme.borderColor};
   transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
