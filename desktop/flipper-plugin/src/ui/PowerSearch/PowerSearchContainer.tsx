@@ -17,6 +17,7 @@ const containerStyle = css`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  align-items: baseline;
   border-radius: ${theme.borderRadius};
   border: 1px solid ${theme.borderColor};
   transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);

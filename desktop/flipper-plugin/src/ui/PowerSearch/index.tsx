@@ -8,7 +8,6 @@
  */
 
 import * as React from 'react';
-import {Space} from 'antd';
 import {
   PowerSearchConfig,
   FieldConfig,
@@ -129,43 +128,41 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
 
   return (
     <PowerSearchContainer>
-      <Space size={0} wrap>
-        <SearchOutlined
-          style={{
-            margin: theme.space.tiny,
-            color: theme.textColorSecondary,
-          }}
-        />
-        {searchExpression.map((searchTerm, i) => {
-          return (
-            <PowerSearchTerm
-              key={JSON.stringify(searchTerm)}
-              searchTerm={searchTerm}
-              onCancel={() => {
-                setSearchExpression((prevSearchExpression) => {
-                  if (prevSearchExpression[i]) {
-                    return [
-                      ...prevSearchExpression.slice(0, i),
-                      ...prevSearchExpression.slice(i + 1),
-                    ];
-                  }
-                  return prevSearchExpression;
-                });
-              }}
-              onFinalize={(finalSearchTerm) => {
-                setSearchExpression((prevSearchExpression) => {
+      <SearchOutlined
+        style={{
+          margin: theme.space.tiny,
+          color: theme.textColorSecondary,
+        }}
+      />
+      {searchExpression.map((searchTerm, i) => {
+        return (
+          <PowerSearchTerm
+            key={JSON.stringify(searchTerm)}
+            searchTerm={searchTerm}
+            onCancel={() => {
+              setSearchExpression((prevSearchExpression) => {
+                if (prevSearchExpression[i]) {
                   return [
                     ...prevSearchExpression.slice(0, i),
-                    finalSearchTerm,
                     ...prevSearchExpression.slice(i + 1),
                   ];
-                });
-                searchTermFinderRef.current?.focus();
-              }}
-            />
-          );
-        })}
-      </Space>
+                }
+                return prevSearchExpression;
+              });
+            }}
+            onFinalize={(finalSearchTerm) => {
+              setSearchExpression((prevSearchExpression) => {
+                return [
+                  ...prevSearchExpression.slice(0, i),
+                  finalSearchTerm,
+                  ...prevSearchExpression.slice(i + 1),
+                ];
+              });
+              searchTermFinderRef.current?.focus();
+            }}
+          />
+        );
+      })}
       <PowerSearchTermFinder
         ref={searchTermFinderRef}
         options={options}

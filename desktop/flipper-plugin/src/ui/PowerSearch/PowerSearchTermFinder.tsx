@@ -67,6 +67,7 @@ export const PowerSearchTermFinder = React.forwardRef<
           setSearchTermFinderValue(null);
         }}>
         <Input
+          size="small"
           bordered={false}
           onKeyUp={(event) => {
             if (event.key === 'Enter') {
