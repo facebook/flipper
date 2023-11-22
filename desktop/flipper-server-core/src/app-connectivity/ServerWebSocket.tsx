@@ -294,10 +294,19 @@ class ServerWebSocket extends ServerWebSocketBase {
    */
   protected verifyClient(): VerifyClientCallbackSync {
     return (_info: {origin: string; req: IncomingMessage; secure: boolean}) => {
+      if (!this.acceptingNewConections) {
+        return false;
+      }
       // Client verification is not necessary. The connected client has
       // already been verified using its certificate signed by the server.
       return true;
     };
+  }
+
+  protected stopAcceptingNewConectionsImpl(): void {
+    this.wsServer?.clients.forEach((client) =>
+      client.close(WSCloseCode.GoingAway),
+    );
   }
 }
 

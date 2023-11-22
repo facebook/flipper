@@ -59,6 +59,7 @@ import {DebuggableDevice} from './devices/DebuggableDevice';
 import {jfUpload} from './fb-stubs/jf';
 import path from 'path';
 import {movePWA} from './utils/findInstallation';
+import GK from './fb-stubs/GK';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
@@ -109,6 +110,7 @@ export class FlipperServerImpl implements FlipperServer {
   keytarManager: KeytarManager;
   pluginManager: PluginManager;
   unresponsiveClients: Set<string> = new Set();
+  private acceptingNewConections = true;
 
   constructor(
     public config: FlipperServerConfig,
@@ -173,6 +175,35 @@ export class FlipperServerImpl implements FlipperServer {
         }
       },
     );
+  }
+
+  startAcceptingNewConections() {
+    if (!GK.get('flipper_disconnect_device_when_ui_offline')) {
+      return;
+    }
+    if (this.acceptingNewConections) {
+      return;
+    }
+    this.acceptingNewConections = true;
+
+    this.server.insecureServer?.startAcceptingNewConections();
+    this.server.altInsecureServer?.startAcceptingNewConections();
+    this.server.secureServer?.startAcceptingNewConections();
+    this.server.altSecureServer?.startAcceptingNewConections();
+    this.server.browserServer?.startAcceptingNewConections();
+  }
+
+  stopAcceptingNewConections() {
+    if (!GK.get('flipper_disconnect_device_when_ui_offline')) {
+      return;
+    }
+    this.acceptingNewConections = false;
+
+    this.server.insecureServer?.stopAcceptingNewConections();
+    this.server.altInsecureServer?.stopAcceptingNewConections();
+    this.server.secureServer?.stopAcceptingNewConections();
+    this.server.altSecureServer?.stopAcceptingNewConections();
+    this.server.browserServer?.stopAcceptingNewConections();
   }
 
   setServerState(state: FlipperServerState, error?: Error) {

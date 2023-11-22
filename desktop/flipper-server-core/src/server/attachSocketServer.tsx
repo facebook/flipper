@@ -72,6 +72,7 @@ export function attachSocketServer(
     server.emit('browser-connection-created', {});
 
     let connected = true;
+    server.startAcceptingNewConections();
 
     let flipperServerCompanion: FlipperServerCompanion | undefined;
     if (req.url) {
@@ -252,6 +253,10 @@ export function attachSocketServer(
         error,
         sessionLength: performance.now() - t0,
       });
+
+      if (numberOfConnectedClients === 0) {
+        server.stopAcceptingNewConections();
+      }
 
       if (
         getFlipperServerConfig().environmentInfo.isHeadlessBuild &&

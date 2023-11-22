@@ -293,6 +293,11 @@ class ServerRSocket extends ServerWebSocketBase {
       },
     };
   };
+
+  protected stopAcceptingNewConectionsImpl(): void {
+    // Did not find a straightforard way to iterate through RSocket open connections and close them.
+    // We probably should not care and invest in it anyway as we are going to remove RScokets.
+  }
 }
 
 export default ServerRSocket;

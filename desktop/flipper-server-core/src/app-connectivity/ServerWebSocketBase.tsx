@@ -15,6 +15,7 @@ import {
   SignCertificateMessage,
 } from 'flipper-common';
 import {SecureServerConfig} from './certificate-exchange/certificate-utils';
+import GK from '../fb-stubs/GK';
 
 /**
  * Defines an interface for events triggered by a running server interacting
@@ -98,6 +99,8 @@ export interface ServerEventsListener {
  * RSocket, WebSocket, etc.
  */
 abstract class ServerWebSocketBase {
+  protected acceptingNewConections = true;
+
   constructor(protected listener: ServerEventsListener) {}
 
   /**
@@ -169,6 +172,23 @@ abstract class ServerWebSocketBase {
 
     return undefined;
   }
+
+  startAcceptingNewConections() {
+    if (!GK.get('flipper_disconnect_device_when_ui_offline')) {
+      return;
+    }
+    this.acceptingNewConections = true;
+  }
+
+  stopAcceptingNewConections() {
+    if (!GK.get('flipper_disconnect_device_when_ui_offline')) {
+      return;
+    }
+    this.acceptingNewConections = false;
+    this.stopAcceptingNewConectionsImpl();
+  }
+
+  protected abstract stopAcceptingNewConectionsImpl(): void;
 }
 
 export default ServerWebSocketBase;

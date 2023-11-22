@@ -148,6 +148,10 @@ class BrowserServerWebSocket extends SecureServerWebSocket {
 
   protected verifyClient(): ws.VerifyClientCallbackSync {
     return (info: {origin: string; req: IncomingMessage; secure: boolean}) => {
+      if (!this.acceptingNewConections) {
+        return false;
+      }
+
       if (isFBBuild) {
         try {
           const urlObj = new URL(info.origin);
