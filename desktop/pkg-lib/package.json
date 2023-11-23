@@ -10,7 +10,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "chalk": "^4",
-    "esbuild": "^0.15.7",
+    "esbuild": "^0.15.18",
     "fb-watchman": "^2.0.2",
     "flipper-common": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
