@@ -60,6 +60,7 @@ import {jfUpload} from './fb-stubs/jf';
 import path from 'path';
 import {movePWA} from './utils/findInstallation';
 import GK from './fb-stubs/GK';
+import {fetchNewVersion} from './fb-stubs/fetchNewVersion';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
@@ -632,6 +633,7 @@ export class FlipperServerImpl implements FlipperServer {
     'move-pwa': async () => {
       await movePWA();
     },
+    'fetch-new-version': fetchNewVersion,
   };
 
   registerDevice(device: ServerDevice) {

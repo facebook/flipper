@@ -384,6 +384,7 @@ export type FlipperServerCommands = {
   'is-logged-in': () => Promise<boolean>;
   'environment-info': () => Promise<EnvironmentInfo>;
   'move-pwa': () => Promise<void>;
+  'fetch-new-version': (version: string) => Promise<void>;
 };
 
 export type GraphResponse = {
