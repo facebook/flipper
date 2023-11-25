@@ -109,7 +109,7 @@ class TableHeadColumn extends PureComponent<{
   ref: HTMLElement | undefined | null;
 
   componentDidMount() {
-    if (this.props.horizontallyScrollable && this.ref) {
+    if (this.props.horizontallyScrollable && this.ref && !this.props.isResizable) {
       // measure initial width
       this.onResize(this.ref.getBoundingClientRect().width);
     }
