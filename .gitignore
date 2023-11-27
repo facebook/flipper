@@ -50,6 +50,7 @@ xplat/build
 
 # Mac OS X
 *.DS_Store
+facebook/flipper-server/Resources/
 
 # Automatically generated
 docs/extending/ui-components.mdx
