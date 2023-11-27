@@ -854,20 +854,12 @@ async function setUpMacBundle(
   await installNodeBinary(nodeBinaryFile, platform);
 
   if (isFB) {
-    const {BuildArchitecture, buildFlipperServer} = await import(
+    const {buildFlipperServer} = await import(
       // @ts-ignore only used inside Meta
       './fb/build-flipper-server-macos'
     );
 
-    const architecture =
-      platform === BuildPlatform.MAC_AARCH64
-        ? BuildArchitecture.MAC_AARCH64
-        : BuildArchitecture.MAC_X64;
-    const outputPath = await buildFlipperServer(
-      architecture,
-      versionNumber,
-      false,
-    );
+    const outputPath = await buildFlipperServer(versionNumber, false);
     console.log(
       `⚙️  Successfully built platform: ${platform}, output: ${outputPath}`,
     );
