@@ -122,8 +122,12 @@ export const LaunchEmulatorDialog = withTrackingScope(
             'ios-get-simulators',
             false,
           );
+
+          const nonPhysical = simulators.filter(
+            (simulator) => simulator.type !== 'physical',
+          );
           setWaitingForIos(false);
-          setIosEmulators(simulators);
+          setIosEmulators(nonPhysical);
         } catch (error) {
           console.warn('Failed to find iOS simulators', error);
           setiOSMessage(`Error: ${error.message ?? error} \nRetrying...`);
