@@ -82,6 +82,7 @@ export type ActivatablePluginDetails = InstalledPluginDetails;
 // Describes plugin available for downloading. Until downloaded to the disk it is not available for activation in Flipper.
 export interface DownloadablePluginDetails extends ConcretePluginDetails {
   isActivatable: false;
+  buildId: string;
   downloadUrl: string;
   lastUpdated: Date;
   // Indicates whether plugin should be enabled by default for new users

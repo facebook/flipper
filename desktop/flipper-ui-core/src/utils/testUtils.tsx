@@ -24,8 +24,17 @@ export function createMockDownloadablePluginDetails(
     lastUpdated?: Date;
   } = {},
 ): DownloadablePluginDetails {
-  const {id, version, title, flipperEngineVersion, gatekeeper, lastUpdated} = {
+  const {
+    id,
+    buildId,
+    version,
+    title,
+    flipperEngineVersion,
+    gatekeeper,
+    lastUpdated,
+  } = {
     id: 'test',
+    buildId: '1337',
     version: '3.0.1',
     flipperEngineVersion: '0.46.0',
     lastUpdated: new Date(1591226525 * 1000),
@@ -36,6 +45,7 @@ export function createMockDownloadablePluginDetails(
   const details: DownloadablePluginDetails = {
     name: name || `flipper-plugin-${lowercasedID}`,
     id: id,
+    buildId,
     bugs: {
       email: 'bugs@localhost',
       url: 'bugs.localhost',
