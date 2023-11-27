@@ -754,7 +754,11 @@ async function setUpMacBundle(
       platform === BuildPlatform.MAC_AARCH64
         ? BuildArchitecture.MAC_AARCH64
         : BuildArchitecture.MAC_X64;
-    const outputPath = await buildFlipperServer(architecture);
+    const outputPath = await buildFlipperServer(
+      architecture,
+      versionNumber,
+      false,
+    );
     console.log(
       `⚙️  Successfully built platform: ${platform}, output: ${outputPath}`,
     );
@@ -766,46 +770,46 @@ async function setUpMacBundle(
   } else {
     const template = path.join(staticDir, 'flipper-server-app-template');
     await fs.copy(template, outputDir);
-  }
 
-  function replacePropertyValue(
-    obj: any,
-    targetValue: string,
-    replacementValue: string,
-  ): any {
-    if (typeof obj === 'object' && !Array.isArray(obj) && obj !== null) {
-      for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          obj[key] = replacePropertyValue(
-            obj[key],
-            targetValue,
-            replacementValue,
-          );
+    function replacePropertyValue(
+      obj: any,
+      targetValue: string,
+      replacementValue: string,
+    ): any {
+      if (typeof obj === 'object' && !Array.isArray(obj) && obj !== null) {
+        for (const key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            obj[key] = replacePropertyValue(
+              obj[key],
+              targetValue,
+              replacementValue,
+            );
+          }
         }
+      } else if (typeof obj === 'string' && obj === targetValue) {
+        obj = replacementValue;
       }
-    } else if (typeof obj === 'string' && obj === targetValue) {
-      obj = replacementValue;
+      return obj;
     }
-    return obj;
+
+    console.log(`⚙️  Writing plist`);
+    const plistPath = path.join(
+      outputDir,
+      'Flipper.app',
+      'Contents',
+      'Info.plist',
+    );
+
+    /* eslint-disable node/no-sync*/
+    const pListContents: Record<any, any> = plist.readFileSync(plistPath);
+    replacePropertyValue(
+      pListContents,
+      '{flipper-server-version}',
+      versionNumber,
+    );
+    plist.writeBinaryFileSync(plistPath, pListContents);
+    /* eslint-enable node/no-sync*/
   }
-
-  console.log(`⚙️  Writing plist`);
-  const plistPath = path.join(
-    outputDir,
-    'Flipper.app',
-    'Contents',
-    'Info.plist',
-  );
-
-  /* eslint-disable node/no-sync*/
-  const pListContents: Record<any, any> = plist.readFileSync(plistPath);
-  replacePropertyValue(
-    pListContents,
-    '{flipper-server-version}',
-    versionNumber,
-  );
-  plist.writeBinaryFileSync(plistPath, pListContents);
-  /* eslint-enable node/no-sync*/
 
   const resourcesOutputDir = path.join(
     outputDir,
