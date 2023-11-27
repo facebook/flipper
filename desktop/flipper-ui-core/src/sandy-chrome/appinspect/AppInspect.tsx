@@ -19,13 +19,18 @@ import Client from '../../Client';
 import {BaseDevice} from 'flipper-frontend-core';
 import {ExclamationCircleOutlined, FieldTimeOutlined} from '@ant-design/icons';
 import {useSelector} from 'react-redux';
-import {getActiveClient, getActiveDevice} from '../../selectors/connections';
+import {
+  getActiveClient,
+  getActiveDevice,
+  getMetroDevice,
+} from '../../selectors/connections';
 import * as connections from '../../selectors/connections';
 import {PluginActionsMenu} from '../../chrome/PluginActionsMenu';
 
 const {Text} = Typography;
 
 export function AppInspect() {
+  const metroDevice = useSelector(getMetroDevice);
   const client = useSelector(getActiveClient);
   const activeDevice = useSelector(getActiveDevice);
   const isDeviceConnected = useValue(activeDevice?.connected, false);
@@ -51,7 +56,11 @@ export function AppInspect() {
         </Layout.Container>
         <Layout.ScrollContainer vertical padv={theme.space.large}>
           {activeDevice ? (
-            <PluginList activeDevice={activeDevice} client={client} />
+            <PluginList
+              activeDevice={activeDevice}
+              metroDevice={metroDevice}
+              client={client}
+            />
           ) : null}
         </Layout.ScrollContainer>
       </Layout.Top>

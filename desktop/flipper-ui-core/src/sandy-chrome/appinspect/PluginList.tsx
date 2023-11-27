@@ -42,9 +42,11 @@ const {Text} = Typography;
 export const PluginList = memo(function PluginList({
   client,
   activeDevice,
+  metroDevice,
 }: {
   client: Client | null;
   activeDevice: BaseDevice | null;
+  metroDevice: BaseDevice | null;
 }) {
   const dispatch = useDispatch();
   const connections = useStore((state) => state.connections);
@@ -52,9 +54,11 @@ export const PluginList = memo(function PluginList({
   const pluginLists = useSelector(getPluginLists);
   const downloads = useStore((state) => state.pluginDownloads);
   const isConnected = useValue(activeDevice?.connected, false);
+  const metroConnected = useValue(metroDevice?.connected, false);
 
   const {
     devicePlugins,
+    metroPlugins,
     enabledPlugins,
     disabledPlugins,
     unavailablePlugins,
@@ -91,6 +95,19 @@ export const PluginList = memo(function PluginList({
       );
     },
     [dispatch, activeDevice, connections.selectedAppId],
+  );
+  const handleMetroPluginClick = useCallback(
+    (pluginId) => {
+      dispatch(
+        selectPlugin({
+          selectedPlugin: pluginId,
+          selectedAppId: connections.selectedAppId,
+          deepLinkPayload: null,
+          selectedDevice: metroDevice,
+        }),
+      );
+    },
+    [dispatch, metroDevice, connections.selectedAppId],
   );
   const handleEnablePlugin = useCallback(
     (id: string) => {
@@ -190,15 +207,39 @@ export const PluginList = memo(function PluginList({
         <PluginMenu
           inlineIndent={8}
           onClick={() => {}}
-          defaultOpenKeys={['enabled']}
+          defaultOpenKeys={['enabled', 'metro']}
           selectedKeys={
-            connections.selectedPlugin ? [connections.selectedPlugin] : []
+            connections.selectedPlugin
+              ? [
+                  (connections.selectedDevice === metroDevice ? 'metro:' : '') +
+                    connections.selectedPlugin,
+                ]
+              : []
           }
           mode="inline">
           <PluginGroup key="enabled" title="Enabled">
             {allEnabledPlugins}
           </PluginGroup>
 
+          {!isArchived && metroConnected && (
+            <PluginGroup
+              key="metro"
+              title="React Native"
+              hint="The following plugins are exposed by the currently running Metro instance. Note that Metro might currently be connected to a different application or device than selected above.">
+              {metroPlugins.map((plugin) => (
+                <PluginEntry
+                  key={'metro:' + plugin.id}
+                  plugin={plugin.details}
+                  scrollTo={
+                    plugin.id === connections.selectedPlugin &&
+                    connections.selectedDevice === metroDevice
+                  }
+                  onClick={handleMetroPluginClick}
+                  tooltip={getPluginTooltip(plugin.details)}
+                />
+              ))}
+            </PluginGroup>
+          )}
           {isConnected && (
             <PluginGroup
               key="disabled"
