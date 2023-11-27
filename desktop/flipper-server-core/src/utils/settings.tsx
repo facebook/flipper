@@ -57,6 +57,13 @@ async function getDefaultSettings(): Promise<Settings> {
     enablePhysicalIOS: os.platform() === 'darwin',
     enablePrefetching: Tristate.Unset,
     idbPath: '/usr/local/bin/idb',
+    reactNative: {
+      shortcuts: {
+        enabled: false,
+        reload: 'Alt+Shift+R',
+        openDevMenu: 'Alt+Shift+D',
+      },
+    },
     darkMode: 'light',
     showWelcomeAtStartup: true,
     suppressPluginErrors: false,

@@ -29,6 +29,13 @@ export type Settings = {
    */
   enablePrefetching: Tristate;
   idbPath: string;
+  reactNative: {
+    shortcuts: {
+      enabled: boolean;
+      reload: string;
+      openDevMenu: string;
+    };
+  };
   darkMode: 'dark' | 'light' | 'system';
   showWelcomeAtStartup: boolean;
   suppressPluginErrors: boolean;

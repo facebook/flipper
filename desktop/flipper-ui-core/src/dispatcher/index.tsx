@@ -14,6 +14,7 @@ import notifications from './notifications';
 import plugins from './plugins';
 import user from './fb-stubs/user';
 import pluginManager from './pluginManager';
+import reactNative from './reactNative';
 import pluginMarketplace from './pluginMarketplace';
 import pluginDownloads from './pluginDownloads';
 import info from '../utils/info';
@@ -38,6 +39,7 @@ export default async function (
     plugins,
     user,
     pluginManager,
+    reactNative,
     pluginMarketplace,
     pluginDownloads,
     info,
