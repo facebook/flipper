@@ -9,4 +9,9 @@
 
 import {uuid} from 'flipper-common';
 
-export const sessionId = uuid();
+if (process.env.FLIPPER_SESSION_ID) {
+  console.info('Use external session ID', process.env.FLIPPER_SESSION_ID);
+}
+export const sessionId = `${
+  process.env.FLIPPER_SESSION_ID ?? 'unset'
+}::${uuid()}`;
