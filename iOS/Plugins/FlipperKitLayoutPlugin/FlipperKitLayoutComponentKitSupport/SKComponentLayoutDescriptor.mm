@@ -200,7 +200,7 @@ static std::vector<SKAttributeGenerator>& attributeGenerators() {
                forNode:(SKComponentLayoutWrapper*)node {
   SKHighlightOverlay* overlay = [SKHighlightOverlay sharedInstance];
   if (highlighted) {
-    CKComponentViewContext viewContext = node.component.viewContext;
+    RCComponentViewContext viewContext = node.component.viewContext;
     [overlay mountInView:viewContext.view withFrame:viewContext.frame];
   } else {
     [overlay unmount];
