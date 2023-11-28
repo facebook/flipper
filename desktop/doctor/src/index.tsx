@@ -288,13 +288,17 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   const result = await tryExecuteCommand(
                     `${settings?.idbPath} --help`,
                   );
-                  const hasProblem = result.hasProblem;
-                  const message = hasProblem
-                    ? getIdbInstallationInstructions(settings.idbPath)
-                    : 'Flipper is configured to use your IDB installation.';
+                  if (result.hasProblem) {
+                    return {
+                      hasProblem: true,
+                      ...getIdbInstallationInstructions(settings.idbPath),
+                    };
+                  }
+
                   return {
-                    hasProblem,
-                    message,
+                    hasProblem: false,
+                    message:
+                      'Flipper is configured to use your IDB installation.',
                   };
                 },
               },
