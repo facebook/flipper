@@ -18,7 +18,7 @@ export const installXcode =
   'Install Xcode from the App Store or download it from https://developer.apple.com';
 
 export const installSDK =
-  'You can install it using Xcode (https://developer.apple.com/xcode/).';
+  'You can install it using Xcode (https://developer.apple.com/xcode/). Once installed, restart flipper.';
 
 export const installAndroidStudio = [
   'Android Studio is not installed.',
