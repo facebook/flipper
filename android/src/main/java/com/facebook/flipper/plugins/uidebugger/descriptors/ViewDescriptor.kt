@@ -16,9 +16,11 @@ import android.util.SparseArray
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.viewpager.widget.ViewPager
+import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.*
 import com.facebook.flipper.plugins.uidebugger.util.EnumMapping
 import com.facebook.flipper.plugins.uidebugger.util.ResourcesUtil
@@ -137,26 +139,33 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
   private var SectionId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
+
   private val PositionAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "position")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "position", mutable = true)
   private val GlobalPositionAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "globalPosition")
   private val SizeAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "size")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "size", mutable = true)
   private val BoundsAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "bounds")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "bounds", mutable = true)
+
   private val PaddingAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "padding")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "padding", mutable = true)
   private val LocalVisibleRectAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "localVisibleRect")
   private val RotationAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "rotation")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "rotation", mutable = true)
   private val ScaleAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "scale")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "scale", mutable = true)
   private val PivotAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "pivot")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "pivot", mutable = true)
   private val ScrollAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "scroll")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "scroll", mutable = true)
   private val LayoutParamsAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "layoutParams")
   private val LayoutDirectionAttributeId =
@@ -164,18 +173,20 @@ object ViewDescriptor : ChainedDescriptor<View>() {
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "layoutDirection",
-          false,
+          true,
           LayoutDirectionMapping.getInspectableValues())
   private val TranslationAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "translation")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "translation", mutable = true)
   private val ElevationAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "elevation")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "elevation", mutable = true)
   private val VisibilityAttributeId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "visibility",
-          false,
+          true,
           VisibilityMapping.getInspectableValues())
 
   private val BackgroundAttributeId =
@@ -184,7 +195,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "foreground")
 
   private val AlphaAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "alpha")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "alpha", mutable = true)
   private val StateAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "state")
 
@@ -222,26 +233,28 @@ object ViewDescriptor : ChainedDescriptor<View>() {
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "width",
-          false,
+          true,
           LayoutParamsMapping.getInspectableValues())
   private val HeightAttributeId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "height",
-          false,
+          true,
           LayoutParamsMapping.getInspectableValues())
 
   private val MarginAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "margin")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "margin", mutable = true)
   private val WeightAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "weight")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "weight", mutable = true)
   private val GravityAttributeId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "gravity",
-          false,
+          true,
           GravityMapping.getInspectableValues())
 
   override fun onGetName(node: View): String = node.javaClass.simpleName
@@ -299,19 +312,15 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     props[SizeAttributeId] = InspectableValue.Size(Size(node.width, node.height))
 
     props[BoundsAttributeId] =
-        InspectableValue.Bounds(Bounds(node.left, node.top, node.width, node.height))
+        InspectableValue.SpaceBox(SpaceBox(node.top, node.right, node.bottom, node.left))
+
     props[PaddingAttributeId] =
         InspectableValue.SpaceBox(
             SpaceBox(node.paddingTop, node.paddingRight, node.paddingBottom, node.paddingLeft))
 
     props[LocalVisibleRectAttributeId] =
-        InspectableObject(
-            mapOf(
-                PositionAttributeId to
-                    InspectableValue.Coordinate(Coordinate(localVisible.left, localVisible.top)),
-                SizeAttributeId to
-                    InspectableValue.Size(Size(localVisible.width(), localVisible.height()))),
-        )
+        InspectableValue.SpaceBox(
+            SpaceBox(localVisible.top, localVisible.right, localVisible.bottom, localVisible.left))
 
     props[RotationAttributeId] =
         InspectableValue.Coordinate3D(Coordinate3D(node.rotationX, node.rotationY, node.rotation))
@@ -336,6 +345,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       props[ElevationAttributeId] = InspectableValue.Number(node.elevation)
+      node.elevation = 2.0f
     }
 
     props[VisibilityAttributeId] = VisibilityMapping.toInspectable(node.visibility)
@@ -366,6 +376,111 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     props[KeyedTagsAttributeId] = InspectableObject(getViewTags(node))
 
     attributeSections[SectionId] = InspectableObject(props.toMap())
+  }
+
+  @SuppressLint("NewApi")
+  override fun onEditAttribute(
+      node: View,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {
+
+    when (metadataPath.last().id) {
+      AlphaAttributeId -> node.alpha = value.asFloat()
+      BoundsAttributeId ->
+          when (hint) {
+            CompoundTypeHint.LEFT -> node.left = value.asInt()
+            CompoundTypeHint.RIGHT -> node.right = value.asInt()
+            CompoundTypeHint.TOP -> node.top = value.asInt()
+            CompoundTypeHint.BOTTOM -> node.bottom = value.asInt()
+            else -> {}
+          }
+      ElevationAttributeId -> node.elevation = value.asFloat()
+      MarginAttributeId -> {
+        val layoutParams = node.layoutParams
+        if (layoutParams is MarginLayoutParams) {
+          layoutParams.setMargins(
+              if (hint == CompoundTypeHint.LEFT) value.asInt() else layoutParams.leftMargin,
+              if (hint == CompoundTypeHint.TOP) value.asInt() else layoutParams.topMargin,
+              if (hint == CompoundTypeHint.RIGHT) value.asInt() else layoutParams.rightMargin,
+              if (hint == CompoundTypeHint.BOTTOM) value.asInt() else layoutParams.bottomMargin,
+          )
+          node.layoutParams = layoutParams
+        }
+      }
+      PaddingAttributeId ->
+          node.setPadding(
+              if (hint == CompoundTypeHint.LEFT) value.asInt() else node.paddingLeft,
+              if (hint == CompoundTypeHint.TOP) value.asInt() else node.paddingTop,
+              if (hint == CompoundTypeHint.RIGHT) value.asInt() else node.paddingRight,
+              if (hint == CompoundTypeHint.BOTTOM) value.asInt() else node.paddingBottom,
+          )
+      PivotAttributeId ->
+          when (hint) {
+            CompoundTypeHint.X -> node.pivotX = value.asFloat()
+            CompoundTypeHint.Y -> node.pivotY = value.asFloat()
+            else -> {}
+          }
+      PositionAttributeId ->
+          when (hint) {
+            CompoundTypeHint.X -> node.x = value.asFloat()
+            CompoundTypeHint.Y -> node.y = value.asFloat()
+            CompoundTypeHint.Z -> node.z = value.asFloat()
+            else -> {}
+          }
+      RotationAttributeId ->
+          when (hint) {
+            CompoundTypeHint.X -> node.rotationX = value.asFloat()
+            CompoundTypeHint.Y -> node.rotationY = value.asFloat()
+            CompoundTypeHint.Z -> node.rotation = value.asFloat()
+            else -> {}
+          }
+      ScaleAttributeId ->
+          when (hint) {
+            CompoundTypeHint.X -> node.scaleX = value.asFloat()
+            CompoundTypeHint.Y -> node.scaleY = value.asFloat()
+            else -> {}
+          }
+      SizeAttributeId ->
+          when (hint) {
+            CompoundTypeHint.WIDTH -> {
+              val layoutParams = node.layoutParams
+              layoutParams.width = value.asInt()
+              node.layoutParams = layoutParams
+            }
+            CompoundTypeHint.HEIGHT -> {
+              val layoutParams = node.layoutParams
+              layoutParams.height = value.asInt()
+              node.layoutParams = layoutParams
+            }
+            else -> {}
+          }
+      ScrollAttributeId ->
+          when (hint) {
+            CompoundTypeHint.X -> node.scrollX = value.asInt()
+            CompoundTypeHint.Y -> node.scrollY = value.asInt()
+            else -> {}
+          }
+      TranslationAttributeId ->
+          when (hint) {
+            CompoundTypeHint.X -> node.translationX = value.asFloat()
+            CompoundTypeHint.Y -> node.translationY = value.asFloat()
+            CompoundTypeHint.Z -> node.translationZ = value.asFloat()
+            else -> {}
+          }
+      VisibilityAttributeId ->
+          node.visibility = VisibilityMapping.getEnumValue(value.asString() ?: "UnknownValue")
+      WeightAttributeId -> {
+        val layoutParams = node.layoutParams
+        if (layoutParams is LinearLayout.LayoutParams) {
+
+          layoutParams.weight = value.asFloat()
+
+          node.layoutParams = layoutParams
+        }
+      }
+    }
   }
 
   override fun onGetInlineAttributes(node: View, attributes: MutableMap<String, String>) {
