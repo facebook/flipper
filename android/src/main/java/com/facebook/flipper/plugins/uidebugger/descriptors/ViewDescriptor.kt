@@ -385,6 +385,9 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       value: FlipperDynamic,
       hint: CompoundTypeHint?
   ) {
+    if (metadataPath.first().id != SectionId) {
+      return
+    }
 
     when (metadataPath.last().id) {
       AlphaAttributeId -> node.alpha = value.asFloat()
