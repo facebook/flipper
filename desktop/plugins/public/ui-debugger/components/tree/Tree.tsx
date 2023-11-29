@@ -34,7 +34,10 @@ import {Badge, Tooltip, Typography} from 'antd';
 
 import {useVirtualizer} from '@tanstack/react-virtual';
 import {ContextMenu} from './ContextMenu';
-import {MillisSinceEpoch, useKeyboardControls} from './useKeyboardControls';
+import {
+  MillisSinceEpoch,
+  useKeyboardControlsCallback,
+} from './useKeyboardControls';
 import {toTreeList} from './toTreeList';
 import {CaretDownOutlined, WarningOutlined} from '@ant-design/icons';
 
@@ -141,7 +144,14 @@ export function Tree2({
     }
   }, [instance.uiActions, nodes, rowVirtualizer, searchTerm, treeNodes]);
 
-  useKeyboardControls(
+  useEffect(() => {
+    //focus tree when an element is selected  via visualuser, keyboard controls are active,
+    //when inputs in the sidebar are focused it will defocus the tree and yield kb controls
+    //to the sidebar
+    grandParentRef.current?.focus();
+  }, [selectedNode]);
+
+  const onKeyDown = useKeyboardControlsCallback(
     treeNodes,
     rowVirtualizer,
     selectedNode?.id,
@@ -240,6 +250,9 @@ export function Tree2({
         onCollapseRecursively={instance.uiActions.onCollapseAllRecursively}
         onExpandRecursively={instance.uiActions.onExpandAllRecursively}>
         <div
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0} //this is for focusability (to allow keyboard navigation)
+          onKeyDown={onKeyDown}
           //We use this normal divs flexbox sizing to measure how much vertical space we need for the child div
           ref={grandParentRef}
           style={{

@@ -14,21 +14,22 @@ import {
   Panel,
   theme,
   Layout,
-  styled,
   useLocalStorageState,
   usePlugin,
 } from 'flipper-plugin';
 import React, {useState} from 'react';
 import {
   ClientNode,
-  Color,
+  CompoundTypeHint,
+  Id,
   Inspectable,
   InspectableObject,
   Metadata,
+  MetadataId,
 } from '../../ClientTypes';
 import {MetadataMap} from '../../DesktopTypes';
 import {NoData} from '../sidebar/inspector/NoData';
-import {css, cx} from '@emotion/css';
+import {css} from '@emotion/css';
 import {upperFirst, sortBy, omit} from 'lodash';
 import {any} from 'lodash/fp';
 import {InspectableColor} from '../../ClientTypes';
@@ -37,6 +38,21 @@ import {SearchOutlined} from '@ant-design/icons';
 import {plugin} from '../../index';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {Glyph} from 'flipper';
+import {
+  NumberGroup,
+  StyledInputNumber,
+  TwoByTwoNumberGroup,
+} from './NumericInputs';
+import {
+  boolColor,
+  enumColor,
+  numberColor,
+  rowHeight,
+  stringColor,
+} from './shared';
+import {StyledTextArea} from './TextInput';
+import {ColorInspector} from './ColorInput';
+import {SelectInput} from './SelectInput';
 
 type ModalData = {
   data: unknown;
@@ -94,8 +110,9 @@ export function AttributesInspector({
       ] as InspectableObject;
 
       return AttributeSection(
+        node.id,
         metadata,
-        sectionMetadata.name,
+        sectionMetadata,
         sectionAttributes,
         showComplexTypeModal,
         attributeFilter,
@@ -131,7 +148,11 @@ export function AttributesInspector({
           <NoData message="No attributes match filter " />
         ) : (
           sections.concat([
-            <Panel key="Raw" title="Raw Data" className={panelCss} collapsed>
+            <Panel
+              key="Raw"
+              title="Internal Debug Data"
+              className={panelCss}
+              collapsed>
               <DataInspector data={omit(node, ['attributes'])} />
             </Panel>,
           ])
@@ -142,8 +163,9 @@ export function AttributesInspector({
 }
 
 function AttributeSection(
+  nodeId: Id,
   metadataMap: MetadataMap,
-  name: string,
+  sectionMetadata: Metadata,
   inspectable: InspectableObject,
   onDisplayModal: (modaldata: ModalData) => void,
   attributeFilter: string,
@@ -183,6 +205,8 @@ function AttributeSection(
     (item) => item.attributeName,
   );
 
+  const metadataPath = [sectionMetadata.id];
+
   const children = sortedAttributesOrSubsections
     .map(({isSubSection, attributeValue, attributeMetadata, attributeName}) => {
       if (attributeMetadata == null) {
@@ -193,8 +217,10 @@ function AttributeSection(
         if (attributeValue.type === 'object') {
           return (
             <SubSection
+              nodeId={nodeId}
               onDisplayModal={onDisplayModal}
               attributeName={attributeName}
+              metadataPath={[...metadataPath, attributeMetadata.id]}
               inspectableObject={attributeValue}
               metadataMap={metadataMap}
             />
@@ -204,10 +230,12 @@ function AttributeSection(
 
       return (
         <NamedAttribute
+          nodeId={nodeId}
           attributeMetadata={attributeMetadata}
           onDisplayModal={onDisplayModal}
           key={attributeName}
           metadataMap={metadataMap}
+          metadataPath={[...metadataPath, attributeMetadata.id]}
           name={attributeName}
           value={attributeValue}
         />
@@ -217,7 +245,10 @@ function AttributeSection(
 
   if (children.length > 0) {
     return (
-      <Panel className={panelCss} key={name} title={name}>
+      <Panel
+        className={panelCss}
+        key={sectionMetadata.name}
+        title={sectionMetadata.name}>
         <Layout.Container gap="small" padv="small" style={{paddingLeft: 18}}>
           {...children}
         </Layout.Container>
@@ -229,13 +260,17 @@ function AttributeSection(
 }
 
 function SubSection({
+  nodeId,
   attributeName,
   inspectableObject,
   metadataMap,
+  metadataPath,
   onDisplayModal,
 }: {
+  nodeId: Id;
   attributeName: string;
   inspectableObject: InspectableObject;
+  metadataPath: MetadataId[];
   metadataMap: MetadataMap;
   onDisplayModal: (modaldata: ModalData) => void;
 }) {
@@ -251,9 +286,11 @@ function SubSection({
 
       return (
         <NamedAttribute
+          nodeId={nodeId}
           key={key}
           onDisplayModal={onDisplayModal}
           name={attributeName}
+          metadataPath={[...metadataPath, attributeMetadata.id]}
           value={value}
           attributeMetadata={attributeMetadata}
           metadataMap={metadataMap}
@@ -274,15 +311,19 @@ function SubSection({
 }
 
 function NamedAttribute({
+  nodeId,
   key,
   name,
   value,
+  metadataPath,
   metadataMap,
   attributeMetadata,
   onDisplayModal,
 }: {
+  nodeId: Id;
   name: string;
   value: Inspectable;
+  metadataPath: MetadataId[];
   attributeMetadata: Metadata;
   metadataMap: MetadataMap;
   key: string;
@@ -293,7 +334,7 @@ function NamedAttribute({
       <Typography.Text
         style={{
           marginTop: 4, //to center with top input when multiline
-          flex: '0 0 40%', //take 40% of the width
+          flex: '0 0 30%', //take 40% of the width
           color: theme.textColorSecondary,
           opacity: 0.7,
           fontWeight: 50,
@@ -306,121 +347,13 @@ function NamedAttribute({
         <AttributeValue
           onDisplayModal={onDisplayModal}
           name={name}
+          metadataPath={[...metadataPath, attributeMetadata.id]}
           attributeMetadata={attributeMetadata}
           metadataMap={metadataMap}
           inspectable={value}
+          nodeId={nodeId}
         />
       </Layout.Container>
-    </Layout.Horizontal>
-  );
-}
-
-/**
- * disables hover and focsued states
- */
-const readOnlyInput = css`
-  overflow: hidden; //stop random scrollbars from showing up
-  font-size: small;
-  :hover {
-    border-color: ${theme.disabledColor} !important;
-  }
-  :focus {
-    border-color: ${theme.disabledColor} !important;
-
-    box-shadow: none !important;
-  }
-  box-shadow: none !important;
-  border-color: ${theme.disabledColor} !important;
-
-  padding: 2px 4px 2px 4px;
-
-  min-height: 20px !important; //this is for text area
-`;
-
-function StyledInput({
-  value,
-  color,
-  mutable,
-  rightAddon,
-}: {
-  value: any;
-  color: string;
-  mutable: boolean;
-  rightAddon?: string;
-}) {
-  let formatted: any = value;
-  if (typeof value === 'number') {
-    //cap the number of decimal places to 5 but dont add trailing zeros
-    formatted = Number.parseFloat(value.toFixed(5));
-  }
-  return (
-    <Input
-      size="small"
-      className={cx(
-        !mutable ? readOnlyInput : '',
-        css`
-          //set input colour when no suffix
-          color: ${color};
-          //set input colour when has suffix
-          .ant-input.ant-input-sm[type='text'] {
-            color: ${color};
-          }
-          //set colour of suffix
-          .ant-input.ant-input-sm[type='text'] + .ant-input-suffix {
-            color: ${theme.textColorSecondary};
-            opacity: 0.7;
-          }
-        `,
-      )}
-      bordered
-      readOnly={!mutable}
-      value={formatted}
-      suffix={rightAddon}
-    />
-  );
-}
-
-function StyledTextArea({
-  value,
-  color,
-  mutable,
-}: {
-  value: any;
-  color: string;
-  mutable: boolean;
-  rightAddon?: string;
-}) {
-  return (
-    <Input.TextArea
-      autoSize
-      className={cx(!mutable && readOnlyInput)}
-      bordered
-      style={{color: color}}
-      readOnly={!mutable}
-      value={value}
-    />
-  );
-}
-
-const boolColor = '#C41D7F';
-const stringColor = '#AF5800';
-const enumColor = '#006D75';
-const numberColor = '#003EB3';
-
-type NumberGroupValue = {value: number; addonText: string};
-
-function NumberGroup({values}: {values: NumberGroupValue[]}) {
-  return (
-    <Layout.Horizontal gap="small">
-      {values.map(({value, addonText}, idx) => (
-        <StyledInput
-          key={idx}
-          color={numberColor}
-          mutable={false}
-          value={value}
-          rightAddon={addonText}
-        />
-      ))}
     </Layout.Horizontal>
   );
 }
@@ -429,22 +362,38 @@ function AttributeValue({
   metadataMap,
   name,
   onDisplayModal,
+  nodeId,
+  metadataPath,
   inspectable,
+  attributeMetadata,
 }: {
+  nodeId: Id;
   onDisplayModal: (modaldata: ModalData) => void;
+  metadataPath: MetadataId[];
   attributeMetadata: Metadata;
   metadataMap: MetadataMap;
   name: string;
   inspectable: Inspectable;
 }) {
   const instance = usePlugin(plugin);
+
+  const numberGroupOnChange = (value: number, hint: CompoundTypeHint): void => {
+    instance.uiActions.editClientAttribute(nodeId, value, metadataPath, hint);
+  };
   switch (inspectable.type) {
     case 'boolean':
       return (
-        <StyledInput
+        <SelectInput
+          options={[
+            {value: true, label: 'TRUE'},
+            {value: false, label: 'FALSE'},
+          ]}
+          onChange={(value) => {
+            instance.uiActions.editClientAttribute(nodeId, value, metadataPath);
+          }}
+          mutable={attributeMetadata.mutable}
+          value={inspectable.value}
           color={boolColor}
-          mutable={false}
-          value={inspectable.value ? 'TRUE' : 'FALSE'}
         />
       );
     case 'unknown':
@@ -452,33 +401,73 @@ function AttributeValue({
       return (
         <StyledTextArea
           color={stringColor}
-          mutable={false}
+          mutable={attributeMetadata.mutable}
           value={inspectable.value}
+          onChange={(value) => {
+            instance.uiActions.editClientAttribute(nodeId, value, metadataPath);
+          }}
         />
       );
     case 'number':
       return (
-        <StyledInput
+        <StyledInputNumber
           color={numberColor}
-          mutable={false}
+          mutable={attributeMetadata.mutable}
+          minValue={attributeMetadata.minValue}
+          maxValue={attributeMetadata.maxValue}
           value={inspectable.value}
+          onChange={(value) => {
+            instance.uiActions.editClientAttribute(nodeId, value, metadataPath);
+          }}
         />
       );
 
     case 'enum':
       return (
-        <StyledInput
-          color={enumColor}
-          mutable={false}
+        <SelectInput
+          options={
+            attributeMetadata.possibleValues?.map((value) => {
+              if ('value' in value) {
+                return {
+                  label: String(value.value),
+                  value: value.value as any,
+                };
+              } else {
+                return {
+                  label: 'UNKNOWN',
+                  value: 'UNKNOWN',
+                };
+              }
+            }) ?? []
+          }
+          onChange={(value) => {
+            instance.uiActions.editClientAttribute(nodeId, value, metadataPath);
+          }}
+          mutable={attributeMetadata.mutable}
           value={inspectable.value}
+          color={enumColor}
         />
       );
     case 'size':
       return (
         <NumberGroup
           values={[
-            {value: inspectable.value.width, addonText: 'W'},
-            {value: inspectable.value.height, addonText: 'H'},
+            {
+              min: 0,
+              value: inspectable.value.width,
+              addonText: 'W',
+              mutable: attributeMetadata.mutable,
+              hint: 'WIDTH',
+              onChange: numberGroupOnChange,
+            },
+            {
+              min: 0,
+              value: inspectable.value.height,
+              addonText: 'H',
+              mutable: attributeMetadata.mutable,
+              hint: 'HEIGHT',
+              onChange: numberGroupOnChange,
+            },
           ]}
         />
       );
@@ -487,8 +476,20 @@ function AttributeValue({
       return (
         <NumberGroup
           values={[
-            {value: inspectable.value.x, addonText: 'X'},
-            {value: inspectable.value.y, addonText: 'Y'},
+            {
+              value: inspectable.value.x,
+              addonText: 'X',
+              mutable: attributeMetadata.mutable,
+              hint: 'X',
+              onChange: numberGroupOnChange,
+            },
+            {
+              value: inspectable.value.y,
+              addonText: 'Y',
+              mutable: attributeMetadata.mutable,
+              hint: 'Y',
+              onChange: numberGroupOnChange,
+            },
           ]}
         />
       );
@@ -496,9 +497,27 @@ function AttributeValue({
       return (
         <NumberGroup
           values={[
-            {value: inspectable.value.x, addonText: 'X'},
-            {value: inspectable.value.y, addonText: 'Y'},
-            {value: inspectable.value.z, addonText: 'Z'},
+            {
+              value: inspectable.value.x,
+              addonText: 'X',
+              mutable: attributeMetadata.mutable,
+              hint: 'X',
+              onChange: numberGroupOnChange,
+            },
+            {
+              value: inspectable.value.y,
+              addonText: 'Y',
+              mutable: attributeMetadata.mutable,
+              hint: 'Y',
+              onChange: numberGroupOnChange,
+            },
+            {
+              value: inspectable.value.z,
+              addonText: 'Z',
+              mutable: attributeMetadata.mutable,
+              hint: 'Z',
+              onChange: numberGroupOnChange,
+            },
           ]}
         />
       );
@@ -506,10 +525,34 @@ function AttributeValue({
       return (
         <TwoByTwoNumberGroup
           values={[
-            {value: inspectable.value.top, addonText: 'T'},
-            {value: inspectable.value.left, addonText: 'L'},
-            {value: inspectable.value.bottom, addonText: 'B'},
-            {value: inspectable.value.right, addonText: 'R'},
+            {
+              value: inspectable.value.top,
+              addonText: 'T',
+              mutable: attributeMetadata.mutable,
+              hint: 'TOP',
+              onChange: numberGroupOnChange,
+            },
+            {
+              value: inspectable.value.left,
+              addonText: 'L',
+              mutable: attributeMetadata.mutable,
+              hint: 'LEFT',
+              onChange: numberGroupOnChange,
+            },
+            {
+              value: inspectable.value.bottom,
+              addonText: 'B',
+              mutable: attributeMetadata.mutable,
+              hint: 'BOTTOM',
+              onChange: numberGroupOnChange,
+            },
+            {
+              value: inspectable.value.right,
+              addonText: 'R',
+              mutable: attributeMetadata.mutable,
+              hint: 'RIGHT',
+              onChange: numberGroupOnChange,
+            },
           ]}
         />
       );
@@ -517,16 +560,55 @@ function AttributeValue({
       return (
         <TwoByTwoNumberGroup
           values={[
-            {value: inspectable.value.x, addonText: 'X'},
-            {value: inspectable.value.y, addonText: 'Y'},
-            {value: inspectable.value.width, addonText: 'W'},
-            {value: inspectable.value.height, addonText: 'H'},
+            {
+              value: inspectable.value.x,
+              addonText: 'X',
+              mutable: attributeMetadata.mutable,
+              hint: 'X',
+              onChange: numberGroupOnChange,
+            },
+            {
+              value: inspectable.value.y,
+              addonText: 'Y',
+              mutable: attributeMetadata.mutable,
+              hint: 'Y',
+              onChange: numberGroupOnChange,
+            },
+            {
+              min: 0,
+              value: inspectable.value.width,
+              addonText: 'W',
+              mutable: attributeMetadata.mutable,
+              hint: 'WIDTH',
+              onChange: numberGroupOnChange,
+            },
+            {
+              min: 0,
+              value: inspectable.value.height,
+              addonText: 'H',
+              mutable: attributeMetadata.mutable,
+              hint: 'HEIGHT',
+              onChange: numberGroupOnChange,
+            },
           ]}
         />
       );
 
     case 'color':
-      return <ColorInspector inspectable={inspectable as InspectableColor} />;
+      return (
+        <ColorInspector
+          onChange={(color) =>
+            instance.uiActions.editClientAttribute(
+              nodeId,
+              color,
+              metadataPath,
+              'COLOR',
+            )
+          }
+          mutable={attributeMetadata.mutable}
+          inspectable={inspectable as InspectableColor}
+        />
+      );
     case 'array':
     case 'object':
       return (
@@ -539,7 +621,7 @@ function AttributeValue({
             });
           }}
           style={{
-            height: 26,
+            height: rowHeight,
             boxSizing: 'border-box',
             alignItems: 'center',
             justifyContent: 'center',
@@ -567,7 +649,7 @@ function AttributeValue({
             );
           }}
           style={{
-            height: 26,
+            height: rowHeight,
             boxSizing: 'border-box',
             alignItems: 'center',
             justifyContent: 'center',
@@ -590,67 +672,4 @@ function AttributeValue({
         </Button>
       );
   }
-  return null;
-}
-
-const rowHeight = 26;
-
-function ColorInspector({inspectable}: {inspectable: InspectableColor}) {
-  return (
-    <Layout.Container gap="small">
-      <NumberGroup
-        values={[
-          {value: inspectable.value.r, addonText: 'R'},
-          {value: inspectable.value.g, addonText: 'G'},
-          {value: inspectable.value.b, addonText: 'B'},
-          {value: inspectable.value.a, addonText: 'A'},
-        ]}
-      />
-      <Layout.Horizontal gap="medium">
-        <ColorPreview
-          background={`rgba(${inspectable.value.r},${inspectable.value.g},${inspectable.value.b},${inspectable.value.a})`}
-        />
-        <StyledTextArea
-          color={stringColor}
-          mutable={false}
-          value={RGBAtoHEX(inspectable.value)}
-        />
-      </Layout.Horizontal>
-    </Layout.Container>
-  );
-}
-
-const ColorPreview = styled.div(({background}: {background: string}) => ({
-  width: rowHeight,
-  height: rowHeight,
-  borderRadius: '8px',
-  borderColor: theme.disabledColor,
-  borderStyle: 'solid',
-  boxSizing: 'border-box',
-  borderWidth: '1px',
-  backgroundColor: background,
-}));
-
-const RGBAtoHEX = (color: Color) => {
-  const hex =
-    (color.r | (1 << 8)).toString(16).slice(1) +
-    (color.g | (1 << 8)).toString(16).slice(1) +
-    (color.b | (1 << 8)).toString(16).slice(1);
-
-  return '#' + hex.toUpperCase();
-};
-
-type FourItemArray<T = any> = [T, T, T, T];
-
-function TwoByTwoNumberGroup({
-  values,
-}: {
-  values: FourItemArray<NumberGroupValue>;
-}) {
-  return (
-    <Layout.Container gap="small" style={{flex: '0 1 auto'}}>
-      <NumberGroup values={[values[0], values[1]]} />
-      <NumberGroup values={[values[2], values[3]]} />
-    </Layout.Container>
-  );
 }

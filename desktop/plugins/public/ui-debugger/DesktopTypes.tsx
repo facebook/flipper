@@ -19,6 +19,7 @@ import {
   Metadata,
   SnapshotInfo,
   MetadataId,
+  CompoundTypeHint,
 } from './ClientTypes';
 import TypedEmitter from 'typed-emitter';
 
@@ -116,6 +117,12 @@ export type UIActions = {
   onCollapseAllRecursively: (nodeId: Id) => void;
   ensureAncestorsExpanded: (nodeId: Id) => void;
   onSetTraversalMode: (mode: TraversalMode) => void;
+  editClientAttribute: (
+    nodeId: Id,
+    value: any,
+    metadataIdPath: MetadataId[],
+    compoundTypeHint?: CompoundTypeHint,
+  ) => Promise<boolean>;
 };
 
 export type SelectionSource =

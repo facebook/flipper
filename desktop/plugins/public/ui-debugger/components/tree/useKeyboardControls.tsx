@@ -11,13 +11,11 @@ import {Id} from '../../ClientTypes';
 import {OnSelectNode} from '../../DesktopTypes';
 import {TreeNode} from './Tree';
 import {Virtualizer} from '@tanstack/react-virtual';
-import {usePlugin} from 'flipper-plugin';
-import {plugin} from '../../index';
-import {useEffect} from 'react';
+import {useCallback} from 'react';
 
 export type MillisSinceEpoch = number;
 
-export function useKeyboardControls(
+export function useKeyboardControlsCallback(
   treeNodes: TreeNode[],
   rowVirtualizer: Virtualizer<HTMLDivElement, Element>,
   selectedNodeId: Id | undefined,
@@ -28,10 +26,8 @@ export function useKeyboardControls(
   onCollapseNode: (id: Id) => void,
   isUsingKBToScrollUntill: React.MutableRefObject<number>,
 ) {
-  const instance = usePlugin(plugin);
-
-  useEffect(() => {
-    const listener = (event: KeyboardEvent) => {
+  return useCallback(
+    (event: React.KeyboardEvent) => {
       const kbTargetNodeId = selectedNodeId ?? hoveredNodeId;
       const kbTargetNode = treeNodes.find((item) => item.id === kbTargetNodeId);
 
@@ -103,23 +99,19 @@ export function useKeyboardControls(
 
           break;
       }
-    };
-    window.addEventListener('keydown', listener);
-    return () => {
-      window.removeEventListener('keydown', listener);
-    };
-  }, [
-    treeNodes,
-    onSelectNode,
-    selectedNodeId,
-    isUsingKBToScrollUntill,
-    onExpandNode,
-    onCollapseNode,
-    instance.uiState.hoveredNodes,
-    hoveredNodeId,
-    rowVirtualizer,
-    onHoverNode,
-  ]);
+    },
+    [
+      treeNodes,
+      onSelectNode,
+      selectedNodeId,
+      isUsingKBToScrollUntill,
+      onExpandNode,
+      onCollapseNode,
+      hoveredNodeId,
+      rowVirtualizer,
+      onHoverNode,
+    ],
+  );
 }
 
 export type UpOrDown = 'ArrowDown' | 'ArrowUp';
