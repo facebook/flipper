@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Button, Divider, Input, Modal, Typography} from 'antd';
+import {Button, Divider, Input, InputNumber, Modal, Typography} from 'antd';
 
 import {
   DataInspector,
@@ -293,7 +293,7 @@ function NamedAttribute({
       <Typography.Text
         style={{
           marginTop: 4, //to center with top input when multiline
-          flex: '0 0 40%', //take 40% of the width
+          flex: '0 0 30%', //take 40% of the width
           color: theme.textColorSecondary,
           opacity: 0.7,
           fontWeight: 50,
@@ -315,12 +315,17 @@ function NamedAttribute({
   );
 }
 
+const inputBase = css`
+  overflow: hidden; //stop random scrollbars from showing up
+  font-size: small;
+  padding: 2px 4px 2px 4px;
+  min-height: 20px !important; //this is for text area
+`;
+
 /**
  * disables hover and focsued states
  */
 const readOnlyInput = css`
-  overflow: hidden; //stop random scrollbars from showing up
-  font-size: small;
   :hover {
     border-color: ${theme.disabledColor} !important;
   }
@@ -331,11 +336,71 @@ const readOnlyInput = css`
   }
   box-shadow: none !important;
   border-color: ${theme.disabledColor} !important;
-
-  padding: 2px 4px 2px 4px;
-
-  min-height: 20px !important; //this is for text area
 `;
+
+function StyledInputNumber({
+  value,
+  color,
+  rightAddon,
+  mutable,
+}: {
+  value: any;
+  mutable: boolean;
+  color: string;
+  rightAddon?: string;
+}) {
+  let formatted: any = value;
+  if (typeof value === 'number') {
+    //cap the number of decimal places to 5 but dont add trailing zeros
+    formatted = Number.parseFloat(value.toFixed(5));
+  }
+  return (
+    <InputNumber
+      size="small"
+      className={cx(
+        // inputBase,
+        !mutable && readOnlyInput,
+        css`
+          // height: ${inputHeight}px;
+          //set input colour when no suffix
+          color: ${color};
+          //set input colour when has suffix
+          .ant-input.ant-input-sm[type='text'] {
+            color: ${color};
+          }
+          //set colour of suffix
+          .ant-input.ant-input-sm[type='text'] + .ant-input-suffix {
+            color: ${theme.textColorSecondary};
+            opacity: 0.7;
+          }
+          .ant-input-number: {
+            background-color: red;
+            border-right: none;
+          }
+          //style the add on to look like a suffix
+          .ant-input-number-group-addon {
+            padding-right: 4px;
+            padding-left: 2px;
+            border-left: none;
+            border-color: ${theme.disabledColor};
+          }
+          ${rightAddon != null && 'border-right: none;'}
+          padding-top: 1px;
+          padding-bottom: 1px;
+          width: 100%;
+        `,
+      )}
+      bordered
+      readOnly={!mutable}
+      value={formatted}
+      addonAfter={
+        rightAddon && (
+          <span style={{color: theme.textColorSecondary}}>{rightAddon}</span>
+        )
+      }
+    />
+  );
+}
 
 function StyledInput({
   value,
@@ -357,7 +422,8 @@ function StyledInput({
     <Input
       size="small"
       className={cx(
-        !mutable ? readOnlyInput : '',
+        inputBase,
+        !mutable && readOnlyInput,
         css`
           //set input colour when no suffix
           color: ${color};
@@ -393,7 +459,7 @@ function StyledTextArea({
   return (
     <Input.TextArea
       autoSize
-      className={cx(!mutable && readOnlyInput)}
+      className={cx(inputBase, !mutable && readOnlyInput)}
       bordered
       style={{color: color}}
       readOnly={!mutable}
@@ -407,16 +473,18 @@ const stringColor = '#AF5800';
 const enumColor = '#006D75';
 const numberColor = '#003EB3';
 
-type NumberGroupValue = {value: number; addonText: string};
+type NumberGroupValue = {value: number; addonText: string; mutable: boolean};
+
+const inputHeight = 26;
 
 function NumberGroup({values}: {values: NumberGroupValue[]}) {
   return (
     <Layout.Horizontal gap="small">
-      {values.map(({value, addonText}, idx) => (
-        <StyledInput
+      {values.map(({value, addonText, mutable}, idx) => (
+        <StyledInputNumber
           key={idx}
           color={numberColor}
-          mutable={false}
+          mutable={mutable}
           value={value}
           rightAddon={addonText}
         />
@@ -430,6 +498,7 @@ function AttributeValue({
   name,
   onDisplayModal,
   inspectable,
+  attributeMetadata,
 }: {
   onDisplayModal: (modaldata: ModalData) => void;
   attributeMetadata: Metadata;
@@ -458,7 +527,7 @@ function AttributeValue({
       );
     case 'number':
       return (
-        <StyledInput
+        <StyledInputNumber
           color={numberColor}
           mutable={false}
           value={inspectable.value}
@@ -477,8 +546,16 @@ function AttributeValue({
       return (
         <NumberGroup
           values={[
-            {value: inspectable.value.width, addonText: 'W'},
-            {value: inspectable.value.height, addonText: 'H'},
+            {
+              value: inspectable.value.width,
+              addonText: 'W',
+              mutable: attributeMetadata.mutable,
+            },
+            {
+              value: inspectable.value.height,
+              addonText: 'H',
+              mutable: attributeMetadata.mutable,
+            },
           ]}
         />
       );
@@ -487,8 +564,16 @@ function AttributeValue({
       return (
         <NumberGroup
           values={[
-            {value: inspectable.value.x, addonText: 'X'},
-            {value: inspectable.value.y, addonText: 'Y'},
+            {
+              value: inspectable.value.x,
+              addonText: 'X',
+              mutable: attributeMetadata.mutable,
+            },
+            {
+              value: inspectable.value.y,
+              addonText: 'Y',
+              mutable: attributeMetadata.mutable,
+            },
           ]}
         />
       );
@@ -496,9 +581,21 @@ function AttributeValue({
       return (
         <NumberGroup
           values={[
-            {value: inspectable.value.x, addonText: 'X'},
-            {value: inspectable.value.y, addonText: 'Y'},
-            {value: inspectable.value.z, addonText: 'Z'},
+            {
+              value: inspectable.value.x,
+              addonText: 'X',
+              mutable: attributeMetadata.mutable,
+            },
+            {
+              value: inspectable.value.y,
+              addonText: 'Y',
+              mutable: attributeMetadata.mutable,
+            },
+            {
+              value: inspectable.value.z,
+              addonText: 'Z',
+              mutable: attributeMetadata.mutable,
+            },
           ]}
         />
       );
@@ -506,10 +603,26 @@ function AttributeValue({
       return (
         <TwoByTwoNumberGroup
           values={[
-            {value: inspectable.value.top, addonText: 'T'},
-            {value: inspectable.value.left, addonText: 'L'},
-            {value: inspectable.value.bottom, addonText: 'B'},
-            {value: inspectable.value.right, addonText: 'R'},
+            {
+              value: inspectable.value.top,
+              addonText: 'T',
+              mutable: attributeMetadata.mutable,
+            },
+            {
+              value: inspectable.value.left,
+              addonText: 'L',
+              mutable: attributeMetadata.mutable,
+            },
+            {
+              value: inspectable.value.bottom,
+              addonText: 'B',
+              mutable: attributeMetadata.mutable,
+            },
+            {
+              value: inspectable.value.right,
+              addonText: 'R',
+              mutable: attributeMetadata.mutable,
+            },
           ]}
         />
       );
@@ -517,10 +630,26 @@ function AttributeValue({
       return (
         <TwoByTwoNumberGroup
           values={[
-            {value: inspectable.value.x, addonText: 'X'},
-            {value: inspectable.value.y, addonText: 'Y'},
-            {value: inspectable.value.width, addonText: 'W'},
-            {value: inspectable.value.height, addonText: 'H'},
+            {
+              value: inspectable.value.x,
+              addonText: 'X',
+              mutable: attributeMetadata.mutable,
+            },
+            {
+              value: inspectable.value.y,
+              addonText: 'Y',
+              mutable: attributeMetadata.mutable,
+            },
+            {
+              value: inspectable.value.width,
+              addonText: 'W',
+              mutable: attributeMetadata.mutable,
+            },
+            {
+              value: inspectable.value.height,
+              addonText: 'H',
+              mutable: attributeMetadata.mutable,
+            },
           ]}
         />
       );
@@ -539,7 +668,7 @@ function AttributeValue({
             });
           }}
           style={{
-            height: 26,
+            height: inputHeight,
             boxSizing: 'border-box',
             alignItems: 'center',
             justifyContent: 'center',
@@ -567,7 +696,7 @@ function AttributeValue({
             );
           }}
           style={{
-            height: 26,
+            height: inputHeight,
             boxSizing: 'border-box',
             alignItems: 'center',
             justifyContent: 'center',
@@ -600,10 +729,26 @@ function ColorInspector({inspectable}: {inspectable: InspectableColor}) {
     <Layout.Container gap="small">
       <NumberGroup
         values={[
-          {value: inspectable.value.r, addonText: 'R'},
-          {value: inspectable.value.g, addonText: 'G'},
-          {value: inspectable.value.b, addonText: 'B'},
-          {value: inspectable.value.a, addonText: 'A'},
+          {
+            value: inspectable.value.r,
+            addonText: 'R',
+            mutable: false,
+          },
+          {
+            value: inspectable.value.g,
+            addonText: 'G',
+            mutable: false,
+          },
+          {
+            value: inspectable.value.b,
+            addonText: 'B',
+            mutable: false,
+          },
+          {
+            value: inspectable.value.a,
+            addonText: 'A',
+            mutable: false,
+          },
         ]}
       />
       <Layout.Horizontal gap="medium">
