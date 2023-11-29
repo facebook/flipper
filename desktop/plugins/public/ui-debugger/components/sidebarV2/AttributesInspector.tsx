@@ -17,14 +17,17 @@ import {
   styled,
   useLocalStorageState,
   usePlugin,
+  useValue,
 } from 'flipper-plugin';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   ClientNode,
   Color,
+  Id,
   Inspectable,
   InspectableObject,
   Metadata,
+  MetadataId,
 } from '../../ClientTypes';
 import {MetadataMap} from '../../DesktopTypes';
 import {NoData} from '../sidebar/inspector/NoData';
@@ -94,8 +97,9 @@ export function AttributesInspector({
       ] as InspectableObject;
 
       return AttributeSection(
+        node.id,
         metadata,
-        sectionMetadata.name,
+        sectionMetadata,
         sectionAttributes,
         showComplexTypeModal,
         attributeFilter,
@@ -142,8 +146,9 @@ export function AttributesInspector({
 }
 
 function AttributeSection(
+  nodeId: Id,
   metadataMap: MetadataMap,
-  name: string,
+  sectionMetadata: Metadata,
   inspectable: InspectableObject,
   onDisplayModal: (modaldata: ModalData) => void,
   attributeFilter: string,
@@ -183,6 +188,8 @@ function AttributeSection(
     (item) => item.attributeName,
   );
 
+  const metadataPath = [sectionMetadata.id];
+
   const children = sortedAttributesOrSubsections
     .map(({isSubSection, attributeValue, attributeMetadata, attributeName}) => {
       if (attributeMetadata == null) {
@@ -193,8 +200,10 @@ function AttributeSection(
         if (attributeValue.type === 'object') {
           return (
             <SubSection
+              nodeId={nodeId}
               onDisplayModal={onDisplayModal}
               attributeName={attributeName}
+              metadataPath={[...metadataPath, attributeMetadata.id]}
               inspectableObject={attributeValue}
               metadataMap={metadataMap}
             />
@@ -204,10 +213,12 @@ function AttributeSection(
 
       return (
         <NamedAttribute
+          nodeId={nodeId}
           attributeMetadata={attributeMetadata}
           onDisplayModal={onDisplayModal}
           key={attributeName}
           metadataMap={metadataMap}
+          metadataPath={[...metadataPath, attributeMetadata.id]}
           name={attributeName}
           value={attributeValue}
         />
@@ -217,7 +228,10 @@ function AttributeSection(
 
   if (children.length > 0) {
     return (
-      <Panel className={panelCss} key={name} title={name}>
+      <Panel
+        className={panelCss}
+        key={sectionMetadata.name}
+        title={sectionMetadata.name}>
         <Layout.Container gap="small" padv="small" style={{paddingLeft: 18}}>
           {...children}
         </Layout.Container>
@@ -229,13 +243,17 @@ function AttributeSection(
 }
 
 function SubSection({
+  nodeId,
   attributeName,
   inspectableObject,
   metadataMap,
+  metadataPath,
   onDisplayModal,
 }: {
+  nodeId: Id;
   attributeName: string;
   inspectableObject: InspectableObject;
+  metadataPath: MetadataId[];
   metadataMap: MetadataMap;
   onDisplayModal: (modaldata: ModalData) => void;
 }) {
@@ -251,9 +269,11 @@ function SubSection({
 
       return (
         <NamedAttribute
+          nodeId={nodeId}
           key={key}
           onDisplayModal={onDisplayModal}
           name={attributeName}
+          metadataPath={[...metadataPath, attributeMetadata.id]}
           value={value}
           attributeMetadata={attributeMetadata}
           metadataMap={metadataMap}
@@ -274,15 +294,19 @@ function SubSection({
 }
 
 function NamedAttribute({
+  nodeId,
   key,
   name,
   value,
+  metadataPath,
   metadataMap,
   attributeMetadata,
   onDisplayModal,
 }: {
+  nodeId: Id;
   name: string;
   value: Inspectable;
+  metadataPath: MetadataId[];
   attributeMetadata: Metadata;
   metadataMap: MetadataMap;
   key: string;
@@ -306,9 +330,11 @@ function NamedAttribute({
         <AttributeValue
           onDisplayModal={onDisplayModal}
           name={name}
+          metadataPath={[...metadataPath, attributeMetadata.id]}
           attributeMetadata={attributeMetadata}
           metadataMap={metadataMap}
           inspectable={value}
+          nodeId={nodeId}
         />
       </Layout.Container>
     </Layout.Horizontal>
@@ -343,20 +369,35 @@ function StyledInputNumber({
   color,
   rightAddon,
   mutable,
+  onChange,
 }: {
   value: any;
   mutable: boolean;
   color: string;
   rightAddon?: string;
+  onChange?: (value: number) => void;
 }) {
   let formatted: any = value;
   if (typeof value === 'number') {
     //cap the number of decimal places to 5 but dont add trailing zeros
     formatted = Number.parseFloat(value.toFixed(5));
   }
+
+  const instance = usePlugin(plugin);
+  const frameTime = useValue(instance.currentFrameTime);
+  const drityFrameTime = useRef(0);
+  const [dirtyValue, setDirtyValue] = useState<number | null>(null);
+
   return (
     <InputNumber
       size="small"
+      onChange={(value) => {
+        if (value != null) {
+          setDirtyValue(value);
+          drityFrameTime.current = frameTime;
+          onChange?.(value);
+        }
+      }}
       className={cx(
         // inputBase,
         !mutable && readOnlyInput,
@@ -383,6 +424,7 @@ function StyledInputNumber({
             padding-left: 2px;
             border-left: none;
             border-color: ${theme.disabledColor};
+            background-color: none;
           }
           ${rightAddon != null && 'border-right: none;'}
           padding-top: 1px;
@@ -392,7 +434,7 @@ function StyledInputNumber({
       )}
       bordered
       readOnly={!mutable}
-      value={formatted}
+      value={frameTime === drityFrameTime.current ? dirtyValue : formatted}
       addonAfter={
         rightAddon && (
           <span style={{color: theme.textColorSecondary}}>{rightAddon}</span>
@@ -497,16 +539,21 @@ function AttributeValue({
   metadataMap,
   name,
   onDisplayModal,
+  nodeId,
+  metadataPath,
   inspectable,
   attributeMetadata,
 }: {
+  nodeId: Id;
   onDisplayModal: (modaldata: ModalData) => void;
+  metadataPath: MetadataId[];
   attributeMetadata: Metadata;
   metadataMap: MetadataMap;
   name: string;
   inspectable: Inspectable;
 }) {
   const instance = usePlugin(plugin);
+
   switch (inspectable.type) {
     case 'boolean':
       return (
@@ -529,8 +576,11 @@ function AttributeValue({
       return (
         <StyledInputNumber
           color={numberColor}
-          mutable={false}
+          mutable={attributeMetadata.mutable}
           value={inspectable.value}
+          onChange={(value) => {
+            instance.uiActions.editClientAttribute(nodeId, value, metadataPath);
+          }}
         />
       );
 
