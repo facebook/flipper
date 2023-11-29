@@ -7,8 +7,10 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 
@@ -41,4 +43,13 @@ object OffsetChildDescriptor : NodeDescriptor<OffsetChild> {
       node.descriptor.getAttributes(node.child)
 
   override fun getTags(node: OffsetChild): Set<String> = node.descriptor.getTags(node.child)
+
+  override fun editAttribute(
+      node: OffsetChild,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {
+    node.descriptor.editAttribute(node, metadataPath, value, hint)
+  }
 }
