@@ -517,6 +517,7 @@ export function DataTable<T extends object>(
                 enumLabels,
                 allowFreeform,
               ),
+              dataTablePowerSearchOperators.string_matches_regex(),
             ];
             break;
           }
