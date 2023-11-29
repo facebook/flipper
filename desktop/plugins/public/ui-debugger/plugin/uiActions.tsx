@@ -11,9 +11,11 @@ import {Atom, PluginClient} from 'flipper-plugin';
 import {debounce} from 'lodash';
 import {
   ClientNode,
+  CompoundTypeHint,
   Events,
   FrameworkEventType,
   Id,
+  MetadataId,
   Methods,
   SnapshotInfo,
 } from '../ClientTypes';
@@ -211,6 +213,26 @@ export function uiActions(
     }
   };
 
+  const editClientAttribute = async (
+    nodeId: Id,
+    value: any,
+    metadataIdPath: MetadataId[],
+    compoundTypeHint?: CompoundTypeHint,
+  ): Promise<boolean> => {
+    try {
+      await client.send('editAttribute', {
+        nodeId,
+        value,
+        metadataIdPath,
+        compoundTypeHint,
+      });
+      return true;
+    } catch (error) {
+      console.warn('[ui-debugger] Failed to edit attribute', error);
+      return false;
+    }
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
@@ -230,5 +252,6 @@ export function uiActions(
     onCollapseAllRecursively,
     ensureAncestorsExpanded,
     onSetTraversalMode,
+    editClientAttribute,
   };
 }

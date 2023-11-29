@@ -22,7 +22,25 @@ export type Events = {
 
 export type Methods = {
   onTraversalModeChange(params: {mode: TraversalMode}): Promise<void>;
+  editAttribute(params: {
+    nodeId: Id;
+    value: any;
+    metadataIdPath: MetadataId[];
+    compoundTypeHint?: CompoundTypeHint;
+  }): Promise<void>;
 };
+
+export type CompoundTypeHint =
+  | 'TOP'
+  | 'LEFT'
+  | 'RIGHT'
+  | 'BOTTOM'
+  | 'WIDTH'
+  | 'HEIGHT'
+  | 'X'
+  | 'Y'
+  | 'Z'
+  | 'COLOR';
 
 export type SetTraversalModeEvent = {
   mode: TraversalMode;
