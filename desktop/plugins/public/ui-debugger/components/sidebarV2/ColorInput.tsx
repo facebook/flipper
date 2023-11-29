@@ -15,7 +15,15 @@ import {NumberGroup} from './NumericInputs';
 import {rowHeight, stringColor} from './shared';
 import {StyledTextArea} from './TextInput';
 
-export function ColorInspector({inspectable}: {inspectable: InspectableColor}) {
+export function ColorInspector({
+  inspectable,
+  onChange,
+  mutable,
+}: {
+  inspectable: InspectableColor;
+  mutable: boolean;
+  onChange: (color: Color) => void;
+}) {
   return (
     <Layout.Container gap="small">
       <NumberGroup
@@ -23,30 +31,30 @@ export function ColorInspector({inspectable}: {inspectable: InspectableColor}) {
           {
             value: inspectable.value.r,
             addonText: 'R',
-            mutable: false,
+            mutable: mutable,
             hint: 'COLOR',
-            onChange: () => {},
+            onChange: (updated) => onChange({...inspectable.value, r: updated}),
           },
           {
             value: inspectable.value.g,
             addonText: 'G',
-            mutable: false,
+            mutable: mutable,
             hint: 'COLOR',
-            onChange: () => {},
+            onChange: (updated) => onChange({...inspectable.value, g: updated}),
           },
           {
             value: inspectable.value.b,
             addonText: 'B',
-            mutable: false,
+            mutable: mutable,
             hint: 'COLOR',
-            onChange: () => {},
+            onChange: (updated) => onChange({...inspectable.value, b: updated}),
           },
           {
             value: inspectable.value.a,
             addonText: 'A',
-            mutable: false,
+            mutable: mutable,
             hint: 'COLOR',
-            onChange: () => {},
+            onChange: (updated) => onChange({...inspectable.value, a: updated}),
           },
         ]}
       />

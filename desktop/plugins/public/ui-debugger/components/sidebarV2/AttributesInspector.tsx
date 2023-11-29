@@ -585,7 +585,20 @@ function AttributeValue({
       );
 
     case 'color':
-      return <ColorInspector inspectable={inspectable as InspectableColor} />;
+      return (
+        <ColorInspector
+          onChange={(color) =>
+            instance.uiActions.editClientAttribute(
+              nodeId,
+              color,
+              metadataPath,
+              'COLOR',
+            )
+          }
+          mutable={attributeMetadata.mutable}
+          inspectable={inspectable as InspectableColor}
+        />
+      );
     case 'array':
     case 'object':
       return (
