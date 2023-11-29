@@ -12,6 +12,7 @@ import React from 'react';
 import {inputBase, readOnlyInput, rowHeight} from './shared';
 import {css, cx} from '@emotion/css';
 import {theme} from 'flipper-plugin';
+import {useOptimisticValue} from './useOptimisticValue';
 
 type AllowedTypes = string | boolean;
 
@@ -28,13 +29,14 @@ export function SelectInput({
   value: AllowedTypes;
   color: string;
 }) {
+  const optimisticValue = useOptimisticValue(value, onChange);
   if (mutable) {
     return (
       <Select
         size="small"
         className={dropDownCss}
-        onChange={onChange}
-        value={value}
+        onChange={optimisticValue.onChange}
+        value={optimisticValue.value}
         options={options}
         style={{color: color, height: rowHeight}}
       />

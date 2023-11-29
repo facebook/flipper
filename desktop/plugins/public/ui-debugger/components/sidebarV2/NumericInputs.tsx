@@ -9,12 +9,12 @@
 
 import {InputNumber} from 'antd';
 
-import {theme, Layout, usePlugin, useValue} from 'flipper-plugin';
-import React, {useRef, useState} from 'react';
+import {theme, Layout} from 'flipper-plugin';
+import React from 'react';
 import {CompoundTypeHint} from '../../ClientTypes';
 import {css, cx} from '@emotion/css';
-import {plugin} from '../../index';
 import {numberColor, readOnlyInput} from './shared';
+import {useOptimisticValue} from './useOptimisticValue';
 
 type FourItemArray<T = any> = [T, T, T, T];
 
@@ -67,7 +67,7 @@ export function StyledInputNumber({
   mutable: boolean;
   color: string;
   rightAddon?: string;
-  onChange?: (value: number) => void;
+  onChange: (value: number) => void;
 }) {
   let formatted: any = value;
   if (typeof value === 'number') {
@@ -75,23 +75,17 @@ export function StyledInputNumber({
     formatted = Number.parseFloat(value.toFixed(5));
   }
 
-  const instance = usePlugin(plugin);
-  const frameTime = useValue(instance.currentFrameTime);
-  const drityFrameTime = useRef(0);
-  const [dirtyValue, setDirtyValue] = useState<number | null>(null);
+  const optimisticValue = useOptimisticValue<number>(formatted, onChange);
 
   return (
     <InputNumber
       size="small"
-      onChange={(value) => {
-        if (value != null) {
-          setDirtyValue(value);
-          drityFrameTime.current = frameTime;
-          onChange?.(value);
-        }
-      }}
+      onChange={(value) =>
+        value == null
+          ? optimisticValue.onChange(0)
+          : optimisticValue.onChange(value)
+      }
       className={cx(
-        // inputBase,
         !mutable && readOnlyInput,
         css`
           //set input colour when no suffix
@@ -125,7 +119,7 @@ export function StyledInputNumber({
       )}
       bordered
       readOnly={!mutable}
-      value={frameTime === drityFrameTime.current ? dirtyValue : formatted}
+      value={optimisticValue.value}
       addonAfter={
         rightAddon && (
           <span style={{color: theme.textColorSecondary}}>{rightAddon}</span>
