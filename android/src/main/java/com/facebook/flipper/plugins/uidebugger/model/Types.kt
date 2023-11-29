@@ -31,10 +31,10 @@ class SpaceBox(val top: Int, val right: Int, val bottom: Int, val left: Int) {
 }
 
 @kotlinx.serialization.Serializable
-class Color(val r: Int, val g: Int, val b: Int, val a: Int) {
+class Color(val r: Int, val g: Int, val b: Int, val a: Float) {
   companion object {
     fun fromColor(color: Int): Color {
-      val alpha: Int = (color shr 24) and 0xFF / 255
+      val alpha: Float = ((color shr 24) and 0xFF).toFloat() / 255
       val red: Int = (color shr 16) and 0xFF
       val green: Int = (color shr 8) and 0xFF
       val blue: Int = (color shr 0) and 0xFF
