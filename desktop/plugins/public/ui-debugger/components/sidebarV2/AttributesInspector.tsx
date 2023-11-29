@@ -148,7 +148,11 @@ export function AttributesInspector({
           <NoData message="No attributes match filter " />
         ) : (
           sections.concat([
-            <Panel key="Raw" title="Raw Data" className={panelCss} collapsed>
+            <Panel
+              key="Raw"
+              title="Internal Debug Data"
+              className={panelCss}
+              collapsed>
               <DataInspector data={omit(node, ['attributes'])} />
             </Panel>,
           ])
