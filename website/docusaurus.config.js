@@ -190,7 +190,7 @@ const siteConfig = {
           customCss: require.resolve('./static/css/custom.css'),
         },
         staticDocsProject: 'flipper',
-        trackingFile: 'xplat/staticdocs/WATCHED_FILES',
+        trackingFile: 'fbcode/staticdocs/WATCHED_FILES',
         'remark-code-snippets': {
           baseDir: '..',
         },
