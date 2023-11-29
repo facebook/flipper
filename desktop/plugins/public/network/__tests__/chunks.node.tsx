@@ -47,11 +47,11 @@ test('Reducer correctly adds initial chunk', () => {
   });
 
   expect(instance.partialResponses.get()['1']).toMatchInlineSnapshot(`
-    Object {
-      "followupChunks": Object {},
-      "initialResponse": Object {
+    {
+      "followupChunks": {},
+      "initialResponse": {
         "data": "hello",
-        "headers": Array [],
+        "headers": [],
         "id": "1",
         "index": 0,
         "insights": null,
@@ -76,8 +76,8 @@ test('Reducer correctly adds followup chunk', () => {
     data: 'hello',
   });
   expect(instance.partialResponses.get()['1']).toMatchInlineSnapshot(`
-    Object {
-      "followupChunks": Object {
+    {
+      "followupChunks": {
         "1": "hello",
       },
     }
@@ -113,13 +113,13 @@ test('Reducer correctly combines initial response and followup chunk', () => {
     totalChunks: 2,
   });
   expect(instance.partialResponses.get()).toMatchInlineSnapshot(`
-    Object {
-      "1": Object {
-        "followupChunks": Object {},
-        "initialResponse": Object {
+    {
+      "1": {
+        "followupChunks": {},
+        "initialResponse": {
           "data": "aGVs",
-          "headers": Array [
-            Object {
+          "headers": [
+            {
               "key": "Content-Type",
               "value": "text/plain",
             },
@@ -180,7 +180,7 @@ test('Reducer correctly combines initial response and followup chunk', () => {
     responseHeaders: [{key: 'Content-Type', value: 'text/plain'}],
     responseIsMock: false,
     responseLength: 5,
-    status: 200,
+    status: '200',
     url: 'http://test.com',
   });
 });

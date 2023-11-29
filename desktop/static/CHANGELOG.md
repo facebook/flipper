@@ -1,3 +1,119 @@
+# 0.239.0 (16/11/2023)
+
+ * [D51346366](https://github.com/facebook/flipper/search?q=D51346366&type=Commits) -  UIDebugger fix issue with scrollbars sometimes appearing in sidebar
+
+
+# 0.238.0 (14/11/2023)
+
+ * [D51199644](https://github.com/facebook/flipper/search?q=D51199644&type=Commits) -  [Logs] Improve power search config to populate dropdown for level, PID & Tag
+ * [D51199783](https://github.com/facebook/flipper/search?q=D51199783&type=Commits) -  [Analytics] Improve power search config to populate dropdown for low cardinality columns
+
+
+# 0.237.0 (10/11/2023)
+
+ * [D51113095](https://github.com/facebook/flipper/search?q=D51113095&type=Commits) -  UIdebugger added powersearch operators to Framework event table
+
+
+# 0.234.0 (1/11/2023)
+
+ * [D50595987](https://github.com/facebook/flipper/search?q=D50595987&type=Commits) -  UIDebugger, new sidebar design
+ * [D50599215](https://github.com/facebook/flipper/search?q=D50599215&type=Commits) -  Android SDK is now built against SDK 34
+
+
+# 0.223.0 (2/10/2023)
+
+ * [D49704398](https://github.com/facebook/flipper/search?q=D49704398&type=Commits) -  UIDebugger: improvements to iOS Accessibility mode
+ * [D49780805](https://github.com/facebook/flipper/search?q=D49780805&type=Commits) -  UIDebugger fix icon for litho event timeline tab
+
+
+# 0.222.0 (25/9/2023)
+
+ * [D49501954](https://github.com/facebook/flipper/search?q=D49501954&type=Commits) -  UIDebugger event debugger - increased highlight time. Nodes get random highlight color
+ * [D49547952](https://github.com/facebook/flipper/search?q=D49547952&type=Commits) -  UIDebugger accessibility mode for iOS launched, look for icon to the right of the search bar
+
+
+# 0.220.0 (18/9/2023)
+
+ * [D49371369](https://github.com/facebook/flipper/search?q=D49371369&type=Commits) -  `yarn start` now launches the in-browser version of Flipper. Use `yarn start-electron` for the old behaviour.
+
+
+# 0.217.0 (13/9/2023)
+
+ * [D46859213](https://github.com/facebook/flipper/search?q=D46859213&type=Commits) -  UI Debugger is now available for Litho in Open Source
+ * [D49183501](https://github.com/facebook/flipper/search?q=D49183501&type=Commits) -  FLIPPER_DISABLE_KEYTAR env var can be used to force in-memory implementation
+
+
+# 0.214.0 (30/8/2023)
+
+ * [D48777923](https://github.com/facebook/flipper/search?q=D48777923&type=Commits) -  Show the iOS version of simulators in the launcher window
+
+
+# 0.213.0 (25/8/2023)
+
+ * [D48467028](https://github.com/facebook/flipper/search?q=D48467028&type=Commits) -  Don't report errors related to timeouts of background plugins
+ * [D48559367](https://github.com/facebook/flipper/search?q=D48559367&type=Commits) -  UIDebugger - added event debugger table view and side panel views
+ * [D48605129](https://github.com/facebook/flipper/search?q=D48605129&type=Commits) -  No longer show importFile.worker.worker.js warning on startup
+ * [D48643116](https://github.com/facebook/flipper/search?q=D48643116&type=Commits) -  Don't throw in C++ if a plugin gets added/removed multiple times.
+
+
+# 0.212.0 (18/8/2023)
+
+ * [D48280921](https://github.com/facebook/flipper/search?q=D48280921&type=Commits) -  [internal] internal
+
+
+# 0.210.0 (2/8/2023)
+
+ * [D47832249](https://github.com/facebook/flipper/search?q=D47832249&type=Commits) -  [UIDebugger] Fixed bug with keyboard tree controls
+ * [D47949841](https://github.com/facebook/flipper/search?q=D47949841&type=Commits) -  UIDebugger - Added wireframe mode control, useful when lots of overlapping wireframes
+ * [D47949840](https://github.com/facebook/flipper/search?q=D47949840&type=Commits) -  UIDebugger - added  context menu items for exanding and collapsing the tree.
+ * [D47949843](https://github.com/facebook/flipper/search?q=D47949843&type=Commits) -  UIDebugger Tree starts collapsed and expands as you click from the visualiser
+
+
+# 0.208.0 (26/7/2023)
+
+ * [D47724521](https://github.com/facebook/flipper/search?q=D47724521&type=Commits) -  Added ability to favourite emulators / simulators in the launch virtual devices dialog
+
+
+# 0.207.0 (20/7/2023)
+
+ * [D47295799](https://github.com/facebook/flipper/search?q=D47295799&type=Commits) -  UIDebugger Add seperate icon for litho mountables
+ * [D47295799](https://github.com/facebook/flipper/search?q=D47295799&type=Commits) -  UIDebugger Serialize all props using java.lang.toString
+ * [D47295799](https://github.com/facebook/flipper/search?q=D47295799&type=Commits) -  UIDebugger show drawables mounted by litho
+ * [D47334078](https://github.com/facebook/flipper/search?q=D47334078&type=Commits) -  UIDebugger only autoscroll horizontally when selecting via the visualiser
+
+
+# 0.205.0 (13/7/2023)
+
+ * [D47212492](https://github.com/facebook/flipper/search?q=D47212492&type=Commits) -  [UIDebugger] Using keyboard arrow control changes the selected and hovered state together for faster / easier navigation
+ * [D47223504](https://github.com/facebook/flipper/search?q=D47223504&type=Commits) -  [UIDebugger] Make selection more prominent in the visualiser
+ * [D47367536](https://github.com/facebook/flipper/search?q=D47367536&type=Commits) -  MobileBuilds prevent downloads from hanging indefinitely
+
+
+# 0.201.0 (21/6/2023)
+
+ * [D46840341](https://github.com/facebook/flipper/search?q=D46840341&type=Commits) -  add export file implementation for browsers
+ * [D46841095](https://github.com/facebook/flipper/search?q=D46841095&type=Commits) -  new FlipperClient isConnected API
+
+
+# 0.200.0 (19/6/2023)
+
+ * [D46724776](https://github.com/facebook/flipper/search?q=D46724776&type=Commits) -  UIDebugger virtualized UI to improve rendering performance
+ * [D46760448](https://github.com/facebook/flipper/search?q=D46760448&type=Commits) -  UIDebugger, pressing left arrow jumps to parent after collapse. Pressing right arrow enters after expand. Similar to file browsers in IDES
+
+
+# 0.197.0 (14/6/2023)
+
+ * [D46720650](https://github.com/facebook/flipper/search?q=D46720650&type=Commits) -  Improved offline page (reload button removal)
+
+
+# 0.191.0 (18/5/2023)
+
+ * [D45523026](https://github.com/facebook/flipper/search?q=D45523026&type=Commits) -  UIDebugger, fix focus mode behaviour
+ * [D45317588](https://github.com/facebook/flipper/search?q=D45317588&type=Commits) -  [Internal]
+ * [D45737758](https://github.com/facebook/flipper/search?q=D45737758&type=Commits) -  UIDebugger, improve selected and hover state of the visualiser
+ * [D45861604](https://github.com/facebook/flipper/search?q=D45861604&type=Commits) -  Improve console error logs readability
+
+
 # 0.181.0 (16/2/2023)
 
  * [D43176345](https://github.com/facebook/flipper/search?q=D43176345&type=Commits)

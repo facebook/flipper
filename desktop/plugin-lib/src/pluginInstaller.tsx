@@ -108,8 +108,8 @@ export async function installPluginFromNpm(name: string) {
   }
 }
 
-export async function installPluginFromFile(
-  packagePath: string,
+export async function installPluginFromFileOrBuffer(
+  packagePath: string | Buffer,
 ): Promise<InstalledPluginDetails> {
   const tmpDir = await promisify(tmp.dir)();
   try {

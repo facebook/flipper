@@ -10,6 +10,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 
 android {
+    namespace 'com.facebook.flipper'
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
     ndkVersion rootProject.ndkVersion
@@ -45,6 +46,11 @@ android {
                 exclude 'com/facebook/flipper/plugins/facebook/**'
             }
         }
+    }
+
+    compileOptions {
+        targetCompatibility rootProject.javaTargetVersion
+        sourceCompatibility rootProject.javaTargetVersion
     }
 
     buildFeatures {

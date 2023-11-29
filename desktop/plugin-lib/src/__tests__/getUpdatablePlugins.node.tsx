@@ -16,7 +16,6 @@ import {
   NpmPackageDescriptor,
 } from '../getNpmHostedPlugins';
 import {getInstalledPlugins} from '../pluginInstaller';
-import {mocked} from 'ts-jest/utils';
 import type {Package} from 'npm-api';
 import {InstalledPluginDetails} from 'flipper-common';
 
@@ -91,10 +90,10 @@ const updates: NpmPackageDescriptor[] = [
 ];
 
 test('annotatePluginsWithUpdates', async () => {
-  const getInstalledPluginsMock = mocked(getInstalledPlugins);
+  const getInstalledPluginsMock = jest.mocked(getInstalledPlugins);
   getInstalledPluginsMock.mockReturnValue(Promise.resolve(installedPlugins));
 
-  const getNpmHostedPluginsMock = mocked(getNpmHostedPlugins);
+  const getNpmHostedPluginsMock = jest.mocked(getNpmHostedPlugins);
   getNpmHostedPluginsMock.mockReturnValue(Promise.resolve(updates));
 
   const res = await getUpdatablePlugins();
@@ -105,9 +104,9 @@ test('annotatePluginsWithUpdates', async () => {
     version: res[0].version,
     updateStatus: res[0].updateStatus,
   }).toMatchInlineSnapshot(`
-    Object {
+    {
       "name": "flipper-plugin-hello",
-      "updateStatus": Object {
+      "updateStatus": {
         "kind": "up-to-date",
       },
       "version": "0.1.0",
@@ -119,9 +118,9 @@ test('annotatePluginsWithUpdates', async () => {
     version: res[1].version,
     updateStatus: res[1].updateStatus,
   }).toMatchInlineSnapshot(`
-    Object {
+    {
       "name": "flipper-plugin-world",
-      "updateStatus": Object {
+      "updateStatus": {
         "kind": "update-available",
         "version": "0.3.0",
       },

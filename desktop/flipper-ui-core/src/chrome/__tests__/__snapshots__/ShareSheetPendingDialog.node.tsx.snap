@@ -4,13 +4,15 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 <div
   className="css-gzchr8-Container e1k65efv0"
   style={
-    Object {
+    {
       "textAlign": "center",
       "width": undefined,
     }
   }
 >
   <div
+    aria-busy={true}
+    aria-live="polite"
     className="ant-spin ant-spin-spinning"
   >
     <span
@@ -18,7 +20,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
       className="anticon anticon-loading anticon-spin ant-spin-dot"
       role="img"
       style={
-        Object {
+        {
           "fontSize": 30,
         }
       }
@@ -40,9 +42,8 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
   </div>
   <span
     className="ant-typography"
-    onClick={null}
     style={
-      Object {
+      {
         "WebkitLineClamp": undefined,
       }
     }
@@ -57,6 +58,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
     <div />
     <button
       className="ant-btn ant-btn-default"
+      disabled={false}
       onClick={[Function]}
       type="button"
     >
@@ -72,13 +74,15 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
 <div
   className="css-gzchr8-Container e1k65efv0"
   style={
-    Object {
+    {
       "textAlign": "center",
       "width": undefined,
     }
   }
 >
   <div
+    aria-busy={true}
+    aria-live="polite"
     className="ant-spin ant-spin-spinning"
   >
     <span
@@ -86,7 +90,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
       className="anticon anticon-loading anticon-spin ant-spin-dot"
       role="img"
       style={
-        Object {
+        {
           "fontSize": 30,
         }
       }
@@ -108,9 +112,8 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
   </div>
   <span
     className="ant-typography"
-    onClick={null}
     style={
-      Object {
+      {
         "WebkitLineClamp": undefined,
       }
     }
@@ -125,6 +128,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
     <div />
     <button
       className="ant-btn ant-btn-default"
+      disabled={false}
       onClick={[Function]}
       type="button"
     >

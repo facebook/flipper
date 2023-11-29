@@ -22,9 +22,10 @@ export function Tabs({
   grow,
   children,
   className,
+  localStorageKeyOverride, //set this if you need to have a dynamic number of tabs, you do *not* need to namespace with the plugin name
   ...baseProps
-}: {grow?: boolean} & TabsProps) {
-  const keys: string[] = [];
+}: {grow?: boolean; localStorageKeyOverride?: string} & TabsProps) {
+  const keys: string[] = baseProps.items?.map((item) => item.key) ?? [];
   const keyedChildren = Children.map(children, (child: any, idx) => {
     if (!child || typeof child !== 'object') {
       return;
@@ -52,13 +53,13 @@ export function Tabs({
   });
 
   const [activeTab, setActiveTab] = useLocalStorageState<string | undefined>(
-    'Tabs:' + keys.join(','),
+    'Tabs:' + (localStorageKeyOverride ?? keys.join(',')),
     undefined,
   );
 
   return (
     <AntdTabs
-      activeKey={activeTab}
+      activeKey={keys.includes(activeTab ?? 'not-there') ? activeTab : keys[0]}
       onChange={(key) => {
         setActiveTab(key);
       }}
@@ -104,7 +105,9 @@ const growingTabs = css`
   & .ant-tabs-content {
     height: 100%;
   }
-  & .ant-tabs-tabpane {
+  & .ant-tabs-tabpane:not(.ant-tabs-tabpane-hidden) {
     display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 `;

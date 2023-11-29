@@ -66,7 +66,7 @@ test('it can store values', async () => {
 
   expect((await res.findByTestId('value')).textContent).toEqual('2');
   expect(storage).toMatchInlineSnapshot(`
-    Object {
+    {
       "[useLocalStorage][Flipper]x": "2",
     }
   `);
@@ -83,7 +83,7 @@ test('it can read default from storage', async () => {
 
   expect((await res.findByTestId('value')).textContent).toEqual('4');
   expect(storage).toMatchInlineSnapshot(`
-    Object {
+    {
       "[useLocalStorage][Flipper]x": "4",
     }
   `);
@@ -102,6 +102,6 @@ test('it does not allow changing key', async () => {
       console.error = orig;
     }
   }).toThrowErrorMatchingInlineSnapshot(
-    `"[useAssertStableRef] An unstable reference was passed to this component as property 'key'. For optimization purposes we expect that this prop doesn't change over time. You might want to create the value passed to this prop outside the render closure, store it in useCallback / useMemo / useState, or set a key on the parent component"`,
+    `"[useAssertStableRef] An unstable reference was passed to this component as property 'key'. For optimization purposes we expect that this prop doesn't change over time. You might want to create the value passed to this prop outside the render closure, store it in useCallback / useMemo / useState, or set a key on the parent component. Prev value: x. New value: y"`,
   );
 });

@@ -19,6 +19,7 @@ import isFB from './isFB';
 import yargs from 'yargs';
 import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
 import {Watchman} from 'flipper-pkg-lib';
+import fs from 'fs-extra';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -43,15 +44,15 @@ const argv = yargs
         '[FB-internal only] Will force using public sources only, to be able to iterate quickly on the public version. If sources are checked out from GitHub this is already the default. Setting env var "FLIPPER_FORCE_PUBLIC_BUILD" is equivalent.',
       type: 'boolean',
     },
-    tcp: {
-      describe: 'Enable TCP connections on flipper-server.',
-      type: 'boolean',
-      default: true,
-    },
     channel: {
       description: 'Release channel for the build',
       choices: ['stable', 'insiders'],
       default: 'stable',
+    },
+    open: {
+      describe: 'Open Flipper in the default browser after starting',
+      type: 'boolean',
+      default: true,
     },
   })
   .version('DEV')
@@ -94,10 +95,22 @@ if (argv['enabled-plugins'] !== undefined) {
 
 let startCount = 0;
 
+async function copyStaticResources() {
+  console.log(`⚙️  Copying necessary static resources`);
+  const staticDir = path.resolve(__dirname, '..', 'static');
+
+  await fs.copy(
+    path.join(staticDir, 'manifest.template.json'),
+    path.join(staticDir, 'manifest.json'),
+  );
+}
+
 async function restartServer() {
   try {
-    await compileServerMain(true);
-    await launchServer(true, ++startCount === 1, argv.tcp); // only open on the first time
+    await compileServerMain();
+    // Only open the UI the first time it runs. Subsequent runs, likely triggered after
+    // saving changes, should just reload the existing UI.
+    await launchServer(true, argv.open && ++startCount === 1);
   } catch (e) {
     console.error(
       chalk.red(
@@ -156,9 +169,8 @@ async function startWatchChanges() {
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders',
   );
 
+  await copyStaticResources();
   await ensurePluginFoldersWatchable();
-  // builds and starts
   await restartServer();
-  // watch
   await startWatchChanges();
 })();

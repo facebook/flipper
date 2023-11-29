@@ -134,10 +134,13 @@ export default abstract class AbstractClient extends EventEmitter {
         'Fetch plugin timeout. Unresponsive client?',
       );
     } catch (e) {
-      console.warn('[conn] Fetch plugin error', e);
+      console.warn('Failed to fetch plugin', e);
     }
     this.plugins = new Set(response?.plugins ?? []);
-    console.info('AbstractClient.loadPlugins', this.query, [...this.plugins]);
+    console.info(
+      `Received plugins from '${this.query.app}' on device '${this.query.device}'`,
+      [...this.plugins],
+    );
     return this.plugins;
   }
 
@@ -218,33 +221,47 @@ export default abstract class AbstractClient extends EventEmitter {
 
   // get the plugins, and update the UI
   async refreshPlugins() {
-    const oldBackgroundPlugins = this.backgroundPlugins;
-    await this.loadPlugins('refresh');
-    await Promise.all(
-      [...this.plugins].map(async (pluginId) =>
-        this.startPluginIfNeeded(await this.getPlugin(pluginId)),
-      ),
-    );
-    const newBackgroundPlugins = await this.getBackgroundPlugins();
-    this.backgroundPlugins = new Set(newBackgroundPlugins);
-    // diff the background plugin list, disconnect old, connect new ones
-    oldBackgroundPlugins.forEach((plugin) => {
-      if (!this.backgroundPlugins.has(plugin)) {
-        if (plugin === 'Msys') {
-          console.log('AbstyractClient.refreshPlugins -> deinit Msys');
+    try {
+      const oldBackgroundPlugins = this.backgroundPlugins;
+      await this.loadPlugins('refresh');
+      await Promise.all(
+        [...this.plugins].map(async (pluginId) =>
+          this.startPluginIfNeeded(await this.getPlugin(pluginId)),
+        ),
+      );
+      let newBackgroundPlugins: PluginsArr = [];
+      try {
+        newBackgroundPlugins = await this.getBackgroundPlugins();
+        this.backgroundPlugins = new Set(newBackgroundPlugins);
+      } catch (e: unknown) {
+        if ((e as Error).message.includes('timeout')) {
+          console.warn(e);
+        } else {
+          throw e;
         }
-        this.deinitPlugin(plugin);
       }
-    });
-    newBackgroundPlugins.forEach((plugin) => {
-      if (
-        !oldBackgroundPlugins.has(plugin) &&
-        this.shouldConnectAsBackgroundPlugin(plugin)
-      ) {
-        this.initPlugin(plugin);
+      // diff the background plugin list, disconnect old, connect new ones
+      oldBackgroundPlugins.forEach((plugin) => {
+        if (!this.backgroundPlugins.has(plugin)) {
+          this.deinitPlugin(plugin);
+        }
+      });
+      newBackgroundPlugins.forEach((plugin) => {
+        if (
+          !oldBackgroundPlugins.has(plugin) &&
+          this.shouldConnectAsBackgroundPlugin(plugin)
+        ) {
+          this.initPlugin(plugin);
+        }
+      });
+      this.emit('plugins-change');
+    } catch (e) {
+      if (this.connected) {
+        throw e;
+      } else {
+        console.warn(e);
       }
-    });
-    this.emit('plugins-change');
+    }
   }
 
   onMessage(msg: string) {

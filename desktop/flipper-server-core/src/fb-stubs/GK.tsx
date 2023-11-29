@@ -15,7 +15,7 @@ export type GKMap = {[key: string]: boolean};
 
 // Allow OSS users start flipper-server
 
-const whitelistedGKs: Array<GKID> = ['flipper_desktop_use_server'];
+const whitelistedGKs: Array<GKID> = [''];
 
 export function loadGKs(_username: string, _gks: Array<GKID>): Promise<GKMap> {
   return Promise.reject(

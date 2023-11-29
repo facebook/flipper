@@ -22,6 +22,7 @@ import {
   ReleaseChannel,
   Tristate,
   parseEnvironmentVariables,
+  uuid,
 } from 'flipper-common';
 
 // Only import the type!
@@ -63,17 +64,51 @@ console.debug = function () {
 };
 
 // make perf tools available in Node (it is available in Browser / Electron just fine)
-const {PerformanceObserver, performance} = require('perf_hooks');
-Object.freeze(performance);
-Object.freeze(Object.getPrototypeOf(performance));
+import {PerformanceObserver, performance} from 'perf_hooks';
+// Object.freeze(performance);
+// Object.freeze(Object.getPrototypeOf(performance));
 // Something in our unit tests is messing with the performance global
-// This fixes that.....
+// This fixes that.
+let _performance = performance;
 Object.defineProperty(global, 'performance', {
   get() {
-    return performance;
+    return _performance;
   },
-  set() {
-    throw new Error('Attempt to overwrite global.performance');
+  set(value) {
+    _performance = value;
+
+    if (typeof _performance.mark === 'undefined') {
+      _performance.mark = (_markName: string, _markOptions?) => {
+        return {
+          name: '',
+          detail: '',
+          duration: 0,
+          entryType: '',
+          startTime: 0,
+          toJSON() {},
+        };
+      };
+    }
+
+    if (typeof _performance.clearMarks === 'undefined') {
+      _performance.clearMarks = () => {};
+    }
+    if (typeof _performance.measure === 'undefined') {
+      _performance.measure = (
+        _measureName: string,
+        _startOrMeasureOptions?,
+        _endMark?: string | undefined,
+      ) => {
+        return {
+          name: '',
+          detail: '',
+          duration: 0,
+          entryType: '',
+          startTime: 0,
+          toJSON() {},
+        };
+      };
+    }
   },
 });
 
@@ -97,6 +132,7 @@ Object.defineProperty(global, 'matchMedia', {
 function createStubRenderHost(): RenderHost {
   const rootPath = resolve(__dirname, '..');
   const stubConfig: FlipperServerConfig = {
+    sessionId: uuid(),
     environmentInfo: {
       processId: process.pid,
       appVersion: '0.0.0',
@@ -164,7 +200,7 @@ function createStubRenderHost(): RenderHost {
 
   return {
     readTextFromClipboard() {
-      return '';
+      return Promise.resolve('');
     },
     writeTextToClipboard() {},
     async importFile() {

@@ -10,11 +10,9 @@
 import {FlipperDoctor} from './doctor';
 import {
   DeviceSpec,
-  DeviceType,
   DownloadablePluginDetails,
   InstalledPluginDetails,
   MarketplacePluginDetails,
-  OS as PluginOS,
   UpdatablePluginDetails,
 } from './PluginDetails';
 import {ServerAddOnStartDetails} from './ServerAddOn';
@@ -30,6 +28,7 @@ import {LoggerInfo} from './utils/Logger';
 // Since flipper-plugin however is currently shared among server, client and defines a lot of base types, leaving it here for now.
 
 export type FlipperServerType = 'embedded' | 'external';
+export type CertificateExchangeMedium = 'FS_ACCESS' | 'WWW' | 'NONE';
 
 export type FlipperServerState =
   | 'pending'
@@ -38,7 +37,7 @@ export type FlipperServerState =
   | 'error'
   | 'closed';
 
-export type DeviceOS = PluginOS;
+export type DeviceOS = OS;
 
 export type DeviceDescription = {
   readonly os: DeviceOS;
@@ -75,6 +74,25 @@ export type DeviceLogLevel =
   | 'error'
   | 'fatal';
 
+export type ConnectionRecordEntry = {
+  time: Date;
+  type: 'warning' | 'info' | 'error';
+  os: DeviceOS;
+  device: string;
+  app: string;
+  message: string;
+  medium: CertificateExchangeMedium;
+};
+
+export type CommandRecordEntry = ConnectionRecordEntry & {
+  cmd: string;
+  description: string;
+  success: boolean;
+  stdout?: string;
+  stderr?: string;
+  troubleshoot?: string;
+};
+
 export type UninitializedClient = {
   os: string;
   deviceName: string;
@@ -87,7 +105,13 @@ export type ClientQuery = {
   readonly device: string;
   readonly device_id: string;
   readonly sdk_version?: number;
+  medium: CertificateExchangeMedium;
   rsocket?: boolean;
+};
+
+export type SecureClientQuery = ClientQuery & {
+  csr?: string | undefined;
+  csr_path?: string | undefined;
 };
 
 export type ClientDescription = {
@@ -134,16 +158,35 @@ export type FlipperServerEvents = {
     id: string;
     message: string;
   };
+  'connectivity-troubleshoot-cmd': CommandRecordEntry;
+  'connectivity-troubleshoot-log': ConnectionRecordEntry;
+  'connectivity-troubleshoot-notification': {
+    type: 'error' | 'warning';
+    title: string;
+    description: string;
+  };
   'plugins-server-add-on-message': ExecuteMessage;
   'download-file-update': DownloadFileUpdate;
   'server-log': LoggerInfo;
+  'browser-connection-created': {};
 };
 
-export type IOSDeviceParams = {
+export type OS =
+  | 'iOS'
+  | 'Android'
+  | 'Metro'
+  | 'Windows'
+  | 'MacOS'
+  | 'Browser'
+  | 'Linux';
+
+export type DeviceType = 'physical' | 'emulator' | 'dummy';
+
+export type DeviceTarget = {
   udid: string;
   type: DeviceType;
   name: string;
-  deviceTypeIdentifier?: string;
+  osVersion?: string;
   state?: string;
 };
 
@@ -245,6 +288,7 @@ export type FlipperServerCommands = {
     serial: string,
     appBundlePath: string,
   ) => Promise<void>;
+  'device-open-app': (serial: string, name: string) => Promise<void>;
   'device-forward-port': (
     serial: string,
     local: string,
@@ -263,8 +307,10 @@ export type FlipperServerCommands = {
   ) => Promise<ClientResponseType>;
   'android-get-emulators': () => Promise<string[]>;
   'android-launch-emulator': (name: string, coldboot: boolean) => Promise<void>;
-  'ios-get-simulators': (bootedOnly: boolean) => Promise<IOSDeviceParams[]>;
+  'android-adb-kill': () => Promise<void>;
+  'ios-get-simulators': (bootedOnly: boolean) => Promise<DeviceTarget[]>;
   'ios-launch-simulator': (udid: string) => Promise<void>;
+  'ios-idb-kill': () => Promise<void>;
   'persist-settings': (settings: Settings) => Promise<void>;
   'persist-launcher-settings': (settings: LauncherSettings) => Promise<void>;
   'keychain-write': (service: string, token: string) => Promise<void>;
@@ -284,8 +330,8 @@ export type FlipperServerCommands = {
     name: string,
   ) => Promise<InstalledPluginDetails>;
   'plugins-install-from-npm': (name: string) => Promise<InstalledPluginDetails>;
-  'plugins-install-from-file': (
-    path: string,
+  'plugins-install-from-content': (
+    contents: string,
   ) => Promise<InstalledPluginDetails>;
   'plugins-remove-plugins': (names: string[]) => Promise<void>;
   'plugins-server-add-on-start': (
@@ -316,6 +362,8 @@ export type FlipperServerCommands = {
     options: {
       timeout?: number;
       internGraphUrl?: string;
+      headers?: Record<string, string | number | boolean>;
+      vpnMode?: 'vpn' | 'vpnless';
     },
   ) => Promise<GraphResponse>;
   'intern-graph-get': (
@@ -324,6 +372,8 @@ export type FlipperServerCommands = {
     options: {
       timeout?: number;
       internGraphUrl?: string;
+      headers?: Record<string, string | number | boolean>;
+      vpnMode?: 'vpn' | 'vpnless';
     },
   ) => Promise<GraphResponse>;
   'intern-upload-scribe-logs': (
@@ -333,6 +383,8 @@ export type FlipperServerCommands = {
   shutdown: () => Promise<void>;
   'is-logged-in': () => Promise<boolean>;
   'environment-info': () => Promise<EnvironmentInfo>;
+  'move-pwa': () => Promise<void>;
+  'fetch-new-version': (version: string) => Promise<void>;
 };
 
 export type GraphResponse = {
@@ -364,6 +416,7 @@ const environmentVariables = {
   HOME: 1,
   METRO_PORT_ENV_VAR: 1,
   FLIPPER_PLUGIN_AUTO_UPDATE_POLLING_INTERVAL: 1,
+  SKIP_TOKEN_VERIFICATION: 1,
 } as const;
 export type ENVIRONMENT_VARIABLES = keyof typeof environmentVariables;
 
@@ -488,6 +541,7 @@ export type FlipperServerConfig = {
   validWebSocketOrigins: string[];
   environmentInfo: EnvironmentInfo;
   type?: FlipperServerType;
+  sessionId: string;
 };
 
 export interface FlipperServerExecOptions {

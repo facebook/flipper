@@ -13,5 +13,6 @@ react-native/ReactNativeFlipperExample
 scripts/generate-changelog.js
 static/index.js
 static/defaultPlugins/*
+static/facebook/flipper-server-app-template
 generated
 flipper-server/static

@@ -8,7 +8,7 @@
  */
 
 import {sleep} from 'flipper-common';
-import {assertNotNull} from '../comms/Utilities';
+import {assertNotNull} from '../app-connectivity/Utilities';
 import {StateMachine} from './StateMachine';
 
 export const RESTART_CNT = 3;

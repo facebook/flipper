@@ -12,13 +12,16 @@ import {
   DeviceLogEntry,
   usePlugin,
   createDataSource,
+  dataTablePowerSearchOperators,
   DataTableColumn,
+  DataTable,
   theme,
   DataTableManager,
   createState,
   useValue,
   DataFormatter,
-  DataTable,
+  EnumLabels,
+  SearchExpressionTerm,
 } from 'flipper-plugin';
 import {
   PlayCircleOutlined,
@@ -32,7 +35,16 @@ import {baseRowStyle, logTypes} from './logTypes';
 
 export type ExtendedLogEntry = DeviceLogEntry & {
   count: number;
+  pidStr: string; //for the purposes of inferring (only supports string type)
 };
+
+const logLevelEnumLabels = Object.entries(logTypes).reduce(
+  (res, [key, {label}]) => {
+    res[key] = label;
+    return res;
+  },
+  {} as EnumLabels,
+);
 
 function createColumnConfig(
   _os: 'iOS' | 'Android' | 'Metro',
@@ -40,20 +52,14 @@ function createColumnConfig(
   return [
     {
       key: 'type',
-      title: '',
+      title: 'Level',
       width: 30,
-      filters: Object.entries(logTypes).map(([value, config]) => ({
-        label: config.label,
-        value,
-        enabled: config.enabled,
-      })),
       onRender(entry) {
         return entry.count > 1 ? (
           <Badge
             count={entry.count}
             size="small"
             style={{
-              marginTop: 4,
               color: theme.white,
               background:
                 (logTypes[entry.type]?.style as any)?.color ??
@@ -64,17 +70,28 @@ function createColumnConfig(
           logTypes[entry.type]?.icon
         );
       },
+      powerSearchConfig: {
+        type: 'enum',
+        inferEnumOptionsFromData: true,
+      },
     },
     {
       key: 'date',
       title: 'Time',
       width: 120,
+      powerSearchConfig: {
+        type: 'dateTime',
+      },
     },
     {
-      key: 'pid',
+      key: 'pidStr',
       title: 'PID',
       width: 60,
       visible: true,
+      powerSearchConfig: {
+        type: 'enum',
+        inferEnumOptionsFromData: true,
+      },
     },
     {
       key: 'tid',
@@ -86,6 +103,10 @@ function createColumnConfig(
       key: 'tag',
       title: 'Tag',
       width: 160,
+      powerSearchConfig: {
+        type: 'enum',
+        inferEnumOptionsFromData: true,
+      },
     },
     {
       key: 'app',
@@ -110,10 +131,25 @@ function getRowStyle(entry: DeviceLogEntry): CSSProperties | undefined {
   return (logTypes[entry.type]?.style as any) ?? baseRowStyle;
 }
 
+const powerSearchInitialState: SearchExpressionTerm[] = [
+  {
+    field: {
+      key: 'type',
+      label: 'Level',
+    },
+    operator:
+      dataTablePowerSearchOperators.enum_set_is_any_of(logLevelEnumLabels),
+    searchValue: Object.entries(logTypes)
+      .filter(([_, item]) => item.enabled)
+      .map(([key]) => key),
+  },
+];
+
 export function devicePlugin(client: DevicePluginClient) {
   const rows = createDataSource<ExtendedLogEntry>([], {
     limit: 200000,
     persist: 'logs',
+    indices: [['pidStr'], ['tag']], //there are for inferring enum types
   });
   const isPaused = createState(true);
   const tableManagerRef = createRef<
@@ -122,6 +158,7 @@ export function devicePlugin(client: DevicePluginClient) {
 
   client.onDeepLink((payload: unknown) => {
     if (typeof payload === 'string') {
+      tableManagerRef.current?.setSearchExpression(powerSearchInitialState);
       // timeout as we want to await restoring any previous scroll positin first, then scroll to the
       setTimeout(() => {
         let hasMatch = false;
@@ -168,11 +205,13 @@ export function devicePlugin(client: DevicePluginClient) {
         ) {
           rows.update(lastIndex, {
             ...previousRow,
+            pidStr: previousRow.pid.toString(),
             count: previousRow.count + 1,
           });
         } else {
           rows.append({
             ...entry,
+            pidStr: entry.pid.toString(),
             count: 1,
           });
         }
@@ -248,6 +287,7 @@ export function Component() {
         ) : undefined
       }
       tableManagerRef={plugin.tableManagerRef}
+      powerSearchInitialState={powerSearchInitialState}
     />
   );
 }

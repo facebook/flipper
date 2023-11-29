@@ -30,6 +30,6 @@ module.exports = {
     ...(process.env.COVERAGE_TEXT === 'detailed' ? ['text'] : []),
   ],
   testMatch: ['**/**.(node|spec).(js|jsx|ts|tsx)'],
-  testEnvironment: 'jest-environment-jsdom-sixteen',
+  testEnvironment: 'jsdom',
   resolver: '<rootDir>/jest.resolver.js',
 };

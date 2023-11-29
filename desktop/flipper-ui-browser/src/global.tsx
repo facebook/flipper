@@ -7,6 +7,8 @@
  * @format
  */
 
+// otherwise there is an error with `declare global`
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type {RenderHost} from 'flipper-ui-core';
 
 declare global {
@@ -15,9 +17,14 @@ declare global {
       theme: 'light' | 'dark' | 'system';
       entryPoint: string;
       debug: boolean;
+      graphSecret: string;
+      appVersion: string;
+      sessionId: string;
+      unixname: string;
+      authToken: string;
     };
 
-    flipperShowError?(error: string): void;
-    flipperHideError?(): void;
+    flipperShowMessage?(message: {title?: string; detail?: string}): void;
+    flipperHideMessage?(): void;
   }
 }

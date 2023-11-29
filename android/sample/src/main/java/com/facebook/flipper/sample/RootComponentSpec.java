@@ -8,10 +8,10 @@
 package com.facebook.flipper.sample;
 
 import android.content.Intent;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.interfaces.DraweeController;
+import android.net.Uri;
 import com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity;
 import com.facebook.flipper.sample.network.NetworkClient;
+import com.facebook.fresco.vito.litho.FrescoVitoImage2;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -22,7 +22,6 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.VerticalScroll;
 import com.facebook.yoga.YogaEdge;
@@ -32,9 +31,6 @@ public class RootComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(final ComponentContext c, @State boolean displayImage) {
-    final DraweeController controller =
-        Fresco.newDraweeControllerBuilder().setUri("https://fbflipper.com/img/icon.png").build();
-
     Column col =
         Column.create(c)
             .child(
@@ -116,17 +112,26 @@ public class RootComponentSpec {
                     .clickHandler(RootComponent.openIncrementActivity(c)))
             .child(
                 Text.create(c)
-                    .text("Crash this app")
+                    .text("Navigate to Jetpack Compose activity")
                     .key("12")
+                    .marginDip(YogaEdge.ALL, 10)
+                    .textSizeSp(20)
+                    .clickHandler(RootComponent.openJetpackComposeActivity(c)))
+            .child(
+                Text.create(c)
+                    .text("Crash this app")
+                    .key("13")
                     .marginDip(YogaEdge.ALL, 10)
                     .textSizeSp(20)
                     .clickHandler(RootComponent.triggerCrash(c)))
             .child(
-                FrescoImage.create(c)
-                    .controller(controller)
-                    .marginDip(YogaEdge.ALL, 10)
-                    .widthDip(150)
-                    .heightDip(150))
+                displayImage
+                    ? FrescoVitoImage2.create(c)
+                        .uri(Uri.parse("https://fbflipper.com/img/icon.png"))
+                        .marginDip(YogaEdge.ALL, 10)
+                        .widthDip(150)
+                        .heightDip(150)
+                    : null)
             .build();
 
     return VerticalScroll.create(c).childComponent(col).build();
@@ -201,6 +206,12 @@ public class RootComponentSpec {
   @OnEvent(ClickEvent.class)
   static void openIncrementActivity(final ComponentContext c) {
     final Intent intent = new Intent(c.getAndroidContext(), ButtonsActivity.class);
+    c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void openJetpackComposeActivity(final ComponentContext c) {
+    final Intent intent = new Intent(c.getAndroidContext(), JetpackComposeActivity.class);
     c.getAndroidContext().startActivity(intent);
   }
 }

@@ -58,10 +58,10 @@ export default async function runLint(
     ];
   }
 
-  const packageJsonSchema = await fs.readJson(packageJsonSchemaPath);
-  const pluginPackageJsonSchema = await fs.readJson(
-    pluginPackageJsonSchemaPath,
-  );
+  const [packageJsonSchema, pluginPackageJsonSchema] = await Promise.all([
+    fs.readJson(packageJsonSchemaPath),
+    fs.readJson(pluginPackageJsonSchemaPath),
+  ]);
   const ajv = new Ajv({
     allErrors: true,
     loadSchema,

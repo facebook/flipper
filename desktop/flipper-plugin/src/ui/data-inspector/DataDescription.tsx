@@ -573,7 +573,8 @@ class DataDescriptionContainer extends PureComponent<{
 
       case 'number':
         return <NumberValue>{+val}</NumberValue>;
-
+      case 'bigint':
+        return <NumberValue>{val.toString()}</NumberValue>;
       case 'color': {
         const colorInfo = parseColor(val);
         if (typeof val === 'number' && val === 0) {

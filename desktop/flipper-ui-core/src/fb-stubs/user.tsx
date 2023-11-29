@@ -7,7 +7,7 @@
  * @format
  */
 
-import {GraphFileUpload, User} from 'flipper-common';
+import {GraphFileUpload, GraphResponse, User} from 'flipper-common';
 import {Atom, createState} from 'flipper-plugin';
 
 export async function fetchUser(): Promise<User | null> {
@@ -36,6 +36,20 @@ export async function internGraphPOSTAPIRequest(
   throw new Error('Feature not implemented');
 }
 
+export async function internGraphPOSTAPIRequestRaw(
+  _endpoint: string,
+  _formFields: {
+    [key: string]: any;
+  } = {},
+  _fileFields: Record<string, GraphFileUpload> = {},
+  _options: {
+    timeout?: number;
+    internGraphUrl?: string;
+  } = {},
+): Promise<GraphResponse> {
+  throw new Error('Feature not implemented');
+}
+
 export async function internGraphGETAPIRequest(
   _endpoint: string,
   _params: {
@@ -46,6 +60,19 @@ export async function internGraphGETAPIRequest(
     internGraphUrl?: string;
   } = {},
 ): Promise<any> {
+  throw new Error('Feature not implemented');
+}
+
+export async function internGraphGETAPIRequestRaw(
+  _endpoint: string,
+  _params: {
+    [key: string]: any;
+  } = {},
+  _options: {
+    timeout?: number;
+    internGraphUrl?: string;
+  } = {},
+): Promise<GraphResponse> {
   throw new Error('Feature not implemented');
 }
 

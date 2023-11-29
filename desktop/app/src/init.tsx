@@ -19,12 +19,9 @@ import {
   FlipperServerState,
 } from 'flipper-server-client';
 import {
-  FlipperServerImpl,
+  checkPortInUse,
+  getAuthToken,
   getEnvironmentInfo,
-  getGatekeepers,
-  loadLauncherSettings,
-  loadProcessConfig,
-  loadSettings,
   setupPrefetcher,
   startFlipperServer,
   startServer,
@@ -34,30 +31,33 @@ import {
   getLogger,
   isTest,
   Logger,
-  parseEnvironmentVariables,
   setLoggerInstance,
-  Settings,
   wrapRequire,
 } from 'flipper-common';
-import constants from './fb-stubs/constants';
 import {initializeElectron} from './electron/initializeElectron';
 import path from 'path';
 import fs from 'fs-extra';
 import {ElectronIpcClientRenderer} from './electronIpc';
-import {checkSocketInUse, makeSocketPath} from 'flipper-server-core';
 import {KeytarModule} from 'flipper-server-core/src/utils/keytar';
 import {initCompanionEnv} from 'flipper-server-companion';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import WS from 'ws';
 import {Module} from 'module';
-import os from 'os';
 
 Module.prototype.require = wrapRequire(Module.prototype.require);
 enableMapSet();
 
-async function getKeytarModule(staticPath: string): Promise<KeytarModule> {
+async function getKeytarModule(
+  staticPath: string,
+): Promise<KeytarModule | undefined> {
   let keytar: any = undefined;
   try {
+    if (process.env.FLIPPER_DISABLE_KEYTAR) {
+      console.log(
+        'Using keytar in-memory implementation as per FLIPPER_DISABLE_KEYTAR env var.',
+      );
+      return undefined;
+    }
     if (!isTest()) {
       const keytarPath = path.join(
         staticPath,
@@ -77,7 +77,7 @@ async function getKeytarModule(staticPath: string): Promise<KeytarModule> {
   return keytar;
 }
 
-async function getExternalServer(url: string) {
+async function getExternalServer(url: URL) {
   const options = {
     WebSocket: class WSWithUnixDomainSocketSupport extends WS {
       constructor(url: string, protocols: string | string[]) {
@@ -87,16 +87,16 @@ async function getExternalServer(url: string) {
       }
     },
   };
-  const socket = new ReconnectingWebSocket(url, [], options);
+  const socket = new ReconnectingWebSocket(url.toString(), [], options);
   const server = await createFlipperServerWithSocket(
     socket as WebSocket,
     (_state: FlipperServerState) => {},
   );
+
   return server;
 }
 
 async function getFlipperServer(
-  logger: Logger,
   electronIpcClient: ElectronIpcClientRenderer,
 ): Promise<FlipperServer> {
   const execPath =
@@ -104,96 +104,70 @@ async function getFlipperServer(
   const appPath = await electronIpcClient.send('getPath', 'app');
   const staticPath = getStaticPath(appPath);
   const isProduction = !/node_modules[\\/]electron[\\/]/.test(execPath);
-  const env = process.env;
   const environmentInfo = await getEnvironmentInfo(
     staticPath,
     isProduction,
     false,
   );
-  const keytar: KeytarModule = await getKeytarModule(staticPath);
-  const gatekeepers = getGatekeepers(environmentInfo.os.unixname);
+  const keytar: KeytarModule | undefined = await getKeytarModule(staticPath);
+  const port = 52342;
 
-  const serverUsageEnabled = gatekeepers['flipper_desktop_use_server'];
-  const settings = await loadSettings();
+  async function shutdown(): Promise<boolean> {
+    console.info('[flipper-server] Attempt to shutdown.');
 
-  const socketPath = await makeSocketPath();
-  let externalServerConnectionURL = `ws+unix://${socketPath}`;
+    try {
+      const response = await fetch(`http://localhost:${port}/shutdown`);
+      const json = await response.json();
 
-  // On Windows this is going to return false at all times as we do not use domain sockets there.
-  let serverRunning = await checkSocketInUse(socketPath);
-  if (serverRunning) {
-    console.info(
-      'flipper-server: currently running/listening, attempt to shutdown',
-    );
-    const server = await getExternalServer(externalServerConnectionURL);
-    await server.exec('shutdown').catch(() => {
-      /** shutdown will ultimately make this request fail, ignore error. */
-    });
-    serverRunning = false;
+      return json?.success;
+    } catch {}
+
+    return false;
   }
 
-  const getEmbeddedServer = async () => {
-    const server = new FlipperServerImpl(
-      {
-        environmentInfo,
-        env: parseEnvironmentVariables(env),
-        gatekeepers: gatekeepers,
-        paths: {
-          appPath,
-          homePath: await electronIpcClient.send('getPath', 'home'),
-          execPath,
-          staticPath,
-          tempPath: await electronIpcClient.send('getPath', 'temp'),
-          desktopPath: await electronIpcClient.send('getPath', 'desktop'),
-        },
-        launcherSettings: await loadLauncherSettings(),
-        processConfig: loadProcessConfig(env),
-        settings,
-        validWebSocketOrigins:
-          constants.VALID_WEB_SOCKET_REQUEST_ORIGIN_PREFIXES,
-      },
-      logger,
-      keytar,
-    );
-
-    return server;
-  };
-  // Failed to start Flipper desktop: Error: flipper-server disconnected
-  if (serverUsageEnabled && (!settings.server || settings.server.enabled)) {
-    if (!serverRunning) {
-      console.info('flipper-server: not running/listening, start');
-
-      const port = 52342;
-      if (os.platform() === 'win32') {
-        externalServerConnectionURL = `ws://localhost:${port}`;
-      }
-
-      const {readyForIncomingConnections} = await startServer({
-        staticPath,
-        entry: 'index.web.dev.html',
-        tcp: false,
-        port,
-      });
-
-      const server = await startFlipperServer(
-        appPath,
-        staticPath,
-        '',
-        false,
-        keytar,
-        'embedded',
-        environmentInfo,
-      );
-
-      const companionEnv = await initCompanionEnv(server);
-      await server.connect();
-
-      await readyForIncomingConnections(server, companionEnv);
-    }
-
-    return getExternalServer(externalServerConnectionURL);
+  /**
+   * In this case, order matters. First, check if the TCP port is in use. If so,
+   * then shut down the TCP socket. If not, then try the UDS socket.
+   *
+   * UDS doesn't accept arguments in the query string, this effectively creates a different
+   * socket path which then doesn't match the one used by the server.
+   */
+  if (await checkPortInUse(port)) {
+    console.warn(`[flipper-server] TCP port ${port} is already in use.`);
+    const success = await shutdown();
+    console.info(`[flipper-server] Shutdown: ${success}`);
   }
-  return getEmbeddedServer();
+
+  console.info('[flipper-server] Not running/listening, start');
+
+  const {readyForIncomingConnections} = await startServer(
+    {
+      staticPath,
+      entry: 'index.web.html',
+      port,
+    },
+    environmentInfo,
+  );
+
+  const server = await startFlipperServer(
+    appPath,
+    staticPath,
+    '',
+    false,
+    keytar,
+    'embedded',
+    environmentInfo,
+  );
+
+  const token: string = await getAuthToken();
+  const searchParams = new URLSearchParams({token});
+  const TCPconnectionURL = new URL(`ws://localhost:${port}?${searchParams}`);
+
+  const companionEnv = await initCompanionEnv(server);
+  await server.connect();
+  await readyForIncomingConnections(server, companionEnv);
+
+  return getExternalServer(TCPconnectionURL);
 }
 
 async function start() {
@@ -203,7 +177,6 @@ async function start() {
   const electronIpcClient = new ElectronIpcClientRenderer();
 
   const flipperServer: FlipperServer = await getFlipperServer(
-    logger,
     electronIpcClient,
   );
   const flipperServerConfig = await flipperServer.exec('get-config');
@@ -213,8 +186,6 @@ async function start() {
     flipperServerConfig,
     electronIpcClient,
   );
-
-  setProcessState(flipperServerConfig.settings);
 
   // By turning this in a require, we force the JS that the body of this module (init) has completed (initializeElectron),
   // before starting the rest of the Flipper process.
@@ -231,8 +202,8 @@ async function start() {
 
 start().catch((e) => {
   console.error('Failed to start Flipper desktop', e);
-  document.getElementById('root')!.textContent =
-    'Failed to start Flipper desktop: ' + e;
+  document.getElementById('loading')!.textContent =
+    'Failed to start Flipper. ' + e;
 });
 
 function getStaticPath(appPath: string) {
@@ -303,23 +274,4 @@ function createDelegatedLogger(): Logger {
       getLogger().info(...args);
     },
   };
-}
-
-function setProcessState(settings: Settings) {
-  const androidHome = settings.androidHome;
-  const idbPath = settings.idbPath;
-
-  if (!process.env.ANDROID_HOME && !process.env.ANDROID_SDK_ROOT) {
-    process.env.ANDROID_HOME = androidHome;
-    process.env.ANDROID_SDK_ROOT = androidHome;
-  }
-
-  // emulator/emulator is more reliable than tools/emulator, so prefer it if
-  // it exists
-  process.env.PATH =
-    ['emulator', 'tools', 'platform-tools']
-      .map((directory) => path.resolve(androidHome, directory))
-      .join(':') +
-    `:${idbPath}` +
-    `:${process.env.PATH}`;
 }

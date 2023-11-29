@@ -10,9 +10,12 @@
   "license": "MIT",
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
+    "file-saver": "^2.0.5",
+    "js-base64": "^3.7.5",
     "reconnecting-websocket": "^4.4.0"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.5",
     "eventemitter3": "^4.0.7",
     "flipper-common": "0.0.0",
     "flipper-frontend-core": "0.0.0",

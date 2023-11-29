@@ -8,11 +8,12 @@
  */
 
 import {KeytarManager} from '../utils/keytar';
-import CertificateProvider from '../utils/CertificateProvider';
+import CertificateProvider from '../app-connectivity/certificate-exchange/CertificateProvider';
 
 export default class WWWCertificateProvider extends CertificateProvider {
   name = 'WWWCertificateProvider';
   medium = 'WWW' as const;
+
   constructor(private keytarManager: KeytarManager) {
     super();
   }

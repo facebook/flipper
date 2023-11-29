@@ -28,13 +28,13 @@ test('It can store rows', () => {
   });
 
   expect(instance.rows.get()).toMatchInlineSnapshot(`
-    Object {
-      "1": Object {
+    {
+      "1": {
         "id": 1,
         "title": "Dolphin",
         "url": "http://dolphin.png",
       },
-      "2": Object {
+      "2": {
         "id": 2,
         "title": "Turtle",
         "url": "http://turtle.png",

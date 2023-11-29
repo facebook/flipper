@@ -9,13 +9,13 @@
 
 import React from 'react';
 import {Col, Row} from 'antd';
-import {UINode} from '../../../types';
+import {ClientNode} from '../../../ClientTypes';
 import {styled, theme} from 'flipper-plugin';
 import {CodeInspector} from './fb-stubs/CodeInspector';
 import {TopSpacedContainerStyle} from './Styles';
 
 type Props = {
-  node: UINode;
+  node: ClientNode;
 };
 
 const IdentityKey = styled.div({
@@ -42,6 +42,7 @@ export const IdentityInspector: React.FC<Props> = ({node}) => {
       </Row>
 
       <CodeInspector
+        name={node.name}
         qualifiedName={node.qualifiedName}
         tags={node.tags}
         androidId={node.inlineAttributes['id']}

@@ -53,9 +53,9 @@ void FlipperWebSocket::setMessageHandler(SocketMessageHandler messageHandler) {
   messageHandler_ = std::move(messageHandler);
 }
 
-bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
+void FlipperWebSocket::connect(FlipperConnectionManager* manager) {
   if (socket_ != NULL) {
-    return true;
+    return;
   }
 
   std::string connectionURL = endpoint_.secure ? "wss://" : "ws://";
@@ -72,43 +72,16 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
     connectionURL += payload;
   }
 
-  __block bool fullfilled = false;
-  __block std::promise<bool> promise;
-  auto connected = promise.get_future();
-
   NSURL* urlObjc = [NSURL
       URLWithString:[NSString stringWithUTF8String:connectionURL.c_str()]];
 
-  auto eventHandler = eventHandler_;
   socket_ = [[FlipperPlatformWebSocket alloc] initWithURL:urlObjc];
   socket_.eventHandler = ^(SocketEvent event) {
-    /**
-       Only fulfill the promise the first time the event handler is used. If the
-       open event is received, then set the promise value to true. For any other
-       event, consider a failure and set to false.
-     */
-    if (!fullfilled) {
-      fullfilled = true;
-      if (event == SocketEvent::OPEN) {
-        promise.set_value(true);
-      } else if (event == SocketEvent::SSL_ERROR) {
-        try {
-          promise.set_exception(
-              std::make_exception_ptr(SSLException("SSL handshake failed")));
-        } catch (...) {
-          // set_exception() may throw an exception
-          // In that case, just set the value to false.
-          promise.set_value(false);
-        }
-      } else {
-        promise.set_value(false);
-      }
-    }
-    eventHandler(event);
+    eventHandler_(event);
   };
-  auto messageHandler = messageHandler_;
+
   socket_.messageHandler = ^(const std::string& message) {
-    messageHandler(message);
+    messageHandler_(message);
   };
 
   if (endpoint_.secure) {
@@ -119,13 +92,12 @@ bool FlipperWebSocket::connect(FlipperConnectionManager* manager) {
         return std::string("");
       }
       strncpy(password, pkcs12.second.c_str(), length);
+      password[length - 1] = '\0';
       return pkcs12.first;
     };
   }
 
   [socket_ connect];
-
-  return connected.get();
 }
 
 void FlipperWebSocket::disconnect() {
@@ -149,6 +121,14 @@ void FlipperWebSocket::send(
   if (socket_ == NULL) {
     return;
   }
+
+  // Ensure the payload size is valid before sending.
+  // The maximum allowed size for a message payload is 2^53 - 1. But that is
+  // for the entire message, including any additional metadata.
+  if (message.length() > pow(2, 53) - 1) {
+    throw std::length_error("Payload is too big to send");
+  }
+
   NSString* messageObjc = [NSString stringWithUTF8String:message.c_str()];
   [socket_ send:messageObjc
       withCompletionHandler:^(NSError*) {
@@ -157,9 +137,9 @@ void FlipperWebSocket::send(
 }
 
 /**
-    Only ever used for insecure connections to receive the device_id from a
-    signCertificate request. If the intended usage ever changes, then a better
-    approach needs to be put in place.
+ * Only ever used for insecure connections to receive the device_id from a
+ * signCertificate request. If the intended usage ever changes, then a better
+ * approach needs to be put in place.
  */
 void FlipperWebSocket::sendExpectResponse(
     const std::string& message,

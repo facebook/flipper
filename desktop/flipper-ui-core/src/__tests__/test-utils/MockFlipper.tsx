@@ -180,6 +180,7 @@ export default class MockFlipper {
       device: device.title,
       device_id: device.serial,
       sdk_version: 4,
+      medium: 'NONE',
     };
     const id = buildClientId({
       app: query.app,

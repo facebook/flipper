@@ -120,6 +120,7 @@ class SearchableManagedTable extends PureComponent<Props, State> {
     this.props.defaultFilters.map(this.props.addFilter);
   }
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (
       nextProps.searchTerm !== this.props.searchTerm ||

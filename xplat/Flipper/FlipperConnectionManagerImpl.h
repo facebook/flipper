@@ -36,7 +36,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
 
   void stop() override;
 
-  bool isOpen() const override;
+  bool isConnected() const override;
 
   void setCallbacks(Callbacks* callbacks) override;
 
@@ -54,34 +54,37 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   std::shared_ptr<FlipperCertificateProvider> getCertificateProvider() override;
 
  private:
-  bool isOpen_ = false;
-  bool isStarted_ = false;
-  std::shared_ptr<FlipperCertificateProvider> certProvider_ = nullptr;
+  bool isConnected_ = false;
+  bool started_ = false;
+  bool isConnectionTrusted_ = false;
+
+  std::shared_ptr<FlipperCertificateProvider> certificateProvider_ = nullptr;
+
   Callbacks* callbacks_;
+
   DeviceData deviceData_;
-  std::shared_ptr<FlipperState> flipperState_;
+
+  std::shared_ptr<FlipperState> state_;
+
   int insecurePort;
   int securePort;
   int altInsecurePort;
   int altSecurePort;
 
-  Scheduler* flipperScheduler_;
+  Scheduler* scheduler_;
   Scheduler* connectionScheduler_;
 
-  std::unique_ptr<FlipperSocket> client_;
-
-  bool connectionIsTrusted_;
-  bool certificateExchangeCompleted_ = false;
+  std::unique_ptr<FlipperSocket> socket_;
 
   int failedConnectionAttempts_ = 0;
-  int failedSocketConnectionAttempts = 0;
 
-  std::shared_ptr<ConnectionContextStore> contextStore_;
+  std::shared_ptr<ConnectionContextStore> store_;
   std::shared_ptr<FlipperConnectionManagerWrapper> implWrapper_;
 
   void startSync();
-  bool connectAndExchangeCertificate();
-  bool connectSecurely();
+  void connectAndExchangeCertificate();
+  void connectSecurely();
+  void handleSocketEvent(const SocketEvent event);
   bool isCertificateExchangeNeeded();
   void requestSignedCertificate();
   void processSignedCertificateResponse(

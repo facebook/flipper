@@ -7,6 +7,8 @@
  * @format
  */
 
+import {DeviceType, OS} from './server-types';
+
 export interface PluginDetails {
   name: string;
   specVersion: number;
@@ -57,17 +59,6 @@ export interface SupportedApp {
   readonly type?: DeviceType;
 }
 
-export type OS =
-  | 'iOS'
-  | 'Android'
-  | 'Metro'
-  | 'Windows'
-  | 'MacOS'
-  | 'Browser'
-  | 'Linux';
-
-export type DeviceType = 'emulator' | 'physical' | 'dummy';
-
 export type PluginType = 'client' | 'device';
 
 export type DeviceSpec = 'KaiOS';
@@ -91,6 +82,7 @@ export type ActivatablePluginDetails = InstalledPluginDetails;
 // Describes plugin available for downloading. Until downloaded to the disk it is not available for activation in Flipper.
 export interface DownloadablePluginDetails extends ConcretePluginDetails {
   isActivatable: false;
+  buildId: string;
   downloadUrl: string;
   lastUpdated: Date;
   // Indicates whether plugin should be enabled by default for new users

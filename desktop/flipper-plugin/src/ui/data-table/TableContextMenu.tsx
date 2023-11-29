@@ -32,7 +32,7 @@ import {theme} from '../theme';
 const {Item, SubMenu} = Menu;
 const {Option} = Select;
 
-export function tableContextMenuFactory<T>(
+export function tableContextMenuFactory<T extends object>(
   dataView: _DataSourceView<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   selection: Selection,
@@ -282,7 +282,7 @@ function friendlyColumnTitle(column: DataTableColumn<any>): string {
   return toFirstUpper(name);
 }
 
-function defaultOnCopyRows<T>(
+function defaultOnCopyRows<T extends object>(
   items: T[],
   visibleColumns: DataTableColumn<T>[],
 ) {

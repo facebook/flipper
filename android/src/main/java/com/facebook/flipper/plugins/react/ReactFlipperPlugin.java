@@ -10,7 +10,7 @@ package com.facebook.flipper.plugins.react;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperPlugin;
 
-// This plugin is not needed, but kept here for backward compatilibty
+// This plugin is not needed, but kept here for backward compatibility
 @Deprecated
 public class ReactFlipperPlugin implements FlipperPlugin {
 

@@ -16,6 +16,7 @@ import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
+import com.facebook.flipper.plugins.jetpackcompose.UIDebuggerComposeSupport;
 import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
@@ -25,7 +26,6 @@ import com.facebook.flipper.plugins.uidebugger.UIDebuggerFlipperPlugin;
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext;
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister;
 import com.facebook.flipper.plugins.uidebugger.litho.UIDebuggerLithoSupport;
-import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.editor.flipper.LithoFlipperDescriptors;
 import java.util.Arrays;
@@ -62,9 +62,9 @@ public final class FlipperInitializer {
     client.addPlugin(NavigationFlipperPlugin.getInstance());
 
     DescriptorRegister descriptorRegister = DescriptorRegister.Companion.withDefaults();
-    TreeObserverFactory treeObserverFactory = TreeObserverFactory.Companion.withDefaults();
     UIDContext uidContext = UIDContext.Companion.create((Application) context);
     UIDebuggerLithoSupport.INSTANCE.enable(uidContext);
+    UIDebuggerComposeSupport.INSTANCE.enable(uidContext);
 
     client.addPlugin(new UIDebuggerFlipperPlugin(uidContext));
     client.start();

@@ -161,13 +161,12 @@ export type Action =
     }
   | RegisterPluginAction;
 
-const DEFAULT_PLUGIN = 'DeviceLogs';
 const DEFAULT_DEVICE_BLACKLIST: DeviceOS[] = ['MacOS', 'Metro', 'Windows'];
 const INITAL_STATE: State = {
   devices: [],
   selectedDevice: null,
   selectedAppId: null,
-  selectedPlugin: DEFAULT_PLUGIN,
+  selectedPlugin: null,
   pluginMenuEntries: [],
   userPreferredDevice: null,
   userPreferredPlugin: null,

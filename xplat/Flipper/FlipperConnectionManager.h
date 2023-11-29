@@ -47,7 +47,7 @@ class FlipperConnectionManager {
    True if there's an open connection.
    This method may block if the connection is busy.
    */
-  virtual bool isOpen() const = 0;
+  virtual bool isConnected() const = 0;
 
   /**
    Send message to the ws server.

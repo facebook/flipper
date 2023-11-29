@@ -204,7 +204,7 @@ module.exports = {
         'no-dupe-class-members': 0,
         '@typescript-eslint/no-redeclare': 1,
         '@typescript-eslint/no-unused-vars': [
-          1,
+          2,
           {
             ignoreRestSiblings: true,
             varsIgnorePattern: '^_',
@@ -215,9 +215,33 @@ module.exports = {
         '@typescript-eslint/naming-convention': [
           2,
           {
+            selector: 'default',
+            format: ['camelCase'],
+            leadingUnderscore: 'allow',
+            trailingUnderscore: 'allow',
+          },
+          {
+            selector: 'variable',
+            format: ['camelCase', 'UPPER_CASE', 'PascalCase', 'snake_case'],
+            leadingUnderscore: 'allowSingleOrDouble',
+            trailingUnderscore: 'allowSingleOrDouble',
+          },
+          {
+            selector: 'function',
+            format: ['camelCase', 'PascalCase'],
+            leadingUnderscore: 'allow',
+            trailingUnderscore: 'allow',
+          },
+          {
             selector: 'typeLike',
             format: ['PascalCase', 'UPPER_CASE'],
             leadingUnderscore: 'allow',
+          },
+          {
+            selector: ['property', 'method', 'memberLike', 'parameter'],
+            // do not enforce naming convention for properties
+            // no support for kebab-case
+            format: null,
           },
         ],
         '@typescript-eslint/no-non-null-assertion': 'warn',

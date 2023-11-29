@@ -183,10 +183,10 @@ exports[`load PluginInstaller list 1`] = `
                   href="https://yarnpkg.com/en/package/flipper-plugin-hello"
                 >
                   <div
-                    class="css-1kmzf9v-ColoredIconCustom ekc8qeh0"
+                    class="css-xl1cnv-ColoredIconCustom ekc8qeh0"
                     color="var(--light-color-button-active)"
                     size="16"
-                    src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                    src="https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/info-circle_filled_16.png"
                   />
                 </a>
               </div>
@@ -255,10 +255,10 @@ exports[`load PluginInstaller list 1`] = `
                   href="https://yarnpkg.com/en/package/flipper-plugin-world"
                 >
                   <div
-                    class="css-1kmzf9v-ColoredIconCustom ekc8qeh0"
+                    class="css-xl1cnv-ColoredIconCustom ekc8qeh0"
                     color="var(--light-color-button-active)"
                     size="16"
-                    src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                    src="https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/info-circle_filled_16.png"
                   />
                 </a>
               </div>
@@ -569,10 +569,10 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                   href="https://yarnpkg.com/en/package/flipper-plugin-hello"
                 >
                   <div
-                    class="css-1kmzf9v-ColoredIconCustom ekc8qeh0"
+                    class="css-xl1cnv-ColoredIconCustom ekc8qeh0"
                     color="var(--light-color-button-active)"
                     size="16"
-                    src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                    src="https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/info-circle_filled_16.png"
                   />
                 </a>
               </div>
@@ -641,10 +641,10 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                   href="https://yarnpkg.com/en/package/flipper-plugin-world"
                 >
                   <div
-                    class="css-1kmzf9v-ColoredIconCustom ekc8qeh0"
+                    class="css-xl1cnv-ColoredIconCustom ekc8qeh0"
                     color="var(--light-color-button-active)"
                     size="16"
-                    src="https://facebook.com/assets/?name=info-circle&variant=filled&size=16&set=facebook_icons&density=1x"
+                    src="https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/info-circle_filled_16.png"
                   />
                 </a>
               </div>

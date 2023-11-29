@@ -152,7 +152,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
 
   renderPending(statusUpdate: string | null) {
     return (
-      <Modal visible onCancel={this.cancelAndHide} footer={null}>
+      <Modal open onCancel={this.cancelAndHide} footer={null}>
         <ShareSheetPendingDialog
           width={500}
           statusUpdate={statusUpdate}
@@ -171,7 +171,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
 
     const {title, errorArray} = displayFetchMetadataErrors(fetchMetaDataErrors);
     return (
-      <Modal visible onCancel={this.cancelAndHide} footer={null}>
+      <Modal open onCancel={this.cancelAndHide} footer={null}>
         <Layout.Container>
           <>
             <FlexColumn>

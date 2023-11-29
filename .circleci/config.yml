@@ -1,13 +1,13 @@
 version: 2.1
 orbs:
-  android: circleci/android@2.1.2
+  android: circleci/android@2.3.0
 jobs:
   snapshot:
     environment:
       TERM: 'dumb'
     executor:
       name: android/android-machine
-      tag: 2021.10.1
+      tag: 2023.04.1
       resource-class: large
     steps:
       - checkout
@@ -19,7 +19,7 @@ jobs:
       - run:
           name: build
           command: |
-            yes | sdkmanager "platforms;android-30" || true
+            yes | sdkmanager "platforms;android-33" || true
             /tmp/retry -m 3 ./gradlew :android:assembleRelease --info
       - run:
           name: deploy snapshot

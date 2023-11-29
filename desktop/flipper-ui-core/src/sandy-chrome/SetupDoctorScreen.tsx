@@ -9,7 +9,16 @@
 
 import React, {useEffect, useCallback, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
-import {Typography, Collapse, Button, Modal, Checkbox, Alert} from 'antd';
+import {
+  Typography,
+  Collapse,
+  Button,
+  List,
+  Modal,
+  Checkbox,
+  Alert,
+  Space,
+} from 'antd';
 import {
   CheckCircleFilled,
   CloseCircleFilled,
@@ -62,7 +71,7 @@ const statusTypeAndMessage: {
   },
 };
 
-function checkHasProblem(result: FlipperDoctor.HealthcheckResult) {
+export function checkHasProblem(result: FlipperDoctor.HealthcheckResult) {
   return result.status === 'FAILED' || result.status === 'WARNING';
 }
 
@@ -124,7 +133,30 @@ function CollapsableCategory(props: {
           key={check.key}
           header={check.label}
           extra={<CheckIcon status={check.result.status} />}>
-          <Paragraph>{check.result.message}</Paragraph>
+          {check.result.message?.split('\n').map((line, index) => (
+            <Paragraph key={index} style={{marginBottom: 0}}>
+              {line}
+            </Paragraph>
+          ))}
+          {check.result.commands && (
+            <List>
+              {check.result.commands.map(({title, command}, i) => (
+                <List.Item key={i}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      marginBottom: 8,
+                    }}>
+                    <Typography.Text type="secondary">{title}</Typography.Text>
+                    <Typography.Text code copyable>
+                      {command}
+                    </Typography.Text>
+                  </div>
+                </List.Item>
+              ))}
+            </List>
+          )}
         </Collapse.Panel>
       ))}
     </Collapse>
@@ -167,6 +199,7 @@ const FooterContainer = styled(Layout.Horizontal)({
 });
 
 function SetupDoctorFooter(props: {
+  closable: boolean;
   onClose: () => void;
   onRerunDoctor: () => Promise<void>;
   showAcknowledgeCheckbox: boolean;
@@ -190,7 +223,7 @@ function SetupDoctorFooter(props: {
         <Layout.Container />
       )}
       <Layout.Horizontal>
-        <Button onClick={props.onClose}>Close</Button>
+        {props.closable && <Button onClick={props.onClose}>Close</Button>}
         <Button
           type="primary"
           onClick={() => props.onRerunDoctor()}
@@ -202,10 +235,17 @@ function SetupDoctorFooter(props: {
   );
 }
 
-export default function SetupDoctorScreen(props: {
+type Props = {
   visible: boolean;
+  modal?: boolean;
   onClose: () => void;
-}) {
+};
+
+export default function SetupDoctorScreen({
+  visible,
+  modal = true,
+  onClose,
+}: Props) {
   const healthcheckReport = useStore(
     (state) => state.healthchecks.healthcheckReport,
   );
@@ -234,8 +274,8 @@ export default function SetupDoctorScreen(props: {
       reportUsage('doctor:report:closed:notAcknowledged');
       dispatch(resetAcknowledgedProblems());
     }
-    props.onClose();
-  }, [healthcheckReport.result, acknowlodgeProblem, props, dispatch]);
+    onClose();
+  }, [healthcheckReport.result, acknowlodgeProblem, onClose, dispatch]);
   const runDoctor = useCallback(async () => {
     await runHealthchecks({
       settings,
@@ -255,15 +295,16 @@ export default function SetupDoctorScreen(props: {
     runDoctor();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
+  return modal ? (
     <Modal
       centered
-      width={570}
+      width={620}
       title="Setup Doctor"
-      visible={props.visible}
+      open={visible}
       destroyOnClose
       footer={
         <SetupDoctorFooter
+          closable
           onClose={onCloseModal}
           onRerunDoctor={runDoctor}
           showAcknowledgeCheckbox={hasProblem}
@@ -275,5 +316,19 @@ export default function SetupDoctorScreen(props: {
       onCancel={onCloseModal}>
       <HealthCheckList report={healthcheckReport} />
     </Modal>
+  ) : (
+    <Layout.Container pad grow>
+      <HealthCheckList report={healthcheckReport} />
+      <Space direction="vertical" size="middle" />
+      <SetupDoctorFooter
+        closable={false}
+        onClose={onCloseModal}
+        onRerunDoctor={runDoctor}
+        showAcknowledgeCheckbox={hasProblem}
+        acknowledgeCheck={acknowlodgeProblem}
+        onAcknowledgeCheck={(checked) => setAcknowlodgeProblem(checked)}
+        disableRerun={healthcheckReport.result.status === 'IN_PROGRESS'}
+      />
+    </Layout.Container>
   );
 }

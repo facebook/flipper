@@ -57,7 +57,6 @@ export async function prepareDefaultPlugins(isInsidersBuild: boolean = false) {
       `⚙️  Copying the provided default plugins dir "${forcedDefaultPluginsDir}"...`,
     );
     await fs.copy(forcedDefaultPluginsDir, defaultPluginsDir, {
-      recursive: true,
       overwrite: true,
       dereference: true,
     });
@@ -168,8 +167,7 @@ export async function moveSourceMaps(
     // If we don't move them out of the build folders, they'll get included in the ASAR
     // which we don't want.
     console.log(`⏭  Removing source maps.`);
-    await fs.remove(mainBundleMap);
-    await fs.remove(rendererBundleMap);
+    await Promise.all([fs.remove(mainBundleMap), fs.remove(rendererBundleMap)]);
   }
 }
 
@@ -281,7 +279,7 @@ export function genMercurialRevision(): Promise<string | null> {
     .catch(() => null);
 }
 
-export async function compileServerMain(dev: boolean) {
+export async function compileServerMain() {
   console.log('⚙️  Compiling server sources...');
   await exec(`cd ${serverDir} && yarn build`);
   console.log('✅  Compiled server sources.');
@@ -385,11 +383,7 @@ export function sleep(ms: number) {
 
 let proc: child.ChildProcess | undefined;
 
-export async function launchServer(
-  startBundler: boolean,
-  open: boolean,
-  tcp: boolean,
-) {
+export async function launchServer(startBundler: boolean, open: boolean) {
   if (proc) {
     console.log('⚙️  Killing old flipper-server...');
     proc.kill(9);
@@ -402,7 +396,6 @@ export async function launchServer(
       `../flipper-server/server.js`,
       startBundler ? `--bundler` : `--no-bundler`,
       open ? `--open` : `--no-open`,
-      tcp ? `--tcp` : `--no-tcp`,
     ],
     {
       cwd: serverDir,

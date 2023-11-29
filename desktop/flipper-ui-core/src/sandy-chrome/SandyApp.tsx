@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect} from 'react';
 import {
   TrackingScope,
   useLogger,
@@ -15,20 +15,17 @@ import {
   Layout,
   Dialog,
   _PortalsManager,
+  getFlipperLib,
 } from 'flipper-plugin';
 import {Link, styled} from '../ui';
 import {theme} from 'flipper-plugin';
 import {Logger} from 'flipper-common';
 
-import {LeftRail} from './LeftRail';
-import {useStore, useDispatch} from '../utils/useStore';
-import {FlipperDevTools} from '../chrome/FlipperDevTools';
-import {setStaticView} from '../reducers/connections';
-import {toggleLeftSidebarVisible} from '../reducers/application';
+import {Navbar} from './Navbar';
+import {useStore} from '../utils/useStore';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
-import {Notification} from './notification/Notification';
 import {showChangelog} from '../chrome/ChangelogSheet';
 import PlatformSelectWizard, {
   hasPlatformWizardBeenDone,
@@ -41,66 +38,32 @@ import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
 import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
-import {notification} from 'antd';
+import {Button, Modal, notification} from 'antd';
 import isProduction from '../utils/isProduction';
 import {getRenderHostInstance} from 'flipper-frontend-core';
-
-export type ToplevelNavItem =
-  | 'appinspect'
-  | 'flipperlogs'
-  | 'notification'
-  | undefined;
-export type ToplevelProps = {
-  toplevelSelection: ToplevelNavItem;
-  setToplevelSelection: (_newSelection: ToplevelNavItem) => void;
-};
+import {uiPerfTracker} from '../utils/UIPerfTracker';
+import {WarningOutlined} from '@ant-design/icons';
 
 export function SandyApp() {
   const logger = useLogger();
-  const dispatch = useDispatch();
   const leftSidebarVisible = useStore(
     (state) => state.application.leftSidebarVisible,
   );
   const staticView = useStore((state) => state.connections.staticView);
-
-  /**
-   * top level navigation uses two pieces of state, selection stored here, and selection that is based on what is stored in the reducer (which might be influenced by redux action dispatches to different means).
-   * The logic here is to sync both, but without modifying the navigation related reducers to not break classic Flipper.
-   * It is possible to simplify this in the future.
-   */
-  const [toplevelSelection, setStoredToplevelSelection] =
-    useState<ToplevelNavItem>('appinspect');
-
-  // Handle toplevel nav clicks from LeftRail
-  const setToplevelSelection = useCallback(
-    (newSelection: ToplevelNavItem) => {
-      // toggle sidebar visibility if needed
-      const hasLeftSidebar =
-        newSelection === 'appinspect' || newSelection === 'notification';
-      if (hasLeftSidebar) {
-        if (newSelection === toplevelSelection) {
-          dispatch(toggleLeftSidebarVisible());
-        } else {
-          dispatch(toggleLeftSidebarVisible(true));
-        }
-      }
-      switch (newSelection) {
-        case 'flipperlogs':
-          dispatch(setStaticView(FlipperDevTools));
-          break;
-        default:
-      }
-      setStoredToplevelSelection(newSelection);
-    },
-    [dispatch, toplevelSelection],
-  );
+  const serverConfig = getRenderHostInstance().serverConfig;
 
   useEffect(() => {
-    document.title = `Flipper (${getVersionString()}${
+    let title = `Flipper (${getVersionString()}${
       config.isFBBuild ? '@FB' : ''
     })`;
+    if (!serverConfig.environmentInfo.isHeadlessBuild) {
+      title += ' (Unsupported)';
+    }
+
+    document.title = title;
 
     registerStartupTime(logger);
+    uiPerfTracker.track('ui-perf-sandy-container-rendered');
 
     if (hasPlatformWizardBeenDone(window.localStorage)) {
       Dialog.showModal((onHide) => (
@@ -118,17 +81,55 @@ export function SandyApp() {
       Dialog.showModal((onHide) => <PWAInstallationWizard onHide={onHide} />);
     }
 
-    showChangelog(true);
+    if (serverConfig.environmentInfo.isHeadlessBuild) {
+      showChangelog(true);
+    }
 
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    if (fbConfig.warnFBEmployees && isProduction()) {
-      isFBEmployee()
-        .then((isEmployee) => {
-          if (isEmployee) {
+    isFBEmployee()
+      .then((isEmployee) => {
+        if (isEmployee) {
+          if (process.env.FLIPPER_REACT_NATIVE_ONLY) {
+            Dialog.showModal((onHide) => (
+              <Modal
+                closable={false}
+                keyboard={false}
+                maskClosable={false}
+                open
+                centered
+                onCancel={() => onHide()}
+                width={570}
+                title={
+                  <>
+                    <WarningOutlined /> This Version of Flipper is Unsupported
+                  </>
+                }
+                footer={
+                  <>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        getFlipperLib().openLink('munki://detail-Flipper');
+                        onHide();
+                      }}>
+                      Open Flipper Stable instead
+                    </Button>
+                    <Button type="ghost" onClick={() => onHide()}>
+                      I understand
+                    </Button>
+                  </>
+                }>
+                This version is only meant to be used for React Native
+                debugging. It is not maintained and it doesn't receive updates.
+                Instead, you should be using the main Flipper version from
+                Managed Software Center for all other purposes.
+              </Modal>
+            ));
+          } else if (fbConfig.warnFBEmployees && isProduction()) {
             notification.warning({
               placement: 'bottomLeft',
               message: 'Please use Flipper@FB',
@@ -145,62 +146,54 @@ export function SandyApp() {
               duration: null,
             });
           }
-        })
-        .catch((e) => {
-          console.warn('Failed to check if user is employee', e);
-        });
-    }
+        }
+      })
+      .catch((e) => {
+        console.warn('Failed to check if user is employee', e);
+      });
   }, []);
-
-  const leftMenuContent = !leftSidebarVisible ? null : toplevelSelection ===
-    'appinspect' ? (
-    <AppInspect />
-  ) : toplevelSelection === 'notification' ? (
-    <Notification />
-  ) : null;
 
   return (
     <RootElement>
       <Layout.Bottom>
-        <Layout.Left>
-          <Layout.Horizontal>
-            <LeftRail
-              toplevelSelection={toplevelSelection}
-              setToplevelSelection={setToplevelSelection}
-            />
-            <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
-              {leftMenuContent && (
-                <TrackingScope scope={toplevelSelection!}>
-                  {leftMenuContent}
+        <Layout.Top gap={16}>
+          <Navbar />
+          <Layout.Left
+            style={{
+              paddingLeft: theme.space.large,
+              paddingRight: theme.space.large,
+            }}>
+            <Layout.Horizontal>
+              <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
+                {leftSidebarVisible ? <AppInspect /> : null}
+              </_Sidebar>
+            </Layout.Horizontal>
+            <MainContainer>
+              {staticView ? (
+                <TrackingScope
+                  scope={
+                    (staticView as any).displayName ??
+                    staticView.name ??
+                    staticView.constructor?.name ??
+                    'unknown static view'
+                  }>
+                  {staticView === WelcomeScreenStaticView ? (
+                    React.createElement(staticView) /* avoid shadow */
+                  ) : (
+                    <ContentContainer>
+                      {React.createElement(staticView, {
+                        logger: logger,
+                      })}
+                    </ContentContainer>
+                  )}
                 </TrackingScope>
+              ) : (
+                <PluginContainer logger={logger} />
               )}
-            </_Sidebar>
-          </Layout.Horizontal>
-          <MainContainer>
-            {staticView ? (
-              <TrackingScope
-                scope={
-                  (staticView as any).displayName ??
-                  staticView.name ??
-                  staticView.constructor?.name ??
-                  'unknown static view'
-                }>
-                {staticView === WelcomeScreenStaticView ? (
-                  React.createElement(staticView) /* avoid shadow */
-                ) : (
-                  <ContentContainer>
-                    {React.createElement(staticView, {
-                      logger: logger,
-                    })}
-                  </ContentContainer>
-                )}
-              </TrackingScope>
-            ) : (
-              <PluginContainer logger={logger} />
-            )}
-            {outOfContentsContainer}
-          </MainContainer>
-        </Layout.Left>
+              {outOfContentsContainer}
+            </MainContainer>
+          </Layout.Left>
+        </Layout.Top>
         <_PortalsManager />
       </Layout.Bottom>
     </RootElement>
@@ -231,13 +224,13 @@ const outOfContentsContainer = (
 
 const MainContainer = styled(Layout.Container)({
   background: theme.backgroundWash,
-  padding: `${theme.space.large}px ${theme.space.large}px ${theme.space.large}px 0`,
   overflow: 'hidden',
 });
 
 const RootElement = styled.div({
   display: 'flex',
   height: '100%',
+  background: theme.backgroundWash,
 });
 RootElement.displayName = 'SandyAppRootElement';
 
@@ -250,5 +243,4 @@ function registerStartupTime(logger: Logger) {
   });
 
   renderHost.sendIpcEvent('getLaunchTime');
-  renderHost.sendIpcEvent('componentDidMount');
 }

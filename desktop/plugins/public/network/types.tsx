@@ -23,7 +23,7 @@ export interface Request {
   requestData: string | Uint8Array | undefined;
   // response
   responseTime?: Date;
-  status?: number;
+  status: string;
   reason?: string;
   responseHeaders?: Array<Header>;
   responseData?: string | Uint8Array | undefined;

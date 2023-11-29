@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": ["ES2019"],
+    "lib": ["ES2021"],
     "esModuleInterop": true,
-    "target": "ES2019",
+    "target": "ES2021",
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
@@ -24,7 +24,6 @@
       "flipper-plugin": ["./flipper-plugin/src"],
       "eslint-plugin-flipper": ["./eslint-plugin-flipper/src"],
       "flipper-server-core": ["./flipper-server-core/src"],
-      "flipper-server-ui": ["./flipper-server-ui/src"],
       "flipper-common": ["./flipper-common/src"],
       "flipper-*": ["./*/src"]
     },

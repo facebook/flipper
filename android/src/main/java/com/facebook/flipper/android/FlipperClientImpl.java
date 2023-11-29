@@ -90,6 +90,9 @@ class FlipperClientImpl implements FlipperClient {
   public native void stop();
 
   @Override
+  public native boolean isConnected();
+
+  @Override
   public native void subscribeForUpdates(FlipperStateUpdateListener stateListener);
 
   @Override

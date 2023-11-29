@@ -205,6 +205,7 @@ const siteConfig = {
   // end_config_example
   plugins: [
     './src/plugins/support-symlinks',
+    ...fbContent({internal: [], external: [require.resolve('docusaurus-lunr-search')]}),
     [
       require.resolve('@docusaurus/plugin-content-pages'),
       {

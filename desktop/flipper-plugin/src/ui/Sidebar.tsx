@@ -168,7 +168,7 @@ export class Sidebar extends Component<SidebarProps, SidebarState> {
     if (horizontal) {
       width = width == null ? 200 : width;
       minWidth = (minWidth == null ? 100 : minWidth) + gutterWidth;
-      maxWidth = maxWidth == null ? 600 : maxWidth;
+      maxWidth = maxWidth == null ? 1200 : maxWidth;
     } else {
       height = height == null ? 200 : height;
       minHeight = minHeight == null ? 100 : minHeight;
@@ -200,7 +200,13 @@ export class Sidebar extends Component<SidebarProps, SidebarState> {
           {gutter ? (
             <GutterWrapper position={position}>
               {/* Stop propagating mousedown events to prevent SidebarInteractiveContainer from resizing whenever a user starts selecting text in a child */}
-              <Layout.Container grow onMouseDown={(e) => e.stopPropagation()}>
+              <Layout.Container
+                style={{
+                  background: theme.backgroundDefault,
+                  borderRadius: theme.borderRadius,
+                }}
+                grow
+                onMouseDown={(e) => e.stopPropagation()}>
                 {children}
               </Layout.Container>
             </GutterWrapper>

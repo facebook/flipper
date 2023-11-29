@@ -134,9 +134,9 @@ FlipperReactSocketClient::getClientCertificate() {
   return installClientCertificate();
 }
 
-bool FlipperReactSocketClient::connect(FlipperConnectionManager* manager) {
+void FlipperReactSocketClient::connect(FlipperConnectionManager* manager) {
   if (status_ != Status::Unconnected) {
-    return false;
+    return;
   }
 
   status_ = Status::Connecting;
@@ -176,30 +176,30 @@ bool FlipperReactSocketClient::connect(FlipperConnectionManager* manager) {
       socket_.Closed({this, &FlipperReactSocketClient::OnWebSocketClosed});
 
   try {
-    this->socket_.ConnectAsync(winrt::Windows::Foundation::Uri(uri))
-        .wait_for(std::chrono::seconds(10));
-
     status_ = Status::Initializing;
-    scheduler_->schedule(
-        [eventHandler = eventHandler_]() { eventHandler(SocketEvent::OPEN); });
 
-    return true;
+    this->socket_.ConnectAsync(winrt::Windows::Foundation::Uri(uri))
+        .Completed([&](auto&& asyncInfo, auto&& asyncStatus) {
+          if (asyncStatus ==
+              winrt::Windows::Foundation::AsyncStatus::Completed) {
+            eventHandler_(SocketEvent::OPEN);
+          } else {
+            eventHandler_(SocketEvent::ERROR);
+          }
+        });
+
   } catch (winrt::hresult_error const& ex) {
     winrt::Windows::Web::WebErrorStatus webErrorStatus{
         winrt::Windows::Networking::Sockets::WebSocketError::GetStatus(
             ex.to_abi())};
+    socket_ = nullptr;
+    status_ = Status::Unconnected;
+    eventHandler_(SocketEvent::ERROR);
   }
-
-  disconnect();
-
-  return false;
 }
 
 void FlipperReactSocketClient::disconnect() {
   status_ = Status::Closed;
-  scheduler_->schedule(
-      [eventHandler = eventHandler_]() { eventHandler(SocketEvent::CLOSE); });
-  // socket_.Close();
   socket_ = nullptr;
 }
 
@@ -269,14 +269,11 @@ void FlipperReactSocketClient::OnWebSocketMessageReceived(
     const std::string payload = winrt::to_string(message);
 
     if (overrideHandler_ != nullptr) {
-      scheduler_->schedule([payload, messageHandler = *overrideHandler_]() {
-        messageHandler(payload, false);
-      });
+      auto messageHandler = *overrideHandler_;
+      messageHandler(payload, false);
       overrideHandler_ = nullptr;
     } else if (messageHandler_) {
-      scheduler_->schedule([payload, messageHandler = messageHandler_]() {
-        messageHandler(payload);
-      });
+      messageHandler_(payload);
     }
   } catch (winrt::hresult_error const& ex) {
     // winrt::Windows::Web::WebErrorStatus webErrorStatus{
@@ -291,8 +288,7 @@ void FlipperReactSocketClient::OnWebSocketClosed(
     return;
   }
   status_ = Status::Closed;
-  scheduler_->schedule(
-      [eventHandler = eventHandler_]() { eventHandler(SocketEvent::CLOSE); });
+  eventHandler_(SocketEvent::CLOSE);
 }
 
 } // namespace flipper

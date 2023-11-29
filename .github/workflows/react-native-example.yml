@@ -1,5 +1,7 @@
 name: Build React Native example
+# This action runs on 'git push' and PRs
 on: [push, pull_request]
+
 jobs:
   build-react-native-example-ios:
     runs-on: macos-latest
@@ -7,11 +9,11 @@ jobs:
       run:
         working-directory: react-native/ReactNativeFlipperExample
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.5
+    - uses: actions/checkout@v3.5.3
+    - uses: actions/setup-node@v3.6.0
       with:
-        node-version: 16.x
-    - uses: maxim-lobanov/setup-cocoapods@v1
+        node-version: '18.x'
+    - uses: maxim-lobanov/setup-cocoapods@v1.3.0
       with:
         # Path to Podfile.lock file to determine Cocoapods version
         # n.b. doesn't seem to respect cwd:
@@ -34,17 +36,18 @@ jobs:
       run:
         working-directory: react-native/ReactNativeFlipperExample
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.5
+    - uses: actions/checkout@v3.5.3
+    - uses: actions/setup-node@v3.6.0
       with:
-        node-version: 16.x
+        node-version: '18.x'
     - name: set up JDK
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v3.11.0
       with:
-        java-version: 11
+        distribution: 'temurin'
+        java-version: '11'
     - name: Compute build cache
       run: ${GITHUB_WORKSPACE}/scripts/checksum-android.sh checksum-android.txt
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3.3.1
       with:
         path: |
           ~/.gradle/caches/modules-*
@@ -67,14 +70,16 @@ jobs:
       run:
         working-directory: react-native/ReactNativeFlipperExample
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2.1.5
+      - uses: actions/checkout@v3.5.3
+      - uses: actions/setup-node@v3.6.0
         with:
-          node-version: 16.x
-      - uses: nuget/setup-nuget@v1
+          node-version: '18.x'
+      - name: Set up NuGet.exe
+      - uses: NuGet/setup-nuget@v1.2.0
         with:
           nuget-version: '5.x'
-      - uses: microsoft/setup-msbuild@v1.1
+      - name: Add msbuild to PATH
+      - uses: microsoft/setup-msbuild@v1.3.1
       - name: Gather environment info
         run: npx envinfo
       - name: Install vcpkg packages

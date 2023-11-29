@@ -1,671 +1,197 @@
-{
-  "accessibility": [
-    16,
-    20
-  ],
-  "app-dailies": [
-    12
-  ],
-  "app-react": [
-    12,
-    16
-  ],
-  "apps": [
-    12,
-    16
-  ],
-  "arrow-right": [
-    12,
-    16
-  ],
-  "bell-null-outline": [
-    24
-  ],
-  "bell-null": [
-    12
-  ],
-  "bell": [
-    12
-  ],
-  "bird": [
-    12,
-    16
-  ],
-  "borders": [
-    16
-  ],
-  "box": [
-    12,
-    24
-  ],
-  "brush-paint": [
-    12,
-    16
-  ],
-  "bug": [
-    12,
-    20
-  ],
-  "building-city": [
-    12,
-    16
-  ],
-  "camcorder": [
-    12,
-    16
-  ],
-  "camera": [
-    12,
-    16
-  ],
-  "caution-octagon": [
-    12,
-    16,
-    20
-  ],
-  "caution-triangle": [
-    12,
-    16,
-    20,
-    24
-  ],
-  "caution": [
-    16,
-    24
-  ],
-  "checkmark": [
-    16
-  ],
-  "chevron-down-outline": [
-    10
-  ],
-  "chevron-down": [
-    12,
-    16,
-    8
-  ],
-  "chevron-left": [
-    12,
-    16
-  ],
-  "chevron-right": [
-    8,
-    12,
-    16
-  ],
-  "chevron-up": [
-    12,
-    16,
-    8
-  ],
-  "compose": [
-    12,
-    16
-  ],
-  "copy": [
-    12,
-    16
-  ],
-  "cross-circle": [
-    12,
-    16,
-    24
-  ],
-  "cross": [
-    12,
-    16
-  ],
-  "dashboard-outline": [
-    24
-  ],
-  "dashboard": [
-    12,
-    16
-  ],
-  "data-table": [
-    12,
-    16
-  ],
-  "desktop": [
-    12
-  ],
-  "directions": [
-    12,
-    16
-  ],
-  "dots-3-circle-outline": [
-    16
-  ],
-  "download": [
-    16
-  ],
-  "face-unhappy-outline": [
-    24
-  ],
-  "first-aid": [
-    12
-  ],
-  "flash-default": [
-    12,
-    16
-  ],
-  "info-circle": [
-    12,
-    16,
-    24
-  ],
-  "internet": [
-    12,
-    16
-  ],
-  "life-event-major": [
-    16
-  ],
-  "magic-wand": [
-    12,
-    16,
-    20
-  ],
-  "magnifying-glass": [
-    16,
-    20,
-    24
-  ],
-  "messages": [
-    12,
-    16
-  ],
-  "minus-circle": [
-    12
-  ],
-  "mobile-engagement": [
-    16
-  ],
-  "mobile": [
-    12,
-    16,
-    32
-  ],
-  "network": [
-    12,
-    16
-  ],
-  "news-feed": [
-    12,
-    16
-  ],
-  "pause": [
-    16
-  ],
-  "posts": [
-    20
-  ],
-  "power": [
-    16
-  ],
-  "profile": [
-    12,
-    16
-  ],
-  "question-circle-outline": [
-    16
-  ],
-  "question-circle": [
-    12,
-    16,
-    20
-  ],
-  "question": [
-    16
-  ],
-  "refresh-left": [
-    16
-  ],
-  "rocket": [
-    12,
-    16,
-    20
-  ],
-  "settings": [
-    12
-  ],
-  "share-external": [
-    12,
-    16
-  ],
-  "share": [
-    16
-  ],
-  "star-outline": [
-    12,
-    16,
-    24
-  ],
-  "star-slash": [
-    16
-  ],
-  "star": [
-    12,
-    16,
-    24
-  ],
-  "stop-playback": [
-    12,
-    16
-  ],
-  "stop": [
-    16,
-    24
-  ],
-  "target": [
-    12,
-    16
-  ],
-  "thought-bubble": [
-    12,
-    16
-  ],
-  "tools": [
-    12,
-    16,
-    20
-  ],
-  "translate": [
-    12,
-    16
-  ],
-  "trash-outline": [
-    16
-  ],
-  "trash": [
-    12,
-    16
-  ],
-  "tree": [
-    12,
-    16
-  ],
-  "trending": [
-    12,
-    16
-  ],
-  "triangle-down": [
-    12,
-    16,
-    20
-  ],
-  "triangle-right": [
-    12
-  ],
-  "underline": [
-    12,
-    16
-  ],
-  "washing-machine": [
-    12,
-    16
-  ],
-  "watch-tv": [
-    12,
-    16
-  ],
-  "gears-two": [
-    16
-  ],
-  "info-cursive": [
-    16
-  ],
-  "on-this-day": [
-    12
-  ],
-  "zoom-out": [
-    16
-  ],
-  "zoom-in": [
-    16
-  ],
-  "fast-forward": [
-    16
-  ],
-  "draft-outline": [
-    16
-  ],
-  "gradient": [
-    16
-  ],
-  "crop": [
-    16
-  ],
-  "play": [
-    16
-  ],
-  "cross-outline": [
-    16
-  ],
-  "messenger-code": [
-    12,
-    16
-  ],
-  "book": [
-    12
-  ],
-  "list-arrow-up": [
-    12,
-    16
-  ],
-  "cat": [
-    12,
-    16
-  ],
-  "duplicate": [
-    12,
-    16
-  ],
-  "profile-circle-outline": [
-    16
-  ],
-  "card-person": [
-    12,
-    16
-  ],
-  "pencil-outline": [
-    16
-  ],
-  "code": [
-    12,
-    16,
-    20
-  ],
-  "undo-outline": [
-    16
-  ],
-  "checkmark-circle-outline": [
-    24
-  ],
-  "target-outline": [
-    16,
-    24
-  ],
-  "internet-outline": [
-    24,
-    32
-  ],
-  "profile-outline": [
-    32
-  ],
-  "app-react-outline": [
-    16
-  ],
-  "send-outline": [
-    16
-  ],
-  "paper-stack": [
-    12,
-    16
-  ],
-  "weather-cold": [
-    12,
-    16
-  ],
-  "mobile-cross": [
-    16
-  ],
-  "database-arrow-left": [
-    12
-  ],
-  "plus-circle-outline": [
-    16
-  ],
-  "arrows-circle": [
-    12
-  ],
-  "navicon": [
-    12
-  ],
-  "paper-fold-text": [
-    16
-  ],
-  "marketplace": [
-    12,
-    16
-  ],
-  "workflow": [
-    12
-  ],
-  "sankey-diagram": [
-    12,
-    16
-  ],
-  "media-stack": [
-    16
-  ],
-  "question-hexagon": [
-    16
-  ],
-  "briefcase": [
-    16
-  ],
-  "business-briefcase": [
-    16
-  ],
-  "log": [
-    12,
-    16
-  ],
-  "triangle-up": [
-    16,
-    20
-  ],
-  "checkmark-circle": [
-    12,
-    20
-  ],
-  "circle": [
-    12
-  ],
-  "comment-swish": [
-    16
-  ],
-  "direct": [
-    16
-  ],
-  "plus": [
-    16
-  ],
-  "scuba": [
-    12,
-    16
-  ],
-  "line-chart": [
-    12,
-    16
-  ],
-  "caution-circle": [
-    12,
-    24
-  ],
-  "megaphone": [
-    12,
-    16
-  ],
-  "wireless": [
-    16
-  ],
-  "cup-outline": [
-    24
-  ],
-  "unicorn": [
-    20
-  ],
-  "turtle": [
-    20
-  ],
-  "sushi": [
-    12
-  ],
-  "arrows-up-down": [
-    16
-  ],
-  "style-effects": [
-    16
-  ],
-  "stopwatch": [
-    16
-  ],
-  "database": [
-    16
-  ],
-  "bar-chart": [
-    16
-  ],
-  "augmented-reality": [
-    16
-  ],
-  "app-flash": [
-    16
-  ],
-  "sample-lo": [
-    20
-  ],
-  "point": [
-    20
-  ],
-  "eye": [
-    16
-  ],
-  "send": [
-    16
-  ],
-  "refresh-right": [
-    12,
-    16
-  ],
-  "hourglass": [
-    16
-  ],
-  "mobile-outline": [
-    16,
-    24
-  ],
-  "bookmark-outline": [
-    16
-  ],
-  "app-facebook-f-outline": [
-    24
-  ],
-  "app-messenger-outline": [
-    24
-  ],
-  "app-instagram-outline": [
-    24
-  ],
-  "app-whatsapp-outline": [
-    24
-  ],
-  "app-workplace-outline": [
-    24
-  ],
-  "app-work-chat-outline": [
-    24
-  ],
-  "sample-hi": [
-    20
-  ],
-  "dog": [
-    12,
-    16
-  ],
-  "hub": [
-    16
-  ],
-  "upload": [
-    16
-  ],
-  "list-gear-outline": [
-    24
-  ],
-  "app-apple-outline": [
-    24
-  ],
-  "app-microsoft-windows": [
-    24
-  ],
-  "box-outline": [
-    24
-  ],
-  "differential": [
-    16
-  ],
-  "raincloud": [
-    16
-  ],
-  "app-microsoft-windows-outline": [
-    24
-  ],
-  "camcorder-live": [
-    16
-  ],
-  "plumbing": [
-    16
-  ],
-  "app-facebook-circle": [
-    16
-  ],
-  "link": [
-    16
-  ],
-  "commercial-break-usd": [
-    16
-  ],
-  "friends-engagement": [
-    16
-  ],
-  "app-cms": [
-    16
-  ],
-  "caution-triangle-outline": [
-    24
-  ],
-  "bird-flying": [
-    16
-  ],
-  "arrows-left-right": [
-    16
-  ],
-  "grid-9": [
-    16
-  ],
-  "stethoscope": [
-    16
-  ],
-  "friend-except": [
-    16
-  ],
-  "app-instagram": [
-    16
-  ],
-  "nav-magnifying-glass": [
-    16
-  ],
-  "list-arrow-down": [
-    16
-  ],
-  "photo-arrows-left-right": [
-    16
-  ],
-  "badge": [
-    16
-  ],
-  "square-ruler": [
-    16
-  ],
-  "phone": [
-    16
-  ],
-  "app-horizon-assets": [
-    16
-  ],
-  "app-bloks": [
-    16
-  ]
-}
+[
+  "accessibility",
+  "app-dailies",
+  "app-react",
+  "apps",
+  "arrow-right",
+  "bell-null-outline",
+  "bell-null",
+  "bell",
+  "bird",
+  "borders",
+  "box",
+  "brush-paint",
+  "bug",
+  "building-city",
+  "camcorder",
+  "camera",
+  "caution-octagon",
+  "caution-triangle",
+  "caution",
+  "checkmark",
+  "chevron-down-outline",
+  "chevron-down",
+  "chevron-left",
+  "chevron-right",
+  "chevron-up",
+  "compose",
+  "copy",
+  "cross-circle",
+  "cross",
+  "dashboard-outline",
+  "dashboard",
+  "data-table",
+  "desktop",
+  "directions",
+  "dots-3-circle-outline",
+  "download",
+  "face-unhappy-outline",
+  "first-aid",
+  "flash-default",
+  "info-circle",
+  "internet",
+  "life-event-major",
+  "magic-wand",
+  "magnifying-glass",
+  "messages",
+  "minus-circle",
+  "mobile-engagement",
+  "mobile",
+  "network",
+  "news-feed",
+  "pause",
+  "posts",
+  "power",
+  "profile",
+  "question-circle-outline",
+  "question-circle",
+  "question",
+  "refresh-left",
+  "rocket",
+  "settings",
+  "share-external",
+  "share",
+  "star-outline",
+  "star-slash",
+  "star",
+  "stop-playback",
+  "stop",
+  "target",
+  "thought-bubble",
+  "tools",
+  "translate",
+  "trash-outline",
+  "trash",
+  "tree",
+  "trending",
+  "triangle-down",
+  "triangle-right",
+  "underline",
+  "washing-machine",
+  "watch-tv",
+  "gears-two",
+  "info-cursive",
+  "on-this-day",
+  "zoom-out",
+  "zoom-in",
+  "fast-forward",
+  "draft-outline",
+  "gradient",
+  "crop",
+  "play",
+  "cross-outline",
+  "messenger-code",
+  "book",
+  "list-arrow-up",
+  "cat",
+  "duplicate",
+  "profile-circle-outline",
+  "card-person",
+  "pencil-outline",
+  "code",
+  "undo-outline",
+  "checkmark-circle-outline",
+  "target-outline",
+  "internet-outline",
+  "profile-outline",
+  "app-react-outline",
+  "send-outline",
+  "paper-stack",
+  "weather-cold",
+  "mobile-cross",
+  "database-arrow-left",
+  "plus-circle-outline",
+  "arrows-circle",
+  "navicon",
+  "paper-fold-text",
+  "marketplace",
+  "workflow",
+  "sankey-diagram",
+  "media-stack",
+  "question-hexagon",
+  "briefcase",
+  "business-briefcase",
+  "log",
+  "triangle-up",
+  "checkmark-circle",
+  "circle",
+  "comment-swish",
+  "direct",
+  "plus",
+  "scuba",
+  "line-chart",
+  "caution-circle",
+  "megaphone",
+  "wireless",
+  "cup-outline",
+  "unicorn",
+  "turtle",
+  "sushi",
+  "arrows-up-down",
+  "style-effects",
+  "stopwatch",
+  "database",
+  "bar-chart",
+  "augmented-reality",
+  "app-flash",
+  "sample-lo",
+  "point",
+  "eye",
+  "send",
+  "refresh-right",
+  "hourglass",
+  "mobile-outline",
+  "bookmark-outline",
+  "app-facebook-f-outline",
+  "app-messenger-outline",
+  "app-instagram-outline",
+  "app-whatsapp-outline",
+  "app-workplace-outline",
+  "app-work-chat-outline",
+  "sample-hi",
+  "dog",
+  "hub",
+  "upload",
+  "list-gear-outline",
+  "app-apple-outline",
+  "app-microsoft-windows",
+  "box-outline",
+  "differential",
+  "raincloud",
+  "app-microsoft-windows-outline",
+  "camcorder-live",
+  "plumbing",
+  "app-facebook-circle",
+  "link",
+  "commercial-break-usd",
+  "friends-engagement",
+  "app-cms",
+  "caution-triangle-outline",
+  "bird-flying",
+  "arrows-left-right",
+  "grid-9",
+  "stethoscope",
+  "friend-except",
+  "app-instagram",
+  "nav-magnifying-glass",
+  "list-arrow-down",
+  "photo-arrows-left-right",
+  "badge",
+  "square-ruler",
+  "phone",
+  "app-horizon-assets",
+  "app-bloks",
+  "settings-internal",
+  "weather-thunder-outline",
+  "weather-thunder"
+]

@@ -8,5 +8,7 @@
  * @format
  */
 
+process.title = 'flipper-runtime';
+
 // eslint-disable-next-line import/no-unresolved
 require('./lib/index.js');

@@ -34,6 +34,7 @@ import {
   theme,
   renderReactRoot,
   batch,
+  dataTablePowerSearchOperators,
 } from 'flipper-plugin';
 import {
   Request,
@@ -50,7 +51,6 @@ import {
   getHeaderValue,
   getResponseLength,
   getRequestLength,
-  formatStatus,
   formatBytes,
   formatDuration,
   requestsToText,
@@ -118,6 +118,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   );
   const requests = createDataSource<Request, 'id'>([], {
     key: 'id',
+    indices: [['method'], ['status']],
   });
   const selectedId = createState<string | undefined>(undefined);
   const tableManagerRef = createRef<undefined | DataTableManager<Request>>();
@@ -136,11 +137,16 @@ export function plugin(client: PluginClient<Events, Methods>) {
       return;
     } else if (payload.startsWith(searchTermDelim)) {
       tableManagerRef.current?.clearSelection();
-      tableManagerRef.current?.setSearchValue(
-        payload.slice(searchTermDelim.length),
-      );
+      tableManagerRef.current?.setSearchExpression([
+        {
+          field: {label: 'Row', key: 'entireRow', useWholeRow: true},
+          operator:
+            dataTablePowerSearchOperators.searializable_object_contains(),
+          searchValue: payload.slice(searchTermDelim.length),
+        },
+      ]);
     } else {
-      tableManagerRef.current?.setSearchValue('');
+      tableManagerRef.current?.setSearchExpression([]);
       tableManagerRef.current?.selectItemById(payload);
     }
   });
@@ -477,7 +483,7 @@ function showCustomColumnDialog(
     return (
       <Modal
         title="Add custom column"
-        visible
+        open
         onOk={() => {
           const header = form.getFieldValue('header');
           const type = form.getFieldValue('type');
@@ -537,6 +543,7 @@ function createRequestFromRequestInfo(
     domain,
     requestHeaders: data.headers,
     requestData: decodeBody(data.headers, data.data),
+    status: '...',
   };
   customColumns
     .filter((c) => c.type === 'request')
@@ -557,7 +564,7 @@ function updateRequestWithResponseInfo(
   const res = {
     ...request,
     responseTime: new Date(response.timestamp),
-    status: response.status,
+    status: response.status.toString(),
     reason: response.reason,
     responseHeaders: response.headers,
     responseData: decodeBody(response.headers, response.data),
@@ -614,7 +621,7 @@ export function Component() {
           }
         />
         <Modal
-          visible={showMockResponseDialog}
+          open={showMockResponseDialog}
           onCancel={instance.onCloseButtonPressed}
           footer={null}
           title="Mock Network Responses"
@@ -659,12 +666,14 @@ const baseColumns: DataTableColumn<Request>[] = [
     key: 'requestTime',
     title: 'Request Time',
     width: 120,
+    powerSearchConfig: {type: 'dateTime'},
   },
   {
     key: 'responseTime',
     title: 'Response Time',
     width: 120,
     visible: false,
+    powerSearchConfig: {type: 'dateTime'},
   },
   {
     key: 'requestData',
@@ -672,26 +681,36 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 120,
     visible: false,
     formatters: formatOperationName,
+    powerSearchConfig: {type: 'object'},
   },
   {
     key: 'domain',
+    powerSearchConfig: {type: 'string'},
   },
   {
     key: 'url',
     title: 'Full URL',
     visible: false,
+    powerSearchConfig: {type: 'string'},
   },
   {
     key: 'method',
     title: 'Method',
     width: 70,
+    powerSearchConfig: {
+      type: 'enum',
+      inferEnumOptionsFromData: true,
+    },
   },
   {
     key: 'status',
     title: 'Status',
     width: 70,
-    formatters: formatStatus,
     align: 'right',
+    powerSearchConfig: {
+      type: 'enum',
+      inferEnumOptionsFromData: true,
+    },
   },
   {
     key: 'requestLength',
@@ -699,6 +718,7 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 100,
     formatters: formatBytes,
     align: 'right',
+    powerSearchConfig: {type: 'float'},
   },
   {
     key: 'responseLength',
@@ -706,6 +726,7 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 100,
     formatters: formatBytes,
     align: 'right',
+    powerSearchConfig: {type: 'float'},
   },
   {
     key: 'duration',
@@ -713,6 +734,7 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 100,
     formatters: formatDuration,
     align: 'right',
+    powerSearchConfig: {type: 'float'},
   },
 ];
 
@@ -727,7 +749,10 @@ const errorStyle = {
 function getRowStyle(row: Request) {
   return row.responseIsMock
     ? mockingStyle
-    : row.status && row.status >= 400 && row.status < 600
+    : row.status &&
+      row.status !== '...' &&
+      parseInt(row.status, 10) >= 400 &&
+      parseInt(row.status, 10) < 600
     ? errorStyle
     : undefined;
 }

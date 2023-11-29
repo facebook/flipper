@@ -7,30 +7,34 @@
  * @format
  */
 
-import os from 'os';
-
-import express, {Express} from 'express';
-import http, {ServerResponse} from 'http';
+import express, {Express, RequestHandler} from 'express';
+import http from 'http';
 import path from 'path';
 import fs from 'fs-extra';
 import {ServerOptions, VerifyClientCallbackSync, WebSocketServer} from 'ws';
-import {WEBSOCKET_MAX_MESSAGE_SIZE} from '../comms/ServerWebSocket';
+import {WEBSOCKET_MAX_MESSAGE_SIZE} from '../app-connectivity/ServerWebSocket';
 import {parse} from 'url';
-import {makeSocketPath, checkSocketInUse} from './utilities';
-
-import proxy from 'http-proxy';
 import exitHook from 'exit-hook';
 import {attachSocketServer} from './attachSocketServer';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {FlipperServerCompanionEnv} from 'flipper-server-companion';
-import {validateAuthToken} from '../utils/certificateUtils';
-import {getLogger} from 'flipper-common';
+import {
+  getAuthToken,
+  validateAuthToken,
+} from '../app-connectivity/certificate-exchange/certificate-utils';
+import {tracker} from '../tracker';
+import {EnvironmentInfo, isProduction} from 'flipper-common';
+import {GRAPH_SECRET} from '../fb-stubs/constants';
+import {sessionId} from '../sessionId';
+import {UIPreference, openUI} from '../utils/openUI';
+import {processExit} from '../utils/processExit';
+
+import util from 'node:util';
 
 type Config = {
   port: number;
   staticPath: string;
   entry: string;
-  tcp: boolean;
 };
 
 type ReadyForConnections = (
@@ -40,6 +44,7 @@ type ReadyForConnections = (
 
 const verifyAuthToken = (req: http.IncomingMessage): boolean => {
   let token: string | null = null;
+
   if (req.url) {
     const url = new URL(req.url, `http://${req.headers.host}`);
     token = url.searchParams.get('token');
@@ -49,22 +54,33 @@ const verifyAuthToken = (req: http.IncomingMessage): boolean => {
     token = req.headers['x-access-token'] as string;
   }
 
+  if (!isProduction()) {
+    console.info('[conn] verifyAuthToken -> token', token);
+  }
+
   if (!token) {
     console.warn('[conn] A token is required for authentication');
-    getLogger().track('usage', 'client-authentication-token-not-found');
+    tracker.track('server-auth-token-verification', {
+      successful: false,
+      present: false,
+      error: 'No token was supplied',
+    });
     return false;
   }
 
   try {
     validateAuthToken(token);
     console.info('[conn] Token was successfully validated');
-    getLogger().track('usage', 'client-authentication-token-validation', {
-      valid: true,
+    tracker.track('server-auth-token-verification', {
+      successful: true,
+      present: true,
     });
   } catch (err) {
     console.warn('[conn] An invalid token was supplied for authentication');
-    getLogger().track('usage', 'client-authentication-token-validation', {
-      valid: false,
+    tracker.track('server-auth-token-verification', {
+      successful: false,
+      present: true,
+      error: err.toString(),
     });
     return false;
   }
@@ -72,17 +88,49 @@ const verifyAuthToken = (req: http.IncomingMessage): boolean => {
 };
 
 /**
+ * The following two variables are used to control when
+ * the server is ready to accept incoming connections.
+ * - isReady, is used to synchronously check if the server is
+ * ready or not.
+ * - isReadyWaitable achieves the same but is used by
+ * asynchronous functions which may want to wait until the
+ * server is ready.
+ */
+let isReady = false;
+let isReadyWaitable: Promise<void> | undefined;
+
+/**
+ * Time to wait until server becomes ready to accept incoming connections.
+ * If within 30 seconds it is not ready, the server is considered unresponsive
+ * and must be terminated.
+ */
+const timeoutSeconds = 30;
+
+/**
  * Orchestrates the creation of the HTTP server, proxy, and WS server.
  * @param config Server configuration.
  * @returns Returns a promise to the created server, proxy and WS server.
  */
-export async function startServer(config: Config): Promise<{
+export async function startServer(
+  config: Config,
+  environmentInfo: EnvironmentInfo,
+): Promise<{
   app: Express;
   server: http.Server;
   socket: WebSocketServer;
   readyForIncomingConnections: ReadyForConnections;
 }> {
-  return await startHTTPServer(config);
+  setTimeout(() => {
+    if (!isReady && isProduction()) {
+      tracker.track('server-ready-timeout', {timeout: timeoutSeconds});
+      console.error(
+        `[flipper-server] Unable to become ready within ${timeoutSeconds} seconds, exit`,
+      );
+      processExit(1);
+    }
+  }, timeoutSeconds * 1000);
+
+  return await startHTTPServer(config, environmentInfo);
 }
 
 /**
@@ -91,7 +139,10 @@ export async function startServer(config: Config): Promise<{
  * @param config Server configuration.
  * @returns A promise to both app and HTTP server.
  */
-async function startHTTPServer(config: Config): Promise<{
+async function startHTTPServer(
+  config: Config,
+  environmentInfo: EnvironmentInfo,
+): Promise<{
   app: Express;
   server: http.Server;
   socket: WebSocketServer;
@@ -106,115 +157,127 @@ async function startHTTPServer(config: Config): Promise<{
     next();
   });
 
-  app.get('/', (_req, res) => {
-    fs.readFile(path.join(config.staticPath, config.entry), (_err, content) => {
-      res.end(content);
+  const serveRoot: RequestHandler = async (_req, res) => {
+    const resource = isReady
+      ? path.join(config.staticPath, config.entry)
+      : path.join(config.staticPath, 'loading.html');
+    const token = await getAuthToken();
+
+    const flipperConfig = {
+      theme: 'light',
+      entryPoint: isProduction()
+        ? 'bundle.js'
+        : 'flipper-ui-browser/src/index-fast-refresh.bundle?platform=web&dev=true&minify=false',
+      debug: !isProduction(),
+      graphSecret: GRAPH_SECRET,
+      appVersion: environmentInfo.appVersion,
+      sessionId: sessionId,
+      unixname: environmentInfo.os.unixname,
+      authToken: token,
+    };
+
+    fs.readFile(resource, (_err, content) => {
+      const processedContent = content
+        .toString()
+        .replace('FLIPPER_CONFIG_PLACEHOLDER', util.inspect(flipperConfig));
+      res.end(processedContent);
     });
+  };
+  app.get('/', serveRoot);
+  app.get('/index.web.html', serveRoot);
+
+  app.get('/ready', (_req, res) => {
+    tracker.track('server-endpoint-hit', {name: 'ready'});
+    res.json({isReady});
+  });
+
+  app.get('/info', (_req, res) => {
+    tracker.track('server-endpoint-hit', {name: 'info'});
+    res.json(environmentInfo);
+  });
+
+  app.get('/shutdown', (_req, res) => {
+    console.info(
+      '[flipper-server] Received shutdown request, process will terminate',
+    );
+    tracker.track('server-endpoint-hit', {name: 'shutdown'});
+    res.json({success: true});
+
+    // Just exit the process, this will trigger the shutdown hooks.
+    // Do not use prcoessExit util as we want the serve to shutdown immediately
+    process.exit(0);
   });
 
   app.get('/health', (_req, res) => {
+    tracker.track('server-endpoint-hit', {name: 'health'});
     res.end('flipper-ok');
+  });
+
+  app.get('/open-ui', (_req, res) => {
+    tracker.track('server-endpoint-hit', {name: 'open-ui'});
+    const preference = isProduction() ? UIPreference.PWA : UIPreference.Browser;
+    openUI(preference, config.port);
+    res.json({success: true});
   });
 
   app.use(express.static(config.staticPath));
 
-  return startProxyServer(config, app);
-}
-
-/**
- * Creates and starts the HTTP and proxy servers.
- * @param config Server configuration.
- * @param app Express app.
- * @returns Returns both the app and server configured and
- * listening.
- */
-async function startProxyServer(
-  config: Config,
-  app: Express,
-): Promise<{
-  app: Express;
-  server: http.Server;
-  socket: WebSocketServer;
-  readyForIncomingConnections: ReadyForConnections;
-}> {
   const server = http.createServer(app);
-  const socket = addWebsocket(server, config);
-
-  // For now, we only support domain socket access on POSIX-like systems.
-  // On Windows, a proxy is not created and the server starts
-  // listening at the specified port.
-  if (os.platform() === 'win32') {
-    if (!config.tcp) {
-      console.warn(
-        'No port was supplied and domain socket access is not available for non-POSIX systems, falling back to TCP',
-      );
-    }
-    return new Promise((resolve) => {
-      console.log(`Starting server on http://localhost:${config.port}`);
-      const readyForIncomingConnections = (
-        serverImpl: FlipperServerImpl,
-        companionEnv: FlipperServerCompanionEnv,
-      ): Promise<void> => {
-        attachSocketServer(socket, serverImpl, companionEnv);
-        return new Promise((resolve) => {
-          server.listen(config.port, undefined, () => resolve());
-        });
-      };
-      resolve({app, server, socket, readyForIncomingConnections});
-    });
-  }
-
-  const socketPath = await makeSocketPath();
-  if (await checkSocketInUse(socketPath)) {
-    console.warn(
-      `Cannot start flipper-server because socket ${socketPath} is in use.`,
-    );
-  } else {
-    console.info(`Cleaning up stale socket ${socketPath}`);
-    await fs.rm(socketPath, {force: true});
-  }
-
-  const proxyServer: proxy | undefined = config.tcp
-    ? proxy.createProxyServer({
-        target: {host: 'localhost', port: 0, socketPath},
-        autoRewrite: true,
-        ws: true,
-      })
-    : undefined;
-
-  console.log('Starting socket server on ', socketPath);
-  if (proxyServer) {
-    console.log(`Starting proxy server on http://localhost:${config.port}`);
-  }
+  const socket = attachWS(server, config);
 
   exitHook(() => {
-    console.log('Shutdown server');
-    proxyServer?.close();
+    console.log('[flipper-server] Shutdown HTTP server');
     server.close();
-
-    console.log('Cleaning up socket on exit:', socketPath);
-    // This *must* run synchronously and we're not blocking any UI loop by definition.
-    // eslint-disable-next-line node/no-sync
-    fs.rmSync(socketPath, {force: true});
   });
 
-  proxyServer?.on('error', (err, _req, res) => {
-    console.warn('Error in proxy server:', err);
-    if (res instanceof ServerResponse) {
-      res.writeHead(502, 'Failed to proxy request');
+  server.on('error', (e: NodeJS.ErrnoException) => {
+    console.warn('[flipper-server] HTTP server error: ', e.code);
+    tracker.track('server-error', {code: e.code, message: e.message});
+
+    if (e.code === 'EADDRINUSE') {
+      console.warn(
+        `[flipper-server] Unable to listen at port: ${config.port}, is already in use`,
+      );
+      tracker.track('server-socket-already-in-use', {});
+      processExit(1);
     }
-    res.end('Failed to proxy request: ' + err);
+  });
+
+  server.listen(config.port);
+
+  /**
+   * Create the promise which can be waited on. In this case,
+   * a reference to resolve is kept outside of the body of the promise
+   * so that other asynchronous functions can resolve the promise
+   * on its behalf.
+   */
+  let isReadyResolver: (value: void | PromiseLike<void>) => void;
+  isReadyWaitable = new Promise((resolve, _reject) => {
+    isReadyResolver = resolve;
   });
 
   return new Promise((resolve) => {
+    console.info(
+      `[flipper-server] Starting server on http://localhost:${config.port}`,
+    );
     const readyForIncomingConnections = (
       serverImpl: FlipperServerImpl,
       companionEnv: FlipperServerCompanionEnv,
     ): Promise<void> => {
       attachSocketServer(socket, serverImpl, companionEnv);
+      /**
+       * At this point, the server is ready to accept incoming
+       * connections. Change the isReady state and resolve the
+       * promise so that other asychronous function become unblocked.
+       */
+      isReady = true;
+      isReadyResolver();
       return new Promise((resolve) => {
-        proxyServer?.listen(config.port);
-        server.listen(socketPath, undefined, () => resolve());
+        tracker.track('server-started', {
+          port: config.port,
+        });
+
+        resolve();
       });
     };
     resolve({app, server, socket, readyForIncomingConnections});
@@ -228,62 +291,26 @@ async function startProxyServer(
  * incoming connections origin.
  * @returns Returns the created WS.
  */
-function addWebsocket(server: http.Server, config: Config) {
-  const localhostIPV4 = `localhost:${config.port}`;
-  const localhostIPV6 = `[::1]:${config.port}`;
-  const localhostIPV6NoBrackets = `::1:${config.port}`;
-  const localhostIPV4Electron = 'localhost:3000';
-
-  const possibleHosts = [
-    localhostIPV4,
-    localhostIPV6,
-    localhostIPV6NoBrackets,
-    localhostIPV4Electron,
-  ];
-  const possibleOrigins = possibleHosts
-    .map((host) => `http://${host}`)
-    .concat(['file://']);
-
-  const verifyClient: VerifyClientCallbackSync = ({origin, req}) => {
-    const noOriginHeader = origin === undefined;
-    if (
-      (noOriginHeader || possibleOrigins.includes(origin)) &&
-      req.headers.host &&
-      possibleHosts.includes(req.headers.host)
-    ) {
-      // no origin header? The request is not originating from a browser, so should be OK to pass through
-      // If origin matches our own address, it means we are serving the page.
-
-      return verifyAuthToken(req);
-    } else {
-      // for now we don't allow cross origin request, so that an arbitrary website cannot try to
-      // connect a socket to localhost:serverport, and try to use the all powerful Flipper APIs to read
-      // for example files.
-      // Potentially in the future we do want to allow this, e.g. if we want to connect to a local flipper-server
-      // directly from intern. But before that, we should either authenticate the request somehow,
-      // and discuss security impact and for example scope the files that can be read by Flipper.
-      console.warn(
-        `Refused socket connection from cross domain request, origin: ${origin}, host: ${
-          req.headers.host
-        }. Expected origins: ${possibleOrigins.join(
-          ' or ',
-        )}. Expected hosts: ${possibleHosts.join(' or ')}`,
-      );
-      return false;
-    }
+function attachWS(server: http.Server, _config: Config) {
+  const verifyClient: VerifyClientCallbackSync = ({req}) => {
+    return process.env.SKIP_TOKEN_VERIFICATION ? true : verifyAuthToken(req);
   };
 
   const options: ServerOptions = {
     noServer: true,
     maxPayload: WEBSOCKET_MAX_MESSAGE_SIZE,
+    verifyClient,
   };
-  if (config.tcp) {
-    options.verifyClient = verifyClient;
-  }
 
   const wss = new WebSocketServer(options);
-  server.on('upgrade', function upgrade(request, socket, head) {
-    const {pathname} = parse(request.url!);
+  server.on('upgrade', async function upgrade(request, socket, head) {
+    if (!request.url) {
+      console.log('[flipper-server] No request URL available');
+      socket.destroy();
+      return;
+    }
+
+    const {pathname} = parse(request.url);
 
     // Handled by Metro
     if (pathname === '/hot') {
@@ -291,13 +318,18 @@ function addWebsocket(server: http.Server, config: Config) {
     }
 
     if (pathname === '/') {
+      // Wait until the server is ready to accept incoming connections.
+      await isReadyWaitable;
       wss.handleUpgrade(request, socket, head, function done(ws) {
         wss.emit('connection', ws, request);
       });
       return;
     }
 
-    console.error('addWebsocket.upgrade -> unknown pathname', pathname);
+    console.error(
+      '[flipper-server] Unable to upgrade, unknown pathname',
+      pathname,
+    );
     socket.destroy();
   });
 

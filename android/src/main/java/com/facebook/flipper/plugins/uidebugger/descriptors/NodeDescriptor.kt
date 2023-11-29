@@ -7,9 +7,10 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
-import android.graphics.Bitmap
+import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import kotlinx.serialization.json.JsonObject
@@ -38,7 +39,7 @@ typealias Id = Int
 interface NodeDescriptor<T> {
 
   /** Used to detect the same node across traversals */
-  fun getId(node: T): Id = System.identityHashCode(node)
+  fun getId(node: T): Id
 
   /** Should be w.r.t the direct parent */
   fun getBounds(node: T): Bounds
@@ -57,13 +58,6 @@ interface NodeDescriptor<T> {
 
   /** The children this node exposes in the inspector. */
   fun getChildren(node: T): List<Any>
-
-  /**
-   * Get a snapshot of the node. Bitmaps are not cheap to create, so accept one as an optional
-   * parameter. If a bitmap is provided, it will be used by the canvas to draw on it. Otherwise, a
-   * bitmap will be created.
-   */
-  fun getSnapshot(node: T, bitmap: Bitmap?): Bitmap? = null
 
   /**
    * If you have overlapping children this indicates which child is active / on top, we will only
@@ -90,4 +84,25 @@ interface NodeDescriptor<T> {
   fun getInlineAttributes(node: T): Map<String, String> = mapOf()
 
   fun getHiddenAttributes(node: T): JsonObject? = null
+
+  /** edit attribute with value from desktop */
+  fun editAttribute(
+      node: T,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {}
+}
+
+enum class CompoundTypeHint {
+  TOP,
+  LEFT,
+  RIGHT,
+  BOTTOM,
+  WIDTH,
+  HEIGHT,
+  X,
+  Y,
+  Z,
+  COLOR
 }

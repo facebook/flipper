@@ -7,13 +7,14 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
-import android.graphics.Bitmap
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.Immediate
 
 object ObjectDescriptor : NodeDescriptor<Any> {
+
+  override fun getId(node: Any): Id = System.identityHashCode(node)
 
   override fun getActiveChild(node: Any): Any? = null
 
@@ -32,6 +33,4 @@ object ObjectDescriptor : NodeDescriptor<Any> {
   override fun getBounds(node: Any): Bounds = Bounds(0, 0, 0, 0)
 
   override fun getTags(node: Any): Set<String> = setOf(BaseTags.Unknown)
-
-  override fun getSnapshot(node: Any, bitmap: Bitmap?): Bitmap? = null
 }

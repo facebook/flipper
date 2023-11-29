@@ -7,7 +7,7 @@
  * @format
  */
 
-import {notification, Typography} from 'antd';
+import {Button, notification, Typography} from 'antd';
 import isProduction from '../utils/isProduction';
 import {reportPlatformFailures, ReleaseChannel} from 'flipper-common';
 import React, {useEffect, useState} from 'react';
@@ -91,17 +91,29 @@ export default function UpdateIndicator() {
       isProduction()
     ) {
       reportPlatformFailures(
-        checkForUpdate(version).then((res) => {
-          if (res.kind === 'error') {
-            console.warn('Version check failure: ', res);
+        checkForUpdate(version)
+          .then((res) => {
+            if (res.kind === 'error') {
+              throw new Error(res.msg);
+            }
+            if (res.kind === 'up-to-date') {
+              setVersionCheckResult(res);
+              return;
+            }
+
+            return getRenderHostInstance()
+              .flipperServer.exec('fetch-new-version', res.version)
+              .then(() => {
+                setVersionCheckResult(res);
+              });
+          })
+          .catch((e) => {
+            console.warn('Version check failure: ', e);
             setVersionCheckResult({
               kind: 'error',
-              msg: res.msg,
+              msg: e,
             });
-          } else {
-            setVersionCheckResult(res);
-          }
-        }),
+          }),
         'publicVersionCheck',
       );
     }
@@ -114,18 +126,31 @@ export function getUpdateAvailableMessage(versionCheckResult: {
   url: string;
   version: string;
 }): React.ReactNode {
+  const {launcherSettings} = getRenderHostInstance().serverConfig;
+
+  const shutdownFlipper = () => {
+    getRenderHostInstance().flipperServer.exec('shutdown');
+    window.close();
+  };
+
   return (
     <>
       Flipper version {versionCheckResult.version} is now available.
       {fbConfig.isFBBuild ? (
-        fbConfig.getReleaseChannel() === ReleaseChannel.INSIDERS ? (
-          <> Restart Flipper to update to the latest version.</>
+        fbConfig.getReleaseChannel() === ReleaseChannel.INSIDERS ||
+        launcherSettings.ignoreLocalPin ? (
+          <Button block type="primary" onClick={shutdownFlipper}>
+            Quit Flipper to upgrade
+          </Button>
         ) : (
           <>
             {' '}
             Run <code>arc pull</code> (optionally with <code>--latest</code>) in{' '}
-            <code>~/fbsource</code> and restart Flipper to update to the latest
-            version.
+            <code>~/fbsource</code> and{' '}
+            <Button block type="primary" onClick={shutdownFlipper}>
+              Quit Flipper to upgrade
+            </Button>
+            .
           </>
         )
       ) : (

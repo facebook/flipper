@@ -7,18 +7,77 @@
  * @format
  */
 
-import {PerformanceStatsEvent} from '../types';
-import React from 'react';
-import {DataSource, DataTable, DataTableColumn} from 'flipper-plugin';
+import {
+  PerformanceStatsEvent,
+  DynamicPerformanceStatsEvent,
+  Id,
+  ClientNode,
+  FrameworkEvent,
+} from '../ClientTypes';
+import {ReadOnlyUIState} from '../DesktopTypes';
+import React, {useMemo} from 'react';
+import {
+  DataInspector,
+  DataSource,
+  DataTable,
+  DataTableColumn,
+  DetailSidebar,
+  Layout,
+} from 'flipper-plugin';
 
 export function PerfStats(props: {
-  events: DataSource<PerformanceStatsEvent, number>;
+  uiState: ReadOnlyUIState;
+  nodes: Map<Id, ClientNode>;
+  rootId?: Id;
+  events: DataSource<DynamicPerformanceStatsEvent, number>;
+  frameworkEvents: DataSource<FrameworkEvent>;
 }) {
+  const uiStateValues = Object.entries(props.uiState).map(([key, value]) => [
+    key,
+    value.get(),
+  ]);
+
+  const allColumns = useMemo(() => {
+    if (props.events.size > 0) {
+      const row = props.events.get(0);
+
+      const unknownKeys = Object.keys(row).filter(
+        (property) => !knownKeys.has(property),
+      );
+
+      const unknownColumns = unknownKeys.map((unknwonKey) => ({
+        key: unknwonKey,
+        title: formatKey(unknwonKey),
+        onRender: (row: DynamicPerformanceStatsEvent) => {
+          if (unknwonKey.endsWith('MS')) {
+            return formatDiff(row[unknwonKey]);
+          }
+          return row[unknwonKey];
+        },
+      }));
+
+      return columns.concat(...unknownColumns);
+    }
+    return columns;
+  }, [props.events]);
+
   return (
-    <DataTable<PerformanceStatsEvent>
-      dataSource={props.events}
-      columns={columns}
-    />
+    <Layout.Container grow>
+      <DataTable<PerformanceStatsEvent>
+        dataSource={props.events}
+        columns={allColumns}
+      />
+      <DetailSidebar width={250}>
+        <DataInspector
+          data={{
+            ...Object.fromEntries(uiStateValues),
+            rootId: props.rootId,
+            nodesCount: props.nodes.size,
+            rootNode: props.nodes.get(props.rootId ?? 'noroot'),
+            frameworkEventsSize: props.frameworkEvents.size,
+          }}></DataInspector>
+      </DetailSidebar>
+    </Layout.Container>
   );
 }
 
@@ -30,12 +89,17 @@ function formatSize(bytes: number): string {
   return `${(bytes / 1000).toFixed()}`;
 }
 
-const columns: DataTableColumn<PerformanceStatsEvent>[] = [
+function formatKey(key: string): string {
+  const pascalCase = key.replace(/([a-z])([A-Z])/g, '$1 $2');
+  return pascalCase.charAt(0).toUpperCase() + pascalCase.slice(1);
+}
+
+const columns: DataTableColumn<DynamicPerformanceStatsEvent>[] = [
   {
     key: 'txId',
     title: 'TXID',
     onRender: (row: PerformanceStatsEvent) => {
-      return row.txId;
+      return row.txId.toFixed(0);
     },
   },
   {
@@ -106,3 +170,4 @@ const columns: DataTableColumn<PerformanceStatsEvent>[] = [
     },
   },
 ];
+const knownKeys = new Set(columns.map((column) => column.key));

@@ -1,4 +1,5 @@
 name: Release
+# This action runs on push to 'main' and below specified paths
 on:
   push:
     branches:
@@ -11,12 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag-version-commit.outputs.tag }}
+
     steps:
       - uses: passy/extract-version-commit@v1.0.0
         id: extract-version-commit
         with:
           version_regex: '^Flipper Release: v([0-9]+\.[0-9]+\.[0-9]+)(?:\n|$)'
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
         if: ${{ steps.extract-version-commit.outputs.commit != ''}}
         with:
           ref: ${{ steps.extract-version-commit.outputs.commit }}
@@ -31,19 +33,19 @@ jobs:
           version_assertion_command: 'grep -q "\"version\": \"$version\"" desktop/package.json'
       - name: Create release
         if: ${{ steps.tag-version-commit.outputs.tag != '' }}
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v0.1.15
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag-version-commit.outputs.tag }}
-          release_name: ${{ steps.tag-version-commit.outputs.tag }}
+          name: ${{ steps.tag-version-commit.outputs.tag }}
           body: |
             See https://github.com/facebook/flipper/blob/main/desktop/static/CHANGELOG.md
             for full notes.
           draft: false
           prerelease: false
 
-  build-mac:
+  build-server-mac:
     needs:
       - release
     runs-on: macos-latest
@@ -51,95 +53,32 @@ jobs:
       desktop-directory: ./desktop
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.3
       with:
         ref: ${{ needs.release.outputs.tag }}
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3.6.0
       with:
-        node-version: '16.x'
+        node-version: '18.x'
     - name: Install
-      uses: nick-invision/retry@v2.6.0
+      uses: nick-invision/retry@v2.0.0
       with:
         timeout_minutes: 10
         max_attempts: 3
         command: cd ${{env.desktop-directory}} && yarn
     - name: Build
-      uses: nick-invision/retry@v2.6.0
+      run: cd ${{env.desktop-directory}} && yarn build:flipper-server --mac --dmg
+    - name: List dist artifacts
+      run: ls -l dist/
+    - name: Upload x86-64
+      uses: actions/upload-artifact@v3.1.2
       with:
-        timeout_minutes: 30
-        max_attempts: 3
-        command: cd ${{env.desktop-directory}} && yarn build --mac --mac-dmg
-    - name: Upload
-      uses: actions/upload-artifact@v1
+        name: 'Flipper-server-mac-x64.dmg'
+        path: 'dist/Flipper-server-mac-x64.dmg'
+    - name: Upload aarch64
+      uses: actions/upload-artifact@v3.1.2
       with:
-        name: 'Flipper-mac.dmg'
-        path: 'dist/Flipper-mac.dmg'
-
-  build-linux:
-    needs:
-      - release
-    runs-on: ubuntu-latest
-    env:
-      desktop-directory: ./desktop
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{ needs.release.outputs.tag }}
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '16.x'
-    - name: Install
-      uses: nick-invision/retry@v2.6.0
-      with:
-        timeout_minutes: 10
-        max_attempts: 3
-        command: cd ${{env.desktop-directory}} && yarn
-    - name: Build
-      uses: nick-invision/retry@v2.6.0
-      with:
-        timeout_minutes: 30
-        max_attempts: 3
-        command: cd ${{env.desktop-directory}} && yarn build --linux
-    - name: Upload Linux
-      uses: actions/upload-artifact@v1
-      with:
-        name: 'Flipper-linux.zip'
-        path: 'dist/Flipper-linux.zip'
-
-  build-win:
-    needs:
-      - release
-    runs-on: windows-latest
-    env:
-      desktop-directory: ./desktop
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{ needs.release.outputs.tag }}
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '16.x'
-    - name: Install
-      uses: nick-invision/retry@v2.6.0
-      with:
-        timeout_minutes: 10
-        max_attempts: 3
-        shell: pwsh
-        command: cd ${{env.desktop-directory}}; yarn
-    - name: Build
-      uses: nick-invision/retry@v2.6.0
-      with:
-        timeout_minutes: 30
-        max_attempts: 3
-        shell: pwsh
-        command: cd ${{env.desktop-directory}}; yarn build --win
-    - name: Upload Windows
-      uses: actions/upload-artifact@v1
-      with:
-        name: 'Flipper-win.zip'
-        path: 'dist/Flipper-win.zip'
+        name: 'Flipper-server-mac-aarch64.dmg'
+        path: 'dist/Flipper-server-mac-aarch64.dmg'
 
   build-flipper-server:
     needs:
@@ -149,12 +88,12 @@ jobs:
       desktop-directory: ./desktop
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.3
       with:
         ref: ${{ needs.release.outputs.tag }}
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3.6.0
       with:
-        node-version: '16.x'
+        node-version: '18.x'
     - name: Install
       uses: nick-invision/retry@v2.0.0
       with:
@@ -166,42 +105,34 @@ jobs:
     - name: List dist artifacts
       run: ls -l dist/
     - name: Upload flipper-server
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: 'flipper-server.tgz'
         path: 'dist/flipper-server.tgz'
 
   publish:
     needs:
-      - build-win
-      - build-linux
-      - build-mac
+      - build-server-mac
       - build-flipper-server
       - release
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.3
       with:
         ref: ${{ needs.release.outputs.tag }}
-    - name: Download Mac
+    - name: Download Flipper Server x86-64
       if: ${{ needs.release.outputs.tag != '' }}
       uses: actions/download-artifact@v1
       with:
-        name: 'Flipper-mac.dmg'
-        path: 'Flipper-mac.dmg'
-    - name: Download Linux
+        name: 'Flipper-server-mac-x64.dmg'
+        path: 'Flipper-server-mac-x64.dmg'
+    - name: Download Flipper Server aarch64
       if: ${{ needs.release.outputs.tag != '' }}
       uses: actions/download-artifact@v1
       with:
-        name: 'Flipper-linux.zip'
-        path: 'Flipper-linux.zip'
-    - name: Download Windows
-      if: ${{ needs.release.outputs.tag != '' }}
-      uses: actions/download-artifact@v1
-      with:
-        name: 'Flipper-win.zip'
-        path: 'Flipper-win.zip'
+        name: 'Flipper-server-mac-aarch64.dmg'
+        path: 'Flipper-server-mac-aarch64.dmg'
     - name: Download Flipper Server
       if: ${{ needs.release.outputs.tag != '' }}
       uses: actions/download-artifact@v1
@@ -215,7 +146,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         created_tag: ${{ needs.release.outputs.tag }}
-        args: Flipper-mac.dmg/Flipper-mac.dmg Flipper-linux.zip/Flipper-linux.zip Flipper-win.zip/Flipper-win.zip flipper-server.tgz/flipper-server.tgz
+        args: flipper-server.tgz/flipper-server.tgz Flipper-server-mac-x64.dmg/Flipper-server-mac-x64.dmg Flipper-server-mac-aarch64.dmg/Flipper-server-mac-aarch64.dmg
     - name: Set up npm token
       run: echo "//registry.yarnpkg.com/:_authToken=${{ secrets.FLIPPER_NPM_TOKEN }}" >> ~/.npmrc
     - name: Publish flipper-server on NPM
@@ -226,7 +157,7 @@ jobs:
         yarn publish
     - name: Open issue on failure
       if: failure()
-      uses: JasonEtco/create-an-issue@v2.4.0
+      uses: JasonEtco/create-an-issue@v2.9.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         REPOSITORY: ${{ github.repository }}
@@ -234,6 +165,7 @@ jobs:
         WORKFLOW_NAME: "Publish"
       with:
         filename: .github/action-failure-template.md
+
   dispatch:
     needs:
       - release

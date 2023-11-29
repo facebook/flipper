@@ -8,10 +8,7 @@
  */
 
 import {Provider} from 'react-redux';
-import {createRoot} from 'react-dom/client';
-
 import {init as initLogger} from './fb-stubs/Logger';
-import {initLogTailer} from './consoleLogTailer';
 import {SandyApp} from './sandy-chrome/SandyApp';
 import {Persistor, persistStore} from 'redux-persist';
 import dispatcher from './dispatcher/index';
@@ -40,12 +37,14 @@ import styled from '@emotion/styled';
 import {CopyOutlined} from '@ant-design/icons';
 import {getVersionString} from './utils/versionString';
 import {PersistGate} from 'redux-persist/integration/react';
-import {setLoggerInstance, FlipperServer} from 'flipper-common';
+import {setLoggerInstance, FlipperServer, initLogTailer} from 'flipper-common';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {startGlobalErrorHandling} from './utils/globalErrorHandling';
 import {loadTheme} from './utils/loadTheme';
 import {connectFlipperServerToStore} from './dispatcher/flipperServer';
+import {enableConnectivityHook} from './chrome/ConnectivityLogs';
 import ReactDOM from 'react-dom';
+import {uiPerfTracker} from './utils/UIPerfTracker';
 
 class AppFrame extends React.Component<
   {logger: Logger; persistor: Persistor},
@@ -124,6 +123,10 @@ class AppFrame extends React.Component<
     );
   }
 
+  componentDidMount(): void {
+    uiPerfTracker.track('ui-perf-root-rendered');
+  }
+
   componentDidCatch(error: any, errorInfo: any) {
     console.error(
       `Flipper chrome crash: ${error}`,
@@ -140,17 +143,30 @@ class AppFrame extends React.Component<
 function init(flipperServer: FlipperServer) {
   const settings = getRenderHostInstance().serverConfig.settings;
   const store = getStore();
+
   initLogTailer();
+
   const logger = initLogger(store);
+  uiPerfTracker._init();
 
   setLoggerInstance(logger);
   startGlobalErrorHandling();
   loadTheme(settings.darkMode);
 
   // rehydrate app state before exposing init
-  const persistor = persistStore(store, undefined, () => {
+  const persistor = persistStore(store, undefined, async () => {
     // Make sure process state is set before dispatchers run
-    dispatcher(store, logger);
+    await dispatcher(store, logger);
+    getRenderHostInstance().sendIpcEvent('storeRehydrated');
+    uiPerfTracker.track('ui-perf-store-rehydrated');
+    // We could potentially merge ui-perf-store-rehydrated and ui-perf-everything-finally-loaded-jeeeez,
+    // but what if at some point in the future we relalize that store rehydration is not actually the last event?
+    // Keep it separate for the time being (evil laugh as there is nothing more permanent than temporary stuff)
+    uiPerfTracker.track('ui-perf-everything-finally-loaded-jeeeez', {
+      numberOfPlugins:
+        store.getState().plugins.clientPlugins.size +
+        store.getState().plugins.devicePlugins.size,
+    });
   });
 
   setPersistor(persistor);
@@ -167,16 +183,17 @@ function init(flipperServer: FlipperServer) {
 
   connectFlipperServerToStore(flipperServer, store, logger);
 
+  enableConsoleHook();
+  enableConnectivityHook(flipperServer);
+
   // TODO T116224873: Return the following code back instead of ReactDOM.react when the following issue is fixed: https://github.com/react-component/trigger/issues/288
   // const root = createRoot(document.getElementById('root')!);
   // root.render(<AppFrame logger={logger} persistor={persistor} />);
 
-  ReactDOM.render(
-    <AppFrame logger={logger} persistor={persistor} />,
-    document.getElementById('root')!,
-  );
-
-  enableConsoleHook();
+  const root = document.getElementById('root');
+  if (root) {
+    ReactDOM.render(<AppFrame logger={logger} persistor={persistor} />, root);
+  }
 
   const launcherMessage =
     getRenderHostInstance().serverConfig.processConfig.launcherMsg;
@@ -191,8 +208,8 @@ function init(flipperServer: FlipperServer) {
   }
 }
 
-export async function startFlipperDesktop(flipperServer: FlipperServer) {
-  getRenderHostInstance(); // renderHost instance should be set at this point!
+export function startFlipperDesktop(flipperServer: FlipperServer) {
+  getRenderHostInstance();
   init(flipperServer);
 }
 

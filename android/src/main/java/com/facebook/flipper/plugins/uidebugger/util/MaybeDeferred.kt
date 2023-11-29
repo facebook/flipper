@@ -26,6 +26,7 @@ class Immediate<T>(private val value: T) : MaybeDeferred<T>() {
 
 class Deferred<T>(private val lazyLoader: () -> T) : MaybeDeferred<T>() {
   override fun value(): T = lazyLoader()
+
   override fun <U> map(fn: (T) -> U): MaybeDeferred<U> {
     return Deferred { fn(lazyLoader()) }
   }

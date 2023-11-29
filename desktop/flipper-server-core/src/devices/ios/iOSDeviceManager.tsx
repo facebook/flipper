@@ -8,7 +8,7 @@
  */
 
 import {ChildProcess} from 'child_process';
-import type {IOSDeviceParams} from 'flipper-common';
+import type {DeviceTarget} from 'flipper-common';
 import path from 'path';
 import childProcess from 'child_process';
 import {exec} from 'promisify-child-process';
@@ -18,11 +18,11 @@ import {
   ERR_NO_IDB_OR_XCODE_AVAILABLE,
   IOSBridge,
   makeIOSBridge,
-  SimctlBridge,
 } from './IOSBridge';
 import {FlipperServerImpl} from '../../FlipperServerImpl';
 import {getFlipperServerConfig} from '../../FlipperServerConfig';
 import iOSCertificateProvider from './iOSCertificateProvider';
+import exitHook from 'exit-hook';
 
 export class IOSDeviceManager {
   private portForwarders: Array<ChildProcess> = [];
@@ -33,7 +33,7 @@ export class IOSDeviceManager {
     'MacOS',
     'PortForwardingMacApp',
   );
-  simctlBridge: SimctlBridge = new SimctlBridge();
+  ctlBridge: IOSBridge | undefined;
 
   readonly certificateProvider: iOSCertificateProvider;
 
@@ -73,6 +73,11 @@ export class IOSDeviceManager {
         console.log(`[conn] Port forwarding app exited gracefully`);
       }
     });
+
+    exitHook(() => {
+      child.kill('SIGKILL');
+    });
+
     return child;
   }
 
@@ -91,14 +96,12 @@ export class IOSDeviceManager {
     ];
   }
 
-  queryDevices(bridge: IOSBridge): Promise<any> {
-    return bridge
-      .getActiveDevices(true)
-      .then((devices) => this.processDevices(bridge, devices));
+  async queryDevices(bridge: IOSBridge): Promise<any> {
+    const devices = await bridge.getActiveDevices(true);
+    return this.processDevices(bridge, devices);
   }
 
-  private processDevices(bridge: IOSBridge, activeDevices: IOSDeviceParams[]) {
-    console.debug('[conn] processDevices', activeDevices);
+  private processDevices(bridge: IOSBridge, activeDevices: DeviceTarget[]) {
     const currentDeviceIDs = new Set(
       this.flipperServer
         .getDevices()
@@ -106,17 +109,13 @@ export class IOSDeviceManager {
         .filter((device) => device.info.deviceType !== 'dummy')
         .map((device) => device.serial),
     );
-    console.debug(
-      '[conn] processDevices -> currentDeviceIDs',
-      currentDeviceIDs,
-    );
 
     for (const activeDevice of activeDevices) {
       const {udid, type, name} = activeDevice;
       if (currentDeviceIDs.has(udid)) {
         currentDeviceIDs.delete(udid);
       } else {
-        console.info(`[conn] detected new iOS device ${udid}`, activeDevice);
+        console.info(`[conn] Detected new iOS device ${udid}`, activeDevice);
         const iOSDevice = new IOSDevice(
           this.flipperServer,
           bridge,
@@ -134,9 +133,23 @@ export class IOSDeviceManager {
     });
   }
 
+  async getBridge(): Promise<IOSBridge> {
+    if (this.ctlBridge !== undefined) {
+      return this.ctlBridge;
+    }
+
+    const isDetected = await iosUtil.isXcodeDetected();
+    this.ctlBridge = await makeIOSBridge(
+      this.idbConfig.idbPath,
+      isDetected,
+      this.idbConfig.enablePhysicalIOS,
+    );
+
+    return this.ctlBridge;
+  }
+
   public async watchIOSDevices() {
     try {
-      const isDetected = await iosUtil.isXcodeDetected();
       if (this.idbConfig.enablePhysicalIOS) {
         this.startDevicePortForwarders();
       }
@@ -144,11 +157,7 @@ export class IOSDeviceManager {
         // Check for version mismatch now for immediate error handling.
         await this.checkXcodeVersionMismatch();
         // Awaiting the promise here to trigger immediate error handling.
-        const bridge = await makeIOSBridge(
-          this.idbConfig.idbPath,
-          isDetected,
-          this.idbConfig.enablePhysicalIOS,
-        );
+        const bridge = await this.getBridge();
         await this.queryDevicesForever(bridge);
       } catch (err) {
         // This case is expected if both Xcode and idb are missing.
@@ -166,8 +175,11 @@ export class IOSDeviceManager {
     }
   }
 
-  getSimulators(bootedOnly: boolean): Promise<Array<IOSDeviceParams>> {
-    return this.simctlBridge.getActiveDevices(bootedOnly).catch((e: Error) => {
+  async getSimulators(bootedOnly: boolean): Promise<Array<DeviceTarget>> {
+    try {
+      const bridge = await this.getBridge();
+      return await bridge.getActiveDevices(bootedOnly);
+    } catch (e) {
       console.warn('Failed to query simulators:', e);
       if (e.message.includes('Xcode license agreements')) {
         this.flipperServer.emit('notification', {
@@ -177,20 +189,28 @@ export class IOSDeviceManager {
             'The Xcode license agreement has changed. You need to either open Xcode and agree to the terms or run `sudo xcodebuild -license` in a Terminal to allow simulators to work with Flipper.',
         });
       }
-      return Promise.resolve([]);
-    });
+      return [];
+    }
   }
 
-  private queryDevicesForever(bridge: IOSBridge) {
-    return this.queryDevices(bridge)
-      .then(() => {
-        // It's important to schedule the next check AFTER the current one has completed
-        // to avoid simultaneous queries which can cause multiple user input prompts.
-        setTimeout(() => this.queryDevicesForever(bridge), 3000);
-      })
-      .catch((err) => {
-        console.warn('Failed to continuously query devices:', err);
-      });
+  async launchSimulator(udid: string) {
+    try {
+      const bridge = await this.getBridge();
+      await bridge.launchSimulator(udid);
+    } catch (e) {
+      console.warn('Failed to launch simulator:', e);
+    }
+  }
+
+  private async queryDevicesForever(bridge: IOSBridge) {
+    try {
+      await this.queryDevices(bridge);
+      // It's important to schedule the next check AFTER the current one has completed
+      // to avoid simultaneous queries which can cause multiple user input prompts.
+      setTimeout(() => this.queryDevicesForever(bridge), 3000);
+    } catch (err) {
+      console.warn('Failed to continuously query devices:', err);
+    }
   }
 
   async checkXcodeVersionMismatch() {
@@ -223,6 +243,14 @@ export class IOSDeviceManager {
       // This is not an error. It depends on the user's local setup that we cannot influence.
       console.warn('Failed to determine Xcode version:', e);
     }
+  }
+
+  async idbKill() {
+    if (!this.idbConfig.idbPath || this.idbConfig.idbPath.length === 0) {
+      return;
+    }
+    const cmd = `${this.idbConfig.idbPath} kill`;
+    await exec(cmd);
   }
 }
 

@@ -14,9 +14,9 @@
     "@emotion/react": "^11.8.2",
     "@reach/observe-rect": "^1.2.0",
     "@types/react": "17.0.39",
-    "@types/react-color": "^3.0.6",
+    "@types/react-color": "2.13.5",
     "@types/react-dom": "^17.0.13",
-    "eventemitter3": "^4.0.7",
+    "dayjs": "^1.11.10",
     "flipper-common": "0.0.0",
     "flipper-plugin-core": "0.0.0",
     "immer": "^9.0.18",
@@ -24,6 +24,7 @@
     "lodash": "^4.17.21",
     "react-color": "^2.19.3",
     "react-element-to-jsx-string": "^14.3.4",
+    "react-use": "^17.4.0",
     "react-virtual": "^2.10.4",
     "string-natural-compare": "^3.0.0"
   },
@@ -34,7 +35,7 @@
   "peerDependencies": {
     "@ant-design/icons": "^4.2.2",
     "@testing-library/dom": "^7.26.3",
-    "antd": "^4.23.4"
+    "antd": "^4.24"
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",

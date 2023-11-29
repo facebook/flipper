@@ -6,6 +6,8 @@
  */
 
 #pragma once
+#ifndef _FLIPPERSCHEDULER_H_
+#define _FLIPPERSCHEDULER_H_
 
 #include <functional>
 
@@ -24,3 +26,4 @@ struct Scheduler {
 
 } // namespace flipper
 } // namespace facebook
+#endif

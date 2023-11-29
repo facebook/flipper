@@ -7,20 +7,27 @@
  * @format
  */
 
-import CertificateProvider from '../../utils/CertificateProvider';
+import CertificateProvider from '../../app-connectivity/certificate-exchange/CertificateProvider';
 import fs from 'fs-extra';
+import {ClientQuery} from 'flipper-common';
 
 export default class DesktopCertificateProvider extends CertificateProvider {
   name = 'DesktopCertificateProvider';
   medium = 'FS_ACCESS' as const;
+
+  /**
+   * For Desktop devices, we currently return an empty string as the device
+   * identifier. TODO: Is there an actual device serial we could use instead?
+   * - What if some app connects from a remote device?
+   * - What if two apps connect from several different remote devices?
+   * @returns An empty string.
+   */
   async getTargetDeviceId(): Promise<string> {
-    // TODO: Could we use some real device serial? Currently, '' corresponds to a local device.
-    // Whats if some app connects from a remote device?
-    // What if two apps connect from several different remote devices?
     return '';
   }
 
   protected async deployOrStageFileForDevice(
+    _: ClientQuery,
     destination: string,
     filename: string,
     contents: string,

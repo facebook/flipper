@@ -55,7 +55,8 @@ export default class ErrorBoundary extends Component<
   }
 
   componentDidCatch(err: Error, errorInfo: ErrorInfo) {
-    console.error(err.toString(), errorInfo.componentStack, 'ErrorBoundary');
+    // eslint-disable-next-line flipper/no-console-error-without-context
+    console.error(err, errorInfo.componentStack, 'ErrorBoundary');
     this.setState({error: err});
   }
 
@@ -78,11 +79,9 @@ export default class ErrorBoundary extends Component<
       return (
         <ErrorBoundaryContainer grow>
           <Heading>{heading}</Heading>
-          {this.props.showStack !== false && (
-            <ErrorBoundaryStack>{`${
-              error.stack ?? error.toString()
-            }`}</ErrorBoundaryStack>
-          )}
+          {this.props.showStack !== false &&
+            'Look in the console for correct stack traces.'}
+          <br />
           <Button onClick={this.clearError}>Clear error and try again</Button>
         </ErrorBoundaryContainer>
       );

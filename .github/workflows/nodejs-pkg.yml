@@ -1,20 +1,17 @@
 name: PKG Node CI
-
+# This actions runs on 'git push' and PRs
 on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     env:
       pkg-directory: ./desktop/pkg
-
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v3.5.3
+    - uses: actions/setup-node@v3.6.0
       with:
-        node-version: '16.x'
+        node-version: '18.x'
     - name: install
       working-directory: ${{env.pkg-directory}}
       run: yarn

@@ -9,17 +9,32 @@
 
 export {FlipperServerImpl} from './FlipperServerImpl';
 export {loadSettings} from './utils/settings';
+export * from './tracker';
 export {loadLauncherSettings} from './utils/launcherSettings';
 export {loadProcessConfig} from './utils/processConfig';
 export {getEnvironmentInfo} from './utils/environmentInfo';
+export {processExit, setProcessExitRoutine} from './utils/processExit';
 export {getGatekeepers} from './gk';
 export {setupPrefetcher} from './fb-stubs/Prefetcher';
 export * from './server/attachSocketServer';
 export * from './server/startFlipperServer';
 export * from './server/startServer';
 export * from './server/utilities';
+export * from './utils/openUI';
 export {isFBBuild} from './fb-stubs/constants';
+export {initializeLogger} from './fb-stubs/Logger';
 
-export {WEBSOCKET_MAX_MESSAGE_SIZE} from './comms/ServerWebSocket';
+export {WEBSOCKET_MAX_MESSAGE_SIZE} from './app-connectivity/ServerWebSocket';
 
-export {getAuthToken} from './utils/certificateUtils';
+export {
+  getAuthToken,
+  hasAuthToken,
+} from './app-connectivity/certificate-exchange/certificate-utils';
+
+export {sessionId} from './sessionId';
+import dns from 'dns';
+
+// The default on node16 is to prefer ipv4 results which causes issues
+// in some setups.
+// @ts-ignore: Not in our node typings yet
+dns.setDefaultResultOrder('verbatim');

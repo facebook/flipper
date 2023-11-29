@@ -7,12 +7,15 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
-import android.graphics.Bitmap
+import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.Immediate
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 
 /**
  * A chained descriptor is a special type of descriptor that models the inheritance hierarchy in
@@ -25,6 +28,8 @@ import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
  */
 abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
   private var mSuper: ChainedDescriptor<T>? = null
+
+  override fun getId(node: T): Id = System.identityHashCode(node)
 
   fun setSuper(superDescriptor: ChainedDescriptor<T>) {
     if (superDescriptor !== mSuper) {
@@ -76,6 +81,32 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
 
   open fun onGetBounds(node: T): Bounds? = null
 
+  final override fun getHiddenAttributes(node: T): JsonObject? {
+
+    val descriptors = mutableListOf(this)
+
+    var curDescriptor: ChainedDescriptor<T>? = mSuper
+
+    while (curDescriptor != null) {
+      descriptors.add(curDescriptor)
+      curDescriptor = curDescriptor.mSuper
+    }
+
+    // reverse the list so that subclasses can override attributes of the base class if they wish to
+    descriptors.reverse()
+    val builder = mutableMapOf<String, JsonElement>()
+
+    descriptors.forEach { it.onGetHiddenAttributes(node, builder) }
+
+    return if (builder.isNotEmpty()) {
+      JsonObject(builder)
+    } else {
+      null
+    }
+  }
+
+  open fun onGetHiddenAttributes(node: T, attributes: MutableMap<String, JsonElement>) {}
+
   final override fun getChildren(node: T): List<Any> {
     val children = onGetChildren(node) ?: mSuper?.getChildren(node)
     return children ?: listOf()
@@ -103,15 +134,6 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
    */
   open fun onGetAttributes(node: T, attributeSections: MutableMap<MetadataId, InspectableObject>) {}
 
-  /** Get a snapshot of the node. */
-  final override fun getSnapshot(node: T, bitmap: Bitmap?): Bitmap? {
-    return onGetSnapshot(node, bitmap) ?: mSuper?.onGetSnapshot(node, bitmap)
-  }
-
-  open fun onGetSnapshot(node: T, bitmap: Bitmap?): Bitmap? {
-    return null
-  }
-
   final override fun getInlineAttributes(node: T): Map<String, String> {
 
     val builder = mutableMapOf<String, String>()
@@ -128,4 +150,26 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
   }
 
   open fun onGetInlineAttributes(node: T, attributes: MutableMap<String, String>) {}
+
+  final override fun editAttribute(
+      node: T,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {
+
+    var curDescriptor: ChainedDescriptor<T>? = this
+
+    while (curDescriptor != null) {
+      curDescriptor.onEditAttribute(node, metadataPath, value, hint)
+      curDescriptor = curDescriptor.mSuper
+    }
+  }
+
+  open fun onEditAttribute(
+      node: T,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {}
 }

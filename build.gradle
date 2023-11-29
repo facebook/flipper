@@ -11,17 +11,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.0'
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.25.2'
+        classpath 'com.android.tools.build:gradle:8.1.2'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.25.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.8.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
     }
 }
 
 plugins {
     id 'de.undercouch.download' version '5.3.1'
-    id 'com.github.ben-manes.versions' version '0.46.0'
+    id 'com.github.ben-manes.versions' version '0.47.0'
 }
 
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
@@ -42,20 +41,25 @@ subprojects {
     tasks.withType(Javadoc).all {
         enabled = false
     }
+
+    tasks.withType(com.android.build.gradle.tasks.JavaDocGenerationTask).all {
+        enabled = false
+    }
 }
 
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 31
-    compileSdkVersion = 31
-    buildToolsVersion = "30.0.3"
-    ndkVersion = "$NDK_VERSION"
+    targetSdkVersion = 34
+    compileSdkVersion = 34
+    buildToolsVersion = "33.0.2"
+    ndkVersion = "25.1.8937393"
+    javaTargetVersion = JavaVersion.VERSION_17
 }
 
 ext.deps = [
         // Kotlin support
         kotlinStdLibrary   : "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION",
-        kotlinCoroutinesAndroid : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4",
+        kotlinCoroutinesAndroid : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3",
         // Android support
         supportAnnotations : "androidx.annotation:annotation:$ANDROIDX_VERSION",
         supportAppCompat   : "androidx.appcompat:appcompat:$ANDROIDX_VERSION",
@@ -66,6 +70,7 @@ ext.deps = [
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.5.1',
         supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.5.1',
         supportTestRunner  : 'androidx.test:runner:1.5.2',
+        supportCoreKtx     : 'androidx.core:core-ktx:1.10.1',
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.1',
         // First-party
@@ -74,10 +79,10 @@ ext.deps = [
         screenshot         : 'com.facebook.testing.screenshot:core:0.15.0',
         boltsTasks         : 'com.parse.bolts:bolts-tasks:1.4.0',
         // Third-party
-        websocket          : 'org.java-websocket:Java-WebSocket:1.5.3',
+        websocket          : 'org.java-websocket:Java-WebSocket:1.5.4',
         openssl            : 'com.android.ndk.thirdparty:openssl:1.1.1l-beta-1',
         // Annotations
-        kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1",
+        kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1",
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
         proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.19.0',
@@ -97,19 +102,23 @@ ext.deps = [
         lithoTesting       : "com.facebook.litho:litho-testing:$LITHO_VERSION",
         // Debugging and testing
         guava              : 'com.google.guava:guava:23.0',
-        robolectric        : 'org.robolectric:robolectric:4.10.2',
+        robolectric        : 'org.robolectric:robolectric:4.10.3',
         junit              : 'junit:junit:4.13.2',
         hamcrest           : 'org.hamcrest:hamcrest-library:2.2',
         mockito            : 'org.mockito:mockito-core:5.3.1',
         okhttp3            : 'com.squareup.okhttp3:okhttp:4.11.0',
         leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.3',
         leakcanary2        : 'com.squareup.leakcanary:leakcanary-android:2.8.1',
-        protobuf           : 'com.google.protobuf:protobuf-java:3.22.3',
+        protobuf           : 'com.google.protobuf:protobuf-java:3.25.1',
         testCore           : 'androidx.test:core:1.4.0',
         testRules          : 'androidx.test:rules:1.5.0',
         // Plugin dependencies
-        flipperFrescoPlugin: 'com.facebook.flipper:flipper-fresco-plugin:0.182.0',
-        frescoFlipper      : 'com.facebook.fresco:flipper:3.0.0',
-        frescoStetho       : 'com.facebook.fresco:stetho:2.6.0',
-        fresco             : 'com.facebook.fresco:fresco:2.6.0',
+        flipperFrescoPlugin: "com.facebook.fresco:flipper-fresco-plugin:$FRESCO_VERSION",
+        frescoFlipper      : "com.facebook.fresco:flipper:$FRESCO_VERSION",
+        frescoStetho       : "com.facebook.fresco:stetho:$FRESCO_VERSION",
+        fresco             : "com.facebook.fresco:fresco:$FRESCO_VERSION",
+        frescoUiCommon     : "com.facebook.fresco:ui-common:$FRESCO_VERSION",
+        frescoVito         : "com.facebook.fresco:vito:$FRESCO_VERSION",
+        frescoVitoCore     : "com.facebook.fresco:vito-core:$FRESCO_VERSION",
+        frescoVitoLitho    : "com.facebook.fresco:vito-litho:$FRESCO_VERSION",
 ]

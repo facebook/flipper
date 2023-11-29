@@ -19,9 +19,8 @@ test('filled icons get correct local path', () => {
     name: 'star',
     variant: 'filled',
     size: 12,
-    density: 2,
   });
-  expect(iconPath).toBe(path.join('icons', 'star-filled-12@2x.png'));
+  expect(iconPath).toBe(path.join('icons', 'star-filled_d.png'));
 });
 
 test('outline icons get correct local path', () => {
@@ -29,9 +28,8 @@ test('outline icons get correct local path', () => {
     name: 'star',
     variant: 'outline',
     size: 12,
-    density: 2,
   });
-  expect(iconPath).toBe(path.join('icons', 'star-outline-12@2x.png'));
+  expect(iconPath).toBe(path.join('icons', 'star-outline_d.png'));
 });
 
 test('filled icons get correct URL', async () => {
@@ -39,11 +37,10 @@ test('filled icons get correct URL', async () => {
     name: 'star',
     variant: 'filled',
     size: 12,
-    density: 2,
   } as const;
   const iconUrl = getPublicIconUrl(icon);
   expect(iconUrl).toBe(
-    'https://facebook.com/assets/?name=star&variant=filled&size=12&set=facebook_icons&density=2x',
+    'https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/star_filled_12.png',
   );
   const staticPath = getRenderHostInstance().serverConfig.paths.staticPath;
   const localUrl = getLocalIconUrl(icon, iconUrl, staticPath, false);
@@ -51,7 +48,7 @@ test('filled icons get correct URL', async () => {
   expect(localUrl).toBe(iconUrl);
 
   // ... let's mock a file
-  const iconPath = path.join(staticPath, 'icons', 'star-filled-12@2x.png');
+  const iconPath = path.join(staticPath, 'icons', 'star-filled_d.png');
   try {
     await fs.promises.writeFile(
       iconPath,

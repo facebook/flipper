@@ -52,12 +52,20 @@ async function startAdbServer(androidHome: string) {
   const adbPath = path.resolve(androidHome, 'platform-tools', 'adb');
   const args = ['start-server'];
 
-  return execFile(adbPath, args).catch((error) => {
-    if (error.code == 'ENOENT') {
-      console.info('falling back to the alternative adb path');
-      return execFile(path.resolve(androidHome, 'adb'), args);
-    }
+  return execFile(adbPath, args)
+    .catch((error) => {
+      if (error.code == 'ENOENT') {
+        console.info('falling back to the alternative adb path');
+        return execFile(path.resolve(androidHome, 'adb'), args);
+      }
+      throw error;
+    })
+    .catch((error) => {
+      if (error.code == 'ENOENT') {
+        console.info('falling back to the adb path of last resort');
+        return execFile(androidHome, args);
+      }
 
-    throw error;
-  });
+      throw error;
+    });
 }

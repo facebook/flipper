@@ -17,7 +17,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type {FlipperDoctor} from 'flipper-common';
 import * as fs_extra from 'fs-extra';
-import {getIdbInstallationInstructions} from './fb-stubs/idbInstallationInstructions';
+import {
+  getIdbInstallationInstructions,
+  installXcode,
+  installSDK,
+  installAndroidStudio,
+} from './fb-stubs/messages';
+import {validateSelectedXcodeVersion} from './fb-stubs/validateSelectedXcodeVersion';
 
 export function getHealthchecks(): FlipperDoctor.Healthchecks {
   return {
@@ -61,6 +67,29 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
       isRequired: false,
       isSkipped: false,
       healthchecks: [
+        ...(process.platform === 'darwin'
+          ? [
+              {
+                key: 'android.android-studio',
+                label: 'Android Studio Installed',
+                isRequired: false,
+                run: async (_: FlipperDoctor.EnvironmentInfo) => {
+                  const hasProblem = !fs.existsSync(
+                    '/Applications/Android Studio.app',
+                  );
+
+                  const message = hasProblem
+                    ? installAndroidStudio
+                    : `Android Studio is installed.`;
+
+                  return {
+                    hasProblem,
+                    message,
+                  };
+                },
+              },
+            ]
+          : []),
         {
           key: 'android.sdk',
           label: 'SDK Installed',
@@ -73,12 +102,12 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             if (!androidHome) {
               androidHomeResult = {
                 hasProblem: true,
-                message: `ANDROID_HOME is not defined. You can use Flipper Settings (File > Preferences) to point to its location.`,
+                message: `ANDROID_HOME is not defined. You can use Flipper Settings (More > Settings) to point to its location.`,
               };
             } else if (!fs.existsSync(androidHome)) {
               androidHomeResult = {
                 hasProblem: true,
-                message: `ANDROID_HOME point to a folder which does not exist: ${androidHome}. You can use Flipper Settings (File > Preferences) to point to a different location.`,
+                message: `ANDROID_HOME point to a folder which does not exist: ${androidHome}. You can use Flipper Settings (More > Settings) to point to a different location.`,
               };
             } else {
               const platformToolsDir = path.join(androidHome, 'platform-tools');
@@ -101,12 +130,12 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             if (!androidSdkRoot) {
               androidSdkRootResult = {
                 hasProblem: true,
-                message: `ANDROID_SDK_ROOT is not defined. You can use Flipper Settings (File > Preferences) to point to its location.`,
+                message: `ANDROID_SDK_ROOT is not defined. You can use Flipper Settings (More > Settings) to point to its location.`,
               };
             } else if (!fs.existsSync(androidSdkRoot)) {
               androidSdkRootResult = {
                 hasProblem: true,
-                message: `ANDROID_SDK_ROOT point to a folder which does not exist: ${androidSdkRoot}. You can use Flipper Settings (File > Preferences) to point to a different location.`,
+                message: `ANDROID_SDK_ROOT point to a folder which does not exist: ${androidSdkRoot}. You can use Flipper Settings (More > Settings) to point to a different location.`,
               };
             } else {
               const platformToolsDir = path.join(
@@ -137,33 +166,13 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             isSkipped: false,
             healthchecks: [
               {
-                key: 'ios.sdk',
-                label: 'SDK Installed',
-                isRequired: true,
-                run: async (e: FlipperDoctor.EnvironmentInfo) => {
-                  const hasProblem =
-                    !e.SDKs['iOS SDK'] ||
-                    !e.SDKs['iOS SDK'].Platforms ||
-                    !e.SDKs['iOS SDK'].Platforms.length;
-                  const message = hasProblem
-                    ? 'iOS SDK is not installed. You can install it using Xcode (https://developer.apple.com/xcode/).'
-                    : `iOS SDK is installed for the following platforms: ${JSON.stringify(
-                        e.SDKs['iOS SDK'].Platforms,
-                      )}.`;
-                  return {
-                    hasProblem,
-                    message,
-                  };
-                },
-              },
-              {
                 key: 'ios.xcode',
                 label: 'XCode Installed',
                 isRequired: true,
                 run: async (e: FlipperDoctor.EnvironmentInfo) => {
                   const hasProblem = e.IDEs == null || e.IDEs.Xcode == null;
                   const message = hasProblem
-                    ? 'Xcode (https://developer.apple.com/xcode/) is not installed.'
+                    ? `Xcode is not installed.\n${installXcode}.`
                     : `Xcode version ${e.IDEs.Xcode.version} is installed at "${e.IDEs.Xcode.path}".`;
                   return {
                     hasProblem,
@@ -177,28 +186,62 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 isRequired: true,
                 run: async (_: FlipperDoctor.EnvironmentInfo) => {
                   const result = await tryExecuteCommand('xcode-select -p');
+                  const selectXcodeCommands = [
+                    {
+                      title: 'Select Xcode version',
+                      command: `sudo xcode-select -switch <path/to/>Xcode.app`,
+                    },
+                  ];
                   if (result.hasProblem) {
                     return {
                       hasProblem: true,
-                      message: `Xcode version is not selected. You can select it using command "sudo xcode-select -switch <path/to/>Xcode.app". ${result.message}.`,
+                      message: `Xcode version is not selected. ${result.message}.`,
+                      commands: selectXcodeCommands,
                     };
                   }
-                  const selectedXcode = result.stdout!.toString().trim();
+                  const selectedXcode = result.stdout.toString().trim();
                   if (selectedXcode == '/Library/Developer/CommandLineTools') {
                     return {
                       hasProblem: true,
-                      message: `xcode-select has no Xcode selected, You can select it using command "sudo xcode-select -switch <path/to/>Xcode.app".`,
+                      message: `xcode-select has no Xcode selected.`,
+                      commands: selectXcodeCommands,
                     };
                   }
                   if ((await fs_extra.pathExists(selectedXcode)) == false) {
                     return {
                       hasProblem: true,
-                      message: `xcode-select has path of ${selectedXcode}, however this path does not exist on disk. Run "sudo xcode-select --switch" with a valid Xcode.app path.`,
+                      message: `xcode-select has path of ${selectedXcode}, however this path does not exist on disk.`,
+                      commands: selectXcodeCommands,
                     };
+                  }
+                  const validatedXcodeVersion =
+                    await validateSelectedXcodeVersion(selectedXcode);
+                  if (validatedXcodeVersion.hasProblem) {
+                    return validatedXcodeVersion;
                   }
                   return {
                     hasProblem: false,
                     message: `xcode-select has path of ${selectedXcode}.`,
+                  };
+                },
+              },
+              {
+                key: 'ios.sdk',
+                label: 'SDK Installed',
+                isRequired: true,
+                run: async (e: FlipperDoctor.EnvironmentInfo) => {
+                  const hasProblem =
+                    !e.SDKs['iOS SDK'] ||
+                    !e.SDKs['iOS SDK'].Platforms ||
+                    !e.SDKs['iOS SDK'].Platforms.length;
+                  const message = hasProblem
+                    ? `iOS SDK is not installed. ${installSDK}`
+                    : `iOS SDK is installed for the following platforms: ${JSON.stringify(
+                        e.SDKs['iOS SDK'].Platforms,
+                      )}.`;
+                  return {
+                    hasProblem,
+                    message,
                   };
                 },
               },
@@ -245,13 +288,17 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   const result = await tryExecuteCommand(
                     `${settings?.idbPath} --help`,
                   );
-                  const hasProblem = result.hasProblem;
-                  const message = hasProblem
-                    ? getIdbInstallationInstructions(settings.idbPath)
-                    : 'Flipper is configured to use your IDB installation.';
+                  if (result.hasProblem) {
+                    return {
+                      hasProblem: true,
+                      ...getIdbInstallationInstructions(settings.idbPath),
+                    };
+                  }
+
                   return {
-                    hasProblem,
-                    message,
+                    hasProblem: false,
+                    message:
+                      'Flipper is configured to use your IDB installation.',
                   };
                 },
               },

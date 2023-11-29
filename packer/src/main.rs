@@ -106,6 +106,7 @@ fn default_progress_bar(len: u64) -> indicatif::ProgressBar {
     pb.set_style(
         indicatif::ProgressStyle::default_bar()
             .template("{prefix:.bold}▕{bar:.magenta}▏{msg}")
+            .expect("valid indicatif template")
             .progress_chars("█▓▒░  "),
     );
     pb
@@ -404,7 +405,7 @@ mod test {
     fn test_included_packlist_parses() {
         let res: PackList =
             serde_yaml::from_str(DEFAULT_PACKLIST).expect("Default packlist doesn't deserialize");
-        assert_eq!(res.0.len(), 5);
+        assert_eq!(res.0.len(), 6);
     }
 
     #[test]
@@ -413,7 +414,7 @@ mod test {
             .join("src")
             .join("__fixtures__")
             .join("archive_a.tar");
-        let tmp_dir = tempdir::TempDir::new("manifest_test")?;
+        let tmp_dir = tempfile::TempDir::with_prefix("manifest_test.")?;
 
         let archive_paths = &[(&PackType::new("core"), artifact_path)];
         let path = manifest(archive_paths, &None, tmp_dir.path())?;

@@ -68,7 +68,7 @@ class BaseClient {
     messageHandler_ = std::move(messageHandler);
   }
 
-  virtual bool connect(FlipperConnectionManager* manager) = 0;
+  virtual void connect(FlipperConnectionManager* manager) = 0;
   virtual void disconnect() = 0;
 
   virtual void send(

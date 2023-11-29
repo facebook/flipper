@@ -15,7 +15,7 @@ import {
 } from '../data-source/DataSource';
 import {registerStorageAtom} from '../plugin/PluginBase';
 
-type DataSourceOptions = BaseDataSourceOptions & {
+type DataSourceOptions<T> = BaseDataSourceOptions<T> & {
   /**
    * Should this state persist when exporting a plugin?
    * If set, the dataSource will be saved / loaded under the key provided
@@ -25,15 +25,15 @@ type DataSourceOptions = BaseDataSourceOptions & {
 
 export function createDataSource<T, Key extends keyof T>(
   initialSet: readonly T[],
-  options: DataSourceOptions & BaseDataSourceOptionKey<Key>,
+  options: DataSourceOptions<T> & BaseDataSourceOptionKey<Key>,
 ): DataSource<T, T[Key] extends string | number ? T[Key] : never>;
 export function createDataSource<T>(
   initialSet?: readonly T[],
-  options?: DataSourceOptions,
+  options?: DataSourceOptions<T>,
 ): DataSource<T, never>;
 export function createDataSource<T, Key extends keyof T>(
   initialSet: readonly T[] = [],
-  options?: DataSourceOptions & BaseDataSourceOptionKey<Key>,
+  options?: DataSourceOptions<T> & BaseDataSourceOptionKey<Key>,
 ): DataSource<T, T[Key] extends string | number ? T[Key] : never> {
   const ds = options
     ? baseCreateDataSource(initialSet, options)

@@ -26,7 +26,7 @@ test('createTablePlugin returns FlipperPlugin', () => {
   const tablePlugin = createTablePlugin(PROPS);
   const p = startPlugin(tablePlugin);
   expect(Object.keys(p.instance)).toMatchInlineSnapshot(`
-    Array [
+    [
       "selection",
       "rows",
       "isPaused",

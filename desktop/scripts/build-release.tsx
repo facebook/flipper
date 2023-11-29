@@ -73,6 +73,11 @@ const argv = yargs
         'Unique build identifier to be used as the version patch part for the build',
       type: 'number',
     },
+    'react-native-only': {
+      description: 'React Native only build',
+      type: 'boolean',
+      default: false,
+    },
     channel: {
       description: 'Release channel for the build',
       choices: ['stable', 'insiders'],
@@ -115,6 +120,10 @@ if (argv['default-plugins-dir']) {
   process.env.FLIPPER_DEFAULT_PLUGINS_DIR = argv['default-plugins-dir'];
 }
 
+if (argv['react-native-only']) {
+  process.env.FLIPPER_REACT_NATIVE_ONLY = 'true';
+}
+
 async function generateManifest(versionNumber: string) {
   await fs.writeFile(
     path.join(distDir, 'manifest.json'),
@@ -130,6 +139,7 @@ async function modifyPackageManifest(
   versionNumber: string,
   hgRevision: string | null,
   channel: string,
+  reactNativeOnly: boolean,
 ) {
   // eslint-disable-next-line no-console
   console.log('Creating package.json manifest');
@@ -148,6 +158,7 @@ async function modifyPackageManifest(
     manifest.revision = hgRevision;
   }
   manifest.releaseChannel = channel;
+  manifest.reactNativeOnly = reactNativeOnly;
   await fs.writeFile(
     path.join(buildFolder, 'package.json'),
     JSON.stringify(manifest, null, '  '),
@@ -199,17 +210,37 @@ async function buildDist(buildFolder: string) {
   const targetsRaw: Map<Platform, Map<Arch, string[]>>[] = [];
   const postBuildCallbacks: (() => void)[] = [];
 
+  const productName = process.env.FLIPPER_REACT_NATIVE_ONLY
+    ? 'Flipper-Electron'
+    : 'Flipper';
+  const appId = process.env.FLIPPER_REACT_NATIVE_ONLY
+    ? 'com.facebook.sonar-electron'
+    : `com.facebook.sonar`;
+
   if (argv.mac || argv['mac-dmg']) {
-    targetsRaw.push(Platform.MAC.createTarget(['dir']));
-    // You can build mac apps on Linux but can't build dmgs, so we separate those.
-    if (argv['mac-dmg']) {
-      targetsRaw.push(Platform.MAC.createTarget(['dmg']));
+    let macPath = path.join(
+      distDir,
+      process.arch === 'arm64' ? 'mac-arm64' : 'mac',
+    );
+    if (argv['react-native-only']) {
+      targetsRaw.push(Platform.MAC.createTarget(['pkg'], Arch.x64));
+      macPath = path.join(distDir, 'mac');
+    } else {
+      targetsRaw.push(Platform.MAC.createTarget(['dir']));
+      // You can build mac apps on Linux but can't build dmgs, so we separate those.
+      if (argv['mac-dmg']) {
+        targetsRaw.push(Platform.MAC.createTarget(['dmg']));
+      }
     }
     postBuildCallbacks.push(() =>
-      spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
-        cwd: path.join(distDir, 'mac'),
-        encoding: 'utf-8',
-      }),
+      spawn(
+        'zip',
+        ['-qyr9', `../${productName}-mac.zip`, `${productName}.app`],
+        {
+          cwd: macPath,
+          encoding: 'utf-8',
+        },
+      ),
     );
   }
   if (argv.linux || argv['linux-deb'] || argv['linux-snap']) {
@@ -248,8 +279,8 @@ async function buildDist(buildFolder: string) {
     await build({
       publish: 'never',
       config: {
-        appId: `com.facebook.sonar`,
-        productName: 'Flipper',
+        appId,
+        productName,
         directories: {
           buildResources: buildFolder,
           output: distDir,
@@ -261,6 +292,9 @@ async function buildDist(buildFolder: string) {
         },
         mac: {
           bundleVersion: FIX_RELEASE_VERSION,
+          icon: process.env.FLIPPER_REACT_NATIVE_ONLY
+            ? path.resolve(buildFolder, 'icon-rn-only.icns')
+            : path.resolve(buildFolder, 'icon.icns'),
         },
         win: {
           signAndEditExecutable: !isFB,
@@ -295,7 +329,13 @@ async function copyStaticFolder(buildFolder: string) {
   await moveSourceMaps(dir, argv['source-map-dir']);
   const versionNumber = getVersionNumber(argv.version);
   const hgRevision = await genMercurialRevision();
-  await modifyPackageManifest(dir, versionNumber, hgRevision, argv.channel);
+  await modifyPackageManifest(
+    dir,
+    versionNumber,
+    hgRevision,
+    argv.channel,
+    argv['react-native-only'],
+  );
   await fs.ensureDir(distDir);
   await generateManifest(versionNumber);
   await buildDist(dir);

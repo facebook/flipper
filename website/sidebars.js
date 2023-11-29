@@ -124,6 +124,7 @@ module.exports = {
       {
         'Desktop Plugin APIs': [
           'extending/flipper-plugin',
+          'extending/power-search',
           'extending/styling-components',
           'extending/style-guide',
           'extending/deeplinks',
@@ -163,6 +164,7 @@ module.exports = {
                 'internals/documentation-formatting',
               ]
             },
+            'fb/vpnless-interngraph',
             'fb/arc_uiqr',
             'fb/connections',
             {
@@ -183,6 +185,7 @@ module.exports = {
             },
             'fb/bundling',
             'fb/Navigation-Plugin-Development-Guide',
+            'fb/jest-e2e-integration',
             {
               'Releases': [
                 'fb/Flipper-Release-Cycle',

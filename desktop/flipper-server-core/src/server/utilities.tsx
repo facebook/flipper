@@ -7,67 +7,102 @@
  * @format
  */
 
-import os from 'os';
-import xdgBasedir from 'xdg-basedir';
 import net from 'net';
-import fs from 'fs-extra';
+import fetch from 'node-fetch';
+import {EnvironmentInfo} from 'flipper-common';
+import semver from 'semver';
 
 /**
- * Checks if a socket is in used for given path.
- * If the path doesn't exist then is not in use. If it does,
- * create a socket client and attempt to connect to it.
- * If the connection is established, then there's a process
- * already listening. Otherwise, it kind of indicates the
- * contrary.
- * @param path Path used instead of port number.
- * @returns True or false dependning on whether the socket is in
- * use or not.
+ * Checks if a port is in use.
+ * @param port The port to check.
+ * @returns True if the port is in use. Otherwise, false.
  */
-export async function checkSocketInUse(path: string): Promise<boolean> {
-  if (!(await fs.pathExists(path))) {
-    return false;
+export async function checkPortInUse(port: number): Promise<boolean> {
+  interface HttpError extends Error {
+    code?: string;
   }
-  return new Promise((resolve, _reject) => {
-    const client = net
-      .createConnection(path, () => {
+
+  return new Promise((resolve, reject) => {
+    const tester = net
+      .createServer()
+      .once('error', function (err: HttpError) {
+        if (err.code != 'EADDRINUSE') return reject(err);
         resolve(true);
-        client.destroy();
       })
-      .on('error', (e) => {
-        if (e.message.includes('ECONNREFUSED')) {
-          resolve(false);
-        } else {
-          console.warn(
-            `[conn] Socket ${path} is in use, but we don't know why.`,
-            e,
-          );
-          resolve(false);
-        }
-        client.destroy();
-      });
+      .once('listening', function () {
+        tester
+          .once('close', function () {
+            resolve(false);
+          })
+          .close();
+      })
+      .listen(port);
   });
 }
 
 /**
- * Creates a socket path. Used to open the socket at location.
- * Format: flipper-server-${userInfo}.sock
- * @returns The created socket path.
+ * Checks if a running Flipper server is available on the given port.
+ * @param port The port to check.
+ * @returns If successful, it will return the version of the running
+ * Flipper server. Otherwise, undefined.
  */
-export async function makeSocketPath(): Promise<string> {
-  const runtimeDir = xdgBasedir.runtime || '/tmp';
-  await fs.mkdirp(runtimeDir);
-  const filename = `flipper-server-${os.userInfo().uid}.sock`;
-  const path = `${runtimeDir}/${filename}`;
-
-  // Depending on the OS this is between 104 and 108:
-  // https://unix.stackexchange.com/a/367012/10198
-  if (path.length >= 104) {
-    console.warn(
-      'Ignoring XDG_RUNTIME_DIR as it would exceed the total limit for domain socket paths. See man 7 unix.',
+export async function checkServerRunning(
+  port: number,
+): Promise<string | undefined> {
+  try {
+    const response = await fetch(`http://localhost:${port}/info`, {
+      timeout: 1000,
+    });
+    if (response.status >= 200 && response.status < 300) {
+      const environmentInfo: EnvironmentInfo = await response.json();
+      return environmentInfo.appVersion;
+    } else {
+      console.info(
+        '[flipper-server] Running instance found, failed with HTTP status code: ',
+        response.status,
+      );
+    }
+  } catch (e) {
+    console.info(
+      `[flipper-server] No running instance found, error found: ${e}`,
     );
-    // Even with the INT32_MAX userid, we should have plenty of room.
-    return `/tmp/${filename}`;
+  }
+}
+
+/**
+ * Attempts to shutdown an existing Flipper server instance.
+ * @param port The port of the running Flipper server
+ * @returns Returns true if the shutdown was successful. Otherwise, false.
+ */
+export async function shutdownRunningInstance(port: number): Promise<boolean> {
+  try {
+    const response = await fetch(`http://localhost:${port}/shutdown`, {
+      timeout: 1000,
+    });
+    if (response.status >= 200 && response.status < 300) {
+      const json = await response.json();
+      console.info(
+        `[flipper-server] Shutdown request acknowledge: ${json?.success}`,
+      );
+      return json?.success;
+    } else {
+      console.warn(
+        '[flipper-server] Shutdown request not handled, HTTP status code: ',
+        response.status,
+      );
+    }
+  } catch (e) {
+    console.warn('[flipper-server] Shutdown request failed with error: ', e);
   }
 
-  return path;
+  return false;
+}
+
+/**
+ * Compares two versions excluding build identifiers
+ * (the bit after + in the semantic version string).
+ * @return 0 if v1 == v2, 1 if v1 is greater, -1 if v2 is greater.
+ */
+export function compareServerVersion(v1: string, v2: string): number {
+  return semver.compare(v1, v2);
 }

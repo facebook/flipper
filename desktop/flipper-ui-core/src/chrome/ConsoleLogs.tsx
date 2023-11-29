@@ -9,9 +9,9 @@
 
 import {useMemo} from 'react';
 import React from 'react';
-import {Console} from 'console-feed';
-import type {Methods} from 'console-feed/lib/definitions/Methods';
-import type {Styles} from 'console-feed/lib/definitions/Styles';
+import {Console} from '@nicksrandall/console-feed';
+import type {Methods} from '@nicksrandall/console-feed/lib/definitions/Methods';
+import type {Styles} from '@nicksrandall/console-feed/lib/definitions/Styles';
 import {createState, useValue} from 'flipper-plugin';
 import {useLocalStorageState} from 'flipper-plugin';
 import {theme, Toolbar, Layout} from 'flipper-plugin';
@@ -20,7 +20,7 @@ import {Button, Dropdown, Menu, Checkbox} from 'antd';
 import {DownOutlined} from '@ant-design/icons';
 import {DeleteOutlined} from '@ant-design/icons';
 import CBuffer from 'cbuffer';
-import {addLogTailer} from '../consoleLogTailer';
+import {addLogTailer} from 'flipper-common';
 import {v4} from 'uuid';
 
 const MAX_DISPLAY_LOG_ITEMS = 1000;
@@ -91,7 +91,7 @@ export function ConsoleLogs() {
 
   return (
     <Layout.Top>
-      <Toolbar wash>
+      <Toolbar>
         <Button onClick={clearLogs} icon={<DeleteOutlined />}>
           Clear Logs
         </Button>

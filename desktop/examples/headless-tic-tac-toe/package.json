@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "inquirer": "^8.2.4",
-    "ws": "^8.6.0"
+    "ws": "^8.13.0"
   },
   "files": [
     "*.js",

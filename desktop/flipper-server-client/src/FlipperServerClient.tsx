@@ -14,6 +14,7 @@ import {
   FlipperServerCommands,
   FlipperServerExecOptions,
   ServerWebSocketMessage,
+  FlipperServerDisconnectedError,
 } from 'flipper-common';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
@@ -30,10 +31,15 @@ export type {FlipperServer, FlipperServerCommands, FlipperServerExecOptions};
 export function createFlipperServer(
   host: string,
   port: number,
-  args: URLSearchParams,
+  tokenProvider: () => string | null | undefined,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
-  const socket = new ReconnectingWebSocket(`ws://${host}:${port}?${args}`);
+  const URLProvider = () => {
+    const token = tokenProvider();
+    return `ws://${host}:${port}?token=${token}`;
+  };
+
+  const socket = new ReconnectingWebSocket(URLProvider);
   return createFlipperServerWithSocket(socket as WebSocket, onStateChange);
 }
 
@@ -47,7 +53,11 @@ export function createFlipperServerWithSocket(
     let initialConnectionTimeout: ReturnType<typeof setTimeout> | undefined =
       setTimeout(() => {
         reject(
-          new Error('Failed to connect to flipper-server in a timely manner'),
+          new Error(
+            `Failed to connect to the server in a timely manner.
+             It may be unresponsive. Run the following from the terminal
+             'sudo kill -9 $(lsof -t -i :52342)' as to kill any existing running instance, if any.`,
+          ),
         );
       }, CONNECTION_TIMEOUT);
 
@@ -65,21 +75,23 @@ export function createFlipperServerWithSocket(
     let connected = false;
 
     socket.addEventListener('open', () => {
+      connected = true;
+      onStateChange(FlipperServerState.CONNECTED);
+
       if (initialConnectionTimeout) {
-        resolve(flipperServer);
         clearTimeout(initialConnectionTimeout);
         initialConnectionTimeout = undefined;
-      }
 
-      onStateChange(FlipperServerState.CONNECTED);
-      connected = true;
+        resolve(flipperServer);
+      }
     });
 
     socket.addEventListener('close', () => {
-      onStateChange(FlipperServerState.DISCONNECTED);
       connected = false;
+      onStateChange(FlipperServerState.DISCONNECTED);
+
       pendingRequests.forEach((r) =>
-        r.reject(new Error('flipper-server disconnected')),
+        r.reject(new FlipperServerDisconnectedError('ws-close')),
       );
       pendingRequests.clear();
     });
@@ -92,7 +104,6 @@ export function createFlipperServerWithSocket(
 
         switch (event) {
           case 'exec-response': {
-            console.debug('flipper-server: exec <<<', payload);
             const entry = pendingRequests.get(payload.id);
             if (!entry) {
               console.warn(`Unknown request id `, payload.id);
@@ -104,12 +115,6 @@ export function createFlipperServerWithSocket(
             break;
           }
           case 'exec-response-error': {
-            // TODO: Deserialize error
-            console.debug(
-              'flipper-server: exec <<< [SERVER ERROR]',
-              payload.id,
-              payload.data,
-            );
             const entry = pendingRequests.get(payload.id);
             if (!entry) {
               console.warn(`flipper-server: Unknown request id `, payload.id);
@@ -166,13 +171,6 @@ export function createFlipperServerWithSocket(
         if (connected) {
           const id = ++requestId;
           return new Promise<any>((resolve, reject) => {
-            console.debug(
-              'flipper-server: exec >>>',
-              id,
-              command,
-              command === 'intern-upload-scribe-logs' ? undefined : args,
-            );
-
             pendingRequests.set(id, {
               resolve,
               reject,

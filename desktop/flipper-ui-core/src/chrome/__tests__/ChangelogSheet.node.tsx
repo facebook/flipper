@@ -54,8 +54,8 @@ describe('ChangelogSheet', () => {
   test('with last header, should not show changes', () => {
     markChangelogRead(storage, changelog);
     expect(storage.data).toMatchInlineSnapshot(`
-      Object {
-        "FlipperChangelogStatus": "{\\"lastHeader\\":\\"# Version 2.0\\"}",
+      {
+        "FlipperChangelogStatus": "{"lastHeader":"# Version 2.0"}",
       }
     `);
     expect(hasNewChangesToShow(storage, changelog)).toBe(false);
@@ -74,18 +74,18 @@ ${changelog}
 
     expect(hasNewChangesToShow(storage, newChangelog)).toBe(true);
     expect(getRecentChangelog(storage, newChangelog)).toMatchInlineSnapshot(`
-"# Version 3.0
+      "# Version 3.0
 
-* Cool!
+      * Cool!
 
-# Version 2.5
+      # Version 2.5
 
-* This is visible as well"
-`);
+      * This is visible as well"
+    `);
     markChangelogRead(storage, newChangelog);
     expect(storage.data).toMatchInlineSnapshot(`
-      Object {
-        "FlipperChangelogStatus": "{\\"lastHeader\\":\\"# Version 3.0\\"}",
+      {
+        "FlipperChangelogStatus": "{"lastHeader":"# Version 3.0"}",
       }
     `);
     expect(hasNewChangesToShow(storage, newChangelog)).toBe(false);

@@ -37,7 +37,10 @@ export {
 export {Sidebar as _Sidebar} from './ui/Sidebar';
 export {DetailSidebar} from './ui/DetailSidebar';
 export {Toolbar} from './ui/Toolbar';
-export {MasterDetail} from './ui/MasterDetail';
+
+export {MasterDetailWithPowerSearch as MasterDetail} from './ui/MasterDetailWithPowerSearch';
+export {MasterDetailWithPowerSearch as _MasterDetailWithPowerSearch} from './ui/MasterDetailWithPowerSearch';
+export {MasterDetail as MasterDetailLegacy} from './ui/MasterDetail';
 export {CodeBlock} from './ui/CodeBlock';
 
 export {renderReactRoot, _PortalsManager} from './utils/renderReactRoot';
@@ -56,10 +59,25 @@ export {DataFormatter} from './ui/DataFormatter';
 
 export {useLogger, _LoggerContext} from './utils/useLogger';
 
-export {DataTable, DataTableColumn} from './ui/data-table/DataTable';
-export {DataTableManager} from './ui/data-table/DataTableManager';
+export {
+  DataTable,
+  DataTableColumn,
+} from './ui/data-table/DataTableWithPowerSearch';
+export {
+  DataTable as _DataTableWithPowerSearch,
+  DataTableColumn as _DataTableColumnWithPowerSearch,
+} from './ui/data-table/DataTableWithPowerSearch';
+export {
+  DataTable as DataTableLegacy,
+  DataTableColumn as DataTableColumnLegacy,
+} from './ui/data-table/DataTable';
+export {DataTableManager} from './ui/data-table/DataTableWithPowerSearchManager';
+export {DataTableManager as _DataTableWithPowerSearchManager} from './ui/data-table/DataTableWithPowerSearchManager';
+export {DataTableManager as DataTableManagerLegacy} from './ui/data-table/DataTableManager';
+export {dataTablePowerSearchOperators} from './ui/data-table/DataTableDefaultPowerSearchOperators';
 export {DataList} from './ui/DataList';
 export {Spinner} from './ui/Spinner';
+export * from './ui/PowerSearch';
 
 export {DataSourceVirtualizer} from './data-source/DataSourceRendererVirtual';
 
@@ -101,6 +119,7 @@ export {
   ElementSearchResultSet,
   ElementID,
 } from './ui/elements-inspector/ElementsInspector';
+export {suggestNewPlugin} from './ui/SuggestNewPlugin';
 export {useMemoize} from './utils/useMemoize';
 
 export {createTablePlugin} from './utils/createTablePlugin';

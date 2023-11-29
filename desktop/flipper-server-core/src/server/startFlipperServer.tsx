@@ -22,6 +22,7 @@ import {getGatekeepers} from '../gk';
 import {loadLauncherSettings} from '../utils/launcherSettings';
 import {loadProcessConfig} from '../utils/processConfig';
 import {loadSettings} from '../utils/settings';
+import {sessionId} from '../sessionId';
 
 /**
  * Creates an instance of FlipperServer (FlipperServerImpl). This is the
@@ -37,7 +38,7 @@ export async function startFlipperServer(
   staticPath: string,
   settingsString: string,
   enableLauncherSettings: boolean,
-  keytarModule: KeytarModule,
+  keytarModule: KeytarModule | undefined,
   type: FlipperServerType,
   environmentInfo: EnvironmentInfo,
 ): Promise<FlipperServerImpl> {
@@ -51,8 +52,14 @@ export async function startFlipperServer(
     console.warn('Failed to find desktop path, falling back to homedir');
     desktopPath = os.homedir();
   }
+
+  const [launcherSettings, settings] = await Promise.all([
+    loadLauncherSettings(enableLauncherSettings),
+    loadSettings(settingsString),
+  ]);
   return new FlipperServerImpl(
     {
+      sessionId,
       environmentInfo,
       env: parseEnvironmentVariables(process.env),
       gatekeepers: getGatekeepers(environmentInfo.os.unixname),
@@ -64,9 +71,9 @@ export async function startFlipperServer(
         tempPath: os.tmpdir(),
         desktopPath: desktopPath,
       },
-      launcherSettings: await loadLauncherSettings(enableLauncherSettings),
+      launcherSettings,
       processConfig: loadProcessConfig(env),
-      settings: await loadSettings(settingsString),
+      settings,
       validWebSocketOrigins: ['localhost:', 'http://localhost:'],
       type,
     },

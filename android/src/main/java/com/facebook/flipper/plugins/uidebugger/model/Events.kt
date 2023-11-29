@@ -10,21 +10,21 @@ package com.facebook.flipper.plugins.uidebugger.model
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 
 @kotlinx.serialization.Serializable
-data class InitEvent(val rootId: Id, val frameworkEventMetadata: List<FrameworkEventMetadata>) {
+class InitEvent(val rootId: Id, val frameworkEventMetadata: List<FrameworkEventMetadata>) {
   companion object {
     const val name = "init"
   }
 }
 
 @kotlinx.serialization.Serializable
-data class MetadataUpdateEvent(val attributeMetadata: Map<MetadataId, Metadata> = emptyMap()) {
+class MetadataUpdateEvent(val attributeMetadata: Map<MetadataId, Metadata> = emptyMap()) {
   companion object {
     const val name = "metadataUpdate"
   }
 }
 
 @kotlinx.serialization.Serializable
-data class FrameScanEvent(
+class FrameScanEvent(
     val frameTime: Long,
     val nodes: List<Node>,
     val snapshot: Snapshot?,
@@ -35,13 +35,24 @@ data class FrameScanEvent(
   }
 }
 
-@kotlinx.serialization.Serializable data class Snapshot(val nodeId: Id, val data: String)
+@kotlinx.serialization.Serializable
+class TraversalError(
+    val nodeName: String,
+    val errorType: String,
+    val errorMessage: String,
+    val stack: String
+) {
+  companion object {
+    const val name = "traversalError"
+  }
+}
+
+@kotlinx.serialization.Serializable class Snapshot(val nodeId: Id, val data: String)
 
 /** Separate optional performance statistics event */
 @kotlinx.serialization.Serializable
-data class PerfStatsEvent(
+class PerfStatsEvent(
     val txId: Long,
-    val observerType: String,
     val nodesCount: Int,
     val start: Long,
     val traversalMS: Long,

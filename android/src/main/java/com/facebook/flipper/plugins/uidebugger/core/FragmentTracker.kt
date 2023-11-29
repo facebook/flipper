@@ -228,6 +228,7 @@ object FragmentTracker {
         Class.forName("android.app.FragmentManager\$FragmentLifecycleCallbacks") != null) {
       frameworkLifecycleTracker =
           object : android.app.FragmentManager.FragmentLifecycleCallbacks() {
+            @Deprecated("Deprecated in Java")
             override fun onFragmentAttached(
                 fm: android.app.FragmentManager?,
                 f: android.app.Fragment?,
@@ -240,6 +241,7 @@ object FragmentTracker {
               }
             }
 
+            @Deprecated("Deprecated in Java")
             override fun onFragmentViewCreated(
                 fm: android.app.FragmentManager?,
                 f: android.app.Fragment?,
@@ -253,6 +255,7 @@ object FragmentTracker {
               }
             }
 
+            @Deprecated("Deprecated in Java")
             override fun onFragmentDetached(
                 fm: android.app.FragmentManager?,
                 f: android.app.Fragment?

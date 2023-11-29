@@ -7,7 +7,6 @@
  * @format
  */
 
-import {v1 as uuidv1} from 'uuid';
 import {getRenderHostInstance} from 'flipper-frontend-core';
 import {Actions} from './';
 
@@ -37,18 +36,21 @@ export type ShareType = {
 } & SubShareType;
 
 export type State = {
+  isTroubleshootingModalOpen: boolean;
+  isNotificationModalOpen: boolean;
   leftSidebarVisible: boolean;
   rightSidebarVisible: boolean;
   rightSidebarAvailable: boolean;
   windowIsFocused: boolean;
   share: ShareType | null;
-  sessionId: string | null;
   launcherMsg: LauncherMsg;
   statusMessages: Array<string>;
 };
 
 type BooleanActionType =
+  | 'hasLeftSidebar'
   | 'leftSidebarVisible'
+  | 'isNotificationModalOpen'
   | 'rightSidebarVisible'
   | 'rightSidebarAvailable';
 
@@ -75,16 +77,22 @@ export type Action =
   | {
       type: 'REMOVE_STATUS_MSG';
       payload: {msg: string; sender: string};
+    }
+  | {
+      type: 'TOGGLE_CONNECTIVITY_MODAL';
     };
 
 export const initialState: () => State = () => ({
+  topLevelSelection: 'appinspect',
+  hasLeftSidebar: true,
+  isTroubleshootingModalOpen: false,
+  isNotificationModalOpen: false,
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
   windowIsFocused: getRenderHostInstance().hasFocus(),
   activeSheet: null,
   share: null,
-  sessionId: uuidv1(),
   launcherMsg: {
     severity: 'warning',
     message: '',
@@ -112,6 +120,7 @@ export default function reducer(
   if (
     action.type === 'leftSidebarVisible' ||
     action.type === 'rightSidebarVisible' ||
+    action.type === 'isNotificationModalOpen' ||
     action.type === 'rightSidebarAvailable'
   ) {
     const newValue =
@@ -128,6 +137,11 @@ export default function reducer(
         [action.type]: newValue,
       };
     }
+  } else if (action.type === 'TOGGLE_CONNECTIVITY_MODAL') {
+    return {
+      ...state,
+      isTroubleshootingModalOpen: !state.isTroubleshootingModalOpen,
+    };
   } else if (action.type === 'windowIsFocused') {
     return {
       ...state,
@@ -170,8 +184,17 @@ export const toggleAction = (
   payload,
 });
 
+export const toggleConnectivityModal = (): Action => ({
+  type: 'TOGGLE_CONNECTIVITY_MODAL',
+});
+
 export const toggleLeftSidebarVisible = (payload?: boolean): Action => ({
   type: 'leftSidebarVisible',
+  payload,
+});
+
+export const toggleHasLeftSidebar = (payload?: boolean): Action => ({
+  type: 'hasLeftSidebar',
   payload,
 });
 

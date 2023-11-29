@@ -48,7 +48,8 @@ bool ConnectionContextStore::hasRequiredFiles() {
   std::string config =
       loadStringFromFile(absoluteFilePath(CONNECTION_CONFIG_FILE));
 
-  if (caCert == "" || clientCert == "" || privateKey == "" || config == "") {
+  if (caCert.empty() || clientCert.empty() || privateKey.empty() ||
+      config.empty()) {
     return false;
   }
   return true;
@@ -56,14 +57,14 @@ bool ConnectionContextStore::hasRequiredFiles() {
 
 std::string ConnectionContextStore::getCertificateSigningRequest() {
   // Use in-memory CSR if already loaded
-  if (csr != "") {
-    return csr;
+  if (!csr_.empty()) {
+    return csr_;
   }
 
   // Attempt to load existing CSR from previous run of the app
-  csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
-  if (csr != "") {
-    return csr;
+  csr_ = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
+  if (!csr_.empty()) {
+    return csr_;
   }
 
   // Clean all state and generate a new one
@@ -75,9 +76,9 @@ std::string ConnectionContextStore::getCertificateSigningRequest() {
   if (!success) {
     throw new std::runtime_error("Failed to generate CSR");
   }
-  csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
+  csr_ = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
 
-  return csr;
+  return csr_;
 }
 
 std::string ConnectionContextStore::getDeviceId() {
@@ -124,7 +125,8 @@ void ConnectionContextStore::storeConnectionConfig(folly::dynamic& config) {
   writeStringToFile(json, absoluteFilePath(CONNECTION_CONFIG_FILE));
 }
 
-std::string ConnectionContextStore::absoluteFilePath(const char* filename) {
+std::string ConnectionContextStore::absoluteFilePath(
+    const char* filename) const {
 #ifndef WIN32
   return std::string(deviceData_.privateAppDirectory + "/sonar/" + filename);
 #else
@@ -159,7 +161,7 @@ std::string ConnectionContextStore::getPath(StoreItem storeItem) {
 
 bool ConnectionContextStore::resetState() {
   // Clear in-memory state
-  csr = "";
+  csr_ = "";
 
   // Delete state from disk
   std::string dirPath = absoluteFilePath("");
@@ -206,6 +208,18 @@ std::pair<std::string, std::string> ConnectionContextStore::getCertificate() {
   }
 
   return std::make_pair(certificate_path, std::string(CERTIFICATE_PASSWORD));
+}
+
+bool ConnectionContextStore::hasCertificateSigningRequest() const {
+  std::string csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
+  return !csr.empty();
+}
+
+bool ConnectionContextStore::hasClientCertificate() const {
+  std::string clientCertificate =
+      loadStringFromFile(absoluteFilePath(CLIENT_CERT_FILE_NAME));
+
+  return !clientCertificate.empty();
 }
 
 std::string loadStringFromFile(std::string fileName) {

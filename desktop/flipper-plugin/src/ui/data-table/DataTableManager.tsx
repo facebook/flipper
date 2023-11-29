@@ -13,7 +13,7 @@ import {MutableRefObject, Reducer, RefObject} from 'react';
 import {DataSourceVirtualizer} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
 import {theme} from '../theme';
-import {DataSource, _DataSourceView} from 'flipper-plugin-core';
+import {DataSource, getFlipperLib, _DataSourceView} from 'flipper-plugin-core';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting<T = any> = {
@@ -54,6 +54,21 @@ type PersistedState = {
   autoScroll: boolean;
   searchHistory: string[];
   highlightSearchSetting: SearchHighlightSetting;
+};
+
+type AddColumnFilterOptions = {
+  /**
+   * The filter is strict by default
+   * All entries that are missing this value(undefined) will be filtered out.
+   * By disabling this option you make filter include rows that don't have this value ie undefined
+   */
+  strict?: boolean;
+  /**
+   * By default, the filter is matched as a substring: rowValue.toLowerCase().includes(filter).
+   * With this flag the filter is going to be matched by exact equality: rowValue === filter
+   */
+  exact?: boolean;
+  disableOthers?: boolean;
 };
 
 type Action<Name extends string, Args = {}> = {type: Name} & Args;
@@ -97,7 +112,7 @@ type DataManagerActions<T> =
   /** Changing column filters */
   | Action<
       'addColumnFilter',
-      {column: keyof T; value: string; disableOthers?: boolean}
+      {column: keyof T; value: string; options: AddColumnFilterOptions}
     >
   | Action<
       'removeColumnFilter',
@@ -111,6 +126,7 @@ type DataManagerActions<T> =
     >
   | Action<'setColumnFilterInverse', {column: keyof T; inversed: boolean}>
   | Action<'setColumnFilterFromSelection', {column: keyof T}>
+  | Action<'setFilterExceptions', {exceptions: string[] | undefined}>
   | Action<'appliedInitialScroll'>
   | Action<'toggleUseRegex'>
   | Action<'toggleAutoScroll'>
@@ -149,6 +165,7 @@ export type DataManagerState<T> = {
   showNumberedHistory: boolean;
   autoScroll: boolean;
   searchValue: string;
+  filterExceptions: string[] | undefined;
   /** Used to remember the record entry to lookup when user presses ctrl */
   previousSearchValue: string;
   searchHistory: string[];
@@ -173,6 +190,7 @@ export const dataTableManagerReducer = produce<
       draft.sorting = undefined;
       draft.searchValue = '';
       draft.selection = castDraft(emptySelection);
+      draft.filterExceptions = undefined;
       break;
     }
     case 'resetFilters': {
@@ -180,6 +198,7 @@ export const dataTableManagerReducer = produce<
         c.filters?.forEach((f) => (f.enabled = false)),
       );
       draft.searchValue = '';
+      draft.filterExceptions = undefined;
       break;
     }
     case 'resizeColumn': {
@@ -204,8 +223,10 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'setSearchValue': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:search');
       draft.searchValue = action.value;
       draft.previousSearchValue = '';
+      draft.filterExceptions = undefined;
       if (
         action.addToHistory &&
         action.value &&
@@ -220,6 +241,8 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'toggleSearchValue': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:toggle-search');
+      draft.filterExceptions = undefined;
       if (draft.searchValue) {
         draft.previousSearchValue = draft.searchValue;
         draft.searchValue = '';
@@ -276,15 +299,19 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'addColumnFilter': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:add-column');
+      draft.filterExceptions = undefined;
       addColumnFilter(
         draft.columns,
         action.column,
         action.value,
-        action.disableOthers,
+        action.options,
       );
       break;
     }
     case 'removeColumnFilter': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:remove-column');
+      draft.filterExceptions = undefined;
       const column = draft.columns.find((c) => c.key === action.column)!;
       const index =
         action.index ??
@@ -298,6 +325,8 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'toggleColumnFilter': {
+      getFlipperLib().logger.track('usage', 'data-table:filter:toggle-column');
+      draft.filterExceptions = undefined;
       const column = draft.columns.find((c) => c.key === action.column)!;
       const index =
         action.index ??
@@ -311,11 +340,13 @@ export const dataTableManagerReducer = produce<
       break;
     }
     case 'setColumnFilterInverse': {
+      draft.filterExceptions = undefined;
       draft.columns.find((c) => c.key === action.column)!.inversed =
         action.inversed;
       break;
     }
     case 'setColumnFilterFromSelection': {
+      draft.filterExceptions = undefined;
       const items = getSelectedItems(
         config.dataView as _DataSourceView<any, any>,
         draft.selection,
@@ -325,7 +356,10 @@ export const dataTableManagerReducer = produce<
           draft.columns,
           action.column,
           getValueAtPath(item, String(action.column)),
-          index === 0, // remove existing filters before adding the first
+          {
+            disableOthers: index === 0, // remove existing filters before adding the first
+            exact: true,
+          },
         );
       });
       break;
@@ -363,6 +397,10 @@ export const dataTableManagerReducer = produce<
     }
     case 'setShowNumberedHistory': {
       draft.showNumberedHistory = action.showNumberedHistory;
+      break;
+    }
+    case 'setFilterExceptions': {
+      draft.filterExceptions = action.exceptions;
       break;
     }
     default: {
@@ -405,9 +443,10 @@ export type DataTableManager<T> = {
   addColumnFilter(
     column: keyof T,
     value: string,
-    disableOthers?: boolean,
+    options?: AddColumnFilterOptions,
   ): void;
   removeColumnFilter(column: keyof T, label: string): void;
+  setFilterExceptions(exceptions: string[] | undefined): void;
 };
 
 export function createDataTableManager<T>(
@@ -472,11 +511,14 @@ export function createDataTableManager<T>(
     setShowNumberedHistory(showNumberedHistory) {
       dispatch({type: 'setShowNumberedHistory', showNumberedHistory});
     },
-    addColumnFilter(column, value, disableOthers) {
-      dispatch({type: 'addColumnFilter', column, value, disableOthers});
+    addColumnFilter(column, value, options = {}) {
+      dispatch({type: 'addColumnFilter', column, value, options});
     },
     removeColumnFilter(column, label) {
       dispatch({type: 'removeColumnFilter', column, label});
+    },
+    setFilterExceptions(exceptions: string[] | undefined) {
+      dispatch({type: 'setFilterExceptions', exceptions});
     },
     dataView,
     stateRef,
@@ -524,6 +566,7 @@ export function createInitialState<T>(
     searchHistory: prefs?.searchHistory ?? [],
     useRegex: prefs?.useRegex ?? false,
     filterSearchHistory: prefs?.filterSearchHistory ?? true,
+    filterExceptions: undefined,
     autoScroll: prefs?.autoScroll ?? config.autoScroll ?? false,
     highlightSearchSetting: prefs?.highlightSearchSetting ?? {
       highlightEnabled: false,
@@ -543,10 +586,13 @@ function addColumnFilter<T>(
   columns: DataTableColumn<T>[],
   columnId: keyof T,
   value: string,
-  disableOthers: boolean = false,
+  options: AddColumnFilterOptions = {},
 ): void {
+  options = Object.assign({disableOthers: false, strict: true}, options);
   const column = columns.find((c) => c.key === columnId)!;
-  const filterValue = String(value).toLowerCase();
+  const filterValue = options.exact
+    ? String(value)
+    : String(value).toLowerCase();
   const existing = column.filters!.find((c) => c.value === filterValue);
   if (existing) {
     existing.enabled = true;
@@ -555,9 +601,11 @@ function addColumnFilter<T>(
       label: String(value),
       value: filterValue,
       enabled: true,
+      strict: options.strict,
+      exact: options.exact,
     });
   }
-  if (disableOthers) {
+  if (options.disableOthers) {
     column.filters!.forEach((c) => {
       if (c.value !== filterValue) {
         c.enabled = false;
@@ -699,13 +747,18 @@ export function computeDataTableFilter(
 
   return function dataTableFilter(item: any) {
     for (const column of filteringColumns) {
-      const rowMatchesFilter = column.filters!.some(
-        (f) =>
-          f.enabled &&
-          String(getValueAtPath(item, column.key))
-            .toLowerCase()
-            .includes(f.value),
-      );
+      const rowMatchesFilter = column.filters!.some((f) => {
+        if (!f.enabled) {
+          return false;
+        }
+
+        const value = getValueAtPath(item, column.key);
+        const isMatching = f.exact
+          ? String(value) === f.value
+          : String(value).toLowerCase().includes(f.value);
+
+        return f.strict ? isMatching : isMatching || value === undefined;
+      });
       if (column.inversed && rowMatchesFilter) {
         return false;
       }

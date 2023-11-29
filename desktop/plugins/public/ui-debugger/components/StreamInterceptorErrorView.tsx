@@ -7,30 +7,19 @@
  * @format
  */
 
-import {Button, Result} from 'antd';
+import {Result} from 'antd';
 import * as React from 'react';
 
 export function StreamInterceptorErrorView({
-  retryCallback,
+  button,
   title,
   message,
 }: {
   title: string;
   message: string;
-  retryCallback?: () => void;
+  button: React.ReactNode;
 }): React.ReactElement {
   return (
-    <Result
-      status="error"
-      title={title}
-      subTitle={message}
-      extra={
-        retryCallback && (
-          <Button onClick={retryCallback} type="primary">
-            Retry
-          </Button>
-        )
-      }
-    />
+    <Result status="error" title={title} subTitle={message} extra={button} />
   );
 }

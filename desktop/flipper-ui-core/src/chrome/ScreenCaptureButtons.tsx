@@ -7,22 +7,26 @@
  * @format
  */
 
-import {Button as AntButton, message} from 'antd';
-import React, {useState, useCallback} from 'react';
+import {message} from 'antd';
+import React, {useState, useCallback, useEffect} from 'react';
 import {capture, getCaptureLocation, getFileName} from '../utils/screenshot';
-import {CameraOutlined, VideoCameraOutlined} from '@ant-design/icons';
+import {
+  CameraOutlined,
+  VideoCameraFilled,
+  VideoCameraOutlined,
+} from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
 import {getRenderHostInstance} from 'flipper-frontend-core';
-import {path} from 'flipper-plugin';
+import {path, theme} from 'flipper-plugin';
+import {NavbarButton} from '../sandy-chrome/Navbar';
 
 async function openFile(path: string) {
   getRenderHostInstance().flipperServer.exec('open-file', path);
 }
 
-export default function ScreenCaptureButtons() {
+export function NavbarScreenshotButton() {
   const selectedDevice = useStore((state) => state.connections.selectedDevice);
   const [isTakingScreenshot, setIsTakingScreenshot] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
 
   const handleScreenshot = useCallback(() => {
     setIsTakingScreenshot(true);
@@ -36,6 +40,24 @@ export default function ScreenCaptureButtons() {
         setIsTakingScreenshot(false);
       });
   }, [selectedDevice]);
+
+  return (
+    <NavbarButton
+      icon={CameraOutlined}
+      label="Screenshot"
+      onClick={handleScreenshot}
+      disabled={
+        !selectedDevice ||
+        !selectedDevice.description.features.screenshotAvailable
+      }
+      toggled={isTakingScreenshot}
+    />
+  );
+}
+
+export function NavbarScreenRecordButton() {
+  const selectedDevice = useStore((state) => state.connections.selectedDevice);
+  const [isRecording, setIsRecording] = useState(false);
 
   const handleRecording = useCallback(() => {
     if (!selectedDevice) {
@@ -67,30 +89,33 @@ export default function ScreenCaptureButtons() {
     }
   }, [selectedDevice, isRecording]);
 
+  const [red, setRed] = useState(false);
+  useEffect(() => {
+    if (isRecording) {
+      setRed(true);
+      const handle = setInterval(() => {
+        setRed((red) => !red);
+      }, FlashInterval);
+
+      return () => {
+        clearInterval(handle);
+      };
+    }
+  }, [isRecording]);
+
   return (
-    <>
-      <AntButton
-        icon={<CameraOutlined />}
-        title="Take Screenshot"
-        type="ghost"
-        onClick={handleScreenshot}
-        disabled={
-          !selectedDevice ||
-          !selectedDevice.description.features.screenshotAvailable
-        }
-        loading={isTakingScreenshot}
-      />
-      <AntButton
-        icon={<VideoCameraOutlined />}
-        title="Make Screen Recording"
-        type={isRecording ? 'primary' : 'ghost'}
-        onClick={handleRecording}
-        disabled={
-          !selectedDevice ||
-          !selectedDevice.description.features.screenCaptureAvailable
-        }
-        danger={isRecording}
-      />
-    </>
+    <NavbarButton
+      icon={isRecording && red ? VideoCameraFilled : VideoCameraOutlined}
+      label="Record"
+      onClick={handleRecording}
+      colorOverride={isRecording && red ? theme.errorColor : undefined}
+      disabled={
+        !selectedDevice ||
+        !selectedDevice.description.features.screenCaptureAvailable
+      }
+      toggled={isRecording}
+    />
   );
 }
+
+const FlashInterval = 600;

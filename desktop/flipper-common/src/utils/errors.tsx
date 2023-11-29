@@ -96,6 +96,12 @@ export class NoLongerConnectedToClientError extends Error {
   name: 'NoLongerConnectedToClientError';
 }
 
+export class FlipperServerDisconnectedError extends Error {
+  constructor(public readonly reason: 'ws-close') {
+    super(`Flipper Server disconnected. Reason: ${reason}`);
+  }
+}
+
 declare global {
   interface Error {
     interaction?: unknown;

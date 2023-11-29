@@ -27,7 +27,7 @@ test('Correct top level API exposed', () => {
 
   // Note, all `exposedAPIs` should be documented in `flipper-plugin.mdx`
   expect(exposedAPIs.sort()).toMatchInlineSnapshot(`
-    Array [
+    [
       "CodeBlock",
       "DataDescription",
       "DataFormatter",
@@ -35,6 +35,7 @@ test('Correct top level API exposed', () => {
       "DataList",
       "DataSource",
       "DataTable",
+      "DataTableLegacy",
       "DetailSidebar",
       "Dialog",
       "ElementsInspector",
@@ -44,8 +45,10 @@ test('Correct top level API exposed', () => {
       "Layout",
       "MarkerTimeline",
       "MasterDetail",
+      "MasterDetailLegacy",
       "NUX",
       "Panel",
+      "PowerSearch",
       "Spinner",
       "Tab",
       "Tabs",
@@ -59,6 +62,7 @@ test('Correct top level API exposed', () => {
       "createDataSource",
       "createState",
       "createTablePlugin",
+      "dataTablePowerSearchOperators",
       "getFlipperLib",
       "isAtom",
       "path",
@@ -67,6 +71,7 @@ test('Correct top level API exposed', () => {
       "safeStringify",
       "sleep",
       "styled",
+      "suggestNewPlugin",
       "textContent",
       "theme",
       "timeout",
@@ -83,7 +88,7 @@ test('Correct top level API exposed', () => {
   `);
 
   expect(exposedTypes.sort()).toMatchInlineSnapshot(`
-    Array [
+    [
       "Atom",
       "AtomPersistentStorage",
       "CrashLog",
@@ -94,7 +99,9 @@ test('Correct top level API exposed', () => {
       "DataInspectorExpanded",
       "DataSourceVirtualizer",
       "DataTableColumn",
+      "DataTableColumnLegacy",
       "DataTableManager",
+      "DataTableManagerLegacy",
       "DataValueExtractor",
       "DefaultKeyboardAction",
       "Device",
@@ -114,6 +121,8 @@ test('Correct top level API exposed', () => {
       "ElementSearchResultSet",
       "ElementsInspectorElement",
       "ElementsInspectorProps",
+      "EnumLabels",
+      "FieldConfig",
       "FileDescriptor",
       "FileEncoding",
       "FlipperLib",
@@ -127,8 +136,11 @@ test('Correct top level API exposed', () => {
       "MenuEntry",
       "NormalizedMenuEntry",
       "Notification",
+      "OperatorConfig",
       "PluginClient",
+      "PowerSearchConfig",
       "RemoteServerContext",
+      "SearchExpressionTerm",
       "ServerAddOn",
       "ServerAddOnPluginConnection",
     ]

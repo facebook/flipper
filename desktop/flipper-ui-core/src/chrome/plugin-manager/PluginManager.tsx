@@ -15,7 +15,7 @@ import {Modal} from 'antd';
 
 export default function (props: {onHide: () => any}) {
   return (
-    <Modal visible centered width={800} onCancel={props.onHide} footer={null}>
+    <Modal open centered width={800} onCancel={props.onHide} footer={null}>
       <Tabs>
         <Tab tab="Plugin Status">
           <PluginDebugger />

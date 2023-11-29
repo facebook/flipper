@@ -15,8 +15,7 @@
     "immer": "^9.0.18",
     "js-base64": "^3.7.5",
     "p-map": "^4.0.0",
-    "reconnecting-websocket": "^4.4.0",
-    "semver": "^7.3.7"
+    "semver": "^7.5.4"
   },
   "devDependencies": {
     "flipper-test-utils": "0.0.0"

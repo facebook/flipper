@@ -7,10 +7,10 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+    namespace 'com.facebook.flipper.sample.tutorial'
 
     defaultConfig {
         applicationId "com.facebook.flipper.sample.tutorial"
@@ -22,8 +22,8 @@ android {
     }
 
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility rootProject.javaTargetVersion
+        sourceCompatibility rootProject.javaTargetVersion
     }
 
     buildTypes {
@@ -31,10 +31,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 
     packagingOptions {
@@ -48,9 +44,9 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION"
-    implementation "androidx.appcompat:appcompat:1.4.1"
-    implementation "androidx.core:core-ktx:1.8.0"
+    implementation deps.kotlinStdLibrary
+    implementation deps.supportAppCompat
+    implementation deps.supportCoreKtx
 
     // Flipper
     // For simplicity, we use Flipper for both debug and release builds here.
@@ -71,6 +67,10 @@ dependencies {
     implementation deps.lithoSectionsDebug
     implementation deps.lithoSectionsWidget
     implementation deps.fresco
+    implementation deps.frescoUiCommon
+    implementation deps.frescoVito
+    implementation deps.frescoVitoCore
+    implementation deps.frescoVitoLitho
     kapt deps.lithoProcessor
     kapt deps.lithoSectionsProcessor
 }

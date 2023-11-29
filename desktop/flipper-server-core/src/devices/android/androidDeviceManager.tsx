@@ -270,6 +270,10 @@ export class AndroidDeviceManager {
     }
   }
 
+  async adbKill() {
+    await this.adbClient.kill();
+  }
+
   private handleOfflineDevice(device: Device): void {
     console.warn(
       `[conn] Found device ${device.id}, but it has status offline. If this concerns an emulator and the problem persists, try these potential solutions: https://stackoverflow.com/a/21330228/1983583, https://stackoverflow.com/a/56053223/1983583`,

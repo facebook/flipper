@@ -9,7 +9,7 @@
 
 import React from 'react';
 import {Col, Popover, Row} from 'antd';
-import {Color} from '../../../types';
+import {Color} from '../../../ClientTypes';
 import {SketchPicker, ColorResult} from 'react-color';
 import {styled} from 'flipper-plugin';
 import {
@@ -25,13 +25,6 @@ import {theme} from 'flipper-plugin';
 type Props = {
   name: string;
   color: Color;
-};
-
-const DefaultColor: Color = {
-  r: 255,
-  g: 255,
-  b: 255,
-  a: 1,
 };
 
 const CenteredContentContainer = styled.div(AutoMarginStyle);

@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {SpaceBox} from '../../../types';
+import {SpaceBox} from '../../../ClientTypes';
 import {InspectorStyle} from './Styles';
 
 type Props = {

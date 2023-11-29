@@ -14,14 +14,10 @@
 
   <title>Flipper</title>
   <script>
-    window.flipperConfig = {
-      theme: 'light',
-      entryPoint: 'bundle.js',
-      debug: false,
-    }
+    window.flipperConfig = FLIPPER_CONFIG_PLACEHOLDER;
   </script>
   <style>
-    #loading {
+    .message {
       -webkit-app-region: drag;
       z-index: 999999;
       position: absolute;
@@ -32,6 +28,7 @@
       padding: 50px;
       overflow: auto;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       font-size: 20px;
@@ -39,58 +36,70 @@
       text-align: center;
     }
 
-    .__infinity-dev-box-error {
-      background-color: red;
-      font-family: monospace;
+    .message p {
       font-size: 12px;
-      z-index: 10;
-      bottom: 0;
-      left: 0;
-      position: absolute;
+    }
+
+    #troubleshoot {
+      display: none;
+      background-color: white;
     }
 
   </style>
 </head>
 
 <body>
+  <div id="troubleshoot" class="message">
+    <h1 id="tourbleshoot_title"></h1>
+    <p id="tourbleshoot_details"></p>
+  </div>
+
   <div id="root">
-    <div id="loading">
+    <div id="loading" class="message">
       Loading...
     </div>
   </div>
 
-  <div class="__infinity-dev-box __infinity-dev-box-error" hidden />
   <script>
       (function () {
-        // FIXME: needed to make Metro work
+        // Line below needed to make Metro work. Alternatives could be considered.
         window.global = window;
-        let suppressErrors = false;
 
-        function openError(text) {
-          if (suppressErrors) {
-            return;
+        // Listen to changes in the network state, reload when online.
+        // This handles the case when the device is completely offline
+        // i.e. no network connection.
+        window.addEventListener('online', () => {
+          window.location.reload();
+        });
+
+        const root = document.getElementById('root');
+        const troubleshootBox = document.getElementById('troubleshoot');
+        const troubleshootBoxTitle = document.getElementById('tourbleshoot_title');
+        const troubleshootBoxDetails = document.getElementById('tourbleshoot_details');
+
+        function showMessage({ title, detail }) {
+          if (title) {
+            troubleshootBoxTitle.innerText = title
+          }
+          if (detail) {
+            const newMessage = document.createElement('p')
+            newMessage.innerText = detail;
+            troubleshootBoxDetails.appendChild(newMessage)
           }
 
-          let box = document.getElementById('loading');
-          if (box) {
-            box.innerText = text;
-          }
-          else {
-            box = document.querySelector('.__infinity-dev-box-error');
-            box.removeAttribute('hidden');
-            box.innerText = text;
-            box.appendChild(closeButton);
-          }
+          root.style.display = 'none';
+          troubleshootBox.style.display = 'flex';
         }
-        window.flipperShowError = openError;
-        window.flipperHideError = () => {
-          const box = document.querySelector('.__infinity-dev-box-error');
-          box.setAttribute('hidden', true);
+
+        function hideMessage() {
+          root.style.display = 'block';
+          troubleshootBox.style.display = 'none';
+          troubleshootBoxTitle.innerHTML = ''
+          troubleshootBoxDetails.innerHTML = ''
         }
 
-        const closeButton = document.createElement('button');
-        closeButton.addEventListener('click', window.flipperHideError);
-        closeButton.textContent = 'X';
+        window.flipperShowMessage = showMessage;
+        window.flipperHideMessage = hideMessage;
 
         // load correct theme (n.b. this doesn't handle system value specifically, will assume light in such cases)
         try {
@@ -107,32 +116,24 @@
         function init() {
           const script = document.createElement('script');
           script.src = window.flipperConfig.entryPoint;
-
           script.onerror = (e) => {
-            openError('Script failure. Check Chrome console for more info.');
+            const retry = (retries) => {
+              showMessage(`Failed to load entry point. Check Chrome Dev Tools console for more info. Retrying in: ${retries}`);
+              retries -= 1;
+              if (retries < 0) {
+                window.location.reload();
+              }
+              else {
+                setTimeout(() => retry(retries), 1000);
+              }
+            }
+
+            retry(3);
           };
 
           document.body.appendChild(script);
         }
-
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker
-            .register('/service-worker.js')
-            .then(() => {
-              console.log('Flipper Service Worker has been registered');
-            })
-            .catch((e) => {
-              console.error('Flipper failed to register Service Worker', e);
-            });
-        }
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-          // Prevent Chrome 67 and earlier from automatically showing the prompt.
-          e.preventDefault();
-          // Stash the event so it can be triggered later.
-          global.PWAppInstallationEvent = e;
-        });
-
+        
         init();
       })();
   </script>

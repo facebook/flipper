@@ -9,11 +9,14 @@ package com.facebook.flipper.plugins.uidebugger
 
 import android.util.Log
 import com.facebook.flipper.core.FlipperConnection
+import com.facebook.flipper.core.FlipperObject
 import com.facebook.flipper.core.FlipperPlugin
 import com.facebook.flipper.plugins.uidebugger.core.*
 import com.facebook.flipper.plugins.uidebugger.descriptors.ApplicationRefDescriptor
+import com.facebook.flipper.plugins.uidebugger.descriptors.CompoundTypeHint
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.InitEvent
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import kotlinx.serialization.json.Json
 
@@ -31,9 +34,40 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
 
   @Throws(Exception::class)
   override fun onConnect(connection: FlipperConnection) {
-    hasConnectedPreviously = true
     this.context.connectionRef.connection = connection
     this.context.bitmapPool.makeReady()
+
+    connection.receive("editAttribute") { args, responder ->
+      try {
+        val nodeId = args.getInt("nodeId")
+
+        val value = args.getDynamic("value")
+
+        val metadataIdsRaw = args.getArray("metadataIdPath")
+        val metadataIds = mutableListOf<MetadataId>()
+        for (i in 0 until metadataIdsRaw.length()) {
+          metadataIds.add(metadataIdsRaw.get(i) as Int)
+        }
+
+        val compoundTypeHint =
+            args.getString("compoundTypeHint")?.let {
+              enumValueOf<CompoundTypeHint>(it.uppercase())
+            }
+
+        context.attributeEditor.editValue(nodeId, metadataIds, value, compoundTypeHint)
+
+        responder.success()
+      } catch (exception: Exception) {
+
+        val errorResponse =
+            FlipperObject.Builder()
+                .put("errorType", exception.javaClass)
+                .put("errorMessage", exception.message)
+                .put("stackTrace", exception.stackTraceToString())
+                .build()
+        responder.error(errorResponse)
+      }
+    }
 
     connection.send(
         InitEvent.name,
@@ -49,7 +83,10 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
             MetadataUpdateEvent.serializer(),
             MetadataUpdateEvent(MetadataRegister.extractPendingMetadata())))
 
-    context.treeObserverManager.start()
+    context.updateQueue.start()
+    context.decorViewTracker.start()
+
+    context.connectionListeners.forEach { it.onConnect() }
   }
 
   @Throws(Exception::class)
@@ -58,17 +95,15 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
 
     MetadataRegister.reset()
 
-    context.treeObserverManager.stop()
+    context.decorViewTracker.stop()
+    context.updateQueue.stop()
+
     context.bitmapPool.recycleAll()
+    context.connectionListeners.forEach { it.onDisconnect() }
+    context.clearFrameworkEvents()
   }
 
   override fun runInBackground(): Boolean {
     return false
-  }
-
-  companion object {
-
-    var hasConnectedPreviously: Boolean = false
-      private set
   }
 }

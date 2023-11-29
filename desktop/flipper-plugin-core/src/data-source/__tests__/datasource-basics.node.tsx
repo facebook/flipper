@@ -356,6 +356,21 @@ test('filter', () => {
   expect(rawOutput(ds)).toEqual([newCookie, newCoffee, submitBug, a, b]);
 });
 
+test('filter + filterExceptions', () => {
+  const ds = createDataSource<Todo, 'id'>([eatCookie, drinkCoffee, submitBug], {
+    key: 'id',
+  });
+
+  ds.view.setFilter((t) => t.title.indexOf('c') === -1);
+
+  expect(rawOutput(ds)).toEqual([submitBug]);
+
+  // add exception
+  ds.view.setFilterExpections([drinkCoffee.id]);
+
+  expect(rawOutput(ds)).toEqual([drinkCoffee, submitBug]);
+});
+
 test('reverse without sorting', () => {
   const ds = createDataSource<Todo>([eatCookie, drinkCoffee]);
   ds.view.setWindow(0, 100);
@@ -452,8 +467,12 @@ test('reset', () => {
     key: 'id',
   });
   ds.view.setSortBy('title');
-  ds.view.setFilter((v) => v.id !== 'cookie');
-  expect(rawOutput(ds)).toEqual([drinkCoffee, submitBug]);
+  ds.view.setFilter((v) => v.id === 'cookie');
+  expect(rawOutput(ds)).toEqual([eatCookie]);
+  expect([...ds.keys()]).toEqual(['bug', 'coffee', 'cookie']);
+
+  ds.view.setFilterExpections([drinkCoffee.id]);
+  expect(rawOutput(ds)).toEqual([drinkCoffee, eatCookie]);
   expect([...ds.keys()]).toEqual(['bug', 'coffee', 'cookie']);
 
   ds.view.reset();
@@ -855,4 +874,261 @@ test('DataSource.view can iterate', () => {
 
   ds.clear();
   expect([...ds.view]).toEqual([]);
+});
+
+test('secondary keys - doesnt allow duplicate keys', () => {
+  expect(() =>
+    createDataSource([], {
+      indices: [['title'], ['title']],
+    }),
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"Duplicate index definition in [["title"],["title"]]"`,
+  );
+
+  expect(() =>
+    createDataSource([], {
+      // these are the same!
+      indices: [
+        ['id', 'title'],
+        ['title', 'id'],
+      ],
+    }),
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"Duplicate index definition in [["id","title"],["title","id"]]"`,
+  );
+});
+
+test('secondary keys - doesnt allow lookup with nonexisting key', () => {
+  const ds = createDataSource<Todo>([], {indices: [['done']]});
+  expect(() =>
+    expect(ds.getAllRecordsByIndex({title: 'subit a bug', done: false})),
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"No index has been defined for the keys ["title","done"]"`,
+  );
+});
+
+test('secondary keys - lookup by single key', () => {
+  const ds = createDataSource([eatCookie, drinkCoffee, submitBug], {
+    indices: [['id'], ['title'], ['done']],
+  });
+
+  expect(ds.secondaryIndicesKeys()).toEqual(['id', 'title', 'done']);
+  expect(ds.getAllIndexValues(['id'])).toEqual([
+    JSON.stringify({id: 'cookie'}),
+    JSON.stringify({id: 'coffee'}),
+    JSON.stringify({id: 'bug'}),
+  ]);
+
+  expect(
+    ds.getAllRecordsByIndex({
+      title: 'eat a cookie',
+    }),
+  ).toEqual([eatCookie]);
+
+  const cookie2 = {...eatCookie, done: false};
+  ds.append(cookie2);
+  expect(
+    ds.getAllRecordsByIndex({
+      title: 'eat a cookie',
+    }),
+  ).toEqual([eatCookie, cookie2]);
+
+  expect(
+    ds.getAllRecordsByIndex({
+      done: false,
+    }),
+  ).toEqual([submitBug, cookie2]);
+
+  expect(
+    ds.getFirstRecordByIndex({
+      done: false,
+    }),
+  ).toEqual(submitBug);
+
+  expect(ds.getAllIndexValues(['id'])).toEqual([
+    JSON.stringify({id: 'cookie'}),
+    JSON.stringify({id: 'coffee'}),
+    JSON.stringify({id: 'bug'}),
+  ]);
+
+  ds.delete(0); // eat Cookie
+  expect(
+    ds.getAllRecordsByIndex({
+      title: 'eat a cookie',
+    }),
+  ).toEqual([cookie2]);
+
+  // We do not remove empty index values (for now)
+  expect(ds.getAllIndexValues(['id'])).toEqual([
+    JSON.stringify({id: 'cookie'}),
+    JSON.stringify({id: 'coffee'}),
+    JSON.stringify({id: 'bug'}),
+  ]);
+
+  // replace submit Bug
+  const n = {
+    id: 'bug',
+    title: 'eat a cookie',
+    done: false,
+  };
+  ds.update(1, n);
+
+  expect(
+    ds.getAllRecordsByIndex({
+      title: 'eat a cookie',
+    }),
+  ).toEqual([cookie2, n]);
+
+  expect(
+    ds.getFirstRecordByIndex({
+      title: 'submit a bug',
+    }),
+  ).toBeUndefined();
+
+  // removes drinkCoffe, n
+  ds.shift(2);
+  expect(
+    ds.getAllRecordsByIndex({
+      title: 'eat a cookie',
+    }),
+  ).toEqual([cookie2]);
+
+  expect(ds.getAllIndexValues(['id'])).toEqual([
+    JSON.stringify({id: 'cookie'}),
+    JSON.stringify({id: 'coffee'}),
+    JSON.stringify({id: 'bug'}),
+  ]);
+});
+
+test('secondary keys - lookup by combined keys', () => {
+  const ds = createDataSource([eatCookie, drinkCoffee, submitBug], {
+    key: 'id',
+    indices: [
+      ['id', 'title'],
+      ['title', 'done'],
+    ],
+  });
+
+  expect(ds.secondaryIndicesKeys()).toEqual(['id:title', 'done:title']);
+  expect(ds.getAllIndexValues(['id', 'title'])).toEqual([
+    JSON.stringify({id: 'cookie', title: 'eat a cookie'}),
+    JSON.stringify({id: 'coffee', title: 'drink coffee'}),
+    JSON.stringify({id: 'bug', title: 'submit a bug'}),
+  ]);
+
+  expect(
+    ds.getAllRecordsByIndex({
+      id: 'cookie',
+      title: 'eat a cookie',
+    }),
+  ).toEqual([eatCookie]);
+  expect(
+    ds.getAllRecordsByIndex({
+      // order doesn't matter
+      title: 'eat a cookie',
+      id: 'cookie',
+    }),
+  ).toEqual([eatCookie]);
+
+  // Note: different key order
+  const cookie2 = {id: 'cookie2', done: true, title: 'eat a cookie'};
+  ds.append(cookie2);
+  expect(
+    ds.getAllRecordsByIndex({
+      id: 'cookie2',
+      title: 'eat a cookie',
+    }),
+  ).toEqual([cookie2]);
+
+  expect(
+    ds.getAllRecordsByIndex({
+      done: true,
+      title: 'eat a cookie',
+    }),
+  ).toEqual([eatCookie, cookie2]);
+
+  expect(ds.getAllIndexValues(['id', 'title'])).toEqual([
+    JSON.stringify({id: 'cookie', title: 'eat a cookie'}),
+    JSON.stringify({id: 'coffee', title: 'drink coffee'}),
+    JSON.stringify({id: 'bug', title: 'submit a bug'}),
+    JSON.stringify({id: 'cookie2', title: 'eat a cookie'}),
+  ]);
+
+  const upsertedCookie = {
+    id: 'cookie',
+    title: 'eat a cookie',
+    done: false,
+  };
+  ds.upsert(upsertedCookie);
+  expect(
+    ds.getAllRecordsByIndex({
+      done: true,
+      title: 'eat a cookie',
+    }),
+  ).toEqual([cookie2]);
+  expect(
+    ds.getAllRecordsByIndex({
+      done: false,
+      title: 'eat a cookie',
+    }),
+  ).toEqual([upsertedCookie]);
+
+  ds.deleteByKey('cookie'); // eat Cookie
+  expect(
+    ds.getFirstRecordByIndex({
+      title: 'eat a cookie',
+      done: false,
+    }),
+  ).toEqual(undefined);
+
+  expect(ds.getAllIndexValues(['id', 'title'])).toEqual([
+    JSON.stringify({id: 'cookie', title: 'eat a cookie'}),
+    JSON.stringify({id: 'coffee', title: 'drink coffee'}),
+    JSON.stringify({id: 'bug', title: 'submit a bug'}),
+    JSON.stringify({id: 'cookie2', title: 'eat a cookie'}),
+  ]);
+
+  const clearSub = jest.fn();
+  ds.addDataListener('clear', clearSub);
+
+  ds.clear();
+  expect(
+    ds.getAllRecordsByIndex({
+      done: true,
+      title: 'eat a cookie',
+    }),
+  ).toEqual([]);
+
+  expect(ds.getAllIndexValues(['id', 'title'])).toEqual([]);
+  expect(clearSub).toBeCalledTimes(1);
+
+  const newIndexValueSub = jest.fn();
+  ds.addDataListener('siNewIndexValue', newIndexValueSub);
+
+  ds.append(cookie2);
+  expect(
+    ds.getAllRecordsByIndex({
+      id: 'cookie2',
+      title: 'eat a cookie',
+    }),
+  ).toEqual([cookie2]);
+
+  expect(ds.getAllIndexValues(['id', 'title'])).toEqual([
+    JSON.stringify({id: 'cookie2', title: 'eat a cookie'}),
+  ]);
+
+  // Because we have 2 indecies
+  expect(newIndexValueSub).toBeCalledTimes(2);
+  expect(newIndexValueSub).toBeCalledWith({
+    type: 'siNewIndexValue',
+    indexKey: JSON.stringify({id: 'cookie2', title: 'eat a cookie'}),
+    firstOfKind: true,
+    value: cookie2,
+  });
+  expect(newIndexValueSub).toBeCalledWith({
+    type: 'siNewIndexValue',
+    indexKey: JSON.stringify({done: 'true', title: 'eat a cookie'}),
+    firstOfKind: true,
+    value: cookie2,
+  });
 });

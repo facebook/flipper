@@ -11,9 +11,10 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewGroupCompat
-import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
+import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.core.FragmentTracker
 import com.facebook.flipper.plugins.uidebugger.model.*
+import com.facebook.flipper.plugins.uidebugger.util.EnumMapping
 
 object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
 
@@ -28,6 +29,7 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
   private const val NAMESPACE = "ViewGroup"
   private var SectionId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
+
   override fun onGetName(node: ViewGroup): String {
     return node.javaClass.simpleName
   }
@@ -64,6 +66,7 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
       node: ViewGroup,
       attributeSections: MutableMap<MetadataId, InspectableObject>
   ) {
+
     val props = mutableMapOf<Int, Inspectable>()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       props[LayoutModeAttributeId] = LayoutModeMapping.toInspectable(node.layoutMode)
@@ -75,5 +78,23 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
     }
 
     attributeSections[SectionId] = InspectableObject(props)
+  }
+
+  override fun onEditAttribute(
+      node: ViewGroup,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {
+    if (metadataPath.first().id != SectionId) {
+      return
+    }
+
+    when (metadataPath.last().id) {
+      LayoutModeAttributeId ->
+          node.layoutMode = LayoutModeMapping.getEnumValue(value.asString() ?: "unknown")
+      ClipChildrenAttributeId -> node.clipChildren = value.asBoolean()
+      ClipToPaddingAttributeId -> node.clipToPadding = value.asBoolean()
+    }
   }
 }

@@ -230,10 +230,10 @@ test('it can send messages from sandy clients', async () => {
   client.initPlugin(TestPlugin.id);
   await pluginInstance.send('test', {test: 3});
   expect(testMethodCalledWith).toMatchInlineSnapshot(`
-    Object {
+    {
       "api": "TestPlugin",
       "method": "test",
-      "params": Object {
+      "params": {
         "test": 3,
       },
     }

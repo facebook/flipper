@@ -57,7 +57,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
   });
 
-  function _unused_JustTypeChecks() {
+  function _unusedJustTypeChecks() {
     // @ts-expect-error Argument of type '"bla"' is not assignable
     client.send('bla', {});
     // @ts-expect-error Argument of type '{ stuff: string; }' is not assignable to parameter of type

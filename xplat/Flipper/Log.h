@@ -14,5 +14,17 @@ namespace flipper {
 
 void log(const std::string& message);
 
+using LogHandlerFunc = void (*)(const std::string& message);
+
+void setLogHandler(LogHandlerFunc handler);
+LogHandlerFunc getLogHandler();
+void defaultLogHandler(const std::string& message);
+
 } // namespace flipper
 } // namespace facebook
+
+#if FLIPPER_DEBUG_LOG
+#define DEBUG_LOG(...) facebook::flipper::log(__VA_ARGS__)
+#else
+#define DEBUG_LOG(...)
+#endif

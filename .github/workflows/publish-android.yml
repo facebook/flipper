@@ -1,5 +1,5 @@
 name: Publish Android
-
+# This action runs on 'git push tag v*' and worflow dispatch as specified below
 on:
   push:
     tags:
@@ -10,25 +10,23 @@ on:
         description: "Tag to upload artifacts to"
         required: false
 
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.3
     - name: set up JDK
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v3.11.0
       with:
-        java-version: 11
+        distribution: 'temurin'
+        java-version: 17
     - name: Write GPG Sec Ring
       run: echo '${{ secrets.GPG_KEY_CONTENTS }}' | base64 -d > /tmp/secring.gpg
     - name: Update gradle.properties
       run: echo -e "signing.secretKeyRingFile=/tmp/secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}\nmavenCentralPassword=${{ secrets.SONATYPE_NEXUS_PASSWORD }}\nmavenCentralUsername=${{ secrets.SONATYPE_NEXUS_USERNAME }}\nSONATYPE_HOST=DEFAULT\nRELEASE_SIGNING_ENABLED=true\nSONATYPE_AUTOMATIC_RELEASE=true" >> gradle.properties
     - name: Compute build cache
       run: ./scripts/checksum-android.sh checksum-android.txt
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3.3.1
       with:
         path: |
           ~/.gradle/caches/modules-*

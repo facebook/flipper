@@ -24,9 +24,9 @@
     "@babel/traverse": "^7.20.13",
     "@babel/types": "^7.20.7",
     "@emotion/babel-plugin": "^11.10.6",
-    "@types/fs-extra": "^9.0.13",
+    "@types/fs-extra": "^11.0.0",
     "@types/node": "^17.0.31",
-    "fs-extra": "^11.1.0",
+    "fs-extra": "^11.1.1",
     "tslib": "^2.4.1"
   },
   "devDependencies": {

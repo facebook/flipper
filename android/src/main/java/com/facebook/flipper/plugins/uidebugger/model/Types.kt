@@ -16,11 +16,13 @@ data class Bounds(val x: Int, val y: Int, val width: Int, val height: Int) {
     fun fromRect(rect: Rect): Bounds {
       return Bounds(rect.left, rect.top, rect.width(), rect.height())
     }
+
+    fun zero() = Bounds(0, 0, 0, 0)
   }
 }
 
 @kotlinx.serialization.Serializable
-data class SpaceBox(val top: Int, val right: Int, val bottom: Int, val left: Int) {
+class SpaceBox(val top: Int, val right: Int, val bottom: Int, val left: Int) {
   companion object {
     fun fromRect(rect: Rect): SpaceBox {
       return SpaceBox(rect.top, rect.right, rect.bottom, rect.left)
@@ -29,15 +31,16 @@ data class SpaceBox(val top: Int, val right: Int, val bottom: Int, val left: Int
 }
 
 @kotlinx.serialization.Serializable
-data class Color(val r: Int, val g: Int, val b: Int, val a: Int) {
+class Color(val r: Int, val g: Int, val b: Int, val a: Float) {
   companion object {
     fun fromColor(color: Int): Color {
-      val alpha: Int = (color shr 24) and 0xFF / 255
+      val alpha: Float = ((color shr 24) and 0xFF).toFloat() / 255
       val red: Int = (color shr 16) and 0xFF
       val green: Int = (color shr 8) and 0xFF
       val blue: Int = (color shr 0) and 0xFF
       return Color(red, green, blue, alpha)
     }
+
     fun fromColor(color: android.graphics.Color): Color {
       return fromColor(color.toArgb())
     }
@@ -45,20 +48,20 @@ data class Color(val r: Int, val g: Int, val b: Int, val a: Int) {
 }
 
 @kotlinx.serialization.Serializable
-data class Coordinate(
+class Coordinate(
     @Serializable(with = NumberSerializer::class) val x: Number,
     @Serializable(with = NumberSerializer::class) val y: Number
 ) {}
 
 @kotlinx.serialization.Serializable
-data class Coordinate3D(
+class Coordinate3D(
     @Serializable(with = NumberSerializer::class) val x: Number,
     @Serializable(with = NumberSerializer::class) val y: Number,
     @Serializable(with = NumberSerializer::class) val z: Number
 ) {}
 
 @kotlinx.serialization.Serializable
-data class Size(
+class Size(
     @Serializable(with = NumberSerializer::class) val width: Number,
     @Serializable(with = NumberSerializer::class) val height: Number
 ) {}

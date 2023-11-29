@@ -10,8 +10,7 @@
 import './utils/macCa';
 import './utils/fetch-polyfill';
 import EventEmitter from 'events';
-import {ServerController} from './comms/ServerController';
-import {CertificateExchangeMedium} from './utils/CertificateProvider';
+import {ServerController} from './app-connectivity/ServerController';
 import {AndroidDeviceManager} from './devices/android/androidDeviceManager';
 import {IOSDeviceManager} from './devices/ios/iOSDeviceManager';
 import metroDevice from './devices/metro/metroDeviceManager';
@@ -26,6 +25,8 @@ import {
   Logger,
   FlipperServerExecOptions,
   DeviceDebugData,
+  CertificateExchangeMedium,
+  Settings,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
@@ -51,11 +52,15 @@ import {promises} from 'fs';
 import rm from 'rimraf';
 import assert from 'assert';
 import {initializeAdbClient} from './devices/android/adbClient';
-import {assertNotNull} from './comms/Utilities';
+import {assertNotNull} from './app-connectivity/Utilities';
 import {mkdirp} from 'fs-extra';
 import {flipperDataFolder, flipperSettingsFolder} from './utils/paths';
 import {DebuggableDevice} from './devices/DebuggableDevice';
 import {jfUpload} from './fb-stubs/jf';
+import path from 'path';
+import {movePWA} from './utils/findInstallation';
+import GK from './fb-stubs/GK';
+import {fetchNewVersion} from './fb-stubs/fetchNewVersion';
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;
@@ -66,6 +71,23 @@ function isHandledStartupError(e: Error) {
   }
 
   return false;
+}
+
+function setProcessState(settings: Settings) {
+  const androidHome = settings.androidHome;
+  const idbPath = settings.idbPath;
+
+  process.env.ANDROID_HOME = androidHome;
+  process.env.ANDROID_SDK_ROOT = androidHome;
+
+  // emulator/emulator is more reliable than tools/emulator, so prefer it if
+  // it exists
+  process.env.PATH =
+    ['emulator', 'tools', 'platform-tools']
+      .map((directory) => path.resolve(androidHome, directory))
+      .join(':') +
+    `:${idbPath}` +
+    `:${process.env.PATH}`;
 }
 
 /**
@@ -89,6 +111,7 @@ export class FlipperServerImpl implements FlipperServer {
   keytarManager: KeytarManager;
   pluginManager: PluginManager;
   unresponsiveClients: Set<string> = new Set();
+  private acceptingNewConections = true;
 
   constructor(
     public config: FlipperServerConfig,
@@ -96,9 +119,9 @@ export class FlipperServerImpl implements FlipperServer {
     keytarModule?: KeytarModule,
   ) {
     setFlipperServerConfig(config);
-    console.log(
-      'Loaded flipper config, paths: ' + JSON.stringify(config.paths, null, 2),
-    );
+    console.info('Loaded flipper config: ' + JSON.stringify(config, null, 2));
+
+    setProcessState(config.settings);
     const server = (this.server = new ServerController(this));
     this.keytarManager = new KeytarManager(keytarModule);
     // given flipper-dump, it might make more sense to have the plugin command
@@ -117,7 +140,7 @@ export class FlipperServerImpl implements FlipperServer {
     server.addListener(
       'client-setup-error',
       ({client, error}: {client: UninitializedClient; error: Error}) => {
-        this.emit('notification', {
+        this.emit('connectivity-troubleshoot-notification', {
           title: `Connection to '${client.appName}' on '${client.deviceName}' failed`,
           description: `Failed to start client connection: ${error}`,
           type: 'error',
@@ -138,7 +161,7 @@ export class FlipperServerImpl implements FlipperServer {
         const clientIdentifier = `${client.deviceName}#${client.appName}`;
         if (!this.unresponsiveClients.has(clientIdentifier)) {
           this.unresponsiveClients.add(clientIdentifier);
-          this.emit('notification', {
+          this.emit('connectivity-troubleshoot-notification', {
             type: 'error',
             title: `Timed out establishing connection with "${client.appName}" on "${client.deviceName}".`,
             description:
@@ -153,6 +176,35 @@ export class FlipperServerImpl implements FlipperServer {
         }
       },
     );
+  }
+
+  startAcceptingNewConections() {
+    if (!GK.get('flipper_disconnect_device_when_ui_offline')) {
+      return;
+    }
+    if (this.acceptingNewConections) {
+      return;
+    }
+    this.acceptingNewConections = true;
+
+    this.server.insecureServer?.startAcceptingNewConections();
+    this.server.altInsecureServer?.startAcceptingNewConections();
+    this.server.secureServer?.startAcceptingNewConections();
+    this.server.altSecureServer?.startAcceptingNewConections();
+    this.server.browserServer?.startAcceptingNewConections();
+  }
+
+  stopAcceptingNewConections() {
+    if (!GK.get('flipper_disconnect_device_when_ui_offline')) {
+      return;
+    }
+    this.acceptingNewConections = false;
+
+    this.server.insecureServer?.stopAcceptingNewConections();
+    this.server.altInsecureServer?.stopAcceptingNewConections();
+    this.server.secureServer?.stopAcceptingNewConections();
+    this.server.altSecureServer?.stopAcceptingNewConections();
+    this.server.browserServer?.stopAcceptingNewConections();
   }
 
   setServerState(state: FlipperServerState, error?: Error) {
@@ -176,19 +228,25 @@ export class FlipperServerImpl implements FlipperServer {
       await this.createFolders();
       await this.server.init();
       await this.pluginManager.start();
-      await this.startDeviceListeners();
+
+      this.startDeviceListeners();
+
       this.setServerState('started');
     } catch (e) {
       if (!isHandledStartupError(e)) {
         console.error('Failed to start FlipperServer', e);
       }
       this.setServerState('error', e);
+
+      throw e;
     }
   }
 
   private async createFolders() {
-    await mkdirp(flipperDataFolder);
-    await mkdirp(flipperSettingsFolder);
+    await Promise.all([
+      mkdirp(flipperDataFolder),
+      mkdirp(flipperSettingsFolder),
+    ]);
   }
 
   async startDeviceListeners() {
@@ -339,6 +397,9 @@ export class FlipperServerImpl implements FlipperServer {
     'device-install-app': async (serial, bundlePath) => {
       return this.devices.get(serial)?.installApp(bundlePath);
     },
+    'device-open-app': async (serial, name) => {
+      return this.devices.get(serial)?.openApp(name);
+    },
     'get-server-state': async () => ({
       state: this.state,
       error: this.stateError,
@@ -461,13 +522,21 @@ export class FlipperServerImpl implements FlipperServer {
     },
     'android-launch-emulator': async (name, coldBoot) =>
       launchEmulator(this.config.settings.androidHome, name, coldBoot),
+    'android-adb-kill': async () => {
+      assertNotNull(this.android);
+      return this.android.adbKill();
+    },
     'ios-get-simulators': async (bootedOnly) => {
       assertNotNull(this.ios);
       return this.ios.getSimulators(bootedOnly);
     },
     'ios-launch-simulator': async (udid) => {
       assertNotNull(this.ios);
-      return this.ios.simctlBridge.launchSimulator(udid);
+      return this.ios.launchSimulator(udid);
+    },
+    'ios-idb-kill': async () => {
+      assertNotNull(this.ios);
+      return this.ios.idbKill();
     },
     'persist-settings': async (settings) => saveSettings(settings),
     'persist-launcher-settings': async (settings) =>
@@ -488,8 +557,11 @@ export class FlipperServerImpl implements FlipperServer {
       this.pluginManager.downloadPlugin(details),
     'plugins-get-updatable-plugins': (query) =>
       this.pluginManager.getUpdatablePlugins(query),
-    'plugins-install-from-file': (path) =>
-      this.pluginManager.installPluginFromFile(path),
+    'plugins-install-from-content': (contents) => {
+      const bytes = Base64.toUint8Array(contents);
+      const buffer = Buffer.from(bytes);
+      return this.pluginManager.installPluginFromFileOrBuffer(buffer);
+    },
     'plugins-install-from-marketplace': (name: string) =>
       this.pluginManager.installPluginForMarketplace(name),
     'plugins-install-from-npm': (name) =>
@@ -544,6 +616,7 @@ export class FlipperServerImpl implements FlipperServer {
       return uploadRes;
     },
     shutdown: async () => {
+      // Do not use processExit helper. We want to server immediatelly quit when this call is triggerred
       process.exit(0);
     },
     'is-logged-in': async () => {
@@ -557,6 +630,10 @@ export class FlipperServerImpl implements FlipperServer {
     'environment-info': async () => {
       return this.config.environmentInfo;
     },
+    'move-pwa': async () => {
+      await movePWA();
+    },
+    'fetch-new-version': fetchNewVersion,
   };
 
   registerDevice(device: ServerDevice) {

@@ -1,7 +1,7 @@
 PODS:
   - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.5)
-  - Flipper (0.135.0):
+  - Flipper (0.198.0):
     - Flipper-Folly (~> 2.6)
   - Flipper-Boost-iOSX (1.76.0.1.11)
   - Flipper-DoubleConversion (3.1.7)
@@ -18,7 +18,7 @@ PODS:
   - glog (0.3.4)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
-  - SocketRocket (0.6.0)
+  - SocketRocket (0.7.0)
 
 DEPENDENCIES:
   - CocoaAsyncSocket (~> 7.6)
@@ -27,7 +27,7 @@ DEPENDENCIES:
   - Flipper-Folly (~> 2.2)
   - Flipper-PeerTalk (~> 0.0)
   - glog (~> 0.3)
-  - SocketRocket (~> 0.6.0)
+  - SocketRocket (~> 0.7.0)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs:
@@ -51,7 +51,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
-  Flipper: 8d280c95b6a6d87a456d6b030df58e8859448267
+  Flipper: 76b4b7f7e1db6082dcd7012cc13998b6d59a76b0
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 57ffbe81ef95306cc9e69c4aa3aeeeeb58a6a28c
   Flipper-Fmt: 60cbdd92fc254826e61d669a5d87ef7015396a9b
@@ -61,8 +61,8 @@ SPEC CHECKSUMS:
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
+  SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
 
-PODFILE CHECKSUM: 75371a02c3eedd0de3d666960d97e308c70edd88
+PODFILE CHECKSUM: abf37c1df1aeaa21dc8787782160e039dc2a64a8
 
 COCOAPODS: 1.11.2

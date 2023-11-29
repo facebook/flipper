@@ -14,6 +14,14 @@ manifest.json
 # conflicts with FB internal infra
 .watchmanconfig
 
+# Don't checkout the yarn/npm lock files that we don't need
+./yarn.lock
+./package-lock.json
+js/yarn.lock
+js/package-lock.json
+react-native/yarn.lock
+react-native/package-lock.json
+
 # iOS / Xcode
 *.xcworkspace
 **/Pods/
@@ -42,6 +50,7 @@ xplat/build
 
 # Mac OS X
 *.DS_Store
+facebook/flipper-server/Resources/
 
 # Automatically generated
 docs/extending/ui-components.mdx

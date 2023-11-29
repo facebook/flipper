@@ -17,6 +17,7 @@ import {
   SystemError,
   getLogger,
   CompanionEventWebSocketMessage,
+  isProduction,
 } from 'flipper-common';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {RawData, WebSocketServer} from 'ws';
@@ -25,6 +26,10 @@ import {
   FlipperServerCompanionEnv,
 } from 'flipper-server-companion';
 import {URLSearchParams} from 'url';
+import {tracker} from '../tracker';
+import {getFlipperServerConfig} from '../FlipperServerConfig';
+import {performance} from 'perf_hooks';
+import {processExit} from '../utils/processExit';
 
 const safe = (f: () => void) => {
   try {
@@ -36,9 +41,12 @@ const safe = (f: () => void) => {
   }
 };
 
+let numberOfConnectedClients = 0;
+let disconnectTimeout: NodeJS.Timeout | undefined;
+
 /**
  * Attach and handle incoming messages from clients.
- * @param flipperServer A FlipperServer instance.
+ * @param server A FlipperServer instance.
  * @param socket A ws socket on which to listen for events.
  */
 export function attachSocketServer(
@@ -47,13 +55,24 @@ export function attachSocketServer(
   companionEnv: FlipperServerCompanionEnv,
 ) {
   socket.on('connection', (client, req) => {
+    const t0 = performance.now();
+
     const clientAddress =
       (req.socket.remoteAddress &&
         ` ${req.socket.remoteAddress}:${req.socket.remotePort}`) ||
       '';
 
     console.log('Client connected', clientAddress);
+    numberOfConnectedClients++;
+
+    if (disconnectTimeout) {
+      clearTimeout(disconnectTimeout);
+    }
+
+    server.emit('browser-connection-created', {});
+
     let connected = true;
+    server.startAcceptingNewConections();
 
     let flipperServerCompanion: FlipperServerCompanion | undefined;
     if (req.url) {
@@ -220,24 +239,60 @@ export function attachSocketServer(
       safe(() => onClientMessage(data));
     });
 
-    async function onClientClose(error: Error | undefined = undefined) {
-      if (error) {
-        console.error(`Client disconnected ${clientAddress} with error`, error);
-      } else {
-        console.log(`Client disconnected ${clientAddress}`);
-      }
+    async function onClientClose(code?: number, error?: string) {
+      console.log(`Client disconnected ${clientAddress}`);
+
+      numberOfConnectedClients--;
 
       connected = false;
       server.offAny(onServerEvent);
       flipperServerCompanion?.destroyAll();
+
+      tracker.track('server-client-close', {
+        code,
+        error,
+        sessionLength: performance.now() - t0,
+      });
+
+      if (numberOfConnectedClients === 0) {
+        server.stopAcceptingNewConections();
+      }
+
+      if (
+        getFlipperServerConfig().environmentInfo.isHeadlessBuild &&
+        isProduction()
+      ) {
+        const FIVE_HOURS = 5 * 60 * 60 * 1000;
+        if (disconnectTimeout) {
+          clearTimeout(disconnectTimeout);
+        }
+
+        disconnectTimeout = setTimeout(() => {
+          if (numberOfConnectedClients === 0) {
+            console.info(
+              '[flipper-server] Shutdown as no clients are currently connected',
+            );
+            processExit(0);
+          }
+        }, FIVE_HOURS);
+      }
     }
 
-    client.on('close', () => {
-      safe(() => onClientClose());
+    client.on('close', (code, _reason) => {
+      console.info('[flipper-server] Client close with code', code);
+      safe(() => onClientClose(code));
     });
 
     client.on('error', (error) => {
-      safe(() => onClientClose(error));
+      safe(() => {
+        /**
+         * The socket will close due to an error. In this case,
+         * do not close on idle as there's a high probability the
+         * client will attempt to connect again.
+         */
+        onClientClose(undefined, error.message);
+        console.error('Client disconnected with error', error);
+      });
     });
   });
 }

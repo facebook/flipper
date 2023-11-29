@@ -1,0 +1,106 @@
+---
+id: power-search
+title: Power Search
+sidebar_label: Power Search
+---
+
+By default, your [table](../tutorial/js-table.mdx) has a power search bar. It allows to search through the entire row as a serialized string or through individual columns. Based on the column type, power search provides different search operators for columns. 
+For instance, for string values it can check if a string contains a substring or even matches some other string exactly. At the same time, for dates Flipper can filter out records after or before a certain date.
+Since Flipper does not have a way of identifying the column type in advance, it always assumes that every column is a string. If you want you can tell Flipper how to handle a column and what power search operators should be available.
+
+## Simplified config
+
+Power search provides a list of default predicates for every column data type. You can specify the column data type like this:
+
+```tsx
+import {DataTableColumn} from 'flipper-plugin'
+
+type MyRow = {
+    timestamp: number;
+    eventType: string;
+}
+
+const columns: DataTableColumn<MyRow>[] = [
+    {
+      key: 'timestamp',
+      title: 'Timestamp',
+      sortable: true,
+      powerSearchConfig: {type: 'dateTime'},
+    },
+    {
+        key: 'eventType',
+        title: 'Event',
+        powerSearchConfig: {type: 'enum'}
+    },
+]
+```
+
+[Complete list of possible "types"](https://github.com/facebook/flipper/blob/main/desktop/flipper-plugin/src/ui/data-table/DataTableWithPowerSearch.tsx#L148).
+
+## Advanced config
+
+If the default list of predicates is not tailored enouhg for your use-case, you can provide a list of predicates explicitly.
+
+```tsx
+import {DataTableColumn, dataTablePowerSearchOperators} from 'flipper-plugin'
+
+type MyRow = {
+    timestamp: number;
+    eventType: string;
+}
+
+const EVENT_TYPE_ENUM_LABELS = {
+    yodaValue: 'Yoda Label',
+    lukeValue: 'Luke Label'
+}
+
+const columns: DataTableColumn<MyRow>[] = [
+    {
+      key: 'timestamp',
+      title: 'Timestamp',
+      sortable: true,
+      powerSearchConfig: [
+        dataTablePowerSearchOperators.same_as_absolute_date_no_time(),
+      ]
+    },
+    {
+        key: 'eventType',
+        title: 'Event',
+        powerSearchConfig: {   
+            // You can also provide power search config as an object
+            operators: [
+                dataTablePowerSearchOperators.enum_is(EVENT_TYPE_ENUM_LABELS),
+                dataTablePowerSearchOperators.enum_is_not(EVENT_TYPE_ENUM_LABELS),
+            ],
+            // It could have exra options
+            // See https://github.com/facebook/flipper/blob/main/desktop/flipper-plugin/src/ui/data-table/DataTableWithPowerSearch.tsx#L157
+        }
+    },
+]
+```
+
+## Using legacy search
+
+While we would encourage using the new power search, some plugins might decide to stick to the legacy experience. To do that you have to use different imports from 'flipper-plugin': `MasterDetailLegacy` instead of `MasterDetail`, `DataTableLegacy` instead of `DataTable`, `DataTableColumnLegacy` instead of `DataTable`, `DataTableManagerLegacy` instead of `DataTableManager`.
+
+```tsx
+import {MasterDetailLegacy, DataTableColumnLegacy} from 'flipper-plugin';
+
+const columns: DataTableColumnLegacy<MyRow>[] = [
+    // colun definition
+]
+
+export const Component = () => {
+    return <MasterDetailLegacy columns={columns} /* ...other props */ />
+}
+```
+
+## Examples 
+
+You can see a live examplse of how you can provide the power search config here:
+
+0. [Logs](https://github.com/facebook/flipper/blob/main/desktop/plugins/public/logs/index.tsx#L49)
+0. [Network](https://github.com/facebook/flipper/blob/main/desktop/plugins/public/network/index.tsx#L664)
+0. [Intern-only](https://fburl.com/code/liiu1wns). 
+
+You can find the complete list of supported operators [here](https://github.com/facebook/flipper/blob/main/desktop/flipper-plugin/src/ui/data-table/DataTableDefaultPowerSearchOperators.tsx).

@@ -30,21 +30,28 @@ const validPackageJson = {
   },
 };
 
-beforeEach(() => {
-  jest.mock('fs-extra', () => jest.fn());
-  fs.pathExists = jest.fn().mockResolvedValue(true);
-  fs.pathExistsSync = jest.fn().mockReturnValue(true);
-  // Required by some inconsistent node types for rw access.
-  (fs.lstatSync as any) = jest.fn().mockReturnValue({
-    isFile: function () {
-      return true;
-    },
-  });
+jest.mock('fs-extra', () => {
+  const mod = {
+    ...jest.requireActual('fs-extra'),
+    readFile: jest.fn(),
+    pathExists: jest.fn().mockResolvedValue(true),
+    pathExistsSync: jest.fn().mockResolvedValue(true),
+    lstatSync: jest.fn().mockReturnValue({
+      isFile: function () {
+        return true;
+      },
+    }),
+  };
+
+  return {
+    ...mod,
+    default: mod,
+  };
 });
 
 test('valid package json', async () => {
   const json = JSON.stringify(validPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toBe(null);
 });
@@ -53,7 +60,7 @@ test('valid scoped package json', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
   testPackageJson.name = '@test/flipper-plugin-package';
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toBe(null);
 });
@@ -63,14 +70,14 @@ test('$schema field is required', async () => {
   // @ts-ignore cannot delete non-optional fields
   delete testPackageJson.$schema;
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
-      ". should have required property \\"$schema\\" pointing to a supported schema URI, e.g.:
+    [
+      ". should have required property "$schema" pointing to a supported schema URI, e.g.:
     {
-     \\"$schema\\": \\"https://fbflipper.com/schemas/plugin-package/v2.json\\",
-     \\"name\\": \\"flipper-plugin-example\\",
+     "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+     "name": "flipper-plugin-example",
      ...
     }",
     ]
@@ -82,10 +89,10 @@ test('supported schema is required', async () => {
   testPackageJson.$schema =
     'https://fbflipper.com/schemas/plugin-package/v1.json';
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
+    [
       ".$schema should point to a supported schema. Currently supported schemas:
     - https://fbflipper.com/schemas/plugin-package/v2.json",
     ]
@@ -97,10 +104,10 @@ test('name is required', async () => {
   // @ts-ignore cannot delete non-optional fields
   delete testPackageJson.name;
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
+    [
       ". should have required property 'name'",
     ]
   `);
@@ -110,11 +117,11 @@ test('name must start with "flipper-plugin-"', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
   testPackageJson.name = 'test-plugin';
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
-      "/name should start with \\"flipper-plugin-\\", e.g. \\"flipper-plugin-example\\"",
+    [
+      "/name should start with "flipper-plugin-", e.g. "flipper-plugin-example"",
     ]
   `);
 });
@@ -123,11 +130,11 @@ test('keywords must contain "flipper-plugin"', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
   testPackageJson.keywords = ['flipper', 'network'];
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
-      "/keywords should contain keyword \\"flipper-plugin\\"",
+    [
+      "/keywords should contain keyword "flipper-plugin"",
     ]
   `);
 });
@@ -135,16 +142,14 @@ test('keywords must contain "flipper-plugin"', async () => {
 test('flippeBundlerEntry must point to an existing file', async () => {
   const testPackageJson = Object.assign({}, validPackageJson);
   testPackageJson.flipperBundlerEntry = 'unexisting/file';
-  fs.pathExistsSync = jest
-    .fn()
-    .mockImplementation(
-      (filePath) => !filePath.includes(path.join('unexisting', 'file')),
-    );
+  (fs.pathExistsSync as any as jest.Mock).mockImplementation(
+    (filePath) => !filePath.includes(path.join('unexisting', 'file')),
+  );
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
+    [
       "/flipperBundlerEntry should point to a valid file",
     ]
   `);
@@ -156,12 +161,12 @@ test('multiple validation errors reported', async () => {
   // @ts-ignore cannot delete non-optional fields
   delete testPackageJson.flipperBundlerEntry;
   const json = JSON.stringify(testPackageJson);
-  fs.readFile = jest.fn().mockResolvedValue(new Buffer(json));
+  (fs.readFile as any as jest.Mock).mockReturnValueOnce(new Buffer(json));
   const result = await runLint('dir');
   expect(result).toMatchInlineSnapshot(`
-    Array [
+    [
       ". should have required property 'flipperBundlerEntry'",
-      "/keywords should contain keyword \\"flipper-plugin\\"",
+      "/keywords should contain keyword "flipper-plugin"",
     ]
   `);
 });

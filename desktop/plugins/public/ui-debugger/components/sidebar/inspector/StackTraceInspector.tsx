@@ -10,7 +10,7 @@
 import React from 'react';
 // eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {StackTrace} from 'flipper';
-import {Tag} from '../../../types';
+import {Tag} from '../../../ClientTypes';
 
 const FacebookLibraries = ['Facebook'];
 const CKFilter = ['UIDCKAnalyticsListener'];

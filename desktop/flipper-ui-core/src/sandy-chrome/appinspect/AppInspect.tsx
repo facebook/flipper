@@ -9,12 +9,10 @@
 
 import React from 'react';
 import {Typography} from 'antd';
-import {LeftSidebar, SidebarTitle, InfoIcon} from '../LeftSidebar';
-import {Layout, Link, styled} from '../../ui';
+import {LeftSidebar, SidebarTitle} from '../LeftSidebar';
+import {Layout, styled} from '../../ui';
 import {theme, useValue} from 'flipper-plugin';
-import {AppSelector} from './AppSelector';
 import {PluginList} from './PluginList';
-import ScreenCaptureButtons from '../../chrome/ScreenCaptureButtons';
 import MetroButton from '../../chrome/MetroButton';
 import {BookmarkSection} from './BookmarkSection';
 import Client from '../../Client';
@@ -31,46 +29,27 @@ import {PluginActionsMenu} from '../../chrome/PluginActionsMenu';
 
 const {Text} = Typography;
 
-const appTooltip = (
-  <>
-    Inspect apps by selecting connected devices and emulators. Navigate and
-    bookmark frequent destinations in the app. Refresh, screenshot and
-    screenrecord is also available.{' '}
-    <Link href="https://fbflipper.com/docs/getting-started/">Learn More</Link>
-  </>
-);
-
 export function AppInspect() {
   const metroDevice = useSelector(getMetroDevice);
   const client = useSelector(getActiveClient);
   const activeDevice = useSelector(getActiveDevice);
   const isDeviceConnected = useValue(activeDevice?.connected, false);
   const isAppConnected = useValue(client?.connected, false);
-  const hasSelectableDevices = useSelector(connections.hasSelectableDevices);
 
   return (
     <LeftSidebar>
       <Layout.Top>
         <Layout.Container borderBottom>
-          <SidebarTitle actions={<InfoIcon>{appTooltip}</InfoIcon>}>
-            App Inspect
-          </SidebarTitle>
+          <Toolbar gap>
+            <SidebarTitle>App Inspect</SidebarTitle>
+            <div style={{flex: 1, marginRight: -16}} />
+            <PluginActionsMenu />
+          </Toolbar>
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
-            <AppSelector />
-            {renderStatusMessage(
-              isDeviceConnected,
-              activeDevice,
-              client,
-              isAppConnected,
-              hasSelectableDevices,
-            )}
             {isDeviceConnected && isAppConnected && <BookmarkSection />}
             {isDeviceConnected && activeDevice && (
               <Toolbar gap>
                 <MetroButton />
-                <ScreenCaptureButtons />
-                <div style={{flex: 1}} />
-                <PluginActionsMenu />
               </Toolbar>
             )}
           </Layout.Container>
@@ -94,6 +73,25 @@ const Toolbar = styled(Layout.Horizontal)({
     border: 'none',
   },
 });
+
+export function StatusMessage() {
+  const client = useSelector(getActiveClient);
+  const activeDevice = useSelector(getActiveDevice);
+  const isDeviceConnected = useValue(activeDevice?.connected, false);
+  const isAppConnected = useValue(client?.connected, false);
+  const hasSelectableDevices = useSelector(connections.hasSelectableDevices);
+  return (
+    <>
+      {renderStatusMessage(
+        isDeviceConnected,
+        activeDevice,
+        client,
+        isAppConnected,
+        hasSelectableDevices,
+      )}
+    </>
+  );
+}
 
 function renderStatusMessage(
   isDeviceConnected: boolean,

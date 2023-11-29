@@ -1,4 +1,5 @@
 name: Validate Podspecs
+# This action runs on 'git push' and PRs to below specified paths.
 on:
   push:
     paths:
@@ -19,11 +20,11 @@ jobs:
   lint-flipperkit_fbdefines_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FBDefines
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -32,11 +33,11 @@ jobs:
   lint-flipperkit_core_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/Core
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -45,11 +46,11 @@ jobs:
   lint-flipperkit_cppbridge_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/CppBridge
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -58,11 +59,11 @@ jobs:
   lint-flipperkit_dynamic_convert_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FBCxxFollyDynamicConvert
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -71,11 +72,11 @@ jobs:
   lint-flipperkit_port_forwarding_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FKPortForwarding
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -84,11 +85,11 @@ jobs:
   lint-flipperkit_layout_highlight_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitHighlightOverlay
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -97,11 +98,11 @@ jobs:
   lint-flipperkit_layout_text_searchable_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitHighlightOverlay
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -110,11 +111,11 @@ jobs:
   lint-flipperkit_layout_helpers_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutHelpers
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -123,11 +124,11 @@ jobs:
   lint-flipperkit_layout_ios_descriptors_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutIOSDescriptors
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -136,11 +137,11 @@ jobs:
   lint-flipperkit_layout_plugin_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutPlugin
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -149,11 +150,11 @@ jobs:
   lint-flipperkit_layout_ck_plugin_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitLayoutComponentKitSupport
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -162,11 +163,11 @@ jobs:
   lint-flipperkit_network_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitNetworkPlugin
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -175,11 +176,11 @@ jobs:
   lint-flipperkit_skiosnetwork_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/SKIOSNetworkPlugin
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -188,11 +189,11 @@ jobs:
   lint-flipperkit_user_default_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitUserDefaultsPlugin
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -201,11 +202,11 @@ jobs:
   lint-flipperkit_example_plugin_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitExamplePlugin
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -214,11 +215,11 @@ jobs:
   lint-flipperkit_react_plugin_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint FlipperKit/FlipperKitReactPlugin
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -227,11 +228,11 @@ jobs:
   lint-flipper_pod:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install Dependences
         run: pod repo update
       - name: Lint Flipper
-        uses: nick-invision/retry@v2.6.0
+        uses: nick-fields/retry@v2.8.3
         with:
           timeout_minutes: 60
           max_attempts: 3

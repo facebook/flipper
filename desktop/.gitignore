@@ -5,9 +5,11 @@ node_modules/
 /static/idb-applications
 /static/themes/
 /static/defaultPlugins/
+/static/manifest.json
 /coverage
 .env
 tsc-error.log
 /flipper-server/static/
 /static/flipper-server-log*
 /static/.audit.json
+/static/icons/*_d.png

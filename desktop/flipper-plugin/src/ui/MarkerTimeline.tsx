@@ -63,14 +63,15 @@ const Point = styled(Layout.Horizontal)<{
   right: 10,
   cursor: props.onClick ? 'pointer' : 'default',
   borderRadius: 3,
-  alignItems: 'flex-start',
+  alignItems: 'baseline',
   lineHeight: '16px',
   ':hover': {
-    backgroundColor: theme.selectionBackgroundColor,
+    backgroundColor: theme.backgroundWash,
     '> span': {
       whiteSpace: 'initial',
     },
   },
+
   '::before': {
     position: 'relative',
     textAlign: 'center',
@@ -115,12 +116,15 @@ const Time = styled.span({
 });
 Time.displayName = 'MakerTimeline:Time';
 
-const Code = styled(Typography.Text)({
+const Name = styled(Typography.Text)({
   overflow: 'hidden',
+  opacity: 0.8,
   textOverflow: 'ellipsis',
   marginTop: -1,
+  marginLeft: theme.space.tiny,
+  fontFamily: 'monospace',
 });
-Code.displayName = 'MakerTimeline:Code';
+Name.displayName = 'MakerTimeline:Name';
 
 type TimePoint = {
   timestamp: number;
@@ -229,8 +233,8 @@ export class MarkerTimeline extends Component<Props, State> {
               number={
                 p.markerNames.length > 1 ? p.markerNames.length : undefined
               }>
-              <Time>{p.timestamp.toFixed(5)}ms</Time>{' '}
-              <Code code>{p.markerNames.join(', ')}</Code>
+              <Time>{p.timestamp.toFixed(0)}ms</Time>{' '}
+              <Name>{p.markerNames.join(', ')}</Name>
             </Point>
           );
         })}

@@ -13,7 +13,7 @@
 #import "FlipperStateUpdateListener.h"
 
 /**
-Represents a connection between the Sonar desktop och client side. Manages the
+Represents a connection between the Flipper desktop client side. Manages the
 lifecycle of attached plugin instances.
 */
 @interface FlipperClient : NSObject
@@ -41,41 +41,48 @@ this client.
 - (NSObject<FlipperPlugin>*)pluginWithIdentifier:(NSString*)identifier;
 
 /**
-Establish a connection to the Sonar desktop.
+Establish a connection to the Flipper desktop.
 */
 - (void)start;
 
 /**
-Stop the connection to the Sonar desktop.
+Stop the connection to the Flipper desktop.
 */
 - (void)stop;
 
 /**
-Get the log of state changes from the sonar client
+Get the log of state changes from the Flipper client.
 */
 - (NSString*)getState;
 
 /**
- Get the current summarized state of the sonar client
+Get the current summarized state of the Flipper client.
  */
 - (NSArray<NSDictionary*>*)getStateElements;
 
 /**
-Subscribe a ViewController to state update change notifications
+ Return true if the app is connected to Flipper desktop. Otherwise, returns
+ false.
+
+ */
+- (BOOL)isConnected;
+
+/**
+Subscribe a ViewController to state update change notifications.
 */
 - (void)subscribeForUpdates:(id<FlipperStateUpdateListener>)controller;
 
 /**
-Sets the certificate provider responsible for obtaining certificates
+Sets the certificate provider responsible for obtaining certificates.
 */
 - (void)setCertificateProvider:(id<FlipperKitCertificateProvider>)provider;
 
 /**
- Get the certificate provider of Flipper Client
+ Get the certificate provider of Flipper Client.
 */
 - (id<FlipperKitCertificateProvider>)getCertificateProvider;
 
-// initializers are disabled. You must use `+[FlipperClient sharedClient]`
+// Initializers are disabled. You must use `+[FlipperClient sharedClient]`
 // instance.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

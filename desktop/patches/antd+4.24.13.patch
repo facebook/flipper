@@ -1,0 +1,57 @@
+diff --git a/node_modules/antd/es/button/button.js b/node_modules/antd/es/button/button.js
+index 635e056..611d5b4 100644
+--- a/node_modules/antd/es/button/button.js
++++ b/node_modules/antd/es/button/button.js
+@@ -165,6 +165,7 @@ var InternalButton = function InternalButton(props, ref) {
+     };
+   }, [loadingOrDelay]);
+   React.useEffect(fixTwoCNChar, [buttonRef]);
++  var scope = React.useContext(global.FlipperTrackingScopeContext);
+   var handleClick = function handleClick(e) {
+     var onClick = props.onClick;
+     // https://github.com/ant-design/ant-design/issues/30207
+@@ -172,7 +173,13 @@ var InternalButton = function InternalButton(props, ref) {
+       e.preventDefault();
+       return;
+     }
+-    onClick === null || onClick === void 0 ? void 0 : onClick(e);
++    if (onClick !== null && onClick !== void 0) {
++      global.flipperTrackInteraction(
++        'Button', 'onClick', scope, props.title || props.children || props.icon,
++        onClick,
++        e
++      );
++    }
+   };
+   process.env.NODE_ENV !== "production" ? warning(!(typeof icon === 'string' && icon.length > 2), 'Button', "`icon` is using ReactNode instead of string naming in v4. Please check `".concat(icon, "` at https://ant.design/components/icon")) : void 0;
+   process.env.NODE_ENV !== "production" ? warning(!(ghost && isUnBorderedButtonType(type)), 'Button', "`link` or `text` button can't be a `ghost` button.") : void 0;
+diff --git a/node_modules/antd/es/typography/Link.js b/node_modules/antd/es/typography/Link.js
+index 9156f1d..3978c6a 100644
+--- a/node_modules/antd/es/typography/Link.js
++++ b/node_modules/antd/es/typography/Link.js
+@@ -19,12 +19,24 @@ var Link = /*#__PURE__*/React.forwardRef(function (_a, ref) {
+   var mergedProps = _extends(_extends({}, restProps), {
+     rel: rel === undefined && restProps.target === '_blank' ? 'noopener noreferrer' : rel
+   });
++  var onClick = React.useCallback((e) => {
++    if (mergedProps.onClick) {
++      return mergedProps.onClick(e);
++    }
++    if (mergedProps.href) {
++      global.flipperOpenLink(mergedProps.href);
++      e.preventDefault();
++      e.stopPropagation();
++    };
++  }, [mergedProps.href, mergedProps.onClick])
++
+   // @ts-expect-error: https://github.com/ant-design/ant-design/issues/26622
+   delete mergedProps.navigate;
+   return /*#__PURE__*/React.createElement(Base, _extends({}, mergedProps, {
+     ref: ref,
+     ellipsis: !!ellipsis,
+-    component: "a"
++    component: "a",
++    onClick: onClick,
+   }));
+ });
+ export default Link;

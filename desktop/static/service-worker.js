@@ -8,7 +8,7 @@
 // OFFLINE_VERSION is used as an update marker so that on subsequent installations
 // the newer version of the file gets updated.
 // eslint-disable-next-line header/header, no-unused-vars
-const OFFLINE_VERSION = 1;
+const OFFLINE_VERSION = 1.2;
 const CACHE_NAME = 'offline';
 const OFFLINE_URL = 'offline.html';
 
@@ -45,15 +45,8 @@ self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
     event.respondWith((async () => {
       try {
-        // First, try to use the navigation preload response if it's supported.
-        const preloadResponse = await event.preloadResponse;
-        if (preloadResponse) {
-          return preloadResponse;
-        }
-
         // Always try the network first (try flipper server)
-        const networkResponse = await fetch(event.request);
-        return networkResponse;
+        return await fetch(event.request);
       } catch (error) {
         // Catch is only triggered if an exception is thrown, which is likely
         // due to a network error.
@@ -62,8 +55,7 @@ self.addEventListener('fetch', (event) => {
         console.log('Fetch failed; returning offline page instead.', error);
 
         const cache = await caches.open(CACHE_NAME);
-        const cachedResponse = await cache.match(OFFLINE_URL);
-        return cachedResponse;
+        return await cache.match(OFFLINE_URL);
       }
     })());
   }

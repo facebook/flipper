@@ -36,35 +36,29 @@
       text-align: center;
     }
 
-    .console {
-      font-family: 'Fira Mono';
-      width: 600px;
-      height: 250px;
-      box-sizing: border-box;
-      margin: auto;
-
-    }
-
-    .console header {
-      border-top-left-radius: 15px;
-      border-top-right-radius: 15px;
-      background-color: #4267B2;
-      height: 45px;
-      line-height: 45px;
-      text-align: center;
-      color: #DDD;
-    }
-
-    .console .consolebody {
-      border-bottom-left-radius: 15px;
-      border-bottom-right-radius: 15px;
-      box-sizing: border-box;
-      padding: 0px 10px;
-      height: calc(100% - 40px);
-      overflow: scroll;
-      background-color: #000;
+    input[type="submit"] {
+      background-color: #9254de;
       color: white;
-      text-align: left;
+      font-family: system-ui;
+      font-size: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #722ed1;
+    }
+
+    input[type="submit"]:active {
+      background-color: #722ed1;
+    }
+
+    input[type="submit"]:disabled {
+      background-color: gray;
+      color: lightgray;
+      cursor: not-allowed;
     }
 
   </style>
@@ -73,39 +67,39 @@
 <body>
   <div id="container">
     <div>
-      <b>Oops! It seems Flipper is not running in the background</b>
+      <b>Flipper is not running in the background</b>
 
-      <p>Flipper can be started by clicking the button below.</p>
-      <form action="flipper-launcher://start-server">
-        <input type="submit" value="Start" />
+      <p>It can be started by clicking the button below.</p>
+      <form action="flipper-launcher://start-server"  onSubmit="serverStart();">
+        <input id="submit" type="submit" value="Start" />
       </form>
 
       <p>
         Flipper will automatically reload once the connection is re-established.
-        Click the button below to try reloading manually.
       </p>
-
-      <button type="button">⤾ Reload</button>
-
-      <p>Also, you can manually start Flipper.
-        From the terminal, please run:</p>
-
-      <div class="console">
-        <header>
-          <p>shell</p>
-        </header>
-        <div class="consolebody">
-          <p>> open -a 'Flipper' --args '--server'</p>
-        </div>
-      </div>
+      <p>Note: if is taking a bit longer than it should, you can manually start Flipper by launching it from the <b>Applications</b> folder.</p>
     </div>
 
   </div>
 
   <script>
-    document.querySelector('button').addEventListener('click', () => {
-      window.location.reload();
-    });
+    function serverStart() {
+      const button = document.getElementById('submit');
+      if (!button) {
+        return;
+      }
+      button.disabled = true;
+      button.value = 'Starting...';
+
+      // Set a timeout to disable the start button for
+      // a period of 30 seconds. If after 30 seconds, the server
+      // has not loaded, then re-enable it.
+      setTimeout(() => {
+        button.disabled = false;
+        button.value = 'Start';
+
+      }, 30 * 10000);
+    }
 
     // Listen to changes in the network state, reload when online.
     // This handles the case when the device is completely offline

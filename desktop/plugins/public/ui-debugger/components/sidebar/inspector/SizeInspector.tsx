@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {Size} from '../../../types';
+import {Size} from '../../../ClientTypes';
 import {Col, Row} from 'antd';
 import {
   CenteredContentStyle,

@@ -8,7 +8,7 @@
  */
 
 import assert from 'assert';
-import {assertNotNull} from '../comms/Utilities';
+import {assertNotNull} from '../app-connectivity/Utilities';
 import {
   FlipperServerForServerAddOn,
   ServerAddOnCleanup,

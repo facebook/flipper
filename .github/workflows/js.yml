@@ -1,5 +1,5 @@
 name: js-flipper
-
+# This action runs on 'git push' and PRs
 on: [push, pull_request]
 
 jobs:
@@ -9,12 +9,12 @@ jobs:
         working-directory: js/js-flipper
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3.5.3
+    - uses: actions/setup-node@v3.6.0
       with:
-        node-version: '16.x'
+        node-version: '18.x'
     - name: yarn install (with retry)
-      uses: nick-invision/retry@v2.6.0
+      uses: nick-fields/retry@v2.8.3
       with:
         command: cd js/js-flipper && yarn
         timeout_minutes: 30
@@ -30,12 +30,12 @@ jobs:
         working-directory: js/react-flipper-example
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3.5.3
+    - uses: actions/setup-node@v3.6.0
       with:
-        node-version: '16.x'
+        node-version: '18.x'
     - name: js-flipper - yarn install (with retry)
-      uses: nick-invision/retry@v2.6.0
+      uses: nick-fields/retry@v2.8.3
       with:
         command: cd js/js-flipper && yarn
         timeout_minutes: 30
@@ -44,7 +44,7 @@ jobs:
       run: yarn build
       working-directory: js/js-flipper
     - name: yarn install (with retry)
-      uses: nick-invision/retry@v2.6.0
+      uses: nick-fields/retry@v2.8.3
       with:
         command: cd js/react-flipper-example && yarn
         timeout_minutes: 30

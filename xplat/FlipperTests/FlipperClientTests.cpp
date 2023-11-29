@@ -47,9 +47,9 @@ class FlipperClientTest : public ::testing::Test {
 TEST_F(FlipperClientTest, testSaneMocks) {
   FlipperConnectionManagerMock socket;
   socket.start();
-  EXPECT_TRUE(socket.isOpen());
+  EXPECT_TRUE(socket.isConnected());
   socket.stop();
-  EXPECT_FALSE(socket.isOpen());
+  EXPECT_FALSE(socket.isConnected());
 
   FlipperPluginMock plugin("Test");
   EXPECT_EQ(plugin.identifier(), "Test");
@@ -103,10 +103,10 @@ TEST_F(FlipperClientTest, testRemovePlugin) {
 
 TEST_F(FlipperClientTest, testStartStop) {
   client->start();
-  EXPECT_TRUE(socket->isOpen());
+  EXPECT_TRUE(socket->isConnected());
 
   client->stop();
-  EXPECT_FALSE(socket->isOpen());
+  EXPECT_FALSE(socket->isConnected());
 }
 
 TEST_F(FlipperClientTest, testConnectDisconnect) {

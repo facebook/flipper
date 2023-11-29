@@ -1,4 +1,5 @@
 name: Build iOS apps
+# This action runs on 'git push' and PRs to below specified paths
 on:
   push:
     paths:
@@ -21,7 +22,7 @@ jobs:
         working-directory: iOS/Sample
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install dependencies
         run: pod install --repo-update
       - name: Build Sample app
@@ -36,7 +37,7 @@ jobs:
         working-directory: iOS/SampleSwift
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install dependencies
         run: pod install --repo-update
       - name: Build SampleSwift app
@@ -51,7 +52,7 @@ jobs:
         working-directory: iOS/Tutorial
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Install dependencies
         run: pod install --repo-update
       - name: Build Tutorial app

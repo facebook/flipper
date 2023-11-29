@@ -13,6 +13,8 @@ import fetch from '@adobe/node-fetch-retry';
 // eslint-disable-next-line node/no-extraneous-import
 import type {Icon} from 'flipper-ui-core';
 
+const AVAILABLE_SIZES: Icon['size'][] = [8, 10, 12, 16, 18, 20, 24, 28, 32, 48];
+
 export type Icons = {
   [key: string]: Icon['size'][];
 };
@@ -30,69 +32,66 @@ function getIconPartsFromName(icon: string): {
 }
 
 export async function downloadIcons(buildFolder: string) {
-  const icons: Icons = JSON.parse(
+  const icons: string[] = JSON.parse(
     await fs.promises.readFile(path.join(buildFolder, 'icons.json'), {
       encoding: 'utf8',
     }),
   );
-  const iconURLs = Object.entries(icons).reduce<Icon[]>(
-    (acc, [entryName, sizes]) => {
-      const {trimmedName: name, variant} = getIconPartsFromName(entryName);
-      acc.push(
-        // get icons in @1x and @2x
-        ...sizes.map((size) => ({name, variant, size, density: 1})),
-        ...sizes.map((size) => ({name, variant, size, density: 2})),
-      );
-      return acc;
-    },
-    [],
-  );
+  const iconURLs: Pick<Icon, 'name' | 'variant'>[] = icons.map((rawName) => {
+    const {trimmedName: name, variant} = getIconPartsFromName(rawName);
+    return {name, variant};
+  });
 
-  return Promise.all(
-    iconURLs.map((icon) => {
-      const url = getPublicIconUrl(icon);
-      return fetch(url, {
-        retryOptions: {
-          retryMaxDuration: 120 * 1000,
-          // Be default, only 5xx are retried but we're getting the odd 404
-          // which goes away on a retry for some reason.
-          retryOnHttpResponse: (res) => res.status >= 400,
-          retryOnHttpError: () => true,
-        },
-      })
-        .then((res) => {
-          if (res.status !== 200) {
-            throw new Error(
-              // eslint-disable-next-line prettier/prettier
-              `Could not download the icon ${icon} from ${url}: got status ${res.status}`,
-            );
-          }
-          return res;
-        })
-        .then(
-          (res) =>
-            new Promise((resolve, reject) => {
-              const fileStream = fs.createWriteStream(
-                path.join(buildFolder, buildLocalIconPath(icon)),
-              );
-              res.body.pipe(fileStream);
-              res.body.on('error', reject);
-              fileStream.on('finish', resolve);
-            }),
-        );
+  // Download first largest instance of each icon
+  await Promise.all(
+    iconURLs.map(async (icon) => {
+      const sizesToTry = [...AVAILABLE_SIZES];
+
+      while (sizesToTry.length) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const size = sizesToTry.pop()!;
+
+        const url = getPublicIconUrl({...(icon as Icon), size});
+        const res = await fetch(url);
+        if (res.status !== 200) {
+          // console.log(
+          //   // eslint-disable-next-line prettier/prettier
+          //   `Could not download the icon ${
+          //     icon.name
+          //   } at size ${size} from ${url}: got status ${
+          //     res.status
+          //   }. Will fallback to one of the sizes: ${sizesToTry.join(' or ')}`,
+          // );
+          // not available at this size, pick the next
+          continue;
+        }
+        return new Promise((resolve, reject) => {
+          const fileStream = fs.createWriteStream(
+            path.join(buildFolder, buildLocalIconPath(icon)),
+          );
+          res.body.pipe(fileStream);
+          res.body.on('error', reject);
+          fileStream.on('finish', resolve);
+        });
+      }
+      console.error(
+        `Could not download the icon ${JSON.stringify(
+          icon,
+        )} from ${getPublicIconUrl({
+          ...icon,
+          size: AVAILABLE_SIZES[AVAILABLE_SIZES.length - 1],
+        } as Icon)}, didn't find any matching size`,
+      );
     }),
   );
 }
 
 // should match flipper-ui-core/src/utils/icons.tsx
-export function getPublicIconUrl({name, variant, size, density}: Icon) {
-  return `https://facebook.com/assets/?name=${name}&variant=${variant}&size=${size}&set=facebook_icons&density=${density}x`;
+export function getPublicIconUrl({name, variant, size}: Icon) {
+  return `https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/${name}_${variant}_${size}.png`;
 }
 
 // should match app/src/utils/icons.tsx
-function buildLocalIconPath(icon: Icon) {
-  return path.join(
-    'icons',
-    `${icon.name}-${icon.variant}-${icon.size}@${icon.density}x.png`,
-  );
+function buildLocalIconPath(icon: Pick<Icon, 'name' | 'variant'>) {
+  return path.join('icons', `${icon.name}-${icon.variant}_d.png`);
 }

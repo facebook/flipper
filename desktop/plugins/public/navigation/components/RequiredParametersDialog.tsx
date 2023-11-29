@@ -34,7 +34,7 @@ export function RequiredParametersDialog(props: Props) {
     useRequiredParameterFormValidator(requiredParameters);
   return (
     <Modal
-      visible
+      open
       onCancel={onHide}
       title="Provide bookmark details"
       footer={

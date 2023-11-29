@@ -18,13 +18,15 @@ import {
   FlipperServerState,
 } from 'flipper-common';
 import Client from '../Client';
-import {notification} from 'antd';
+import {Button, notification} from 'antd';
 import {BaseDevice} from 'flipper-frontend-core';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
 import {waitFor} from '../utils/waitFor';
 import {NotificationBody} from '../ui/components/NotificationBody';
+import {Layout} from '../ui';
+import {toggleConnectivityModal} from '../reducers/application';
 
 export function connectFlipperServerToStore(
   server: FlipperServer,
@@ -32,16 +34,17 @@ export function connectFlipperServerToStore(
   logger: Logger,
 ) {
   server.on('notification', ({type, title, description}) => {
-    const text = `[${type}] ${title}: ${description}`;
-    console.warn(text);
-    notification.open({
-      message: title,
-      description: <NotificationBody text={description} />,
-      type: type,
-      duration: 0,
-      key: text,
-    });
+    const key = `[${type}] ${title}: ${description}`;
+    showNotification(key, type, title, description);
   });
+
+  server.on(
+    'connectivity-troubleshoot-notification',
+    ({type, title, description}) => {
+      const key = `[${type}] ${title}: ${description}`;
+      showConnectivityTroubleshootNotification(store, key, title, description);
+    },
+  );
 
   server.on('server-state', handleServerStateChange);
 
@@ -49,9 +52,11 @@ export function connectFlipperServerToStore(
     if (err.code === 'EADDRINUSE') {
       handeEADDRINUSE('' + err);
     } else {
+      const text = err.message ?? err;
       notification.error({
+        key: text,
         message: 'Connection error',
-        description: <NotificationBody text={err.message ?? err} />,
+        description: <NotificationBody text={text} />,
         duration: null,
       });
     }
@@ -177,23 +182,25 @@ function handleServerStateChange({
   error?: string;
 }) {
   if (state === 'error') {
-    console.warn(`[conn] Flipper server state -> ${state}`, error);
+    console.warn(`Flipper server state -> ${state}`, error);
     if (error?.includes('EADDRINUSE')) {
       handeEADDRINUSE(error);
     } else {
       notification.error({
+        key: `server-${state}-error`,
         message: 'Failed to start flipper-server',
         description: '' + error,
         duration: null,
       });
     }
   } else {
-    console.info(`[conn] Flipper server state -> ${state}`);
+    console.info(`Flipper server state -> ${state}`);
   }
 }
 
 function handeEADDRINUSE(errorMessage: string) {
   notification.error({
+    key: 'eaddrinuse-error',
     message: 'Connection error',
     description: (
       <>
@@ -203,7 +210,7 @@ function handeEADDRINUSE(errorMessage: string) {
         <br />
         <br />
         Please try to kill the offending process by running{' '}
-        <code>kill $(lsof -ti:PORTNUMBER)</code> and restart flipper.
+        <code>sudo kill -9 $(lsof -ti:PORTNUMBER)</code> and restart flipper.
         <br />
         <br />
         {errorMessage}
@@ -273,6 +280,50 @@ export function handleDeviceDisconnected(
   existing?.connected.set(false);
 }
 
+function showNotification(
+  key: string,
+  type: 'success' | 'info' | 'error' | 'warning',
+  message: string,
+  description: string,
+) {
+  notification.open({
+    message,
+    description: <NotificationBody text={description} />,
+    type,
+    duration: 0,
+    key,
+  });
+}
+
+function showConnectivityTroubleshootNotification(
+  store: Store,
+  key: string,
+  message: string,
+  description: string,
+) {
+  notification.error({
+    key,
+    message,
+    description: (
+      <Layout.Bottom>
+        <p>{description}</p>
+        <div>
+          <Button
+            type="primary"
+            style={{float: 'right'}}
+            onClick={() => {
+              store.dispatch(toggleConnectivityModal());
+              notification.close(key);
+            }}>
+            Troubleshoot
+          </Button>
+        </div>
+      </Layout.Bottom>
+    ),
+    duration: 0,
+  });
+}
+
 export async function handleClientConnected(
   server: FlipperServer,
   store: Store,
@@ -297,21 +348,24 @@ export async function handleClientConnected(
   }
 
   console.log(
-    `[conn] Searching matching device ${query.device_id} for client ${query.app}...`,
+    `Searching matching device ${query.device_id} for client ${query.app}...`,
   );
   const device =
     getDeviceBySerial(store.getState(), query.device_id) ??
     (await findDeviceForConnection(store, query.app, query.device_id).catch(
       (e) => {
         console.warn(
-          `[conn] Failed to find device '${query.device_id}' while connection app '${query.app}'`,
+          `Failed to find device '${query.device_id}' while connection app '${query.app}'`,
           e,
         );
-        notification.error({
-          message: 'Connection failed',
-          description: `Failed to find device '${query.device_id}' while trying to connect app '${query.app}'`,
-          duration: 0,
-        });
+        const key = `device-find-failure-${query.device_id}`;
+        showConnectivityTroubleshootNotification(
+          store,
+          key,
+          'Connection failed',
+          `Failed to find device '${query.device_id}' while trying to
+        connect app '${query.app}'`,
+        );
       },
     ));
 
@@ -324,7 +378,9 @@ export async function handleClientConnected(
     query,
     {
       send(data: any) {
-        server.exec('client-request', id, data);
+        server.exec('client-request', id, data).catch((e) => {
+          console.warn(e);
+        });
       },
       async sendExpectResponse(data: any) {
         return await server.exec('client-request-response', id, data);
@@ -352,19 +408,17 @@ export async function handleClientConnected(
     await timeout(
       30 * 1000,
       client.init(),
-      `[conn] Failed to initialize client ${query.app} on ${query.device_id} in a timely manner`,
+      `Failed to initialize client ${query.app} on ${query.device_id} in a timely manner`,
     );
-    console.log(
-      `[conn] ${query.app} on ${query.device_id} connected and ready.`,
-    );
+    console.log(`${query.app} on ${query.device_id} connected and ready.`);
   } catch (e) {
     if (e instanceof NoLongerConnectedToClientError) {
       console.warn(
-        `[conn] Client ${query.app} on ${query.device_id} disconnected while initialising`,
+        `Client ${query.app} on ${query.device_id} disconnected while initialising`,
       );
       return;
     }
-    throw e;
+    console.warn(`Failed to handle client connected: ${e}`);
   }
 }
 
@@ -409,7 +463,7 @@ async function findDeviceForConnection(
             (device) => device.serial === serial,
           );
           if (matchingDevice) {
-            console.log(`[conn] Found device for: ${clientId} on ${serial}.`);
+            console.log(`Found device for: ${clientId} on ${serial}.`);
             clearTimeout(timeout);
             resolve(matchingDevice);
             unsubscribe();

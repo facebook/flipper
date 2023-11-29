@@ -58,30 +58,32 @@ export abstract class ServerDevice {
   }
 
   async startScreenCapture(_destination: string): Promise<void> {
-    throw new Error('startScreenCapture not implemented on BaseDevice ');
+    throw new Error('startScreenCapture not implemented');
   }
 
   async stopScreenCapture(): Promise<string> {
-    throw new Error('stopScreenCapture not implemented on BaseDevice ');
+    throw new Error('stopScreenCapture not implemented');
   }
 
   async executeShell(_command: string): Promise<string> {
-    throw new Error('executeShell not implemented on BaseDevice');
+    throw new Error('executeShell not implemented');
   }
 
   async forwardPort(_local: string, _remote: string): Promise<boolean> {
-    throw new Error('forwardPort not implemented on BaseDevice');
+    throw new Error('forwardPort not implemented');
   }
 
-  async clearLogs(): Promise<void> {
-    // no-op on most devices
-  }
+  async clearLogs(): Promise<void> {}
 
   async navigateToLocation(_location: string) {
-    throw new Error('navigateLocation not implemented on BaseDevice');
+    throw new Error('navigateLocation not implemented');
   }
 
   async installApp(_appBundlePath: string): Promise<void> {
-    throw new Error('Install not implemented');
+    throw new Error('installApp not implemented');
+  }
+
+  async openApp(_name: string): Promise<void> {
+    throw new Error('openApp not implemented');
   }
 }

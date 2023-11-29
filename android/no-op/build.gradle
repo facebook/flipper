@@ -8,6 +8,7 @@
 apply plugin: 'com.android.library'
 
 android {
+    namespace 'com.facebook.flipper.noop'
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
@@ -30,10 +31,3 @@ android {
 }
 
 apply plugin: 'com.vanniktech.maven.publish'
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-artifacts.add('archives', sourcesJar)

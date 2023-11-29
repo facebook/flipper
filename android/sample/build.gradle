@@ -5,12 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
 
 android {
+    namespace 'com.facebook.flipper.sample'
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
     ndkVersion rootProject.ndkVersion
+
     defaultConfig {
         minSdkVersion 21
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -34,9 +39,16 @@ android {
         }
     }
 
-    compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.6"
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 
     packagingOptions {
@@ -59,13 +71,26 @@ dependencies {
     implementation deps.lithoWidget
     implementation deps.lithoAnnotations
     implementation deps.lithoFresco
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     annotationProcessor deps.lithoProcessor
+
+    // Compose
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.activity:activity-ktx:1.8.0'
+    implementation 'androidx.compose.runtime:runtime:1.5.4'
+    implementation 'androidx.activity:activity-compose:1.8.0'
+    implementation 'androidx.compose.ui:ui:1.5.4'
+    implementation 'androidx.compose.material3:material3:1.1.2'
+    implementation 'androidx.compose.ui:ui-tooling:1.5.4'
+    implementation 'androidx.compose.ui:ui-tooling-preview:1.5.4'
 
     // Third-party
     implementation deps.soloader
     implementation deps.okhttp3
     implementation deps.fresco
+    implementation deps.frescoUiCommon
+    implementation deps.frescoVito
+    implementation deps.frescoVitoLitho
+    implementation deps.inferAnnotations
     debugImplementation deps.flipperFrescoPlugin
 
     // Integration test
@@ -81,5 +106,6 @@ dependencies {
     debugImplementation project(':android')
     debugImplementation project(':network-plugin')
     debugImplementation project(':litho-plugin')
+    debugImplementation project(':jetpack-compose-plugin')
     releaseImplementation project(':noop')
 }

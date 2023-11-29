@@ -104,7 +104,7 @@ type TableRowProps<T> = {
   style?: CSSProperties;
 };
 
-export const TableRow = memo(function TableRow<T>({
+export const TableRow = memo(function TableRow<T extends object>({
   record,
   itemIndex,
   highlighted,
@@ -155,7 +155,7 @@ export const TableRow = memo(function TableRow<T>({
   }
 });
 
-export function renderColumnValue<T>(
+export function renderColumnValue<T extends object>(
   col: DataTableColumn<any>,
   record: T,
   highlighted: boolean,

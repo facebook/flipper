@@ -11,9 +11,13 @@ import {
   FlipperServer,
   FlipperServerConfig,
   isProduction,
+  uuid,
   wrapRequire,
 } from 'flipper-common';
 import type {RenderHost} from 'flipper-ui-core';
+import FileSaver from 'file-saver';
+
+import {Base64} from 'js-base64';
 
 declare module globalThis {
   let require: any;
@@ -30,26 +34,118 @@ globalThis.require = wrapRequire((module: string) => {
   );
 });
 
+type FileEncoding = 'utf-8' | 'base64' | 'binary';
+interface FileDescriptor {
+  data: string | Uint8Array | undefined;
+  name: string;
+  encoding: FileEncoding;
+}
+
 export function initializeRenderHost(
   flipperServer: FlipperServer,
   flipperServerConfig: FlipperServerConfig,
 ) {
   FlipperRenderHostInstance = {
-    readTextFromClipboard() {
-      // TODO:
-      return undefined;
+    async readTextFromClipboard() {
+      return await navigator.clipboard.readText();
     },
-    writeTextToClipboard(_text: string) {
-      // TODO:
+    writeTextToClipboard(text: string) {
+      return navigator.clipboard.writeText(text);
     },
-    async importFile() {
-      throw new Error('Not implemented');
+    async importFile(options?: {
+      defaultPath?: string;
+      extensions?: string[];
+      title?: string;
+      encoding?: FileEncoding;
+      multi?: false;
+    }) {
+      return new Promise<FileDescriptor | FileDescriptor[] | undefined>(
+        (resolve, reject) => {
+          try {
+            let selectionMade = false;
+
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.id = uuid();
+            if (options?.extensions) {
+              fileInput.accept = options?.extensions.join(', ');
+            }
+            fileInput.multiple = options?.multi ?? false;
+
+            fileInput.addEventListener('change', async (event) => {
+              selectionMade = true;
+              const target = event.target as HTMLInputElement | undefined;
+              if (!target || !target.files) {
+                resolve(undefined);
+                return;
+              }
+
+              const files: File[] = Array.from(target.files);
+              const descriptors: FileDescriptor[] = await Promise.all(
+                files.map(async (file) => {
+                  switch (options?.encoding) {
+                    case 'base64': {
+                      const bytes = new Uint8Array(await file.arrayBuffer());
+                      const base64Content = Base64.fromUint8Array(bytes);
+                      return {
+                        data: base64Content,
+                        name: file.name,
+                        encoding: 'base64',
+                      };
+                    }
+                    case 'binary':
+                      return {
+                        data: new Uint8Array(await file.arrayBuffer()),
+                        name: file.name,
+                        encoding: 'binary',
+                      };
+                    default:
+                      return {
+                        data: await file.text(),
+                        name: file.name,
+                        encoding: 'utf-8',
+                      };
+                  }
+                }),
+              );
+              resolve(options?.multi ? descriptors : descriptors[0]);
+            });
+
+            window.addEventListener(
+              'focus',
+              () => {
+                setTimeout(() => {
+                  if (!selectionMade) {
+                    resolve(undefined);
+                  }
+                }, 300);
+              },
+              {once: true},
+            );
+
+            fileInput.click();
+          } catch (error) {
+            reject(error);
+          }
+        },
+      );
     },
-    async exportFile() {
-      throw new Error('Not implemented');
+    async exportFile(data: string, {defaultPath}: {defaultPath?: string}) {
+      const file = new File([data], defaultPath ?? 'unknown', {
+        type: 'text/plain;charset=utf-8',
+      });
+      FileSaver.saveAs(file);
+      return defaultPath;
     },
-    async exportFileBinary() {
-      throw new Error('Not implemented');
+    async exportFileBinary(
+      data: Uint8Array,
+      {defaultPath}: {defaultPath?: string},
+    ) {
+      const file = new File([data], defaultPath ?? 'unknown', {
+        type: 'application/octet-stream',
+      });
+      FileSaver.saveAs(file);
+      return defaultPath;
     },
     openLink(url: string) {
       window.open(url, '_blank');
@@ -57,11 +153,13 @@ export function initializeRenderHost(
     hasFocus() {
       return document.hasFocus();
     },
-    onIpcEvent(_event) {
-      // no-op
+    onIpcEvent(event, cb) {
+      window.addEventListener(event as string, (ev) => {
+        cb(...((ev as CustomEvent).detail as any));
+      });
     },
-    sendIpcEvent(_event, ..._args: any[]) {
-      // no-op
+    sendIpcEvent(event, ...args: any[]) {
+      window.dispatchEvent(new CustomEvent(event, {detail: args}));
     },
     shouldUseDarkColors() {
       return !!(
@@ -71,9 +169,7 @@ export function initializeRenderHost(
       );
     },
     restartFlipper() {
-      window.flipperShowError!(
-        'Flipper settings have changed, please restart flipper server for the changes to take effect',
-      );
+      flipperServer.exec('shutdown');
     },
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {
@@ -107,7 +203,7 @@ export function initializeRenderHost(
     },
     getLocalIconUrl(icon, url) {
       if (isProduction()) {
-        return `icons/${icon.name}-${icon.variant}-${icon.size}@${icon.density}x.png`;
+        return `icons/${icon.name}-${icon.variant}_d.png`;
       }
       return url;
     },

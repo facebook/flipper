@@ -368,10 +368,6 @@ function stopPlugin(
       !defaultEnabledBackgroundPlugins.includes(pluginId)) &&
     client?.isBackgroundPlugin(pluginId)
   ) {
-    // Debugging T141716711
-    if (pluginId === 'Msys') {
-      console.log('pluginManager.stopPlugin -> deinit Msys');
-    }
     client.deinitPlugin(pluginId);
   }
   // stop sandy plugins

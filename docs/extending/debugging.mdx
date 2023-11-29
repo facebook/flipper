@@ -42,4 +42,6 @@ Click on 'Plugin now showing' in the sidebar and see if your plugin is now liste
 
 A common error here is `Error: fsevents unavailable (this watcher can only be used on Darwin)`. This can be fixed by installing watchman (`brew install watchman`).
 
+## Print debugging
+Add console.log("test phrase %", object) and then search the developer tools log in Flipper to find what the value of the object is.
 If the plugin is listed in the desktop app, but still is not showing up in the sidebar, the mobile app is not announcing the plugin. In this case, make sure to instantiate your plugin and add it to your FlipperClient.

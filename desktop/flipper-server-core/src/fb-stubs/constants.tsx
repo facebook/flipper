@@ -8,3 +8,4 @@
  */
 
 export const isFBBuild: boolean = false;
+export const GRAPH_SECRET = '';

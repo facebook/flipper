@@ -20,6 +20,8 @@ export {
   setLoggerInstance,
   NoopLogger,
 } from './utils/Logger';
+export * from './utils/LoggerTailer';
+export * from './utils/ScribeLogger';
 export * from './server-types';
 export * from './companion-types';
 export * from './ServerAddOn';
@@ -52,6 +54,7 @@ export {
   isConnectivityOrAuthError,
   isError,
   isAuthError,
+  FlipperServerDisconnectedError,
   getStringFromErrorLike,
   getErrorFromErrorLike,
   deserializeRemoteError,

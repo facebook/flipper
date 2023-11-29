@@ -36,7 +36,9 @@ object MetadataRegister {
       name: String,
       mutable: Boolean = false,
       possibleValues: Set<InspectableValue>? = null,
-      customAttributes: Map<String, JsonPrimitive>? = null
+      customAttributes: Map<String, JsonPrimitive>? = null,
+      minValue: Int? = null,
+      maxValue: Int? = null
   ): MetadataId {
     val key = key(namespace, name)
     register[key]?.let { m ->
@@ -46,7 +48,16 @@ object MetadataRegister {
     synchronized(lock) {
       val identifier = ++generator
       val metadata =
-          Metadata(identifier, type, namespace, name, mutable, possibleValues, customAttributes)
+          Metadata(
+              identifier,
+              type,
+              namespace,
+              name,
+              mutable,
+              possibleValues,
+              customAttributes,
+              minValue,
+              maxValue)
 
       register[key] = metadata
       pendingKeys.add(key)
@@ -59,6 +70,8 @@ object MetadataRegister {
     val key = key(namespace, name)
     return register[key]
   }
+
+  fun get(id: MetadataId): Metadata? = register.values.find { metadata -> metadata.id == id }
 
   /** gets all pending metadata to be sent and resets the pending list */
   fun extractPendingMetadata(): Map<MetadataId, Metadata> {

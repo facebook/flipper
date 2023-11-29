@@ -171,21 +171,21 @@ static constexpr int connectionKeepaliveSeconds = 10;
   }
   _keepAlive = nil;
 
-  if (_socket) {
-    // Clear the socket delegate before close. Ensures that we won't get
-    // any messages after the disconnect takes place.
-    [_socket setDelegate:nil];
-    [_socket close];
-    _socket = nil;
-  };
+  __weak auto weakSelf = self;
+  NSBlockOperation* disconnectOperation =
+      [NSBlockOperation blockOperationWithBlock:^{
+        __strong auto strongSelf = weakSelf;
+        // Clear the socket delegate before close. Ensures that we won't get
+        // any messages after the disconnect takes place.
+        if (strongSelf->_socket) {
+          [strongSelf->_socket setDelegate:nil];
+          [strongSelf->_socket close];
 
-  [_dispatchQueue cancelAllOperations];
-  [_dispatchQueue waitUntilAllOperationsAreFinished];
+          strongSelf->_socket = nil;
+        }
+      }];
 
-  // Manually trigger a 'close' event as SocketRocket close method will
-  // not notify the delegate. SocketRocket only triggers the close event
-  // when the connection is closed from the server.
-  _eventHandler(facebook::flipper::SocketEvent::CLOSE);
+  [_dispatchQueue addOperations:@[ disconnectOperation ] waitUntilFinished:YES];
 }
 
 - (void)send:(NSString*)message

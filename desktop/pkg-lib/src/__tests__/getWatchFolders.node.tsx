@@ -99,12 +99,13 @@ describe('getWatchFolders', () => {
     };
     const readReadJson = fs.readJson;
     try {
+      // @ts-expect-error readJson is read only and it is fine, this is a test
       fs.readJson = readJsonMock as any;
       const resolvedFolders = await getWatchFolders(
         path.join(rootDir, 'local_module_2'),
       );
       expect(resolvedFolders.map(normalizePath)).toMatchInlineSnapshot(`
-        Array [
+        [
           "/test/root/local_module_2",
           "/test/root/node_modules",
           "/test/root/plugins/fb/fb_plugin_module_1",
@@ -115,6 +116,7 @@ describe('getWatchFolders', () => {
         ]
       `);
     } finally {
+      // @ts-expect-error readJson is read only and it is fine, this is a test
       fs.readJson = readReadJson;
     }
   });

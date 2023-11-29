@@ -7,12 +7,15 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import android.graphics.Typeface
 import android.os.Build
 import android.widget.TextView
+import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.Color
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 
 object TextViewDescriptor : ChainedDescriptor<TextView>() {
@@ -22,27 +25,35 @@ object TextViewDescriptor : ChainedDescriptor<TextView>() {
   private var SectionId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, NAMESPACE)
   private val TextAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "text")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "text", mutable = true)
   private val TextSizeAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textSize")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textSize", mutable = true, minValue = 0)
   private val TextColorAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textColor")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textColor", mutable = true)
   private val IsBoldAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isBold")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isBold", mutable = true)
   private val IsItalicAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isItalic")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isItalic", mutable = true)
   private val WeightAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "weight")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "weight", minValue = 0)
   private val TypefaceAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "typeface")
   private val MinLinesAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minLines")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minLines", mutable = true, minValue = 0)
   private val MaxLinesAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxLines")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxLines", mutable = true)
   private val MinWidthAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minWidth")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minWidth", mutable = true, minValue = 0)
   private val MaxWidthAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxWidth")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxWidth", mutable = true)
 
   override fun onGetName(node: TextView): String = node.javaClass.simpleName
 
@@ -81,5 +92,35 @@ object TextViewDescriptor : ChainedDescriptor<TextView>() {
     }
 
     attributeSections[SectionId] = InspectableObject(props)
+  }
+
+  override fun onEditAttribute(
+      node: TextView,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {
+    if (metadataPath.first().id != SectionId) {
+      return
+    }
+
+    when (metadataPath.last().id) {
+      TextAttributeId -> node.text = value.asString()
+      TextSizeAttributeId ->
+          node.textSize = value.asFloat() / node.context.resources.displayMetrics.density
+      MinLinesAttributeId -> node.minLines = value.asInt()
+      MaxLinesAttributeId -> node.maxLines = value.asInt()
+      MinWidthAttributeId -> node.minWidth = value.asInt()
+      MaxWidthAttributeId -> node.maxWidth = value.asInt()
+      // technically one overwrites the other but oh well
+      IsBoldAttributeId ->
+          node.typeface =
+              Typeface.create(
+                  node.typeface, if (value.asBoolean()) Typeface.BOLD else Typeface.NORMAL)
+      IsItalicAttributeId ->
+          node.typeface =
+              Typeface.create(
+                  node.typeface, if (value.asBoolean()) Typeface.ITALIC else Typeface.NORMAL)
+    }
   }
 }

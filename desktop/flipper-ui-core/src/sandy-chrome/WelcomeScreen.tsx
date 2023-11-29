@@ -110,7 +110,7 @@ export default function WelcomeScreen({
     <Modal
       centered
       closable={false}
-      visible={visible}
+      open={visible}
       footer={
         <WelcomeFooter
           onClose={onClose}
@@ -157,7 +157,11 @@ function WelcomeScreenContent() {
           }}
           width={125}
           height={125}
-          src="./icon.png"
+          src={
+            process.env.FLIPPER_REACT_NATIVE_ONLY
+              ? './icon-rn-only.png'
+              : './icon.png'
+          }
           preview={false}
         />
         <Title level={1}>Welcome to Flipper</Title>

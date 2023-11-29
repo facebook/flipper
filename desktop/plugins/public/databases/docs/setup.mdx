@@ -21,7 +21,7 @@ client.addPlugin(new DatabasesFlipperPlugin(new SqliteDatabaseDriver(context, ne
         for (String databaseName : context.databaseList()) {
             databaseFiles.add(context.getDatabasePath(databaseName));
         }
-        databaseFiles.add("...path_to_your_db...")
+        databaseFiles.add("...path_to_your_db...");
         return databaseFiles;
     }
 })));

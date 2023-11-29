@@ -8,8 +8,8 @@
 package com.facebook.flipper.plugins.uidebugger
 
 import android.view.View
-import com.facebook.flipper.plugins.uidebugger.common.EnumMapping
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.util.EnumMapping
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test

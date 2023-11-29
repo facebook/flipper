@@ -32,12 +32,12 @@ import {
 import {CreatePasteArgs, CreatePasteResult} from './Paste';
 import {Atom} from '../state/atom';
 
-export type FileEncoding = 'utf-8' | 'base64';
+export type FileEncoding = 'utf-8' | 'base64' | 'binary';
 
 export interface FileDescriptor {
-  data: string;
+  data: string | Uint8Array | undefined;
   name: string;
-  path?: string;
+  encoding: FileEncoding;
 }
 
 export interface DownloadFileResponse extends DownloadFileStartResponse {
@@ -202,10 +202,14 @@ export interface FlipperLib {
   };
   environmentInfo: {
     os: EnvironmentInfo['os'];
+    isHeadlessBuild: EnvironmentInfo['isHeadlessBuild'];
     env: Partial<Record<ENVIRONMENT_VARIABLES, string>>;
   };
   remoteServerContext: RemoteServerContext;
   intern: InternAPI;
+  settings: () => {
+    isDarkMode: boolean;
+  };
 }
 
 interface InternAPI {

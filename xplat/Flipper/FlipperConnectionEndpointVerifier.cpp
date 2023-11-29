@@ -6,15 +6,56 @@
  */
 
 #include "FlipperConnectionEndpointVerifier.h"
-#include <netdb.h>
 #include <stdio.h>
+
+#ifdef _MSC_VER /* MSVC */
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#define getsockopt(a, b, c, d, e) getsockopt(a, b, c, (char*)d, e)
+typedef int socklen_t;
+
+#else /* !_WIN32 */
+
+#include <netdb.h>
 #include <sys/fcntl.h>
 #include <sys/socket.h>
 #include <unistd.h>
+using SOCKET = int;
+#endif
+
 #include <cstring>
 
 namespace facebook {
 namespace flipper {
+
+static bool setSocketNonBlocking(SOCKET socket) {
+#ifndef _WIN32
+  int flags = fcntl(socket, F_GETFL, 0);
+  if (flags < 0) {
+    return false;
+  }
+  return (fcntl(socket, F_SETFL, flags | O_NONBLOCK) == 0);
+#else
+  // If nonBlocking = 0, blocking is enabled;
+  // If nonBlocking != 0, non-blocking mode is enabled.
+  u_long nonBlocking = 1;
+  int32_t nonBlockResult = ioctlsocket(socket, FIONBIO, &nonBlocking);
+  if (nonBlockResult != 0) {
+    return false;
+  } else {
+    return true;
+  }
+#endif
+}
+
+static void closeSocket(SOCKET socket) {
+#ifndef _WIN32
+  close(socket);
+#else
+  closesocket(socket);
+#endif
+}
 
 bool ConnectionEndpointVerifier::verify(const std::string& host, int port) {
   auto sport = std::to_string(port);
@@ -31,7 +72,7 @@ bool ConnectionEndpointVerifier::verify(const std::string& host, int port) {
   int sfd =
       socket(address->ai_family, address->ai_socktype, address->ai_protocol);
 
-  fcntl(sfd, F_SETFL, O_NONBLOCK);
+  setSocketNonBlocking(sfd);
   connect(sfd, address->ai_addr, address->ai_addrlen);
 
   fd_set fdset;
@@ -58,7 +99,7 @@ bool ConnectionEndpointVerifier::verify(const std::string& host, int port) {
   }
 
   freeaddrinfo(address);
-  close(sfd);
+  closeSocket(sfd);
 
   return listening;
 }

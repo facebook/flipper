@@ -11,7 +11,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import {getIconURL} from '../../utils/icons';
 
-export type IconSize = 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32;
+export type IconSize = 8 | 10 | 12 | 16 | 18 | 20 | 24 | 28 | 32 | 48;
 
 const ColoredIconBlack = styled.img<{size: number}>(({size}) => ({
   height: size,
@@ -94,7 +94,7 @@ function ColoredIcon(
 }
 ColoredIcon.displayName = 'Glyph:ColoredIcon';
 
-export default class Glyph extends React.PureComponent<{
+export default function Glyph(props: {
   name: string;
   size?: IconSize;
   variant?: 'filled' | 'outline';
@@ -102,33 +102,22 @@ export default class Glyph extends React.PureComponent<{
   color?: string;
   style?: React.CSSProperties;
   title?: string;
-}> {
-  render() {
-    const {
-      name,
-      size = 16,
-      variant,
-      color,
-      className,
-      style,
-      title,
-    } = this.props;
+}) {
+  const {name, size = 16, variant, color, className, style, title} = props;
 
-    return (
-      <ColoredIcon
-        name={name}
-        className={className}
-        color={color}
-        size={size}
-        title={title}
-        src={getIconURL({
-          name,
-          variant: variant ?? 'filled',
-          size,
-          density: typeof window !== 'undefined' ? window.devicePixelRatio : 1,
-        })}
-        style={style}
-      />
-    );
-  }
+  return (
+    <ColoredIcon
+      name={name}
+      className={className}
+      color={color}
+      size={size}
+      title={title}
+      src={getIconURL({
+        name,
+        variant: variant ?? 'filled',
+        size,
+      })}
+      style={style}
+    />
+  );
 }

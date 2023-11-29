@@ -34,6 +34,7 @@ export const theme = {
   buttonDefaultBackground: 'var(--flipper-button-default-background)',
   backgroundTransparentHover: 'var(--flipper-background-transparent-hover)',
   dividerColor: 'var(--flipper-divider-color)',
+  borderColor: 'var(--flipper-border-color)',
   borderRadius: 'var(--flipper-border-radius)',
   containerBorderRadius: 8,
   inlinePaddingV: 6, // vertical padding on inline elements like buttons

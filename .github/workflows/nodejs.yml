@@ -1,25 +1,21 @@
 name: Desktop Node CI
-
+# This action run on 'git push' and PRs
 on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
-
     env:
       desktop-directory: ./desktop
-
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x]
+        node-version: [18.x]
         os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
-
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3.6.0
       with:
         node-version: ${{ matrix.node-version }}
     - name: Get yarn cache directory path
@@ -64,25 +60,25 @@ jobs:
       run: yarn build --win
       working-directory: ${{env.desktop-directory}}
     - name: upload linux artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3.1.2
       if: matrix.os == 'ubuntu-latest'
       with:
         name: Flipper-linux.zip
         path: dist/Flipper-linux.zip
     - name: upload windows artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3.1.2
       if: matrix.os == 'windows-latest'
       with:
         name: Flipper-win.zip
         path: dist/Flipper-win.zip
     - name: upload mac zip artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3.1.2
       if: matrix.os == 'macos-latest'
       with:
         name: Flipper-mac.zip
         path: dist/Flipper-mac.zip
     - name: upload mac dmg artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3.1.2
       if: matrix.os == 'macos-latest'
       with:
         name: Flipper-mac.dmg

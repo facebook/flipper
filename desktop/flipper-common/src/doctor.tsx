@@ -64,14 +64,28 @@ export namespace FlipperDoctor {
     ) => Promise<HealthcheckRunResult>;
   };
 
+  export type CliCommand = {
+    title: string;
+    command: string;
+  };
+
   export type HealthcheckRunResult = {
     hasProblem: boolean;
     message: string;
+    /**
+     * Commands to show to mitigate a problem or hint for more information
+     */
+    commands?: CliCommand[];
   };
 
-  export type SubprocessHealtcheckRunResult = HealthcheckRunResult & {
-    stdout?: string;
-  };
+  export type SubprocessHealtcheckRunResult =
+    | (HealthcheckRunResult & {
+        hasProblem: true;
+      })
+    | (HealthcheckRunResult & {
+        hasProblem: false;
+        stdout: string;
+      });
 
   export type CategoryResult = [
     string,
@@ -99,6 +113,7 @@ export namespace FlipperDoctor {
     status: HealthcheckStatus;
     isAcknowledged?: boolean;
     message?: string;
+    commands?: CliCommand[];
   };
 
   export type HealthcheckReportItem = {

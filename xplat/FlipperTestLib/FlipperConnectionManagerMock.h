@@ -19,21 +19,21 @@ class FlipperConnectionManagerMock : public FlipperConnectionManager {
   FlipperConnectionManagerMock() : callbacks(nullptr) {}
 
   void start() override {
-    open = true;
+    connected = true;
     if (callbacks) {
       callbacks->onConnected();
     }
   }
 
   void stop() override {
-    open = false;
+    connected = false;
     if (callbacks) {
       callbacks->onDisconnected();
     }
   }
 
-  bool isOpen() const override {
-    return open;
+  bool isConnected() const override {
+    return connected;
   }
 
   void sendMessage(const folly::dynamic& message) override {
@@ -77,7 +77,7 @@ class FlipperConnectionManagerMock : public FlipperConnectionManager {
   }
 
  public:
-  bool open = false;
+  bool connected = false;
   Callbacks* callbacks;
   std::vector<folly::dynamic> messages;
   std::vector<folly::dynamic> messagesReceived;

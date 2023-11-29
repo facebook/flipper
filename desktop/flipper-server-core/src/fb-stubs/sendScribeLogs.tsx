@@ -7,6 +7,8 @@
  * @format
  */
 
+import {ScribeMessage} from 'flipper-common';
+
 export async function sendScribeLogs(
-  _messages: {category: string; message: string}[],
+  _messages: ScribeMessage[],
 ): Promise<void> {}

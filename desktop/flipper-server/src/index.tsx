@@ -16,17 +16,23 @@ import {attachDevServer} from './attachDevServer';
 import {initializeLogger} from './logger';
 import fs from 'fs-extra';
 import yargs from 'yargs';
-import open from 'open';
+import os from 'os';
 import {initCompanionEnv} from 'flipper-server-companion';
 import {
+  UIPreference,
+  checkPortInUse,
+  checkServerRunning,
   getEnvironmentInfo,
+  openUI,
+  setupPrefetcher,
+  shutdownRunningInstance,
   startFlipperServer,
   startServer,
+  tracker,
+  processExit,
 } from 'flipper-server-core';
-import {isTest} from 'flipper-common';
+import {addLogTailer, isTest, LoggerFormat} from 'flipper-common';
 import exitHook from 'exit-hook';
-import {getAuthToken} from 'flipper-server-core';
-import {findInstallation} from './findInstallation';
 
 const argv = yargs
   .usage('yarn flipper-server [args]')
@@ -64,34 +70,79 @@ const argv = yargs
       type: 'boolean',
       default: true,
     },
-    tcp: {
-      describe:
-        'Open a TCP port (--no-tcp can be specified as to use unix-domain-socket exclusively)',
-      type: 'boolean',
-      default: true,
-    },
   })
   .version('DEV')
   .help()
   .parse(process.argv.slice(1));
 
 console.log(
-  `Starting flipper server with ${
+  `[flipper-server] Starting flipper server with ${
     argv.bundler ? 'UI bundle from source' : 'pre-bundled UI'
   }`,
 );
 
+/**
+ * When running as a standlone app not run from the terminal, the process itself
+ * doesn't inherit the user's terminal PATH environment variable.
+ * The PATH, when NOT launched from terminal is `/usr/bin:/bin:/usr/sbin:/sbin`
+ * which is missing `/usr/local/bin`.
+ */
+if (os.platform() !== 'win32') {
+  process.env.PATH = '/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin';
+}
+
 const rootPath = argv.bundler
   ? path.resolve(__dirname, '..', '..')
-  : path.resolve(__dirname, '..'); // in pre packaged versions of the server, static is copied inside the package
+  : path.resolve(__dirname, '..'); // In pre-packaged versions of the server, static is copied inside the package.
 const staticPath = path.join(rootPath, 'static');
 
+const t0 = performance.now();
+
+const browserConnectionTimeout = setTimeout(() => {
+  tracker.track('browser-connection-created', {
+    successful: false,
+    timeMS: performance.now() - t0,
+    timedOut: true,
+  });
+}, 10000);
+let reported = false;
+const reportBrowserConnection = (successful: boolean) => {
+  if (reported) {
+    return;
+  }
+  clearTimeout(browserConnectionTimeout);
+  reported = true;
+  tracker.track('browser-connection-created', {
+    successful,
+    timeMS: performance.now() - t0,
+    timedOut: false,
+  });
+};
+
 async function start() {
-  const enhanceLogger = await initializeLogger(staticPath);
+  const isProduction =
+    process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
+  const environmentInfo = await getEnvironmentInfo(
+    rootPath,
+    isProduction,
+    true,
+  );
+
+  await initializeLogger(environmentInfo, staticPath);
+
+  const t1 = performance.now();
+  const loggerInitializedMS = t1 - t0;
+  console.info(
+    `[flipper-server][bootstrap] Logger initialised (${loggerInitializedMS} ms)`,
+  );
 
   let keytar: any = undefined;
   try {
-    if (!isTest()) {
+    if (process.env.FLIPPER_DISABLE_KEYTAR) {
+      console.log(
+        '[flipper-server][bootstrap] Using keytar in-memory implementation as per FLIPPER_DISABLE_KEYTAR env var.',
+      );
+    } else if (!isTest()) {
       const keytarPath = path.join(
         staticPath,
         'native-modules',
@@ -105,23 +156,56 @@ async function start() {
       keytar = electronRequire(keytarPath);
     }
   } catch (e) {
-    console.error('Failed to load keytar:', e);
+    console.error('[flipper-server] Failed to load keytar:', e);
   }
 
-  const {app, server, socket, readyForIncomingConnections} = await startServer({
-    staticPath,
-    entry: `index.web${argv.bundler ? '.dev' : ''}.html`,
-    port: argv.port,
-    tcp: argv.tcp,
-  });
+  const t2 = performance.now();
+  const keytarLoadedMS = t2 - t1;
+  console.info(
+    `[flipper-server][bootstrap] Keytar loaded (${keytarLoadedMS} ms)`,
+  );
 
-  const isProduction =
-    process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
+  console.info('[flipper-server] Check for running instances');
+  const existingRunningInstanceVersion = await checkServerRunning(argv.port);
+  if (existingRunningInstanceVersion) {
+    console.info(
+      `[flipper-server] Running instance found with version: ${existingRunningInstanceVersion}, current version: ${environmentInfo.appVersion}`,
+    );
+    console.info(`[flipper-server] Shutdown running instance`);
+    const success = await shutdownRunningInstance(argv.port);
+    console.info(
+      `[flipper-server] Shutdown running instance acknowledged: ${success}`,
+    );
+  } else {
+    console.info('[flipper-server] Checking if port is in use (TCP)');
+    if (await checkPortInUse(argv.port)) {
+      const success = await shutdownRunningInstance(argv.port);
+      console.info(
+        `[flipper-server] Shutdown running instance acknowledged: ${success}`,
+      );
+    }
+  }
 
-  const environmentInfo = await getEnvironmentInfo(
-    rootPath,
-    isProduction,
-    true,
+  const t3 = performance.now();
+  const runningInstanceShutdownMS = t3 - t2;
+  console.info(
+    `[flipper-server][bootstrap] Check for running instances completed (${runningInstanceShutdownMS} ms)`,
+  );
+
+  const {app, server, socket, readyForIncomingConnections} = await startServer(
+    {
+      staticPath,
+      entry: `index.web.html`,
+      port: argv.port,
+    },
+    environmentInfo,
+  );
+
+  const t4 = performance.now();
+  const httpServerStartedMS = t4 - t3;
+
+  console.info(
+    `[flipper-server][bootstrap] HTTP server started (${httpServerStartedMS} ms)`,
   );
 
   const flipperServer = await startFlipperServer(
@@ -134,41 +218,118 @@ async function start() {
     environmentInfo,
   );
 
+  flipperServer.once('browser-connection-created', () => {
+    reportBrowserConnection(true);
+  });
+
+  const t5 = performance.now();
+  const serverCreatedMS = t5 - t4;
+  console.info(
+    `[flipper-server][bootstrap] FlipperServer created (${serverCreatedMS} ms)`,
+  );
+
+  // At this point, the HTTP server is ready and configuration is set.
+  await launch();
+
+  if (!isProduction) {
+    addLogTailer((level, ...data) => {
+      flipperServer.emit('server-log', LoggerFormat(level, ...data));
+    });
+  }
+
+  const t6 = performance.now();
+  const launchedMS = t6 - t5;
+
   exitHook(async () => {
+    console.log('[flipper-server] Shutdown Flipper server');
     await flipperServer.close();
   });
 
-  enhanceLogger((logEntry) => {
-    flipperServer.emit('server-log', logEntry);
-  });
-
   const companionEnv = await initCompanionEnv(flipperServer);
+
+  const t7 = performance.now();
+  const companionEnvironmentInitializedMS = t7 - t6;
+
+  console.info(
+    `[flipper-server][bootstrap] Companion environment initialised (${companionEnvironmentInitializedMS} ms)`,
+  );
+
   if (argv.failFast) {
     flipperServer.on('server-state', ({state}) => {
       if (state === 'error') {
         console.error(
-          '[flipper-server-process-exit] state changed to error, process will exit.',
+          '[flipper-server] state changed to error, process will exit.',
         );
-        process.exit(1);
+        processExit(1);
       }
     });
   }
-  await flipperServer.connect();
+  await flipperServer
+    .connect()
+    .catch((e) => console.warn('Flipper Server failed to initialize', e));
+
+  const t8 = performance.now();
+  const appServerStartedMS = t8 - t7;
+  console.info(
+    `[flipper-server][bootstrap] Ready for app connections (${appServerStartedMS} ms)`,
+  );
 
   if (argv.bundler) {
     await attachDevServer(app, server, socket, rootPath);
   }
-  await readyForIncomingConnections(flipperServer, companionEnv);
 
-  return flipperServer;
+  const t9 = performance.now();
+  const developmentServerAttachedMS = t9 - t8;
+  console.info(
+    `[flipper-server][bootstrap] Development server attached (${developmentServerAttachedMS} ms)`,
+  );
+  readyForIncomingConnections(flipperServer, companionEnv);
+
+  const t10 = performance.now();
+  const serverStartedMS = t10 - t9;
+  console.info(
+    `[flipper-server][bootstrap] Listening at port ${chalk.green(
+      argv.port,
+    )} (${serverStartedMS} ms)`,
+  );
+
+  setupPrefetcher(flipperServer.config.settings);
+
+  const startupMS = t10 - t0;
+
+  tracker.track('server-bootstrap-performance', {
+    loggerInitializedMS,
+    keytarLoadedMS,
+    runningInstanceShutdownMS,
+    httpServerStartedMS,
+    serverCreatedMS,
+    companionEnvironmentInitializedMS,
+    appServerStartedMS,
+    developmentServerAttachedMS,
+    serverStartedMS,
+    launchedMS,
+    startupMS,
+  });
+}
+
+async function launch() {
+  if (!argv.open) {
+    console.warn(
+      '[flipper-server] Not opening UI, --open flag was not provided',
+    );
+    return;
+  }
+
+  openUI(UIPreference.PWA, argv.port);
 }
 
 process.on('uncaughtException', (error) => {
   console.error(
-    '[flipper-server-process-exit] uncaught exception, process will exit.',
+    '[flipper-server] uncaught exception, process will exit.',
     error,
   );
-  process.exit(1);
+  reportBrowserConnection(false);
+  processExit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
@@ -180,32 +341,17 @@ process.on('unhandledRejection', (reason, promise) => {
   );
 });
 
+// It has to fit in 32 bit int
+const MAX_TIMEOUT = 2147483647;
+// Node.js process never waits for all promises to settle and exits as soon as there is not pending timers or open sockets or tasks in teh macroqueue
+const runtimeTimeout = setTimeout(() => {}, MAX_TIMEOUT);
+// eslint-disable-next-line promise/catch-or-return
 start()
-  .then(async (flipperServer) => {
-    if (!argv.tcp) {
-      console.log('Flipper server started');
-      return;
-    }
-    console.log(
-      'Flipper server started and is listening at port ' +
-        chalk.green(argv.port),
-    );
-    const token = await getAuthToken();
-    const searchParams = new URLSearchParams({token: token ?? ''});
-    const url = new URL(`http://localhost:${argv.port}?${searchParams}`);
-    console.log('Go to: ' + chalk.green(chalk.bold(url)));
-    if (!argv.open) {
-      return;
-    }
-
-    if (argv.bundler) {
-      open(url.toString());
-    } else {
-      const path = await findInstallation(flipperServer);
-      open(path ?? url.toString());
-    }
-  })
   .catch((e) => {
     console.error(chalk.red('Server startup error: '), e);
-    process.exit(1);
+    reportBrowserConnection(false);
+    return processExit(1);
+  })
+  .finally(() => {
+    clearTimeout(runtimeTimeout);
   });

@@ -8,9 +8,9 @@
  */
 
 import React from 'react';
-import {RocketOutlined} from '@ant-design/icons';
-import {Alert, Typography} from 'antd';
-import {useTrackedCallback} from 'flipper-plugin';
+import {RocketOutlined, WarningOutlined} from '@ant-design/icons';
+import {Alert, Tooltip, Typography} from 'antd';
+import {useTrackedCallback, Layout, theme} from 'flipper-plugin';
 import {showEmulatorLauncher} from './LaunchEmulator';
 import {useStore} from '../../utils/useStore';
 
@@ -28,21 +28,29 @@ export function NoDevices() {
   );
 
   return (
-    <Alert
-      type="info"
-      message={
-        <>
-          <Title level={4}>No devices found</Title>
-          <Text>
-            Start a fresh emulator <RocketOutlined onClick={onLaunchEmulator} />{' '}
-            or check the{' '}
-            <Link href="https://fbflipper.com/docs/getting-started/troubleshooting/">
-              troubleshooting guide
-            </Link>
-            .
-          </Text>
-        </>
-      }
-    />
+    <Tooltip
+      title={
+        <Alert
+          type="info"
+          message={
+            <>
+              <Title level={4}>No devices found</Title>
+              <Text>
+                Start a fresh emulator{' '}
+                <RocketOutlined onClick={onLaunchEmulator} /> or check the{' '}
+                <Link href="https://fbflipper.com/docs/getting-started/troubleshooting/">
+                  troubleshooting guide
+                </Link>
+                .
+              </Text>
+            </>
+          }
+        />
+      }>
+      <Layout.Container
+        style={{alignItems: 'center', justifyContent: 'space-around'}}>
+        <WarningOutlined style={{fontSize: 32, color: theme.warningColor}} />
+      </Layout.Container>
+    </Tooltip>
   );
 }

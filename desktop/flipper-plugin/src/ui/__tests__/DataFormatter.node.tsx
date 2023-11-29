@@ -25,13 +25,13 @@ test('default formatter', () => {
 
   expect(DataFormatter.format({hello: 'world'})).toMatchInlineSnapshot(`
     "{
-      \\"hello\\": \\"world\\"
+      "hello": "world"
     }"
   `);
   expect(DataFormatter.format({hello: ['world']})).toMatchInlineSnapshot(`
     "{
-      \\"hello\\": [
-        \\"world\\"
+      "hello": [
+        "world"
       ]
     }"
   `);
@@ -39,8 +39,8 @@ test('default formatter', () => {
     .toMatchInlineSnapshot(`
     "[
       [
-        \\"hello\\",
-        \\"world\\"
+        "hello",
+        "world"
       ]
     ]"
   `);
@@ -48,8 +48,8 @@ test('default formatter', () => {
     .toMatchInlineSnapshot(`
     "[
       [
-        \\"hello\\",
-        \\"world\\"
+        "hello",
+        "world"
       ]
     ]"
   `);
@@ -85,18 +85,18 @@ test('linkify formatter', () => {
   // verify fallback
   expect(linkify({hello: 'world'})).toMatchInlineSnapshot(`
     "{
-      \\"hello\\": \\"world\\"
+      "hello": "world"
     }"
   `);
   expect(linkify('hi there!')).toMatchInlineSnapshot(`"hi there!"`);
   expect(linkify('https://www.google.com')).toMatchInlineSnapshot(`
     <React.Fragment>
       
-      <ForwardRef(Link)
+      <ForwardRef
         href="https://www.google.com"
       >
         https://www.google.com
-      </ForwardRef(Link)>
+      </ForwardRef>
       
     </React.Fragment>
   `);
@@ -107,11 +107,11 @@ test('linkify formatter', () => {
   expect(linkify('test https://www.google.com test')).toMatchInlineSnapshot(`
     <React.Fragment>
       test 
-      <ForwardRef(Link)
+      <ForwardRef
         href="https://www.google.com"
       >
         https://www.google.com
-      </ForwardRef(Link)>
+      </ForwardRef>
        test
     </React.Fragment>
   `);
@@ -119,17 +119,17 @@ test('linkify formatter', () => {
     .toMatchInlineSnapshot(`
     <React.Fragment>
       
-      <ForwardRef(Link)
+      <ForwardRef
         href="https://www.google.com"
       >
         https://www.google.com
-      </ForwardRef(Link)>
+      </ForwardRef>
        test 
-      <ForwardRef(Link)
+      <ForwardRef
         href="http://fb.com"
       >
         http://fb.com
-      </ForwardRef(Link)>
+      </ForwardRef>
       
     </React.Fragment>
   `);
@@ -141,14 +141,14 @@ test('jsonify formatter', () => {
     DataFormatter.format(value, DataFormatter.prettyPrintJson);
 
   expect(jsonify({hello: 'world'})).toMatchInlineSnapshot(`
-      "{
-        \\"hello\\": \\"world\\"
-      }"
-    `);
+    "{
+      "hello": "world"
+    }"
+  `);
   expect(jsonify([{hello: 'world'}])).toMatchInlineSnapshot(`
     "[
       {
-        \\"hello\\": \\"world\\"
+        "hello": "world"
       }
     ]"
   `);
@@ -162,11 +162,11 @@ test('jsonify formatter', () => {
     <React.Fragment>
       {
       "hello": "
-      <ForwardRef(Link)
+      <ForwardRef
         href="http://facebook.com"
       >
         http://facebook.com
-      </ForwardRef(Link)>
+      </ForwardRef>
       "
     }
     </React.Fragment>
@@ -181,7 +181,7 @@ test("jsonify doesn't process react elements", () => {
   expect(jsonify('{ a: 1 }')).toMatchInlineSnapshot(`"{ a: 1 }"`);
   expect(jsonify({a: 1})).toMatchInlineSnapshot(`
     "{
-      \\"a\\": 1
+      "a": 1
     }"
   `);
   expect(jsonify(<span>hi</span>)).toMatchInlineSnapshot(`
@@ -197,7 +197,7 @@ test('truncate formatter', () => {
 
   expect(truncate({test: true})).toMatchInlineSnapshot(`
     "{
-      \\"test\\": true
+      "test": true
     }"
   `);
   expect(truncate('abcde')).toEqual('abcde');

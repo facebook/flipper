@@ -17,12 +17,14 @@ typealias MetadataId = Int
  * identity, attributes, layout, documentation, or a custom type.
  */
 @kotlinx.serialization.Serializable
-data class Metadata(
+class Metadata(
     val id: MetadataId,
     val type: String,
     val namespace: String,
     val name: String,
     val mutable: kotlin.Boolean,
     val possibleValues: Set<InspectableValue>? = emptySet(),
-    val customAttributes: Map<String, JsonPrimitive>? = null
+    val customAttributes: Map<String, JsonPrimitive>? = null,
+    val minValue: Int?,
+    val maxValue: Int?,
 )

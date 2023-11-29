@@ -23,7 +23,7 @@ let _icons: Icons | undefined;
 
 function getIconsSync(staticPath: string): Icons {
   return (
-    _icons! ??
+    _icons ??
     (_icons = JSON.parse(
       fs.readFileSync(path.join(staticPath, 'icons.json'), {encoding: 'utf8'}),
     ))
@@ -31,10 +31,7 @@ function getIconsSync(staticPath: string): Icons {
 }
 
 export function buildLocalIconPath(icon: Icon) {
-  return path.join(
-    'icons',
-    `${icon.name}-${icon.variant}-${icon.size}@${icon.density}x.png`,
-  );
+  return path.join('icons', `${icon.name}-${icon.variant}_d.png`);
 }
 
 export function getLocalIconUrl(
@@ -68,7 +65,7 @@ function tryRegisterIcon(icon: Icon, url: string, staticPath: string) {
           if (res.status !== 200) {
             throw new Error(
               // eslint-disable-next-line prettier/prettier
-              `Trying to use icon '${entryName}' with size ${size} and density ${icon.density}, however the icon doesn't seem to exists at ${url}: ${res.status}`,
+              `Trying to use icon '${entryName}' with size ${size}, however the icon doesn't seem to exists at ${url}: ${res.status}`,
             );
           }
           if (!existing.includes(size)) {

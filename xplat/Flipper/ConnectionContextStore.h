@@ -38,6 +38,16 @@ class ConnectionContextStore {
    */
   folly::Optional<FlipperCertificateExchangeMedium> getLastKnownMedium();
   void storeConnectionConfig(folly::dynamic& config);
+  /**
+   * Reset state just removes all certificate exchange related files stored on
+   * the client. These are:
+   * - Certificate Sign Request (CSR)
+   * - CA Certificate
+   * - Server Certificate
+   * - Client Certificate
+   * - Client Key
+   * - Configuration file (includes device identifier)
+   */
   bool resetState();
 
   /** Convert and save to disk the existing certificate to PKCS #12 format.
@@ -47,11 +57,18 @@ class ConnectionContextStore {
    */
   std::pair<std::string, std::string> getCertificate();
 
+  /** Is there a CSR present.
+   */
+  bool hasCertificateSigningRequest() const;
+  /** Is there a client certificate present.
+   */
+  bool hasClientCertificate() const;
+
  private:
   DeviceData deviceData_;
-  std::string csr = "";
+  std::string csr_ = "";
 
-  std::string absoluteFilePath(const char* filename);
+  std::string absoluteFilePath(const char* filename) const;
 };
 
 } // namespace flipper

@@ -17,7 +17,12 @@ import {addNotification} from '../../reducers/notifications';
 import {deconstructPluginKey} from 'flipper-common';
 import {RenderHost} from 'flipper-frontend-core';
 import {setMenuEntries} from '../../reducers/connections';
-import {currentUser, isConnected} from '../../fb-stubs/user';
+import {
+  currentUser,
+  internGraphGETAPIRequestRaw,
+  internGraphPOSTAPIRequestRaw,
+  isConnected,
+} from '../../fb-stubs/user';
 
 export function initializeFlipperLibImplementation(
   renderHost: RenderHost,
@@ -29,6 +34,8 @@ export function initializeFlipperLibImplementation(
     ...base,
     intern: {
       ...base.intern,
+      graphGet: internGraphGETAPIRequestRaw,
+      graphPost: internGraphPOSTAPIRequestRaw,
       currentUser,
       isConnected,
     },
@@ -59,5 +66,16 @@ export function initializeFlipperLibImplementation(
       );
     },
     DetailsSidebarImplementation: DetailSidebarImpl,
+    settings() {
+      const darkModeState = store.getState().settingsState.darkMode;
+      let isDarkMode = darkModeState === 'dark';
+      if (
+        darkModeState === 'system' &&
+        window.matchMedia('(prefers-color-scheme:dark)').matches
+      ) {
+        isDarkMode = true;
+      }
+      return {isDarkMode};
+    },
   });
 }

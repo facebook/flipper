@@ -16,7 +16,6 @@ import React, {
 } from 'react';
 import {Badge, Tooltip, Typography, Button} from 'antd';
 import styled from '@emotion/styled';
-import {keyframes} from '@emotion/css';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {SandyPluginContext} from '../plugin/PluginContext';
 import {createState} from 'flipper-plugin-core';

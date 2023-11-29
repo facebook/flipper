@@ -58,14 +58,16 @@ export default class IOSDevice
       this.serial,
       this.info.deviceType,
     );
-    // It is OK not to await the start of the log listener. We just spawn it and handle errors internally.
+    // It is OK not to await the start of the log listener.
+    // We just spawn it and handle errors internally.
     this.logListener
       .start()
       .catch((e) =>
         console.error('IOSDevice.logListener.start -> unexpected error', e),
       );
     this.crashWatcher = new iOSCrashWatcher(this);
-    // It is OK not to await the start of the crash watcher. We just spawn it and handle errors internally.
+    // It is OK not to await the start of the crash watcher.
+    // We just spawn it and handle errors internally.
     this.crashWatcher
       .start()
       .catch((e) =>
@@ -136,6 +138,10 @@ export default class IOSDevice
       ipaPath,
       this.flipperServer.config.paths.tempPath,
     );
+  }
+
+  async openApp(name: string): Promise<void> {
+    return this.iOSBridge.openApp(this.serial, name);
   }
 
   async readFlipperFolderForAllApps(): Promise<DeviceDebugData[]> {

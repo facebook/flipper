@@ -28,7 +28,6 @@ import fixPath from 'fix-path';
 import {exec} from 'child_process';
 import setup, {Config, configPath} from './setup';
 import isFB from './fb-stubs/isFB';
-import delegateToLauncher from './launcher';
 import yargs from 'yargs';
 import {promisify} from 'util';
 import process from 'process';
@@ -63,14 +62,6 @@ if (process.platform === 'darwin') {
 const argv = yargs
   .usage('$0 [args]')
   .options({
-    file: {
-      describe: 'Define a file to open on startup.',
-      type: 'string',
-    },
-    url: {
-      describe: 'Define a flipper:// URL to open on startup.',
-      type: 'string',
-    },
     updater: {
       default: true,
       describe: 'Toggle the built-in update mechanism.',
@@ -114,16 +105,8 @@ if (argv['disable-gpu'] || process.env.FLIPPER_DISABLE_GPU === '1') {
 // possible reference to main app window
 let win: BrowserWindow;
 let appReady = false;
-let deeplinkURL: string | undefined = argv.url;
-let filePath: string | undefined = argv.file;
-let didMount = false;
-
-// tracking
-setInterval(() => {
-  if (win) {
-    win.webContents.send('trackUsage');
-  }
-}, 60 * 1000);
+let deeplinkURL: string | undefined;
+let filePath: string | undefined;
 
 // check if we already have an instance of this app open
 const gotTheLock = app.requestSingleInstanceLock();
@@ -145,6 +128,24 @@ if (!gotTheLock) {
   app.on('ready', () => {});
 }
 
+const openFileIfAny = () => {
+  if (!filePath || !win) {
+    return;
+  }
+  fs.readFile(filePath, {encoding: 'utf-8'}, (_err, data) => {
+    win.webContents.send('open-flipper-file', filePath, data);
+    filePath = undefined;
+  });
+};
+
+const openURLIfAny = () => {
+  if (!deeplinkURL || !win) {
+    return;
+  }
+  win.webContents.send('flipper-protocol-handler', deeplinkURL);
+  deeplinkURL = undefined;
+};
+
 // quit app once all windows are closed
 app.on('window-all-closed', () => {
   appReady = false;
@@ -155,22 +156,16 @@ app.on('will-finish-launching', () => {
   // Protocol handler for osx
   app.on('open-url', function (event, url) {
     event.preventDefault();
-    argv.url = url;
-    if (win && didMount) {
-      win.webContents.send('flipper-protocol-handler', url);
-    } else {
-      deeplinkURL = url;
-    }
+    deeplinkURL = url;
+    openURLIfAny();
   });
   app.on('open-file', (event, path) => {
-    // When flipper app is running, and someone double clicks the import file, `componentDidMount` will not be called again and windows object will exist in that case. That's why calling `win.webContents.send('open-flipper-file', filePath);` again.
+    // When flipper app is running, and someone double clicks the import file,
+    // component and store is already mounted and the windows object will exist.
+    // In that case, the file can be immediately opened.
     event.preventDefault();
     filePath = path;
-    argv.file = path;
-    if (win) {
-      win.webContents.send('open-flipper-file', filePath);
-      filePath = undefined;
-    }
+    openFileIfAny();
   });
 });
 
@@ -178,58 +173,50 @@ app.on('ready', async () => {
   const config = await setup(argv);
   processConfig(config);
 
-  // If we delegate to the launcher, shut down this instance of the app.
-  delegateToLauncher(argv)
-    .then(async (hasLauncherInvoked: boolean) => {
-      if (hasLauncherInvoked) {
-        app.quit();
-        return;
-      }
-      appReady = true;
-      app.commandLine.appendSwitch('scroll-bounce');
-      configureSession();
-      createWindow(config);
+  appReady = true;
 
-      // if in development install the react devtools extension
-      if (process.env.NODE_ENV === 'development') {
-        const {
-          default: installExtension,
-          REACT_DEVELOPER_TOOLS,
-        } = require('electron-devtools-installer');
-        // if set, try to download a newever version of the dev tools
-        const forceDownload = process.env.FLIPPER_UPDATE_DEV_TOOLS === 'true';
-        if (forceDownload) {
-          console.log('Force updating DevTools');
-        }
-        // React
-        // Fix for extension loading (see D27685981)
-        // Work around per https://github.com/electron/electron/issues/23662#issuecomment-787420799
-        const reactDevToolsPath = `${os.homedir()}/Library/Application Support/Electron/extensions/${
-          REACT_DEVELOPER_TOOLS.id
-        }`;
-        if (await promisify(fs.exists)(reactDevToolsPath)) {
-          console.log('Loading React devtools from disk ' + reactDevToolsPath);
-          try {
-            await session.defaultSession.loadExtension(
-              reactDevToolsPath,
-              // @ts-ignore only supported (and needed) in Electron 12
-              {allowFileAccess: true},
-            );
-          } catch (e) {
-            console.error('Failed to load React devtools from disk: ', e);
-          }
-        } else {
-          try {
-            await installExtension(REACT_DEVELOPER_TOOLS.id, {
-              loadExtensionOptions: {allowFileAccess: true, forceDownload},
-            });
-          } catch (e) {
-            console.error('Failed to install React devtools extension', e);
-          }
-        }
+  app.commandLine.appendSwitch('scroll-bounce');
+  configureSession();
+  createWindow(config);
+
+  // if in development install the react devtools extension
+  if (process.env.NODE_ENV === 'development') {
+    const {
+      default: installExtension,
+      REACT_DEVELOPER_TOOLS,
+    } = require('electron-devtools-installer');
+    // if set, try to download a newever version of the dev tools
+    const forceDownload = process.env.FLIPPER_UPDATE_DEV_TOOLS === 'true';
+    if (forceDownload) {
+      console.log('Force updating DevTools');
+    }
+    // React
+    // Fix for extension loading (see D27685981)
+    // Work around per https://github.com/electron/electron/issues/23662#issuecomment-787420799
+    const reactDevToolsPath = `${os.homedir()}/Library/Application Support/Electron/extensions/${
+      REACT_DEVELOPER_TOOLS.id
+    }`;
+    if (await promisify(fs.exists)(reactDevToolsPath)) {
+      console.log('Loading React devtools from disk ' + reactDevToolsPath);
+      try {
+        await session.defaultSession.loadExtension(
+          reactDevToolsPath,
+          // @ts-ignore only supported (and needed) in Electron 12
+          {allowFileAccess: true},
+        );
+      } catch (e) {
+        console.error('Failed to load React devtools from disk: ', e);
       }
-    })
-    .catch((e: any) => console.error('Error while delegating app launch', e));
+    } else {
+      try {
+        await installExtension(REACT_DEVELOPER_TOOLS.id, {
+          loadExtensionOptions: {allowFileAccess: true, forceDownload},
+        });
+      } catch (e) {
+        console.error('Failed to install React devtools extension', e);
+      }
+    }
+  }
 });
 
 app.on('web-contents-created', (_event, contents) => {
@@ -263,17 +250,9 @@ function configureSession() {
   );
 }
 
-ipcMain.on('componentDidMount', (_event) => {
-  didMount = true;
-  if (deeplinkURL) {
-    win.webContents.send('flipper-protocol-handler', deeplinkURL);
-    deeplinkURL = undefined;
-  }
-  if (filePath) {
-    // When flipper app is not running, the windows object might not exist in the callback of `open-file`, but after ``componentDidMount` it will definitely exist.
-    win.webContents.send('open-flipper-file', filePath);
-    filePath = undefined;
-  }
+ipcMain.on('storeRehydrated', (_event) => {
+  openFileIfAny();
+  openURLIfAny();
 });
 
 ipcMain.on('getLaunchTime', (event) => {

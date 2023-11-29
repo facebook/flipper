@@ -34,7 +34,7 @@ public class AccessibilityRoleUtil {
    * <p>https://github.com/google/talkback/blob/master/compositor/src/main/res/raw/compositor.json
    */
   public enum AccessibilityRole {
-    NONE(null, ""),
+    NONE("android.view.View", ""),
     BUTTON("android.widget.Button", "Button"),
     CHECK_BOX("android.widget.CompoundButton", "Check box"),
     DROP_DOWN_LIST("android.widget.Spinner", "Drop down list"),

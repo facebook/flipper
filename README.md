@@ -13,6 +13,24 @@
   </a>
 </p>
 
+---
+## Important Accouncement
+
+Flipper is moving away from its Electron distribution to an in-Browser experience.
+
+**How does this affect me?**
+
+Functionality hasn't changed. The UI remains unchanged. Flipper will run in your default browser instead of a standalone application.
+If you build from source, Flipper will open in the browser instead of a standalone app. We also provide a MacOS app for the Flipper runtime which can be run and will also open Flipper in the browser.
+
+The last Electron release is [v0.239.0](https://github.com/facebook/flipper/releases/tag/v0.239.0). As such, future releases will not include Electron artifacts.
+
+### React Native support
+
+If you are debugging React Native applications, v0.239.0 will be the last release with support for it due to technical limitations for React Dev Tools and Hermes Debugger plugins. As such, please refer to that release when debugging React Native applications.
+
+---
+
 <p align="center">
   Flipper (formerly Sonar) is a platform for debugging mobile apps on iOS and Android and JS apps in your browser or in Node.js. Visualize, inspect, and control your apps from a simple desktop interface. Use Flipper as is or extend it using the plugin API.
 </p>

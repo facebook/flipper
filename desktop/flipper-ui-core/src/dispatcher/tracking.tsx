@@ -71,7 +71,6 @@ export function emitBytesReceived(plugin: string, bytes: number) {
     bytesReceivedEmitter.emit('bytesReceived', plugin, bytes);
   }
 }
-
 export default (store: Store, logger: Logger) => {
   const renderHost = getRenderHostInstance();
   sideEffect(
@@ -98,7 +97,7 @@ export default (store: Store, logger: Logger) => {
       renderHost.serverConfig.environmentInfo.processId === oldExitData.pid;
     const timeSinceLastStartup =
       Date.now() - parseInt(oldExitData.lastSeen, 10);
-    // console.log(isReload ? 'reload' : 'restart', oldExitData);
+
     logger.track('usage', isReload ? 'reload' : 'restart', {
       ...oldExitData,
       pid: undefined,
@@ -142,12 +141,14 @@ export default (store: Store, logger: Logger) => {
     );
   }
 
-  renderHost.onIpcEvent('trackUsage', (...args: any[]) => {
+  const trackUsage = (...args: any[]) => {
     let state: State;
     try {
       state = store.getState();
     } catch (e) {
-      // if trackUsage is called (indirectly) through a reducer, this will utterly die Flipper. Let's prevent that and log an error instead
+      // If trackUsage is called (indirectly) through a reducer,
+      // this will utterly kill Flipper.
+      // Let's prevent that and log an error instead.
       console.error(
         'trackUsage triggered indirectly as side effect of a reducer',
         e,
@@ -179,11 +180,6 @@ export default (store: Store, logger: Logger) => {
 
     Object.entries(state.connections.enabledPlugins).forEach(
       ([app, plugins]) => {
-        // TODO: remove "starred-plugns" event in favor of "enabled-plugins" after some transition period
-        logger.track('usage', 'starred-plugins', {
-          app,
-          starredPlugins: plugins,
-        });
         logger.track('usage', 'enabled-plugins', {
           app,
           enabledPugins: plugins,
@@ -246,7 +242,11 @@ export default (store: Store, logger: Logger) => {
     largeFrameDrops = 0;
 
     logger.track('usage', 'ping', info);
-  });
+  };
+
+  renderHost.onIpcEvent('trackUsage', trackUsage);
+
+  setInterval(trackUsage, 60 * 1000);
 };
 
 export function computeUsageSummary(

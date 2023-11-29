@@ -11,7 +11,7 @@ import {
   ServerAddOn as ServerAddOnFn,
   ServerAddOnStartDetails,
 } from 'flipper-common';
-import {assertNotNull} from '../comms/Utilities';
+import {assertNotNull} from '../app-connectivity/Utilities';
 import * as FlipperPluginSDK from 'flipper-plugin-core';
 
 declare global {
