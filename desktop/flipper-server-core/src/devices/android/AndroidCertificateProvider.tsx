@@ -10,16 +10,13 @@
 import CertificateProvider from '../../app-connectivity/certificate-exchange/CertificateProvider';
 import {Client} from 'adbkit';
 import * as androidUtil from './androidContainerUtility';
-import {csrFileName, extractAppNameFromCSR} from '../../utils/certificateUtils';
-import {FlipperServerImpl} from '../../FlipperServerImpl';
-
-const logTag = 'AndroidCertificateProvider';
 import {
   csrFileName,
   extractBundleIdFromCSR,
 } from '../../app-connectivity/certificate-exchange/certificate-utils';
 import {ClientQuery} from 'flipper-common';
 import {recorder} from '../../recorder';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
 
 export default class AndroidCertificateProvider extends CertificateProvider {
   name = 'AndroidCertificateProvider';
