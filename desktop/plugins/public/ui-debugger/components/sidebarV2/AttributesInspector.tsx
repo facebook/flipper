@@ -29,7 +29,7 @@ import {
 } from '../../ClientTypes';
 import {MetadataMap} from '../../DesktopTypes';
 import {NoData} from '../sidebar/inspector/NoData';
-import {css, cx} from '@emotion/css';
+import {css} from '@emotion/css';
 import {upperFirst, sortBy, omit} from 'lodash';
 import {any} from 'lodash/fp';
 import {InspectableColor} from '../../ClientTypes';
@@ -46,14 +46,13 @@ import {
 import {
   boolColor,
   enumColor,
-  inputBase,
   numberColor,
-  readOnlyInput,
   rowHeight,
   stringColor,
 } from './shared';
 import {StyledTextArea} from './TextInput';
 import {ColorInspector} from './ColorInput';
+import {SelectInput} from './SelectInput';
 
 type ModalData = {
   data: unknown;
@@ -355,50 +354,6 @@ function NamedAttribute({
   );
 }
 
-function StyledInput({
-  value,
-  color,
-  mutable,
-  rightAddon,
-}: {
-  value: any;
-  color: string;
-  mutable: boolean;
-  rightAddon?: string;
-}) {
-  let formatted: any = value;
-  if (typeof value === 'number') {
-    //cap the number of decimal places to 5 but dont add trailing zeros
-    formatted = Number.parseFloat(value.toFixed(5));
-  }
-  return (
-    <Input
-      size="small"
-      className={cx(
-        inputBase,
-        !mutable && readOnlyInput,
-        css`
-          //set input colour when no suffix
-          color: ${color};
-          //set input colour when has suffix
-          .ant-input.ant-input-sm[type='text'] {
-            color: ${color};
-          }
-          //set colour of suffix
-          .ant-input.ant-input-sm[type='text'] + .ant-input-suffix {
-            color: ${theme.textColorSecondary};
-            opacity: 0.7;
-          }
-        `,
-      )}
-      bordered
-      readOnly={!mutable}
-      value={formatted}
-      suffix={rightAddon}
-    />
-  );
-}
-
 function AttributeValue({
   metadataMap,
   name,
@@ -424,10 +379,17 @@ function AttributeValue({
   switch (inspectable.type) {
     case 'boolean':
       return (
-        <StyledInput
+        <SelectInput
+          options={[
+            {value: true, label: 'TRUE'},
+            {value: false, label: 'FALSE'},
+          ]}
+          onChange={(value) => {
+            instance.uiActions.editClientAttribute(nodeId, value, metadataPath);
+          }}
+          mutable={attributeMetadata.mutable}
+          value={inspectable.value}
           color={boolColor}
-          mutable={false}
-          value={inspectable.value ? 'TRUE' : 'FALSE'}
         />
       );
     case 'unknown':
@@ -453,10 +415,28 @@ function AttributeValue({
 
     case 'enum':
       return (
-        <StyledInput
-          color={enumColor}
-          mutable={false}
+        <SelectInput
+          options={
+            attributeMetadata.possibleValues?.map((value) => {
+              if ('value' in value) {
+                return {
+                  label: String(value.value),
+                  value: value.value as any,
+                };
+              } else {
+                return {
+                  label: 'UNKNOWN',
+                  value: 'UNKNOWN',
+                };
+              }
+            }) ?? []
+          }
+          onChange={(value) => {
+            instance.uiActions.editClientAttribute(nodeId, value, metadataPath);
+          }}
+          mutable={attributeMetadata.mutable}
           value={inspectable.value}
+          color={enumColor}
         />
       );
     case 'size':

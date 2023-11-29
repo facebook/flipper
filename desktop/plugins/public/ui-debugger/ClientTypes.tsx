@@ -175,6 +175,7 @@ export type Metadata = {
   name: string;
   mutable: boolean;
   customAttributes?: Record<string, string | number>;
+  possibleValues?: Inspectable[];
 };
 
 export type Bounds = {
