@@ -198,7 +198,14 @@ object ViewDescriptor : ChainedDescriptor<View>() {
           MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "foreground", mutable = true)
 
   private val AlphaAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "alpha", mutable = true)
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE,
+          NAMESPACE,
+          "alpha",
+          mutable = true,
+          minValue = 0,
+          maxValue = 1)
+
   private val StateAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "state")
 
@@ -237,14 +244,16 @@ object ViewDescriptor : ChainedDescriptor<View>() {
           NAMESPACE,
           "width",
           true,
-          LayoutParamsMapping.getInspectableValues())
+          LayoutParamsMapping.getInspectableValues(),
+          minValue = 0)
   private val HeightAttributeId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "height",
           true,
-          LayoutParamsMapping.getInspectableValues())
+          LayoutParamsMapping.getInspectableValues(),
+          minValue = 0)
 
   private val MarginAttributeId =
       MetadataRegister.register(

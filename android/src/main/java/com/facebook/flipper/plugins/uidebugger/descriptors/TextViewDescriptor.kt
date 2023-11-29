@@ -28,7 +28,7 @@ object TextViewDescriptor : ChainedDescriptor<TextView>() {
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "text", mutable = true)
   private val TextSizeAttributeId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textSize", mutable = true)
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textSize", mutable = true, minValue = 0)
   private val TextColorAttributeId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "textColor", mutable = true)
@@ -39,18 +39,18 @@ object TextViewDescriptor : ChainedDescriptor<TextView>() {
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "isItalic", mutable = true)
   private val WeightAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "weight")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "weight", minValue = 0)
   private val TypefaceAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "typeface")
   private val MinLinesAttributeId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minLines", mutable = true)
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minLines", mutable = true, minValue = 0)
   private val MaxLinesAttributeId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxLines", mutable = true)
   private val MinWidthAttributeId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minWidth", mutable = true)
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minWidth", mutable = true, minValue = 0)
   private val MaxWidthAttributeId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxWidth", mutable = true)
