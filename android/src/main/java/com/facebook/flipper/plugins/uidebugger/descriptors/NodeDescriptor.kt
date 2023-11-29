@@ -104,5 +104,5 @@ enum class CompoundTypeHint {
   X,
   Y,
   Z,
-  Color
+  COLOR
 }

@@ -22,6 +22,7 @@ import android.widget.LinearLayout
 import androidx.viewpager.widget.ViewPager
 import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.*
+import com.facebook.flipper.plugins.uidebugger.util.ColorUtil.toColorInt
 import com.facebook.flipper.plugins.uidebugger.util.EnumMapping
 import com.facebook.flipper.plugins.uidebugger.util.ResourcesUtil
 import java.lang.reflect.Field
@@ -190,9 +191,11 @@ object ViewDescriptor : ChainedDescriptor<View>() {
           VisibilityMapping.getInspectableValues())
 
   private val BackgroundAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "background")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "background", mutable = true)
   private val ForegroundAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "foreground")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "foreground", mutable = true)
 
   private val AlphaAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "alpha", mutable = true)
@@ -410,6 +413,8 @@ object ViewDescriptor : ChainedDescriptor<View>() {
         }
         node.layoutParams = layoutParams
       }
+      ForegroundAttributeId -> node.foreground = ColorDrawable(toColorInt(value))
+      BackgroundAttributeId -> node.background = ColorDrawable(toColorInt(value))
       HeightAttributeId -> {
         val strValue = value.asRaw()
         val layoutParams = node.layoutParams
@@ -507,9 +512,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
       WeightAttributeId -> {
         val layoutParams = node.layoutParams
         if (layoutParams is LinearLayout.LayoutParams) {
-
           layoutParams.weight = value.asFloat()
-
           node.layoutParams = layoutParams
         }
       }
