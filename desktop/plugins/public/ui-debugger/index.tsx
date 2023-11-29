@@ -7,7 +7,12 @@
  * @format
  */
 
-import {createDataSource, createState, PluginClient} from 'flipper-plugin';
+import {
+  _ReadOnlyAtom,
+  createDataSource,
+  createState,
+  PluginClient,
+} from 'flipper-plugin';
 import {
   Events,
   FrameScanEvent,
@@ -72,7 +77,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     nodes: new Map(),
   };
 
-  let lastProcessedFrameTime = 0;
+  const lastProcessedFrameTime = createState(0);
 
   const _uiActions = uiActions(
     uiState,
@@ -185,9 +190,9 @@ export function plugin(client: PluginClient<Events, Methods>) {
   };
 
   streamInterceptor.on('frameUpdated', (frame) => {
-    if (frame.frameTime > lastProcessedFrameTime) {
+    if (frame.frameTime > lastProcessedFrameTime.get()) {
       applyFrameData(frame.nodes, frame.snapshot);
-      lastProcessedFrameTime = frame.frameTime;
+      lastProcessedFrameTime.set(frame.frameTime);
       const selectedNode = uiState.selectedNode.get();
       if (selectedNode != null)
         _uiActions.ensureAncestorsExpanded(selectedNode.id);
@@ -287,6 +292,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
   return {
     rootId,
+    currentFrameTime: lastProcessedFrameTime as _ReadOnlyAtom<number>,
     uiState: uiState as ReadOnlyUIState,
     uiActions: _uiActions,
     nodes: nodesAtom,
