@@ -409,6 +409,8 @@ function AttributeValue({
         <StyledInputNumber
           color={numberColor}
           mutable={attributeMetadata.mutable}
+          minValue={attributeMetadata.minValue}
+          maxValue={attributeMetadata.maxValue}
           value={inspectable.value}
           onChange={(value) => {
             instance.uiActions.editClientAttribute(nodeId, value, metadataPath);

@@ -176,6 +176,8 @@ export type Metadata = {
   mutable: boolean;
   customAttributes?: Record<string, string | number>;
   possibleValues?: Inspectable[];
+  minValue?: number;
+  maxValue?: number;
 };
 
 export type Bounds = {
