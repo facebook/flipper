@@ -41,7 +41,6 @@ class DecorViewTracker(private val context: UIDContext, private val snapshotter:
 
   private var currentDecorView: View? = null
   private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
-  private val mStopWatch = StopWatch()
 
   fun start() {
 

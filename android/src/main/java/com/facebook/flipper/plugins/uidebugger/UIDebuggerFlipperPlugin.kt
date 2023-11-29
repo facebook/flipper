@@ -9,11 +9,14 @@ package com.facebook.flipper.plugins.uidebugger
 
 import android.util.Log
 import com.facebook.flipper.core.FlipperConnection
+import com.facebook.flipper.core.FlipperObject
 import com.facebook.flipper.core.FlipperPlugin
 import com.facebook.flipper.plugins.uidebugger.core.*
 import com.facebook.flipper.plugins.uidebugger.descriptors.ApplicationRefDescriptor
+import com.facebook.flipper.plugins.uidebugger.descriptors.CompoundTypeHint
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.InitEvent
+import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import kotlinx.serialization.json.Json
 
@@ -33,6 +36,38 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
   override fun onConnect(connection: FlipperConnection) {
     this.context.connectionRef.connection = connection
     this.context.bitmapPool.makeReady()
+
+    connection.receive("editAttribute") { args, responder ->
+      try {
+        val nodeId = args.getInt("nodeId")
+
+        val value = args.getDynamic("value")
+
+        val metadataIdsRaw = args.getArray("metadataIdPath")
+        val metadataIds = mutableListOf<MetadataId>()
+        for (i in 0 until metadataIdsRaw.length()) {
+          metadataIds.add(metadataIdsRaw.get(i) as Int)
+        }
+
+        val compoundTypeHint =
+            args.getString("compoundTypeHint")?.let {
+              enumValueOf<CompoundTypeHint>(it.uppercase())
+            }
+
+        context.attributeEditor.editValue(nodeId, metadataIds, value, compoundTypeHint)
+
+        responder.success()
+      } catch (exception: Exception) {
+
+        val errorResponse =
+            FlipperObject.Builder()
+                .put("errorType", exception.javaClass)
+                .put("errorMessage", exception.message)
+                .put("stackTrace", exception.stackTraceToString())
+                .build()
+        responder.error(errorResponse)
+      }
+    }
 
     connection.send(
         InitEvent.name,

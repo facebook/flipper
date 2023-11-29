@@ -60,6 +60,8 @@ object MetadataRegister {
     return register[key]
   }
 
+  fun get(id: MetadataId): Metadata? = register.values.find { metadata -> metadata.id == id }
+
   /** gets all pending metadata to be sent and resets the pending list */
   fun extractPendingMetadata(): Map<MetadataId, Metadata> {
     synchronized(lock) {

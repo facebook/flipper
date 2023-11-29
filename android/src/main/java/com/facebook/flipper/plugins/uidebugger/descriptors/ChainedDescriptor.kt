@@ -7,8 +7,10 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.Immediate
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
@@ -148,4 +150,26 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
   }
 
   open fun onGetInlineAttributes(node: T, attributes: MutableMap<String, String>) {}
+
+  final override fun editAttribute(
+      node: T,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {
+
+    var curDescriptor: ChainedDescriptor<T>? = this
+
+    while (curDescriptor != null) {
+      curDescriptor.onEditAttribute(node, metadataPath, value, hint)
+      curDescriptor = curDescriptor.mSuper
+    }
+  }
+
+  open fun onEditAttribute(
+      node: T,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {}
 }

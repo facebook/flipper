@@ -7,8 +7,10 @@
 
 package com.facebook.flipper.plugins.uidebugger.descriptors
 
+import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
+import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import kotlinx.serialization.json.JsonObject
@@ -82,4 +84,25 @@ interface NodeDescriptor<T> {
   fun getInlineAttributes(node: T): Map<String, String> = mapOf()
 
   fun getHiddenAttributes(node: T): JsonObject? = null
+
+  /** edit attribute with value from desktop */
+  fun editAttribute(
+      node: T,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {}
+}
+
+enum class CompoundTypeHint {
+  TOP,
+  LEFT,
+  RIGHT,
+  BOTTOM,
+  WIDTH,
+  HEIGHT,
+  X,
+  Y,
+  Z,
+  Color
 }

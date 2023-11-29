@@ -33,6 +33,7 @@ class UIDContext(
     private val pendingFrameworkEvents: MutableList<FrameworkEvent>
 ) {
 
+  val attributeEditor = AttributeEditor(applicationRef, descriptorRegister)
   val bitmapPool = BitmapPool()
   private val canvasSnapshotter = CanvasSnapshotter(bitmapPool)
 
