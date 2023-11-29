@@ -69,6 +69,8 @@ export function ColorInspector({
             addonText: 'R',
             mutable: mutable,
             hint: 'COLOR',
+            min: 0,
+            max: 255,
             onChange: (updated) => onChange({...inspectable.value, r: updated}),
           },
           {
@@ -76,6 +78,8 @@ export function ColorInspector({
             addonText: 'G',
             mutable: mutable,
             hint: 'COLOR',
+            min: 0,
+            max: 255,
             onChange: (updated) => onChange({...inspectable.value, g: updated}),
           },
           {
@@ -83,11 +87,15 @@ export function ColorInspector({
             addonText: 'B',
             mutable: mutable,
             hint: 'COLOR',
+            min: 0,
+            max: 255,
             onChange: (updated) => onChange({...inspectable.value, b: updated}),
           },
           {
             value: inspectable.value.a,
             addonText: 'A',
+            min: 0,
+            max: 1,
             mutable: mutable,
             hint: 'COLOR',
             onChange: (updated) => onChange({...inspectable.value, a: updated}),

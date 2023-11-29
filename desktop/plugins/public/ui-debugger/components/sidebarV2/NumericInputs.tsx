@@ -34,6 +34,8 @@ export function TwoByTwoNumberGroup({
 export type NumberGroupValue = {
   value: number;
   addonText: string;
+  min?: number;
+  max?: number;
   mutable: boolean;
   hint: CompoundTypeHint;
   onChange: (value: number, hint: CompoundTypeHint) => void;
@@ -42,16 +44,20 @@ export type NumberGroupValue = {
 export function NumberGroup({values}: {values: NumberGroupValue[]}) {
   return (
     <Layout.Horizontal gap="small">
-      {values.map(({value, addonText, mutable, onChange, hint}, idx) => (
-        <StyledInputNumber
-          key={idx}
-          color={numberColor}
-          mutable={mutable}
-          value={value}
-          onChange={(value) => onChange(value, hint)}
-          rightAddon={addonText}
-        />
-      ))}
+      {values.map(
+        ({value, addonText, mutable, onChange, hint, min, max}, idx) => (
+          <StyledInputNumber
+            key={idx}
+            color={numberColor}
+            mutable={mutable}
+            maxValue={max}
+            minValue={min}
+            value={value}
+            onChange={(value) => onChange(value, hint)}
+            rightAddon={addonText}
+          />
+        ),
+      )}
     </Layout.Horizontal>
   );
 }
@@ -62,7 +68,11 @@ export function StyledInputNumber({
   rightAddon,
   mutable,
   onChange,
+  minValue,
+  maxValue,
 }: {
+  minValue?: number;
+  maxValue?: number;
   value: any;
   mutable: boolean;
   color: string;
@@ -76,6 +86,13 @@ export function StyledInputNumber({
   }
 
   const optimisticValue = useOptimisticValue<number>(formatted, onChange);
+
+  let step: number = 1;
+  if (minValue != null && maxValue != null) {
+    if (Math.abs(minValue - maxValue) <= 1) {
+      step = 0.1;
+    }
+  }
 
   return (
     <InputNumber
@@ -117,6 +134,9 @@ export function StyledInputNumber({
           width: 100%;
         `,
       )}
+      min={minValue}
+      max={maxValue}
+      step={step}
       bordered
       readOnly={!mutable}
       value={optimisticValue.value}

@@ -447,6 +447,7 @@ function AttributeValue({
         <NumberGroup
           values={[
             {
+              min: 0,
               value: inspectable.value.width,
               addonText: 'W',
               mutable: attributeMetadata.mutable,
@@ -454,6 +455,7 @@ function AttributeValue({
               onChange: numberGroupOnChange,
             },
             {
+              min: 0,
               value: inspectable.value.height,
               addonText: 'H',
               mutable: attributeMetadata.mutable,
@@ -567,6 +569,7 @@ function AttributeValue({
               onChange: numberGroupOnChange,
             },
             {
+              min: 0,
               value: inspectable.value.width,
               addonText: 'W',
               mutable: attributeMetadata.mutable,
@@ -574,6 +577,7 @@ function AttributeValue({
               onChange: numberGroupOnChange,
             },
             {
+              min: 0,
               value: inspectable.value.height,
               addonText: 'H',
               mutable: attributeMetadata.mutable,
