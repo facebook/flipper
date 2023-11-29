@@ -23,6 +23,7 @@ import React, {useRef, useState} from 'react';
 import {
   ClientNode,
   Color,
+  CompoundTypeHint,
   Id,
   Inspectable,
   InspectableObject,
@@ -515,19 +516,26 @@ const stringColor = '#AF5800';
 const enumColor = '#006D75';
 const numberColor = '#003EB3';
 
-type NumberGroupValue = {value: number; addonText: string; mutable: boolean};
+type NumberGroupValue = {
+  value: number;
+  addonText: string;
+  mutable: boolean;
+  hint: CompoundTypeHint;
+  onChange: (value: number, hint: CompoundTypeHint) => void;
+};
 
 const inputHeight = 26;
 
 function NumberGroup({values}: {values: NumberGroupValue[]}) {
   return (
     <Layout.Horizontal gap="small">
-      {values.map(({value, addonText, mutable}, idx) => (
+      {values.map(({value, addonText, mutable, onChange, hint}, idx) => (
         <StyledInputNumber
           key={idx}
           color={numberColor}
           mutable={mutable}
           value={value}
+          onChange={(value) => onChange(value, hint)}
           rightAddon={addonText}
         />
       ))}
@@ -554,6 +562,9 @@ function AttributeValue({
 }) {
   const instance = usePlugin(plugin);
 
+  const numberGroupOnChange = (value: number, hint: CompoundTypeHint): void => {
+    instance.uiActions.editClientAttribute(nodeId, value, metadataPath, hint);
+  };
   switch (inspectable.type) {
     case 'boolean':
       return (
@@ -600,11 +611,15 @@ function AttributeValue({
               value: inspectable.value.width,
               addonText: 'W',
               mutable: attributeMetadata.mutable,
+              hint: 'WIDTH',
+              onChange: numberGroupOnChange,
             },
             {
               value: inspectable.value.height,
               addonText: 'H',
               mutable: attributeMetadata.mutable,
+              hint: 'HEIGHT',
+              onChange: numberGroupOnChange,
             },
           ]}
         />
@@ -618,11 +633,15 @@ function AttributeValue({
               value: inspectable.value.x,
               addonText: 'X',
               mutable: attributeMetadata.mutable,
+              hint: 'X',
+              onChange: numberGroupOnChange,
             },
             {
               value: inspectable.value.y,
               addonText: 'Y',
               mutable: attributeMetadata.mutable,
+              hint: 'Y',
+              onChange: numberGroupOnChange,
             },
           ]}
         />
@@ -635,16 +654,22 @@ function AttributeValue({
               value: inspectable.value.x,
               addonText: 'X',
               mutable: attributeMetadata.mutable,
+              hint: 'X',
+              onChange: numberGroupOnChange,
             },
             {
               value: inspectable.value.y,
               addonText: 'Y',
               mutable: attributeMetadata.mutable,
+              hint: 'Y',
+              onChange: numberGroupOnChange,
             },
             {
               value: inspectable.value.z,
               addonText: 'Z',
               mutable: attributeMetadata.mutable,
+              hint: 'Z',
+              onChange: numberGroupOnChange,
             },
           ]}
         />
@@ -657,21 +682,29 @@ function AttributeValue({
               value: inspectable.value.top,
               addonText: 'T',
               mutable: attributeMetadata.mutable,
+              hint: 'TOP',
+              onChange: numberGroupOnChange,
             },
             {
               value: inspectable.value.left,
               addonText: 'L',
               mutable: attributeMetadata.mutable,
+              hint: 'LEFT',
+              onChange: numberGroupOnChange,
             },
             {
               value: inspectable.value.bottom,
               addonText: 'B',
               mutable: attributeMetadata.mutable,
+              hint: 'BOTTOM',
+              onChange: numberGroupOnChange,
             },
             {
               value: inspectable.value.right,
               addonText: 'R',
               mutable: attributeMetadata.mutable,
+              hint: 'RIGHT',
+              onChange: numberGroupOnChange,
             },
           ]}
         />
@@ -684,21 +717,29 @@ function AttributeValue({
               value: inspectable.value.x,
               addonText: 'X',
               mutable: attributeMetadata.mutable,
+              hint: 'X',
+              onChange: numberGroupOnChange,
             },
             {
               value: inspectable.value.y,
               addonText: 'Y',
               mutable: attributeMetadata.mutable,
+              hint: 'Y',
+              onChange: numberGroupOnChange,
             },
             {
               value: inspectable.value.width,
               addonText: 'W',
               mutable: attributeMetadata.mutable,
+              hint: 'WIDTH',
+              onChange: numberGroupOnChange,
             },
             {
               value: inspectable.value.height,
               addonText: 'H',
               mutable: attributeMetadata.mutable,
+              hint: 'HEIGHT',
+              onChange: numberGroupOnChange,
             },
           ]}
         />
@@ -783,21 +824,29 @@ function ColorInspector({inspectable}: {inspectable: InspectableColor}) {
             value: inspectable.value.r,
             addonText: 'R',
             mutable: false,
+            hint: 'COLOR',
+            onChange: () => {},
           },
           {
             value: inspectable.value.g,
             addonText: 'G',
             mutable: false,
+            hint: 'COLOR',
+            onChange: () => {},
           },
           {
             value: inspectable.value.b,
             addonText: 'B',
             mutable: false,
+            hint: 'COLOR',
+            onChange: () => {},
           },
           {
             value: inspectable.value.a,
             addonText: 'A',
             mutable: false,
+            hint: 'COLOR',
+            onChange: () => {},
           },
         ]}
       />
