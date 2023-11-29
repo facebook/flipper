@@ -14,6 +14,9 @@ import {InspectableColor} from '../../ClientTypes';
 import {NumberGroup} from './NumericInputs';
 import {rowHeight, stringColor} from './shared';
 import {StyledTextArea} from './TextInput';
+import {Popover} from 'antd';
+import {SketchPicker} from 'react-color';
+import {useOptimisticValue} from './useOptimisticValue';
 
 export function ColorInspector({
   inspectable,
@@ -24,8 +27,41 @@ export function ColorInspector({
   mutable: boolean;
   onChange: (color: Color) => void;
 }) {
+  const optimisticValue = useOptimisticValue(inspectable.value, onChange);
+
+  let colorPreviewComponent = (
+    <ColorPreview
+      background={`rgba(${inspectable.value.r},${inspectable.value.g},${inspectable.value.b},${inspectable.value.a})`}
+    />
+  );
+
+  if (mutable) {
+    colorPreviewComponent = (
+      <Popover
+        content={
+          <SketchPicker
+            color={optimisticValue.value}
+            onChange={(color) => {
+              optimisticValue.onChange({...color.rgb, a: color.rgb.a ?? 1});
+            }}
+          />
+        }>
+        {colorPreviewComponent}
+      </Popover>
+    );
+  }
+
   return (
     <Layout.Container gap="small">
+      <Layout.Horizontal gap="medium">
+        {colorPreviewComponent}
+        <StyledTextArea
+          color={stringColor}
+          mutable={false}
+          onChange={() => {}}
+          value={RGBAtoHEX(inspectable.value)}
+        />
+      </Layout.Horizontal>
       <NumberGroup
         values={[
           {
@@ -58,17 +94,6 @@ export function ColorInspector({
           },
         ]}
       />
-      <Layout.Horizontal gap="medium">
-        <ColorPreview
-          background={`rgba(${inspectable.value.r},${inspectable.value.g},${inspectable.value.b},${inspectable.value.a})`}
-        />
-        <StyledTextArea
-          color={stringColor}
-          mutable={false}
-          onChange={() => {}}
-          value={RGBAtoHEX(inspectable.value)}
-        />
-      </Layout.Horizontal>
     </Layout.Container>
   );
 }
