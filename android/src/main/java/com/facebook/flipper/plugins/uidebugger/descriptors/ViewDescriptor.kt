@@ -173,7 +173,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "layoutDirection",
-          true,
+          mutable = false, // for some reason this doesnt work
           LayoutDirectionMapping.getInspectableValues())
   private val TranslationAttributeId =
       MetadataRegister.register(
@@ -213,14 +213,14 @@ object ViewDescriptor : ChainedDescriptor<View>() {
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "textDirection",
-          false,
+          mutable = false, // for some reason this doesnt work
           TextDirectionMapping.getInspectableValues())
   private val TextAlignmentAttributeId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "textAlignment",
-          false,
+          mutable = false, // for some reason this doesnt work
           TextAlignmentMapping.getInspectableValues())
 
   private val TagAttributeId =
@@ -397,6 +397,16 @@ object ViewDescriptor : ChainedDescriptor<View>() {
             else -> {}
           }
       ElevationAttributeId -> node.elevation = value.asFloat()
+      GravityAttributeId -> {
+        val layoutParams = node.layoutParams
+        if (layoutParams is LinearLayout.LayoutParams) {
+          layoutParams.gravity = GravityMapping.getEnumValue(value.asString() ?: "Unknown")
+        }
+        if (layoutParams is FrameLayout.LayoutParams) {
+          layoutParams.gravity = GravityMapping.getEnumValue(value.asString() ?: "Unknown")
+        }
+        node.layoutParams = layoutParams
+      }
       HeightAttributeId -> {
         val strValue = value.asRaw()
         val layoutParams = node.layoutParams
