@@ -12,7 +12,7 @@ import React from 'react';
 import {Color} from '../../ClientTypes';
 import {InspectableColor} from '../../ClientTypes';
 import {NumberGroup} from './NumericInputs';
-import {rowHeight, stringColor} from './shared';
+import {opactity, rowHeight, stringColor} from './shared';
 import {StyledTextArea} from './TextInput';
 import {Popover} from 'antd';
 import {SketchPicker} from 'react-color';
@@ -52,7 +52,7 @@ export function ColorInspector({
   }
 
   return (
-    <Layout.Container gap="small">
+    <Layout.Container gap="small" style={opactity(optimisticValue)}>
       <Layout.Horizontal gap="medium">
         {colorPreviewComponent}
         <StyledTextArea

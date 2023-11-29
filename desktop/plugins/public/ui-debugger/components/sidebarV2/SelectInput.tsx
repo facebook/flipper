@@ -9,7 +9,7 @@
 
 import {Input, Select} from 'antd';
 import React from 'react';
-import {inputBase, readOnlyInput, rowHeight} from './shared';
+import {inputBase, opactity, readOnlyInput, rowHeight} from './shared';
 import {css, cx} from '@emotion/css';
 import {theme} from 'flipper-plugin';
 import {useOptimisticValue} from './useOptimisticValue';
@@ -38,7 +38,11 @@ export function SelectInput({
         onChange={optimisticValue.onChange}
         value={optimisticValue.value}
         options={options}
-        style={{color: color, height: rowHeight}}
+        style={{
+          color: color,
+          height: rowHeight,
+          ...opactity(optimisticValue),
+        }}
       />
     );
   } else {
@@ -54,7 +58,7 @@ export function SelectInput({
 
 const dropDownCss = css`
   .ant-select-selector {
-    height: ${rowHeight}px !important;
+    height: ${rowHeight}px !important;b
   }
 `;
 

@@ -9,7 +9,7 @@
 
 import {cx} from '@emotion/css';
 import {Input} from 'antd';
-import {inputBase, readOnlyInput} from './shared';
+import {inputBase, opactity as pendingStyle, readOnlyInput} from './shared';
 import React from 'react';
 import {useOptimisticValue} from './useOptimisticValue';
 
@@ -32,7 +32,7 @@ export function StyledTextArea({
       autoSize
       className={cx(inputBase, !mutable && readOnlyInput)}
       bordered
-      style={{color: color}}
+      style={{color: color, ...pendingStyle(optimisticValue)}}
       readOnly={!mutable}
       value={optimisticValue.value}
       onChange={(event) => optimisticValue.onChange(event.target.value)}

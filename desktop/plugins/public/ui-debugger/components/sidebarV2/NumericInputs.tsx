@@ -13,7 +13,7 @@ import {theme, Layout} from 'flipper-plugin';
 import React from 'react';
 import {CompoundTypeHint} from '../../ClientTypes';
 import {css, cx} from '@emotion/css';
-import {numberColor, readOnlyInput} from './shared';
+import {numberColor, opactity, readOnlyInput} from './shared';
 import {useOptimisticValue} from './useOptimisticValue';
 
 type FourItemArray<T = any> = [T, T, T, T];
@@ -138,6 +138,7 @@ export function StyledInputNumber({
       max={maxValue}
       step={step}
       bordered
+      style={opactity(optimisticValue)}
       readOnly={!mutable}
       value={optimisticValue.value}
       addonAfter={

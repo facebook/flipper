@@ -38,3 +38,7 @@ export const stringColor = '#AF5800';
 export const enumColor = '#006D75';
 export const numberColor = '#003EB3';
 export const rowHeight = 26;
+
+export function opactity(optimistic: {pending: boolean}) {
+  return {opacity: optimistic.pending ? 0.7 : 1};
+}
