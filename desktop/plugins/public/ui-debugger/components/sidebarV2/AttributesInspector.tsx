@@ -7,22 +7,19 @@
  * @format
  */
 
-import {Button, Divider, Input, InputNumber, Modal, Typography} from 'antd';
+import {Button, Divider, Input, Modal, Typography} from 'antd';
 
 import {
   DataInspector,
   Panel,
   theme,
   Layout,
-  styled,
   useLocalStorageState,
   usePlugin,
-  useValue,
 } from 'flipper-plugin';
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {
   ClientNode,
-  Color,
   CompoundTypeHint,
   Id,
   Inspectable,
@@ -41,6 +38,22 @@ import {SearchOutlined} from '@ant-design/icons';
 import {plugin} from '../../index';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {Glyph} from 'flipper';
+import {
+  NumberGroup,
+  StyledInputNumber,
+  TwoByTwoNumberGroup,
+} from './NumericInputs';
+import {
+  boolColor,
+  enumColor,
+  inputBase,
+  numberColor,
+  readOnlyInput,
+  rowHeight,
+  stringColor,
+} from './shared';
+import {StyledTextArea} from './TextInput';
+import {ColorInspector} from './ColorInput';
 
 type ModalData = {
   data: unknown;
@@ -342,109 +355,6 @@ function NamedAttribute({
   );
 }
 
-const inputBase = css`
-  overflow: hidden; //stop random scrollbars from showing up
-  font-size: small;
-  padding: 2px 4px 2px 4px;
-  min-height: 20px !important; //this is for text area
-`;
-
-/**
- * disables hover and focsued states
- */
-const readOnlyInput = css`
-  :hover {
-    border-color: ${theme.disabledColor} !important;
-  }
-  :focus {
-    border-color: ${theme.disabledColor} !important;
-
-    box-shadow: none !important;
-  }
-  box-shadow: none !important;
-  border-color: ${theme.disabledColor} !important;
-`;
-
-function StyledInputNumber({
-  value,
-  color,
-  rightAddon,
-  mutable,
-  onChange,
-}: {
-  value: any;
-  mutable: boolean;
-  color: string;
-  rightAddon?: string;
-  onChange?: (value: number) => void;
-}) {
-  let formatted: any = value;
-  if (typeof value === 'number') {
-    //cap the number of decimal places to 5 but dont add trailing zeros
-    formatted = Number.parseFloat(value.toFixed(5));
-  }
-
-  const instance = usePlugin(plugin);
-  const frameTime = useValue(instance.currentFrameTime);
-  const drityFrameTime = useRef(0);
-  const [dirtyValue, setDirtyValue] = useState<number | null>(null);
-
-  return (
-    <InputNumber
-      size="small"
-      onChange={(value) => {
-        if (value != null) {
-          setDirtyValue(value);
-          drityFrameTime.current = frameTime;
-          onChange?.(value);
-        }
-      }}
-      className={cx(
-        // inputBase,
-        !mutable && readOnlyInput,
-        css`
-          // height: ${inputHeight}px;
-          //set input colour when no suffix
-          color: ${color};
-          //set input colour when has suffix
-          .ant-input.ant-input-sm[type='text'] {
-            color: ${color};
-          }
-          //set colour of suffix
-          .ant-input.ant-input-sm[type='text'] + .ant-input-suffix {
-            color: ${theme.textColorSecondary};
-            opacity: 0.7;
-          }
-          .ant-input-number: {
-            background-color: red;
-            border-right: none;
-          }
-          //style the add on to look like a suffix
-          .ant-input-number-group-addon {
-            padding-right: 4px;
-            padding-left: 2px;
-            border-left: none;
-            border-color: ${theme.disabledColor};
-            background-color: none;
-          }
-          ${rightAddon != null && 'border-right: none;'}
-          padding-top: 1px;
-          padding-bottom: 1px;
-          width: 100%;
-        `,
-      )}
-      bordered
-      readOnly={!mutable}
-      value={frameTime === drityFrameTime.current ? dirtyValue : formatted}
-      addonAfter={
-        rightAddon && (
-          <span style={{color: theme.textColorSecondary}}>{rightAddon}</span>
-        )
-      }
-    />
-  );
-}
-
 function StyledInput({
   value,
   color,
@@ -486,60 +396,6 @@ function StyledInput({
       value={formatted}
       suffix={rightAddon}
     />
-  );
-}
-
-function StyledTextArea({
-  value,
-  color,
-  mutable,
-}: {
-  value: any;
-  color: string;
-  mutable: boolean;
-  rightAddon?: string;
-}) {
-  return (
-    <Input.TextArea
-      autoSize
-      className={cx(inputBase, !mutable && readOnlyInput)}
-      bordered
-      style={{color: color}}
-      readOnly={!mutable}
-      value={value}
-    />
-  );
-}
-
-const boolColor = '#C41D7F';
-const stringColor = '#AF5800';
-const enumColor = '#006D75';
-const numberColor = '#003EB3';
-
-type NumberGroupValue = {
-  value: number;
-  addonText: string;
-  mutable: boolean;
-  hint: CompoundTypeHint;
-  onChange: (value: number, hint: CompoundTypeHint) => void;
-};
-
-const inputHeight = 26;
-
-function NumberGroup({values}: {values: NumberGroupValue[]}) {
-  return (
-    <Layout.Horizontal gap="small">
-      {values.map(({value, addonText, mutable, onChange, hint}, idx) => (
-        <StyledInputNumber
-          key={idx}
-          color={numberColor}
-          mutable={mutable}
-          value={value}
-          onChange={(value) => onChange(value, hint)}
-          rightAddon={addonText}
-        />
-      ))}
-    </Layout.Horizontal>
   );
 }
 
@@ -759,7 +615,7 @@ function AttributeValue({
             });
           }}
           style={{
-            height: inputHeight,
+            height: rowHeight,
             boxSizing: 'border-box',
             alignItems: 'center',
             justifyContent: 'center',
@@ -787,7 +643,7 @@ function AttributeValue({
             );
           }}
           style={{
-            height: inputHeight,
+            height: rowHeight,
             boxSizing: 'border-box',
             alignItems: 'center',
             justifyContent: 'center',
@@ -810,91 +666,4 @@ function AttributeValue({
         </Button>
       );
   }
-  return null;
-}
-
-const rowHeight = 26;
-
-function ColorInspector({inspectable}: {inspectable: InspectableColor}) {
-  return (
-    <Layout.Container gap="small">
-      <NumberGroup
-        values={[
-          {
-            value: inspectable.value.r,
-            addonText: 'R',
-            mutable: false,
-            hint: 'COLOR',
-            onChange: () => {},
-          },
-          {
-            value: inspectable.value.g,
-            addonText: 'G',
-            mutable: false,
-            hint: 'COLOR',
-            onChange: () => {},
-          },
-          {
-            value: inspectable.value.b,
-            addonText: 'B',
-            mutable: false,
-            hint: 'COLOR',
-            onChange: () => {},
-          },
-          {
-            value: inspectable.value.a,
-            addonText: 'A',
-            mutable: false,
-            hint: 'COLOR',
-            onChange: () => {},
-          },
-        ]}
-      />
-      <Layout.Horizontal gap="medium">
-        <ColorPreview
-          background={`rgba(${inspectable.value.r},${inspectable.value.g},${inspectable.value.b},${inspectable.value.a})`}
-        />
-        <StyledTextArea
-          color={stringColor}
-          mutable={false}
-          value={RGBAtoHEX(inspectable.value)}
-        />
-      </Layout.Horizontal>
-    </Layout.Container>
-  );
-}
-
-const ColorPreview = styled.div(({background}: {background: string}) => ({
-  width: rowHeight,
-  height: rowHeight,
-  borderRadius: '8px',
-  borderColor: theme.disabledColor,
-  borderStyle: 'solid',
-  boxSizing: 'border-box',
-  borderWidth: '1px',
-  backgroundColor: background,
-}));
-
-const RGBAtoHEX = (color: Color) => {
-  const hex =
-    (color.r | (1 << 8)).toString(16).slice(1) +
-    (color.g | (1 << 8)).toString(16).slice(1) +
-    (color.b | (1 << 8)).toString(16).slice(1);
-
-  return '#' + hex.toUpperCase();
-};
-
-type FourItemArray<T = any> = [T, T, T, T];
-
-function TwoByTwoNumberGroup({
-  values,
-}: {
-  values: FourItemArray<NumberGroupValue>;
-}) {
-  return (
-    <Layout.Container gap="small" style={{flex: '0 1 auto'}}>
-      <NumberGroup values={[values[0], values[1]]} />
-      <NumberGroup values={[values[2], values[3]]} />
-    </Layout.Container>
-  );
 }
