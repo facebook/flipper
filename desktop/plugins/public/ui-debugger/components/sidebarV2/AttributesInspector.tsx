@@ -397,8 +397,11 @@ function AttributeValue({
       return (
         <StyledTextArea
           color={stringColor}
-          mutable={false}
+          mutable={attributeMetadata.mutable}
           value={inspectable.value}
+          onChange={(value) => {
+            instance.uiActions.editClientAttribute(nodeId, value, metadataPath);
+          }}
         />
       );
     case 'number':

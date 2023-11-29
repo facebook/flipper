@@ -57,6 +57,7 @@ export function ColorInspector({inspectable}: {inspectable: InspectableColor}) {
         <StyledTextArea
           color={stringColor}
           mutable={false}
+          onChange={() => {}}
           value={RGBAtoHEX(inspectable.value)}
         />
       </Layout.Horizontal>

@@ -11,17 +11,22 @@ import {cx} from '@emotion/css';
 import {Input} from 'antd';
 import {inputBase, readOnlyInput} from './shared';
 import React from 'react';
+import {useOptimisticValue} from './useOptimisticValue';
 
 export function StyledTextArea({
   value,
   color,
   mutable,
+  onChange,
 }: {
-  value: any;
+  value: string;
   color: string;
   mutable: boolean;
+  onChange: (value: string) => void;
   rightAddon?: string;
 }) {
+  const optimisticValue = useOptimisticValue(value, onChange);
+
   return (
     <Input.TextArea
       autoSize
@@ -29,7 +34,8 @@ export function StyledTextArea({
       bordered
       style={{color: color}}
       readOnly={!mutable}
-      value={value}
+      value={optimisticValue.value}
+      onChange={(event) => optimisticValue.onChange(event.target.value)}
     />
   );
 }
