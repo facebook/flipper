@@ -397,6 +397,26 @@ object ViewDescriptor : ChainedDescriptor<View>() {
             else -> {}
           }
       ElevationAttributeId -> node.elevation = value.asFloat()
+      HeightAttributeId -> {
+        val strValue = value.asRaw()
+        val layoutParams = node.layoutParams
+        if (strValue is String) {
+          layoutParams.height = LayoutParamsMapping.getEnumValue(strValue)
+        } else {
+          layoutParams.height = value.asInt()
+        }
+        node.layoutParams = layoutParams
+      }
+      WidthAttributeId -> {
+        val strValue = value.asRaw()
+        val layoutParams = node.layoutParams
+        if (strValue is String) {
+          layoutParams.width = LayoutParamsMapping.getEnumValue(strValue)
+        } else {
+          layoutParams.width = value.asInt()
+        }
+        node.layoutParams = layoutParams
+      }
       MarginAttributeId -> {
         val layoutParams = node.layoutParams
         if (layoutParams is MarginLayoutParams) {
@@ -503,8 +523,16 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     val layoutParams = node.layoutParams
 
     val params = mutableMapOf<Int, Inspectable>()
-    params[WidthAttributeId] = LayoutParamsMapping.toInspectable(layoutParams.width)
-    params[HeightAttributeId] = LayoutParamsMapping.toInspectable(layoutParams.height)
+    if (layoutParams.width >= 0) {
+      params[WidthAttributeId] = InspectableValue.Number(layoutParams.width)
+    } else {
+      params[WidthAttributeId] = LayoutParamsMapping.toInspectable(layoutParams.width)
+    }
+    if (layoutParams.height >= 0) {
+      params[WidthAttributeId] = InspectableValue.Number(layoutParams.height)
+    } else {
+      params[HeightAttributeId] = LayoutParamsMapping.toInspectable(layoutParams.height)
+    }
 
     if (layoutParams is ViewGroup.MarginLayoutParams) {
       params[MarginAttributeId] =

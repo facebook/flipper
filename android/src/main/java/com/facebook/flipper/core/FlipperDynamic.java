@@ -125,4 +125,8 @@ public class FlipperDynamic {
     }
     return (FlipperArray) mObject;
   }
+
+  public Object asRaw() {
+    return mObject;
+  }
 }
