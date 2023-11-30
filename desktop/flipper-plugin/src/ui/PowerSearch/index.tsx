@@ -158,7 +158,9 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
                   ...prevSearchExpression.slice(i + 1),
                 ];
               });
-              searchTermFinderRef.current?.focus();
+              setTimeout(() => {
+                searchTermFinderRef.current?.focus();
+              });
             }}
           />
         );
