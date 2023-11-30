@@ -1,3 +1,12 @@
+# 0.240.0 (30/11/2023)
+
+ * [D51349212](https://github.com/facebook/flipper/search?q=D51349212&type=Commits) -  UIDebugger - show bloks state & deeplink to bloks debugger
+ * [D51349213](https://github.com/facebook/flipper/search?q=D51349213&type=Commits) -  UIDebugger search now expands matching elements
+ * [D51525419](https://github.com/facebook/flipper/search?q=D51525419&type=Commits) -  Plugin Marketplace now stores a unique ID per build
+ * [D51616454](https://github.com/facebook/flipper/search?q=D51616454&type=Commits) -  Flipper Electron distribution change announcement.
+ * [D51623365](https://github.com/facebook/flipper/search?q=D51623365&type=Commits) -  UIDebugger: Add live editting of attribute on the running app from the side bar. Currently Native android only
+
+
 # 0.239.0 (16/11/2023)
 
  * [D51346366](https://github.com/facebook/flipper/search?q=D51346366&type=Commits) -  UIDebugger fix issue with scrollbars sometimes appearing in sidebar
