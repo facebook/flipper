@@ -56,18 +56,6 @@ const operators = {
     key: 'caller_is',
     valueType: 'STRING',
   },
-  macro_is: {
-    label: 'is',
-    key: 'macro_is',
-    valueType: 'ENUM',
-    enumLabels: MyMacroEnum,
-  },
-  macro_is_not: {
-    label: 'is not',
-    key: 'macro_is_not',
-    valueType: 'ENUM',
-    enumLabels: MyMacroEnum,
-  },
   macro_is_any_of: {
     label: 'is any of',
     key: 'macro_is_any_of',
@@ -160,15 +148,6 @@ export const powerSearchExampleConfig: PowerSearchConfig = {
       label: 'Caller',
       operators: {
         caller_is: operators.caller_is,
-      },
-    },
-    macro: {
-      key: 'macro',
-      label: 'Macro',
-      operators: {
-        macro_is: operators.macro_is,
-        macro_is_not: operators.macro_is_not,
-        macro_is_any_of: operators.macro_is_any_of,
       },
     },
     unread_only: {

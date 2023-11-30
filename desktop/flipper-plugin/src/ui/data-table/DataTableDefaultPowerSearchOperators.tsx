@@ -122,28 +122,6 @@ export const dataTablePowerSearchOperators = {
     key: 'float_less_or_equal',
     valueType: 'FLOAT',
   }),
-  // { [enumValue]: enumLabel }
-  enum_is: (enumLabels: EnumLabels, allowFreeform?: boolean) => ({
-    label: 'is',
-    key: 'enum_is',
-    valueType: 'ENUM',
-    enumLabels,
-    allowFreeform,
-  }),
-  enum_is_nullish_or: (enumLabels: EnumLabels, allowFreeform?: boolean) => ({
-    label: 'is nullish or',
-    key: 'enum_is_nullish_or',
-    valueType: 'ENUM',
-    enumLabels,
-    allowFreeform,
-  }),
-  enum_is_not: (enumLabels: EnumLabels, allowFreeform?: boolean) => ({
-    label: 'is not',
-    key: 'enum_is_not',
-    valueType: 'ENUM',
-    enumLabels,
-    allowFreeform,
-  }),
   // TODO: Support logical operations (AND, OR, NOT) to combine primitive operators instead of adding new complex operators!
   enum_set_is_nullish_or_any_of: (
     enumLabels: EnumLabels,
@@ -340,13 +318,6 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     value < searchValue,
   float_less_or_equal: (_operator, searchValue: number, value: number) =>
     value <= searchValue,
-  enum_is: (_operator, searchValue: string, value: string) =>
-    enumPredicateForWhenValueCouldBeAStringifiedNullish(searchValue, value),
-  enum_is_nullish_or: (_operator, searchValue: string, value?: string | null) =>
-    value == null ||
-    enumPredicateForWhenValueCouldBeAStringifiedNullish(searchValue, value),
-  enum_is_not: (_operator, searchValue: string, value: string) =>
-    !enumPredicateForWhenValueCouldBeAStringifiedNullish(searchValue, value),
   enum_set_is_nullish_or_any_of: (
     _operator,
     searchValue: string[],

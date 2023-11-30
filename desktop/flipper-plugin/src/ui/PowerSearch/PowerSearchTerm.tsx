@@ -14,7 +14,6 @@ import {theme} from '../theme';
 import {PowerSearchAbsoluteDateTerm} from './PowerSearchAbsoluteDateTerm';
 import {OperatorConfig} from './PowerSearchConfig';
 import {PowerSearchEnumSetTerm} from './PowerSearchEnumSetTerm';
-import {PowerSearchEnumTerm} from './PowerSearchEnumTerm';
 import {PowerSearchFloatTerm} from './PowerSearchFloatTerm';
 import {PowerSearchIntegerTerm} from './PowerSearchIntegerTerm';
 import {PowerSearchStringSetTerm} from './PowerSearchStringSetTerm';
@@ -103,23 +102,6 @@ export const PowerSearchTerm: React.FC<PowerSearchTermProps> = ({
     case 'NO_VALUE': {
       // Nothing needs to be done. It should never be the case.
       searchValueComponent = null;
-      break;
-    }
-    case 'ENUM': {
-      searchValueComponent = (
-        <PowerSearchEnumTerm
-          onCancel={onCancel}
-          onChange={(newValue) => {
-            onFinalize({
-              ...searchTerm,
-              searchValue: newValue,
-            });
-          }}
-          enumLabels={searchTerm.operator.enumLabels}
-          allowFreeform={searchTerm.operator.allowFreeform}
-          defaultValue={searchTerm.searchValue}
-        />
-      );
       break;
     }
     case 'ENUM_SET': {
