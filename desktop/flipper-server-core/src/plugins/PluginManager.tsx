@@ -36,13 +36,9 @@ import {
 } from 'flipper-plugin-lib';
 import {ServerAddOnManager} from './ServerAddManager';
 import {loadMarketplacePlugins} from './loadMarketplacePlugins';
+import {httpGet} from './fb-stubs/pluginMarketplaceAPI';
 
 const maxInstalledPluginVersionsToKeep = 2;
-
-// Adapter which forces node.js implementation for axios instead of browser implementation
-// used by default in Electron. Node.js implementation is better, because it
-// supports streams which can be used for direct downloading to disk.
-const axiosHttpAdapter = require('axios/lib/adapters/http'); // eslint-disable-line import/no-commonjs
 
 const getTempDirName = promisify(tmp.dir) as (
   options?: tmp.DirOptions,
@@ -143,15 +139,10 @@ export class PluginManager {
         return await getInstalledPluginDetails(installationDir);
       } else {
         await fs.ensureDir(tmpDir);
+
         let percentCompleted = 0;
-        const response = await axios.get(plugin.downloadUrl, {
-          adapter: axiosHttpAdapter,
+        const response = await httpGet(new URL(plugin.downloadUrl), {
           cancelToken: cancelationSource.token,
-          responseType: 'stream',
-          headers: {
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-Mode': 'navigate',
-          },
           onDownloadProgress: async (progressEvent) => {
             const newPercentCompleted = !progressEvent.total
               ? 0
