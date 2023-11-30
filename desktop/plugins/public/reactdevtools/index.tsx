@@ -15,6 +15,7 @@ import {
   createState,
   useValue,
   Toolbar,
+  getFlipperLib,
 } from 'flipper-plugin';
 import React from 'react';
 import {Button, message, Switch, Typography} from 'antd';
@@ -351,6 +352,25 @@ export function Component() {
 
   const displayToolbar =
     globalDevToolsAvailable || connectionStatus !== ConnectionStatus.Connected;
+
+  if (getFlipperLib().environmentInfo.isHeadlessBuild) {
+    return (
+      <Layout.Container pad="medium">
+        <h1>Plugin is not going to work!</h1>
+        <p>Flipper and React Native are parting ways.</p>
+        <p>
+          Please, install "Flipper Electron" from MSC to make this plugin work.
+        </p>
+        <Button
+          block
+          onClick={() =>
+            getFlipperLib().openLink('munki://detail-FlipperElectron')
+          }>
+          Install
+        </Button>
+      </Layout.Container>
+    );
+  }
 
   return (
     <>
