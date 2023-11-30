@@ -185,6 +185,13 @@ export const dataTablePowerSearchOperators = {
 } satisfies {
   [key: string]: (...args: any[]) => OperatorConfig;
 };
+// Legacy enum term support. Remove me in a couple of months.
+(dataTablePowerSearchOperators as any).enum_is =
+  dataTablePowerSearchOperators.enum_set_is_any_of;
+(dataTablePowerSearchOperators as any).enum_is_not =
+  dataTablePowerSearchOperators.enum_set_is_none_of;
+(dataTablePowerSearchOperators as any).enum_is_nullish_or =
+  dataTablePowerSearchOperators.enum_set_is_nullish_or_any_of;
 
 export type PowerSearchOperatorProcessorConfig = {
   [K in keyof typeof dataTablePowerSearchOperators]: PowerSearchOperatorProcessor;
