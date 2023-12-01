@@ -21,8 +21,8 @@ import Banner, {isBannerEnabled} from './Banner';
 import SelectScreen from './SelectScreen';
 import ErrorScreen from './ErrorScreen';
 import ChromeDevTools from './ChromeDevTools';
-import {Layout, getFlipperLib} from 'flipper-plugin';
-import {Button} from 'antd';
+import {getFlipperLib} from 'flipper-plugin';
+import {IncompatibleNotice} from './fb-stubs/IncompatibleNotice';
 
 const POLL_SECS = 5 * 1000;
 const METRO_PORT_ENV_VAR = process.env.METRO_SERVER_PORT || '8081';
@@ -142,13 +142,11 @@ export default class extends FlipperDevicePlugin<State, any, any> {
 
   renderContent() {
     const {error, selectedTarget, targets} = this.state;
-
     if (selectedTarget) {
       let bannerMargin = null;
       if (isBannerEnabled()) {
         bannerMargin = '29px';
       }
-
       return (
         <ChromeDevTools
           url={selectedTarget.devtoolsFrontendUrl}
@@ -168,23 +166,7 @@ export default class extends FlipperDevicePlugin<State, any, any> {
 
   render() {
     if (getFlipperLib().environmentInfo.isHeadlessBuild) {
-      return (
-        <Layout.Container pad="medium">
-          <h1>Plugin is not going to work!</h1>
-          <p>Flipper and React Native are parting ways.</p>
-          <p>
-            Please, install "Flipper Electron" from MSC to make this plugin
-            work.
-          </p>
-          <Button
-            block
-            onClick={() =>
-              getFlipperLib().openLink('munki://detail-FlipperElectron')
-            }>
-            Install
-          </Button>
-        </Layout.Container>
-      );
+      return <IncompatibleNotice />;
     }
     return (
       <Container>

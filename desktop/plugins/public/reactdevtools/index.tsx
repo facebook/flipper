@@ -23,6 +23,7 @@ import {Button, message, Switch, Typography} from 'antd';
 import * as ReactDevToolsOSS from 'react-devtools-inline/frontend';
 import {DevToolsEmbedder} from './DevToolsEmbedder';
 import {Events, Methods} from './contract';
+import {IncompatibleNotice} from './fb-stubs/IncompatibleNotice';
 
 const DEV_TOOLS_NODE_ID = 'reactdevtools-out-of-react-node';
 const CONNECTED = 'DevTools connected';
@@ -354,22 +355,7 @@ export function Component() {
     globalDevToolsAvailable || connectionStatus !== ConnectionStatus.Connected;
 
   if (getFlipperLib().environmentInfo.isHeadlessBuild) {
-    return (
-      <Layout.Container pad="medium">
-        <h1>Plugin is not going to work!</h1>
-        <p>Flipper and React Native are parting ways.</p>
-        <p>
-          Please, install "Flipper Electron" from MSC to make this plugin work.
-        </p>
-        <Button
-          block
-          onClick={() =>
-            getFlipperLib().openLink('munki://detail-FlipperElectron')
-          }>
-          Install
-        </Button>
-      </Layout.Container>
-    );
+    return <IncompatibleNotice />;
   }
 
   return (
