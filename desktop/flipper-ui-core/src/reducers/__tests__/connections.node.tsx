@@ -56,39 +56,6 @@ test('doing a double REGISTER_DEVICE fails', () => {
   }).toThrow('still connected');
 });
 
-test('register, remove, re-register a metro device works correctly', () => {
-  const device1 = new TestDevice(
-    'http://localhost:8081',
-    'emulator',
-    'React Native',
-    'Metro',
-  );
-  let state: State = reducer(undefined, {
-    type: 'REGISTER_DEVICE',
-    payload: device1,
-  });
-  expect(state.devices.length).toBe(1);
-  expect(state.devices[0].displayTitle()).toBe('React Native');
-
-  device1.disconnect();
-
-  expect(state.devices.length).toBe(1);
-  expect(state.devices[0].displayTitle()).toBe('React Native (Offline)');
-
-  state = reducer(state, {
-    type: 'REGISTER_DEVICE',
-    payload: new TestDevice(
-      'http://localhost:8081',
-      'emulator',
-      'React Native',
-      'Metro',
-    ),
-  });
-  expect(state.devices.length).toBe(1);
-  expect(state.devices[0].displayTitle()).toBe('React Native');
-  expect(state.devices[0]).not.toBe(device1);
-});
-
 test('selectPlugin sets deepLinkPayload correctly', () => {
   const device1 = new TestDevice(
     'http://localhost:8081',
@@ -233,10 +200,8 @@ describe('selection changes', () => {
 
   let device1: BaseDevice;
   let device2: BaseDevice;
-  let metroDevice: BaseDevice;
   let d1app1: Client;
   let d1app2: Client;
-  let d2app1: Client;
   let d2app2: Client;
   let store: Store;
   let mockFlipper: MockFlipperResult;
@@ -249,13 +214,8 @@ describe('selection changes', () => {
 
     device1 = mockFlipper.device;
     device2 = mockFlipper.createDevice({});
-    metroDevice = mockFlipper.createDevice({
-      os: 'Metro',
-      serial: 'http://localhost:8081',
-    });
     d1app1 = mockFlipper.client;
     d1app2 = await mockFlipper.createClient(device1, 'd1app2');
-    d2app1 = await mockFlipper.createClient(device2, 'd2app1');
     d2app2 = await mockFlipper.createClient(device2, 'd2app2');
     store = mockFlipper.store;
   });
@@ -319,31 +279,6 @@ describe('selection changes', () => {
     expect(getActiveDevice(store.getState())).toBe(device1);
   });
 
-  test('select a metro device', async () => {
-    store.dispatch(
-      selectPlugin({
-        selectedPlugin: DevicePlugin1.id,
-        selectedDevice: metroDevice,
-        selectedAppId: d2app1.id, // this app will determine the active device
-      }),
-    );
-
-    const state = store.getState();
-    expect(state.connections).toMatchObject({
-      selectedDevice: metroDevice,
-      selectedPlugin: DevicePlugin1.id,
-      selectedAppId: d2app1.id,
-      userPreferredDevice: metroDevice.title,
-      // other prefs not updated
-      userPreferredPlugin: DevicePlugin1.id,
-      userPreferredApp: d2app1.query.app,
-    });
-
-    // used by plugin list, to keep main device / app selection correct
-    expect(getActiveClient(state)).toBe(d2app1);
-    expect(getActiveDevice(state)).toBe(device2);
-  });
-
   test('introducing new client does not select it', async () => {
     await mockFlipper.createClient(device2, 'd2app3');
     expect(store.getState().connections).toMatchObject({
@@ -401,12 +336,12 @@ describe('selection changes', () => {
   });
 
   test('select device', () => {
-    store.dispatch(selectDevice(metroDevice));
+    store.dispatch(selectDevice(device1));
     expect(store.getState().connections).toMatchObject({
-      selectedDevice: metroDevice,
+      selectedDevice: device1,
       selectedPlugin: TestPlugin1.id,
       selectedAppId: null,
-      userPreferredDevice: metroDevice.title,
+      userPreferredDevice: device1.title,
       // other prefs not updated
       userPreferredPlugin: TestPlugin1.id,
       userPreferredApp: d1app1.query.app,

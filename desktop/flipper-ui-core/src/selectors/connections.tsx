@@ -26,13 +26,6 @@ const getPluginDownloads = (state: State) => state.pluginDownloads;
 export const getActiveClient = (state: State) =>
   state.connections.clients.get(state.connections.selectedAppId!) ?? null;
 
-export const getMetroDevice = createSelector(getDevices, (devices) => {
-  return (
-    devices.find((device) => device.os === 'Metro' && !device.isArchived) ??
-    null
-  );
-});
-
 export const getSelectableDevices = createSelector(
   getDevices,
   getClients,
@@ -55,12 +48,7 @@ export const hasSelectableDevices = createSelector(
 export const getActiveDevice = createSelector(
   getSelectedDevice,
   getActiveClient,
-  getMetroDevice,
-  (selectedDevice, client, metroDevice) => {
-    // if not Metro device, use the selected device as metro device
-    if (selectedDevice !== metroDevice) {
-      return selectedDevice;
-    }
+  (selectedDevice, client) => {
     // if there is an active app, use device owning the app
     if (client) {
       // TODO: Will be fixed later in the stack
@@ -102,7 +90,6 @@ export const getPluginLists = createSelector(
     failedPlugins,
   }),
   getActiveDevice,
-  getMetroDevice,
   getActiveClient,
   computePluginLists,
 );
