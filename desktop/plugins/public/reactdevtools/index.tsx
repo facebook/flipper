@@ -15,6 +15,7 @@ import {
   createState,
   useValue,
   Toolbar,
+  getFlipperLib,
 } from 'flipper-plugin';
 import React from 'react';
 import {Button, message, Switch, Typography} from 'antd';
@@ -22,6 +23,7 @@ import {Button, message, Switch, Typography} from 'antd';
 import * as ReactDevToolsOSS from 'react-devtools-inline/frontend';
 import {DevToolsEmbedder} from './DevToolsEmbedder';
 import {Events, Methods} from './contract';
+import {IncompatibleNotice} from './fb-stubs/IncompatibleNotice';
 
 const DEV_TOOLS_NODE_ID = 'reactdevtools-out-of-react-node';
 const CONNECTED = 'DevTools connected';
@@ -351,6 +353,10 @@ export function Component() {
 
   const displayToolbar =
     globalDevToolsAvailable || connectionStatus !== ConnectionStatus.Connected;
+
+  if (getFlipperLib().environmentInfo.isHeadlessBuild) {
+    return <IncompatibleNotice />;
+  }
 
   return (
     <>

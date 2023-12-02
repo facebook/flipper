@@ -168,9 +168,7 @@ const idConfig = [dataTablePowerSearchOperators.int_equals()];
 
 const inferredEnum = [
   dataTablePowerSearchOperators.enum_set_is_any_of({}),
-  dataTablePowerSearchOperators.enum_is({}),
   dataTablePowerSearchOperators.enum_set_is_none_of({}),
-  dataTablePowerSearchOperators.enum_is_not({}),
 ];
 
 const staticColumns: DataTableColumn<AugmentedFrameworkEvent>[] = [

@@ -8,13 +8,14 @@
  */
 
 import {Atom, PluginClient} from 'flipper-plugin';
-import {debounce} from 'lodash';
+import {debounce, last} from 'lodash';
 import {
   ClientNode,
   CompoundTypeHint,
   Events,
   FrameworkEventType,
   Id,
+  Metadata,
   MetadataId,
   Methods,
   SnapshotInfo,
@@ -37,6 +38,7 @@ export function uiActions(
   snapshot: Atom<SnapshotInfo | null>,
   liveClientData: LiveClientState,
   client: PluginClient<Events, Methods>,
+  metadata: Atom<Map<MetadataId, Metadata>>,
 ): UIActions {
   const onExpandNode = (node: Id) => {
     uiState.expandedNodes.update((draft) => {
@@ -226,12 +228,33 @@ export function uiActions(
         metadataIdPath,
         compoundTypeHint,
       });
+      trackLiveEditDebounced(nodeId, metadataIdPath, value);
       return true;
     } catch (error) {
       console.warn('[ui-debugger] Failed to edit attribute', error);
       return false;
     }
   };
+
+  const trackLiveEditDebounced = debounce(
+    (nodeId: Id, metadataIdPath: MetadataId[], value: any) => {
+      const node = nodes.get().get(nodeId);
+      const attributePath = metadataIdPath.map(
+        (id) => metadata.get().get(id)?.name ?? id.toString(),
+      );
+
+      tracker.track('attribute-editted', {
+        nodeId: nodeId,
+        nodeName: node?.name ?? 'Unknown',
+        attributeName: last(attributePath) ?? 'Unknown',
+        attributePath,
+        value: value,
+        attributeType: (typeof value).toString(),
+        tags: node?.tags ?? [],
+      });
+    },
+    100,
+  );
 
   return {
     onExpandNode,

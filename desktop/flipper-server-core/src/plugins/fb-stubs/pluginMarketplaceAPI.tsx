@@ -9,6 +9,8 @@
 
 import {FlipperServer, MarketplacePluginDetails} from 'flipper-common';
 import fetch from 'node-fetch';
+import {default as axios, AxiosRequestConfig, AxiosResponse} from 'axios';
+import report from '../../utils/requestReport';
 
 export async function loadAvailablePlugins(
   server: FlipperServer,
@@ -22,4 +24,27 @@ export async function loadAvailablePlugins(
     console.error('Failed while retrieving marketplace plugins', e);
     return [];
   }
+}
+
+// Adapter which forces node.js implementation for axios instead of browser implementation
+// used by default in Electron. Node.js implementation is better, because it
+// supports streams which can be used for direct downloading to disk.
+const axiosHttpAdapter = require('axios/lib/adapters/http'); // eslint-disable-line import/no-commonjs
+
+export async function httpGet(
+  url: URL,
+  config: AxiosRequestConfig,
+): Promise<AxiosResponse> {
+  return report(
+    'plugin-download',
+    axios.get(url.toString(), {
+      adapter: axiosHttpAdapter,
+      responseType: 'stream',
+      headers: {
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-Mode': 'navigate',
+      },
+      ...config,
+    }),
+  );
 }

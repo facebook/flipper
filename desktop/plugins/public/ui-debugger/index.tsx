@@ -85,6 +85,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     snapshot,
     mutableLiveClientData,
     client,
+    metadata,
   );
 
   const perfEvents = createDataSource<PerformanceStatsEvent, 'txId'>([], {

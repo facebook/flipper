@@ -19,7 +19,7 @@ export type IntegerFilterValueType = 'INTEGER';
 
 export type FloatFilterValueType = 'FLOAT';
 
-export type EnumFilterValueType = 'ENUM' | 'ENUM_SET';
+export type EnumFilterValueType = 'ENUM_SET';
 
 export type AbsoluteDateFilterValueType = 'ABSOLUTE_DATE';
 

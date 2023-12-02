@@ -72,7 +72,7 @@ function createColumnConfig(
       },
       powerSearchConfig: {
         type: 'enum',
-        inferEnumOptionsFromData: true,
+        enumLabels: logLevelEnumLabels,
       },
     },
     {

@@ -158,7 +158,12 @@ export const PowerSearch: React.FC<PowerSearchProps> = ({
                   ...prevSearchExpression.slice(i + 1),
                 ];
               });
-              searchTermFinderRef.current?.focus();
+              // setTimeout allows antd to clear the search input (default behavior when a predefined option is selected) and prevents onChange from firing twice
+              // Without it, when you enter a value in the enum_set term to filter available options, and then select on the filtered optiong, onChange fires twice.
+              // First, with the selected option. Second, with the search value that you used for filtering.
+              setTimeout(() => {
+                searchTermFinderRef.current?.focus();
+              });
             }}
           />
         );
