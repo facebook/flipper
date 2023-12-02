@@ -15,6 +15,7 @@ module.exports = {
       'features/index',
       'features/share-flipper-data',
       'features/react-native',
+      'features/virtual-devices',
       {
         Plugins: [
           {
