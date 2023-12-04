@@ -53,74 +53,74 @@ exports[`load PluginInstaller list 1`] = `
       </span>
     </div>
     <div
-      class="css-bgfc37-View-FlexBox-FlexColumn-Container emab7y20"
+      class="css-bgfc37-View-FlexBox-FlexColumn-Container ecd8vvk0"
       tabindex="0"
     >
       <div
-        class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn e1e47qlf0"
+        class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn ewpmr9y0"
       >
         <div
-          class="css-1otvu18-View-FlexBox-FlexRow-TableHeadContainer eig1lcc1"
+          class="css-1otvu18-View-FlexBox-FlexRow-TableHeadContainer ebt14ub1"
         >
           <div
-            class="css-mpoiz3-TableHeadColumnContainer eig1lcc0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="name"
             width="0"
           >
             <div
-              class="eig1lcc3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
+              class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1054ash-TableHeaderColumnContainer eig1lcc2"
+                class="css-1054ash-TableHeaderColumnContainer ebt14ub2"
               >
                 Name
               </div>
             </div>
           </div>
           <div
-            class="css-mpoiz3-TableHeadColumnContainer eig1lcc0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="version"
             width="0"
           >
             <div
-              class="eig1lcc3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
+              class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1054ash-TableHeaderColumnContainer eig1lcc2"
+                class="css-1054ash-TableHeaderColumnContainer ebt14ub2"
               >
                 Version
               </div>
             </div>
           </div>
           <div
-            class="css-mpoiz3-TableHeadColumnContainer eig1lcc0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="description"
             width="0"
           >
             <div
-              class="eig1lcc3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
+              class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1054ash-TableHeaderColumnContainer eig1lcc2"
+                class="css-1054ash-TableHeaderColumnContainer ebt14ub2"
               >
                 Description
               </div>
             </div>
           </div>
           <div
-            class="css-mpoiz3-TableHeadColumnContainer eig1lcc0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="install"
             width="0"
           >
             <div
-              class="eig1lcc3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
+              class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1054ash-TableHeaderColumnContainer eig1lcc2"
+                class="css-1054ash-TableHeaderColumnContainer ebt14ub2"
               >
                 Action
               </div>
@@ -129,17 +129,17 @@ exports[`load PluginInstaller list 1`] = `
         </div>
       </div>
       <div
-        class="css-p5h61d-View-FlexBox-FlexColumn-Container emab7y20"
+        class="css-p5h61d-View-FlexBox-FlexColumn-Container ecd8vvk0"
       >
         <div
-          class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn e1e47qlf0"
+          class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn ewpmr9y0"
         >
           <div
-            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer e1pvjj0s1"
+            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer ef77i511"
             data-key="flipper-plugin-hello"
           >
             <div
-              class="css-yt4330-TableBodyColumnContainer e1pvjj0s0"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -155,7 +155,7 @@ exports[`load PluginInstaller list 1`] = `
               </div>
             </div>
             <div
-              class="css-pfp0fy-TableBodyColumnContainer e1pvjj0s0"
+              class="css-pfp0fy-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -166,7 +166,7 @@ exports[`load PluginInstaller list 1`] = `
               </span>
             </div>
             <div
-              class="css-yt4330-TableBodyColumnContainer e1pvjj0s0"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -183,7 +183,7 @@ exports[`load PluginInstaller list 1`] = `
                   href="https://yarnpkg.com/en/package/flipper-plugin-hello"
                 >
                   <div
-                    class="css-xl1cnv-ColoredIconCustom ekc8qeh0"
+                    class="css-xl1cnv-ColoredIconCustom ejte90o0"
                     color="var(--light-color-button-active)"
                     size="16"
                     src="https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/info-circle_filled_16.png"
@@ -192,7 +192,7 @@ exports[`load PluginInstaller list 1`] = `
               </div>
             </div>
             <div
-              class="css-16v1lq1-TableBodyColumnContainer e1pvjj0s0"
+              class="css-16v1lq1-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -207,11 +207,11 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer e1pvjj0s1"
+            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer ef77i511"
             data-key="flipper-plugin-world"
           >
             <div
-              class="css-yt4330-TableBodyColumnContainer e1pvjj0s0"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -227,7 +227,7 @@ exports[`load PluginInstaller list 1`] = `
               </div>
             </div>
             <div
-              class="css-pfp0fy-TableBodyColumnContainer e1pvjj0s0"
+              class="css-pfp0fy-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -238,7 +238,7 @@ exports[`load PluginInstaller list 1`] = `
               </span>
             </div>
             <div
-              class="css-yt4330-TableBodyColumnContainer e1pvjj0s0"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -255,7 +255,7 @@ exports[`load PluginInstaller list 1`] = `
                   href="https://yarnpkg.com/en/package/flipper-plugin-world"
                 >
                   <div
-                    class="css-xl1cnv-ColoredIconCustom ekc8qeh0"
+                    class="css-xl1cnv-ColoredIconCustom ejte90o0"
                     color="var(--light-color-button-active)"
                     size="16"
                     src="https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/info-circle_filled_16.png"
@@ -264,7 +264,7 @@ exports[`load PluginInstaller list 1`] = `
               </div>
             </div>
             <div
-              class="css-16v1lq1-TableBodyColumnContainer e1pvjj0s0"
+              class="css-16v1lq1-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -362,10 +362,10 @@ exports[`load PluginInstaller list 1`] = `
         </div>
       </div>
       <div
-        class="css-5ukfaz-View-FlexBox-FlexRow-ButtonContainer eguixfz1"
+        class="css-5ukfaz-View-FlexBox-FlexRow-ButtonContainer e1q5b1ee1"
       >
         <div
-          class="css-wospjg-View-FlexBox-FlexRow ek54xq0"
+          class="css-wospjg-View-FlexBox-FlexRow e1ufal3d0"
         >
           <button
             class="ant-btn ant-btn-primary"
@@ -377,7 +377,7 @@ exports[`load PluginInstaller list 1`] = `
             </span>
           </button>
           <div
-            class="css-170i4ha-View-FlexBox-FlexRow-ErrorGlyphContainer eguixfz0"
+            class="css-170i4ha-View-FlexBox-FlexRow-ErrorGlyphContainer e1q5b1ee0"
           />
         </div>
       </div>
@@ -439,74 +439,74 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
       </span>
     </div>
     <div
-      class="css-bgfc37-View-FlexBox-FlexColumn-Container emab7y20"
+      class="css-bgfc37-View-FlexBox-FlexColumn-Container ecd8vvk0"
       tabindex="0"
     >
       <div
-        class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn e1e47qlf0"
+        class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn ewpmr9y0"
       >
         <div
-          class="css-1otvu18-View-FlexBox-FlexRow-TableHeadContainer eig1lcc1"
+          class="css-1otvu18-View-FlexBox-FlexRow-TableHeadContainer ebt14ub1"
         >
           <div
-            class="css-mpoiz3-TableHeadColumnContainer eig1lcc0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="name"
             width="0"
           >
             <div
-              class="eig1lcc3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
+              class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1054ash-TableHeaderColumnContainer eig1lcc2"
+                class="css-1054ash-TableHeaderColumnContainer ebt14ub2"
               >
                 Name
               </div>
             </div>
           </div>
           <div
-            class="css-mpoiz3-TableHeadColumnContainer eig1lcc0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="version"
             width="0"
           >
             <div
-              class="eig1lcc3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
+              class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1054ash-TableHeaderColumnContainer eig1lcc2"
+                class="css-1054ash-TableHeaderColumnContainer ebt14ub2"
               >
                 Version
               </div>
             </div>
           </div>
           <div
-            class="css-mpoiz3-TableHeadColumnContainer eig1lcc0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="description"
             width="0"
           >
             <div
-              class="eig1lcc3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
+              class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1054ash-TableHeaderColumnContainer eig1lcc2"
+                class="css-1054ash-TableHeaderColumnContainer ebt14ub2"
               >
                 Description
               </div>
             </div>
           </div>
           <div
-            class="css-mpoiz3-TableHeadColumnContainer eig1lcc0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="install"
             width="0"
           >
             <div
-              class="eig1lcc3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
+              class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
               style="z-index: auto; right: 0px; bottom: 0px; width: 100%; height: 100%;"
             >
               <div
-                class="css-1054ash-TableHeaderColumnContainer eig1lcc2"
+                class="css-1054ash-TableHeaderColumnContainer ebt14ub2"
               >
                 Action
               </div>
@@ -515,17 +515,17 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
         </div>
       </div>
       <div
-        class="css-p5h61d-View-FlexBox-FlexColumn-Container emab7y20"
+        class="css-p5h61d-View-FlexBox-FlexColumn-Container ecd8vvk0"
       >
         <div
-          class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn e1e47qlf0"
+          class="ant-dropdown-trigger css-18abd42-View-FlexBox-FlexColumn ewpmr9y0"
         >
           <div
-            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer e1pvjj0s1"
+            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer ef77i511"
             data-key="flipper-plugin-hello"
           >
             <div
-              class="css-yt4330-TableBodyColumnContainer e1pvjj0s0"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -541,7 +541,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </div>
             </div>
             <div
-              class="css-pfp0fy-TableBodyColumnContainer e1pvjj0s0"
+              class="css-pfp0fy-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -552,7 +552,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </span>
             </div>
             <div
-              class="css-yt4330-TableBodyColumnContainer e1pvjj0s0"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -569,7 +569,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                   href="https://yarnpkg.com/en/package/flipper-plugin-hello"
                 >
                   <div
-                    class="css-xl1cnv-ColoredIconCustom ekc8qeh0"
+                    class="css-xl1cnv-ColoredIconCustom ejte90o0"
                     color="var(--light-color-button-active)"
                     size="16"
                     src="https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/info-circle_filled_16.png"
@@ -578,7 +578,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </div>
             </div>
             <div
-              class="css-16v1lq1-TableBodyColumnContainer e1pvjj0s0"
+              class="css-16v1lq1-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -593,11 +593,11 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer e1pvjj0s1"
+            class="css-hg3ptm-View-FlexBox-FlexRow-TableBodyRowContainer ef77i511"
             data-key="flipper-plugin-world"
           >
             <div
-              class="css-yt4330-TableBodyColumnContainer e1pvjj0s0"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -613,7 +613,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </div>
             </div>
             <div
-              class="css-pfp0fy-TableBodyColumnContainer e1pvjj0s0"
+              class="css-pfp0fy-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -624,7 +624,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </span>
             </div>
             <div
-              class="css-yt4330-TableBodyColumnContainer e1pvjj0s0"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -641,7 +641,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
                   href="https://yarnpkg.com/en/package/flipper-plugin-world"
                 >
                   <div
-                    class="css-xl1cnv-ColoredIconCustom ekc8qeh0"
+                    class="css-xl1cnv-ColoredIconCustom ejte90o0"
                     color="var(--light-color-button-active)"
                     size="16"
                     src="https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/info-circle_filled_16.png"
@@ -650,7 +650,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </div>
             </div>
             <div
-              class="css-16v1lq1-TableBodyColumnContainer e1pvjj0s0"
+              class="css-16v1lq1-TableBodyColumnContainer ef77i510"
               title=""
               width="0"
             >
@@ -748,10 +748,10 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
         </div>
       </div>
       <div
-        class="css-5ukfaz-View-FlexBox-FlexRow-ButtonContainer eguixfz1"
+        class="css-5ukfaz-View-FlexBox-FlexRow-ButtonContainer e1q5b1ee1"
       >
         <div
-          class="css-wospjg-View-FlexBox-FlexRow ek54xq0"
+          class="css-wospjg-View-FlexBox-FlexRow e1ufal3d0"
         >
           <button
             class="ant-btn ant-btn-primary"
@@ -763,7 +763,7 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </span>
           </button>
           <div
-            class="css-170i4ha-View-FlexBox-FlexRow-ErrorGlyphContainer eguixfz0"
+            class="css-170i4ha-View-FlexBox-FlexRow-ErrorGlyphContainer e1q5b1ee0"
           />
         </div>
       </div>

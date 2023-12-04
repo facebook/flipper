@@ -9,7 +9,7 @@
   },
   "references": [
     {
-      "path": "../flipper-ui-core"
+      "path": "../flipper-ui"
     }
   ],
   "exclude": ["**/node_modules/", "**/__tests__/", "**/lib/"]

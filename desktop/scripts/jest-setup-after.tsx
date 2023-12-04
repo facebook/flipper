@@ -27,7 +27,18 @@ import {
 
 // Only import the type!
 // eslint-disable-next-line node/no-extraneous-import
-import type {RenderHost} from 'flipper-ui-core';
+import type {RenderHost} from 'flipper-frontend-core';
+
+(global as any).flipperConfig = {
+  theme: 'light',
+  entryPoint: 'bundle.js',
+  debug: true,
+  graphSecret: 'TEST_GRAPH_SECRET',
+  appVersion: '0.0.0',
+  sessionId: 'TEST_SESSION_ID',
+  unixname: 'Luke',
+  authToken: 'TEST_AUTH_TOKEN',
+};
 
 const test = global.test;
 if (!test) {

@@ -153,12 +153,7 @@ export async function compileServerMain() {
 }
 
 // TODO: needed?
-const uiSourceDirs = [
-  'flipper-ui',
-  'flipper-ui-core',
-  'flipper-plugin',
-  'flipper-common',
-];
+const uiSourceDirs = ['flipper-ui', 'flipper-plugin', 'flipper-common'];
 
 export async function buildBrowserBundle(outDir: string, dev: boolean) {
   console.log('⚙️  Compiling browser bundle...');
@@ -202,10 +197,10 @@ export async function buildBrowserBundle(outDir: string, dev: boolean) {
       resolveRequest(context: any, moduleName: string, ...rest: any[]) {
         assertSaneImport(context, moduleName);
         // flipper is special cased, for plugins that we bundle,
-        // we want to resolve `import from 'flipper'` to 'flipper-ui-core', which
+        // we want to resolve `import from 'flipper'` to 'deprecated-exports', which
         // defines all the deprecated exports
         if (moduleName === 'flipper') {
-          return MetroResolver.resolve(context, 'flipper-ui-core', ...rest);
+          return MetroResolver.resolve(context, 'deprecated-exports', ...rest);
         }
         // stubbed modules are modules that don't make sense outside a Node / Electron context,
         // like fs, child_process etc etc.

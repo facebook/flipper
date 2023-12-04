@@ -15,7 +15,7 @@ import {makeIOSBridge} from '../IOSBridge';
 import * as promisifyChildProcess from 'promisify-child-process';
 import {setFlipperServerConfig} from '../../../FlipperServerConfig';
 // eslint-disable-next-line node/no-extraneous-import
-import {getRenderHostInstance} from 'flipper-ui-core';
+import {getRenderHostInstance} from 'flipper-frontend-core';
 
 beforeEach(() => {
   setFlipperServerConfig(getRenderHostInstance().serverConfig);

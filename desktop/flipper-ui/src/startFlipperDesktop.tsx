@@ -8,7 +8,7 @@
  */
 
 import {Provider} from 'react-redux';
-import {init as initLogger} from './fb-stubs/Logger';
+import {init as initLogger} from './fb-stubs/LoggerEnhanced';
 import {SandyApp} from './sandy-chrome/SandyApp';
 import {Persistor, persistStore} from 'redux-persist';
 import dispatcher from './dispatcher/index';

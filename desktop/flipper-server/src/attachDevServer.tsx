@@ -24,7 +24,6 @@ import {isFBBuild} from './fb-stubs/constants';
 
 const uiSourceDirs = [
   'flipper-ui',
-  'flipper-ui-core',
   'flipper-plugin-core',
   'flipper-plugin',
   'flipper-frontend-core',
@@ -103,10 +102,10 @@ export async function attachDevServer(
       sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
       resolveRequest(context: any, moduleName: string, ...rest: any[]) {
         // flipper is special cased, for plugins that we bundle,
-        // we want to resolve `impoSrt from 'flipper'` to 'flipper-ui-core', which
+        // we want to resolve `impoSrt from 'flipper'` to 'deprecated-exports', which
         // defines all the deprecated exports
         if (moduleName === 'flipper') {
-          return MetroResolver.resolve(context, 'flipper-ui-core', ...rest);
+          return MetroResolver.resolve(context, 'deprecated-exports', ...rest);
         }
         // stubbed modules are modules that don't make sense outside a Node / Electron context,
         // like fs, child_process etc etc.

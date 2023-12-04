@@ -186,7 +186,7 @@ async function start() {
 
   // @ts-ignore
   // eslint-disable-next-line import/no-commonjs
-  require('flipper-ui-core').startFlipperDesktop(flipperServer);
+  require('./startFlipperDesktop').startFlipperDesktop(flipperServer);
   window.flipperHideMessage?.();
 
   /**

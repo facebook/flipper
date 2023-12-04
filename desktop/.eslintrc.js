@@ -62,11 +62,6 @@ const restrictedImportsUniversalErrorConfig = {
         "Imports from nested flipper-common directories are not allowed. Import from 'flipper-common' module directly. If it is missing an export, add it there.",
     },
     {
-      group: ['flipper-ui-core/*'],
-      message:
-        "Imports from nested flipper-ui-core directories are not allowed. Import from 'flipper-ui-core' module directly. If it is missing an export, add it there.",
-    },
-    {
       group: ['antd/*'],
       message:
         "Imports from nested antd directories are not allowed. Import from 'antd' module directly. If you want to import only a type, use `import type` syntax and silence this warning.",
@@ -251,7 +246,6 @@ module.exports = {
       files: [
         'plugins/**/*.ts',
         'plugins/**/*.tsx',
-        'flipper-ui-core/**/*.tsx',
         'flipper-common/**/*.tsx',
         'flipper-frontend-core/**/*.tsx',
         'flipper-ui/**/*.tsx',
@@ -325,7 +319,6 @@ module.exports = {
       files: [
         'plugins/**/__tests__/**/*.tsx',
         'plugins/**/__tests__/**/*.ts',
-        'flipper-ui-core/**/__tests__/**/*.tsx',
         'flipper-common/**/__tests__/**/*.tsx',
         'flipper-frontend-core/**/__tests__/**/*.tsx',
         'flipper-ui/**/__tests__/**/*.tsx',

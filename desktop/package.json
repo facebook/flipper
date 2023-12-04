@@ -181,7 +181,6 @@
       "flipper-plugin-core",
       "flipper-server-client",
       "flipper-server-companion",
-      "flipper-ui-core",
       "flipper-ui",
       "flipper-server",
       "flipper-dump",

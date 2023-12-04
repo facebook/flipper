@@ -4,7 +4,12 @@
     "outDir": "lib",
     "rootDir": "src",
     "lib": ["dom", "ES2021"],
-    "types": ["../types/flipperGlobals", "react/next", "react-dom/next"]
+    "types": [
+      "../types/flipperGlobals",
+      "react/next",
+      "react-dom/next",
+      "../types/ReactDebounceRender"
+    ]
   },
   "references": [
     {
@@ -17,7 +22,10 @@
       "path": "../flipper-server-client"
     },
     {
-      "path": "../flipper-ui-core"
+      "path": "../flipper-plugin"
+    },
+    {
+      "path": "../test-utils"
     }
   ]
 }

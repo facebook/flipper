@@ -14,7 +14,7 @@ import {
   uuid,
   wrapRequire,
 } from 'flipper-common';
-import type {RenderHost} from 'flipper-ui-core';
+import type {RenderHost} from 'flipper-frontend-core';
 import FileSaver from 'file-saver';
 
 import {Base64} from 'js-base64';
