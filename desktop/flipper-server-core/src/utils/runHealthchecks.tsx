@@ -71,19 +71,14 @@ export async function runHealthcheck(
     ? {
         status: 'FAILED',
         message: checkResult.message,
-        message2: checkResult.message2,
-        commands: checkResult.commands,
       }
     : checkResult.hasProblem && !check.isRequired
     ? {
         status: 'WARNING',
         message: checkResult.message,
-        message2: checkResult.message2,
-        commands: checkResult.commands,
       }
     : {
         status: 'SUCCESS',
         message: checkResult.message,
-        message2: checkResult.message2,
       };
 }

@@ -14,7 +14,6 @@ export async function validateSelectedXcodeVersion(
 ): Promise<FlipperDoctor.HealthcheckRunResult> {
   return {
     hasProblem: false,
-    message: '',
-    message2: ['ios.xcode-select--noop'],
+    message: ['ios.xcode-select--noop'],
   };
 }

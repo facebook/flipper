@@ -71,12 +71,7 @@ export namespace FlipperDoctor {
 
   export type HealthcheckRunResult = {
     hasProblem: boolean;
-    message: string;
-    message2: MessageIdWithParams;
-    /**
-     * Commands to show to mitigate a problem or hint for more information
-     */
-    commands?: CliCommand[];
+    message: MessageIdWithParams;
   };
 
   export type SubprocessHealtcheckRunResult =
@@ -113,9 +108,7 @@ export namespace FlipperDoctor {
   export type HealthcheckResult = {
     status: HealthcheckStatus;
     isAcknowledged?: boolean;
-    message?: string;
-    message2?: MessageIdWithParams;
-    commands?: CliCommand[];
+    message?: MessageIdWithParams;
   };
 
   export type HealthcheckReportItem = {
@@ -196,6 +189,8 @@ export namespace FlipperDoctor {
     'ios.idb--installed': [];
 
     'doctor-failed': [{error: any}];
+
+    skipped: [{reason: string}];
   };
 
   export type MessageIdWithParams = {

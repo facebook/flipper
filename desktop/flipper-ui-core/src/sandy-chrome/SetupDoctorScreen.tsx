@@ -13,7 +13,6 @@ import {
   Typography,
   Collapse,
   Button,
-  List,
   Modal,
   Checkbox,
   Alert,
@@ -41,7 +40,7 @@ import type {FlipperDoctor} from 'flipper-common';
 type Healthchecks = FlipperDoctor.Healthchecks;
 import {reportUsage} from 'flipper-common';
 
-const {Title, Paragraph, Text} = Typography;
+const {Title, Text} = Typography;
 
 const statusTypeAndMessage: {
   [key in FlipperDoctor.HealthcheckStatus]: {
@@ -134,37 +133,12 @@ function CollapsableCategory(props: {
           key={check.key}
           header={check.label}
           extra={<CheckIcon status={check.result.status} />}>
-          {check.result.message2 != null ? (
+          {check.result.message != null ? (
             <DoctorMessage
-              id={check.result.message2[0]}
-              props={check.result.message2[1]}
+              id={check.result.message[0]}
+              props={check.result.message[1]}
             />
-          ) : (
-            check.result.message?.split('\n').map((line, index) => (
-              <Paragraph key={index} style={{marginBottom: 0}}>
-                {line}
-              </Paragraph>
-            ))
-          )}
-          {check.result.commands && (
-            <List>
-              {check.result.commands.map(({title, command}, i) => (
-                <List.Item key={i}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      marginBottom: 8,
-                    }}>
-                    <Typography.Text type="secondary">{title}</Typography.Text>
-                    <Typography.Text code copyable>
-                      {command}
-                    </Typography.Text>
-                  </div>
-                </List.Item>
-              ))}
-            </List>
-          )}
+          ) : null}
         </Collapse.Panel>
       ))}
     </Collapse>
@@ -190,7 +164,6 @@ function HealthCheckList(props: {report: FlipperDoctor.HealthcheckReport}) {
                       result: {
                         status: 'SKIPPED',
                         message: category.result.message,
-                        message2: category.result.message2,
                       },
                     },
                   ]

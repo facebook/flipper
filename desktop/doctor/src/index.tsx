@@ -33,8 +33,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             const result = await tryExecuteCommand('openssl version');
             return {
               hasProblem: result.fail,
-              message: 'moved to message2',
-              message2: result.fail
+              message: result.fail
                 ? ['common.openssl--not_installed', {output: result.message}]
                 : ['common.openssl--installed', {output: result.message}],
             };
@@ -47,8 +46,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             const isAvailable = await isWatchmanAvailable();
             return {
               hasProblem: !isAvailable,
-              message: 'moved to message2',
-              message2: isAvailable
+              message: isAvailable
                 ? ['common.watchman--installed']
                 : ['common.watchman--not_installed'],
             };
@@ -76,8 +74,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
 
                   return {
                     hasProblem,
-                    message: 'moved to message2',
-                    message2: hasProblem
+                    message: hasProblem
                       ? ['android.android-studio--not_installed']
                       : ['android.android-studio--installed'],
                   };
@@ -97,22 +94,19 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             if (!androidHome) {
               return {
                 hasProblem: true,
-                message: `moved to message2`,
-                message2: ['android.sdk--no_ANDROID_HOME'],
+                message: ['android.sdk--no_ANDROID_HOME'],
               };
             } else if (!fs.existsSync(androidHome)) {
               return {
                 hasProblem: true,
-                message: `moved to message2`,
-                message2: ['android.sdk--invalid_ANDROID_HOME', {androidHome}],
+                message: ['android.sdk--invalid_ANDROID_HOME', {androidHome}],
               };
             } else {
               const platformToolsDir = path.join(androidHome, 'platform-tools');
               if (!fs.existsSync(platformToolsDir)) {
                 return {
                   hasProblem: true,
-                  message: `moved to message2`,
-                  message2: ['android.sdk--no_android_sdk', {platformToolsDir}],
+                  message: ['android.sdk--no_android_sdk', {platformToolsDir}],
                 };
               } else {
                 const versionResult = await tryExecuteCommand(
@@ -122,8 +116,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 if (versionResult.fail === false) {
                   return {
                     hasProblem: false,
-                    message: `moved to message2`,
-                    message2: [
+                    message: [
                       'android.sdk--installed',
                       {output: versionResult.stdout},
                     ],
@@ -131,8 +124,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 } else {
                   return {
                     hasProblem: true,
-                    message: `moved to message2`,
-                    message2: [
+                    message: [
                       'android.sdk--not_installed',
                       {output: versionResult.message},
                     ],
@@ -161,8 +153,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   const hasProblem = e.IDEs == null || e.IDEs.Xcode == null;
                   return {
                     hasProblem,
-                    message: 'moved to message2',
-                    message2: hasProblem
+                    message: hasProblem
                       ? ['ios.xcode--not_installed']
                       : [
                           `ios.xcode--installed`,
@@ -183,18 +174,10 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 ): Promise<FlipperDoctor.HealthcheckRunResult> => {
                   // TODO check for an existing Xcode
                   const result = await tryExecuteCommand('xcode-select -p');
-                  const selectXcodeCommands = [
-                    {
-                      title: 'Select Xcode version',
-                      command: `sudo xcode-select -switch <path/to/>Xcode.app`,
-                    },
-                  ];
                   if (result.fail) {
                     return {
                       hasProblem: true,
-                      message: 'moved to message2',
-                      commands: selectXcodeCommands,
-                      message2: [
+                      message: [
                         'ios.xcode-select--not_set',
                         {message: result.message},
                       ],
@@ -204,15 +187,13 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   if (selectedXcode == '/Library/Developer/CommandLineTools') {
                     return {
                       hasProblem: true,
-                      message: 'moved to message2',
-                      message2: ['ios.xcode-select--no_xcode_selected'],
+                      message: ['ios.xcode-select--no_xcode_selected'],
                     };
                   }
                   if ((await fs_extra.pathExists(selectedXcode)) == false) {
                     return {
                       hasProblem: true,
-                      message: 'moved to message2',
-                      message2: [
+                      message: [
                         'ios.xcode-select--nonexisting_selected',
                         {selected: selectedXcode},
                       ],
@@ -225,8 +206,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   }
                   return {
                     hasProblem: false,
-                    message: `xcode-select has path of ${selectedXcode}.`,
-                    message2: [
+                    message: [
                       'ios.xcode-select--set',
                       {selected: selectedXcode},
                     ],
@@ -246,8 +226,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                     !e.SDKs['iOS SDK'].Platforms.length;
                   return {
                     hasProblem,
-                    message: 'moved to message2',
-                    message2: hasProblem
+                    message: hasProblem
                       ? ['ios.sdk--not_installed']
                       : [
                           'ios.sdk--installed',
@@ -269,8 +248,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   if (result.fail) {
                     return {
                       hasProblem: true,
-                      message: 'moved to message2',
-                      message2: [
+                      message: [
                         'ios.xctrace--not_installed',
                         {message: result.message.trim()},
                       ],
@@ -278,8 +256,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   }
                   return {
                     hasProblem: false,
-                    message: 'moved to message2',
-                    message2: [
+                    message: [
                       'ios.xctrace--installed',
                       {output: result.stdout.trim()},
                     ],
@@ -297,15 +274,13 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   if (!settings) {
                     return {
                       hasProblem: false,
-                      message: 'moved to message2',
-                      message2: ['ios.idb--no_context'],
+                      message: ['ios.idb--no_context'],
                     };
                   }
                   if (!settings.enablePhysicalIOS) {
                     return {
                       hasProblem: false,
-                      message: 'moved to message2',
-                      message2: ['ios.idb--physical_device_disabled'],
+                      message: ['ios.idb--physical_device_disabled'],
                     };
                   }
                   const result = await tryExecuteCommand(
@@ -314,8 +289,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   if (result.fail) {
                     return {
                       hasProblem: true,
-                      message: 'moved to message2',
-                      message2: [
+                      message: [
                         'ios.idb--not_installed',
                         {idbPath: settings.idbPath},
                       ],
@@ -324,9 +298,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
 
                   return {
                     hasProblem: false,
-                    message:
-                      'Flipper is configured to use your IDB installation.',
-                    message2: ['ios.idb--installed'],
+                    message: ['ios.idb--installed'],
                   };
                 },
               },

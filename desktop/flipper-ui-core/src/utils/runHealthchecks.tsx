@@ -62,8 +62,7 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
           return {
             status: 'FAILED',
             isAcknowledged: false,
-            message: 'Failed to run doctor check: ' + e,
-            message2: ['doctor-failed', {error: e}],
+            message: ['doctor-failed', {error: e}],
           };
         });
       const metricName = `doctor:${h.key.replace('.', ':')}.healthcheck`; // e.g. "doctor:ios:xcode-select.healthcheck"

@@ -83,7 +83,12 @@ exports[`finish 1`] = `
             "label": "SDK Installed",
             "result": {
               "isAcknowledged": false,
-              "message": "Updated Test Message",
+              "message": [
+                "android.sdk--installed",
+                {
+                  "output": "success",
+                },
+              ],
               "status": "SUCCESS",
             },
           },
@@ -102,7 +107,12 @@ exports[`finish 1`] = `
             "label": "OpenSSL Istalled",
             "result": {
               "isAcknowledged": false,
-              "message": "Updated Test Message",
+              "message": [
+                "common.openssl--installed",
+                {
+                  "output": "not found",
+                },
+              ],
               "status": "SUCCESS",
             },
           },
@@ -121,7 +131,14 @@ exports[`finish 1`] = `
             "label": "SDK Installed",
             "result": {
               "isAcknowledged": false,
-              "message": "Updated Test Message",
+              "message": [
+                "ios.sdk--installed",
+                {
+                  "platforms": [
+                    "ios",
+                  ],
+                },
+              ],
               "status": "SUCCESS",
             },
           },
@@ -214,7 +231,12 @@ exports[`statuses updated after healthchecks finished 1`] = `
             "label": "SDK Installed",
             "result": {
               "isAcknowledged": false,
-              "message": "Updated Test Message",
+              "message": [
+                "android.sdk--not_installed",
+                {
+                  "output": "some error message",
+                },
+              ],
               "status": "FAILED",
             },
           },
@@ -233,7 +255,12 @@ exports[`statuses updated after healthchecks finished 1`] = `
             "label": "OpenSSL Istalled",
             "result": {
               "isAcknowledged": false,
-              "message": "Updated Test Message",
+              "message": [
+                "common.openssl--installed",
+                {
+                  "output": "found",
+                },
+              ],
               "status": "SUCCESS",
             },
           },
@@ -251,7 +278,14 @@ exports[`statuses updated after healthchecks finished 1`] = `
             "label": "SDK Installed",
             "result": {
               "isAcknowledged": false,
-              "message": "Updated Test Message",
+              "message": [
+                "ios.sdk--installed",
+                {
+                  "platforms": [
+                    "ios",
+                  ],
+                },
+              ],
               "status": "SUCCESS",
             },
           },
@@ -283,7 +317,12 @@ exports[`updateHealthcheckResult 1`] = `
             "label": "SDK Installed",
             "result": {
               "isAcknowledged": false,
-              "message": "Updated Test Message",
+              "message": [
+                "android.sdk--installed",
+                {
+                  "output": "some error message",
+                },
+              ],
               "status": "SUCCESS",
             },
           },

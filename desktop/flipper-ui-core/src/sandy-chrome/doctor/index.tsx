@@ -249,6 +249,10 @@ const IosIdbInstalled = (_props: PropsFor<'ios.idb--installed'>) => (
   </Typography.Paragraph>
 );
 
+const Skipped = (props: PropsFor<'skipped'>) => (
+  <Typography.Paragraph>{props.reason}</Typography.Paragraph>
+);
+
 const messageToComp: {
   [K in keyof FlipperDoctor.HealthcheckResultMessageMapping]: React.FC<
     PropsFor<K>
@@ -296,6 +300,8 @@ const messageToComp: {
   'ios.idb--installed': IosIdbInstalled,
 
   'doctor-failed': Noop,
+
+  skipped: Skipped,
 };
 
 export const DoctorMessage = <
