@@ -12,6 +12,7 @@ import {Logger} from 'flipper-common';
 import {PluginNotification} from '../reducers/notifications';
 import {textContent} from 'flipper-plugin';
 import {sideEffect} from '../utils/sideEffect';
+import reactElementToJSXString from 'react-element-to-jsx-string';
 
 export type NotificationEvents =
   | 'show'
@@ -29,16 +30,10 @@ export default (store: Store, logger: Logger) => {
   sideEffect(
     store,
     {name: 'notifications', throttleMs: 500},
-    ({notifications, plugins}) => ({
+    ({notifications}) => ({
       notifications,
-      devicePlugins: plugins.devicePlugins,
-      clientPlugins: plugins.clientPlugins,
     }),
-    ({notifications, devicePlugins, clientPlugins}, store) => {
-      function getPlugin(name: string) {
-        return devicePlugins.get(name) ?? clientPlugins.get(name);
-      }
-
+    ({notifications}, store) => {
       const {activeNotifications, blocklistedPlugins, blocklistedCategories} =
         notifications;
 
@@ -71,33 +66,12 @@ export default (store: Store, logger: Logger) => {
               // within the NOTIFICATION_THROTTLE.
               return;
             }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const plugin = getPlugin(n.pluginId);
-            // getRenderHostInstance().sendIpcEvent('sendNotification', {
-            //   payload: {
-            //     title: n.notification.title,
-            //     body: reactElementToJSXString(n.notification.message),
-            //     actions: [
-            //       {
-            //         type: 'button',
-            //         text: 'Show',
-            //       },
-            //       {
-            //         type: 'button',
-            //         text: 'Hide similar',
-            //       },
-            //       {
-            //         type: 'button',
-            //         text: `Hide all ${
-            //           plugin != null ? getPluginTitle(plugin) : ''
-            //         }`,
-            //       },
-            //     ],
-            //     closeButtonText: 'Hide',
-            //   },
-            //   closeAfter: 10000,
-            //   pluginNotification: n,
-            // });
+
+            if (Notification.permission === 'granted') {
+              new Notification(n.notification.title, {
+                body: reactElementToJSXString(n.notification.message),
+              });
+            }
             logger.track('usage', 'native-notification', {
               ...n.notification,
               message:
