@@ -29,7 +29,7 @@ const HEALTHCHECKS: FlipperDoctor.Healthchecks = {
           return {
             hasProblem: false,
             message: '',
-            message2: ['ios.sdk--installed'],
+            message2: ['ios.sdk--installed', {platforms: ['ios']}],
           };
         },
       },

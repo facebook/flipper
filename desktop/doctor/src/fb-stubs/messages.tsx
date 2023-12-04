@@ -13,8 +13,3 @@ export const getIdbInstallationInstructions = (
   message: `IDB is required to use Flipper with iOS devices. It can be installed from https://github.com/facebook/idb and configured in Flipper settings. You can also disable physical iOS device support in settings. Current setting: ${idbPath} isn't a valid IDB installation.`,
   commands: [],
 });
-
-export const installSDK =
-  'You can install it using Xcode (https://developer.apple.com/xcode/). Once installed, restart flipper.';
-
-export const installAndroidStudio = 'moved to message2';

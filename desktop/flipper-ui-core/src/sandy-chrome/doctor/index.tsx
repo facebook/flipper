@@ -10,7 +10,7 @@
 import {FlipperDoctor} from 'flipper-common';
 import React from 'react';
 import {Typography} from 'antd';
-import {CodeBlock, PropsFor, Noop, CliCommand} from './util';
+import {CodeBlock, PropsFor, Noop, CliCommand, List} from './util';
 import {moreMessageToComp} from './fb-stubs/messages';
 
 const CommonOpenSSLInstalled = (
@@ -168,6 +168,39 @@ const XcodeSelectNonExistingSelected = (
   </Typography.Paragraph>
 );
 
+const IosSdkNotInstalled = (_props: PropsFor<'ios.sdk--not_installed'>) => (
+  <div>
+    <Typography.Paragraph>
+      The iOS SDK is not installed on your machine. Please follow these steps:
+    </Typography.Paragraph>
+    <List>
+      <List.Item>Launch Xcode</List.Item>
+      <List.Item>Create a new project</List.Item>
+      <List.Item>
+        Download SDK for iOS(other environments are optional)
+      </List.Item>
+      <List.Item
+      // TODO see how to pick it up without a restart
+      >
+        Restart Flipper
+      </List.Item>
+    </List>
+  </div>
+);
+
+const IosSdkInstalled = (props: PropsFor<'ios.sdk--installed'>) => (
+  <div>
+    <Typography.Paragraph>
+      The iOS SDK is installed on your machine. Installed platforms:
+    </Typography.Paragraph>
+    <List listStyle="none">
+      {props.platforms.map((platform, i) => (
+        <List.Item key={i}>{platform}</List.Item>
+      ))}
+    </List>
+  </div>
+);
+
 const messageToComp: {
   [K in keyof FlipperDoctor.HealthcheckResultMessageMapping]: React.FC<
     PropsFor<K>
@@ -202,8 +235,8 @@ const messageToComp: {
   'ios.xcode-select--custom_path': Noop,
   'ios.xcode-select--old_version_selected': Noop,
 
-  'ios.sdk--installed': Noop,
-  'ios.sdk--not_installed': Noop,
+  'ios.sdk--installed': IosSdkInstalled,
+  'ios.sdk--not_installed': IosSdkNotInstalled,
 
   'ios.xctrace--installed': Noop,
   'ios.xctrace--not_installed': Noop,

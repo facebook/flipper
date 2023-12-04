@@ -47,12 +47,18 @@ export function CodeBlock({
     </pre>
   );
 }
-export function List({children}: {children: React.ReactNode[]}) {
+export function List({
+  children,
+  listStyle = 'decimal',
+}: {
+  children: React.ReactNode[];
+  listStyle?: 'decimal' | 'distk' | 'none';
+}) {
   return (
     <ul
       style={{
         marginLeft: 16,
-        listStyle: 'decimal',
+        listStyle,
       }}>
       {children}
     </ul>

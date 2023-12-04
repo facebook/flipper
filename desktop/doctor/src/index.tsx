@@ -17,11 +17,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type {FlipperDoctor} from 'flipper-common';
 import * as fs_extra from 'fs-extra';
-import {
-  getIdbInstallationInstructions,
-  installSDK,
-  installAndroidStudio,
-} from './fb-stubs/messages';
+import {getIdbInstallationInstructions} from './fb-stubs/messages';
 import {validateSelectedXcodeVersion} from './fb-stubs/validateSelectedXcodeVersion';
 
 export function getHealthchecks(): FlipperDoctor.Healthchecks {
@@ -80,13 +76,9 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                     '/Applications/Android Studio.app',
                   );
 
-                  const message = hasProblem
-                    ? installAndroidStudio
-                    : `Android Studio is installed.`;
-
                   return {
                     hasProblem,
-                    message,
+                    message: 'moved to message2',
                     message2: hasProblem
                       ? ['android.android-studio--not_installed']
                       : ['android.android-studio--installed'],
@@ -250,17 +242,15 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                     !e.SDKs['iOS SDK'] ||
                     !e.SDKs['iOS SDK'].Platforms ||
                     !e.SDKs['iOS SDK'].Platforms.length;
-                  const message = hasProblem
-                    ? `iOS SDK is not installed. ${installSDK}`
-                    : `iOS SDK is installed for the following platforms: ${JSON.stringify(
-                        e.SDKs['iOS SDK'].Platforms,
-                      )}.`;
                   return {
                     hasProblem,
-                    message,
+                    message: 'moved to message2',
                     message2: hasProblem
                       ? ['ios.sdk--not_installed']
-                      : ['ios.sdk--installed'],
+                      : [
+                          'ios.sdk--installed',
+                          {platforms: e.SDKs['iOS SDK'].Platforms},
+                        ],
                   };
                 },
               },

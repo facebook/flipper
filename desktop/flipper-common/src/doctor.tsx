@@ -183,7 +183,7 @@ export namespace FlipperDoctor {
     ];
     'ios.xcode-select--nonexisting_selected': [{selected: string}];
 
-    'ios.sdk--installed': [];
+    'ios.sdk--installed': [{platforms: string[]}];
     'ios.sdk--not_installed': [];
 
     'ios.xctrace--installed': [];
