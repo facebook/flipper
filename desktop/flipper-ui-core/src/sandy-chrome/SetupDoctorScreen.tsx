@@ -18,6 +18,7 @@ import {
   Alert,
   Space,
 } from 'antd';
+import {css} from '@emotion/css';
 import {
   CheckCircleFilled,
   CloseCircleFilled,
@@ -123,6 +124,24 @@ function CheckIcon(props: {status: FlipperDoctor.HealthcheckStatus}) {
   }
 }
 
+// decrease size and padding of elements in messages
+const panelClassname = css`
+  & .ant-collapse-content-box {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 0.9em;
+  }
+
+  & div.ant-typography {
+    margin-bottom: 0.5em;
+  }
+
+  & .ant-typography pre {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+`;
+
 function CollapsableCategory(props: {
   checks: Array<FlipperDoctor.HealthcheckReportItem>;
 }) {
@@ -131,6 +150,7 @@ function CollapsableCategory(props: {
       {props.checks.map((check) => (
         <Collapse.Panel
           key={check.key}
+          className={panelClassname}
           header={check.label}
           extra={<CheckIcon status={check.result.status} />}>
           {check.result.message != null ? (
