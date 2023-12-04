@@ -9,7 +9,6 @@
 
 import {CopyOutlined, FilterOutlined, TableOutlined} from '@ant-design/icons';
 import {Badge, Checkbox, Menu, Select, Switch} from 'antd';
-import {Layout} from 'flipper-plugin';
 import {
   DataTableDispatch,
   getSelectedItem,
@@ -19,21 +18,20 @@ import {
   Selection,
 } from './DataTableManager';
 import React from 'react';
-import {
-  _tryGetFlipperLibImplementation,
-  _DataSourceView,
-} from 'flipper-plugin-core';
 import {DataTableColumn} from './DataTable';
 import {toFirstUpper} from '../../utils/toFirstUpper';
 import {renderColumnValue} from './TableRow';
 import {textContent} from '../../utils/textContent';
 import {theme} from '../theme';
+import {DataSourceView} from '../../data-source/index';
+import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
+import {Layout} from '../Layout';
 
 const {Item, SubMenu} = Menu;
 const {Option} = Select;
 
 export function tableContextMenuFactory<T extends object>(
-  dataView: _DataSourceView<T, T[keyof T]>,
+  dataView: DataSourceView<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   selection: Selection,
   highlightSearchSetting: SearchHighlightSetting,
@@ -47,7 +45,7 @@ export function tableContextMenuFactory<T extends object>(
   onContextMenu?: (selection: undefined | T) => React.ReactElement,
   sideBySideOption?: React.ReactElement,
 ) {
-  const lib = _tryGetFlipperLibImplementation();
+  const lib = tryGetFlipperLibImplementation();
   if (!lib) {
     return (
       <Menu>

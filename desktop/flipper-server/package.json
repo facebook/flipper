@@ -32,7 +32,6 @@
     "async-mutex": "^0.3.2",
     "axios": "^0.26.0",
     "flipper-doctor": "0.0.0",
-    "flipper-plugin-core": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
     "form-data": "^4.0.0",
     "invariant": "^2.2.4",

@@ -19,14 +19,14 @@ import {
   ExclamationCircleOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
+import {fromUint8Array} from 'js-base64';
+import {assertNever} from 'flipper-common';
 import {
   FileDescriptor,
   FileEncoding,
   FlipperLib,
   getFlipperLib,
-} from 'flipper-plugin-core';
-import {fromUint8Array} from 'js-base64';
-import {assertNever} from 'flipper-common';
+} from '../plugin/FlipperLib';
 
 export type FileSelectorProps = {
   /**

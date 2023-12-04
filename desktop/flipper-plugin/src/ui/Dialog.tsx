@@ -8,8 +8,7 @@
  */
 
 import {Alert, ButtonProps, Input, Modal, Radio, Space, Typography} from 'antd';
-import {createState} from 'flipper-plugin-core';
-import {useValue} from '../state/atom';
+import {createState, useValue} from '../state/atom';
 import React from 'react';
 import {renderReactRoot} from '../utils/renderReactRoot';
 import {Layout} from './Layout';

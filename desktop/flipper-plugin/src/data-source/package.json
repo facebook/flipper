@@ -20,7 +20,8 @@
     "@reach/observe-rect": "^1.2.0",
     "lodash": "^4.17.21",
     "microbundle": "^0.13.0",
-    "react-virtual": "^2.6.2"
+    "react-virtual": "^2.6.2",
+    "eventemitter3": "^4.0.7"
   },
   "peerDependencies": {
     "react": "*",

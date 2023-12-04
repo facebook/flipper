@@ -22,12 +22,7 @@ import {isFBBuild} from './fb-stubs/constants';
 // part of that is done by start-flipper-server-dev (compiling "main"),
 // the other part ("renderer") here.
 
-const uiSourceDirs = [
-  'flipper-ui',
-  'flipper-plugin-core',
-  'flipper-plugin',
-  'flipper-common',
-];
+const uiSourceDirs = ['flipper-ui', 'flipper-plugin', 'flipper-common'];
 
 // copied from plugin-lib/src/pluginPaths
 export async function getPluginSourceFolders(): Promise<string[]> {

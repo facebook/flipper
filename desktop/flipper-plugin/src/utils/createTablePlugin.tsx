@@ -8,14 +8,14 @@
  */
 
 import {notification, Typography} from 'antd';
-import {DataSource} from 'flipper-plugin-core';
 import React from 'react';
-import {PluginClient} from 'flipper-plugin-core';
+import {DataSource} from '../data-source/index';
+import {PluginClient} from '../plugin/Plugin';
 import {usePlugin} from '../plugin/PluginContext';
-import {createState} from 'flipper-plugin-core';
+import {createState} from '../state/atom';
+import {createDataSource} from '../state/createDataSource';
 import {DataTableColumn} from '../ui/data-table/DataTable';
 import {MasterDetail} from '../ui/MasterDetail';
-import {createDataSource} from 'flipper-plugin-core';
 
 type PluginResult<Raw, Row> = {
   plugin(client: PluginClient<Record<string, Raw | {}>>): {

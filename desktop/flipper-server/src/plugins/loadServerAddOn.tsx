@@ -12,13 +12,6 @@ import {
   ServerAddOnStartDetails,
 } from 'flipper-common';
 import {assertNotNull} from '../app-connectivity/Utilities';
-import * as FlipperPluginSDK from 'flipper-plugin-core';
-
-declare global {
-  // eslint-disable-next-line no-var
-  var FlipperPlugin: typeof FlipperPluginSDK;
-}
-global.FlipperPlugin = FlipperPluginSDK;
 
 interface ServerAddOnModule {
   default: ServerAddOnFn<any, any>;

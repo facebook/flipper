@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {_tryGetFlipperLibImplementation} from 'flipper-plugin-core';
+import {tryGetFlipperLibImplementation} from '../plugin/FlipperLib';
 import {Layout} from './Layout';
 
 export type DetailSidebarProps = {
@@ -19,7 +19,7 @@ export type DetailSidebarProps = {
 
 /* eslint-disable react-hooks/rules-of-hooks */
 export function DetailSidebar(props: DetailSidebarProps) {
-  const lib = _tryGetFlipperLibImplementation();
+  const lib = tryGetFlipperLibImplementation();
   if (lib?.DetailsSidebarImplementation) {
     return <lib.DetailsSidebarImplementation {...props} />;
   }

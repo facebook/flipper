@@ -10,15 +10,19 @@
 import type {DataTableColumn} from './DataTableWithPowerSearch';
 import {Percentage} from '../../utils/widthUtils';
 import {MutableRefObject, Reducer, RefObject} from 'react';
-import {DataSourceVirtualizer} from '../../data-source/index';
+import {
+  DataSource,
+  DataSourceView,
+  DataSourceVirtualizer,
+} from '../../data-source/index';
 import produce, {castDraft, immerable, original} from 'immer';
-import {DataSource, getFlipperLib, _DataSourceView} from 'flipper-plugin-core';
 import {SearchExpressionTerm} from '../PowerSearch';
 import {
   dataTablePowerSearchOperators,
   PowerSearchOperatorProcessorConfig,
 } from './DataTableDefaultPowerSearchOperators';
 import {DataTableManager as DataTableManagerLegacy} from './DataTableManager';
+import {getFlipperLib} from '../../plugin/FlipperLib';
 
 export type OnColumnResize = (id: string, size: number | Percentage) => void;
 export type Sorting<T = any> = {
@@ -101,7 +105,7 @@ type DataManagerActions<T> =
 
 type DataManagerConfig<T> = {
   dataSource: DataSource<T, T[keyof T]>;
-  dataView: _DataSourceView<T, T[keyof T]>;
+  dataView: DataSourceView<T, T[keyof T]>;
   defaultColumns: DataTableColumn<T>[];
   scope: string;
   onSelect: undefined | ((item: T | undefined, items: T[]) => void);
@@ -184,7 +188,7 @@ export const dataTableManagerReducer = produce<
       );
       draft.filterExceptions = undefined;
       const items = getSelectedItems(
-        config.dataView as _DataSourceView<any, any>,
+        config.dataView as DataSourceView<any, any>,
         draft.selection,
       );
 
@@ -288,7 +292,7 @@ export type DataTableManager<T> = {
   toggleColumnVisibility(column: keyof T): void;
   sortColumn(column: keyof T, direction?: SortDirection): void;
   setSearchExpression(searchExpression: SearchExpressionTerm[]): void;
-  dataView: _DataSourceView<T, T[keyof T]>;
+  dataView: DataSourceView<T, T[keyof T]>;
   stateRef: RefObject<Readonly<DataManagerState<T>>>;
   toggleSideBySide(): void;
   setFilterExceptions(exceptions: string[] | undefined): void;
@@ -305,7 +309,7 @@ const showPowerSearchMigrationWarning = () => {
 };
 
 export function createDataTableManager<T>(
-  dataView: _DataSourceView<T, T[keyof T]>,
+  dataView: DataSourceView<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   stateRef: MutableRefObject<DataManagerState<T>>,
 ): DataTableManager<T> {
@@ -436,14 +440,14 @@ export function createInitialState<T>(
 }
 
 export function getSelectedItem<T>(
-  dataView: _DataSourceView<T, T[keyof T]>,
+  dataView: DataSourceView<T, T[keyof T]>,
   selection: Selection,
 ): T | undefined {
   return selection.current < 0 ? undefined : dataView.get(selection.current);
 }
 
 export function getSelectedItems<T>(
-  dataView: _DataSourceView<T, T[keyof T]>,
+  dataView: DataSourceView<T, T[keyof T]>,
   selection: Selection,
 ): T[] {
   return [...selection.items]

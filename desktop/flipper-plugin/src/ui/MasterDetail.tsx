@@ -29,9 +29,8 @@ import {
 } from '@ant-design/icons';
 import {Button} from 'antd';
 import {usePluginInstance} from '../plugin/PluginContext';
-import {Atom, createState} from 'flipper-plugin-core';
 import {useAssertStableRef} from '../utils/useAssertStableRef';
-import {useValue} from '../state/atom';
+import {Atom, createState, useValue} from '../state/atom';
 
 type MasterDetailProps<T> = {
   /**

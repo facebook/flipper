@@ -27,6 +27,9 @@ import {
   DataSourceRendererVirtual,
   DataSourceRendererStatic,
   DataSourceVirtualizer,
+  DataSource,
+  DataSourceView,
+  createDataSource,
 } from '../../data-source/index';
 import {
   computeDataTableFilter,
@@ -55,11 +58,6 @@ import {Formatter} from '../DataFormatter';
 import {usePluginInstanceMaybe} from '../../plugin/PluginContext';
 import {debounce} from 'lodash';
 import {useInUnitTest} from '../../utils/useInUnitTest';
-import {
-  createDataSource,
-  DataSource,
-  _DataSourceView,
-} from 'flipper-plugin-core';
 import {useLatestRef} from '../../utils/useLatestRef';
 import {
   PowerSearch,
@@ -98,7 +96,7 @@ type DataTableBaseProps<T = any> = {
   onContextMenu?: (selection: undefined | T) => React.ReactElement;
   onRenderEmpty?:
     | null
-    | ((dataView?: _DataSourceView<T, T[keyof T]>) => React.ReactElement);
+    | ((dataView?: DataSourceView<T, T[keyof T]>) => React.ReactElement);
   powerSearchInitialState?: SearchExpressionTerm[];
   /**
    * Adds a special power search entry to search through the entire row (mathching a substring in it after stringifying it as a JSON)
@@ -1114,7 +1112,7 @@ function syncRecordsToDataSource<T>(
 }
 
 function createDefaultEmptyRenderer<T>(dataTableManager?: DataTableManager<T>) {
-  return (dataView?: _DataSourceView<T, T[keyof T]>) => (
+  return (dataView?: DataSourceView<T, T[keyof T]>) => (
     <EmptyTable dataView={dataView} dataManager={dataTableManager} />
   );
 }
@@ -1123,7 +1121,7 @@ function EmptyTable<T>({
   dataView,
   dataManager,
 }: {
-  dataView?: _DataSourceView<T, T[keyof T]>;
+  dataView?: DataSourceView<T, T[keyof T]>;
   dataManager?: DataTableManager<T>;
 }) {
   const resetFilters = useCallback(() => {

@@ -9,12 +9,12 @@
 
 import * as TestUtils from '../test-utils/test-utils';
 import * as testPlugin from './TestPlugin';
-import {createState} from 'flipper-plugin-core';
-import {PluginClient} from 'flipper-plugin-core';
-import {DevicePluginClient} from 'flipper-plugin-core';
 import mockConsole from 'jest-mock-console';
 import {sleep} from 'flipper-common';
-import {createDataSource} from 'flipper-plugin-core';
+import {createState} from '../state/atom';
+import {PluginClient} from '../plugin/Plugin';
+import {DevicePluginClient} from '../plugin/DevicePlugin';
+import {createDataSource} from '../state/createDataSource';
 
 test('it can start a plugin and lifecycle events', () => {
   const {instance, ...p} = TestUtils.startPlugin(testPlugin);

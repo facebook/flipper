@@ -133,7 +133,6 @@ async function startWatchChanges() {
         'pkg-lib',
         'plugin-lib',
         'flipper-common',
-        'flipper-plugin-core',
         'flipper-server',
       ].map((dir) =>
         watchman.startWatchFiles(

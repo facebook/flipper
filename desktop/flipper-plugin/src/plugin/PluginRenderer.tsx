@@ -9,22 +9,20 @@
 
 import React, {memo, useEffect, createElement} from 'react';
 import {SandyPluginContext} from './PluginContext';
-import {
-  _SandyPluginInstance,
-  _SandyDevicePluginInstance,
-  _BasePluginInstance,
-} from 'flipper-plugin-core';
 import {TrackingScope} from '../ui/Tracked';
+import {SandyPluginInstance} from './Plugin';
+import {SandyDevicePluginInstance} from './DevicePlugin';
+import {BasePluginInstance} from './PluginBase';
 
 type Props = {
-  plugin: _SandyPluginInstance | _SandyDevicePluginInstance;
+  plugin: SandyPluginInstance | SandyDevicePluginInstance;
 };
 
 /**
  * Component to render a Sandy plugin container
  */
 export const SandyPluginRenderer = memo(({plugin}: Props) => {
-  if (!plugin || !(plugin instanceof _BasePluginInstance)) {
+  if (!plugin || !(plugin instanceof BasePluginInstance)) {
     throw new Error('Expected plugin, got ' + plugin);
   }
   useEffect(() => {

@@ -23,9 +23,6 @@
       "path": "../flipper-common"
     },
     {
-      "path": "../flipper-plugin-core"
-    },
-    {
       "path": "../plugin-lib"
     },
     {

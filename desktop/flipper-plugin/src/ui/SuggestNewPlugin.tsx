@@ -8,8 +8,9 @@
  */
 
 import {Button, notification} from 'antd';
-import {getFlipperLib, PluginClient} from 'flipper-plugin-core';
 import * as React from 'react';
+import {getFlipperLib} from '../plugin/FlipperLib';
+import {PluginClient} from '../plugin/Plugin';
 
 export type SuggestNewPluginProps = {
   newPluginGK?: string;

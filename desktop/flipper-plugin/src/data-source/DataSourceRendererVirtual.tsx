@@ -18,10 +18,9 @@ import React, {
   useContext,
   createContext,
 } from 'react';
-// eslint-disable-next-line node/no-extraneous-import
-import type {_DataSourceView} from 'flipper-plugin-core';
 import {useVirtual} from 'react-virtual';
 import observeRect from '@reach/observe-rect';
+import {DataSourceView} from './DataSource';
 
 // how fast we update if updates are low-prio (e.g. out of window and not super significant)
 const LOW_PRIO_UPDATE = 1000; //ms
@@ -40,7 +39,7 @@ type DataSourceProps<T extends object, C> = {
   /**
    * The data source to render
    */
-  dataView: _DataSourceView<T, T[keyof T]>;
+  dataView: DataSourceView<T, T[keyof T]>;
   /**
    * Automatically scroll if the user is near the end?
    */
@@ -69,7 +68,7 @@ type DataSourceProps<T extends object, C> = {
   onUpdateAutoScroll?(autoScroll: boolean): void;
   emptyRenderer?:
     | null
-    | ((dataView: _DataSourceView<T, T[keyof T]>) => React.ReactElement);
+    | ((dataView: DataSourceView<T, T[keyof T]>) => React.ReactElement);
 };
 
 /**

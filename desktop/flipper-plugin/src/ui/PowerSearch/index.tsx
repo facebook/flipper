@@ -29,7 +29,7 @@ import {useLatestRef} from '../../utils/useLatestRef';
 import {useUpdateEffect} from 'react-use';
 import {theme} from '../theme';
 import {SearchOutlined} from '@ant-design/icons';
-import {getFlipperLib} from 'flipper-plugin-core';
+import {getFlipperLib} from '../../plugin/FlipperLib';
 
 export {
   PowerSearchConfig,

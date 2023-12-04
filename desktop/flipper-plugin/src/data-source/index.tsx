@@ -9,11 +9,11 @@
 
 export {
   DataSource,
-  _DataSourceView,
+  DataSourceView,
   createDataSource,
-  _DataSourceOptions,
-  _DataSourceOptionKey, // eslint-disable-next-line node/no-extraneous-import
-} from 'flipper-plugin-core';
+  DataSourceOptions,
+  DataSourceOptionKey,
+} from './DataSource';
 export {
   DataSourceRendererVirtual,
   DataSourceVirtualizer,
