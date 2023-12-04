@@ -44,6 +44,7 @@ import BaseDevice, {DeviceExport} from '../devices/BaseDevice';
 import ArchivedDevice from '../devices/ArchivedDevice';
 import {getRenderHostInstance} from '../RenderHost';
 import {importFile} from './importFile';
+import {exportFileBinary} from './exportFile';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -692,12 +693,9 @@ export async function exportEverythingEverywhereAllAtOnce(
   onStatusUpdate?.('archive');
   const archiveData = await zip.generateAsync({type: 'uint8array'});
 
-  const exportedFilePath = await getRenderHostInstance().exportFileBinary?.(
-    archiveData,
-    {
-      defaultPath: 'flipper_EEAaO_export.zip',
-    },
-  );
+  const exportedFilePath = await exportFileBinary(archiveData, {
+    defaultPath: 'flipper_EEAaO_export.zip',
+  });
 
   if (openSupportRequest) {
     if (exportedFilePath) {

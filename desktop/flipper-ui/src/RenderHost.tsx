@@ -8,7 +8,7 @@
  */
 
 import './global';
-import {FlipperLib, Notification} from 'flipper-plugin';
+import {Notification} from 'flipper-plugin';
 import {FlipperServer, FlipperServerConfig} from 'flipper-common';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
@@ -122,7 +122,6 @@ export interface RenderHost {
     };
   }): Promise<string | undefined>;
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
-  exportFileBinary: FlipperLib['exportFileBinary'];
   hasFocus(): boolean;
   onIpcEvent<Event extends keyof MainProcessEvents>(
     event: Event,

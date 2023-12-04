@@ -21,7 +21,7 @@ import {RenderHost} from '../RenderHost';
 import {downloadFileFactory} from './downloadFile';
 import {Base64} from 'js-base64';
 import {importFile} from '../utils/importFile';
-import {exportFile} from '../utils/exportFile';
+import {exportFile, exportFileBinary} from '../utils/exportFile';
 
 export function baseFlipperLibImplementation(
   renderHost: RenderHost,
@@ -45,7 +45,7 @@ export function baseFlipperLibImplementation(
     openLink: renderHost.openLink,
     importFile,
     exportFile,
-    exportFileBinary: renderHost.exportFileBinary,
+    exportFileBinary,
     paths: {
       appPath: renderHost.serverConfig.paths.appPath,
       homePath: renderHost.serverConfig.paths.homePath,

@@ -19,3 +19,14 @@ export async function exportFile(
   FileSaver.saveAs(file);
   return defaultPath;
 }
+
+export async function exportFileBinary(
+  data: Uint8Array,
+  {defaultPath}: {defaultPath?: string},
+) {
+  const file = new File([data], defaultPath ?? 'unknown', {
+    type: 'application/octet-stream',
+  });
+  FileSaver.saveAs(file);
+  return defaultPath;
+}

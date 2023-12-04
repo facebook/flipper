@@ -206,9 +206,6 @@ function createStubRenderHost(): RenderHost {
   };
 
   return {
-    async exportFileBinary() {
-      return undefined;
-    },
     hasFocus() {
       return true;
     },
