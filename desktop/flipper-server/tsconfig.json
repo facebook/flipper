@@ -7,19 +7,29 @@
     "types": [
       "../types/flipperGlobals",
       "../types/metro-resolver",
-      "../types/metro"
+      "../types/metro",
+      "../types/JSONStream",
+      "../types/adbkit",
+      "../types/openssl-wrapper",
+      "../types/adbkit-logcat"
     ]
   },
-  "include": ["./src/*"],
+  "include": ["./src/**/*"],
   "references": [
+    {
+      "path": "../doctor"
+    },
     {
       "path": "../flipper-common"
     },
     {
-      "path": "../flipper-server-core"
+      "path": "../flipper-plugin-core"
     },
     {
       "path": "../flipper-server-companion"
+    },
+    {
+      "path": "../plugin-lib"
     },
     {
       "path": "../pkg-lib"

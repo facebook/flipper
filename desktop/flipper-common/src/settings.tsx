@@ -63,7 +63,7 @@ export enum ReleaseChannel {
   INSIDERS = 'insiders',
 }
 
-/** Launcher settings only apply to Electron, and aren't managed or relevant for flipper-server-core */
+/** Launcher settings only apply to Electron, and aren't managed or relevant for flipper-server */
 export type LauncherSettings = {
   releaseChannel: ReleaseChannel;
   ignoreLocalPin: boolean;

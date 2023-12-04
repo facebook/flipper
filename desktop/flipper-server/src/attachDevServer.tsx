@@ -16,7 +16,7 @@ import {WebSocketServer} from 'ws';
 import pFilter from 'p-filter';
 import {homedir} from 'os';
 import {InstalledPluginDetails} from 'flipper-common';
-import {isFBBuild} from 'flipper-server-core';
+import {isFBBuild} from './fb-stubs/constants';
 
 // This file is heavily inspired by scripts/start-dev-server.ts!
 // part of that is done by start-flipper-server-dev (compiling "main"),

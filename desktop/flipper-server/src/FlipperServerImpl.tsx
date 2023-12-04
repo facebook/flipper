@@ -61,6 +61,12 @@ import path from 'path';
 import {movePWA} from './utils/findInstallation';
 import GK from './fb-stubs/GK';
 import {fetchNewVersion} from './fb-stubs/fetchNewVersion';
+import dns from 'dns';
+
+// The default on node16 is to prefer ipv4 results which causes issues
+// in some setups.
+// @ts-ignore: Not in our node typings yet
+dns.setDefaultResultOrder('verbatim');
 
 const {access, copyFile, mkdir, unlink, stat, readlink, readFile, writeFile} =
   promises;

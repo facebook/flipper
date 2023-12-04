@@ -23,7 +23,7 @@
       "flipper": ["./deprecated-exports/src"],
       "flipper-plugin": ["./flipper-plugin/src"],
       "eslint-plugin-flipper": ["./eslint-plugin-flipper/src"],
-      "flipper-server-core": ["./flipper-server-core/src"],
+      "flipper-server": ["./flipper-server/src"],
       "flipper-common": ["./flipper-common/src"],
       "flipper-*": ["./*/src"]
     },

@@ -17,7 +17,7 @@ import {
   loadProcessConfig,
   loadSettings,
   sessionId,
-} from 'flipper-server-core';
+} from 'flipper-server';
 import {
   ClientDescription,
   Logger,

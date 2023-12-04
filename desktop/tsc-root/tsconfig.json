@@ -31,9 +31,6 @@
       "path": "../flipper-server-companion"
     },
     {
-      "path": "../flipper-server-core"
-    },
-    {
       "path": "../flipper-ui-browser"
     },
     {

@@ -136,7 +136,6 @@ async function startWatchChanges() {
         'flipper-frontend-core',
         'flipper-plugin-core',
         'flipper-server-companion',
-        'flipper-server-core',
         'flipper-server',
       ].map((dir) =>
         watchman.startWatchFiles(

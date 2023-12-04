@@ -11,7 +11,7 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "flipper-common": "0.0.0",
-    "flipper-server-core": "0.0.0",
+    "flipper-server": "0.0.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

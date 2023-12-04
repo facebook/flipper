@@ -21,10 +21,8 @@ import fsRotator from 'file-stream-rotator';
 import {ensureFile} from 'fs-extra';
 import {access} from 'fs/promises';
 import {constants} from 'fs';
-import {
-  initializeLogger as initLogger,
-  setProcessExitRoutine,
-} from 'flipper-server-core';
+import {initializeLogger as initializeLoggerCore} from './fb-stubs/Logger';
+import {setProcessExitRoutine} from './utils/processExit';
 
 export const loggerOutputFile = 'flipper-server-log.out';
 
@@ -35,7 +33,7 @@ export async function initializeLogger(
   // Suppress stdout debug messages, but keep writing them to the file.
   console.debug = function () {};
 
-  const logger = initLogger(environmentInfo);
+  const logger = initializeLoggerCore(environmentInfo);
   setLoggerInstance(logger);
 
   const logFilename = path.join(staticDir, loggerOutputFile);
