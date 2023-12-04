@@ -17,7 +17,7 @@ import {isEqual} from 'lodash';
 import {Platform, reportUsage, Settings} from 'flipper-common';
 import {Modal, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
-import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServer} from '../flipperServer';
 
 const WIZARD_FINISHED_LOCAL_STORAGE_KEY = 'platformSelectWizardFinished';
 
@@ -64,7 +64,7 @@ class PlatformSelectWizard extends Component<Props, State> {
     return flush().then(() => {
       if (!settingsPristine) {
         reportUsage('platformwizard:action:changed');
-        getRenderHostInstance().restartFlipper();
+        getFlipperServer().exec('shutdown');
       } else {
         reportUsage('platformwizard:action:noop');
       }

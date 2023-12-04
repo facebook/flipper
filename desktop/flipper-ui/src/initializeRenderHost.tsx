@@ -8,7 +8,6 @@
  */
 
 import {FlipperServerConfig, isProduction, wrapRequire} from 'flipper-common';
-import {getFlipperServer} from './flipperServer';
 import type {RenderHost} from './RenderHost';
 
 declare module globalThis {
@@ -42,9 +41,6 @@ export function initializeRenderHost(flipperServerConfig: FlipperServerConfig) {
         (window.flipperConfig.theme === 'system' &&
           window.matchMedia?.('(prefers-color-scheme: dark)'))
       );
-    },
-    restartFlipper() {
-      getFlipperServer().exec('shutdown');
     },
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {

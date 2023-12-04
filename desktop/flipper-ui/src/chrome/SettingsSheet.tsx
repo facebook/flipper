@@ -41,6 +41,7 @@ import {
 } from 'flipper-plugin';
 import {getRenderHostInstance} from '../RenderHost';
 import {loadTheme} from '../utils/loadTheme';
+import {getFlipperServer} from '../flipperServer';
 
 type OwnProps = {
   onHide: () => void;
@@ -84,7 +85,7 @@ class SettingsSheet extends Component<Props, State> {
     this.props.onHide();
     await flush();
     await sleep(1000);
-    getRenderHostInstance().restartFlipper(true);
+    getFlipperServer().exec('shutdown');
   };
 
   applyChangesWithoutRestart = async () => {

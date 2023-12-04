@@ -43,6 +43,7 @@ import {
 } from '../deeplinkTracking';
 import {waitFor} from '../utils/waitFor';
 import BaseDevice from '../devices/BaseDevice';
+import {getFlipperServer} from '../flipperServer';
 
 export function parseOpenPluginParams(query: string): OpenPluginParams {
   // 'flipper://open-plugin?plugin-id=graphql&client=facebook&devices=android,ios&chrome=1&payload='
@@ -388,7 +389,7 @@ async function verifyPluginStatus(
             ),
             okText: 'Restart',
             onConfirm: async () => {
-              getRenderHostInstance().restartFlipper();
+              getFlipperServer().exec('shutdown');
               // intentionally forever pending, we're restarting...
               return new Promise(() => {});
             },

@@ -214,7 +214,6 @@ function createStubRenderHost(): RenderHost {
     shouldUseDarkColors() {
       return false;
     },
-    restartFlipper() {},
     serverConfig: stubConfig,
     GK(gk: string) {
       return stubConfig.gatekeepers[gk] ?? false;

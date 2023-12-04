@@ -131,7 +131,6 @@ export interface RenderHost {
     ...args: ChildProcessEvents[Event]
   ): void;
   shouldUseDarkColors(): boolean;
-  restartFlipper(update?: boolean): void;
   GK(gatekeeper: string): boolean;
   serverConfig: FlipperServerConfig;
   getStaticResourceUrl(relativePath: string): string;
