@@ -23,7 +23,7 @@ import {isFBBuild} from './fb-stubs/constants';
 // the other part ("renderer") here.
 
 const uiSourceDirs = [
-  'flipper-ui-browser',
+  'flipper-ui',
   'flipper-ui-core',
   'flipper-plugin-core',
   'flipper-plugin',

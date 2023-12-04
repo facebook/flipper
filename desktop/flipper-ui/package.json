@@ -1,8 +1,8 @@
 {
-  "name": "flipper-ui-browser",
+  "name": "flipper-ui",
   "private": true,
   "version": "0.0.0",
-  "description": "Flipper's UI, packaged for the browser",
+  "description": "Flipper's UI",
   "repository": "facebook/flipper",
   "main": "lib/index.js",
   "flipperBundlerEntry": "src",

@@ -167,7 +167,7 @@ async function startHTTPServer(
       theme: 'light',
       entryPoint: isProduction()
         ? 'bundle.js'
-        : 'flipper-ui-browser/src/index-fast-refresh.bundle?platform=web&dev=true&minify=false',
+        : 'flipper-ui/src/index-fast-refresh.bundle?platform=web&dev=true&minify=false',
       debug: !isProduction(),
       graphSecret: GRAPH_SECRET,
       appVersion: environmentInfo.appVersion,

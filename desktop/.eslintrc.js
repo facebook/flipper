@@ -254,7 +254,7 @@ module.exports = {
         'flipper-ui-core/**/*.tsx',
         'flipper-common/**/*.tsx',
         'flipper-frontend-core/**/*.tsx',
-        'flipper-ui-browser/**/*.tsx',
+        'flipper-ui/**/*.tsx',
         'flipper-plugin/**/*.tsx',
       ],
       excludedFiles: [
@@ -328,7 +328,7 @@ module.exports = {
         'flipper-ui-core/**/__tests__/**/*.tsx',
         'flipper-common/**/__tests__/**/*.tsx',
         'flipper-frontend-core/**/__tests__/**/*.tsx',
-        'flipper-ui-browser/**/__tests__/**/*.tsx',
+        'flipper-ui/**/__tests__/**/*.tsx',
         'flipper-plugin/**/__tests__/**/*.tsx',
         'plugins/postinstall.tsx',
         // TODO: Remove specific plugin overrides down below

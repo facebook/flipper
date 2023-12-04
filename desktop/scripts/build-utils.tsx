@@ -28,7 +28,7 @@ import {
   babelTransformationsDir,
   serverDir,
   rootDir,
-  browserUiDir,
+  uiDir,
 } from './paths';
 import pFilter from 'p-filter';
 import child from 'child_process';
@@ -154,7 +154,7 @@ export async function compileServerMain() {
 
 // TODO: needed?
 const uiSourceDirs = [
-  'flipper-ui-browser',
+  'flipper-ui',
   'flipper-ui-core',
   'flipper-plugin',
   'flipper-common',
@@ -184,7 +184,7 @@ export async function buildBrowserBundle(outDir: string, dev: boolean) {
 
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
-    projectRoot: browserUiDir,
+    projectRoot: uiDir,
     watchFolders,
     transformer: {
       ...baseConfig.transformer,
@@ -226,7 +226,7 @@ export async function buildBrowserBundle(outDir: string, dev: boolean) {
   });
   await Metro.runBuild(config, {
     platform: 'web',
-    entry: path.join(browserUiDir, 'src', 'index.tsx'),
+    entry: path.join(uiDir, 'src', 'index.tsx'),
     out,
     dev,
     minify: !dev,

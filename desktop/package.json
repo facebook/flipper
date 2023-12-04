@@ -182,7 +182,7 @@
       "flipper-server-client",
       "flipper-server-companion",
       "flipper-ui-core",
-      "flipper-ui-browser",
+      "flipper-ui",
       "flipper-server",
       "flipper-dump",
       "e2e",
