@@ -155,15 +155,56 @@ export async function compileServerMain() {
 // TODO: needed?
 const uiSourceDirs = ['flipper-ui', 'flipper-plugin', 'flipper-common'];
 
+export const BUILTINS = [
+  'buffer',
+  'child_process',
+  'crypto',
+  'dgram',
+  'dns',
+  'fs',
+  'http',
+  'https',
+  'net',
+  'os',
+  'readline',
+  'stream',
+  'string_decoder',
+  'tls',
+  'tty',
+  'zlib',
+  'constants',
+  'events',
+  'url',
+  'assert',
+  'util',
+  'path',
+  'punycode',
+  'querystring',
+  'cluster',
+  'console',
+  'module',
+  'process',
+  'vm',
+  'domain',
+  'v8',
+  'repl',
+  'timers',
+  'perf_hooks',
+  'worker_threads',
+  'encoding',
+  'fsevents',
+  './fsevents.node',
+  // jest is referred to in source code, like in TestUtils, but we don't want to ever bundle it up!
+  'jest',
+  '@testing-library/react',
+  '@testing-library/dom',
+];
+
 export async function buildBrowserBundle(outDir: string, dev: boolean) {
   console.log('⚙️  Compiling browser bundle...');
   const out = path.join(outDir, 'bundle.js');
 
-  const electronRequires = path.join(
-    babelTransformationsDir,
-    'electron-requires',
-  );
-  const stubModules = new Set<string>(require(electronRequires).BUILTINS);
+  const stubModules = new Set<string>(BUILTINS);
   if (!stubModules.size) {
     throw new Error('Failed to load list of Node builtins');
   }

@@ -12,8 +12,6 @@ import {default as doTransform} from './transform';
 const presets = [require('@babel/preset-react')];
 const plugins = [
   require('./fsevents-dynamic-imports'),
-  require('./prefixed-node-requires'),
-  require('./electron-requires'),
   require('./plugin-flipper-requires'),
   require('./fb-stubs'),
 ];
