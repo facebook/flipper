@@ -188,7 +188,6 @@
       "flipper-ui-browser",
       "flipper-server",
       "flipper-dump",
-      "static",
       "e2e",
       "plugin-lib",
       "test-utils",
