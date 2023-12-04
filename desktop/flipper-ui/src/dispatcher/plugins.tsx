@@ -47,7 +47,6 @@ import {
   isSandyPlugin,
   wrapRequirePlugin,
 } from '../plugins';
-import {setGlobalObject} from '../globalObject';
 import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 import {GK} from '../utils/GK';
 
@@ -103,6 +102,43 @@ class UIPluginInitializer extends AbstractPluginInitializer {
     return this.store.getState().plugins.uninstalledPluginNames;
   }
 }
+
+// this list should match `replace-flipper-requires.tsx` and the `builtInModules` in `desktop/.eslintrc`
+export interface GlobalObject {
+  React: any;
+  ReactDOM: any;
+  ReactDOMClient: any;
+  ReactIs: any;
+  Flipper: any;
+  FlipperPlugin: any;
+  Immer: any;
+  antd: any;
+  emotion_styled: any;
+  emotion_css: any;
+  antdesign_icons: any;
+  ReactJsxRuntime: any;
+}
+
+declare module globalThis {
+  let React: any;
+  let ReactDOM: any;
+  let ReactDOMClient: any;
+  let ReactIs: any;
+  let Flipper: any;
+  let FlipperPlugin: any;
+  let Immer: any;
+  let antd: any;
+  let emotion_styled: any;
+  let emotion_css: any;
+  let antdesign_icons: any;
+  let ReactJsxRuntime: any;
+}
+
+const setGlobalObject = (replacements: GlobalObject) => {
+  for (const [name, module] of Object.entries(replacements)) {
+    globalThis[name as keyof GlobalObject] = module;
+  }
+};
 
 let uiPluginInitializer: UIPluginInitializer;
 export default async (store: Store, _logger: Logger) => {
