@@ -31,11 +31,10 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
           label: 'OpenSSL Installed',
           run: async (_: FlipperDoctor.EnvironmentInfo) => {
             const result = await tryExecuteCommand('openssl version');
-            const hasProblem = result.hasProblem;
             return {
-              hasProblem,
+              hasProblem: result.fail,
               message: 'moved to message2',
-              message2: hasProblem
+              message2: result.fail
                 ? ['common.openssl--not_installed', {output: result.message}]
                 : ['common.openssl--installed', {output: result.message}],
             };
@@ -120,10 +119,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   `"${path.join(platformToolsDir, 'adb')}" version`,
                 );
 
-                if (
-                  versionResult.hasProblem === false &&
-                  versionResult.message2[0] === 'command-success'
-                ) {
+                if (versionResult.fail === false) {
                   return {
                     hasProblem: false,
                     message: `moved to message2`,
@@ -133,7 +129,14 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                     ],
                   };
                 } else {
-                  return versionResult;
+                  return {
+                    hasProblem: true,
+                    message: `moved to message2`,
+                    message2: [
+                      'android.sdk--not_installed',
+                      {output: versionResult.message},
+                    ],
+                  };
                 }
               }
             }
@@ -186,7 +189,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                       command: `sudo xcode-select -switch <path/to/>Xcode.app`,
                     },
                   ];
-                  if (result.hasProblem) {
+                  if (result.fail) {
                     return {
                       hasProblem: true,
                       message: 'moved to message2',
@@ -263,7 +266,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   const result = await tryExecuteCommand(
                     'xcrun xctrace version',
                   );
-                  if (result.hasProblem) {
+                  if (result.fail) {
                     return {
                       hasProblem: true,
                       message: 'moved to message2',
@@ -308,7 +311,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   const result = await tryExecuteCommand(
                     `${settings?.idbPath} --help`,
                   );
-                  if (result.hasProblem) {
+                  if (result.fail) {
                     return {
                       hasProblem: true,
                       message: 'moved to message2',
@@ -380,20 +383,22 @@ export async function runHealthchecks(): Promise<
 
 async function tryExecuteCommand(
   command: string,
-): Promise<FlipperDoctor.SubprocessHealtcheckRunResult> {
+): Promise<
+  | {fail: false; message: string; stdout: string}
+  | {fail: true; message: string; error: any}
+> {
   try {
     const output = await promisify(exec)(command);
     return {
-      hasProblem: false,
+      fail: false,
       message: `Command "${command}" successfully executed with output: ${output.stdout}`,
       stdout: output.stdout,
-      message2: ['command-success', {command, stdout: output.stdout}],
     };
   } catch (err) {
     return {
-      hasProblem: true,
+      fail: true,
       message: `Command "${command}" failed to execute with output: ${err.message}`,
-      message2: ['command-fail', {command, error: err.message}],
+      error: err,
     };
   }
 }

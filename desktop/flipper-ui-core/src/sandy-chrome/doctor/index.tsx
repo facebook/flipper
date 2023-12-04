@@ -117,6 +117,17 @@ const AndroidSdkInstalled = (props: PropsFor<'android.sdk--installed'>) => (
   </div>
 );
 
+const AndroidSdkNotInstalled = (
+  props: PropsFor<'android.sdk--not_installed'>,
+) => (
+  <div>
+    <Typography.Paragraph>
+      Android SDK Platform Tools are not found at the expected location.
+    </Typography.Paragraph>
+    <CodeBlock>{props.output}</CodeBlock>
+  </div>
+);
+
 const IosXcodeInstalled = (props: PropsFor<'ios.xcode--installed'>) => (
   <Typography.Paragraph>
     Xcode is installed. Version {props.version} at "{props.path}"
@@ -260,6 +271,7 @@ const messageToComp: {
   'android.sdk--no_ANDROID_SDK_ROOT': AndroidSdkNoAndroidSdkRoot,
   'android.sdk--unexisting_folder_ANDROID_SDK_ROOT': AndroidSdkNoAndroidSdkRoot,
   'android.sdk--installed': AndroidSdkInstalled,
+  'android.sdk--not_installed': AndroidSdkNotInstalled,
 
   'ios.xcode--installed': IosXcodeInstalled,
   'ios.xcode--not_installed': Noop,
@@ -282,9 +294,6 @@ const messageToComp: {
   'ios.idb--physical_device_disabled': IdbPhysicalDeviceDisabled,
   'ios.idb--not_installed': Noop,
   'ios.idb--installed': IosIdbInstalled,
-
-  'command-success': Noop,
-  'command-fail': Noop,
 
   'doctor-failed': Noop,
 };

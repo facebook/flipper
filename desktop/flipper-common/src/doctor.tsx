@@ -166,6 +166,7 @@ export namespace FlipperDoctor {
     'android.sdk--no_ANDROID_SDK_ROOT': [];
     'android.sdk--unexisting_folder_ANDROID_SDK_ROOT': [];
     'android.sdk--installed': [{output: string}];
+    'android.sdk--not_installed': [{output: string}];
 
     'ios.xcode--installed': [{version: string; path: string}];
     'ios.xcode--not_installed': [];
@@ -193,9 +194,6 @@ export namespace FlipperDoctor {
     'ios.idb--physical_device_disabled': [];
     'ios.idb--not_installed': [{idbPath: string}];
     'ios.idb--installed': [];
-
-    'command-success': [{command: string; stdout: string}];
-    'command-fail': [{command: string; error: string}];
 
     'doctor-failed': [{error: any}];
   };
