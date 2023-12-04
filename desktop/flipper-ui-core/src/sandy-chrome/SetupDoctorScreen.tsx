@@ -36,6 +36,7 @@ import {
   resetAcknowledgedProblems,
 } from '../reducers/healthchecks';
 import runHealthchecks from '../utils/runHealthchecks';
+import {DoctorMessage} from './doctor';
 import type {FlipperDoctor} from 'flipper-common';
 type Healthchecks = FlipperDoctor.Healthchecks;
 import {reportUsage} from 'flipper-common';
@@ -133,11 +134,18 @@ function CollapsableCategory(props: {
           key={check.key}
           header={check.label}
           extra={<CheckIcon status={check.result.status} />}>
-          {check.result.message?.split('\n').map((line, index) => (
-            <Paragraph key={index} style={{marginBottom: 0}}>
-              {line}
-            </Paragraph>
-          ))}
+          {check.result.message2 != null ? (
+            <DoctorMessage
+              id={check.result.message2[0]}
+              props={check.result.message2[1]}
+            />
+          ) : (
+            check.result.message?.split('\n').map((line, index) => (
+              <Paragraph key={index} style={{marginBottom: 0}}>
+                {line}
+              </Paragraph>
+            ))
+          )}
           {check.result.commands && (
             <List>
               {check.result.commands.map(({title, command}, i) => (
@@ -182,6 +190,7 @@ function HealthCheckList(props: {report: FlipperDoctor.HealthcheckReport}) {
                       result: {
                         status: 'SKIPPED',
                         message: category.result.message,
+                        message2: category.result.message2,
                       },
                     },
                   ]
