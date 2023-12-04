@@ -26,7 +26,11 @@ const HEALTHCHECKS: FlipperDoctor.Healthchecks = {
         key: 'ios.sdk',
         label: 'SDK Installed',
         run: async (_env: FlipperDoctor.EnvironmentInfo) => {
-          return {hasProblem: false, message: ''};
+          return {
+            hasProblem: false,
+            message: '',
+            message2: ['ios.sdk--installed'],
+          };
         },
       },
     ],
@@ -40,7 +44,11 @@ const HEALTHCHECKS: FlipperDoctor.Healthchecks = {
         key: 'android.sdk',
         label: 'SDK Installed',
         run: async (_env: FlipperDoctor.EnvironmentInfo) => {
-          return {hasProblem: true, message: 'Error'};
+          return {
+            hasProblem: true,
+            message: 'Error',
+            message2: ['android.sdk--no_ANDROID_HOME'],
+          };
         },
       },
     ],
@@ -54,7 +62,11 @@ const HEALTHCHECKS: FlipperDoctor.Healthchecks = {
         key: 'common.openssl',
         label: 'OpenSSL Istalled',
         run: async (_env: FlipperDoctor.EnvironmentInfo) => {
-          return {hasProblem: false, message: ''};
+          return {
+            hasProblem: false,
+            message: '',
+            message2: ['common.openssl--installed'],
+          };
         },
       },
     ],

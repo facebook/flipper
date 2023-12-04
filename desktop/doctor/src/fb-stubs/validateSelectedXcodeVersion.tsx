@@ -15,5 +15,6 @@ export async function validateSelectedXcodeVersion(
   return {
     hasProblem: false,
     message: '',
+    message2: ['ios.xcode-select--noop'],
   };
 }
