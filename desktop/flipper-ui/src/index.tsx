@@ -18,6 +18,7 @@ import {
 import {init as initLogger} from './fb-stubs/Logger';
 import {createFlipperServer, FlipperServerState} from 'flipper-server-client';
 import {setFlipperServer, setFlipperServerConfig} from './flipperServer';
+import {startFlipperDesktop} from './startFlipperDesktop';
 
 declare module globalThis {
   let require: any;
@@ -193,9 +194,7 @@ async function start() {
 
   initializePWA();
 
-  // @ts-ignore
-  // eslint-disable-next-line import/no-commonjs
-  require('./startFlipperDesktop').startFlipperDesktop(flipperServer);
+  startFlipperDesktop(flipperServer);
   window.flipperHideMessage?.();
 
   /**
