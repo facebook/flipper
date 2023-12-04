@@ -11,7 +11,7 @@ import React from 'react';
 import {Image, Modal, Button} from 'antd';
 import {getFlipperLib, Layout, _NuxManagerContext} from 'flipper-plugin';
 import isProduction from '../utils/isProduction';
-import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
+import {getFlipperServer} from '../flipperServer';
 
 type Props = {
   onHide: () => void;
@@ -40,17 +40,9 @@ class PWAWizardTracker {
 
 const tracker = new PWAWizardTracker();
 
-function isElectron() {
-  return !getFlipperServerConfig().environmentInfo.isHeadlessBuild;
-}
-
 const lastShownTimestampKey = 'flipper-pwa-wizard-last-shown-timestamp';
 const neverAskAgainKey = 'flipper-pwa-wizard-never-ask-again';
 export function shouldShowPWAInstallationWizard(): boolean {
-  if (isElectron()) {
-    return false;
-  }
-
   if (!isProduction()) {
     return false;
   }

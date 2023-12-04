@@ -108,9 +108,7 @@ export const Navbar = withTrackingScope(function Navbar() {
         <SandyRatingButton />
         <ExtrasMenu />
         <RightSidebarToggleButton />
-        {getFlipperServerConfig().environmentInfo.isHeadlessBuild && (
-          <UpdateIndicator />
-        )}
+        <UpdateIndicator />
       </Layout.Horizontal>
     </Layout.Horizontal>
   );

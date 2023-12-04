@@ -31,6 +31,7 @@ import {processExit} from './utils/processExit';
 import {setupPrefetcher} from './fb-stubs/Prefetcher';
 import {openUI, UIPreference} from './utils/openUI';
 
+// eslint-disable-next-line node/no-sync
 const argv = yargs
   .usage('yarn flipper-server [args]')
   .options({
@@ -119,11 +120,7 @@ const reportBrowserConnection = (successful: boolean) => {
 async function start() {
   const isProduction =
     process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
-  const environmentInfo = await getEnvironmentInfo(
-    rootPath,
-    isProduction,
-    true,
-  );
+  const environmentInfo = await getEnvironmentInfo(rootPath, isProduction);
 
   await initializeLogger(environmentInfo, staticPath);
 

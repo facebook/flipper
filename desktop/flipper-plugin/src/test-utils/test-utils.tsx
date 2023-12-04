@@ -209,9 +209,6 @@ export function createFlipperServerMock(
     close: createStubFunction(),
   };
 }
-
-declare const electronRequire: any;
-
 type Renderer = RenderResult<typeof queries>;
 
 type ExtractClientType<Module extends FlipperPluginModule<any>> = Parameters<
@@ -342,7 +339,8 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
   module: Module,
   options?: StartPluginOptions,
 ): StartPluginResult<Module> {
-  const {act} = electronRequire('@testing-library/react');
+  // eslint-disable-next-line no-eval
+  const {act} = eval('require("@testing-library/react")');
 
   const definition = new SandyPluginDefinition(
     createMockPluginDetails(),
@@ -454,7 +452,8 @@ export function renderPlugin<Module extends FlipperPluginModule<any>>(
   act: (cb: () => void) => void;
 } {
   // prevent bundling in UI bundle
-  const {render, act} = electronRequire('@testing-library/react');
+  // eslint-disable-next-line no-eval
+  const {render, act} = eval('require("@testing-library/react")');
   const res = startPlugin(module, options);
   const pluginInstance: SandyPluginInstance = (res as any)._backingInstance;
 
@@ -475,7 +474,8 @@ export function startDevicePlugin<Module extends FlipperDevicePluginModule>(
   module: Module,
   options?: StartPluginOptions,
 ): StartDevicePluginResult<Module> {
-  const {act} = electronRequire('@testing-library/react');
+  // eslint-disable-next-line no-eval
+  const {act} = eval('require("@testing-library/react")');
 
   const definition = new SandyPluginDefinition(
     createMockPluginDetails({pluginType: 'device'}),
@@ -527,7 +527,8 @@ export function renderDevicePlugin<Module extends FlipperDevicePluginModule>(
   renderer: Renderer;
   act: (cb: () => void) => void;
 } {
-  const {render, act} = electronRequire('@testing-library/react');
+  // eslint-disable-next-line no-eval
+  const {render, act} = eval('require("@testing-library/react")');
 
   const res = startDevicePlugin(module, options);
   // @ts-ignore hidden api

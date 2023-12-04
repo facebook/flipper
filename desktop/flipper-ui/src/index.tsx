@@ -55,16 +55,6 @@ async function start() {
     }
   });
 
-  // @ts-ignore
-  electronRequire = function (path: string) {
-    console.error(
-      `[decapitate] Tried to electronRequire ${path}, this module is not available in the browser and will be stubbed`,
-    );
-    return {
-      default: {},
-    };
-  };
-
   setLoggerInstance(logger);
 
   const params = new URL(location.href).searchParams;

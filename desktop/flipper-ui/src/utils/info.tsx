@@ -18,7 +18,6 @@ import {getFlipperServerConfig} from '../flipperServer';
 type PlatformInfo = {
   arch: string;
   platform: string;
-  isHeadlessBuild: boolean;
   unixname: string;
   versions: {
     [key: string]: string | undefined;
@@ -86,7 +85,6 @@ export function getInfo(): Info {
     platformInfo = {
       arch: envInfo.os.arch,
       platform: envInfo.os.platform,
-      isHeadlessBuild: envInfo.isHeadlessBuild,
       unixname: envInfo.os.unixname,
       versions: envInfo.versions,
     };
@@ -103,9 +101,7 @@ export function getAppVersion(): string {
 
 export function stringifyInfo(info: Info): string {
   const lines = [
-    `Platform: ${info.platform} ${info.arch} (${
-      info.isHeadlessBuild ? 'headless' : 'desktop'
-    })`,
+    `Platform: ${info.platform} ${info.arch} (headless)`,
     `Unixname: ${info.unixname}`,
     `Versions:`,
   ];

@@ -16,7 +16,6 @@ import {EnvironmentInfo, ReleaseChannel} from 'flipper-common';
 export async function getEnvironmentInfo(
   packageJsonDir: string,
   isProduction: boolean,
-  isHeadlessBuild: boolean,
 ): Promise<EnvironmentInfo> {
   const packageJson = await fs.readJSON(
     path.resolve(packageJsonDir, 'package.json'),
@@ -46,7 +45,6 @@ export async function getEnvironmentInfo(
   return {
     processId: process.pid,
     isProduction,
-    isHeadlessBuild,
     releaseChannel,
     flipperReleaseRevision,
     appVersion,
@@ -56,7 +54,6 @@ export async function getEnvironmentInfo(
       unixname: os.userInfo().username,
     },
     versions: {
-      electron: process.versions.electron,
       node: process.versions.node,
       platform: os.release(),
     },

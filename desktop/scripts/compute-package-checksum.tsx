@@ -12,6 +12,7 @@
 import {computePackageChecksum} from 'flipper-pkg-lib';
 import yargs from 'yargs';
 
+// eslint-disable-next-line node/no-sync
 const argv = yargs
   .usage('yarn compute-package-checksum [args]')
   .version(false)
@@ -30,7 +31,7 @@ const argv = yargs
     },
   })
   .help()
-  .parse(process.argv.slice(1));
+  .parseSync(process.argv.slice(1));
 
 computePackageChecksum(argv.dir, argv.out)
   .then(() => {

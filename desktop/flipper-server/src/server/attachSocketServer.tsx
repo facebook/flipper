@@ -20,7 +20,6 @@ import {
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {RawData, WebSocketServer} from 'ws';
 import {tracker} from '../tracker';
-import {getFlipperServerConfig} from '../FlipperServerConfig';
 import {performance} from 'perf_hooks';
 import {processExit} from '../utils/processExit';
 
@@ -188,10 +187,7 @@ export function attachSocketServer(
         server.stopAcceptingNewConections();
       }
 
-      if (
-        getFlipperServerConfig().environmentInfo.isHeadlessBuild &&
-        isProduction()
-      ) {
+      if (isProduction()) {
         const FIVE_HOURS = 5 * 60 * 60 * 1000;
         if (disconnectTimeout) {
           clearTimeout(disconnectTimeout);

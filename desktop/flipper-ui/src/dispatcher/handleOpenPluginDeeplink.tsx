@@ -293,10 +293,6 @@ async function waitForLogin(store: Store) {
 async function verifyFlipperIsUpToDate(title: string) {
   const serverConfig = getFlipperServerConfig();
 
-  // If this is not a headless build, do not check for updates.
-  if (!serverConfig.environmentInfo.isHeadlessBuild) {
-    return;
-  }
   const config = serverConfig.processConfig;
   if (
     !isProduction() ||

@@ -48,15 +48,11 @@ export function SandyApp() {
     (state) => state.application.leftSidebarVisible,
   );
   const staticView = useStore((state) => state.connections.staticView);
-  const serverConfig = getFlipperServerConfig();
 
   useEffect(() => {
-    let title = `Flipper (${getVersionString()}${
+    const title = `Flipper (${getVersionString()}${
       config.isFBBuild ? '@FB' : ''
     })`;
-    if (!serverConfig.environmentInfo.isHeadlessBuild) {
-      title += ' (Unsupported)';
-    }
 
     document.title = title;
 
@@ -76,9 +72,7 @@ export function SandyApp() {
       Dialog.showModal((onHide) => <PWAInstallationWizard onHide={onHide} />);
     }
 
-    if (serverConfig.environmentInfo.isHeadlessBuild) {
-      showChangelog(true);
-    }
+    showChangelog(true);
 
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line

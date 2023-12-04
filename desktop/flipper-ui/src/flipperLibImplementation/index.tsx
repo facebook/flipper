@@ -53,7 +53,7 @@ export function baseFlipperLibImplementation(logger: Logger): Omit<
     environmentInfo: {
       os: getFlipperServerConfig().environmentInfo.os,
       env: getFlipperServerConfig().env,
-      isHeadlessBuild: getFlipperServerConfig().environmentInfo.isHeadlessBuild,
+      isHeadlessBuild: true,
     },
     intern: {
       graphGet: (...args) =>

@@ -17,6 +17,7 @@ import pmap from 'p-map';
 import {rootDir} from './paths';
 import yargs from 'yargs';
 
+// eslint-disable-next-line node/no-sync
 const argv = yargs
   .usage('yarn tsc-plugins [args]')
   .version(false)
@@ -29,7 +30,7 @@ const argv = yargs
     },
   })
   .help()
-  .parse(process.argv.slice(1));
+  .parseSync(process.argv.slice(1));
 
 const pluginsDir = path.join(rootDir, argv.dir);
 const fbPluginsDir = path.join(pluginsDir, 'fb');

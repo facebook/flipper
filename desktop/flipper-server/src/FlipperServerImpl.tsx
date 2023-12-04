@@ -48,7 +48,6 @@ import {
 import {commandNodeApiExec} from './commands/NodeApiExec';
 import {commandDownloadFileStartFactory} from './commands/DownloadFile';
 import {promises} from 'fs';
-// Electron 11 runs on Node 12 which does not support fs.promises.rm
 import rm from 'rimraf';
 import assert from 'assert';
 import {initializeAdbClient} from './devices/android/adbClient';

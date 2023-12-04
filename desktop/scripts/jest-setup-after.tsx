@@ -147,7 +147,6 @@ export function createStubFlipperServerConfig(): FlipperServerConfig {
       processId: 4242,
       appVersion: '0.0.0',
       isProduction: true,
-      isHeadlessBuild: true,
       releaseChannel: ReleaseChannel.DEFAULT,
       flipperReleaseRevision: '000',
       os: {

@@ -31,6 +31,7 @@ import {stdout} from 'process';
 // eslint-disable-next-line
 const packageJson = JSON.parse(fs.readFileSync('../package.json', 'utf-8'));
 
+// eslint-disable-next-line node/no-sync
 const argv = yargs
   .usage('$0 [args]')
   .options({
@@ -86,7 +87,7 @@ async function start(deviceQuery: string, appName: string, pluginId: string) {
     console.debug = () => {};
     console.info = console.error;
 
-    const environmentInfo = await getEnvironmentInfo(staticPath, false, true);
+    const environmentInfo = await getEnvironmentInfo(staticPath, false);
     // TODO: initialise FB user manager to be able to do certificate exchange
 
     const [launcherSettings, settings] = await Promise.all([

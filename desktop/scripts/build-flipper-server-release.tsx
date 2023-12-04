@@ -65,6 +65,7 @@ cd /d "%THIS_DIR%"
 flipper-runtime server %*
 `;
 
+// eslint-disable-next-line node/no-sync
 const argv = yargs
   .usage('yarn build-flipper-server [args]')
   .version(false)
@@ -157,7 +158,7 @@ const argv = yargs
     },
   })
   .help()
-  .parse(process.argv.slice(1));
+  .parseSync(process.argv.slice(1));
 
 if (isFB) {
   process.env.FLIPPER_FB = 'true';
@@ -222,7 +223,6 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
 
   console.log(`⚙️  Copying package resources...`);
 
-  // static folder, without the things that are only for Electron
   const packageFilesToCopy = ['README.md', 'server.js', 'lib'];
 
   await Promise.all(
@@ -233,7 +233,6 @@ async function copyStaticResources(outDir: string, versionNumber: string) {
 
   console.log(`⚙️  Copying static resources...`);
 
-  // static folder, without the things that are only for Electron
   const staticsToCopy = [
     'icons',
     'native-modules',

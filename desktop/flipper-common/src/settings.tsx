@@ -104,7 +104,6 @@ export type Platform =
 export type EnvironmentInfo = {
   processId: number;
   isProduction: boolean;
-  isHeadlessBuild: boolean;
   releaseChannel: ReleaseChannel;
   flipperReleaseRevision?: string;
   appVersion: string;
@@ -114,7 +113,6 @@ export type EnvironmentInfo = {
     unixname: string;
   };
   versions: {
-    electron?: string;
     node: string;
     platform: string;
   };
