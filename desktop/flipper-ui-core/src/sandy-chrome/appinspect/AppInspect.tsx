@@ -13,24 +13,18 @@ import {LeftSidebar, SidebarTitle} from '../LeftSidebar';
 import {Layout, styled} from '../../ui';
 import {theme, useValue} from 'flipper-plugin';
 import {PluginList} from './PluginList';
-import MetroButton from '../../chrome/MetroButton';
 import {BookmarkSection} from './BookmarkSection';
 import Client from '../../Client';
 import {BaseDevice} from 'flipper-frontend-core';
 import {ExclamationCircleOutlined, FieldTimeOutlined} from '@ant-design/icons';
 import {useSelector} from 'react-redux';
-import {
-  getActiveClient,
-  getActiveDevice,
-  getMetroDevice,
-} from '../../selectors/connections';
+import {getActiveClient, getActiveDevice} from '../../selectors/connections';
 import * as connections from '../../selectors/connections';
 import {PluginActionsMenu} from '../../chrome/PluginActionsMenu';
 
 const {Text} = Typography;
 
 export function AppInspect() {
-  const metroDevice = useSelector(getMetroDevice);
   const client = useSelector(getActiveClient);
   const activeDevice = useSelector(getActiveDevice);
   const isDeviceConnected = useValue(activeDevice?.connected, false);
@@ -47,20 +41,11 @@ export function AppInspect() {
           </Toolbar>
           <Layout.Container padv="small" padh="medium" gap={theme.space.large}>
             {isDeviceConnected && isAppConnected && <BookmarkSection />}
-            {isDeviceConnected && activeDevice && (
-              <Toolbar gap>
-                <MetroButton />
-              </Toolbar>
-            )}
           </Layout.Container>
         </Layout.Container>
         <Layout.ScrollContainer vertical padv={theme.space.large}>
           {activeDevice ? (
-            <PluginList
-              activeDevice={activeDevice}
-              metroDevice={metroDevice}
-              client={client}
-            />
+            <PluginList activeDevice={activeDevice} client={client} />
           ) : null}
         </Layout.ScrollContainer>
       </Layout.Top>

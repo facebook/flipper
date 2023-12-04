@@ -24,7 +24,6 @@ import {
   URLConfigField,
   ComboBoxConfigField,
 } from './settings/configFields';
-import KeyboardShortcutInput from './settings/KeyboardShortcutInput';
 import {isEqual, isMatch, isEmpty} from 'lodash';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
 import {
@@ -127,7 +126,6 @@ class SettingsSheet extends Component<Props, State> {
       enablePhysicalIOS,
       enablePrefetching,
       idbPath,
-      reactNative,
       darkMode,
       suppressPluginErrors,
       persistDeviceData,
@@ -308,60 +306,6 @@ class SettingsSheet extends Component<Props, State> {
             <Radio.Button value="system">Use System Setting</Radio.Button>
           </Radio.Group>
         </Layout.Container>
-        <ToggledSection
-          label="React Native keyboard shortcuts"
-          toggled={reactNative.shortcuts.enabled}
-          onChange={(enabled) => {
-            this.setState((prevState) => ({
-              updatedSettings: {
-                ...prevState.updatedSettings,
-                reactNative: {
-                  ...prevState.updatedSettings.reactNative,
-                  shortcuts: {
-                    ...prevState.updatedSettings.reactNative.shortcuts,
-                    enabled,
-                  },
-                },
-              },
-            }));
-          }}>
-          <KeyboardShortcutInput
-            label="Reload application"
-            value={reactNative.shortcuts.reload}
-            onChange={(reload) => {
-              this.setState((prevState) => ({
-                updatedSettings: {
-                  ...prevState.updatedSettings,
-                  reactNative: {
-                    ...prevState.updatedSettings.reactNative,
-                    shortcuts: {
-                      ...prevState.updatedSettings.reactNative.shortcuts,
-                      reload,
-                    },
-                  },
-                },
-              }));
-            }}
-          />
-          <KeyboardShortcutInput
-            label="Open developer menu"
-            value={reactNative.shortcuts.openDevMenu}
-            onChange={(openDevMenu) => {
-              this.setState((prevState) => ({
-                updatedSettings: {
-                  ...prevState.updatedSettings,
-                  reactNative: {
-                    ...prevState.updatedSettings.reactNative,
-                    shortcuts: {
-                      ...prevState.updatedSettings.reactNative.shortcuts,
-                      openDevMenu,
-                    },
-                  },
-                },
-              }));
-            }}
-          />
-        </ToggledSection>
         <NUX
           // TODO: provide link to Flipper doc with more details
           title="Plugin marketplace serve as a way to distribute private/internal plugins"

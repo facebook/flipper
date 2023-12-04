@@ -25,7 +25,6 @@ import {getAppVersion} from './info';
 
 export type PluginLists = {
   devicePlugins: PluginDefinition[];
-  metroPlugins: PluginDefinition[];
   enabledPlugins: PluginDefinition[];
   disabledPlugins: PluginDefinition[];
   unavailablePlugins: [plugin: PluginDetails, reason: string][];
@@ -170,11 +169,9 @@ export function computePluginLists(
     | 'clientPlugins'
   >,
   device: BaseDevice | null,
-  metroDevice: BaseDevice | null,
   client: Client | null,
 ): {
   devicePlugins: PluginDefinition[];
-  metroPlugins: PluginDefinition[];
   enabledPlugins: PluginDefinition[];
   disabledPlugins: PluginDefinition[];
   unavailablePlugins: [plugin: PluginDetails, reason: string][];
@@ -189,26 +186,19 @@ export function computePluginLists(
   const devicePlugins: PluginDefinition[] = [...plugins.devicePlugins.values()]
     .filter((p) => device?.supportsPlugin(p))
     .filter((p) => enabledDevicePluginsState.has(p.id));
-  const metroPlugins: PluginDefinition[] = [...plugins.devicePlugins.values()]
-    .filter((p) => metroDevice?.supportsPlugin(p))
-    .filter((p) => enabledDevicePluginsState.has(p.id));
   const enabledPlugins: PluginDefinition[] = [];
   const disabledPlugins: PluginDefinition[] = [
     ...plugins.devicePlugins.values(),
   ]
-    .filter(
-      (p) =>
-        device?.supportsPlugin(p.details) ||
-        metroDevice?.supportsPlugin(p.details),
-    )
+    .filter((p) => device?.supportsPlugin(p.details))
     .filter((p) => !enabledDevicePluginsState.has(p.id));
   const unavailablePlugins: [plugin: PluginDetails, reason: string][] = [];
   const downloadablePlugins: DownloadablePluginDetails[] = [];
 
   if (device) {
-    // find all device plugins that aren't part of the current device / metro
+    // find all device plugins that aren't part of the current device
     for (const p of plugins.devicePlugins.values()) {
-      if (!device.supportsPlugin(p) && !metroDevice?.supportsPlugin(p)) {
+      if (!device.supportsPlugin(p)) {
         unavailablePlugins.push([
           p.details,
           `Device plugin '${getPluginTitle(
@@ -222,10 +212,7 @@ export function computePluginLists(
     for (const plugin of uninstalledMarketplacePlugins.filter(
       (d) => d.pluginType === 'device',
     )) {
-      if (
-        device.supportsPlugin(plugin) ||
-        metroDevice?.supportsPlugin(plugin)
-      ) {
+      if (device.supportsPlugin(plugin)) {
         downloadablePlugins.push(plugin);
       }
     }
@@ -327,7 +314,6 @@ export function computePluginLists(
   enabledPlugins.sort(sortPluginsByName);
   devicePlugins.sort(sortPluginsByName);
   disabledPlugins.sort(sortPluginsByName);
-  metroPlugins.sort(sortPluginsByName);
   unavailablePlugins.sort(([a], [b]) => {
     return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
   });
@@ -337,7 +323,6 @@ export function computePluginLists(
 
   return {
     devicePlugins,
-    metroPlugins,
     enabledPlugins,
     disabledPlugins,
     unavailablePlugins,
@@ -371,7 +356,6 @@ function getFavoritePlugins(
 export function computeActivePluginList({
   enabledPlugins,
   devicePlugins,
-  metroPlugins,
   disabledPlugins,
   downloadablePlugins,
   unavailablePlugins,
@@ -385,13 +369,6 @@ export function computeActivePluginList({
     };
   }
   for (const plugin of devicePlugins) {
-    pluginList[plugin.id] = {
-      status: 'enabled',
-      details: plugin.details,
-      definition: plugin,
-    };
-  }
-  for (const plugin of metroPlugins) {
     pluginList[plugin.id] = {
       status: 'enabled',
       details: plugin.details,
