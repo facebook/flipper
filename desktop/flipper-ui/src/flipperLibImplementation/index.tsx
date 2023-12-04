@@ -20,6 +20,7 @@ import constants from '../fb-stubs/constants';
 import {RenderHost} from '../RenderHost';
 import {downloadFileFactory} from './downloadFile';
 import {Base64} from 'js-base64';
+import {importFile} from '../utils/importFile';
 
 export function baseFlipperLibImplementation(
   renderHost: RenderHost,
@@ -41,7 +42,7 @@ export function baseFlipperLibImplementation(
     GK: renderHost.GK,
     writeTextToClipboard: (text) => navigator.clipboard.writeText(text),
     openLink: renderHost.openLink,
-    importFile: renderHost.importFile,
+    importFile,
     exportFile: renderHost.exportFile,
     exportFileBinary: renderHost.exportFileBinary,
     paths: {

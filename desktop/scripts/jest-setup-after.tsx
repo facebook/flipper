@@ -206,9 +206,6 @@ function createStubRenderHost(): RenderHost {
   };
 
   return {
-    async importFile() {
-      return undefined;
-    },
     async exportFile() {
       return undefined;
     },

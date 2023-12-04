@@ -43,6 +43,7 @@ import {getStore} from '../store';
 import BaseDevice, {DeviceExport} from '../devices/BaseDevice';
 import ArchivedDevice from '../devices/ArchivedDevice';
 import {getRenderHostInstance} from '../RenderHost';
+import {importFile} from './importFile';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -594,7 +595,7 @@ export const importFileToStore = async (file: string, store: Store) => {
 };
 
 export async function startFileImport(store: Store) {
-  const file = await getRenderHostInstance().importFile({
+  const file = await importFile({
     extensions: ['flipper', 'json', 'txt'],
   });
   if (!file || typeof file.data !== 'string') {
