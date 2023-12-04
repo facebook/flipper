@@ -8,7 +8,24 @@
  */
 
 import {useStore} from './useStore';
-import {getRenderHostInstance} from '../RenderHost';
+import {Settings} from 'flipper-common';
+
+export function shouldUseDarkMode(theme: Settings['darkMode']) {
+  let shouldUseDarkMode = false;
+  if (theme === 'dark') {
+    shouldUseDarkMode = true;
+  } else if (theme === 'light') {
+    shouldUseDarkMode = false;
+  } else if (theme === 'system') {
+    shouldUseDarkMode = !!(
+      window.flipperConfig.theme === 'dark' ||
+      (window.flipperConfig.theme === 'system' &&
+        window.matchMedia?.('(prefers-color-scheme: dark)'))
+    );
+  }
+
+  return shouldUseDarkMode;
+}
 
 /**
  * This hook returns whether dark mode is currently being used.
@@ -17,12 +34,5 @@ import {getRenderHostInstance} from '../RenderHost';
  */
 export function useIsDarkMode(): boolean {
   const darkMode = useStore((state) => state.settingsState.darkMode);
-  if (darkMode === 'dark') {
-    return true;
-  } else if (darkMode === 'light') {
-    return false;
-  } else if (darkMode === 'system') {
-    return getRenderHostInstance().shouldUseDarkColors();
-  }
-  return false;
+  return shouldUseDarkMode(darkMode);
 }

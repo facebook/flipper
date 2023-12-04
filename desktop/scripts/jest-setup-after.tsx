@@ -217,9 +217,6 @@ function createStubRenderHost(): RenderHost {
   return {
     onIpcEvent() {},
     sendIpcEvent() {},
-    shouldUseDarkColors() {
-      return false;
-    },
     GK(gk: string) {
       return stubConfig.gatekeepers[gk] ?? false;
     },

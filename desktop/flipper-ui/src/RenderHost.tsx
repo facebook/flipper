@@ -124,7 +124,6 @@ export interface RenderHost {
     event: Event,
     ...args: ChildProcessEvents[Event]
   ): void;
-  shouldUseDarkColors(): boolean;
   GK(gatekeeper: string): boolean;
   unloadModule?(path: string): void;
   getPercentCPUUsage?(): number;

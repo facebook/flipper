@@ -35,13 +35,6 @@ export function initializeRenderHost(flipperServerConfig: FlipperServerConfig) {
     sendIpcEvent(event, ...args: any[]) {
       window.dispatchEvent(new CustomEvent(event, {detail: args}));
     },
-    shouldUseDarkColors() {
-      return !!(
-        window.flipperConfig.theme === 'dark' ||
-        (window.flipperConfig.theme === 'system' &&
-          window.matchMedia?.('(prefers-color-scheme: dark)'))
-      );
-    },
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },

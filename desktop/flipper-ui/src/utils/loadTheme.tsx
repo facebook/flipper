@@ -9,18 +9,11 @@
 
 import {Settings} from 'flipper-common';
 import {getRenderHostInstance} from '../RenderHost';
+import {shouldUseDarkMode} from './useIsDarkMode';
 
 export function loadTheme(theme: Settings['darkMode']) {
-  let shouldUseDarkMode = false;
-  if (theme === 'dark') {
-    shouldUseDarkMode = true;
-  } else if (theme === 'light') {
-    shouldUseDarkMode = false;
-  } else if (theme === 'system') {
-    shouldUseDarkMode = getRenderHostInstance().shouldUseDarkColors();
-  }
   (
     document.getElementById('flipper-theme-import') as HTMLLinkElement
-  ).href = `themes/${shouldUseDarkMode ? 'dark' : 'light'}.css`;
+  ).href = `themes/${shouldUseDarkMode(theme) ? 'dark' : 'light'}.css`;
   getRenderHostInstance().sendIpcEvent('setTheme', theme);
 }
