@@ -32,6 +32,18 @@ const IosXcodeNodeInstalled = (
     </a>
   </Typography.Paragraph>
 );
+
+const IosIdbNotInstalled = (props: PropsFor<'ios.idb--not_installed'>) => (
+  <Typography.Paragraph>
+    IDB is required to use Flipper with iOS devices. It can be installed from
+    <a href="https://github.com/facebook/idb" target="_blank">
+      github.com/facebook/idb
+    </a>{' '}
+    and configured in Flipper settings. Current setting: "${props.idbPath}"
+    isn't a valid IDB installation.
+  </Typography.Paragraph>
+);
+
 export const moreMessageToComp: {
   [K in keyof FlipperDoctor.HealthcheckResultMessageMapping]?: React.FC<
     PropsFor<K>
@@ -39,4 +51,5 @@ export const moreMessageToComp: {
 } = {
   'ios.xcode--not_installed': IosXcodeNodeInstalled,
   'android.android-studio--not_installed': AndroidStudioNotInstalled,
+  'ios.idb--not_installed': IosIdbNotInstalled,
 };

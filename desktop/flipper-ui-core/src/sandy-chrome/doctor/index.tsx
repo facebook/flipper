@@ -217,6 +217,27 @@ const IosXctraceNotInstalled = (
   </Typography.Paragraph>
 );
 
+const IdbNoContext = (_props: PropsFor<'ios.idb--no_context'>) => (
+  <Typography.Paragraph>
+    Not enough context to check IDB installation. Needs to be run through
+    Flipper UI.
+  </Typography.Paragraph>
+);
+
+const IdbPhysicalDeviceDisabled = (
+  _props: PropsFor<'ios.idb--physical_device_disabled'>,
+) => (
+  <Typography.Paragraph>
+    Physical device support disabled in flipper settings, check skipped.
+  </Typography.Paragraph>
+);
+
+const IosIdbInstalled = (_props: PropsFor<'ios.idb--installed'>) => (
+  <Typography.Paragraph>
+    Flipper is configured to use your IDB installation.
+  </Typography.Paragraph>
+);
+
 const messageToComp: {
   [K in keyof FlipperDoctor.HealthcheckResultMessageMapping]: React.FC<
     PropsFor<K>
@@ -257,10 +278,10 @@ const messageToComp: {
   'ios.xctrace--installed': IosXctraceInstalled,
   'ios.xctrace--not_installed': IosXctraceNotInstalled,
 
-  'ios.idb--no_context': Noop,
-  'ios.idb--physical_device_disabled': Noop,
+  'ios.idb--no_context': IdbNoContext,
+  'ios.idb--physical_device_disabled': IdbPhysicalDeviceDisabled,
   'ios.idb--not_installed': Noop,
-  'ios.idb--installed': Noop,
+  'ios.idb--installed': IosIdbInstalled,
 
   'command-success': Noop,
   'command-fail': Noop,

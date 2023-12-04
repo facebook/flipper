@@ -17,7 +17,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type {FlipperDoctor} from 'flipper-common';
 import * as fs_extra from 'fs-extra';
-import {getIdbInstallationInstructions} from './fb-stubs/messages';
 import {validateSelectedXcodeVersion} from './fb-stubs/validateSelectedXcodeVersion';
 
 export function getHealthchecks(): FlipperDoctor.Healthchecks {
@@ -295,16 +294,14 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   if (!settings) {
                     return {
                       hasProblem: false,
-                      message:
-                        'Not enough context to check IDB installation. Needs to be run through Flipper UI.',
+                      message: 'moved to message2',
                       message2: ['ios.idb--no_context'],
                     };
                   }
                   if (!settings.enablePhysicalIOS) {
                     return {
                       hasProblem: false,
-                      message:
-                        'Using physical iOS devices is disabled in settings. So IDB is not required.',
+                      message: 'moved to message2',
                       message2: ['ios.idb--physical_device_disabled'],
                     };
                   }
@@ -314,7 +311,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   if (result.hasProblem) {
                     return {
                       hasProblem: true,
-                      ...getIdbInstallationInstructions(settings.idbPath),
+                      message: 'moved to message2',
                       message2: [
                         'ios.idb--not_installed',
                         {idbPath: settings.idbPath},
