@@ -7,12 +7,8 @@
  * @format
  */
 
-import {
-  FlipperServer,
-  FlipperServerConfig,
-  isProduction,
-  wrapRequire,
-} from 'flipper-common';
+import {FlipperServerConfig, isProduction, wrapRequire} from 'flipper-common';
+import {getFlipperServer} from './flipperServer';
 import type {RenderHost} from './RenderHost';
 
 declare module globalThis {
@@ -30,10 +26,7 @@ globalThis.require = wrapRequire((module: string) => {
   );
 });
 
-export function initializeRenderHost(
-  flipperServer: FlipperServer,
-  flipperServerConfig: FlipperServerConfig,
-) {
+export function initializeRenderHost(flipperServerConfig: FlipperServerConfig) {
   FlipperRenderHostInstance = {
     onIpcEvent(event, cb) {
       window.addEventListener(event as string, (ev) => {
@@ -51,15 +44,14 @@ export function initializeRenderHost(
       );
     },
     restartFlipper() {
-      flipperServer.exec('shutdown');
+      getFlipperServer().exec('shutdown');
     },
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },
-    flipperServer,
     async requirePlugin(path): Promise<{plugin: any; css?: string}> {
-      const source = await flipperServer.exec('plugin-source', path);
+      const source = await getFlipperServer().exec('plugin-source', path);
 
       let js = source.js;
       // append source url (to make sure a file entry shows up in the debugger)

@@ -12,6 +12,7 @@ import {Image, Modal, Button} from 'antd';
 import {getFlipperLib, Layout, _NuxManagerContext} from 'flipper-plugin';
 import {getRenderHostInstance} from '../RenderHost';
 import isProduction from '../utils/isProduction';
+import {getFlipperServer} from '../flipperServer';
 
 type Props = {
   onHide: () => void;
@@ -132,7 +133,7 @@ async function install(event: any) {
       if (choiceResult.outcome === 'accepted') {
         tracker.track('pwa-install-outcome', {installed: true});
         console.log('PWA installation, user accepted the prompt.');
-        return getRenderHostInstance().flipperServer.exec('move-pwa');
+        return getFlipperServer().exec('move-pwa');
       } else {
         tracker.track('pwa-install-outcome', {installed: false});
         console.log('PWA installation, user dismissed the prompt.');

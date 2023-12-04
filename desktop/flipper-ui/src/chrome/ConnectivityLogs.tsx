@@ -27,7 +27,7 @@ import {
   FlipperServerCommands,
 } from 'flipper-common';
 import {Button} from 'antd';
-import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServer} from '../flipperServer';
 
 const SIDEBAR_WIDTH = 400;
 
@@ -173,7 +173,7 @@ function KillDebuggingBridge({os}: {os: DeviceOS}) {
       <Button
         type="default"
         onClick={() => {
-          getRenderHostInstance().flipperServer.exec(cmd);
+          getFlipperServer().exec(cmd);
         }}>
         {title}
       </Button>

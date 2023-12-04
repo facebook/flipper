@@ -28,6 +28,8 @@ import {
 // Only import the type!
 // eslint-disable-next-line node/no-extraneous-import
 import type {RenderHost} from 'flipper-ui/src/RenderHost';
+// eslint-disable-next-line node/no-extraneous-import
+import {setFlipperServer} from 'flipper-ui/src/flipperServer';
 
 (global as any).flipperConfig = {
   theme: 'light',
@@ -66,6 +68,7 @@ if (!test) {
 beforeEach(() => {
   // Fresh mock flipperServer for every test
   (global as any).FlipperRenderHostInstance = createStubRenderHost();
+  setFlipperServer(TestUtils.createFlipperServerMock());
 });
 
 afterEach(cleanup);
@@ -216,7 +219,6 @@ function createStubRenderHost(): RenderHost {
     GK(gk: string) {
       return stubConfig.gatekeepers[gk] ?? false;
     },
-    flipperServer: TestUtils.createFlipperServerMock(),
     async requirePlugin(path: string) {
       return {plugin: require(path)};
     },

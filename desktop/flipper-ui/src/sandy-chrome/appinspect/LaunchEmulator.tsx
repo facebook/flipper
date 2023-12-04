@@ -33,6 +33,7 @@ import {Link} from '../../ui';
 import {chain, uniq, without} from 'lodash';
 import {ReactNode} from 'react-markdown';
 import {produce} from 'immer';
+import {getFlipperServer} from '../../flipperServer';
 
 const COLD_BOOT = 'cold-boot';
 
@@ -118,7 +119,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
         }
         setWaitingForIos(true);
         try {
-          const simulators = await getRenderHostInstance().flipperServer.exec(
+          const simulators = await getFlipperServer().exec(
             'ios-get-simulators',
             false,
           );
@@ -145,7 +146,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
         }
         setWaitingForAndroid(true);
         try {
-          const emulators = await getRenderHostInstance().flipperServer.exec(
+          const emulators = await getFlipperServer().exec(
             'android-get-emulators',
           );
           setWaitingForAndroid(false);
@@ -188,7 +189,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
                     draft.add(name);
                   }),
                 );
-                await getRenderHostInstance().flipperServer.exec(
+                await getFlipperServer().exec(
                   'android-launch-emulator',
                   name,
                   coldBoot,
@@ -273,7 +274,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
                         draft.add(device.udid);
                       }),
                     );
-                    await getRenderHostInstance().flipperServer.exec(
+                    await getFlipperServer().exec(
                       'ios-launch-simulator',
                       device.udid,
                     );

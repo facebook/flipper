@@ -17,6 +17,7 @@ import {getAppVersion} from '../utils/info';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
 import {getRenderHostInstance} from '../RenderHost';
 import {NotificationBody} from '../ui/components/NotificationBody';
+import {getFlipperServer} from '../flipperServer';
 
 export type VersionCheckResult =
   | {
@@ -101,8 +102,8 @@ export default function UpdateIndicator() {
               return;
             }
 
-            return getRenderHostInstance()
-              .flipperServer.exec('fetch-new-version', res.version)
+            return getFlipperServer()
+              .exec('fetch-new-version', res.version)
               .then(() => {
                 setVersionCheckResult(res);
               });
@@ -129,7 +130,7 @@ export function getUpdateAvailableMessage(versionCheckResult: {
   const {launcherSettings} = getRenderHostInstance().serverConfig;
 
   const shutdownFlipper = () => {
-    getRenderHostInstance().flipperServer.exec('shutdown');
+    getFlipperServer().exec('shutdown');
     window.close();
   };
 

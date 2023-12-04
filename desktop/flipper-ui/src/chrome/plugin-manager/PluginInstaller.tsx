@@ -25,8 +25,8 @@ import {Dispatch, Action} from 'redux';
 import PluginPackageInstaller from './PluginPackageInstaller';
 import {Toolbar} from 'flipper-plugin';
 import {Alert, Button, Input, Tooltip, Typography} from 'antd';
-import {getRenderHostInstance} from '../../RenderHost';
 import {WarningOutlined} from '@ant-design/icons';
+import {getFlipperServer} from '../../flipperServer';
 
 const {Text, Link} = Typography;
 
@@ -342,7 +342,7 @@ export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
   }),
   (dispatch: Dispatch<Action<any>>) => ({
     refreshInstalledPlugins: async () => {
-      const plugins = await await getRenderHostInstance().flipperServer!.exec(
+      const plugins = await getFlipperServer().exec(
         'plugins-get-installed-plugins',
       );
       dispatch(registerInstalledPlugins(plugins));
@@ -353,22 +353,13 @@ export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
 async function installPluginFromNpm(
   name: string,
 ): Promise<InstalledPluginDetails> {
-  return await getRenderHostInstance().flipperServer!.exec(
-    'plugins-install-from-npm',
-    name,
-  );
+  return await getFlipperServer().exec('plugins-install-from-npm', name);
 }
 
 async function removePlugin(name: string) {
-  return await getRenderHostInstance().flipperServer!.exec(
-    'plugins-remove-plugins',
-    [name],
-  );
+  return await getFlipperServer().exec('plugins-remove-plugins', [name]);
 }
 
 async function getUpdatablePlugins(query: string | undefined) {
-  return await getRenderHostInstance().flipperServer!.exec(
-    'plugins-get-updatable-plugins',
-    query,
-  );
+  return await getFlipperServer().exec('plugins-get-updatable-plugins', query);
 }

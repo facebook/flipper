@@ -12,7 +12,7 @@ import React, {Component} from 'react';
 import {reportUsage} from 'flipper-common';
 import {Modal} from 'antd';
 import {Dialog, theme} from 'flipper-plugin';
-import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServer} from '../flipperServer';
 
 const changelogKey = 'FlipperChangelogStatus';
 
@@ -140,8 +140,8 @@ export /*for test*/ function markChangelogRead(
 }
 
 export function showChangelog(onlyIfNewChanges: boolean) {
-  getRenderHostInstance()
-    .flipperServer.exec('get-changelog')
+  getFlipperServer()
+    .exec('get-changelog')
     .then((changelog) => {
       const show =
         !onlyIfNewChanges ||

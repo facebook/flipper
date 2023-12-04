@@ -18,7 +18,7 @@ import {
 import styled from '@emotion/styled';
 import React, {useState} from 'react';
 import {Toolbar, FileSelector} from 'flipper-plugin';
-import {getRenderHostInstance} from '../../RenderHost';
+import {getFlipperServer} from '../../flipperServer';
 
 const CenteredGlyph = styled(Glyph)({
   margin: 'auto',
@@ -54,10 +54,7 @@ export default function PluginPackageInstaller({
     setError(undefined);
     setInProgress(true);
     try {
-      await getRenderHostInstance().flipperServer?.exec(
-        'plugins-install-from-content',
-        content,
-      );
+      await getFlipperServer().exec('plugins-install-from-content', content);
       await onInstall();
     } catch (e) {
       setError(e);

@@ -20,6 +20,7 @@ import isPluginCompatible from './utils/isPluginCompatible';
 import isPluginVersionMoreRecent from './utils/isPluginVersionMoreRecent';
 import {getRenderHostInstance} from './RenderHost';
 import pMap from 'p-map';
+import {getFlipperServer} from './flipperServer';
 
 export abstract class AbstractPluginInitializer {
   protected gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
@@ -128,9 +129,7 @@ export function getLatestCompatibleVersionOfEachPlugin<
 
 export async function getDynamicPlugins(): Promise<InstalledPluginDetails[]> {
   try {
-    return await getRenderHostInstance().flipperServer!.exec(
-      'plugins-load-dynamic-plugins',
-    );
+    return await getFlipperServer().exec('plugins-load-dynamic-plugins');
   } catch (e) {
     console.error('Failed to load dynamic plugins', e);
     return [];

@@ -29,6 +29,7 @@ import BaseDevice from '../../devices/BaseDevice';
 import {TestDevice} from '../../devices/TestDevice';
 import ArchivedDevice from '../../devices/ArchivedDevice';
 import {ClientConnection} from '../../AbstractClient';
+import {getFlipperServer} from '../../flipperServer';
 
 export interface AppOptions {
   plugins?: PluginDefinition[];
@@ -58,7 +59,7 @@ export default class MockFlipper {
   private _clients: Client[] = [];
   private _deviceCounter: number = 0;
   private _clientCounter: number = 0;
-  flipperServer: FlipperServer = getRenderHostInstance().flipperServer;
+  flipperServer: FlipperServer = getFlipperServer();
 
   public get store(): Store {
     return this._store;

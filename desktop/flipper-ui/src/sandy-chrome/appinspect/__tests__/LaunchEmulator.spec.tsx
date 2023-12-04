@@ -15,8 +15,8 @@ import {LaunchEmulatorDialog} from '../LaunchEmulator';
 
 import {createRootReducer} from '../../../reducers';
 import {sleep} from 'flipper-plugin';
-import {getRenderHostInstance} from '../../../RenderHost';
 import {last} from 'lodash';
+import {getFlipperServer} from '../../../flipperServer';
 
 test('Can render and launch android apps - no emulators', async () => {
   const store = createStore(createRootReducer());
@@ -33,7 +33,7 @@ test('Can render and launch android apps - no emulators', async () => {
     'ios-get-simulators': [],
     'android-get-emulators': [],
   };
-  getRenderHostInstance().flipperServer.exec = async function (cmd: any) {
+  getFlipperServer().exec = async function (cmd: any) {
     return responses[cmd];
   } as any;
   const onClose = jest.fn();
@@ -77,7 +77,7 @@ test('Can render and launch android apps - no SDKs', async () => {
     'ios-get-simulators': [],
     'android-get-emulators': [],
   };
-  getRenderHostInstance().flipperServer.exec = async function (cmd: any) {
+  getFlipperServer().exec = async function (cmd: any) {
     return responses[cmd];
   } as any;
   const onClose = jest.fn();
@@ -108,7 +108,7 @@ test('Can render and launch android apps', async () => {
     }
   });
 
-  getRenderHostInstance().flipperServer.exec = exec;
+  getFlipperServer().exec = exec;
 
   store.dispatch({
     type: 'UPDATE_SETTINGS',
@@ -171,7 +171,7 @@ test('Favouriting a virtual device brings it to the top', async () => {
     }
   });
 
-  getRenderHostInstance().flipperServer.exec = exec;
+  getFlipperServer().exec = exec;
 
   store.dispatch({
     type: 'UPDATE_SETTINGS',

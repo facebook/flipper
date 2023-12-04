@@ -18,10 +18,11 @@ import {
 } from 'flipper-common';
 import constants from '../fb-stubs/constants';
 import {RenderHost} from '../RenderHost';
-import {downloadFileFactory} from './downloadFile';
+import {downloadFile} from './downloadFile';
 import {Base64} from 'js-base64';
 import {importFile} from '../utils/importFile';
 import {exportFile, exportFileBinary} from '../utils/exportFile';
+import {getFlipperServer} from '../flipperServer';
 
 export function baseFlipperLibImplementation(
   renderHost: RenderHost,
@@ -59,59 +60,51 @@ export function baseFlipperLibImplementation(
     },
     intern: {
       graphGet: (...args) =>
-        renderHost.flipperServer.exec('intern-graph-get', ...args),
+        getFlipperServer().exec('intern-graph-get', ...args),
       graphPost: (...args) =>
-        renderHost.flipperServer.exec('intern-graph-post', ...args),
-      isLoggedIn: () => renderHost.flipperServer.exec('is-logged-in'),
+        getFlipperServer().exec('intern-graph-post', ...args),
+      isLoggedIn: () => getFlipperServer().exec('is-logged-in'),
     },
     remoteServerContext: {
       childProcess: {
         exec: async (
           command: string,
           options?: ExecOptions & {encoding?: BufferEncoding},
-        ) => renderHost.flipperServer.exec('node-api-exec', command, options),
+        ) => getFlipperServer().exec('node-api-exec', command, options),
       },
       fs: {
         access: async (path: string, mode?: number) =>
-          renderHost.flipperServer.exec('node-api-fs-access', path, mode),
+          getFlipperServer().exec('node-api-fs-access', path, mode),
         pathExists: async (path: string, mode?: number) =>
-          renderHost.flipperServer.exec('node-api-fs-pathExists', path, mode),
+          getFlipperServer().exec('node-api-fs-pathExists', path, mode),
         unlink: async (path: string) =>
-          renderHost.flipperServer.exec('node-api-fs-unlink', path),
+          getFlipperServer().exec('node-api-fs-unlink', path),
         mkdir: (async (
           path: string,
           options?: {recursive?: boolean} & MkdirOptions,
         ) =>
-          renderHost.flipperServer.exec(
+          getFlipperServer().exec(
             'node-api-fs-mkdir',
             path,
             options,
           )) as RemoteServerContext['fs']['mkdir'],
         rm: async (path: string, options?: RmOptions) =>
-          renderHost.flipperServer.exec('node-api-fs-rm', path, options),
+          getFlipperServer().exec('node-api-fs-rm', path, options),
         copyFile: async (src: string, dest: string, flags?: number) =>
-          renderHost.flipperServer.exec(
-            'node-api-fs-copyFile',
-            src,
-            dest,
-            flags,
-          ),
+          getFlipperServer().exec('node-api-fs-copyFile', src, dest, flags),
         constants: fsConstants,
         stat: async (path: string) =>
-          renderHost.flipperServer.exec('node-api-fs-stat', path),
+          getFlipperServer().exec('node-api-fs-stat', path),
         readlink: async (path: string) =>
-          renderHost.flipperServer.exec('node-api-fs-readlink', path),
+          getFlipperServer().exec('node-api-fs-readlink', path),
         readFile: (path, options) =>
-          renderHost.flipperServer.exec('node-api-fs-readfile', path, options),
+          getFlipperServer().exec('node-api-fs-readfile', path, options),
         readFileBinary: async (path) =>
           Base64.toUint8Array(
-            await renderHost.flipperServer.exec(
-              'node-api-fs-readfile-binary',
-              path,
-            ),
+            await getFlipperServer().exec('node-api-fs-readfile-binary', path),
           ),
         writeFile: (path, contents, options) =>
-          renderHost.flipperServer.exec(
+          getFlipperServer().exec(
             'node-api-fs-writefile',
             path,
             contents,
@@ -119,14 +112,14 @@ export function baseFlipperLibImplementation(
           ),
         writeFileBinary: async (path, contents) => {
           const base64contents = Base64.fromUint8Array(contents);
-          return await renderHost.flipperServer.exec(
+          return await getFlipperServer().exec(
             'node-api-fs-writefile-binary',
             path,
             base64contents,
           );
         },
       },
-      downloadFile: downloadFileFactory(renderHost),
+      downloadFile,
     },
   };
 }

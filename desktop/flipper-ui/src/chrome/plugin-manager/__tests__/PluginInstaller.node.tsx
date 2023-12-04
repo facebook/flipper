@@ -14,14 +14,13 @@ import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
 import type {PluginDetails, UpdatablePluginDetails} from 'flipper-common';
 import {Store} from '../../../reducers';
-import {getRenderHostInstance} from '../../../RenderHost';
+import {getFlipperServer} from '../../../flipperServer';
 
 let getUpdatablePluginsMock: jest.Mock<any, any>;
 
 beforeEach(() => {
   // flipperServer get resets before each test, no need to do so explicitly
-  getUpdatablePluginsMock = getRenderHostInstance().flipperServer!.exec =
-    jest.fn();
+  getUpdatablePluginsMock = getFlipperServer().exec = jest.fn();
 });
 
 function getStore(installedPlugins: PluginDetails[] = []): Store {

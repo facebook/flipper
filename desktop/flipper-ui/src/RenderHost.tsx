@@ -9,7 +9,7 @@
 
 import './global';
 import {Notification} from 'flipper-plugin';
-import {FlipperServer, FlipperServerConfig} from 'flipper-common';
+import {FlipperServerConfig} from 'flipper-common';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 type PluginNotification = {
@@ -133,7 +133,6 @@ export interface RenderHost {
   shouldUseDarkColors(): boolean;
   restartFlipper(update?: boolean): void;
   GK(gatekeeper: string): boolean;
-  flipperServer: FlipperServer;
   serverConfig: FlipperServerConfig;
   requirePlugin(path: string): Promise<{plugin: any; css?: string}>;
   getStaticResourceUrl(relativePath: string): string;

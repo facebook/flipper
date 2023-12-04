@@ -10,7 +10,7 @@
 import type {DeviceOS, DeviceType} from 'flipper-plugin';
 import {DeviceSpec} from 'flipper-common';
 import BaseDevice from './BaseDevice';
-import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServer} from '../flipperServer';
 
 export class TestDevice extends BaseDevice {
   constructor(
@@ -20,7 +20,7 @@ export class TestDevice extends BaseDevice {
     os: DeviceOS,
     specs?: DeviceSpec[],
   ) {
-    super(getRenderHostInstance().flipperServer, {
+    super(getFlipperServer(), {
       serial,
       deviceType,
       title,

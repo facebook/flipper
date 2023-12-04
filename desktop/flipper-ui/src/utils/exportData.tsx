@@ -45,6 +45,7 @@ import ArchivedDevice from '../devices/ArchivedDevice';
 import {getRenderHostInstance} from '../RenderHost';
 import {importFile} from './importFile';
 import {exportFileBinary} from './exportFile';
+import {getFlipperServer} from '../flipperServer';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -572,7 +573,7 @@ export async function importDataToStore(
         store,
         clientPlugins,
         archivedDevice,
-        getRenderHostInstance().flipperServer,
+        getFlipperServer(),
       ).initFromImport(sandyPluginStates);
       store.dispatch({
         type: 'NEW_CLIENT',
@@ -606,7 +607,7 @@ export async function startFileImport(store: Store) {
 }
 
 async function startDeviceFlipperFolderExport() {
-  return await getRenderHostInstance().flipperServer.exec(
+  return await getFlipperServer().exec(
     {timeout: 3 * 60 * 1000},
     'fetch-debug-data',
   );
@@ -704,7 +705,7 @@ export async function exportEverythingEverywhereAllAtOnce(
       let everythingEverywhereAllAtOnceExportDownloadURL: string | undefined;
       try {
         everythingEverywhereAllAtOnceExportDownloadURL =
-          await getRenderHostInstance().flipperServer.exec(
+          await getFlipperServer().exec(
             'intern-cloud-upload',
             exportedFilePath,
           );

@@ -12,7 +12,7 @@ import {
   reportPlatformFailures,
   FlipperDoctor,
 } from 'flipper-common';
-import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServer} from '../flipperServer';
 
 let healthcheckIsRunning: boolean;
 let runningHealthcheck: Promise<void>;
@@ -39,7 +39,7 @@ export type HealthcheckSettings = {
 export type HealthcheckOptions = HealthcheckEventsHandler & HealthcheckSettings;
 
 async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
-  const {flipperServer} = getRenderHostInstance();
+  const flipperServer = getFlipperServer();
   const healthchecks = await flipperServer.exec('doctor-get-healthchecks', {
     settings: options.settings,
   });

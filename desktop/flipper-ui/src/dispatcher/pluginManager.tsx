@@ -44,9 +44,10 @@ import {
 } from '../utils/pluginUtils';
 import {getPluginKey} from '../utils/pluginKey';
 import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServer} from '../flipperServer';
 
 async function refreshInstalledPlugins(store: Store) {
-  const flipperServer = getRenderHostInstance().flipperServer;
+  const flipperServer = getFlipperServer();
   if (!flipperServer) {
     throw new Error('Flipper Server not ready');
   }

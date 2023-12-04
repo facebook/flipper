@@ -16,6 +16,7 @@ import {
 import {init as initLogger} from './fb-stubs/Logger';
 import {initializeRenderHost} from './initializeRenderHost';
 import {createFlipperServer, FlipperServerState} from 'flipper-server-client';
+import {setFlipperServer} from './flipperServer';
 
 const loadingContainer = document.getElementById('loading');
 if (loadingContainer) {
@@ -181,7 +182,9 @@ async function start() {
     '[flipper-client][ui-browser] Configuration obtained, initialise render host',
   );
 
-  initializeRenderHost(flipperServer, flipperServerConfig);
+  setFlipperServer(flipperServer);
+
+  initializeRenderHost(flipperServerConfig);
   initializePWA();
 
   // @ts-ignore

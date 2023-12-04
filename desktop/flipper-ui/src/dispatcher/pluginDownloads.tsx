@@ -20,7 +20,7 @@ import {loadPlugin} from '../reducers/pluginManager';
 import {showErrorNotification} from '../utils/notifications';
 import {pluginInstalled} from '../reducers/plugins';
 import {getAllClients} from '../reducers/connections';
-import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServer} from '../flipperServer';
 
 export default (store: Store) => {
   sideEffect(
@@ -65,7 +65,7 @@ async function handlePluginDownload(
   );
   try {
     dispatch(pluginDownloadStarted({plugin}));
-    const installedPlugin = await getRenderHostInstance().flipperServer!.exec(
+    const installedPlugin = await getFlipperServer().exec(
       'plugin-start-download',
       plugin,
     );

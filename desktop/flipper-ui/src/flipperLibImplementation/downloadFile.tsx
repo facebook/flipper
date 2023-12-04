@@ -9,12 +9,11 @@
 
 import {assertNever, DownloadFileUpdate} from 'flipper-common';
 import {FlipperLib, DownloadFileResponse} from 'flipper-plugin';
-import {RenderHost} from '../RenderHost';
+import {getFlipperServer} from '../flipperServer';
 
-export const downloadFileFactory =
-  (renderHost: RenderHost): FlipperLib['remoteServerContext']['downloadFile'] =>
+export const downloadFile: FlipperLib['remoteServerContext']['downloadFile'] =
   async (url, dest, {onProgressUpdate, ...options} = {}) => {
-    const downloadDescriptor = (await renderHost.flipperServer.exec(
+    const downloadDescriptor = (await getFlipperServer().exec(
       'download-file-start',
       url,
       dest,
@@ -52,18 +51,12 @@ export const downloadFileFactory =
           }
         }
       };
-      renderHost.flipperServer.on(
-        'download-file-update',
-        onProgressUpdateWrapped,
-      );
+      getFlipperServer().on('download-file-update', onProgressUpdateWrapped);
     });
 
     // eslint-disable-next-line promise/catch-or-return
     completed.finally(() => {
-      renderHost.flipperServer.off(
-        'download-file-update',
-        onProgressUpdateWrapped,
-      );
+      getFlipperServer().off('download-file-update', onProgressUpdateWrapped);
     });
 
     downloadDescriptor.completed = completed;

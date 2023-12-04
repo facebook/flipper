@@ -16,12 +16,12 @@ import {
   VideoCameraOutlined,
 } from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
-import {getRenderHostInstance} from '../RenderHost';
 import {path, theme} from 'flipper-plugin';
 import {NavbarButton} from '../sandy-chrome/Navbar';
+import {getFlipperServer} from '../flipperServer';
 
 async function openFile(path: string) {
-  getRenderHostInstance().flipperServer.exec('open-file', path);
+  getFlipperServer().exec('open-file', path);
 }
 
 export function NavbarScreenshotButton() {

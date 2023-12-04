@@ -16,7 +16,7 @@ import TestPlugin from './TestPlugin';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import path from 'path';
 import {createRequirePluginFunction} from '../../plugins';
-import {getRenderHostInstance} from '../../RenderHost';
+import {getFlipperServer} from '../../flipperServer';
 
 let loadDynamicPluginsMock: jest.Mock;
 
@@ -40,8 +40,7 @@ const sampleInstalledPluginDetails: InstalledPluginDetails = {
 };
 
 beforeEach(() => {
-  loadDynamicPluginsMock = getRenderHostInstance().flipperServer.exec =
-    jest.fn();
+  loadDynamicPluginsMock = getFlipperServer().exec = jest.fn();
   loadDynamicPluginsMock.mockResolvedValue([]);
 });
 
