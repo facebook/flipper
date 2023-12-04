@@ -46,9 +46,6 @@ export function initializeRenderHost(
   flipperServerConfig: FlipperServerConfig,
 ) {
   FlipperRenderHostInstance = {
-    async readTextFromClipboard() {
-      return await navigator.clipboard.readText();
-    },
     writeTextToClipboard(text: string) {
       return navigator.clipboard.writeText(text);
     },
