@@ -7,7 +7,7 @@
  * @format
  */
 
-import {getRenderHostInstance} from '../RenderHost';
+import {isProduction} from 'flipper-common';
 import {IconSize} from '../ui/components/Glyph';
 
 const AVAILABLE_SIZES: IconSize[] = [8, 10, 12, 16, 18, 20, 24, 28, 32, 48];
@@ -51,6 +51,8 @@ export function getIconURL(icon: Icon) {
 
   icon = normalizeIcon(icon);
   const baseUrl = getPublicIconUrl(icon);
-
-  return getRenderHostInstance().getLocalIconUrl?.(icon, baseUrl) ?? baseUrl;
+  if (isProduction()) {
+    return `icons/${icon.name}-${icon.variant}_d.png`;
+  }
+  return baseUrl;
 }

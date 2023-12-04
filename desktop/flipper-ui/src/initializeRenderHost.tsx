@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlipperServerConfig, isProduction, wrapRequire} from 'flipper-common';
+import {FlipperServerConfig, wrapRequire} from 'flipper-common';
 import type {RenderHost} from './RenderHost';
 
 declare module globalThis {
@@ -45,12 +45,6 @@ export function initializeRenderHost(flipperServerConfig: FlipperServerConfig) {
     serverConfig: flipperServerConfig,
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
-    },
-    getLocalIconUrl(icon, url) {
-      if (isProduction()) {
-        return `icons/${icon.name}-${icon.variant}_d.png`;
-      }
-      return url;
     },
   } as RenderHost;
 }

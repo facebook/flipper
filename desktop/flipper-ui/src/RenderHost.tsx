@@ -17,11 +17,6 @@ type PluginNotification = {
   pluginId: string;
   client: null | string; // id
 };
-type Icon = {
-  name: string;
-  variant: 'outline' | 'filled';
-  size: number;
-};
 
 interface NotificationAction {
   // Docs: https://electronjs.org/docs/api/structures/notification-action
@@ -133,8 +128,6 @@ export interface RenderHost {
   shouldUseDarkColors(): boolean;
   GK(gatekeeper: string): boolean;
   serverConfig: FlipperServerConfig;
-  // given the requested icon and proposed public url of the icon, rewrite it to a local icon if needed
-  getLocalIconUrl?(icon: Icon, publicUrl: string): string;
   unloadModule?(path: string): void;
   getPercentCPUUsage?(): number;
 }
