@@ -8,7 +8,6 @@
  */
 
 import {getLogger} from 'flipper-common';
-import {baseFlipperLibImplementation} from '../../flipperLibImplementation';
 import AbstractClient from '../../AbstractClient';
 import {
   TestUtils,
@@ -248,20 +247,7 @@ test('log listeners are resumed and suspended automatically - 1', async () => {
     },
   });
 
-  const baseFlipperLib = baseFlipperLibImplementation(getLogger());
-  _setFlipperLibImplementation({
-    ...baseFlipperLib,
-    intern: {
-      ...baseFlipperLib.intern,
-      currentUser: jest.fn(),
-      isConnected: jest.fn(),
-    },
-    createPaste: jest.fn(),
-    enableMenuEntries: jest.fn(),
-    selectPlugin: jest.fn(),
-    showNotification: jest.fn(),
-    settings: jest.fn(),
-  });
+  _setFlipperLibImplementation(TestUtils.createMockFlipperLib());
 
   device.loadDevicePlugins(
     new Map([[DevicePlugin.id, DevicePlugin]]),
@@ -334,20 +320,7 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
 
   const client = new TestClient(device, [Plugin]);
 
-  const baseFlipperLib = baseFlipperLibImplementation(getLogger());
-  _setFlipperLibImplementation({
-    ...baseFlipperLib,
-    intern: {
-      ...baseFlipperLib.intern,
-      currentUser: jest.fn(),
-      isConnected: jest.fn(),
-    },
-    createPaste: jest.fn(),
-    enableMenuEntries: jest.fn(),
-    selectPlugin: jest.fn(),
-    showNotification: jest.fn(),
-    settings: jest.fn(),
-  });
+  _setFlipperLibImplementation(TestUtils.createMockFlipperLib());
 
   device.loadDevicePlugins(
     new Map([[DevicePlugin.id, DevicePlugin]]),

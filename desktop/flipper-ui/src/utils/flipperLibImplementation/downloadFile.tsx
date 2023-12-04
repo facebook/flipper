@@ -9,7 +9,7 @@
 
 import {assertNever, DownloadFileUpdate} from 'flipper-common';
 import {FlipperLib, DownloadFileResponse} from 'flipper-plugin';
-import {getFlipperServer} from '../flipperServer';
+import {getFlipperServer} from '../../flipperServer';
 
 export const downloadFile: FlipperLib['remoteServerContext']['downloadFile'] =
   async (url, dest, {onProgressUpdate, ...options} = {}) => {
