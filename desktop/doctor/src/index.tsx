@@ -19,7 +19,6 @@ import type {FlipperDoctor} from 'flipper-common';
 import * as fs_extra from 'fs-extra';
 import {
   getIdbInstallationInstructions,
-  installXcode,
   installSDK,
   installAndroidStudio,
 } from './fb-stubs/messages';
@@ -167,7 +166,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 ): Promise<FlipperDoctor.HealthcheckRunResult> => {
                   const hasProblem = e.IDEs == null || e.IDEs.Xcode == null;
                   const message = hasProblem
-                    ? `Xcode is not installed.\n${installXcode}.`
+                    ? `Xcode is not installed.`
                     : `Xcode version ${e.IDEs.Xcode.version} is installed at "${e.IDEs.Xcode.path}".`;
                   return {
                     hasProblem,

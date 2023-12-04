@@ -8,25 +8,11 @@
  */
 
 import {FlipperDoctor} from 'flipper-common';
-import {theme} from 'flipper-plugin';
 import React from 'react';
 import {Typography} from 'antd';
+import {CodeBlock, PropsFor, Noop} from './util';
+import {moreMessageToComp} from './fb-stubs/messages';
 
-function CodeBlock({children}: {children: string}) {
-  return (
-    <pre
-      style={{
-        whiteSpace: 'pre-wrap',
-        padding: '2px 4px',
-        background: theme.backgroundWash,
-      }}>
-      {children}
-    </pre>
-  );
-}
-function Noop() {
-  return <span>Unimplemented</span>;
-}
 const CommonOpenSSLInstalled = (
   props: PropsFor<'common.openssl--installed'>,
 ) => (
@@ -131,10 +117,12 @@ const AndroidSdkInstalled = (props: PropsFor<'android.sdk--installed'>) => (
   </div>
 );
 
-type PropsFor<T extends keyof FlipperDoctor.HealthcheckResultMessageMapping> =
-  FlipperDoctor.HealthcheckResultMessageMapping[T] extends []
-    ? {}
-    : FlipperDoctor.HealthcheckResultMessageMapping[T][0];
+const IosXcodeInstalled = (props: PropsFor<'ios.xcode--installed'>) => (
+  <Typography.Paragraph>
+    Xcode is installed. Version {props.version} at "{props.path}"
+  </Typography.Paragraph>
+);
+
 const messageToComp: {
   [K in keyof FlipperDoctor.HealthcheckResultMessageMapping]: React.FC<
     PropsFor<K>
@@ -158,7 +146,7 @@ const messageToComp: {
   'android.sdk--unexisting_folder_ANDROID_SDK_ROOT': AndroidSdkNoAndroidSdkRoot,
   'android.sdk--installed': AndroidSdkInstalled,
 
-  'ios.xcode--installed': Noop,
+  'ios.xcode--installed': IosXcodeInstalled,
   'ios.xcode--not_installed': Noop,
 
   'ios.xcode-select--set': Noop,
@@ -195,7 +183,10 @@ export const DoctorMessage = <
   id: T;
   props: any;
 }) => {
-  if (id in messageToComp) {
+  const OtherComp = moreMessageToComp[id];
+  if (OtherComp != null) {
+    return <OtherComp {...props} />;
+  } else if (id in messageToComp) {
     const Comp = messageToComp[id];
     return <Comp {...props} />;
   }
