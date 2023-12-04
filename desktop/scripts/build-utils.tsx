@@ -21,13 +21,9 @@ import {
   buildDefaultPlugins,
   getDefaultPlugins,
   getWatchFolders,
-  stripSourceMapComment,
 } from 'flipper-pkg-lib';
-import getAppWatchFolders from './get-app-watch-folders';
 import {getPluginSourceFolders} from 'flipper-plugin-lib';
 import {
-  appDir,
-  staticDir,
   defaultPluginsDir,
   babelTransformationsDir,
   serverDir,
@@ -84,93 +80,6 @@ const minifierConfig = {
   },
 };
 
-async function compile(
-  buildFolder: string,
-  projectRoot: string,
-  watchFolders: string[],
-  entry: string,
-) {
-  const out = path.join(buildFolder, 'bundle.js');
-  await Metro.runBuild(
-    {
-      reporter: {update: () => {}},
-      projectRoot,
-      watchFolders,
-      serializer: {},
-      transformer: {
-        babelTransformerPath: path.join(
-          babelTransformationsDir,
-          'transform-app',
-        ),
-        ...minifierConfig,
-      },
-      resolver: {
-        resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
-        blacklistRE: /\.native\.js$/,
-        sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
-      },
-    },
-    {
-      dev,
-      minify: !dev,
-      resetCache: !dev,
-      sourceMap: true,
-      sourceMapUrl: dev ? 'bundle.map' : undefined,
-      inlineSourceMap: false,
-      entry,
-      out,
-    },
-  );
-  if (!dev) {
-    await stripSourceMapComment(out);
-  }
-}
-
-export async function compileRenderer(buildFolder: string) {
-  console.log(`⚙️  Compiling renderer bundle...`);
-  const watchFolders = [
-    ...(await getAppWatchFolders()),
-    ...(await getPluginSourceFolders()),
-  ];
-  try {
-    await compile(
-      buildFolder,
-      appDir,
-      watchFolders,
-      path.join(appDir, 'src', 'init.tsx'),
-    );
-    console.log('✅  Compiled renderer bundle.');
-  } catch (err) {
-    die(err);
-  }
-}
-
-export async function moveSourceMaps(
-  buildFolder: string,
-  sourceMapFolder: string | undefined,
-) {
-  console.log(`⚙️  Moving source maps...`);
-  const mainBundleMap = path.join(buildFolder, 'bundle.map');
-  const rendererBundleMap = path.join(staticDir, 'main.bundle.map');
-  if (sourceMapFolder) {
-    await fs.ensureDir(sourceMapFolder);
-    await fs.move(mainBundleMap, path.join(sourceMapFolder, 'bundle.map'), {
-      overwrite: true,
-    });
-    await fs.move(
-      rendererBundleMap,
-      path.join(sourceMapFolder, 'main.bundle.map'),
-      {overwrite: true},
-    );
-    console.log(`✅  Moved to ${sourceMapFolder}.`);
-  } else {
-    // If we don't move them out of the build folders, they'll get included in the ASAR
-    // which we don't want.
-    console.log(`⏭  Removing source maps.`);
-    await Promise.all([fs.remove(mainBundleMap), fs.remove(rendererBundleMap)]);
-  }
-}
-
 export async function moveServerSourceMaps(
   buildFolder: string,
   sourceMapFolder: string | undefined,
@@ -195,48 +104,6 @@ export async function moveServerSourceMaps(
   }
 }
 
-export async function compileMain() {
-  const out = path.join(staticDir, 'main.bundle.js');
-  process.env.FLIPPER_ELECTRON_VERSION =
-    require('electron/package.json').version;
-  console.log('⚙️  Compiling main bundle...');
-  try {
-    const config = Object.assign({}, await Metro.loadConfig(), {
-      reporter: {update: () => {}},
-      projectRoot: staticDir,
-      watchFolders: await getWatchFolders(staticDir),
-      transformer: {
-        babelTransformerPath: path.join(
-          babelTransformationsDir,
-          'transform-main',
-        ),
-        ...minifierConfig,
-      },
-      resolver: {
-        sourceExts: ['tsx', 'ts', 'js'],
-        resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
-        blacklistRE: /\.native\.js$/,
-      },
-    });
-    await Metro.runBuild(config, {
-      platform: 'web',
-      entry: path.join(staticDir, 'main.tsx'),
-      out,
-      dev,
-      minify: !dev,
-      sourceMap: true,
-      sourceMapUrl: dev ? 'main.bundle.map' : undefined,
-      inlineSourceMap: false,
-      resetCache: !dev,
-    });
-    console.log('✅  Compiled main bundle.');
-    if (!dev) {
-      await stripSourceMapComment(out);
-    }
-  } catch (err) {
-    die(err);
-  }
-}
 export function buildFolder(
   prefix: string = 'flipper-build-',
 ): Promise<string> {
@@ -375,10 +242,6 @@ async function dedupeFolders(paths: string[]): Promise<string[]> {
     paths.filter((value, index, self) => self.indexOf(value) === index),
     (f) => fs.pathExists(f),
   );
-}
-
-export function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
 }
 
 let proc: child.ChildProcess | undefined;

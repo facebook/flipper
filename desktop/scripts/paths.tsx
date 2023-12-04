@@ -11,7 +11,6 @@ import path from 'path';
 
 export const rootDir = path.resolve(__dirname, '..');
 export const sonarDir = path.resolve(__dirname, '..', '..');
-export const appDir = path.join(rootDir, 'app');
 export const browserUiDir = path.join(rootDir, 'flipper-ui-browser');
 export const staticDir = path.join(rootDir, 'static');
 export const serverDir = path.join(rootDir, 'flipper-server');
