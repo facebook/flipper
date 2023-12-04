@@ -218,8 +218,5 @@ function createStubRenderHost(): RenderHost {
     GK(gk: string) {
       return stubConfig.gatekeepers[gk] ?? false;
     },
-    getStaticResourceUrl(relativePath): string {
-      return 'file://' + resolve(rootPath, 'static', relativePath);
-    },
   };
 }

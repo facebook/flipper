@@ -46,10 +46,6 @@ export function initializeRenderHost(flipperServerConfig: FlipperServerConfig) {
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },
-    getStaticResourceUrl(path): string {
-      // the 'static' folder is mounted as static middleware in Express at the root
-      return '/' + path;
-    },
     getLocalIconUrl(icon, url) {
       if (isProduction()) {
         return `icons/${icon.name}-${icon.variant}_d.png`;

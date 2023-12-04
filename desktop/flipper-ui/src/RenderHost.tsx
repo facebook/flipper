@@ -133,7 +133,6 @@ export interface RenderHost {
   shouldUseDarkColors(): boolean;
   GK(gatekeeper: string): boolean;
   serverConfig: FlipperServerConfig;
-  getStaticResourceUrl(relativePath: string): string;
   // given the requested icon and proposed public url of the icon, rewrite it to a local icon if needed
   getLocalIconUrl?(icon: Icon, publicUrl: string): string;
   unloadModule?(path: string): void;
