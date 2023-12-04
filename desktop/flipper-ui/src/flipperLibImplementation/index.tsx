@@ -7,7 +7,7 @@
  * @format
  */
 
-import {RemoteServerContext, FlipperLib} from 'flipper-plugin-core';
+import {RemoteServerContext, FlipperLib} from 'flipper-plugin';
 import {
   BufferEncoding,
   ExecOptions,

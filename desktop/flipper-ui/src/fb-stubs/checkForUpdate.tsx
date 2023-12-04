@@ -8,7 +8,7 @@
  */
 
 import {VersionCheckResult} from '../chrome/UpdateIndicator';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import config from './config';
 
 const getPlatformSpecifier = (): string => {

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import {Actions} from './';
 
 export type LauncherMsg = {

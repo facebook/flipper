@@ -22,7 +22,7 @@ import {Button, Checkbox, Popover, Rate} from 'antd';
 import {currentUser} from '../fb-stubs/user';
 import {theme, useValue} from 'flipper-plugin';
 import {reportPlatformFailures} from 'flipper-common';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import {NavbarButton} from './Navbar';
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';

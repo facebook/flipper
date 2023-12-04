@@ -9,7 +9,7 @@
 
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import {Logger, isTest} from 'flipper-common';
-import {BaseDevice} from 'flipper-frontend-core';
+import BaseDevice from './devices/BaseDevice';
 import {pluginKey as getPluginKey} from './utils/pluginKey';
 import Client from './Client';
 import {

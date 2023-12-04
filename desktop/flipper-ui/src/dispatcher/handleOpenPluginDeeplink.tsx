@@ -31,7 +31,7 @@ import {loadPluginsFromMarketplace} from './pluginMarketplace';
 import {switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
 import isProduction from '../utils/isProduction';
-import {BaseDevice, getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import Client from '../Client';
 import {RocketOutlined} from '@ant-design/icons';
 import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';
@@ -42,6 +42,7 @@ import {
   OpenPluginParams,
 } from '../deeplinkTracking';
 import {waitFor} from '../utils/waitFor';
+import BaseDevice from '../devices/BaseDevice';
 
 export function parseOpenPluginParams(query: string): OpenPluginParams {
   // 'flipper://open-plugin?plugin-id=graphql&client=facebook&devices=android,ios&chrome=1&payload='

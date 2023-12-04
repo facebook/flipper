@@ -11,7 +11,6 @@
 
 import {State} from '../../reducers/index';
 import configureStore from 'redux-mock-store';
-import {ArchivedDevice, TestDevice} from 'flipper-frontend-core';
 import {
   processStore,
   determinePluginsToProcess,
@@ -38,6 +37,8 @@ import {
 import {selectPlugin, getAllClients} from '../../reducers/connections';
 import {TestIdler} from '../Idler';
 import {FlipperServer} from 'flipper-common';
+import ArchivedDevice from 'flipper-ui/src/devices/ArchivedDevice';
+import {TestDevice} from 'flipper-ui/src/devices/TestDevice';
 
 const testIdler = new TestIdler();
 

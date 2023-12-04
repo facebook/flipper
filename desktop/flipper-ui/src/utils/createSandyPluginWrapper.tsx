@@ -28,7 +28,7 @@ import {useStore} from './useStore';
 import {setStaticView, StaticView} from '../reducers/connections';
 import {getStore} from '../store';
 import {setActiveNotifications} from '../reducers/notifications';
-import {BaseDevice} from 'flipper-frontend-core';
+import BaseDevice from '../devices/BaseDevice';
 
 export type SandyPluginModule = ConstructorParameters<
   typeof _SandyPluginDefinition
@@ -184,9 +184,7 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
       ? // in the client, all Device's are BaseDevice, so this is safe..
         (instance.device as BaseDevice)
       : // eslint-disable-next-line
-          useStore((state) =>
-          state.connections.clients.get(instance.appId!),
-        );
+        useStore((state) => state.connections.clients.get(instance.appId!));
     if (!target) {
       throw new Error('Illegal state: missing target');
     }

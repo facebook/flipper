@@ -20,7 +20,7 @@ import {loadPlugin} from '../reducers/pluginManager';
 import {showErrorNotification} from '../utils/notifications';
 import {pluginInstalled} from '../reducers/plugins';
 import {getAllClients} from '../reducers/connections';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 
 export default (store: Store) => {
   sideEffect(

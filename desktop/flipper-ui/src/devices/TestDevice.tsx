@@ -7,7 +7,7 @@
  * @format
  */
 
-import type {DeviceOS, DeviceType} from 'flipper-plugin-core';
+import type {DeviceOS, DeviceType} from 'flipper-plugin';
 import {DeviceSpec} from 'flipper-common';
 import BaseDevice from './BaseDevice';
 import {getRenderHostInstance} from '../RenderHost';

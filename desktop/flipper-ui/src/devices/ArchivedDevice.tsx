@@ -8,7 +8,7 @@
  */
 
 import BaseDevice from './BaseDevice';
-import type {DeviceOS, DeviceType} from 'flipper-plugin-core';
+import type {DeviceOS, DeviceType} from 'flipper-plugin';
 
 export default class ArchivedDevice extends BaseDevice {
   isArchived = true;

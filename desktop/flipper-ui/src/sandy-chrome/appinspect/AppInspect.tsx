@@ -15,12 +15,12 @@ import {theme, useValue} from 'flipper-plugin';
 import {PluginList} from './PluginList';
 import {BookmarkSection} from './BookmarkSection';
 import Client from '../../Client';
-import {BaseDevice} from 'flipper-frontend-core';
 import {ExclamationCircleOutlined, FieldTimeOutlined} from '@ant-design/icons';
 import {useSelector} from 'react-redux';
 import {getActiveClient, getActiveDevice} from '../../selectors/connections';
 import * as connections from '../../selectors/connections';
 import {PluginActionsMenu} from '../../chrome/PluginActionsMenu';
+import BaseDevice from '../../devices/BaseDevice';
 
 const {Text} = Typography;
 

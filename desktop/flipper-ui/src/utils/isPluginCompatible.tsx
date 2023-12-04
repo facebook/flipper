@@ -9,7 +9,7 @@
 
 import {PluginDetails} from 'flipper-common';
 import semver from 'semver';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import {getAppVersion} from './info';
 
 export function isPluginCompatible(plugin: PluginDetails) {

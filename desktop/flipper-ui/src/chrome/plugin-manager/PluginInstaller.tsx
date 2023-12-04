@@ -25,7 +25,7 @@ import {Dispatch, Action} from 'redux';
 import PluginPackageInstaller from './PluginPackageInstaller';
 import {Toolbar} from 'flipper-plugin';
 import {Alert, Button, Input, Tooltip, Typography} from 'antd';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../../RenderHost';
 import {WarningOutlined} from '@ant-design/icons';
 
 const {Text, Link} = Typography;

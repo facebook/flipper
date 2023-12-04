@@ -8,7 +8,7 @@
  */
 
 import {useStore} from './useStore';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 
 /**
  * This hook returns whether dark mode is currently being used.

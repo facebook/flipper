@@ -16,7 +16,7 @@ import {
   createState,
   getFlipperLib,
   CrashLogListener,
-} from 'flipper-plugin-core';
+} from 'flipper-plugin';
 import {
   DeviceLogEntry,
   DeviceOS,

@@ -43,7 +43,7 @@ import {
   defaultEnabledBackgroundPlugins,
 } from '../utils/pluginUtils';
 import {getPluginKey} from '../utils/pluginKey';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 
 async function refreshInstalledPlugins(store: Store) {
   const flipperServer = getRenderHostInstance().flipperServer;

@@ -22,7 +22,7 @@ import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {ReactReduxContext, ReactReduxContextValue} from 'react-redux';
 import {MiddlewareAPI} from '../reducers/index';
 import {Modal} from 'antd';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 
 const Container = styled(FlexColumn)({
   padding: 20,

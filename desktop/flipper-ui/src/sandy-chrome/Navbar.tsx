@@ -17,7 +17,7 @@ import {
   useValue,
   withTrackingScope,
 } from 'flipper-plugin';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';

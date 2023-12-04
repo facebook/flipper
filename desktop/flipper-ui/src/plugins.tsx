@@ -15,7 +15,7 @@ import {
 } from 'flipper-common';
 import {ActivatablePluginDetails, ConcretePluginDetails} from 'flipper-common';
 import {reportUsage} from 'flipper-common';
-import {_SandyPluginDefinition} from 'flipper-plugin-core';
+import {_SandyPluginDefinition} from 'flipper-plugin';
 import isPluginCompatible from './utils/isPluginCompatible';
 import isPluginVersionMoreRecent from './utils/isPluginVersionMoreRecent';
 import {getRenderHostInstance} from './RenderHost';
@@ -73,11 +73,8 @@ export abstract class AbstractPluginInitializer {
   protected async filterAllLocalVersions(
     allLocalVersions: InstalledPluginDetails[],
   ): Promise<ActivatablePluginDetails[]> {
-    const flipperVersion = await this.getFlipperVersion();
-    const loadedPlugins = getLatestCompatibleVersionOfEachPlugin(
-      allLocalVersions,
-      flipperVersion,
-    );
+    const loadedPlugins =
+      getLatestCompatibleVersionOfEachPlugin(allLocalVersions);
     this.loadedPlugins = loadedPlugins;
 
     const pluginsToLoad = loadedPlugins
@@ -116,15 +113,12 @@ export function reportVersion(pluginDetails: ActivatablePluginDetails) {
 
 export function getLatestCompatibleVersionOfEachPlugin<
   T extends ConcretePluginDetails,
->(plugins: T[], flipperVersion: string): T[] {
+>(plugins: T[]): T[] {
   const latestCompatibleVersions: Map<string, T> = new Map();
   for (const plugin of plugins) {
-    if (isPluginCompatible(plugin, flipperVersion)) {
+    if (isPluginCompatible(plugin)) {
       const loadedVersion = latestCompatibleVersions.get(plugin.id);
-      if (
-        !loadedVersion ||
-        isPluginVersionMoreRecent(plugin, loadedVersion, flipperVersion)
-      ) {
+      if (!loadedVersion || isPluginVersionMoreRecent(plugin, loadedVersion)) {
         latestCompatibleVersions.set(plugin.id, plugin);
       }
     }

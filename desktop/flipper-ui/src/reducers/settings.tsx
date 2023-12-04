@@ -8,7 +8,7 @@
  */
 
 import {Actions} from './index';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import {Settings} from 'flipper-common';
 
 export type Action =

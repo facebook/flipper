@@ -19,7 +19,7 @@ import {textContent} from 'flipper-plugin';
 import {getPluginTitle} from '../utils/pluginUtils';
 import {sideEffect} from '../utils/sideEffect';
 import {openNotification} from '../sandy-chrome/notification/Notification';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 
 export type NotificationEvents =
   | 'show'

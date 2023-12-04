@@ -15,7 +15,7 @@ import {LaunchEmulatorDialog} from '../LaunchEmulator';
 
 import {createRootReducer} from '../../../reducers';
 import {sleep} from 'flipper-plugin';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../../../RenderHost';
 import {last} from 'lodash';
 
 test('Can render and launch android apps - no emulators', async () => {

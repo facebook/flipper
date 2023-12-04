@@ -8,9 +8,10 @@
  */
 
 import React, {Component} from 'react';
-import {BaseDevice, getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import {Button, Glyph, colors} from '../ui';
 import {path} from 'flipper-plugin';
+import BaseDevice from '../devices/BaseDevice';
 
 type OwnProps = {
   recordingFinished: (path: string | null) => void;

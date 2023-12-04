@@ -12,7 +12,7 @@ import React, {Component} from 'react';
 import {reportUsage} from 'flipper-common';
 import {Modal} from 'antd';
 import {Dialog, theme} from 'flipper-plugin';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 
 const changelogKey = 'FlipperChangelogStatus';
 

@@ -15,7 +15,7 @@ import {
   getLatestCompatibleVersionOfEachPlugin,
 } from '../plugins';
 import {InstalledPluginDetails} from 'flipper-common';
-import {_SandyPluginDefinition} from 'flipper-plugin-core';
+import {_SandyPluginDefinition} from 'flipper-plugin';
 import {getRenderHostInstance} from '../RenderHost';
 
 let loadDynamicPluginsMock: jest.Mock;
@@ -159,10 +159,10 @@ test('newest version of each plugin is used', () => {
       entry: './test/index.js',
     },
   ];
-  const filteredPlugins = getLatestCompatibleVersionOfEachPlugin(
-    [...sourcePlugins, ...installedPlugins],
-    '0.1.0',
-  );
+  const filteredPlugins = getLatestCompatibleVersionOfEachPlugin([
+    ...sourcePlugins,
+    ...installedPlugins,
+  ]);
   expect(filteredPlugins).toHaveLength(2);
   expect(filteredPlugins).toContainEqual({
     ...sampleInstalledPluginDetails,

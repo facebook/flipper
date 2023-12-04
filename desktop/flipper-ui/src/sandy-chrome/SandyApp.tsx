@@ -40,7 +40,7 @@ import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
 import {Button, Modal, notification} from 'antd';
 import isProduction from '../utils/isProduction';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import {uiPerfTracker} from '../utils/UIPerfTracker';
 import {WarningOutlined} from '@ant-design/icons';
 

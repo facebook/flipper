@@ -16,7 +16,7 @@ import {
   VideoCameraOutlined,
 } from '@ant-design/icons';
 import {useStore} from '../utils/useStore';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import {path, theme} from 'flipper-plugin';
 import {NavbarButton} from '../sandy-chrome/Navbar';
 

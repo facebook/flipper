@@ -8,7 +8,7 @@
  */
 
 import {assertNever, DownloadFileUpdate} from 'flipper-common';
-import {FlipperLib, DownloadFileResponse} from 'flipper-plugin-core';
+import {FlipperLib, DownloadFileResponse} from 'flipper-plugin';
 import {RenderHost} from '../RenderHost';
 
 export const downloadFileFactory =

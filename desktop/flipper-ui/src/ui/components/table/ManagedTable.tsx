@@ -32,7 +32,7 @@ import {debounce} from 'lodash';
 import {DEFAULT_ROW_HEIGHT} from './types';
 import {notNull} from '../../../utils/typeUtils';
 import {getFlipperLib, textContent} from 'flipper-plugin';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../../../RenderHost';
 
 const EMPTY_OBJECT = {};
 Object.freeze(EMPTY_OBJECT);

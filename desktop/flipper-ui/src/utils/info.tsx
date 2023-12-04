@@ -13,7 +13,7 @@
 import type {State, Store} from '../reducers/index';
 import {sideEffect} from './sideEffect';
 import {Logger, deconstructClientId} from 'flipper-common';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 
 type PlatformInfo = {
   arch: string;

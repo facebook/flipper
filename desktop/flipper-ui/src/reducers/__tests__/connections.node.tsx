@@ -20,12 +20,13 @@ import {
 } from '../../__tests__/test-utils/createMockFlipperWithPlugin';
 import {Store} from '..';
 import {getActiveClient, getActiveDevice} from '../../selectors/connections';
-import {BaseDevice, TestDevice} from 'flipper-frontend-core';
 import Client from '../../Client';
 import {
   mockConsole,
   MockedConsole,
 } from '../../__tests__/test-utils/mockConsole';
+import {TestDevice} from '../../devices/TestDevice';
+import BaseDevice from '../../devices/BaseDevice';
 
 let mockedConsole: MockedConsole;
 beforeEach(() => {

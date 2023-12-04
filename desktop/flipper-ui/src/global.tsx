@@ -7,12 +7,12 @@
  * @format
  */
 
-// otherwise there is an error with `declare global`
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type {RenderHost} from 'flipper-frontend-core';
 import {StoreEnhancerStoreCreator} from 'redux';
 
 declare global {
+  // eslint-disable-next-line no-var
+  var FlipperRenderHostInstance: any /* RenderHost */;
+
   interface StoreEnhancerStateSanitizer {
     stateSanitizer: Function;
   }

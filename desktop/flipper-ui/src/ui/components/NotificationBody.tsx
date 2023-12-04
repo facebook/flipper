@@ -9,7 +9,7 @@
 
 import {CopyOutlined} from '@ant-design/icons';
 import {Typography} from 'antd';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../../RenderHost';
 import {theme} from 'flipper-plugin';
 import * as React from 'react';
 

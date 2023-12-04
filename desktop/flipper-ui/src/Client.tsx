@@ -30,15 +30,13 @@ import {
   registerFlipperDebugMessage,
 } from './chrome/FlipperMessages';
 import {waitFor} from './utils/waitFor';
-import {
-  AbstractClient,
-  Params,
+import BaseDevice from './devices/BaseDevice';
+import AbstractClient, {
   ClientConnection,
-  BaseDevice,
+  Params,
   RequestMetadata,
-  getPluginKey,
-} from 'flipper-frontend-core';
-
+} from './AbstractClient';
+import {getPluginKey} from './utils/pluginKey';
 export type ClientExport = {
   id: string;
   query: ClientQuery;

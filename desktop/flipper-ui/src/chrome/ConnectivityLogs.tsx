@@ -27,7 +27,7 @@ import {
   FlipperServerCommands,
 } from 'flipper-common';
 import {Button} from 'antd';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 
 const SIDEBAR_WIDTH = 400;
 

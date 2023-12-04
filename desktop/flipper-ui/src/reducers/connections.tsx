@@ -10,7 +10,7 @@
 import {ComponentType} from 'react';
 import {produce} from 'immer';
 
-import type {BaseDevice} from 'flipper-frontend-core';
+import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
 import type {UninitializedClient, DeviceOS, Logger} from 'flipper-common';
 import type {Actions} from '.';

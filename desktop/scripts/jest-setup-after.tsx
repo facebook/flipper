@@ -27,7 +27,7 @@ import {
 
 // Only import the type!
 // eslint-disable-next-line node/no-extraneous-import
-import type {RenderHost} from 'flipper-frontend-core';
+import type {RenderHost} from 'flipper-ui/src/RenderHost';
 
 (global as any).flipperConfig = {
   theme: 'light',

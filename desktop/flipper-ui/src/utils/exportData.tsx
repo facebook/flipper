@@ -16,15 +16,12 @@ import {
   getStringFromErrorLike,
 } from 'flipper-common';
 import {Store, MiddlewareAPI} from '../reducers';
-import {DeviceExport} from 'flipper-frontend-core';
 import {selectedPlugins, State as PluginsState} from '../reducers/plugins';
 import {PluginNotification} from '../reducers/notifications';
 import Client, {ClientExport} from '../Client';
 import {getAppVersion} from './info';
 import {pluginKey} from '../utils/pluginKey';
 import {DevicePluginMap, ClientPluginMap} from '../plugin';
-import {BaseDevice} from 'flipper-frontend-core';
-import {ArchivedDevice} from 'flipper-frontend-core';
 import {v4 as uuidv4} from 'uuid';
 import {TestIdler} from './Idler';
 import {processMessageQueue} from './messageQueue';
@@ -35,7 +32,6 @@ import {ClientQuery} from 'flipper-common';
 import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
-import {getRenderHostInstance} from 'flipper-frontend-core';
 import {uploadFlipperMedia} from '../fb-stubs/user';
 import {exportLogs} from '../chrome/ConsoleLogs';
 import JSZip from 'jszip';
@@ -44,6 +40,9 @@ import {getExportablePlugins} from '../selectors/connections';
 import {notification} from 'antd';
 import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
 import {getStore} from '../store';
+import BaseDevice, {DeviceExport} from '../devices/BaseDevice';
+import ArchivedDevice from '../devices/ArchivedDevice';
+import {getRenderHostInstance} from '../RenderHost';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';

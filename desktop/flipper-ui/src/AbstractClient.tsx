@@ -30,7 +30,7 @@ import {
   _SandyPluginInstance,
   getFlipperLib,
   _SandyPluginDefinition,
-} from 'flipper-plugin-core';
+} from 'flipper-plugin';
 import {createServerAddOnControls} from './utils/createServerAddOnControls';
 import isProduction from './utils/isProduction';
 

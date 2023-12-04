@@ -10,7 +10,7 @@
 import {produce} from 'immer';
 import {Actions} from './';
 import {SelectionInfo} from '../utils/info';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 
 export type TrackingEvent =
   | {

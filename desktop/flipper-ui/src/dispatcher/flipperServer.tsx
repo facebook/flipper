@@ -19,7 +19,7 @@ import {
 } from 'flipper-common';
 import Client from '../Client';
 import {Button, notification} from 'antd';
-import {BaseDevice} from 'flipper-frontend-core';
+import BaseDevice from '../devices/BaseDevice';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';

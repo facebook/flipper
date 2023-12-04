@@ -11,11 +11,9 @@ import {_setFlipperLibImplementation} from 'flipper-plugin';
 import {Logger} from 'flipper-common';
 import type {Store} from '../../reducers';
 import createPaste from '../../fb-stubs/createPaste';
-import {BaseDevice, baseFlipperLibImplementation} from 'flipper-frontend-core';
 import {DetailSidebarImpl} from '../../sandy-chrome/DetailSidebarImpl';
 import {addNotification} from '../../reducers/notifications';
 import {deconstructPluginKey} from 'flipper-common';
-import {RenderHost} from 'flipper-frontend-core';
 import {setMenuEntries} from '../../reducers/connections';
 import {
   currentUser,
@@ -23,6 +21,9 @@ import {
   internGraphPOSTAPIRequestRaw,
   isConnected,
 } from '../../fb-stubs/user';
+import {baseFlipperLibImplementation} from '../../flipperLibImplementation';
+import {RenderHost} from '../../RenderHost';
+import BaseDevice from '../../devices/BaseDevice';
 
 export function initializeFlipperLibImplementation(
   renderHost: RenderHost,

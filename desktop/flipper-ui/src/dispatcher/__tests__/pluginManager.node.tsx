@@ -20,8 +20,8 @@ import {_SandyPluginDefinition as SandyPluginDefinition} from 'flipper-plugin';
 import MockFlipper from '../../__tests__/test-utils/MockFlipper';
 import Client from '../../Client';
 import React from 'react';
-import {BaseDevice} from 'flipper-frontend-core';
 import {awaitPluginCommandQueueEmpty} from '../pluginManager';
+import BaseDevice from '../../devices/BaseDevice';
 
 const pluginDetails1 = TestUtils.createMockPluginDetails({
   id: 'plugin1',

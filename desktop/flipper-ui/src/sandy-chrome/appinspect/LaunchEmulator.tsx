@@ -27,7 +27,7 @@ import {
 } from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {DeviceTarget} from 'flipper-common';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../../RenderHost';
 import SettingsSheet from '../../chrome/SettingsSheet';
 import {Link} from '../../ui';
 import {chain, uniq, without} from 'lodash';

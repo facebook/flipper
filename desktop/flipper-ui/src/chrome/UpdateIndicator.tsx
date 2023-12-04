@@ -15,7 +15,7 @@ import fbConfig from '../fb-stubs/config';
 import {useStore} from '../utils/useStore';
 import {getAppVersion} from '../utils/info';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import {NotificationBody} from '../ui/components/NotificationBody';
 
 export type VersionCheckResult =

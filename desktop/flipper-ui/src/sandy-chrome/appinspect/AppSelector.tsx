@@ -25,13 +25,13 @@ import {
   selectClient,
   selectDevice,
 } from '../../reducers/connections';
-import {BaseDevice} from 'flipper-frontend-core';
 import Client from '../../Client';
 import {State} from '../../reducers';
 import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {getSelectableDevices} from '../../selectors/connections';
-import {getRenderHostInstance} from 'flipper-frontend-core';
 import {NoDevices} from './NoDevices';
+import BaseDevice from '../../devices/BaseDevice';
+import {getRenderHostInstance} from '../../RenderHost';
 
 const {Text} = Typography;
 

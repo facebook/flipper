@@ -9,7 +9,7 @@
 
 import {checkXcodeVersionMismatch, IOSDeviceManager} from '../iOSDeviceManager';
 // eslint-disable-next-line node/no-extraneous-import
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from 'flipper-ui/src/RenderHost';
 import {
   getFlipperServerConfig,
   setFlipperServerConfig,

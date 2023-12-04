@@ -39,15 +39,15 @@ import * as emotion_css from '@emotion/css';
 import * as antdesign_icons from '@ant-design/icons';
 import isPluginCompatible from '../utils/isPluginCompatible';
 import {createSandyPluginWrapper} from '../utils/createSandyPluginWrapper';
-import {
-  AbstractPluginInitializer,
-  getRenderHostInstance,
-  setGlobalObject,
-  isSandyPlugin,
-  wrapRequirePlugin,
-} from 'flipper-frontend-core';
 import * as deprecatedExports from '../deprecated-exports';
 import {getAppVersion} from '../utils/info';
+import {
+  AbstractPluginInitializer,
+  isSandyPlugin,
+  wrapRequirePlugin,
+} from '../plugins';
+import {getRenderHostInstance} from '../RenderHost';
+import {setGlobalObject} from '../globalObject';
 
 class UIPluginInitializer extends AbstractPluginInitializer {
   constructor(private readonly store: Store) {

@@ -8,10 +8,9 @@
  */
 
 import {DeviceOS} from 'flipper-plugin';
-import {frontendCoreConstants} from 'flipper-frontend-core';
 
 export default Object.freeze({
-  ...frontendCoreConstants,
+  IS_PUBLIC_BUILD: true,
 
   // Enables the flipper data to be exported through shareabale link
   ENABLE_SHAREABLE_LINK: false,

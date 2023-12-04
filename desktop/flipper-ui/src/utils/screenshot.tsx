@@ -7,9 +7,10 @@
  * @format
  */
 
-import {BaseDevice, getRenderHostInstance} from 'flipper-frontend-core';
 import {reportPlatformFailures} from 'flipper-common';
 import {getFlipperLib, path} from 'flipper-plugin';
+import BaseDevice from '../devices/BaseDevice';
+import {getRenderHostInstance} from '../RenderHost';
 import {assertNotNull} from './assertNotNull';
 
 export function getCaptureLocation() {

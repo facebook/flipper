@@ -26,7 +26,6 @@ const uiSourceDirs = [
   'flipper-ui',
   'flipper-plugin-core',
   'flipper-plugin',
-  'flipper-frontend-core',
   'flipper-common',
 ];
 

@@ -17,7 +17,7 @@ import {isEqual} from 'lodash';
 import {Platform, reportUsage, Settings} from 'flipper-common';
 import {Modal, Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 
 const WIZARD_FINISHED_LOCAL_STORAGE_KEY = 'platformSelectWizardFinished';
 

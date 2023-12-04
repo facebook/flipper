@@ -15,7 +15,7 @@ import {
   TestUtils,
   _SandyPluginDefinition,
   _setFlipperLibImplementation,
-} from 'flipper-plugin-core';
+} from 'flipper-plugin';
 import {default as ArchivedDevice} from '../ArchivedDevice';
 import {TestDevice} from '../TestDevice';
 

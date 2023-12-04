@@ -10,7 +10,7 @@
 import React from 'react';
 import {Image, Modal, Button} from 'antd';
 import {getFlipperLib, Layout, _NuxManagerContext} from 'flipper-plugin';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../RenderHost';
 import isProduction from '../utils/isProduction';
 
 type Props = {

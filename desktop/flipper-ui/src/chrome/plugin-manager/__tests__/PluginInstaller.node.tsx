@@ -14,7 +14,7 @@ import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
 import type {PluginDetails, UpdatablePluginDetails} from 'flipper-common';
 import {Store} from '../../../reducers';
-import {getRenderHostInstance} from 'flipper-frontend-core';
+import {getRenderHostInstance} from '../../../RenderHost';
 
 let getUpdatablePluginsMock: jest.Mock<any, any>;
 

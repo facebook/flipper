@@ -279,7 +279,6 @@ async function linkLocalDeps(buildFolder: string) {
   const resolutions = {
     'flipper-doctor': `file:${rootDir}/doctor`,
     'flipper-common': `file:${rootDir}/flipper-common`,
-    'flipper-frontend-core': `file:${rootDir}/flipper-frontend-core`,
     'flipper-plugin-core': `file:${rootDir}/flipper-plugin-core`,
     'flipper-server-client': `file:${rootDir}/flipper-server-client`,
     'flipper-pkg-lib': `file:${rootDir}/pkg-lib`,
