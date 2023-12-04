@@ -35,9 +35,6 @@ export function initializeRenderHost(
   flipperServerConfig: FlipperServerConfig,
 ) {
   FlipperRenderHostInstance = {
-    openLink(url: string) {
-      window.open(url, '_blank');
-    },
     hasFocus() {
       return document.hasFocus();
     },

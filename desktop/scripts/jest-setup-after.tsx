@@ -215,7 +215,6 @@ function createStubRenderHost(): RenderHost {
       return false;
     },
     restartFlipper() {},
-    openLink() {},
     serverConfig: stubConfig,
     GK(gk: string) {
       return stubConfig.gatekeepers[gk] ?? false;

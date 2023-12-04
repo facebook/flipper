@@ -133,7 +133,6 @@ export interface RenderHost {
   ): void;
   shouldUseDarkColors(): boolean;
   restartFlipper(update?: boolean): void;
-  openLink(url: string): void;
   GK(gatekeeper: string): boolean;
   flipperServer: FlipperServer;
   serverConfig: FlipperServerConfig;

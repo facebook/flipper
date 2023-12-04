@@ -42,7 +42,7 @@ export function baseFlipperLibImplementation(
     logger,
     GK: renderHost.GK,
     writeTextToClipboard: (text) => navigator.clipboard.writeText(text),
-    openLink: renderHost.openLink,
+    openLink: (url: string) => window.open(url, '_blank'),
     importFile,
     exportFile,
     exportFileBinary,
