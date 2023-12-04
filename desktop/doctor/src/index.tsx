@@ -264,16 +264,23 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   const result = await tryExecuteCommand(
                     'xcrun xctrace version',
                   );
-                  const hasProblem = result.hasProblem;
-                  const message = hasProblem
-                    ? `xctrace is not available. Please ensure you have Xcode installed and are running a recent version (https://developer.apple.com/xcode/). ${result.message}.`
-                    : `xctrace is available. ${result.message}.`;
+                  if (result.hasProblem) {
+                    return {
+                      hasProblem: true,
+                      message: 'moved to message2',
+                      message2: [
+                        'ios.xctrace--not_installed',
+                        {message: result.message.trim()},
+                      ],
+                    };
+                  }
                   return {
-                    hasProblem,
-                    message,
-                    message2: hasProblem
-                      ? ['ios.xctrace--not_installed']
-                      : ['ios.xctrace--installed'],
+                    hasProblem: false,
+                    message: 'moved to message2',
+                    message2: [
+                      'ios.xctrace--installed',
+                      {output: result.stdout.trim()},
+                    ],
                   };
                 },
               },

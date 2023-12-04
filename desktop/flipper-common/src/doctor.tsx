@@ -186,8 +186,8 @@ export namespace FlipperDoctor {
     'ios.sdk--installed': [{platforms: string[]}];
     'ios.sdk--not_installed': [];
 
-    'ios.xctrace--installed': [];
-    'ios.xctrace--not_installed': [];
+    'ios.xctrace--installed': [{output: string}];
+    'ios.xctrace--not_installed': [{message: string}];
 
     'ios.idb--no_context': [];
     'ios.idb--physical_device_disabled': [];

@@ -201,6 +201,22 @@ const IosSdkInstalled = (props: PropsFor<'ios.sdk--installed'>) => (
   </div>
 );
 
+const IosXctraceInstalled = (props: PropsFor<'ios.xctrace--installed'>) => (
+  <Typography.Paragraph>
+    xctrace is installed.
+    <CodeBlock>{props.output}</CodeBlock>
+  </Typography.Paragraph>
+);
+const IosXctraceNotInstalled = (
+  props: PropsFor<'ios.xctrace--not_installed'>,
+) => (
+  <Typography.Paragraph>
+    xctrace is not available. Please ensure you have Xcode installed and are
+    running a recent version (https://developer.apple.com/xcode/).
+    <CodeBlock>{props.message}</CodeBlock>
+  </Typography.Paragraph>
+);
+
 const messageToComp: {
   [K in keyof FlipperDoctor.HealthcheckResultMessageMapping]: React.FC<
     PropsFor<K>
@@ -238,8 +254,8 @@ const messageToComp: {
   'ios.sdk--installed': IosSdkInstalled,
   'ios.sdk--not_installed': IosSdkNotInstalled,
 
-  'ios.xctrace--installed': Noop,
-  'ios.xctrace--not_installed': Noop,
+  'ios.xctrace--installed': IosXctraceInstalled,
+  'ios.xctrace--not_installed': IosXctraceNotInstalled,
 
   'ios.idb--no_context': Noop,
   'ios.idb--physical_device_disabled': Noop,
