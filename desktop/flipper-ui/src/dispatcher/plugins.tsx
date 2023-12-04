@@ -10,6 +10,7 @@
 import type {Store} from '../reducers/index';
 import {
   InstalledPluginDetails,
+  isProduction,
   Logger,
   MarketplacePluginDetails,
 } from 'flipper-common';
@@ -48,6 +49,7 @@ import {
 } from '../plugins';
 import {getRenderHostInstance} from '../RenderHost';
 import {setGlobalObject} from '../globalObject';
+import {getFlipperServer} from '../flipperServer';
 
 class UIPluginInitializer extends AbstractPluginInitializer {
   constructor(private readonly store: Store) {
@@ -140,9 +142,28 @@ export const requirePlugin = (pluginDetails: ActivatablePluginDetails) =>
 export const requirePluginInternal = async (
   pluginDetails: ActivatablePluginDetails,
 ): Promise<PluginDefinition> => {
-  const requiredPlugin = await getRenderHostInstance().requirePlugin(
-    (pluginDetails as InstalledPluginDetails).entry,
-  );
+  const path = (pluginDetails as InstalledPluginDetails).entry;
+
+  const source = await getFlipperServer().exec('plugin-source', path);
+
+  let js = source.js;
+  // append source url (to make sure a file entry shows up in the debugger)
+  js += `\n//# sourceURL=file://${path}`;
+  if (isProduction()) {
+    // and source map url (to get source code if available)
+    js += `\n//# sourceMappingURL=file://${path}.map`;
+  }
+
+  // Plugins are compiled as typical CJS modules, referring to the global
+  // 'module', which we'll make available by loading the source into a closure that captures 'module'.
+  // Note that we use 'eval', and not 'new Function', because the latter will cause the source maps
+  // to be off by two lines (as the function declaration uses two lines in the generated source)
+  // eslint-disable-next-line no-eval
+  const cjsLoader = eval('(module) => {' + js + '\n}');
+  const theModule = {exports: {}};
+  cjsLoader(theModule);
+
+  const requiredPlugin = {plugin: theModule.exports as any, css: source.css};
   if (!requiredPlugin || !requiredPlugin.plugin) {
     throw new Error(
       `Failed to obtain plugin source for: ${pluginDetails.name}`,

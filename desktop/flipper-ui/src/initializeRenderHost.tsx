@@ -50,27 +50,6 @@ export function initializeRenderHost(flipperServerConfig: FlipperServerConfig) {
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },
-    async requirePlugin(path): Promise<{plugin: any; css?: string}> {
-      const source = await getFlipperServer().exec('plugin-source', path);
-
-      let js = source.js;
-      // append source url (to make sure a file entry shows up in the debugger)
-      js += `\n//# sourceURL=file://${path}`;
-      if (isProduction()) {
-        // and source map url (to get source code if available)
-        js += `\n//# sourceMappingURL=file://${path}.map`;
-      }
-
-      // Plugins are compiled as typical CJS modules, referring to the global
-      // 'module', which we'll make available by loading the source into a closure that captures 'module'.
-      // Note that we use 'eval', and not 'new Function', because the latter will cause the source maps
-      // to be off by two lines (as the function declaration uses two lines in the generated source)
-      // eslint-disable-next-line no-eval
-      const cjsLoader = eval('(module) => {' + js + '\n}');
-      const theModule = {exports: {}};
-      cjsLoader(theModule);
-      return {plugin: theModule.exports, css: source.css};
-    },
     getStaticResourceUrl(path): string {
       // the 'static' folder is mounted as static middleware in Express at the root
       return '/' + path;
