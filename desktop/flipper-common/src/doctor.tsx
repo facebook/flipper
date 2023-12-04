@@ -160,11 +160,12 @@ export namespace FlipperDoctor {
     'android.android-studio--not_installed': [];
 
     'android.sdk--no_ANDROID_HOME': [];
-    'android.sdk--invalid_ANDROID_HOME': [];
-    'android.sdk--no_android_sdk': [];
+    'android.sdk--invalid_ANDROID_HOME': [{androidHome: string}];
+    'android.sdk--no_android_sdk': [{platformToolsDir: string}];
 
     'android.sdk--no_ANDROID_SDK_ROOT': [];
     'android.sdk--unexisting_folder_ANDROID_SDK_ROOT': [];
+    'android.sdk--installed': [{output: string}];
 
     'ios.xcode--installed': [{version: string; path: string}];
     'ios.xcode--not_installed': [];

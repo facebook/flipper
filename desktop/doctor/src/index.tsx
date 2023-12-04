@@ -104,70 +104,49 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             _: FlipperDoctor.EnvironmentInfo,
           ): Promise<FlipperDoctor.HealthcheckRunResult> => {
             const androidHome = process.env.ANDROID_HOME;
-            const androidSdkRoot = process.env.ANDROID_SDK_ROOT;
 
-            let androidHomeResult: FlipperDoctor.HealthcheckRunResult;
             if (!androidHome) {
-              androidHomeResult = {
+              return {
                 hasProblem: true,
-                message: `ANDROID_HOME is not defined. You can use Flipper Settings (More > Settings) to point to its location.`,
+                message: `moved to message2`,
                 message2: ['android.sdk--no_ANDROID_HOME'],
               };
             } else if (!fs.existsSync(androidHome)) {
-              androidHomeResult = {
+              return {
                 hasProblem: true,
-                message: `ANDROID_HOME point to a folder which does not exist: ${androidHome}. You can use Flipper Settings (More > Settings) to point to a different location.`,
-                message2: ['android.sdk--invalid_ANDROID_HOME'],
+                message: `moved to message2`,
+                message2: ['android.sdk--invalid_ANDROID_HOME', {androidHome}],
               };
             } else {
               const platformToolsDir = path.join(androidHome, 'platform-tools');
               if (!fs.existsSync(platformToolsDir)) {
-                androidHomeResult = {
+                return {
                   hasProblem: true,
-                  message: `Android SDK Platform Tools not found at the expected location "${platformToolsDir}". Probably they are not installed.`,
-                  message2: ['android.sdk--no_ANDROID_SDK_ROOT'],
+                  message: `moved to message2`,
+                  message2: ['android.sdk--no_android_sdk', {platformToolsDir}],
                 };
               } else {
-                androidHomeResult = await tryExecuteCommand(
+                const versionResult = await tryExecuteCommand(
                   `"${path.join(platformToolsDir, 'adb')}" version`,
                 );
-              }
-            }
-            if (androidHomeResult.hasProblem == false) {
-              return androidHomeResult;
-            }
 
-            let androidSdkRootResult: FlipperDoctor.HealthcheckRunResult;
-            if (!androidSdkRoot) {
-              androidSdkRootResult = {
-                hasProblem: true,
-                message: `ANDROID_SDK_ROOT is not defined. You can use Flipper Settings (More > Settings) to point to its location.`,
-                message2: ['android.sdk--no_ANDROID_SDK_ROOT'],
-              };
-            } else if (!fs.existsSync(androidSdkRoot)) {
-              androidSdkRootResult = {
-                hasProblem: true,
-                message: `ANDROID_SDK_ROOT point to a folder which does not exist: ${androidSdkRoot}. You can use Flipper Settings (More > Settings) to point to a different location.`,
-                message2: ['android.sdk--unexisting_folder_ANDROID_SDK_ROOT'],
-              };
-            } else {
-              const platformToolsDir = path.join(
-                androidSdkRoot,
-                'platform-tools',
-              );
-              if (!fs.existsSync(platformToolsDir)) {
-                androidSdkRootResult = {
-                  hasProblem: true,
-                  message: `Android SDK Platform Tools not found at the expected location "${platformToolsDir}". Probably they are not installed.`,
-                  message2: ['android.sdk--no_ANDROID_SDK_ROOT'],
-                };
-              } else {
-                androidSdkRootResult = await tryExecuteCommand(
-                  `"${path.join(platformToolsDir, 'adb')}" version`,
-                );
+                if (
+                  versionResult.hasProblem === false &&
+                  versionResult.message2[0] === 'command-success'
+                ) {
+                  return {
+                    hasProblem: false,
+                    message: `moved to message2`,
+                    message2: [
+                      'android.sdk--installed',
+                      {output: versionResult.stdout},
+                    ],
+                  };
+                } else {
+                  return versionResult;
+                }
               }
             }
-            return androidSdkRootResult;
           },
         },
       ],

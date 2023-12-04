@@ -79,6 +79,58 @@ const CommonWatchmanNotInstalled = (
   </Typography.Paragraph>
 );
 
+const AndroidStudioInstalled = (
+  _props: PropsFor<'android.android-studio--installed'>,
+) => <Typography.Paragraph>Android Studio is installed.</Typography.Paragraph>;
+
+const AndroidSdkNoAndroidHome = (
+  _props: PropsFor<'android.sdk--no_ANDROID_HOME'>,
+) => (
+  // TODO: open settings buttons
+  <Typography.Paragraph>
+    ANDROID_HOME is not defined. You can use Flipper Settings (More {'>'}{' '}
+    Settings) to point to its location.
+  </Typography.Paragraph>
+);
+
+const AndroidSdkInvalidAndroidHome = (
+  props: PropsFor<'android.sdk--invalid_ANDROID_HOME'>,
+) => (
+  // TODO: open settings buttons
+  <Typography.Paragraph>
+    ANDROID_HOME point to a folder which does not exist: {props.androidHome}.
+    You can use Flipper Settings (More {'>'} Settings) to point to a different
+    location.
+  </Typography.Paragraph>
+);
+
+const AndroidSdkNoAndroidSdk = (
+  props: PropsFor<'android.sdk--no_android_sdk'>,
+) => (
+  <Typography.Paragraph>
+    Android SDK Platform Tools not found at the expected location "
+    {props.platformToolsDir}". Probably they are not installed.
+  </Typography.Paragraph>
+);
+
+const AndroidSdkNoAndroidSdkRoot = (
+  _props: PropsFor<'android.sdk--no_ANDROID_SDK_ROOT'>,
+) => (
+  <Typography.Paragraph>
+    ANDROID_SDK_ROOT is not set. You can use Flipper Settings (More {'>'}
+    Settings) to point to its location.
+  </Typography.Paragraph>
+);
+
+const AndroidSdkInstalled = (props: PropsFor<'android.sdk--installed'>) => (
+  <div>
+    <Typography.Paragraph>
+      Android SDK Platform Tools found at the expected location.
+    </Typography.Paragraph>
+    <CodeBlock>{props.output}</CodeBlock>
+  </div>
+);
+
 type PropsFor<T extends keyof FlipperDoctor.HealthcheckResultMessageMapping> =
   FlipperDoctor.HealthcheckResultMessageMapping[T] extends []
     ? {}
@@ -94,15 +146,17 @@ const messageToComp: {
   'common.watchman--installed': CommonWatchmanInstalled,
   'common.watchman--not_installed': CommonWatchmanNotInstalled,
 
-  'android.android-studio--installed': Noop,
+  'android.android-studio--installed': AndroidStudioInstalled,
+  // TODO oss and internal
   'android.android-studio--not_installed': Noop,
 
-  'android.sdk--no_ANDROID_HOME': Noop,
-  'android.sdk--invalid_ANDROID_HOME': Noop,
-  'android.sdk--no_android_sdk': Noop,
+  'android.sdk--no_ANDROID_HOME': AndroidSdkNoAndroidHome,
+  'android.sdk--invalid_ANDROID_HOME': AndroidSdkInvalidAndroidHome,
+  'android.sdk--no_android_sdk': AndroidSdkNoAndroidSdk,
 
-  'android.sdk--no_ANDROID_SDK_ROOT': Noop,
-  'android.sdk--unexisting_folder_ANDROID_SDK_ROOT': Noop,
+  'android.sdk--no_ANDROID_SDK_ROOT': AndroidSdkNoAndroidSdkRoot,
+  'android.sdk--unexisting_folder_ANDROID_SDK_ROOT': AndroidSdkNoAndroidSdkRoot,
+  'android.sdk--installed': AndroidSdkInstalled,
 
   'ios.xcode--installed': Noop,
   'ios.xcode--not_installed': Noop,
