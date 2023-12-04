@@ -158,7 +158,7 @@ function init(flipperServer: FlipperServer) {
   const persistor = persistStore(store, undefined, async () => {
     // Make sure process state is set before dispatchers run
     await dispatcher(store, logger);
-    getRenderHostInstance().sendIpcEvent('storeRehydrated');
+    window.dispatchEvent(new CustomEvent('storeRehydrated'));
     uiPerfTracker.track('ui-perf-store-rehydrated');
     // We could potentially merge ui-perf-store-rehydrated and ui-perf-everything-finally-loaded-jeeeez,
     // but what if at some point in the future we relalize that store rehydration is not actually the last event?
@@ -186,6 +186,8 @@ function init(flipperServer: FlipperServer) {
 
   enableConsoleHook();
   enableConnectivityHook(flipperServer);
+
+  Notification.requestPermission();
 
   // TODO T116224873: Return the following code back instead of ReactDOM.react when the following issue is fixed: https://github.com/react-component/trigger/issues/288
   // const root = createRoot(document.getElementById('root')!);

@@ -8,82 +8,6 @@
  */
 
 import './global';
-import {Notification} from 'flipper-plugin';
-
-type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
-type PluginNotification = {
-  notification: Notification;
-  pluginId: string;
-  client: null | string; // id
-};
-
-interface NotificationAction {
-  // Docs: https://electronjs.org/docs/api/structures/notification-action
-
-  /**
-   * The label for the given action.
-   */
-  text?: string;
-  /**
-   * The type of action, can be `button`.
-   */
-  type: 'button';
-}
-
-// Subset of electron.d.ts
-interface NotificationConstructorOptions {
-  /**
-   * A title for the notification, which will be shown at the top of the notification
-   * window when it is shown.
-   */
-  title: string;
-  /**
-   * The body text of the notification, which will be displayed below the title or
-   * subtitle.
-   */
-  body: string;
-  /**
-   * Actions to add to the notification. Please read the available actions and
-   * limitations in the `NotificationAction` documentation.
-   *
-   * @platform darwin
-   */
-  actions?: NotificationAction[];
-  /**
-   * A custom title for the close button of an alert. An empty string will cause the
-   * default localized text to be used.
-   *
-   * @platform darwin
-   */
-  closeButtonText?: string;
-}
-
-// Events that are emitted from the main.ts ovr the IPC process bridge in Electron
-type MainProcessEvents = {
-  'flipper-protocol-handler': [query: string];
-  'open-flipper-file': [name: string, data: string];
-  notificationEvent: [
-    eventName: NotificationEvents,
-    pluginNotification: PluginNotification,
-    arg: null | string | number,
-  ];
-  trackUsage: any[];
-  getLaunchTime: [launchStartTime: number];
-};
-
-// Events that are emitted by the child process, to the main process
-type ChildProcessEvents = {
-  setTheme: [theme: 'dark' | 'light' | 'system'];
-  sendNotification: [
-    {
-      payload: NotificationConstructorOptions;
-      pluginNotification: PluginNotification;
-      closeAfter?: number;
-    },
-  ];
-  getLaunchTime: [];
-  storeRehydrated: [];
-};
 
 /**
  * Utilities provided by the render host, e.g. Electron, the Browser, etc
@@ -116,14 +40,6 @@ export interface RenderHost {
     };
   }): Promise<string | undefined>;
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
-  onIpcEvent<Event extends keyof MainProcessEvents>(
-    event: Event,
-    callback: (...arg: MainProcessEvents[Event]) => void,
-  ): void;
-  sendIpcEvent<Event extends keyof ChildProcessEvents>(
-    event: Event,
-    ...args: ChildProcessEvents[Event]
-  ): void;
   GK(gatekeeper: string): boolean;
   unloadModule?(path: string): void;
   getPercentCPUUsage?(): number;

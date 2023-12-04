@@ -10,16 +10,8 @@
 import {Store} from '../reducers/index';
 import {Logger} from 'flipper-common';
 import {PluginNotification} from '../reducers/notifications';
-import reactElementToJSXString from 'react-element-to-jsx-string';
-import {
-  updatePluginBlocklist,
-  updateCategoryBlocklist,
-} from '../reducers/notifications';
 import {textContent} from 'flipper-plugin';
-import {getPluginTitle} from '../utils/pluginUtils';
 import {sideEffect} from '../utils/sideEffect';
-import {openNotification} from '../sandy-chrome/notification/Notification';
-import {getRenderHostInstance} from '../RenderHost';
 
 export type NotificationEvents =
   | 'show'
@@ -33,49 +25,6 @@ const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
 export default (store: Store, logger: Logger) => {
   const knownNotifications: Set<string> = new Set();
   const lastNotificationTime: Map<string, number> = new Map();
-
-  getRenderHostInstance().onIpcEvent(
-    'notificationEvent',
-    (
-      eventName: NotificationEvents,
-      pluginNotification: PluginNotification,
-      arg: null | string | number,
-    ) => {
-      if (eventName === 'click' || (eventName === 'action' && arg === 0)) {
-        openNotification(store, pluginNotification);
-      } else if (eventName === 'action') {
-        if (arg === 1 && pluginNotification.notification.category) {
-          // Hide similar (category)
-          logger.track(
-            'usage',
-            'notification-hide-category',
-            pluginNotification,
-          );
-
-          const {category} = pluginNotification.notification;
-          const {blocklistedCategories} = store.getState().notifications;
-          if (category && blocklistedCategories.indexOf(category) === -1) {
-            store.dispatch(
-              updateCategoryBlocklist([...blocklistedCategories, category]),
-            );
-          }
-        } else if (arg === 2) {
-          // Hide plugin
-          logger.track('usage', 'notification-hide-plugin', pluginNotification);
-
-          const {blocklistedPlugins} = store.getState().notifications;
-          if (blocklistedPlugins.indexOf(pluginNotification.pluginId) === -1) {
-            store.dispatch(
-              updatePluginBlocklist([
-                ...blocklistedPlugins,
-                pluginNotification.pluginId,
-              ]),
-            );
-          }
-        }
-      }
-    },
-  );
 
   sideEffect(
     store,
@@ -122,32 +71,33 @@ export default (store: Store, logger: Logger) => {
               // within the NOTIFICATION_THROTTLE.
               return;
             }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const plugin = getPlugin(n.pluginId);
-            getRenderHostInstance().sendIpcEvent('sendNotification', {
-              payload: {
-                title: n.notification.title,
-                body: reactElementToJSXString(n.notification.message),
-                actions: [
-                  {
-                    type: 'button',
-                    text: 'Show',
-                  },
-                  {
-                    type: 'button',
-                    text: 'Hide similar',
-                  },
-                  {
-                    type: 'button',
-                    text: `Hide all ${
-                      plugin != null ? getPluginTitle(plugin) : ''
-                    }`,
-                  },
-                ],
-                closeButtonText: 'Hide',
-              },
-              closeAfter: 10000,
-              pluginNotification: n,
-            });
+            // getRenderHostInstance().sendIpcEvent('sendNotification', {
+            //   payload: {
+            //     title: n.notification.title,
+            //     body: reactElementToJSXString(n.notification.message),
+            //     actions: [
+            //       {
+            //         type: 'button',
+            //         text: 'Show',
+            //       },
+            //       {
+            //         type: 'button',
+            //         text: 'Hide similar',
+            //       },
+            //       {
+            //         type: 'button',
+            //         text: `Hide all ${
+            //           plugin != null ? getPluginTitle(plugin) : ''
+            //         }`,
+            //       },
+            //     ],
+            //     closeButtonText: 'Hide',
+            //   },
+            //   closeAfter: 10000,
+            //   pluginNotification: n,
+            // });
             logger.track('usage', 'native-notification', {
               ...n.notification,
               message:

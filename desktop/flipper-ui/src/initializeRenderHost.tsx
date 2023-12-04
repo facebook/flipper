@@ -27,14 +27,6 @@ globalThis.require = wrapRequire((module: string) => {
 
 export function initializeRenderHost(flipperServerConfig: FlipperServerConfig) {
   FlipperRenderHostInstance = {
-    onIpcEvent(event, cb) {
-      window.addEventListener(event as string, (ev) => {
-        cb(...((ev as CustomEvent).detail as any));
-      });
-    },
-    sendIpcEvent(event, ...args: any[]) {
-      window.dispatchEvent(new CustomEvent(event, {detail: args}));
-    },
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },

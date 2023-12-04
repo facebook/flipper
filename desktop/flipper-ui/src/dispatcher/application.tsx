@@ -16,11 +16,8 @@ import {
 import {tryCatchReportPlatformFailures} from 'flipper-common';
 import {handleDeeplink} from '../deeplink';
 import {Dialog} from 'flipper-plugin';
-import {getRenderHostInstance} from '../RenderHost';
 
 export default (store: Store, logger: Logger) => {
-  const renderHost = getRenderHostInstance();
-
   const onFocus = () => {
     setTimeout(() => {
       store.dispatch({
@@ -54,7 +51,8 @@ export default (store: Store, logger: Logger) => {
     });
   });
 
-  renderHost.onIpcEvent('flipper-protocol-handler', (query: string) => {
+  window.addEventListener('flipper-protocol-handler', (ev) => {
+    const [query] = (ev as CustomEvent).detail as [string];
     handleDeeplink(store, logger, query).catch((e) => {
       console.warn('Failed to handle deeplink', query, e);
       Dialog.alert({
@@ -67,7 +65,8 @@ export default (store: Store, logger: Logger) => {
     });
   });
 
-  renderHost.onIpcEvent('open-flipper-file', (name: string, data: string) => {
+  window.addEventListener('open-flipper-file', (ev) => {
+    const [name, data] = (ev as CustomEvent).detail as [string, string];
     tryCatchReportPlatformFailures(() => {
       return importDataToStore(name, data, store);
     }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);

@@ -245,8 +245,6 @@ export default (store: Store, logger: Logger) => {
     logger.track('usage', 'ping', info);
   };
 
-  renderHost.onIpcEvent('trackUsage', trackUsage);
-
   setInterval(trackUsage, 60 * 1000);
 };
 

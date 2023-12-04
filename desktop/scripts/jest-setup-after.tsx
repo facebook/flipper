@@ -215,8 +215,6 @@ function createStubRenderHost(): RenderHost {
   };
 
   return {
-    onIpcEvent() {},
-    sendIpcEvent() {},
     GK(gk: string) {
       return stubConfig.gatekeepers[gk] ?? false;
     },

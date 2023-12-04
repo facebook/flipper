@@ -19,8 +19,6 @@ import {
 } from 'flipper-plugin';
 import {Link, styled} from '../ui';
 import {theme} from 'flipper-plugin';
-import {Logger} from 'flipper-common';
-
 import {Navbar} from './Navbar';
 import {useStore} from '../utils/useStore';
 import {AppInspect} from './appinspect/AppInspect';
@@ -40,7 +38,6 @@ import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
 import {Button, Modal, notification} from 'antd';
 import isProduction from '../utils/isProduction';
-import {getRenderHostInstance} from '../RenderHost';
 import {uiPerfTracker} from '../utils/UIPerfTracker';
 import {WarningOutlined} from '@ant-design/icons';
 import {getFlipperServerConfig} from '../flipperServer';
@@ -63,7 +60,6 @@ export function SandyApp() {
 
     document.title = title;
 
-    registerStartupTime(logger);
     uiPerfTracker.track('ui-perf-sandy-container-rendered');
 
     if (hasPlatformWizardBeenDone(window.localStorage)) {
@@ -232,14 +228,3 @@ const RootElement = styled.div({
   background: theme.backgroundWash,
 });
 RootElement.displayName = 'SandyAppRootElement';
-
-function registerStartupTime(logger: Logger) {
-  // track time since launch
-  const launchEndTime = performance.now();
-  const renderHost = getRenderHostInstance();
-  renderHost.onIpcEvent('getLaunchTime', (launchStartTime: number) => {
-    logger.track('performance', 'launchTime', launchEndTime - launchStartTime);
-  });
-
-  renderHost.sendIpcEvent('getLaunchTime');
-}
