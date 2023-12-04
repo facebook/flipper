@@ -35,9 +35,7 @@ const hardcodedPlugins = new Set<string>([
 export const getDefaultPlugins = async (isInsidersBuild: boolean) => {
   const sourcePlugins = await getSourcePlugins();
   const defaultPlugins = sourcePlugins
-    // we only include headless plugins and a predefined set of regular plugins into insiders release
-    .filter(
-      (p) => !isInsidersBuild || hardcodedPlugins.has(p.id) || p.headless,
-    );
+    // we only include a predefined set of regular plugins into insiders release
+    .filter((p) => !isInsidersBuild || hardcodedPlugins.has(p.id));
   return defaultPlugins;
 };
