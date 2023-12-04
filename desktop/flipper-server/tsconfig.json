@@ -4,7 +4,11 @@
     "outDir": "lib",
     "rootDir": "src",
     "lib": ["DOM", "ES2021"],
-    "types": ["../types/flipperGlobals", "../types/metro-resolver", "../types/metro"]
+    "types": [
+      "../types/flipperGlobals",
+      "../types/metro-resolver",
+      "../types/metro"
+    ]
   },
   "include": ["./src/*"],
   "references": [
@@ -16,9 +20,6 @@
     },
     {
       "path": "../flipper-server-companion"
-    },
-    {
-      "path": "../flipper-server-client"
     },
     {
       "path": "../pkg-lib"
