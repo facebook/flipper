@@ -31,7 +31,7 @@ import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {getSelectableDevices} from '../../selectors/connections';
 import {NoDevices} from './NoDevices';
 import BaseDevice from '../../devices/BaseDevice';
-import {getRenderHostInstance} from '../../RenderHost';
+import {GK} from '../../utils/GK';
 
 const {Text} = Typography;
 
@@ -82,9 +82,7 @@ export function AppSelector() {
     onSelectApp,
   );
   const client = clients.get(selectedAppId!);
-  const gkSelfSufficiency = getRenderHostInstance().GK(
-    'flipper_self_sufficiency',
-  );
+  const gkSelfSufficiency = GK('flipper_self_sufficiency');
 
   return (
     <>

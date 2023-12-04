@@ -11,23 +11,15 @@
 
 // eslint-disable-next-line node/no-extraneous-import
 import {cleanup} from '@testing-library/react';
-import {resolve} from 'path';
-import os from 'os';
-
-(global as any).FlipperRenderHostInstance = createStubRenderHost();
 
 import {TestUtils} from 'flipper-plugin';
 import {
   FlipperServerConfig,
   ReleaseChannel,
   Tristate,
-  parseEnvironmentVariables,
   uuid,
 } from 'flipper-common';
 
-// Only import the type!
-// eslint-disable-next-line node/no-extraneous-import
-import type {RenderHost} from 'flipper-ui/src/RenderHost';
 // eslint-disable-next-line node/no-extraneous-import
 import {
   setFlipperServer,
@@ -70,8 +62,6 @@ if (!test) {
 };
 
 beforeEach(() => {
-  // Fresh mock flipperServer for every test
-  (global as any).FlipperRenderHostInstance = createStubRenderHost();
   setFlipperServer(TestUtils.createFlipperServerMock());
   setFlipperServerConfig(createStubFlipperServerConfig());
   setFlipperServerConfigServer(createStubFlipperServerConfig());
@@ -148,78 +138,6 @@ Object.defineProperty(global, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 });
-
-function createStubRenderHost(): RenderHost {
-  const rootPath = resolve(__dirname, '..');
-  const stubConfig: FlipperServerConfig = {
-    sessionId: uuid(),
-    environmentInfo: {
-      processId: process.pid,
-      appVersion: '0.0.0',
-      isProduction: false,
-      isHeadlessBuild: false,
-      releaseChannel: ReleaseChannel.DEFAULT,
-      flipperReleaseRevision: '000',
-      os: {
-        arch: process.arch,
-        platform: process.platform,
-        unixname: os.userInfo().username,
-      },
-      versions: {
-        node: process.versions.node,
-        platform: os.release(),
-      },
-    },
-    env: parseEnvironmentVariables(process.env),
-    gatekeepers: {
-      TEST_PASSING_GK: true,
-      TEST_FAILING_GK: false,
-    },
-    launcherSettings: {
-      ignoreLocalPin: false,
-      releaseChannel: ReleaseChannel.DEFAULT,
-    },
-    paths: {
-      appPath: rootPath,
-      desktopPath: `/dev/null`,
-      execPath: process.execPath,
-      homePath: `/dev/null`,
-      staticPath: resolve(rootPath, 'static'),
-      tempPath: os.tmpdir(),
-    },
-    processConfig: {
-      disabledPlugins: [],
-      lastWindowPosition: null,
-      launcherEnabled: false,
-      launcherMsg: null,
-      screenCapturePath: `/dev/null`,
-      updaterEnabled: true,
-      suppressPluginUpdateNotifications: false,
-    },
-    settings: {
-      androidHome: `/dev/null`,
-      darkMode: 'light',
-      enableAndroid: false,
-      enableIOS: false,
-      enablePhysicalIOS: false,
-      enablePrefetching: Tristate.False,
-      idbPath: `/dev/null`,
-      showWelcomeAtStartup: false,
-      suppressPluginErrors: false,
-      persistDeviceData: false,
-      enablePluginMarketplace: false,
-      marketplaceURL: '',
-      enablePluginMarketplaceAutoUpdate: true,
-    },
-    validWebSocketOrigins: [],
-  };
-
-  return {
-    GK(gk: string) {
-      return stubConfig.gatekeepers[gk] ?? false;
-    },
-  };
-}
 
 export function createStubFlipperServerConfig(): FlipperServerConfig {
   const rootPath = '/root';

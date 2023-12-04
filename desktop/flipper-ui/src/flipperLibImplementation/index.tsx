@@ -17,17 +17,14 @@ import {
   RmOptions,
 } from 'flipper-common';
 import constants from '../fb-stubs/constants';
-import {RenderHost} from '../RenderHost';
 import {downloadFile} from './downloadFile';
 import {Base64} from 'js-base64';
 import {importFile} from '../utils/importFile';
 import {exportFile, exportFileBinary} from '../utils/exportFile';
 import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
+import {GK} from '../utils/GK';
 
-export function baseFlipperLibImplementation(
-  renderHost: RenderHost,
-  logger: Logger,
-): Omit<
+export function baseFlipperLibImplementation(logger: Logger): Omit<
   FlipperLib,
   | 'enableMenuEntries'
   | 'selectPlugin'
@@ -41,7 +38,7 @@ export function baseFlipperLibImplementation(
   return {
     isFB: !constants.IS_PUBLIC_BUILD,
     logger,
-    GK: renderHost.GK,
+    GK,
     writeTextToClipboard: (text) => navigator.clipboard.writeText(text),
     openLink: (url: string) => window.open(url, '_blank'),
     importFile,

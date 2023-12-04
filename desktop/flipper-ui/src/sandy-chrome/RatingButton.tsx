@@ -22,9 +22,9 @@ import {Button, Checkbox, Popover, Rate} from 'antd';
 import {currentUser} from '../fb-stubs/user';
 import {theme, useValue} from 'flipper-plugin';
 import {reportPlatformFailures} from 'flipper-common';
-import {getRenderHostInstance} from '../RenderHost';
 import {NavbarButton} from './Navbar';
 import {getFlipperServerConfig} from '../flipperServer';
+import {GK} from '../utils/GK';
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';
 
@@ -273,11 +273,7 @@ export function SandyRatingButton() {
   }, [hasTriggered]);
 
   useEffect(() => {
-    if (
-      getRenderHostInstance().GK('flipper_enable_star_ratiings') &&
-      !hasTriggered &&
-      loggedIn
-    ) {
+    if (GK('flipper_enable_star_ratiings') && !hasTriggered && loggedIn) {
       reportPlatformFailures(
         UserFeedback.getPrompt().then((prompt) => {
           setPromptData(prompt);

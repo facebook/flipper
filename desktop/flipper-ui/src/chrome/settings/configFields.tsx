@@ -18,7 +18,6 @@ import {
 } from '../../ui';
 import React, {useState, useEffect} from 'react';
 import {getFlipperLib, theme} from 'flipper-plugin';
-import {getRenderHostInstance} from '../../RenderHost';
 
 export const ConfigFieldContainer = styled(FlexRow)({
   paddingLeft: 10,
@@ -66,7 +65,6 @@ export function FilePathConfigField(props: {
   // Defaults to allowing directories only, this changes to expect regular files.
   isRegularFile?: boolean;
 }) {
-  const renderHost = getRenderHostInstance();
   const [value, setValue] = useState(props.defaultValue);
   const [isValid, setIsValid] = useState(true);
 
@@ -102,28 +100,6 @@ export function FilePathConfigField(props: {
             .catch((_) => setIsValid(false));
         }}
       />
-      {renderHost.showSelectDirectoryDialog && (
-        <FlexColumn
-          onClick={() => {
-            renderHost
-              .showSelectDirectoryDialog?.()
-              .then((path) => {
-                if (path) {
-                  setValue(path);
-                  props.onChange(path);
-                }
-              })
-              .catch((e) => {
-                console.warn('Failed to select dir', e);
-              });
-          }}>
-          <CenteredGlyph
-            color={theme.primaryColor}
-            name="dots-3-circle"
-            variant="outline"
-          />
-        </FlexColumn>
-      )}
       {props.resetValue && (
         <FlexColumn
           title={`Reset to default path ${props.resetValue}`}

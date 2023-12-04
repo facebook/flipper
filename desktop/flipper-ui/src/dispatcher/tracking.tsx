@@ -26,7 +26,6 @@ import {deconstructClientId} from 'flipper-common';
 import {sideEffect} from '../utils/sideEffect';
 import {getSelectionInfo} from '../utils/info';
 import type {SelectionInfo} from '../utils/info';
-import {getRenderHostInstance} from '../RenderHost';
 import BaseDevice from '../devices/BaseDevice';
 import {getFlipperServerConfig} from '../flipperServer';
 
@@ -73,7 +72,6 @@ export function emitBytesReceived(plugin: string, bytes: number) {
   }
 }
 export default (store: Store, logger: Logger) => {
-  const renderHost = getRenderHostInstance();
   sideEffect(
     store,
     {
@@ -235,7 +233,7 @@ export default (store: Store, logger: Logger) => {
       sdkVersion,
       isForeground: state.application.windowIsFocused,
       usedJSHeapSize: (window.performance as any).memory.usedJSHeapSize,
-      cpuLoad: renderHost.getPercentCPUUsage?.() ?? 0,
+      cpuLoad: 0,
     };
 
     // reset dropped frames counter

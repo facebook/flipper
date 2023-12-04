@@ -8,7 +8,7 @@
  */
 
 import type {Store} from '../reducers/index';
-import type {Logger, ActivatablePluginDetails} from 'flipper-common';
+import type {Logger} from 'flipper-common';
 import {
   LoadPluginActionPayload,
   UninstallPluginActionPayload,
@@ -43,7 +43,6 @@ import {
   defaultEnabledBackgroundPlugins,
 } from '../utils/pluginUtils';
 import {getPluginKey} from '../utils/pluginKey';
-import {getRenderHostInstance} from '../RenderHost';
 import {getFlipperServer} from '../flipperServer';
 
 async function refreshInstalledPlugins(store: Store) {
@@ -158,7 +157,6 @@ async function processPluginCommandsQueue(
 
 async function loadPlugin(store: Store, payload: LoadPluginActionPayload) {
   try {
-    unloadPluginModule(payload.plugin);
     const plugin = await requirePlugin(payload.plugin);
     const enablePlugin = payload.enable;
     updatePlugin(store, {plugin, enablePlugin});
@@ -182,7 +180,6 @@ function uninstallPlugin(store: Store, {plugin}: UninstallPluginActionPayload) {
     clients.forEach((client) => {
       stopPlugin(client, plugin.id);
     });
-    unloadPluginModule(plugin.details);
     store.dispatch(pluginUninstalled(plugin.details));
   } catch (err) {
     console.error(
@@ -374,8 +371,4 @@ function stopPlugin(
   // stop sandy plugins
   client.stopPluginIfNeeded(pluginId);
   return true;
-}
-
-function unloadPluginModule(plugin: ActivatablePluginDetails) {
-  getRenderHostInstance().unloadModule?.(plugin.entry);
 }

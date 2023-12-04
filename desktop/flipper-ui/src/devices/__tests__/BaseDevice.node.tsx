@@ -9,7 +9,6 @@
 
 import {getLogger} from 'flipper-common';
 import {baseFlipperLibImplementation} from '../../flipperLibImplementation';
-import {getRenderHostInstance} from '../../RenderHost';
 import AbstractClient from '../../AbstractClient';
 import {
   TestUtils,
@@ -249,10 +248,7 @@ test('log listeners are resumed and suspended automatically - 1', async () => {
     },
   });
 
-  const baseFlipperLib = baseFlipperLibImplementation(
-    getRenderHostInstance(),
-    getLogger(),
-  );
+  const baseFlipperLib = baseFlipperLibImplementation(getLogger());
   _setFlipperLibImplementation({
     ...baseFlipperLib,
     intern: {
@@ -338,10 +334,7 @@ test('log listeners are resumed and suspended automatically - 2', async () => {
 
   const client = new TestClient(device, [Plugin]);
 
-  const baseFlipperLib = baseFlipperLibImplementation(
-    getRenderHostInstance(),
-    getLogger(),
-  );
+  const baseFlipperLib = baseFlipperLibImplementation(getLogger());
   _setFlipperLibImplementation({
     ...baseFlipperLib,
     intern: {

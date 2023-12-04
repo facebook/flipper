@@ -7,16 +7,32 @@
  * @format
  */
 
+import './global';
 import {
   getLogger,
   getStringFromErrorLike,
   isProduction,
   setLoggerInstance,
+  wrapRequire,
 } from 'flipper-common';
 import {init as initLogger} from './fb-stubs/Logger';
-import {initializeRenderHost} from './initializeRenderHost';
 import {createFlipperServer, FlipperServerState} from 'flipper-server-client';
 import {setFlipperServer, setFlipperServerConfig} from './flipperServer';
+
+declare module globalThis {
+  let require: any;
+}
+
+// Whenever we bundle plugins, we assume that they are going to share some modules - React, React-DOM, ant design and etc.
+// It allows us to decrease the bundle size and not to create separate React roots for every plugin
+// To tell a plugin that a module is going to be provided externally, we add the module to the list of externals (see https://esbuild.github.io/api/#external).
+// As a result, esbuild does not bundle hte contents of the module. Instead, it wraps the module name with `require(...)`.
+// `require` does not exist ion the browser environment, so we substitute it here to feed the plugin our global module.
+globalThis.require = wrapRequire((module: string) => {
+  throw new Error(
+    `Dynamic require is not supported in browser envs. Tried to require: ${module}`,
+  );
+});
 
 const loadingContainer = document.getElementById('loading');
 if (loadingContainer) {
@@ -185,7 +201,6 @@ async function start() {
   setFlipperServer(flipperServer);
   setFlipperServerConfig(flipperServerConfig);
 
-  initializeRenderHost(flipperServerConfig);
   initializePWA();
 
   // @ts-ignore

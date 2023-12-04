@@ -38,7 +38,6 @@ import {CopyOutlined} from '@ant-design/icons';
 import {getVersionString} from './utils/versionString';
 import {PersistGate} from 'redux-persist/integration/react';
 import {setLoggerInstance, FlipperServer, initLogTailer} from 'flipper-common';
-import {getRenderHostInstance} from './RenderHost';
 import {startGlobalErrorHandling} from './utils/globalErrorHandling';
 import {loadTheme} from './utils/loadTheme';
 import {connectFlipperServerToStore} from './dispatcher/flipperServer';
@@ -141,7 +140,7 @@ class AppFrame extends React.Component<
   }
 }
 
-function init(flipperServer: FlipperServer) {
+export function startFlipperDesktop(flipperServer: FlipperServer) {
   const settings = getFlipperServerConfig().settings;
   const store = getStore();
 
@@ -172,7 +171,7 @@ function init(flipperServer: FlipperServer) {
 
   setPersistor(persistor);
 
-  initializeFlipperLibImplementation(getRenderHostInstance(), store, logger);
+  initializeFlipperLibImplementation(store, logger);
   _setGlobalInteractionReporter((r) => {
     logger.track('usage', 'interaction', r);
     if (!isProduction()) {
@@ -208,11 +207,6 @@ function init(flipperServer: FlipperServer) {
       },
     });
   }
-}
-
-export function startFlipperDesktop(flipperServer: FlipperServer) {
-  getRenderHostInstance();
-  init(flipperServer);
 }
 
 const CodeBlock = styled(Input.TextArea)({

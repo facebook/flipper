@@ -22,15 +22,13 @@ import {
   isConnected,
 } from '../../fb-stubs/user';
 import {baseFlipperLibImplementation} from '../../flipperLibImplementation';
-import {RenderHost} from '../../RenderHost';
 import BaseDevice from '../../devices/BaseDevice';
 
 export function initializeFlipperLibImplementation(
-  renderHost: RenderHost,
   store: Store,
   logger: Logger,
 ) {
-  const base = baseFlipperLibImplementation(renderHost, logger);
+  const base = baseFlipperLibImplementation(logger);
   _setFlipperLibImplementation({
     ...base,
     intern: {

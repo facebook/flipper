@@ -47,9 +47,9 @@ import {
   isSandyPlugin,
   wrapRequirePlugin,
 } from '../plugins';
-import {getRenderHostInstance} from '../RenderHost';
 import {setGlobalObject} from '../globalObject';
 import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
+import {GK} from '../utils/GK';
 
 class UIPluginInitializer extends AbstractPluginInitializer {
   constructor(private readonly store: Store) {
@@ -107,7 +107,7 @@ class UIPluginInitializer extends AbstractPluginInitializer {
 let uiPluginInitializer: UIPluginInitializer;
 export default async (store: Store, _logger: Logger) => {
   let FlipperPlugin = FlipperPluginSDK;
-  if (!getRenderHostInstance().GK('flipper_power_search')) {
+  if (!GK('flipper_power_search')) {
     FlipperPlugin = {
       ...FlipperPlugin,
       MasterDetail: FlipperPlugin.MasterDetailLegacy as any,

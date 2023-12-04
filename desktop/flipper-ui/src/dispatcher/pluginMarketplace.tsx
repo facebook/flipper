@@ -25,8 +25,8 @@ import {selectCompatibleMarketplaceVersions} from './plugins';
 import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {isConnectivityOrAuthError} from 'flipper-common';
 import {currentUser} from '../fb-stubs/user';
-import {getRenderHostInstance} from '../RenderHost';
 import {getFlipperServerConfig} from '../flipperServer';
+import {GK} from '../utils/GK';
 
 function isAutoUpdateDisabled(store: Store) {
   return (
@@ -35,7 +35,7 @@ function isAutoUpdateDisabled(store: Store) {
       !store.getState().settingsState.enablePluginMarketplaceAutoUpdate) ||
     // for internal build we disable auto-updates in case user is not logged
     (getFlipperLib().isFB && !currentUser().get()) ||
-    getRenderHostInstance().GK('flipper_disable_plugin_auto_update') ||
+    GK('flipper_disable_plugin_auto_update') ||
     getFlipperServerConfig().env.FLIPPER_NO_PLUGIN_AUTO_UPDATE !== undefined
   );
 }
@@ -45,7 +45,7 @@ function isPluginMarketplaceDisabled(store: Store) {
     // for open-source version marketplace must be explicitly enabled in Settings
     (!getFlipperLib().isFB &&
       !store.getState().settingsState.enablePluginMarketplace) ||
-    getRenderHostInstance().GK('flipper_disable_plugin_marketplace') ||
+    GK('flipper_disable_plugin_marketplace') ||
     getFlipperServerConfig().env.FLIPPER_NO_PLUGIN_MARKETPLACE
   );
 }

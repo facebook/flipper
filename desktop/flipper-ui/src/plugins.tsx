@@ -19,9 +19,9 @@ import {reportUsage} from 'flipper-common';
 import {_SandyPluginDefinition} from 'flipper-plugin';
 import isPluginCompatible from './utils/isPluginCompatible';
 import isPluginVersionMoreRecent from './utils/isPluginVersionMoreRecent';
-import {getRenderHostInstance} from './RenderHost';
 import pMap from 'p-map';
 import {getFlipperServer, getFlipperServerConfig} from './flipperServer';
+import {GK} from './utils/GK';
 
 export abstract class AbstractPluginInitializer {
   protected gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
@@ -144,7 +144,7 @@ export const checkGK =
       if (!plugin.gatekeeper) {
         return true;
       }
-      const result = getRenderHostInstance().GK(plugin.gatekeeper);
+      const result = GK(plugin.gatekeeper);
       if (!result) {
         gatekeepedPlugins.push(plugin);
       }

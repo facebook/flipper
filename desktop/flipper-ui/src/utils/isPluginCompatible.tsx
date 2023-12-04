@@ -9,13 +9,13 @@
 
 import {PluginDetails} from 'flipper-common';
 import semver from 'semver';
-import {getRenderHostInstance} from '../RenderHost';
+import {GK} from './GK';
 import {getAppVersion} from './info';
 
 export function isPluginCompatible(plugin: PluginDetails) {
   const flipperVersion = getAppVersion();
   return (
-    getRenderHostInstance().GK('flipper_disable_plugin_compatibility_checks') ||
+    GK('flipper_disable_plugin_compatibility_checks') ||
     flipperVersion === '0.0.0' ||
     !plugin.engines?.flipper ||
     semver.lte(plugin.engines?.flipper, flipperVersion)
