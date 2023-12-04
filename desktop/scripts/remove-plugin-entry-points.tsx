@@ -19,7 +19,6 @@ import {rootDir} from './paths';
   await Promise.all(
     [
       path.resolve(rootDir, 'app/src/defaultPlugins'),
-      path.resolve(rootDir, 'flipper-server-companion/src/defaultPlugins'),
       path.resolve(rootDir, 'flipper-server/src/defaultPlugins'),
       path.resolve(rootDir, 'flipper-ui/src/defaultPlugins'),
     ].map((dir) =>

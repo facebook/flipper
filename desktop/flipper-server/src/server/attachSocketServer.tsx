@@ -15,17 +15,10 @@ import {
   GenericWebSocketError,
   UserError,
   SystemError,
-  getLogger,
-  CompanionEventWebSocketMessage,
   isProduction,
 } from 'flipper-common';
 import {FlipperServerImpl} from '../FlipperServerImpl';
 import {RawData, WebSocketServer} from 'ws';
-import {
-  FlipperServerCompanion,
-  FlipperServerCompanionEnv,
-} from 'flipper-server-companion';
-import {URLSearchParams} from 'url';
 import {tracker} from '../tracker';
 import {getFlipperServerConfig} from '../FlipperServerConfig';
 import {performance} from 'perf_hooks';
@@ -52,7 +45,6 @@ let disconnectTimeout: NodeJS.Timeout | undefined;
 export function attachSocketServer(
   socket: WebSocketServer,
   server: FlipperServerImpl,
-  companionEnv: FlipperServerCompanionEnv,
 ) {
   socket.on('connection', (client, req) => {
     const t0 = performance.now();
@@ -74,52 +66,7 @@ export function attachSocketServer(
     let connected = true;
     server.startAcceptingNewConections();
 
-    let flipperServerCompanion: FlipperServerCompanion | undefined;
-    if (req.url) {
-      const params = new URLSearchParams(req.url.slice(1));
-
-      if (params.get('server_companion')) {
-        flipperServerCompanion = new FlipperServerCompanion(
-          server,
-          getLogger(),
-          companionEnv,
-        );
-      }
-    }
-
     async function onServerEvent(event: string, payload: any) {
-      if (flipperServerCompanion) {
-        switch (event) {
-          case 'client-message': {
-            const client = flipperServerCompanion.getClient(payload.id);
-            if (!client) {
-              console.warn(
-                'flipperServerCompanion.handleClientMessage -> unknown client',
-                event,
-                payload,
-              );
-              return;
-            }
-            client.onMessage(payload.message);
-            return;
-          }
-          case 'client-disconnected': {
-            if (flipperServerCompanion.getClient(payload.id)) {
-              flipperServerCompanion.destroyClient(payload.id);
-            }
-            // We use "break" here instead of "return" because a flipper desktop client still might be interested in the "client-disconnect" event to update its list of active clients
-            break;
-          }
-          case 'device-disconnected': {
-            if (flipperServerCompanion.getDevice(payload.id)) {
-              flipperServerCompanion.destroyDevice(payload.id);
-            }
-            // We use "break" here instead of "return" because a flipper desktop client still might be interested in the "device-disconnect" event to update its list of active devices
-            break;
-          }
-        }
-      }
-
       const message = {
         event: 'server-event',
         payload: {
@@ -131,19 +78,6 @@ export function attachSocketServer(
     }
 
     server.onAny(onServerEvent);
-
-    async function onServerCompanionEvent(event: string, payload: any) {
-      const message = {
-        event: 'companion-event',
-        payload: {
-          event,
-          data: payload,
-        },
-      } as CompanionEventWebSocketMessage;
-      client.send(JSON.stringify(message));
-    }
-
-    flipperServerCompanion?.onAny(onServerCompanionEvent);
 
     async function onClientMessage(data: RawData) {
       let [event, payload]: [event: string | null, payload: any | null] = [
@@ -183,11 +117,8 @@ export function attachSocketServer(
             return;
           }
 
-          const execRes = flipperServerCompanion?.canHandleCommand(command)
-            ? flipperServerCompanion.exec(command, ...args)
-            : server.exec(command, ...args);
-
-          execRes
+          server
+            .exec(command, ...args)
             .then((result: any) => {
               if (connected) {
                 const response: ExecResponseWebSocketMessage = {
@@ -246,7 +177,6 @@ export function attachSocketServer(
 
       connected = false;
       server.offAny(onServerEvent);
-      flipperServerCompanion?.destroyAll();
 
       tracker.track('server-client-close', {
         code,

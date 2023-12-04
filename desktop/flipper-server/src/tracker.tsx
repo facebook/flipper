@@ -28,7 +28,6 @@ type ServerBootstrapPerformancePayload = {
   runningInstanceShutdownMS: number;
   httpServerStartedMS: number;
   serverCreatedMS: number;
-  companionEnvironmentInitializedMS: number;
   appServerStartedMS: number;
   developmentServerAttachedMS: number;
   serverStartedMS: number;

@@ -16,7 +16,6 @@ import {initializeLogger} from './logger';
 import fs from 'fs-extra';
 import yargs from 'yargs';
 import os from 'os';
-import {initCompanionEnv} from 'flipper-server-companion';
 import {addLogTailer, isTest, LoggerFormat} from 'flipper-common';
 import exitHook from 'exit-hook';
 import {tracker} from './tracker';
@@ -243,15 +242,6 @@ async function start() {
     await flipperServer.close();
   });
 
-  const companionEnv = await initCompanionEnv(flipperServer);
-
-  const t7 = performance.now();
-  const companionEnvironmentInitializedMS = t7 - t6;
-
-  console.info(
-    `[flipper-server][bootstrap] Companion environment initialised (${companionEnvironmentInitializedMS} ms)`,
-  );
-
   if (argv.failFast) {
     flipperServer.on('server-state', ({state}) => {
       if (state === 'error') {
@@ -266,8 +256,8 @@ async function start() {
     .connect()
     .catch((e) => console.warn('Flipper Server failed to initialize', e));
 
-  const t8 = performance.now();
-  const appServerStartedMS = t8 - t7;
+  const t7 = performance.now();
+  const appServerStartedMS = t7 - t6;
   console.info(
     `[flipper-server][bootstrap] Ready for app connections (${appServerStartedMS} ms)`,
   );
@@ -276,15 +266,15 @@ async function start() {
     await attachDevServer(app, server, socket, rootPath);
   }
 
-  const t9 = performance.now();
-  const developmentServerAttachedMS = t9 - t8;
+  const t8 = performance.now();
+  const developmentServerAttachedMS = t8 - t7;
   console.info(
     `[flipper-server][bootstrap] Development server attached (${developmentServerAttachedMS} ms)`,
   );
-  readyForIncomingConnections(flipperServer, companionEnv);
+  readyForIncomingConnections(flipperServer);
 
-  const t10 = performance.now();
-  const serverStartedMS = t10 - t9;
+  const t9 = performance.now();
+  const serverStartedMS = t9 - t8;
   console.info(
     `[flipper-server][bootstrap] Listening at port ${chalk.green(
       argv.port,
@@ -293,7 +283,7 @@ async function start() {
 
   setupPrefetcher(flipperServer.config.settings);
 
-  const startupMS = t10 - t0;
+  const startupMS = t9 - t0;
 
   tracker.track('server-bootstrap-performance', {
     loggerInitializedMS,
@@ -301,7 +291,6 @@ async function start() {
     runningInstanceShutdownMS,
     httpServerStartedMS,
     serverCreatedMS,
-    companionEnvironmentInitializedMS,
     appServerStartedMS,
     developmentServerAttachedMS,
     serverStartedMS,

@@ -23,7 +23,6 @@ export {
 export * from './utils/LoggerTailer';
 export * from './utils/ScribeLogger';
 export * from './server-types';
-export * from './companion-types';
 export * from './ServerAddOn';
 export * from './plugin-external-modules';
 export {sleep} from './utils/sleep';

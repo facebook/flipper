@@ -232,8 +232,6 @@ export abstract class BasePluginInstance {
   definition: SandyPluginDefinition;
   /** the plugin instance api as used inside components and such  */
   instanceApi: any;
-  /** the plugin public api exposed over the wire via flipper-server-companion  */
-  companionApi?: any;
   /** the device owning this plugin */
   readonly device: Device;
 
@@ -287,11 +285,6 @@ export abstract class BasePluginInstance {
     setCurrentPluginInstance(this);
     try {
       this.instanceApi = batched(factory)();
-
-      const apiFactory = this.definition.module.API;
-      if (apiFactory) {
-        this.companionApi = apiFactory(this.instanceApi);
-      }
     } finally {
       // check if we have both an import handler and rootStates; probably dev error
       if (this.importHandler && Object.keys(this.rootStates).length > 0) {

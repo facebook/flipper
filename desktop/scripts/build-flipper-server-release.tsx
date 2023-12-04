@@ -282,7 +282,6 @@ async function linkLocalDeps(buildFolder: string) {
     'flipper-frontend-core': `file:${rootDir}/flipper-frontend-core`,
     'flipper-plugin-core': `file:${rootDir}/flipper-plugin-core`,
     'flipper-server-client': `file:${rootDir}/flipper-server-client`,
-    'flipper-server-companion': `file:${rootDir}/flipper-server-companion`,
     'flipper-pkg-lib': `file:${rootDir}/pkg-lib`,
     'flipper-plugin-lib': `file:${rootDir}/plugin-lib`,
   };

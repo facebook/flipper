@@ -17,7 +17,6 @@ import {parse} from 'url';
 import exitHook from 'exit-hook';
 import {attachSocketServer} from './attachSocketServer';
 import {FlipperServerImpl} from '../FlipperServerImpl';
-import {FlipperServerCompanionEnv} from 'flipper-server-companion';
 import {
   getAuthToken,
   validateAuthToken,
@@ -37,10 +36,7 @@ type Config = {
   entry: string;
 };
 
-type ReadyForConnections = (
-  server: FlipperServerImpl,
-  companionEnv: FlipperServerCompanionEnv,
-) => Promise<void>;
+type ReadyForConnections = (server: FlipperServerImpl) => Promise<void>;
 
 const verifyAuthToken = (req: http.IncomingMessage): boolean => {
   let token: string | null = null;
@@ -262,9 +258,8 @@ async function startHTTPServer(
     );
     const readyForIncomingConnections = (
       serverImpl: FlipperServerImpl,
-      companionEnv: FlipperServerCompanionEnv,
     ): Promise<void> => {
-      attachSocketServer(socket, serverImpl, companionEnv);
+      attachSocketServer(socket, serverImpl);
       /**
        * At this point, the server is ready to accept incoming
        * connections. Change the isReady state and resolve the

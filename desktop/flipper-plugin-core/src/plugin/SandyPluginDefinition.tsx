@@ -24,8 +24,6 @@ export type FlipperPluginInstance<T extends (...args: any[]) => object> =
 export type FlipperDevicePluginModule = {
   /** predicate that determines if this plugin applies to the currently selcted device */
   supportsDevice?: DevicePluginPredicate; // TODO T84453692: remove this function after some transition period in favor of BaseDevice.supportsPlugin.
-  /** the factory function that exposes plugin API over the wire */
-  API?: FlipperPluginAPI<DevicePluginFactory>;
   /** the factory function that initializes a plugin instance */
   devicePlugin: DevicePluginFactory;
   /** the component type that can render this plugin */
@@ -38,8 +36,6 @@ export type FlipperDevicePluginModule = {
 export type FlipperPluginModule<
   Factory extends PluginFactory<any, any, any, any>,
 > = {
-  /** the factory function that exposes plugin API over the wire */
-  API?: FlipperPluginAPI<Factory>;
   /** the factory function that initializes a plugin instance */
   plugin: Factory;
   /** the component type that can render this plugin */

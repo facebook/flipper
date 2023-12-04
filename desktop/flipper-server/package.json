@@ -15,7 +15,6 @@
     "file-stream-rotator": "^0.6.1",
     "flipper-common": "0.0.0",
     "flipper-pkg-lib": "0.0.0",
-    "flipper-server-companion": "0.0.0",
     "fs-extra": "^11.1.1",
     "http-proxy": "^1.18.1",
     "metro": "^0.70.2",
