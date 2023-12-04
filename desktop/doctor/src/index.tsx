@@ -8,6 +8,7 @@
  */
 
 import {exec} from 'child_process';
+import os from 'os';
 import {promisify} from 'util';
 import {getEnvInfo} from './environmentInfo';
 export {getEnvInfo} from './environmentInfo';
@@ -75,7 +76,10 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   return {
                     hasProblem,
                     message: hasProblem
-                      ? ['android.android-studio--not_installed']
+                      ? [
+                          'android.android-studio--not_installed',
+                          {platform: os.arch()},
+                        ]
                       : ['android.android-studio--installed'],
                   };
                 },

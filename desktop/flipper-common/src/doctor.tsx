@@ -150,7 +150,7 @@ export namespace FlipperDoctor {
     'common.watchman--not_installed': [];
 
     'android.android-studio--installed': [];
-    'android.android-studio--not_installed': [];
+    'android.android-studio--not_installed': [{platform: string}];
 
     'android.sdk--no_ANDROID_HOME': [];
     'android.sdk--invalid_ANDROID_HOME': [{androidHome: string}];
