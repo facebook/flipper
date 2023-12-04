@@ -8,11 +8,11 @@
  */
 
 import {VersionCheckResult} from '../chrome/UpdateIndicator';
-import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServerConfig} from '../flipperServer';
 import config from './config';
 
 const getPlatformSpecifier = (): string => {
-  switch (getRenderHostInstance().serverConfig.environmentInfo.os.platform) {
+  switch (getFlipperServerConfig().environmentInfo.os.platform) {
     case 'win32':
       return 'windows';
     case 'linux':

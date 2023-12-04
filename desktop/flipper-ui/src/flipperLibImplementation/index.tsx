@@ -22,7 +22,7 @@ import {downloadFile} from './downloadFile';
 import {Base64} from 'js-base64';
 import {importFile} from '../utils/importFile';
 import {exportFile, exportFileBinary} from '../utils/exportFile';
-import {getFlipperServer} from '../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 
 export function baseFlipperLibImplementation(
   renderHost: RenderHost,
@@ -48,15 +48,15 @@ export function baseFlipperLibImplementation(
     exportFile,
     exportFileBinary,
     paths: {
-      appPath: renderHost.serverConfig.paths.appPath,
-      homePath: renderHost.serverConfig.paths.homePath,
-      staticPath: renderHost.serverConfig.paths.staticPath,
-      tempPath: renderHost.serverConfig.paths.tempPath,
+      appPath: getFlipperServerConfig().paths.appPath,
+      homePath: getFlipperServerConfig().paths.homePath,
+      staticPath: getFlipperServerConfig().paths.staticPath,
+      tempPath: getFlipperServerConfig().paths.tempPath,
     },
     environmentInfo: {
-      os: renderHost.serverConfig.environmentInfo.os,
-      env: renderHost.serverConfig.env,
-      isHeadlessBuild: renderHost.serverConfig.environmentInfo.isHeadlessBuild,
+      os: getFlipperServerConfig().environmentInfo.os,
+      env: getFlipperServerConfig().env,
+      isHeadlessBuild: getFlipperServerConfig().environmentInfo.isHeadlessBuild,
     },
     intern: {
       graphGet: (...args) =>

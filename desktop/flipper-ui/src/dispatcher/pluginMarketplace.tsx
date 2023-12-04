@@ -26,16 +26,7 @@ import isPluginVersionMoreRecent from '../utils/isPluginVersionMoreRecent';
 import {isConnectivityOrAuthError} from 'flipper-common';
 import {currentUser} from '../fb-stubs/user';
 import {getRenderHostInstance} from '../RenderHost';
-
-// TODO: provide this value from settings
-export const pollingIntervalMs = getRenderHostInstance().serverConfig.env
-  .FLIPPER_PLUGIN_AUTO_UPDATE_POLLING_INTERVAL
-  ? parseInt(
-      getRenderHostInstance().serverConfig.env
-        .FLIPPER_PLUGIN_AUTO_UPDATE_POLLING_INTERVAL!,
-      10,
-    ) // for manual testing we could set smaller interval
-  : 300000; // 5 min by default
+import {getFlipperServerConfig} from '../flipperServer';
 
 function isAutoUpdateDisabled(store: Store) {
   return (
@@ -45,8 +36,7 @@ function isAutoUpdateDisabled(store: Store) {
     // for internal build we disable auto-updates in case user is not logged
     (getFlipperLib().isFB && !currentUser().get()) ||
     getRenderHostInstance().GK('flipper_disable_plugin_auto_update') ||
-    getRenderHostInstance().serverConfig.env.FLIPPER_NO_PLUGIN_AUTO_UPDATE !==
-      undefined
+    getFlipperServerConfig().env.FLIPPER_NO_PLUGIN_AUTO_UPDATE !== undefined
   );
 }
 
@@ -56,7 +46,7 @@ function isPluginMarketplaceDisabled(store: Store) {
     (!getFlipperLib().isFB &&
       !store.getState().settingsState.enablePluginMarketplace) ||
     getRenderHostInstance().GK('flipper_disable_plugin_marketplace') ||
-    getRenderHostInstance().serverConfig.env.FLIPPER_NO_PLUGIN_MARKETPLACE
+    getFlipperServerConfig().env.FLIPPER_NO_PLUGIN_MARKETPLACE
   );
 }
 
@@ -79,6 +69,18 @@ export default (store: Store) => {
     (state) => state.user,
     (_, store) => refreshMarketplacePlugins(store),
   );
+
+  // TODO: provide this value from settings
+  const pollingIntervalMs = getFlipperServerConfig().env
+    .FLIPPER_PLUGIN_AUTO_UPDATE_POLLING_INTERVAL
+    ? parseInt(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        getFlipperServerConfig().env
+          .FLIPPER_PLUGIN_AUTO_UPDATE_POLLING_INTERVAL!,
+        10,
+      ) // for manual testing we could set smaller interval
+    : 300000; // 5 min by default
+
   // Additionally schedule refreshes with the given interval
   const handle = setInterval(
     refreshMarketplacePlugins,

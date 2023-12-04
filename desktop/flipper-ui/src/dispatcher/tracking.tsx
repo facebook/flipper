@@ -28,6 +28,7 @@ import {getSelectionInfo} from '../utils/info';
 import type {SelectionInfo} from '../utils/info';
 import {getRenderHostInstance} from '../RenderHost';
 import BaseDevice from '../devices/BaseDevice';
+import {getFlipperServerConfig} from '../flipperServer';
 
 const TIME_SPENT_EVENT = 'time-spent';
 
@@ -94,7 +95,7 @@ export default (store: Store, logger: Logger) => {
   const oldExitData = loadExitData();
   if (oldExitData) {
     const isReload =
-      renderHost.serverConfig.environmentInfo.processId === oldExitData.pid;
+      getFlipperServerConfig().environmentInfo.processId === oldExitData.pid;
     const timeSinceLastStartup =
       Date.now() - parseInt(oldExitData.lastSeen, 10);
 
@@ -370,7 +371,7 @@ export function persistExitData(
       ? deconstructClientId(state.selectedAppId).app
       : '',
     cleanExit,
-    pid: getRenderHostInstance().serverConfig.environmentInfo.processId,
+    pid: getFlipperServerConfig().environmentInfo.processId,
   };
   window.localStorage.setItem(
     flipperExitDataKey,

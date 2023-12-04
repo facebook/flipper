@@ -12,6 +12,7 @@ import {
   tryCatchReportPluginFailuresAsync,
   notNull,
   FlipperServerDisconnectedError,
+  FlipperServerConfig,
 } from 'flipper-common';
 import {ActivatablePluginDetails, ConcretePluginDetails} from 'flipper-common';
 import {reportUsage} from 'flipper-common';
@@ -20,7 +21,7 @@ import isPluginCompatible from './utils/isPluginCompatible';
 import isPluginVersionMoreRecent from './utils/isPluginVersionMoreRecent';
 import {getRenderHostInstance} from './RenderHost';
 import pMap from 'p-map';
-import {getFlipperServer} from './flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from './flipperServer';
 
 export abstract class AbstractPluginInitializer {
   protected gatekeepedPlugins: Array<ActivatablePluginDetails> = [];
@@ -80,7 +81,7 @@ export abstract class AbstractPluginInitializer {
 
     const pluginsToLoad = loadedPlugins
       .map(reportVersion)
-      .filter(checkDisabled(this.disabledPlugins))
+      .filter(checkDisabled(this.disabledPlugins, getFlipperServerConfig()))
       .filter(checkGK(this.gatekeepedPlugins));
 
     return pluginsToLoad;
@@ -156,8 +157,8 @@ export const checkGK =
 
 export const checkDisabled = (
   disabledPlugins: Array<ActivatablePluginDetails>,
+  config: FlipperServerConfig,
 ) => {
-  const config = getRenderHostInstance().serverConfig;
   let enabledList: Set<string> | null = null;
   let disabledList: Set<string> = new Set();
   try {

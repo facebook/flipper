@@ -42,7 +42,6 @@ export function initializeRenderHost(flipperServerConfig: FlipperServerConfig) {
           window.matchMedia?.('(prefers-color-scheme: dark)'))
       );
     },
-    serverConfig: flipperServerConfig,
     GK(gatekeeper) {
       return flipperServerConfig.gatekeepers[gatekeeper] ?? false;
     },

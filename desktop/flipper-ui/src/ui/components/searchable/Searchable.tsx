@@ -20,7 +20,7 @@ import {debounce} from 'lodash';
 import ToggleButton from '../ToggleSwitch';
 import React from 'react';
 import {Layout, theme, Toolbar} from 'flipper-plugin';
-import {getRenderHostInstance} from '../../../RenderHost';
+import {getFlipperServerConfig} from '../../../flipperServer';
 
 const SearchBar = styled(Toolbar)({
   height: 42,
@@ -299,8 +299,7 @@ export default function Searchable(
     };
 
     onKeyDown = (e: KeyboardEvent) => {
-      const {platform} =
-        getRenderHostInstance().serverConfig.environmentInfo.os;
+      const {platform} = getFlipperServerConfig().environmentInfo.os;
       const ctrlOrCmd = (e: KeyboardEvent) =>
         (e.metaKey && platform === 'darwin') ||
         (e.ctrlKey && platform !== 'darwin');

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {FlipperServer} from 'flipper-common';
+import {FlipperServer, FlipperServerConfig} from 'flipper-common';
 
 let flipperServer: FlipperServer;
 
@@ -17,4 +17,14 @@ export function getFlipperServer() {
 
 export function setFlipperServer(newFlipperServer: FlipperServer) {
   flipperServer = newFlipperServer;
+}
+
+let flipperServerConfig: FlipperServerConfig;
+export function getFlipperServerConfig() {
+  return flipperServerConfig;
+}
+export function setFlipperServerConfig(
+  newFlipperServerConfig: FlipperServerConfig,
+) {
+  flipperServerConfig = newFlipperServerConfig;
 }

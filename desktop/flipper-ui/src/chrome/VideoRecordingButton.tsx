@@ -8,10 +8,10 @@
  */
 
 import React, {Component} from 'react';
-import {getRenderHostInstance} from '../RenderHost';
 import {Button, Glyph, colors} from '../ui';
 import {path} from 'flipper-plugin';
 import BaseDevice from '../devices/BaseDevice';
+import {getFlipperServerConfig} from '../flipperServer';
 
 type OwnProps = {
   recordingFinished: (path: string | null) => void;
@@ -40,7 +40,7 @@ export default class VideoRecordingButton extends Component<Props, State> {
     }
 
     const flipperDirectory = path.join(
-      getRenderHostInstance().serverConfig.paths.homePath,
+      getFlipperServerConfig().paths.homePath,
       '.flipper',
     );
     const fileName = `screencap-${new Date()

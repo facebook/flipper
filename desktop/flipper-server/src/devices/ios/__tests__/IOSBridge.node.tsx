@@ -13,17 +13,6 @@ jest.mock('promisify-child-process');
 
 import {makeIOSBridge} from '../IOSBridge';
 import * as promisifyChildProcess from 'promisify-child-process';
-import {setFlipperServerConfig} from '../../../FlipperServerConfig';
-// eslint-disable-next-line node/no-extraneous-import
-import {getRenderHostInstance} from 'flipper-ui/src/RenderHost';
-
-beforeEach(() => {
-  setFlipperServerConfig(getRenderHostInstance().serverConfig);
-});
-
-afterEach(() => {
-  setFlipperServerConfig(undefined);
-});
 
 test('uses xcrun with no idb when xcode is detected', async () => {
   const ib = await makeIOSBridge('', true, false);

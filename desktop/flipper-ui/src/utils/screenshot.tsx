@@ -10,13 +10,13 @@
 import {reportPlatformFailures} from 'flipper-common';
 import {getFlipperLib, path} from 'flipper-plugin';
 import BaseDevice from '../devices/BaseDevice';
-import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServerConfig} from '../flipperServer';
 import {assertNotNull} from './assertNotNull';
 
 export function getCaptureLocation() {
   return (
-    getRenderHostInstance().serverConfig.processConfig.screenCapturePath ||
-    getRenderHostInstance().serverConfig.paths.desktopPath
+    getFlipperServerConfig().processConfig.screenCapturePath ||
+    getFlipperServerConfig().paths.desktopPath
   );
 }
 

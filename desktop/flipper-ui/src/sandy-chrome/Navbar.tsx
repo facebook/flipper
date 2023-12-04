@@ -17,7 +17,6 @@ import {
   useValue,
   withTrackingScope,
 } from 'flipper-plugin';
-import {getRenderHostInstance} from '../RenderHost';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
@@ -73,6 +72,7 @@ import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
 import {Notification} from './notification/Notification';
 import {SandyRatingButton} from './RatingButton';
+import {getFlipperServerConfig} from '../flipperServer';
 
 export const Navbar = withTrackingScope(function Navbar() {
   return (
@@ -108,8 +108,9 @@ export const Navbar = withTrackingScope(function Navbar() {
         <SandyRatingButton />
         <ExtrasMenu />
         <RightSidebarToggleButton />
-        {getRenderHostInstance().serverConfig.environmentInfo
-          .isHeadlessBuild && <UpdateIndicator />}
+        {getFlipperServerConfig().environmentInfo.isHeadlessBuild && (
+          <UpdateIndicator />
+        )}
       </Layout.Horizontal>
     </Layout.Horizontal>
   );
@@ -695,9 +696,7 @@ function ExtrasMenu() {
       </NUX>
       {showSettings && (
         <SettingsSheet
-          platform={
-            getRenderHostInstance().serverConfig.environmentInfo.os.platform
-          }
+          platform={getFlipperServerConfig().environmentInfo.os.platform}
           onHide={onSettingsClose}
         />
       )}

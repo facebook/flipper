@@ -16,7 +16,6 @@ import {
 } from '../plugins';
 import {InstalledPluginDetails} from 'flipper-common';
 import {_SandyPluginDefinition} from 'flipper-plugin';
-import {getRenderHostInstance} from '../RenderHost';
 import {getFlipperServer} from '../flipperServer';
 
 let loadDynamicPluginsMock: jest.Mock;
@@ -48,32 +47,28 @@ test('getDynamicPlugins returns empty array on errors', async () => {
 
 test('checkDisabled', () => {
   const disabledPlugin = 'pluginName';
-  const hostConfig = getRenderHostInstance().serverConfig;
-  const orig = hostConfig.processConfig;
-  try {
-    hostConfig.processConfig = {
-      ...orig,
+  const hostConfig = {
+    processConfig: {
       disabledPlugins: [disabledPlugin],
-    };
-    const disabled = checkDisabled([]);
+    },
+    env: {},
+  } as any;
+  const disabled = checkDisabled([], hostConfig);
 
-    expect(
-      disabled({
-        ...sampleInstalledPluginDetails,
-        name: 'other Name',
-        version: '1.0.0',
-      }),
-    ).toBeTruthy();
-    expect(
-      disabled({
-        ...sampleInstalledPluginDetails,
-        name: disabledPlugin,
-        version: '1.0.0',
-      }),
-    ).toBeFalsy();
-  } finally {
-    hostConfig.processConfig = orig;
-  }
+  expect(
+    disabled({
+      ...sampleInstalledPluginDetails,
+      name: 'other Name',
+      version: '1.0.0',
+    }),
+  ).toBeTruthy();
+  expect(
+    disabled({
+      ...sampleInstalledPluginDetails,
+      name: disabledPlugin,
+      version: '1.0.0',
+    }),
+  ).toBeFalsy();
 });
 
 test('checkGK for plugin without GK', () => {

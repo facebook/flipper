@@ -7,8 +7,4 @@
  * @format
  */
 
-import {getFlipperServerConfig} from '../flipperServer';
-
-export default function isProduction() {
-  return getFlipperServerConfig().environmentInfo.isProduction;
-}
+export const getInternURL = () => '';

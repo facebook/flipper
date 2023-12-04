@@ -10,9 +10,8 @@
 import React from 'react';
 import {Image, Modal, Button} from 'antd';
 import {getFlipperLib, Layout, _NuxManagerContext} from 'flipper-plugin';
-import {getRenderHostInstance} from '../RenderHost';
 import isProduction from '../utils/isProduction';
-import {getFlipperServer} from '../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 
 type Props = {
   onHide: () => void;
@@ -42,7 +41,7 @@ class PWAWizardTracker {
 const tracker = new PWAWizardTracker();
 
 function isElectron() {
-  return !getRenderHostInstance().serverConfig.environmentInfo.isHeadlessBuild;
+  return !getFlipperServerConfig().environmentInfo.isHeadlessBuild;
 }
 
 const lastShownTimestampKey = 'flipper-pwa-wizard-last-shown-timestamp';

@@ -29,6 +29,4 @@ export default Object.freeze({
   },
 
   SUPPORT_GROUPS: [],
-
-  INTERN_URL: '',
 });

@@ -16,11 +16,6 @@ import {_SandyPluginDefinition} from 'flipper-plugin';
 import {getFlipperServer} from '../../flipperServer';
 import {createRequirePluginFunction} from '../../plugins';
 
-const mockStore = configureStore<State, {}>([])(
-  createRootReducer()(undefined, {type: 'INIT'}),
-);
-const logger = getLogger();
-
 const sampleInstalledPluginDetails: InstalledPluginDetails = {
   name: 'other Name',
   version: '1.0.0',
@@ -48,6 +43,11 @@ beforeEach(() => {
 });
 
 test('dispatcher dispatches REGISTER_PLUGINS', async () => {
+  const mockStore = configureStore<State, {}>([])(
+    createRootReducer()(undefined, {type: 'INIT'}),
+  );
+  const logger = getLogger();
+
   await dispatcher(mockStore, logger);
   const actions = mockStore.getActions();
   expect(actions.map((a) => a.type)).toContain('REGISTER_PLUGINS');

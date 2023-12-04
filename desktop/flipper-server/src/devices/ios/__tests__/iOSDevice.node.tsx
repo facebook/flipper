@@ -9,11 +9,7 @@
 
 import {checkXcodeVersionMismatch, IOSDeviceManager} from '../iOSDeviceManager';
 // eslint-disable-next-line node/no-extraneous-import
-import {getRenderHostInstance} from 'flipper-ui/src/RenderHost';
-import {
-  getFlipperServerConfig,
-  setFlipperServerConfig,
-} from '../../../FlipperServerConfig';
+import {getFlipperServerConfig} from '../../../FlipperServerConfig';
 import {DeviceTarget} from 'flipper-common';
 
 let fakeSimctlBridge: any;
@@ -60,11 +56,6 @@ beforeEach(() => {
     registerDevice: jest.fn(),
     unregisterDevice: jest.fn(),
   };
-  setFlipperServerConfig(getRenderHostInstance().serverConfig);
-});
-
-afterEach(() => {
-  setFlipperServerConfig(undefined);
 });
 
 test('test checkXcodeVersionMismatch with correct Simulator.app', () => {

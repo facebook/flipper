@@ -8,7 +8,7 @@
  */
 
 import {LauncherSettings} from 'flipper-common';
-import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServerConfig} from '../flipperServer';
 import {Actions} from './index';
 
 export type Action = {
@@ -17,8 +17,7 @@ export type Action = {
 };
 
 export default function reducer(
-  state: LauncherSettings = getRenderHostInstance().serverConfig
-    .launcherSettings,
+  state: LauncherSettings = getFlipperServerConfig().launcherSettings,
   action: Actions,
 ): LauncherSettings {
   if (action.type === 'UPDATE_LAUNCHER_SETTINGS') {

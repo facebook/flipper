@@ -13,7 +13,7 @@
 import type {State, Store} from '../reducers/index';
 import {sideEffect} from './sideEffect';
 import {Logger, deconstructClientId} from 'flipper-common';
-import {getRenderHostInstance} from '../RenderHost';
+import {getFlipperServerConfig} from '../flipperServer';
 
 type PlatformInfo = {
   arch: string;
@@ -81,7 +81,7 @@ export default (store: Store, _logger: Logger) => {
  */
 export function getInfo(): Info {
   if (!platformInfo) {
-    const envInfo = getRenderHostInstance().serverConfig.environmentInfo;
+    const envInfo = getFlipperServerConfig().environmentInfo;
 
     platformInfo = {
       arch: envInfo.os.arch,
@@ -98,7 +98,7 @@ export function getInfo(): Info {
 }
 
 export function getAppVersion(): string {
-  return getRenderHostInstance().serverConfig.environmentInfo.appVersion;
+  return getFlipperServerConfig().environmentInfo.appVersion;
 }
 
 export function stringifyInfo(info: Info): string {

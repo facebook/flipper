@@ -49,7 +49,7 @@ import {
 } from '../plugins';
 import {getRenderHostInstance} from '../RenderHost';
 import {setGlobalObject} from '../globalObject';
-import {getFlipperServer} from '../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 
 class UIPluginInitializer extends AbstractPluginInitializer {
   constructor(private readonly store: Store) {
@@ -63,7 +63,7 @@ class UIPluginInitializer extends AbstractPluginInitializer {
       (p) => !isSandyPlugin(p.details),
     );
     if (
-      getRenderHostInstance().serverConfig.env.NODE_ENV !== 'test' &&
+      getFlipperServerConfig().env.NODE_ENV !== 'test' &&
       classicPlugins.length
     ) {
       console.warn(

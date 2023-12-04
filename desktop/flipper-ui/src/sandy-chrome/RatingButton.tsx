@@ -24,6 +24,7 @@ import {theme, useValue} from 'flipper-plugin';
 import {reportPlatformFailures} from 'flipper-common';
 import {getRenderHostInstance} from '../RenderHost';
 import {NavbarButton} from './Navbar';
+import {getFlipperServerConfig} from '../flipperServer';
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';
 
@@ -261,7 +262,7 @@ export function SandyRatingButton() {
     useState<UserFeedback.FeedbackPrompt | null>(null);
   const [isShown, setIsShown] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
-  const sessionId = getRenderHostInstance().serverConfig.sessionId;
+  const sessionId = getFlipperServerConfig().sessionId;
   const loggedIn = useValue(currentUser());
 
   const triggerPopover = useCallback(() => {

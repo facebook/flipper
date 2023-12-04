@@ -8,8 +8,8 @@
  */
 
 import {Actions} from './index';
-import {getRenderHostInstance} from '../RenderHost';
 import {Settings} from 'flipper-common';
+import {getFlipperServerConfig} from '../flipperServer';
 
 export type Action =
   | {type: 'INIT'}
@@ -19,7 +19,7 @@ export type Action =
     };
 
 export default function reducer(
-  state: Settings = getRenderHostInstance().serverConfig.settings,
+  state: Settings = getFlipperServerConfig().settings,
   action: Actions,
 ): Settings {
   if (action.type === 'UPDATE_SETTINGS') {

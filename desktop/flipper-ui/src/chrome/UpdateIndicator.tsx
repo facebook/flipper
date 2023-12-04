@@ -15,9 +15,8 @@ import fbConfig from '../fb-stubs/config';
 import {useStore} from '../utils/useStore';
 import {getAppVersion} from '../utils/info';
 import {checkForUpdate} from '../fb-stubs/checkForUpdate';
-import {getRenderHostInstance} from '../RenderHost';
 import {NotificationBody} from '../ui/components/NotificationBody';
-import {getFlipperServer} from '../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 
 export type VersionCheckResult =
   | {
@@ -66,7 +65,7 @@ export default function UpdateIndicator() {
   // trigger the update check, unless there is a launcher message already
   useEffect(() => {
     const version = getAppVersion();
-    const config = getRenderHostInstance().serverConfig.processConfig;
+    const config = getFlipperServerConfig().processConfig;
     if (launcherMsg && launcherMsg.message) {
       if (launcherMsg.severity === 'error') {
         notification.error({
@@ -127,7 +126,7 @@ export function getUpdateAvailableMessage(versionCheckResult: {
   url: string;
   version: string;
 }): React.ReactNode {
-  const {launcherSettings} = getRenderHostInstance().serverConfig;
+  const {launcherSettings} = getFlipperServerConfig();
 
   const shutdownFlipper = () => {
     getFlipperServer().exec('shutdown');

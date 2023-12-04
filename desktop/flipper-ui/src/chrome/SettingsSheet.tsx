@@ -39,9 +39,8 @@ import {
   _NuxManagerContext,
   NUX,
 } from 'flipper-plugin';
-import {getRenderHostInstance} from '../RenderHost';
 import {loadTheme} from '../utils/loadTheme';
-import {getFlipperServer} from '../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 
 type OwnProps = {
   onHide: () => void;
@@ -159,9 +158,7 @@ class SettingsSheet extends Component<Props, State> {
           }}>
           <FilePathConfigField
             label="Android SDK location"
-            resetValue={
-              getRenderHostInstance().serverConfig.settings.androidHome
-            }
+            resetValue={getFlipperServerConfig().settings.androidHome}
             defaultValue={androidHome}
             onChange={(v) => {
               this.setState({

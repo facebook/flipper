@@ -32,7 +32,7 @@ import {debounce} from 'lodash';
 import {DEFAULT_ROW_HEIGHT} from './types';
 import {notNull} from '../../../utils/typeUtils';
 import {getFlipperLib, textContent} from 'flipper-plugin';
-import {getRenderHostInstance} from '../../../RenderHost';
+import {getFlipperServerConfig} from '../../../flipperServer';
 
 const EMPTY_OBJECT = {};
 Object.freeze(EMPTY_OBJECT);
@@ -337,7 +337,7 @@ export class ManagedTable extends React.Component<
 
   onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const {highlightedRows} = this.state;
-    const {platform} = getRenderHostInstance().serverConfig.environmentInfo.os;
+    const {platform} = getFlipperServerConfig().environmentInfo.os;
     if (highlightedRows.size === 0) {
       return;
     }
@@ -431,7 +431,7 @@ export class ManagedTable extends React.Component<
     if (!this.props.highlightableRows) {
       return;
     }
-    const {platform} = getRenderHostInstance().serverConfig.environmentInfo.os;
+    const {platform} = getFlipperServerConfig().environmentInfo.os;
 
     if (e.shiftKey) {
       // prevents text selection

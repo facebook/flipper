@@ -45,6 +45,7 @@ import {connectFlipperServerToStore} from './dispatcher/flipperServer';
 import {enableConnectivityHook} from './chrome/ConnectivityLogs';
 import ReactDOM from 'react-dom';
 import {uiPerfTracker} from './utils/UIPerfTracker';
+import {getFlipperServerConfig} from './flipperServer';
 
 class AppFrame extends React.Component<
   {logger: Logger; persistor: Persistor},
@@ -141,7 +142,7 @@ class AppFrame extends React.Component<
 }
 
 function init(flipperServer: FlipperServer) {
-  const settings = getRenderHostInstance().serverConfig.settings;
+  const settings = getFlipperServerConfig().settings;
   const store = getStore();
 
   initLogTailer();
@@ -195,8 +196,7 @@ function init(flipperServer: FlipperServer) {
     ReactDOM.render(<AppFrame logger={logger} persistor={persistor} />, root);
   }
 
-  const launcherMessage =
-    getRenderHostInstance().serverConfig.processConfig.launcherMsg;
+  const launcherMessage = getFlipperServerConfig().processConfig.launcherMsg;
   if (launcherMessage) {
     store.dispatch({
       type: 'LAUNCHER_MSG',

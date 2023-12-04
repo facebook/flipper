@@ -43,6 +43,7 @@ import isProduction from '../utils/isProduction';
 import {getRenderHostInstance} from '../RenderHost';
 import {uiPerfTracker} from '../utils/UIPerfTracker';
 import {WarningOutlined} from '@ant-design/icons';
+import {getFlipperServerConfig} from '../flipperServer';
 
 export function SandyApp() {
   const logger = useLogger();
@@ -50,7 +51,7 @@ export function SandyApp() {
     (state) => state.application.leftSidebarVisible,
   );
   const staticView = useStore((state) => state.connections.staticView);
-  const serverConfig = getRenderHostInstance().serverConfig;
+  const serverConfig = getFlipperServerConfig();
 
   useEffect(() => {
     let title = `Flipper (${getVersionString()}${
@@ -69,9 +70,7 @@ export function SandyApp() {
       Dialog.showModal((onHide) => (
         <PlatformSelectWizard
           onHide={onHide}
-          platform={
-            getRenderHostInstance().serverConfig.environmentInfo.os.platform
-          }
+          platform={getFlipperServerConfig().environmentInfo.os.platform}
         />
       ));
     }

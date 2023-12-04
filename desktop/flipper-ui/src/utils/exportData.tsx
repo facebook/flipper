@@ -42,10 +42,9 @@ import openSupportRequestForm from '../fb-stubs/openSupportRequestForm';
 import {getStore} from '../store';
 import BaseDevice, {DeviceExport} from '../devices/BaseDevice';
 import ArchivedDevice from '../devices/ArchivedDevice';
-import {getRenderHostInstance} from '../RenderHost';
 import {importFile} from './importFile';
 import {exportFileBinary} from './exportFile';
-import {getFlipperServer} from '../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -247,7 +246,7 @@ async function addSaltToDeviceSerial({
     return {...notif, client: notif.client.replace(serial, newSerial)};
   });
   const revision: string | undefined =
-    getRenderHostInstance().serverConfig.environmentInfo.flipperReleaseRevision;
+    getFlipperServerConfig().environmentInfo.flipperReleaseRevision;
   return {
     fileVersion: getAppVersion() || 'unknown',
     flipperReleaseRevision: revision,

@@ -27,13 +27,12 @@ import {
 } from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {DeviceTarget} from 'flipper-common';
-import {getRenderHostInstance} from '../../RenderHost';
 import SettingsSheet from '../../chrome/SettingsSheet';
 import {Link} from '../../ui';
 import {chain, uniq, without} from 'lodash';
 import {ReactNode} from 'react-markdown';
 import {produce} from 'immer';
-import {getFlipperServer} from '../../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../../flipperServer';
 
 const COLD_BOOT = 'cold-boot';
 
@@ -73,9 +72,7 @@ function NoSDKsEnabledAlert({onClose}: {onClose: () => void}) {
       </Modal>
       {showSettings && (
         <SettingsSheet
-          platform={
-            getRenderHostInstance().serverConfig.environmentInfo.os.platform
-          }
+          platform={getFlipperServerConfig().environmentInfo.os.platform}
           onHide={() => setShowSettings(false)}
         />
       )}

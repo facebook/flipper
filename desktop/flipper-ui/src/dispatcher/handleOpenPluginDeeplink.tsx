@@ -31,7 +31,6 @@ import {loadPluginsFromMarketplace} from './pluginMarketplace';
 import {switchPlugin} from '../reducers/pluginManager';
 import {startPluginDownload} from '../reducers/pluginDownloads';
 import isProduction from '../utils/isProduction';
-import {getRenderHostInstance} from '../RenderHost';
 import Client from '../Client';
 import {RocketOutlined} from '@ant-design/icons';
 import {showEmulatorLauncher} from '../sandy-chrome/appinspect/LaunchEmulator';
@@ -43,7 +42,7 @@ import {
 } from '../deeplinkTracking';
 import {waitFor} from '../utils/waitFor';
 import BaseDevice from '../devices/BaseDevice';
-import {getFlipperServer} from '../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 
 export function parseOpenPluginParams(query: string): OpenPluginParams {
   // 'flipper://open-plugin?plugin-id=graphql&client=facebook&devices=android,ios&chrome=1&payload='
@@ -219,7 +218,7 @@ async function verifyLighthouseAndUserLoggedIn(
 ): Promise<boolean> {
   if (
     !getFlipperLib().isFB ||
-    getRenderHostInstance().serverConfig.env.NODE_ENV === 'test'
+    getFlipperServerConfig().env.NODE_ENV === 'test'
   ) {
     return true; // ok, continue
   }
@@ -292,7 +291,7 @@ async function waitForLogin(store: Store) {
 }
 
 async function verifyFlipperIsUpToDate(title: string) {
-  const serverConfig = getRenderHostInstance().serverConfig;
+  const serverConfig = getFlipperServerConfig();
 
   // If this is not a headless build, do not check for updates.
   if (!serverConfig.environmentInfo.isHeadlessBuild) {

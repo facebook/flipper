@@ -9,7 +9,6 @@
 
 import './global';
 import {Notification} from 'flipper-plugin';
-import {FlipperServerConfig} from 'flipper-common';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 type PluginNotification = {
@@ -127,7 +126,6 @@ export interface RenderHost {
   ): void;
   shouldUseDarkColors(): boolean;
   GK(gatekeeper: string): boolean;
-  serverConfig: FlipperServerConfig;
   unloadModule?(path: string): void;
   getPercentCPUUsage?(): number;
 }
