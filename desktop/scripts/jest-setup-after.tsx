@@ -206,9 +206,6 @@ function createStubRenderHost(): RenderHost {
   };
 
   return {
-    async exportFile() {
-      return undefined;
-    },
     async exportFileBinary() {
       return undefined;
     },

@@ -22,7 +22,7 @@ import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {ReactReduxContext, ReactReduxContextValue} from 'react-redux';
 import {MiddlewareAPI} from '../reducers/index';
 import {Modal} from 'antd';
-import {getRenderHostInstance} from '../RenderHost';
+import {exportFile} from '../utils/exportFile';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -102,9 +102,8 @@ export default class ShareSheetExportFile extends Component<Props, State> {
           : {kind: 'success'},
       });
 
-      await getRenderHostInstance().exportFile(serializedString, {
+      await exportFile(serializedString, {
         defaultPath: 'export.flipper',
-        encoding: 'utf-8',
       });
 
       this.props.logger.trackTimeSince(mark, 'export:file-success');

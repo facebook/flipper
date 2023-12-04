@@ -122,7 +122,6 @@ export interface RenderHost {
     };
   }): Promise<string | undefined>;
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
-  exportFile: FlipperLib['exportFile'];
   exportFileBinary: FlipperLib['exportFileBinary'];
   hasFocus(): boolean;
   onIpcEvent<Event extends keyof MainProcessEvents>(

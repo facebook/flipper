@@ -36,13 +36,6 @@ export function initializeRenderHost(
   flipperServerConfig: FlipperServerConfig,
 ) {
   FlipperRenderHostInstance = {
-    async exportFile(data: string, {defaultPath}: {defaultPath?: string}) {
-      const file = new File([data], defaultPath ?? 'unknown', {
-        type: 'text/plain;charset=utf-8',
-      });
-      FileSaver.saveAs(file);
-      return defaultPath;
-    },
     async exportFileBinary(
       data: Uint8Array,
       {defaultPath}: {defaultPath?: string},
