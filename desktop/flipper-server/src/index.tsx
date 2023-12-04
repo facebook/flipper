@@ -8,7 +8,6 @@
  */
 
 import './fb-stubs';
-import './electronRequire';
 import process from 'process';
 import chalk from 'chalk';
 import path from 'path';
@@ -153,7 +152,7 @@ async function start() {
           `Keytar binary does not exist for platform ${process.platform}-${process.arch}`,
         );
       }
-      keytar = electronRequire(keytarPath);
+      keytar = require(keytarPath);
     }
   } catch (e) {
     console.error('[flipper-server] Failed to load keytar:', e);

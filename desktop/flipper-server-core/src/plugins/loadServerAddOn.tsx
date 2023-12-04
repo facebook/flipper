@@ -35,6 +35,6 @@ export const loadServerAddOn = (
     `loadPlugin -> server add-on path is empty plugin ${pluginName}.`,
   );
 
-  const serverAddOnModule = electronRequire(details.path);
+  const serverAddOnModule = require(details.path);
   return serverAddOnModule;
 };

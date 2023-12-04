@@ -60,11 +60,10 @@ export async function attachDevServer(
   socket: WebSocketServer,
   rootDir: string,
 ) {
-  // prevent bundling!
-  const Metro = electronRequire('metro');
-  const MetroResolver = electronRequire('metro-resolver');
-  const {getWatchFolders, startWatchPlugins} =
-    electronRequire('flipper-pkg-lib');
+  const Metro = require('metro');
+  // eslint-disable-next-line node/no-extraneous-require
+  const MetroResolver = require('metro-resolver');
+  const {getWatchFolders, startWatchPlugins} = require('flipper-pkg-lib');
 
   const babelTransformationsDir = path.resolve(
     rootDir,
@@ -72,13 +71,8 @@ export async function attachDevServer(
     'lib', // Note: required pre-compiled!
   );
 
-  const electronRequires = path.join(
-    babelTransformationsDir,
-    'electron-requires.js',
-  );
-  const stubModules = new Set<string>(
-    electronRequire(electronRequires).BUILTINS,
-  );
+  const requires = path.join(babelTransformationsDir, 'electron-requires.js');
+  const stubModules = new Set<string>(require(requires).BUILTINS);
   if (!stubModules.size) {
     throw new Error('Failed to load list of Node builtins');
   }
