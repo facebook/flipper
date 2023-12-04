@@ -27,54 +27,72 @@ function CodeBlock({children}: {children: string}) {
 function Noop() {
   return <span>Unimplemented</span>;
 }
+const CommonOpenSSLInstalled = (
+  props: PropsFor<'common.openssl--installed'>,
+) => (
+  <div>
+    <Typography.Paragraph>
+      <a href="https://wiki.openssl.org/index.php/Binaries" target="_blank">
+        OpenSSL
+      </a>{' '}
+      is installed and added to PATH.
+    </Typography.Paragraph>
+    <CodeBlock>{props.output}</CodeBlock>
+  </div>
+);
+
+const CommonOpenSSLNotInstalled = (
+  props: PropsFor<'common.openssl--not_installed'>,
+) => (
+  <div>
+    <Typography.Paragraph>
+      <a href="https://wiki.openssl.org/index.php/Binaries" target="_blank">
+        OpenSSL
+      </a>{' '}
+      is not installed or not added to PATH.
+    </Typography.Paragraph>
+    <CodeBlock>{props.output}</CodeBlock>
+  </div>
+);
+
+const CommonWatchmanInstalled = (
+  _props: PropsFor<'common.watchman--installed'>,
+) => (
+  <Typography.Paragraph>
+    <a href="https://facebook.github.io/watchman/" target="_blank">
+      Watchman
+    </a>{' '}
+    file watching service is installed and added to PATH. Live reloading after
+    changes during Flipper plugin development is enabled.
+  </Typography.Paragraph>
+);
+
+const CommonWatchmanNotInstalled = (
+  _props: PropsFor<'common.watchman--not_installed'>,
+) => (
+  <Typography.Paragraph>
+    <a href="https://facebook.github.io/watchman/" target="_blank">
+      Watchman
+    </a>{' '}
+    file watching service is not installed or not added to PATH. Live reloading
+    after changes during Flipper plugin development is disabled.
+  </Typography.Paragraph>
+);
+
+type PropsFor<T extends keyof FlipperDoctor.HealthcheckResultMessageMapping> =
+  FlipperDoctor.HealthcheckResultMessageMapping[T] extends []
+    ? {}
+    : FlipperDoctor.HealthcheckResultMessageMapping[T][0];
 const messageToComp: {
   [K in keyof FlipperDoctor.HealthcheckResultMessageMapping]: React.FC<
-    FlipperDoctor.HealthcheckResultMessageMapping[K] extends []
-      ? {}
-      : FlipperDoctor.HealthcheckResultMessageMapping[K][0]
+    PropsFor<K>
   >;
 } = {
-  'common.openssl--installed': ({output}) => (
-    <div>
-      <Typography.Paragraph>
-        <a href="https://wiki.openssl.org/index.php/Binaries" target="_blank">
-          OpenSSL
-        </a>{' '}
-        is installed and added to PATH.
-      </Typography.Paragraph>
-      <CodeBlock>{output}</CodeBlock>
-    </div>
-  ),
-  'common.openssl--not_installed': ({output}) => (
-    <div>
-      <Typography.Paragraph>
-        <a href="https://wiki.openssl.org/index.php/Binaries" target="_blank">
-          OpenSSL
-        </a>{' '}
-        is not installed or not added to PATH.
-      </Typography.Paragraph>
-      <CodeBlock>{output}</CodeBlock>
-    </div>
-  ),
+  'common.openssl--installed': CommonOpenSSLInstalled,
+  'common.openssl--not_installed': CommonOpenSSLNotInstalled,
 
-  'common.watchman--installed': () => (
-    <Typography.Paragraph>
-      <a href="https://facebook.github.io/watchman/" target="_blank">
-        Watchman
-      </a>{' '}
-      file watching service is installed and added to PATH. Live reloading after
-      changes during Flipper plugin development is enabled.
-    </Typography.Paragraph>
-  ),
-  'common.watchman--not_installed': () => (
-    <Typography.Paragraph>
-      <a href="https://facebook.github.io/watchman/" target="_blank">
-        Watchman
-      </a>{' '}
-      file watching service is not installed or not added to PATH. Live
-      reloading after changes during Flipper plugin development is disabled.
-    </Typography.Paragraph>
-  ),
+  'common.watchman--installed': CommonWatchmanInstalled,
+  'common.watchman--not_installed': CommonWatchmanNotInstalled,
 
   'android.android-studio--installed': Noop,
   'android.android-studio--not_installed': Noop,
