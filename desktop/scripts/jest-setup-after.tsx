@@ -206,7 +206,6 @@ function createStubRenderHost(): RenderHost {
   };
 
   return {
-    writeTextToClipboard() {},
     async importFile() {
       return undefined;
     },

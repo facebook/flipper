@@ -9,7 +9,6 @@
 
 import {CopyOutlined} from '@ant-design/icons';
 import {Typography} from 'antd';
-import {getRenderHostInstance} from '../../RenderHost';
 import {theme} from 'flipper-plugin';
 import * as React from 'react';
 
@@ -40,7 +39,7 @@ export const NotificationBody: React.FC<NotificationbodyProps> = ({text}) => {
         },
       }}
       copyable={{
-        onCopy: () => getRenderHostInstance().writeTextToClipboard(text),
+        onCopy: () => navigator.clipboard.writeText(text),
         icon: <CopyOutlined style={{color: theme.textColorSecondary}} />,
       }}>
       {text}

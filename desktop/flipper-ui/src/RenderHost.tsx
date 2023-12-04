@@ -95,7 +95,6 @@ type ChildProcessEvents = {
  * Utilities provided by the render host, e.g. Electron, the Browser, etc
  */
 export interface RenderHost {
-  writeTextToClipboard(text: string): void;
   /**
    * @deprecated
    * WARNING!

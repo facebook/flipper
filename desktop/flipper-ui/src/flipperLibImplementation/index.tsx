@@ -39,7 +39,7 @@ export function baseFlipperLibImplementation(
     isFB: !constants.IS_PUBLIC_BUILD,
     logger,
     GK: renderHost.GK,
-    writeTextToClipboard: renderHost.writeTextToClipboard,
+    writeTextToClipboard: (text) => navigator.clipboard.writeText(text),
     openLink: renderHost.openLink,
     importFile: renderHost.importFile,
     exportFile: renderHost.exportFile,

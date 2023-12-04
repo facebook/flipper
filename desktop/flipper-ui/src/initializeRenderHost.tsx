@@ -46,9 +46,6 @@ export function initializeRenderHost(
   flipperServerConfig: FlipperServerConfig,
 ) {
   FlipperRenderHostInstance = {
-    writeTextToClipboard(text: string) {
-      return navigator.clipboard.writeText(text);
-    },
     async importFile(options?: {
       defaultPath?: string;
       extensions?: string[];
