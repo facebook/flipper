@@ -26,7 +26,10 @@ const HEALTHCHECKS: FlipperDoctor.Healthchecks = {
         key: 'ios.sdk',
         label: 'SDK Installed',
         run: async (_env: FlipperDoctor.EnvironmentInfo) => {
-          return {hasProblem: false, message: ''};
+          return {
+            hasProblem: false,
+            message: ['ios.sdk--installed', {platforms: ['ios']}],
+          };
         },
       },
     ],
@@ -40,7 +43,10 @@ const HEALTHCHECKS: FlipperDoctor.Healthchecks = {
         key: 'android.sdk',
         label: 'SDK Installed',
         run: async (_env: FlipperDoctor.EnvironmentInfo) => {
-          return {hasProblem: true, message: 'Error'};
+          return {
+            hasProblem: true,
+            message: ['android.sdk--no_ANDROID_HOME'],
+          };
         },
       },
     ],
@@ -54,7 +60,10 @@ const HEALTHCHECKS: FlipperDoctor.Healthchecks = {
         key: 'common.openssl',
         label: 'OpenSSL Istalled',
         run: async (_env: FlipperDoctor.EnvironmentInfo) => {
-          return {hasProblem: false, message: ''};
+          return {
+            hasProblem: false,
+            message: ['common.openssl--installed', {output: 'not found'}],
+          };
         },
       },
     ],
@@ -71,7 +80,7 @@ test('updateHealthcheckResult', () => {
   res = reducer(
     res,
     updateHealthcheckResult('android', 'android.sdk', {
-      message: 'Updated Test Message',
+      message: ['android.sdk--installed', {output: 'some error message'}],
       isAcknowledged: false,
       status: 'SUCCESS',
     }),
@@ -84,7 +93,7 @@ test('finish', () => {
   res = reducer(
     res,
     updateHealthcheckResult('ios', 'ios.sdk', {
-      message: 'Updated Test Message',
+      message: ['ios.sdk--installed', {platforms: ['ios']}],
       isAcknowledged: false,
       status: 'SUCCESS',
     }),
@@ -92,7 +101,7 @@ test('finish', () => {
   res = reducer(
     res,
     updateHealthcheckResult('android', 'android.sdk', {
-      message: 'Updated Test Message',
+      message: ['android.sdk--installed', {output: 'success'}],
       isAcknowledged: false,
       status: 'SUCCESS',
     }),
@@ -100,7 +109,7 @@ test('finish', () => {
   res = reducer(
     res,
     updateHealthcheckResult('common', 'common.openssl', {
-      message: 'Updated Test Message',
+      message: ['common.openssl--installed', {output: 'not found'}],
       isAcknowledged: false,
       status: 'SUCCESS',
     }),
@@ -114,7 +123,7 @@ test('statuses updated after healthchecks finished', () => {
   res = reducer(
     res,
     updateHealthcheckResult('android', 'android.sdk', {
-      message: 'Updated Test Message',
+      message: ['android.sdk--not_installed', {output: 'some error message'}],
       isAcknowledged: false,
       status: 'FAILED',
     }),
@@ -122,7 +131,7 @@ test('statuses updated after healthchecks finished', () => {
   res = reducer(
     res,
     updateHealthcheckResult('ios', 'ios.sdk', {
-      message: 'Updated Test Message',
+      message: ['ios.sdk--installed', {platforms: ['ios']}],
       isAcknowledged: false,
       status: 'SUCCESS',
     }),
@@ -130,7 +139,7 @@ test('statuses updated after healthchecks finished', () => {
   res = reducer(
     res,
     updateHealthcheckResult('common', 'common.openssl', {
-      message: 'Updated Test Message',
+      message: ['common.openssl--installed', {output: 'found'}],
       isAcknowledged: false,
       status: 'SUCCESS',
     }),

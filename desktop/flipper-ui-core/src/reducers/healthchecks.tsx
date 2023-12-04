@@ -112,11 +112,11 @@ const start = produce(
                 key: categoryKey,
                 result: {
                   status: 'SKIPPED',
-                  message: category.skipReason,
+                  message: ['skipped', {reason: category.skipReason}],
                 },
                 label: category.label,
                 checks: createDict<FlipperDoctor.HealthcheckReportItem>([]),
-              },
+              } satisfies FlipperDoctor.HealthcheckReportCategory,
             ];
           }
           return [

@@ -13,12 +13,12 @@ import {
   Typography,
   Collapse,
   Button,
-  List,
   Modal,
   Checkbox,
   Alert,
   Space,
 } from 'antd';
+import {css} from '@emotion/css';
 import {
   CheckCircleFilled,
   CloseCircleFilled,
@@ -36,11 +36,12 @@ import {
   resetAcknowledgedProblems,
 } from '../reducers/healthchecks';
 import runHealthchecks from '../utils/runHealthchecks';
+import {DoctorMessage} from './doctor';
 import type {FlipperDoctor} from 'flipper-common';
 type Healthchecks = FlipperDoctor.Healthchecks;
 import {reportUsage} from 'flipper-common';
 
-const {Title, Paragraph, Text} = Typography;
+const {Title, Text} = Typography;
 
 const statusTypeAndMessage: {
   [key in FlipperDoctor.HealthcheckStatus]: {
@@ -123,6 +124,24 @@ function CheckIcon(props: {status: FlipperDoctor.HealthcheckStatus}) {
   }
 }
 
+// decrease size and padding of elements in messages
+const panelClassname = css`
+  & .ant-collapse-content-box {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 0.9em;
+  }
+
+  & div.ant-typography {
+    margin-bottom: 0.5em;
+  }
+
+  & .ant-typography pre {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+`;
+
 function CollapsableCategory(props: {
   checks: Array<FlipperDoctor.HealthcheckReportItem>;
 }) {
@@ -131,32 +150,15 @@ function CollapsableCategory(props: {
       {props.checks.map((check) => (
         <Collapse.Panel
           key={check.key}
+          className={panelClassname}
           header={check.label}
           extra={<CheckIcon status={check.result.status} />}>
-          {check.result.message?.split('\n').map((line, index) => (
-            <Paragraph key={index} style={{marginBottom: 0}}>
-              {line}
-            </Paragraph>
-          ))}
-          {check.result.commands && (
-            <List>
-              {check.result.commands.map(({title, command}, i) => (
-                <List.Item key={i}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      marginBottom: 8,
-                    }}>
-                    <Typography.Text type="secondary">{title}</Typography.Text>
-                    <Typography.Text code copyable>
-                      {command}
-                    </Typography.Text>
-                  </div>
-                </List.Item>
-              ))}
-            </List>
-          )}
+          {check.result.message != null ? (
+            <DoctorMessage
+              id={check.result.message[0]}
+              props={check.result.message[1]}
+            />
+          ) : null}
         </Collapse.Panel>
       ))}
     </Collapse>

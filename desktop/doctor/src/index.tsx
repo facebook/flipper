@@ -8,6 +8,7 @@
  */
 
 import {exec} from 'child_process';
+import os from 'os';
 import {promisify} from 'util';
 import {getEnvInfo} from './environmentInfo';
 export {getEnvInfo} from './environmentInfo';
@@ -17,12 +18,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type {FlipperDoctor} from 'flipper-common';
 import * as fs_extra from 'fs-extra';
-import {
-  getIdbInstallationInstructions,
-  installXcode,
-  installSDK,
-  installAndroidStudio,
-} from './fb-stubs/messages';
 import {validateSelectedXcodeVersion} from './fb-stubs/validateSelectedXcodeVersion';
 
 export function getHealthchecks(): FlipperDoctor.Healthchecks {
@@ -37,13 +32,11 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
           label: 'OpenSSL Installed',
           run: async (_: FlipperDoctor.EnvironmentInfo) => {
             const result = await tryExecuteCommand('openssl version');
-            const hasProblem = result.hasProblem;
-            const message = hasProblem
-              ? `OpenSSL (https://wiki.openssl.org/index.php/Binaries) is not installed or not added to PATH. ${result.message}.`
-              : `OpenSSL (https://wiki.openssl.org/index.php/Binaries) is installed and added to PATH. ${result.message}.`;
             return {
-              hasProblem,
-              message,
+              hasProblem: result.fail,
+              message: result.fail
+                ? ['common.openssl--not_installed', {output: result.message}]
+                : ['common.openssl--installed', {output: result.message}],
             };
           },
         },
@@ -55,8 +48,8 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             return {
               hasProblem: !isAvailable,
               message: isAvailable
-                ? 'Watchman file watching service (https://facebook.github.io/watchman/) is installed and added to PATH. Live reloading after changes during Flipper plugin development is enabled.'
-                : 'Watchman file watching service (https://facebook.github.io/watchman/) is not installed or not added to PATH. Live reloading after changes during Flipper plugin development is disabled.',
+                ? ['common.watchman--installed']
+                : ['common.watchman--not_installed'],
             };
           },
         },
@@ -73,18 +66,21 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 key: 'android.android-studio',
                 label: 'Android Studio Installed',
                 isRequired: false,
-                run: async (_: FlipperDoctor.EnvironmentInfo) => {
+                run: async (
+                  _: FlipperDoctor.EnvironmentInfo,
+                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
                   const hasProblem = !fs.existsSync(
                     '/Applications/Android Studio.app',
                   );
 
-                  const message = hasProblem
-                    ? installAndroidStudio
-                    : `Android Studio is installed.`;
-
                   return {
                     hasProblem,
-                    message,
+                    message: hasProblem
+                      ? [
+                          'android.android-studio--not_installed',
+                          {platform: os.arch()},
+                        ]
+                      : ['android.android-studio--installed'],
                   };
                 },
               },
@@ -94,66 +90,52 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
           key: 'android.sdk',
           label: 'SDK Installed',
           isRequired: true,
-          run: async (_: FlipperDoctor.EnvironmentInfo) => {
+          run: async (
+            _: FlipperDoctor.EnvironmentInfo,
+          ): Promise<FlipperDoctor.HealthcheckRunResult> => {
             const androidHome = process.env.ANDROID_HOME;
-            const androidSdkRoot = process.env.ANDROID_SDK_ROOT;
 
-            let androidHomeResult: FlipperDoctor.HealthcheckRunResult;
             if (!androidHome) {
-              androidHomeResult = {
+              return {
                 hasProblem: true,
-                message: `ANDROID_HOME is not defined. You can use Flipper Settings (More > Settings) to point to its location.`,
+                message: ['android.sdk--no_ANDROID_HOME'],
               };
             } else if (!fs.existsSync(androidHome)) {
-              androidHomeResult = {
+              return {
                 hasProblem: true,
-                message: `ANDROID_HOME point to a folder which does not exist: ${androidHome}. You can use Flipper Settings (More > Settings) to point to a different location.`,
+                message: ['android.sdk--invalid_ANDROID_HOME', {androidHome}],
               };
             } else {
               const platformToolsDir = path.join(androidHome, 'platform-tools');
               if (!fs.existsSync(platformToolsDir)) {
-                androidHomeResult = {
+                return {
                   hasProblem: true,
-                  message: `Android SDK Platform Tools not found at the expected location "${platformToolsDir}". Probably they are not installed.`,
+                  message: ['android.sdk--no_android_sdk', {platformToolsDir}],
                 };
               } else {
-                androidHomeResult = await tryExecuteCommand(
+                const versionResult = await tryExecuteCommand(
                   `"${path.join(platformToolsDir, 'adb')}" version`,
                 );
-              }
-            }
-            if (androidHomeResult.hasProblem == false) {
-              return androidHomeResult;
-            }
 
-            let androidSdkRootResult: FlipperDoctor.HealthcheckRunResult;
-            if (!androidSdkRoot) {
-              androidSdkRootResult = {
-                hasProblem: true,
-                message: `ANDROID_SDK_ROOT is not defined. You can use Flipper Settings (More > Settings) to point to its location.`,
-              };
-            } else if (!fs.existsSync(androidSdkRoot)) {
-              androidSdkRootResult = {
-                hasProblem: true,
-                message: `ANDROID_SDK_ROOT point to a folder which does not exist: ${androidSdkRoot}. You can use Flipper Settings (More > Settings) to point to a different location.`,
-              };
-            } else {
-              const platformToolsDir = path.join(
-                androidSdkRoot,
-                'platform-tools',
-              );
-              if (!fs.existsSync(platformToolsDir)) {
-                androidSdkRootResult = {
-                  hasProblem: true,
-                  message: `Android SDK Platform Tools not found at the expected location "${platformToolsDir}". Probably they are not installed.`,
-                };
-              } else {
-                androidSdkRootResult = await tryExecuteCommand(
-                  `"${path.join(platformToolsDir, 'adb')}" version`,
-                );
+                if (versionResult.fail === false) {
+                  return {
+                    hasProblem: false,
+                    message: [
+                      'android.sdk--installed',
+                      {output: versionResult.stdout},
+                    ],
+                  };
+                } else {
+                  return {
+                    hasProblem: true,
+                    message: [
+                      'android.sdk--not_installed',
+                      {output: versionResult.message},
+                    ],
+                  };
+                }
               }
             }
-            return androidSdkRootResult;
           },
         },
       ],
@@ -169,14 +151,21 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 key: 'ios.xcode',
                 label: 'XCode Installed',
                 isRequired: true,
-                run: async (e: FlipperDoctor.EnvironmentInfo) => {
+                run: async (
+                  e: FlipperDoctor.EnvironmentInfo,
+                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
                   const hasProblem = e.IDEs == null || e.IDEs.Xcode == null;
-                  const message = hasProblem
-                    ? `Xcode is not installed.\n${installXcode}.`
-                    : `Xcode version ${e.IDEs.Xcode.version} is installed at "${e.IDEs.Xcode.path}".`;
                   return {
                     hasProblem,
-                    message,
+                    message: hasProblem
+                      ? ['ios.xcode--not_installed']
+                      : [
+                          `ios.xcode--installed`,
+                          {
+                            version: e.IDEs.Xcode.version,
+                            path: e.IDEs.Xcode.path,
+                          },
+                        ],
                   };
                 },
               },
@@ -184,34 +173,34 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 key: 'ios.xcode-select',
                 label: 'xcode-select set',
                 isRequired: true,
-                run: async (_: FlipperDoctor.EnvironmentInfo) => {
+                run: async (
+                  _: FlipperDoctor.EnvironmentInfo,
+                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
+                  // TODO check for an existing Xcode
                   const result = await tryExecuteCommand('xcode-select -p');
-                  const selectXcodeCommands = [
-                    {
-                      title: 'Select Xcode version',
-                      command: `sudo xcode-select -switch <path/to/>Xcode.app`,
-                    },
-                  ];
-                  if (result.hasProblem) {
+                  if (result.fail) {
                     return {
                       hasProblem: true,
-                      message: `Xcode version is not selected. ${result.message}.`,
-                      commands: selectXcodeCommands,
+                      message: [
+                        'ios.xcode-select--not_set',
+                        {message: result.message},
+                      ],
                     };
                   }
                   const selectedXcode = result.stdout.toString().trim();
                   if (selectedXcode == '/Library/Developer/CommandLineTools') {
                     return {
                       hasProblem: true,
-                      message: `xcode-select has no Xcode selected.`,
-                      commands: selectXcodeCommands,
+                      message: ['ios.xcode-select--no_xcode_selected'],
                     };
                   }
                   if ((await fs_extra.pathExists(selectedXcode)) == false) {
                     return {
                       hasProblem: true,
-                      message: `xcode-select has path of ${selectedXcode}, however this path does not exist on disk.`,
-                      commands: selectXcodeCommands,
+                      message: [
+                        'ios.xcode-select--nonexisting_selected',
+                        {selected: selectedXcode},
+                      ],
                     };
                   }
                   const validatedXcodeVersion =
@@ -221,7 +210,10 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   }
                   return {
                     hasProblem: false,
-                    message: `xcode-select has path of ${selectedXcode}.`,
+                    message: [
+                      'ios.xcode-select--set',
+                      {selected: selectedXcode},
+                    ],
                   };
                 },
               },
@@ -229,19 +221,21 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 key: 'ios.sdk',
                 label: 'SDK Installed',
                 isRequired: true,
-                run: async (e: FlipperDoctor.EnvironmentInfo) => {
+                run: async (
+                  e: FlipperDoctor.EnvironmentInfo,
+                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
                   const hasProblem =
                     !e.SDKs['iOS SDK'] ||
                     !e.SDKs['iOS SDK'].Platforms ||
                     !e.SDKs['iOS SDK'].Platforms.length;
-                  const message = hasProblem
-                    ? `iOS SDK is not installed. ${installSDK}`
-                    : `iOS SDK is installed for the following platforms: ${JSON.stringify(
-                        e.SDKs['iOS SDK'].Platforms,
-                      )}.`;
                   return {
                     hasProblem,
-                    message,
+                    message: hasProblem
+                      ? ['ios.sdk--not_installed']
+                      : [
+                          'ios.sdk--installed',
+                          {platforms: e.SDKs['iOS SDK'].Platforms},
+                        ],
                   };
                 },
               },
@@ -249,17 +243,27 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 key: 'ios.xctrace',
                 label: 'xctrace exists',
                 isRequired: true,
-                run: async (_: FlipperDoctor.EnvironmentInfo) => {
+                run: async (
+                  _: FlipperDoctor.EnvironmentInfo,
+                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
                   const result = await tryExecuteCommand(
                     'xcrun xctrace version',
                   );
-                  const hasProblem = result.hasProblem;
-                  const message = hasProblem
-                    ? `xctrace is not available. Please ensure you have Xcode installed and are running a recent version (https://developer.apple.com/xcode/). ${result.message}.`
-                    : `xctrace is available. ${result.message}.`;
+                  if (result.fail) {
+                    return {
+                      hasProblem: true,
+                      message: [
+                        'ios.xctrace--not_installed',
+                        {message: result.message.trim()},
+                      ],
+                    };
+                  }
                   return {
-                    hasProblem,
-                    message,
+                    hasProblem: false,
+                    message: [
+                      'ios.xctrace--installed',
+                      {output: result.stdout.trim()},
+                    ],
                   };
                 },
               },
@@ -270,35 +274,35 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 run: async (
                   _: FlipperDoctor.EnvironmentInfo,
                   settings?: {enablePhysicalIOS: boolean; idbPath: string},
-                ) => {
+                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
                   if (!settings) {
                     return {
                       hasProblem: false,
-                      message:
-                        'Not enough context to check IDB installation. Needs to be run through Flipper UI.',
+                      message: ['ios.idb--no_context'],
                     };
                   }
                   if (!settings.enablePhysicalIOS) {
                     return {
                       hasProblem: false,
-                      message:
-                        'Using physical iOS devices is disabled in settings. So IDB is not required.',
+                      message: ['ios.idb--physical_device_disabled'],
                     };
                   }
                   const result = await tryExecuteCommand(
                     `${settings?.idbPath} --help`,
                   );
-                  if (result.hasProblem) {
+                  if (result.fail) {
                     return {
                       hasProblem: true,
-                      ...getIdbInstallationInstructions(settings.idbPath),
+                      message: [
+                        'ios.idb--not_installed',
+                        {idbPath: settings.idbPath},
+                      ],
                     };
                   }
 
                   return {
                     hasProblem: false,
-                    message:
-                      'Flipper is configured to use your IDB installation.',
+                    message: ['ios.idb--installed'],
                   };
                 },
               },
@@ -346,6 +350,7 @@ export async function runHealthchecks(): Promise<
           ),
         },
       ];
+
       return categoryResult;
     }),
   );
@@ -354,18 +359,22 @@ export async function runHealthchecks(): Promise<
 
 async function tryExecuteCommand(
   command: string,
-): Promise<FlipperDoctor.SubprocessHealtcheckRunResult> {
+): Promise<
+  | {fail: false; message: string; stdout: string}
+  | {fail: true; message: string; error: any}
+> {
   try {
     const output = await promisify(exec)(command);
     return {
-      hasProblem: false,
+      fail: false,
       message: `Command "${command}" successfully executed with output: ${output.stdout}`,
       stdout: output.stdout,
     };
   } catch (err) {
     return {
-      hasProblem: true,
+      fail: true,
       message: `Command "${command}" failed to execute with output: ${err.message}`,
+      error: err,
     };
   }
 }
