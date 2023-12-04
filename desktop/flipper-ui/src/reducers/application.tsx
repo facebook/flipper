@@ -7,7 +7,6 @@
  * @format
  */
 
-import {getRenderHostInstance} from '../RenderHost';
 import {Actions} from './';
 
 export type LauncherMsg = {
@@ -90,7 +89,7 @@ export const initialState: () => State = () => ({
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
-  windowIsFocused: getRenderHostInstance().hasFocus(),
+  windowIsFocused: document.hasFocus(),
   activeSheet: null,
   share: null,
   launcherMsg: {

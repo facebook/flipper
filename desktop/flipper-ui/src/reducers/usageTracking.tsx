@@ -10,7 +10,6 @@
 import {produce} from 'immer';
 import {Actions} from './';
 import {SelectionInfo} from '../utils/info';
-import {getRenderHostInstance} from '../RenderHost';
 
 export type TrackingEvent =
   | {
@@ -34,7 +33,7 @@ const INITAL_STATE: () => State = () => ({
     {
       type: 'TIMELINE_START',
       time: Date.now(),
-      isFocused: getRenderHostInstance().hasFocus(),
+      isFocused: document.hasFocus(),
     },
   ],
 });
@@ -92,7 +91,7 @@ export function clearTimeline(time: number): Action {
     type: 'CLEAR_TIMELINE',
     payload: {
       time,
-      isFocused: getRenderHostInstance().hasFocus(),
+      isFocused: document.hasFocus(),
     },
   };
 }

@@ -206,9 +206,6 @@ function createStubRenderHost(): RenderHost {
   };
 
   return {
-    hasFocus() {
-      return true;
-    },
     onIpcEvent() {},
     sendIpcEvent() {},
     shouldUseDarkColors() {

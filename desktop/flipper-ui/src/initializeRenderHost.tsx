@@ -35,9 +35,6 @@ export function initializeRenderHost(
   flipperServerConfig: FlipperServerConfig,
 ) {
   FlipperRenderHostInstance = {
-    hasFocus() {
-      return document.hasFocus();
-    },
     onIpcEvent(event, cb) {
       window.addEventListener(event as string, (ev) => {
         cb(...((ev as CustomEvent).detail as any));

@@ -122,7 +122,6 @@ export interface RenderHost {
     };
   }): Promise<string | undefined>;
   showSelectDirectoryDialog?(defaultPath?: string): Promise<string | undefined>;
-  hasFocus(): boolean;
   onIpcEvent<Event extends keyof MainProcessEvents>(
     event: Event,
     callback: (...arg: MainProcessEvents[Event]) => void,
