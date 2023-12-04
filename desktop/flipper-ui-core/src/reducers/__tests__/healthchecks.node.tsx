@@ -65,7 +65,7 @@ const HEALTHCHECKS: FlipperDoctor.Healthchecks = {
           return {
             hasProblem: false,
             message: '',
-            message2: ['common.openssl--installed'],
+            message2: ['common.openssl--installed', {output: 'not found'}],
           };
         },
       },

@@ -150,8 +150,8 @@ export namespace FlipperDoctor {
    * value - params of message function
    */
   export type HealthcheckResultMessageMapping = {
-    'common.openssl--installed': [];
-    'common.openssl--not_installed': [];
+    'common.openssl--installed': [{output: string}];
+    'common.openssl--not_installed': [{output: string}];
 
     'common.watchman--installed': [];
     'common.watchman--not_installed': [];

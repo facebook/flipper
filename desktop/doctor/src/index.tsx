@@ -38,15 +38,12 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
           run: async (_: FlipperDoctor.EnvironmentInfo) => {
             const result = await tryExecuteCommand('openssl version');
             const hasProblem = result.hasProblem;
-            const message = hasProblem
-              ? `OpenSSL (https://wiki.openssl.org/index.php/Binaries) is not installed or not added to PATH. ${result.message}.`
-              : `OpenSSL (https://wiki.openssl.org/index.php/Binaries) is installed and added to PATH. ${result.message}.`;
             return {
               hasProblem,
-              message,
+              message: 'moved to message2',
               message2: hasProblem
-                ? ['common.openssl--not_installed']
-                : ['common.openssl--installed'],
+                ? ['common.openssl--not_installed', {output: result.message}]
+                : ['common.openssl--installed', {output: result.message}],
             };
           },
         },
@@ -57,9 +54,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             const isAvailable = await isWatchmanAvailable();
             return {
               hasProblem: !isAvailable,
-              message: isAvailable
-                ? 'Watchman file watching service (https://facebook.github.io/watchman/) is installed and added to PATH. Live reloading after changes during Flipper plugin development is enabled.'
-                : 'Watchman file watching service (https://facebook.github.io/watchman/) is not installed or not added to PATH. Live reloading after changes during Flipper plugin development is disabled.',
+              message: 'moved to message2',
               message2: isAvailable
                 ? ['common.watchman--installed']
                 : ['common.watchman--not_installed'],

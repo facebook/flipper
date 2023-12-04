@@ -8,9 +8,22 @@
  */
 
 import {FlipperDoctor} from 'flipper-common';
+import {theme} from 'flipper-plugin';
 import React from 'react';
 import {Typography} from 'antd';
 
+function CodeBlock({children}: {children: string}) {
+  return (
+    <pre
+      style={{
+        whiteSpace: 'pre-wrap',
+        padding: '2px 4px',
+        background: theme.backgroundWash,
+      }}>
+      {children}
+    </pre>
+  );
+}
 function Noop() {
   return <span>Unimplemented</span>;
 }
@@ -21,8 +34,28 @@ const messageToComp: {
       : FlipperDoctor.HealthcheckResultMessageMapping[K][0]
   >;
 } = {
-  'common.openssl--installed': Noop,
-  'common.openssl--not_installed': Noop,
+  'common.openssl--installed': ({output}) => (
+    <div>
+      <Typography.Paragraph>
+        <a href="https://wiki.openssl.org/index.php/Binaries" target="_blank">
+          OpenSSL
+        </a>{' '}
+        is installed and added to PATH.
+      </Typography.Paragraph>
+      <CodeBlock>{output}</CodeBlock>
+    </div>
+  ),
+  'common.openssl--not_installed': ({output}) => (
+    <div>
+      <Typography.Paragraph>
+        <a href="https://wiki.openssl.org/index.php/Binaries" target="_blank">
+          OpenSSL
+        </a>{' '}
+        is not installed or not added to PATH.
+      </Typography.Paragraph>
+      <CodeBlock>{output}</CodeBlock>
+    </div>
+  ),
 
   'common.watchman--installed': () => (
     <Typography.Paragraph>
@@ -33,7 +66,15 @@ const messageToComp: {
       changes during Flipper plugin development is enabled.
     </Typography.Paragraph>
   ),
-  'common.watchman--not_installed': Noop,
+  'common.watchman--not_installed': () => (
+    <Typography.Paragraph>
+      <a href="https://facebook.github.io/watchman/" target="_blank">
+        Watchman
+      </a>{' '}
+      file watching service is not installed or not added to PATH. Live
+      reloading after changes during Flipper plugin development is disabled.
+    </Typography.Paragraph>
+  ),
 
   'android.android-studio--installed': Noop,
   'android.android-studio--not_installed': Noop,
