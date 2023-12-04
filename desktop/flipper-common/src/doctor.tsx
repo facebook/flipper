@@ -176,7 +176,10 @@ export namespace FlipperDoctor {
     'ios.xcode-select--noop': [];
     'ios.xcode-select--custom_path': [];
     'ios.xcode-select--old_version_selected': [
-      {selectedVersion: string; latestVersion: string | void},
+      {
+        selectedVersion: string;
+        latestXCode: string;
+      },
     ];
     'ios.xcode-select--nonexisting_selected': [{selected: string}];
 

@@ -165,12 +165,9 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   e: FlipperDoctor.EnvironmentInfo,
                 ): Promise<FlipperDoctor.HealthcheckRunResult> => {
                   const hasProblem = e.IDEs == null || e.IDEs.Xcode == null;
-                  const message = hasProblem
-                    ? `Xcode is not installed.`
-                    : `Xcode version ${e.IDEs.Xcode.version} is installed at "${e.IDEs.Xcode.path}".`;
                   return {
                     hasProblem,
-                    message,
+                    message: 'moved to message2',
                     message2: hasProblem
                       ? ['ios.xcode--not_installed']
                       : [
@@ -190,6 +187,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 run: async (
                   _: FlipperDoctor.EnvironmentInfo,
                 ): Promise<FlipperDoctor.HealthcheckRunResult> => {
+                  // TODO check for an existing Xcode
                   const result = await tryExecuteCommand('xcode-select -p');
                   const selectXcodeCommands = [
                     {
@@ -200,7 +198,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   if (result.hasProblem) {
                     return {
                       hasProblem: true,
-                      message: `Xcode version is not selected. ${result.message}.`,
+                      message: 'moved to message2',
                       commands: selectXcodeCommands,
                       message2: [
                         'ios.xcode-select--not_set',
@@ -212,16 +210,14 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   if (selectedXcode == '/Library/Developer/CommandLineTools') {
                     return {
                       hasProblem: true,
-                      message: `xcode-select has no Xcode selected.`,
-                      commands: selectXcodeCommands,
+                      message: 'moved to message2',
                       message2: ['ios.xcode-select--no_xcode_selected'],
                     };
                   }
                   if ((await fs_extra.pathExists(selectedXcode)) == false) {
                     return {
                       hasProblem: true,
-                      message: `xcode-select has path of ${selectedXcode}, however this path does not exist on disk.`,
-                      commands: selectXcodeCommands,
+                      message: 'moved to message2',
                       message2: [
                         'ios.xcode-select--nonexisting_selected',
                         {selected: selectedXcode},

@@ -10,14 +10,38 @@
 import {theme} from 'flipper-plugin';
 import {FlipperDoctor} from 'flipper-common';
 import React from 'react';
+import {Typography} from 'antd';
 
-export function CodeBlock({children}: {children: string}) {
+export function CliCommand({title, command}: {title: string; command: string}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        marginBottom: 8,
+      }}>
+      <Typography.Text type="secondary">{title}</Typography.Text>
+      <Typography.Text code copyable>
+        {command}
+      </Typography.Text>
+    </div>
+  );
+}
+
+export function CodeBlock({
+  children,
+  size = 'm',
+}: {
+  children: string;
+  size?: 's' | 'm';
+}) {
   return (
     <pre
       style={{
         whiteSpace: 'pre-wrap',
         padding: '2px 4px',
         background: theme.backgroundWash,
+        fontSize: size === 's' ? '0.8em' : size == 'm' ? '1em' : undefined,
       }}>
       {children}
     </pre>
