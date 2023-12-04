@@ -171,8 +171,6 @@
   "workspaces": {
     "packages": [
       "scripts",
-      "app",
-      "app/src/fb/*",
       "babel-transformer",
       "doctor",
       "pkg",
@@ -193,7 +191,8 @@
       "test-utils",
       "eslint-plugin-flipper",
       "types",
-      "examples/*"
+      "examples/*",
+      "deprecated-exports"
     ]
   },
   "dependencies": {

@@ -56,6 +56,9 @@
     },
     {
       "path": "../scripts"
+    },
+    {
+      "path": "../deprecated-exports"
     }
   ]
 }
