@@ -55,6 +55,12 @@ object UIDebuggerLithoSupport {
             FrameworkEventMetadata(
                 DebugEvent.RenderTreeMounted, "The mount phase for the entire render tree"),
             FrameworkEventMetadata(
+                "RenderCore.RenderTreeMount.Start",
+                "The process to mount an entire render tree has started"),
+            FrameworkEventMetadata(
+                "RenderCore.RenderTreeMount.End",
+                "The process to mount an entire render tree has ended"),
+            FrameworkEventMetadata(
                 DebugEvent.RenderUnitMounted,
                 "Component was added into the view hierarchy (this doesn't mean it is visible)"),
             FrameworkEventMetadata(
@@ -68,7 +74,7 @@ object UIDebuggerLithoSupport {
             FrameworkEventMetadata(
                 "RenderCore.IncrementalMount.Start", "Incremental mount process starts"),
             FrameworkEventMetadata(
-                "RenderCore.IncrementalMount.Start", "Incremental mount process ends."),
+                "RenderCore.IncrementalMount.End", "Incremental mount process ends."),
         )
 
     val eventForwarder =
@@ -99,6 +105,9 @@ object UIDebuggerLithoSupport {
             event.attributeOrNull<String>("visibleRect")?.let { attributes["visibleRect"] = it }
             event.attributeOrNull<String>("areBoundsVisible")?.let {
               attributes["areBoundsVisible"] = it
+            }
+            event.attributeOrNull<String?>("numMountableOutputs")?.let {
+              attributes["numMountableOutputs"] = it
             }
 
             context.addFrameworkEvent(
