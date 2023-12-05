@@ -8,7 +8,7 @@
  */
 
 import {getLogger} from 'flipper-common';
-import AbstractClient from '../../AbstractClient';
+import Client from '../../Client';
 import {
   TestUtils,
   _SandyPluginDefinition,
@@ -16,6 +16,7 @@ import {
 } from 'flipper-plugin';
 import {default as ArchivedDevice} from '../ArchivedDevice';
 import {TestDevice} from '../TestDevice';
+import {getFlipperServer} from '../../flipperServer';
 
 const createDeviceTestPluginModule = () => ({
   devicePlugin: jest.fn(),
@@ -129,7 +130,7 @@ const androidOnlyDevicePlugin = new _SandyPluginDefinition(
   createDeviceTestPluginModule(),
 );
 
-export class TestClient extends AbstractClient {
+export class TestClient extends Client {
   private pluginDefinitions: _SandyPluginDefinition[];
   constructor(device: TestDevice, pluginDefinitions: _SandyPluginDefinition[]) {
     super(
@@ -140,9 +141,10 @@ export class TestClient extends AbstractClient {
         sendExpectResponse: jest.fn(),
       },
       getLogger(),
+      {} as any,
       undefined,
       device,
-      {} as any,
+      getFlipperServer(),
     );
     this.pluginDefinitions = pluginDefinitions;
   }
@@ -154,6 +156,12 @@ export class TestClient extends AbstractClient {
   async getPlugin(pluginId: string) {
     return this.pluginDefinitions.find(({id}) => id === pluginId);
   }
+
+  isEnabledPlugin() {
+    return true;
+  }
+
+  async waitForPluginsInit() {}
 }
 
 test('ios physical device compatibility', () => {

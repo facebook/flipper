@@ -27,7 +27,7 @@ import {ClientQuery, DeviceOS} from 'flipper-common';
 import BaseDevice from '../../devices/BaseDevice';
 import {TestDevice} from '../../devices/TestDevice';
 import ArchivedDevice from '../../devices/ArchivedDevice';
-import {ClientConnection} from '../../AbstractClient';
+import {ClientConnection} from '../../Client';
 import {getFlipperServer} from '../../flipperServer';
 
 export interface AppOptions {
