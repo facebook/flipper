@@ -312,7 +312,6 @@ function SubSection({
 
 function NamedAttribute({
   nodeId,
-  key,
   name,
   value,
   metadataPath,
@@ -326,11 +325,11 @@ function NamedAttribute({
   metadataPath: MetadataId[];
   attributeMetadata: Metadata;
   metadataMap: MetadataMap;
-  key: string;
+
   onDisplayModal: (modaldata: ModalData) => void;
 }) {
   return (
-    <Layout.Horizontal key={key} gap="small">
+    <Layout.Horizontal key={name} gap="small">
       <Typography.Text
         style={{
           marginTop: 4, //to center with top input when multiline
