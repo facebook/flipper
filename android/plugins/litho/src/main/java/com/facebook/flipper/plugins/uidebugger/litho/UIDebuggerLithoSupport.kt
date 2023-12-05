@@ -64,6 +64,11 @@ object UIDebuggerLithoSupport {
                 DebugEvent.RenderUnitUnmounted, "Component was removed from the view hierarchy"),
             FrameworkEventMetadata(DebugEvent.RenderUnitOnVisible, "Component became visible"),
             FrameworkEventMetadata(DebugEvent.RenderUnitOnInvisible, "Component became invisible"),
+            // TODO: Replace once a new Litho-OSS is released.
+            FrameworkEventMetadata(
+                "RenderCore.IncrementalMount.Start", "Incremental mount process starts"),
+            FrameworkEventMetadata(
+                "RenderCore.IncrementalMount.Start", "Incremental mount process ends."),
         )
 
     val eventForwarder =
@@ -90,6 +95,12 @@ object UIDebuggerLithoSupport {
             if (source != null) {
               attributes["source"] = source
             }
+
+            event.attributeOrNull<String>("visibleRect")?.let { attributes["visibleRect"] = it }
+            event.attributeOrNull<String>("areBoundsVisible")?.let {
+              attributes["areBoundsVisible"] = it
+            }
+
             context.addFrameworkEvent(
                 FrameworkEvent(
                     treeId,
