@@ -13,12 +13,14 @@ import type {State as PluginsState} from '../reducers/plugins';
 import type Client from '../Client';
 import type {
   ActivatablePluginDetails,
+  ConcretePluginDetails,
   DownloadablePluginDetails,
   PluginDetails,
 } from 'flipper-common';
 import {getPluginKey} from './pluginKey';
 import BaseDevice from '../devices/BaseDevice';
-import {getLatestCompatibleVersionOfEachPlugin} from '../plugins';
+import isPluginVersionMoreRecent from './isPluginVersionMoreRecent';
+import isPluginCompatible from './isPluginCompatible';
 
 export type PluginLists = {
   devicePlugins: PluginDefinition[];
@@ -423,4 +425,19 @@ export function getPluginStatus(
     return ['marketplace_installable'];
   }
   return ['unknown'];
+}
+
+export function getLatestCompatibleVersionOfEachPlugin<
+  T extends ConcretePluginDetails,
+>(plugins: T[]): T[] {
+  const latestCompatibleVersions: Map<string, T> = new Map();
+  for (const plugin of plugins) {
+    if (isPluginCompatible(plugin)) {
+      const loadedVersion = latestCompatibleVersions.get(plugin.id);
+      if (!loadedVersion || isPluginVersionMoreRecent(plugin, loadedVersion)) {
+        latestCompatibleVersions.set(plugin.id, plugin);
+      }
+    }
+  }
+  return Array.from(latestCompatibleVersions.values());
 }
