@@ -36,6 +36,7 @@ export type ShareType = {
 
 export type State = {
   isTroubleshootingModalOpen: boolean;
+  isSettingsModalOpen: boolean;
   isNotificationModalOpen: boolean;
   leftSidebarVisible: boolean;
   rightSidebarVisible: boolean;
@@ -50,6 +51,7 @@ type BooleanActionType =
   | 'hasLeftSidebar'
   | 'leftSidebarVisible'
   | 'isNotificationModalOpen'
+  | 'isSettingsModalOpen'
   | 'rightSidebarVisible'
   | 'rightSidebarAvailable';
 
@@ -85,6 +87,7 @@ export const initialState: () => State = () => ({
   topLevelSelection: 'appinspect',
   hasLeftSidebar: true,
   isTroubleshootingModalOpen: false,
+  isSettingsModalOpen: false,
   isNotificationModalOpen: false,
   leftSidebarVisible: true,
   rightSidebarVisible: true,
@@ -118,6 +121,7 @@ export default function reducer(
   state = state || initialState();
   if (
     action.type === 'leftSidebarVisible' ||
+    action.type === 'isSettingsModalOpen' ||
     action.type === 'rightSidebarVisible' ||
     action.type === 'isNotificationModalOpen' ||
     action.type === 'rightSidebarAvailable'
@@ -185,6 +189,11 @@ export const toggleAction = (
 
 export const toggleConnectivityModal = (): Action => ({
   type: 'TOGGLE_CONNECTIVITY_MODAL',
+});
+
+export const toggleSettingsModal = (payload?: boolean): Action => ({
+  type: 'isSettingsModalOpen',
+  payload,
 });
 
 export const toggleLeftSidebarVisible = (payload?: boolean): Action => ({

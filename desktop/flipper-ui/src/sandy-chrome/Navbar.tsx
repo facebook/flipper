@@ -17,7 +17,7 @@ import {
   useValue,
   withTrackingScope,
 } from 'flipper-plugin';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
 import {currentUser, isConnected, logoutUser} from '../fb-stubs/user';
@@ -34,6 +34,7 @@ import {
   toggleConnectivityModal,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
+  toggleSettingsModal,
 } from '../reducers/application';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
@@ -619,10 +620,10 @@ function ExtrasMenu() {
     [store],
   );
 
-  const [showSettings, setShowSettings] = useState(false);
-  const onSettingsClose = useCallback(() => setShowSettings(false), []);
-
   const settings = useStore((state) => state.settingsState);
+  const isSettingModalOpen = useStore(
+    (state) => state.application.isSettingsModalOpen,
+  );
   const {showWelcomeAtStartup} = settings;
   const [welcomeVisible, setWelcomeVisible] = useState(showWelcomeAtStartup);
   const loggedIn = useValue(currentUser());
@@ -678,7 +679,9 @@ function ExtrasMenu() {
               </Menu.Item>
             </Menu.SubMenu>
             <Menu.Divider />
-            <Menu.Item key="settings" onClick={() => setShowSettings(true)}>
+            <Menu.Item
+              key="settings"
+              onClick={() => store.dispatch(toggleSettingsModal(true))}>
               Settings
             </Menu.Item>
             <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
@@ -692,10 +695,10 @@ function ExtrasMenu() {
           </Menu.SubMenu>
         </Menu>
       </NUX>
-      {showSettings && (
+      {isSettingModalOpen && (
         <SettingsSheet
           platform={getFlipperServerConfig().environmentInfo.os.platform}
-          onHide={onSettingsClose}
+          onHide={() => store.dispatch(toggleSettingsModal())}
         />
       )}
       <WelcomeScreen
