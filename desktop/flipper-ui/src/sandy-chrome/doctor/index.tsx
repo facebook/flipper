@@ -10,7 +10,14 @@
 import {FlipperDoctor} from 'flipper-common';
 import React from 'react';
 import {Typography} from 'antd';
-import {CodeBlock, PropsFor, Noop, CliCommand, List} from './util';
+import {
+  CodeBlock,
+  PropsFor,
+  Noop,
+  CliCommand,
+  List,
+  OpenFlippeSettingBtn,
+} from './util';
 import {moreMessageToComp} from './fb-stubs/messages';
 
 const CommonOpenSSLInstalled = (
@@ -72,21 +79,19 @@ const AndroidStudioInstalled = (
 const AndroidSdkNoAndroidHome = (
   _props: PropsFor<'android.sdk--no_ANDROID_HOME'>,
 ) => (
-  // TODO: open settings buttons
   <Typography.Paragraph>
-    ANDROID_HOME is not defined. You can use Flipper Settings (More {'>'}{' '}
-    Settings) to point to its location.
+    Android SDK Location is not defined. You can use <OpenFlippeSettingBtn /> to
+    point to its location.
   </Typography.Paragraph>
 );
 
 const AndroidSdkInvalidAndroidHome = (
   props: PropsFor<'android.sdk--invalid_ANDROID_HOME'>,
 ) => (
-  // TODO: open settings buttons
   <Typography.Paragraph>
-    ANDROID_HOME point to a folder which does not exist: {props.androidHome}.
-    You can use Flipper Settings (More {'>'} Settings) to point to a different
-    location.
+    Android SDK Location points to a folder which does not exist:{' '}
+    {props.androidHome}. You can use <OpenFlippeSettingBtn /> to point to a
+    different location.
   </Typography.Paragraph>
 );
 
@@ -103,8 +108,8 @@ const AndroidSdkNoAndroidSdkRoot = (
   _props: PropsFor<'android.sdk--no_ANDROID_SDK_ROOT'>,
 ) => (
   <Typography.Paragraph>
-    ANDROID_SDK_ROOT is not set. You can use Flipper Settings (More {'>'}
-    Settings) to point to its location.
+    ANDROID_SDK_ROOT is not set. Use <OpenFlippeSettingBtn /> to point to its
+    location.
   </Typography.Paragraph>
 );
 

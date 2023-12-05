@@ -10,9 +10,17 @@
 import {theme} from 'flipper-plugin';
 import {FlipperDoctor} from 'flipper-common';
 import React from 'react';
-import {Typography} from 'antd';
+import {Button, Typography} from 'antd';
+import {useStore} from '../../utils/useStore';
+import {toggleSettingsModal} from '../../reducers/application';
 
-export function CliCommand({title, command}: {title: string; command: string}) {
+export function CliCommand({
+  title,
+  command,
+}: {
+  title?: string;
+  command: string;
+}) {
   return (
     <div
       style={{
@@ -20,7 +28,9 @@ export function CliCommand({title, command}: {title: string; command: string}) {
         flexDirection: 'column',
         marginBottom: 8,
       }}>
-      <Typography.Text type="secondary">{title}</Typography.Text>
+      {title ? (
+        <Typography.Text type="secondary">{title}</Typography.Text>
+      ) : null}
       <Typography.Text code copyable>
         {command}
       </Typography.Text>
@@ -67,6 +77,18 @@ export function List({
 List.Item = (props: {children: React.ReactNode}) => (
   <li style={{marginBottom: 8}}>{props.children}</li>
 );
+
+export function OpenFlippeSettingBtn() {
+  const store = useStore();
+  return (
+    <Button
+      type="link"
+      style={{padding: 0, display: 'inline'}}
+      onClick={() => store.dispatch(toggleSettingsModal(true))}>
+      Flipper Settings
+    </Button>
+  );
+}
 
 export function Noop() {
   return <span>Unimplemented</span>;
