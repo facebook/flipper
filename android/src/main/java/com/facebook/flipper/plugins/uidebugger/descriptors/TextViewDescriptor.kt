@@ -17,6 +17,7 @@ import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
+import com.facebook.flipper.plugins.uidebugger.util.ColorUtil
 
 object TextViewDescriptor : ChainedDescriptor<TextView>() {
 
@@ -112,6 +113,7 @@ object TextViewDescriptor : ChainedDescriptor<TextView>() {
       MaxLinesAttributeId -> node.maxLines = value.asInt()
       MinWidthAttributeId -> node.minWidth = value.asInt()
       MaxWidthAttributeId -> node.maxWidth = value.asInt()
+      TextColorAttributeId -> node.setTextColor(ColorUtil.toColorInt(value))
       // technically one overwrites the other but oh well
       IsBoldAttributeId ->
           node.typeface =
