@@ -126,14 +126,16 @@ function HealthcheckIcon(props: {
   const {checkResult: check} = props;
   switch (props.checkResult.status) {
     case 'IN_PROGRESS':
-      return <LoadingIndicator size={16} title={props.checkResult.message} />;
+      return (
+        <LoadingIndicator size={16} title={props.checkResult.message?.[0]} />
+      );
     case 'SKIPPED':
       return (
         <Glyph
           size={16}
           name={'question'}
           color={colors.gray}
-          title={props.checkResult.message}
+          title={props.checkResult.message?.[0]}
         />
       );
     case 'SUCCESS':
@@ -142,7 +144,7 @@ function HealthcheckIcon(props: {
           size={16}
           name={'checkmark'}
           color={colors.green}
-          title={props.checkResult.message}
+          title={props.checkResult.message?.[0]}
         />
       );
     case 'FAILED':
@@ -151,7 +153,7 @@ function HealthcheckIcon(props: {
           size={16}
           name={'cross'}
           color={colors.red}
-          title={props.checkResult.message}
+          title={props.checkResult.message?.[0]}
           variant={check.isAcknowledged ? 'outline' : 'filled'}
         />
       );
@@ -161,7 +163,7 @@ function HealthcheckIcon(props: {
           size={16}
           name={'caution'}
           color={colors.yellow}
-          title={props.checkResult.message}
+          title={props.checkResult.message?.[0]}
         />
       );
   }
@@ -175,7 +177,7 @@ function HealthcheckDisplay(props: {
 }) {
   return (
     <FlexColumn shrink>
-      <HealthcheckDisplayContainer shrink title={props.result.message}>
+      <HealthcheckDisplayContainer shrink title={props.result.status}>
         <HealthcheckIcon checkResult={props.result} />
         <HealthcheckLabel
           bold={props.selected}
@@ -307,7 +309,7 @@ class DoctorSheet extends Component<Props, State> {
         (chk) => chk.key === checkKey,
       );
       if (check) {
-        return check.result.message || '';
+        return check.result.message?.[0] || '';
       }
     }
     return '';
