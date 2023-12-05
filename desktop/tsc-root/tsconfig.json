@@ -10,7 +10,7 @@
       "path": "../flipper-common"
     },
     {
-      "path": "../flipper-dump"
+      "path": "../examples/flipper-dump"
     },
     {
       "path": "../flipper-plugin"

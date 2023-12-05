@@ -1,12 +1,15 @@
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src"
   },
   "references": [
     {
-      "path": "../flipper-server"
+      "path": "../../flipper-server"
+    },
+    {
+      "path": "../../flipper-common"
     }
   ],
   "ts-node": {

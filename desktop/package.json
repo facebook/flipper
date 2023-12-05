@@ -179,7 +179,6 @@
       "flipper-server-client",
       "flipper-ui",
       "flipper-server",
-      "flipper-dump",
       "e2e",
       "plugin-lib",
       "test-utils",
