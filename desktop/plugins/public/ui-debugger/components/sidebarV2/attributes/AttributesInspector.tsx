@@ -26,16 +26,16 @@ import {
   InspectableObject,
   Metadata,
   MetadataId,
-} from '../../ClientTypes';
-import {MetadataMap} from '../../DesktopTypes';
-import {NoData} from '../sidebar/inspector/NoData';
+} from '../../../ClientTypes';
+import {MetadataMap} from '../../../DesktopTypes';
+import {NoData} from '../NoData';
 import {css} from '@emotion/css';
 import {upperFirst, sortBy, omit} from 'lodash';
 import {any} from 'lodash/fp';
-import {InspectableColor} from '../../ClientTypes';
-import {transformAny} from '../../utils/dataTransform';
+import {InspectableColor} from '../../../ClientTypes';
+import {transformAny} from '../../../utils/dataTransform';
 import {SearchOutlined} from '@ant-design/icons';
-import {plugin} from '../../index';
+import {plugin} from '../../../index';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {Glyph} from 'flipper';
 import {

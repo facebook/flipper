@@ -9,8 +9,8 @@
 
 import {theme, Layout, styled} from 'flipper-plugin';
 import React from 'react';
-import {Color} from '../../ClientTypes';
-import {InspectableColor} from '../../ClientTypes';
+import {Color} from '../../../ClientTypes';
+import {InspectableColor} from '../../../ClientTypes';
 import {NumberGroup} from './NumericInputs';
 import {opactity, rowHeight, stringColor} from './shared';
 import {StyledTextArea} from './TextInput';

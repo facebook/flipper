@@ -11,7 +11,7 @@ import {InputNumber} from 'antd';
 
 import {theme, Layout} from 'flipper-plugin';
 import React from 'react';
-import {CompoundTypeHint} from '../../ClientTypes';
+import {CompoundTypeHint} from '../../../ClientTypes';
 import {css, cx} from '@emotion/css';
 import {numberColor, opactity, readOnlyInput} from './shared';
 import {useOptimisticValue} from './useOptimisticValue';

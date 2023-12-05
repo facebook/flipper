@@ -24,7 +24,7 @@ import {plugin} from '../index';
 import {Button, Result, Tooltip} from 'antd';
 import {AugmentedFrameworkEvent} from '../DesktopTypes';
 import {formatDuration, formatTimestampMillis} from '../utils/timeUtils';
-import {eventTypeToName} from './sidebar/inspector/FrameworkEventsInspector';
+import {eventTypeToName} from './sidebarV2/frameworkevents/FrameworkEventsInspector';
 import {startCase} from 'lodash';
 import {Visualization2D} from './visualizer/Visualization2D';
 import {getNode} from '../utils/map';
