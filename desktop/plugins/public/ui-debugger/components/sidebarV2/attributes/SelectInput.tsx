@@ -91,7 +91,6 @@ function ImmutableSelectInput({
             color: ${theme.textColorSecondary};
             opacity: 0.7;
           }
-          cursor: not-allowed;
         `,
       )}
       bordered

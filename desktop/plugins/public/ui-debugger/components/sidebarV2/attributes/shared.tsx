@@ -31,6 +31,10 @@ export const readOnlyInput = css`
   }
   box-shadow: none !important;
   border-color: ${theme.disabledColor} !important;
+  cursor: not-allowed !important;
+  & input {
+    cursor: not-allowed !important;
+  }
 `;
 
 export const boolColor = '#C41D7F';

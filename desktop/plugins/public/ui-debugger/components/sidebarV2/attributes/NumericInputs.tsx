@@ -116,10 +116,6 @@ export function StyledInputNumber({
             color: ${theme.textColorSecondary};
             opacity: 0.7;
           }
-          .ant-input-number: {
-            background-color: red;
-            border-right: none;
-          }
           //style the add on to look like a suffix
           .ant-input-number-group-addon {
             padding-right: 4px;
