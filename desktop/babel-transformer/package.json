@@ -19,7 +19,7 @@
     "@babel/plugin-transform-flow-strip-types": "^7.19.0",
     "@babel/plugin-transform-modules-commonjs": "^7.20.11",
     "@babel/plugin-transform-typescript": "^7.20.13",
-    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-env": "^7.23.5",
     "@babel/preset-react": "^7.18.6",
     "@babel/traverse": "^7.20.13",
     "@babel/types": "^7.20.7",
