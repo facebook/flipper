@@ -842,7 +842,8 @@ async function setUpMacBundle(
   // other platforms.
   await fs.copy(serverDir, serverOutputDir, {
     overwrite: true,
-    dereference: true,
+    // We need to preserve symlinks, otherwise signing fails for frameworks that use Versions schema
+    dereference: false,
   });
 
   console.log(`⚙️  Downloading compatible node version`);
@@ -910,7 +911,8 @@ async function bundleServerReleaseForPlatform(
     );
     await fs.copy(bundleDir, outputPaths.resourcesPath, {
       overwrite: true,
-      dereference: true,
+      // We need to preserve symlinks, otherwise signing fails for frameworks that use Versions schema
+      dereference: false,
     });
 
     console.log(`⚙️  Downloading compatible node version`);
