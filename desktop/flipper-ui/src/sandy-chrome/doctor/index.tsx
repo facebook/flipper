@@ -195,11 +195,7 @@ const IosSdkNotInstalled = (_props: PropsFor<'ios.sdk--not_installed'>) => (
       <List.Item>
         Download SDK for iOS(other environments are optional)
       </List.Item>
-      <List.Item
-      // TODO see how to pick it up without a restart
-      >
-        Restart Flipper
-      </List.Item>
+      <List.Item>Re-run doctor</List.Item>
     </List>
   </div>
 );
