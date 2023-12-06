@@ -13,6 +13,6 @@ const path = require('path');
 
 // Only used once at startup.
 // eslint-disable-next-line node/no-sync
-const isFB = fs.pathExistsSync(path.resolve(__dirname, '..', 'static', 'fb'));
+const isFB = fs.pathExistsSync(path.resolve(__dirname, 'fb'));
 
 module.exports = isFB;
