@@ -88,10 +88,18 @@ public class FlipperOkhttpInterceptor
   @Override
   public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
-    final Pair<Request, Buffer> requestWithClonedBody = cloneBodyAndInvalidateRequest(request);
-    request = requestWithClonedBody.first;
+    Buffer bodyBuffer;
+    if(request.body() != null && request.body().isOneShot()) {
+        bodyBuffer = new Buffer().writeUtf8("(one shot body)");
+    } else if (request.body() != null && request.body().isDuplex()) {
+        bodyBuffer = new Buffer().writeUtf8("(duplex body)");
+    } else {
+        final Pair<Request, Buffer> requestWithClonedBody = cloneBodyAndInvalidateRequest(request);
+        request = requestWithClonedBody.first;
+        bodyBuffer = requestWithClonedBody.second;
+    }
     final String identifier = UUID.randomUUID().toString();
-    mPlugin.reportRequest(convertRequest(request, requestWithClonedBody.second, identifier));
+    mPlugin.reportRequest(convertRequest(request, bodyBuffer, identifier));
 
     // Check if there is a mock response
     final Response mockResponse = mIsMockResponseSupported ? getMockResponse(request) : null;
