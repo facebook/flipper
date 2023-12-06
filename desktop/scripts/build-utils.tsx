@@ -33,6 +33,7 @@ import {
 import pFilter from 'p-filter';
 import child from 'child_process';
 import isFB from './isFB';
+import {BUILTINS} from 'flipper-common';
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -155,51 +156,6 @@ export async function compileServerMain() {
 // TODO: needed?
 const uiSourceDirs = ['flipper-ui', 'flipper-plugin', 'flipper-common'];
 
-export const BUILTINS = [
-  'buffer',
-  'child_process',
-  'crypto',
-  'dgram',
-  'dns',
-  'fs',
-  'http',
-  'https',
-  'net',
-  'os',
-  'readline',
-  'stream',
-  'string_decoder',
-  'tls',
-  'tty',
-  'zlib',
-  'constants',
-  'events',
-  'url',
-  'assert',
-  'util',
-  'path',
-  'punycode',
-  'querystring',
-  'cluster',
-  'console',
-  'module',
-  'process',
-  'vm',
-  'domain',
-  'v8',
-  'repl',
-  'timers',
-  'perf_hooks',
-  'worker_threads',
-  'encoding',
-  'fsevents',
-  './fsevents.node',
-  // jest is referred to in source code, like in TestUtils, but we don't want to ever bundle it up!
-  'jest',
-  '@testing-library/react',
-  '@testing-library/dom',
-];
-
 export async function buildBrowserBundle(outDir: string, dev: boolean) {
   console.log('⚙️  Compiling browser bundle...');
   const out = path.join(outDir, 'bundle.js');
@@ -243,7 +199,7 @@ export async function buildBrowserBundle(outDir: string, dev: boolean) {
         if (moduleName === 'flipper') {
           return MetroResolver.resolve(context, 'deprecated-exports', ...rest);
         }
-        // stubbed modules are modules that don't make sense outside a Node / Electron context,
+        // stubbed modules are modules that don't make sense outside a Node context,
         // like fs, child_process etc etc.
         // UI / plugins using these features should use the corresponding RenderHost api's instead
         // Ideally we'd fail hard on those, but not all plugins are properly converted yet, and some
@@ -317,7 +273,6 @@ function assertSaneImport(context: any, moduleName: string) {
     (moduleName.startsWith('babel') &&
       !moduleName.startsWith('babel-runtime')) ||
     moduleName.startsWith('typescript') ||
-    moduleName.startsWith('electron') ||
     moduleName.startsWith('@testing-library')
   ) {
     console.error(

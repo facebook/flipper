@@ -279,7 +279,8 @@ export const options: Intl.DateTimeFormatOptions = {
 };
 
 export function eventTypeToName(eventType: string) {
-  return eventType.slice(eventType.lastIndexOf(frameworkEventSeparator) + 1);
+  //drop the first prefix
+  return eventType.slice(eventType.indexOf(frameworkEventSeparator) + 1);
 }
 
 function threadToColor(thread?: string) {

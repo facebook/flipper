@@ -17,7 +17,7 @@ import https from 'https';
 const {unlink} = promises;
 
 // Adapter which forces node.js implementation for axios instead of browser implementation
-// used by default in Electron. Node.js implementation is better, because it
+// Node.js implementation is better, because it
 // supports streams which can be used for direct downloading to disk.
 const axiosHttpAdapter = require('axios/lib/adapters/http'); // eslint-disable-line import/no-commonjs
 

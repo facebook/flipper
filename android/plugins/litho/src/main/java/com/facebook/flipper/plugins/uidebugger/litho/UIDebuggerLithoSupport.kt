@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.uidebugger.litho
 
-import android.graphics.Rect
 import com.facebook.flipper.plugins.uidebugger.core.ConnectionListener
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
@@ -103,16 +102,16 @@ object UIDebuggerLithoSupport {
               attributes["source"] = source
             }
 
-            event.attributeOrNull<Rect?>("visibleRect")?.let {
+            event.attributeOrNull<Any?>("visibleRect")?.let {
               attributes["visibleRect"] = it.toString()
             }
 
-            event.attributeOrNull<Boolean?>("areBoundsVisible")?.let {
+            event.attributeOrNull<Any?>("areBoundsVisible")?.let {
               attributes["areBoundsVisible"] = it.toString()
             }
 
-            event.attributeOrNull<String?>("numMountableOutputs")?.let {
-              attributes["numMountableOutputs"] = it
+            event.attributeOrNull<Any?>("numMountableOutputs")?.let {
+              attributes["numMountableOutputs"] = it.toString()
             }
 
             context.addFrameworkEvent(

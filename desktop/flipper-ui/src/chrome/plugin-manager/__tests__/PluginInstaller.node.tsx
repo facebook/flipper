@@ -76,7 +76,7 @@ test('load PluginInstaller list', async () => {
     <Provider store={getStore()}>
       <PluginInstaller
         // Bit ugly to have this as an effectively test-only option, but
-        // without, we rely on height information from Electron which we don't
+        // without, we rely on height information which we don't
         // have, causing no items to be rendered.
         autoHeight
       />
@@ -100,7 +100,7 @@ test('load PluginInstaller list with one plugin installed', async () => {
     <Provider store={store}>
       <PluginInstaller
         // Bit ugly to have this as an effectively test-only option, but
-        // without, we rely on height information from Electron which we don't
+        // without, we rely on height information which we don't
         // have, causing no items to be rendered.
         autoHeight
       />

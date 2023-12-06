@@ -73,7 +73,7 @@ console.debug = function () {
   // Intentional noop, we don't want debug statements in Jest runs
 };
 
-// make perf tools available in Node (it is available in Browser / Electron just fine)
+// Make perf tools available in Node (it is available in Browser just fine)
 import {PerformanceObserver, performance} from 'perf_hooks';
 // Object.freeze(performance);
 // Object.freeze(Object.getPrototypeOf(performance));
