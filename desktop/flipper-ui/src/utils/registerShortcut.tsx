@@ -13,7 +13,7 @@ export function registerShortcut(
   accelerator: string,
   handler: () => void,
 ): () => void {
-  // normalize between Electron defined shortcuts format, and hotkeys format
+  // Normalize shortcuts format.
   // split acceleratos like Shift+CmdOrCtrl+Z into Shift+Cmd+Z,Shift+Control+Z
   if (accelerator.includes('CmdOrCtrl')) {
     accelerator =

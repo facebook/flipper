@@ -68,3 +68,4 @@ export * from './doctor';
 export * from './ServerAddOn';
 export * from './transport';
 export * from './User';
+export * from './builtins';

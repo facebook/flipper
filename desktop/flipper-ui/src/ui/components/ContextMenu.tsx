@@ -48,8 +48,6 @@ const contextMenuTrigger = ['contextMenu' as const];
 
 /**
  * Native context menu that is shown on secondary click.
- * Uses [Electron's context menu API](https://electronjs.org/docs/api/menu-item)
- * to show menu items.
  *
  * Separators can be added by `{type: 'separator'}`
  * @depreacted https://ant.design/components/dropdown/#components-dropdown-demo-context-menu

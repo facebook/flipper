@@ -15,7 +15,7 @@ import fs from 'fs-extra';
 import {WebSocketServer} from 'ws';
 import pFilter from 'p-filter';
 import {homedir} from 'os';
-import {InstalledPluginDetails} from 'flipper-common';
+import {BUILTINS, InstalledPluginDetails} from 'flipper-common';
 import {isFBBuild} from './fb-stubs/constants';
 
 // This file is heavily inspired by scripts/start-dev-server.ts!
@@ -64,8 +64,7 @@ export async function attachDevServer(
     'lib', // Note: required pre-compiled!
   );
 
-  const requires = path.join(babelTransformationsDir, 'electron-requires.js');
-  const stubModules = new Set<string>(require(requires).BUILTINS);
+  const stubModules = new Set<string>(BUILTINS);
   if (!stubModules.size) {
     throw new Error('Failed to load list of Node builtins');
   }

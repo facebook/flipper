@@ -71,7 +71,7 @@ const argv = yargs
   })
   .version('DEV')
   .help()
-  .parse(process.argv.slice(1));
+  .parseSync(process.argv.slice(1));
 
 console.log(
   `[flipper-server] Starting flipper server with ${

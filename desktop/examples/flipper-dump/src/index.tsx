@@ -68,7 +68,7 @@ const argv = yargs
   .version(packageJson.version)
   .help()
   // .strict()
-  .parse(process.argv.slice(1));
+  .parseSync(process.argv.slice(1));
 
 async function start(deviceQuery: string, appName: string, pluginId: string) {
   return new Promise(async (_resolve, reject) => {
