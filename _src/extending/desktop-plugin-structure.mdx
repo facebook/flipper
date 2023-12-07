@@ -296,7 +296,7 @@ If you need any dependencies in your plugin, you can install them using `yarn ad
 <OssOnly>
 
 :::caution
-Flipper plugins should be designed to work inside browsers as well, as Flipper isn't guaranteed to be always running on top of Electron. For that reason, you should avoid using Node.js APIs directly (such as modules like `fs`, `child_process`, `path`), or packages that depend on them. For alternative APIs, see [using Node.js APIs](./node-apis.mdx) in Flipper plugins.
+Flipper plugins must be designed to work inside browsers. For that reason, you should avoid using Node.JS APIs directly (such as modules like `fs`, `child_process`, `path`), or packages that depend on them. For alternative APIs, see [using Node.js APIs](./node-apis.mdx) in Flipper plugins.
 :::
 
 </OssOnly>

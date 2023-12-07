@@ -152,42 +152,6 @@ const GreyedOutOverlay = initialiseComponent();
 const GrayedOutOverlay = initializeComponent();
 ```
 
-### `no-restricted-properties`
-
-- **Summary** - try to avoid using `electron.remote` directly.
-- **Why** - using [electron.remote](https://nornagon.medium.com/electrons-remote-module-considered-harmful-70d69500f31) is considered harmful. Not only is accessing it slow but it also makes it harder to abstract away from Electron, which we're planning to do.
-- **How to fix it** - for now, the best way is to use utilities, wherever possible, which cache to access. This is not always possible. Adding ignores for legitimate accesses is fine.
-
-#### Example
-
-*Before*
-
-```js
-import electron from 'electron';
-const portforwardingClient =
-  path.join(
-    electron.remote.app.getAppPath()
-    'PortForwardingMacApp.app',
-    'Contents',
-    'MacOS',
-    'PortForwardingMacApp'
-  );
-```
-
-*After*
-
-```js
-import {getStaticPath} from './utils/pathUtils';
-const portforwardingClient = getStaticPath(
-  path.join(
-    'PortForwardingMacApp.app',
-    'Contents',
-    'MacOS',
-    'PortForwardingMacApp',
-  ),
-);
-```
-
 ### `node/no-sync`
 
 - **Summary**: Use asynchronous methods wherever possible. [More details.](https://github.com/mysticatea/eslint-plugin-node/blob/master/docs/rules/no-sync.md)
