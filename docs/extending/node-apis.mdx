@@ -3,8 +3,8 @@ id: node-apis
 title: Using Node.js APIs
 ---
 
-Flipper plugins should be designed to work inside browsers as Flipper isn't guaranteed to always run on top of Electron.
-For that reason, you should avoid using Node.js APIs directly (with, for example, modules like `fs`, `child_process`, `path`), or packages that depend on the plugins.
+Flipper plugins must be designed to work inside browsers.
+For that reason, you should avoid using Node.JS APIs directly (with, for example, modules like `fs`, `child_process`, `path`), or packages that depend on the plugins.
 
 The most important Node APIs can be found by using `getFlipperLib()` (exposed by the `flipper-plugin` package). Please note that these APIs are all promisified:
 

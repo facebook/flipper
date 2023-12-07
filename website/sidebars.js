@@ -177,7 +177,6 @@ module.exports = {
                 'fb/error-logging',
               ]
             },
-            'fb/Electron-Upgrade',
             {
               'Launcher': [
                 'fb/hacking-on-launcher',
