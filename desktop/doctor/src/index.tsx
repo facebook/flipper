@@ -290,12 +290,33 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   const result = await tryExecuteCommand(
                     `${settings?.idbPath} --help`,
                   );
+                  const hasIdbCompanion = await tryExecuteCommand(
+                    `idbCompanion --help`,
+                  );
                   if (result.fail) {
+                    const hasIdbInPath = await tryExecuteCommand(`which idb`);
+
+                    if (!hasIdbInPath.fail) {
+                      return {
+                        hasProblem: true,
+                        message: [
+                          'ios.idb--not_installed_but_present',
+                          {
+                            idbPath: settings.idbPath,
+                            idbInPath: hasIdbInPath.stdout.trim(),
+                          },
+                        ],
+                      };
+                    }
+
                     return {
                       hasProblem: true,
                       message: [
                         'ios.idb--not_installed',
-                        {idbPath: settings.idbPath},
+                        {
+                          idbPath: settings.idbPath,
+                          hasIdbCompanion: !hasIdbCompanion.fail,
+                        },
                       ],
                     };
                   }

@@ -297,6 +297,7 @@ const messageToComp: {
 
   'ios.idb--no_context': IdbNoContext,
   'ios.idb--physical_device_disabled': IdbPhysicalDeviceDisabled,
+  'ios.idb--not_installed_but_present': Noop,
   'ios.idb--not_installed': Noop,
   'ios.idb--installed': IosIdbInstalled,
 
