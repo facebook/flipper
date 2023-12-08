@@ -55,12 +55,15 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "layoutMode",
-          false,
-          LayoutModeMapping.getInspectableValues())
+          mutable = true,
+          LayoutModeMapping.getInspectableValues(),
+      )
   private val ClipChildrenAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "clipChildren")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "clipChildren", mutable = true)
   private val ClipToPaddingAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "clipToPadding")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "clipToPadding", mutable = true)
 
   override fun onGetAttributes(
       node: ViewGroup,
@@ -96,5 +99,7 @@ object ViewGroupDescriptor : ChainedDescriptor<ViewGroup>() {
       ClipChildrenAttributeId -> node.clipChildren = value.asBoolean()
       ClipToPaddingAttributeId -> node.clipToPadding = value.asBoolean()
     }
+    node.forceLayout()
+    node.invalidate()
   }
 }
