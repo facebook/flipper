@@ -24,7 +24,6 @@ import {useStore} from '../utils/useStore';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
-import {showChangelog} from '../chrome/ChangelogSheet';
 import PlatformSelectWizard, {
   hasPlatformWizardBeenDone,
 } from '../chrome/PlatformSelectWizard';
@@ -71,8 +70,6 @@ export function SandyApp() {
       console.info('Attempt to install PWA, launch installation wizard.');
       Dialog.showModal((onHide) => <PWAInstallationWizard onHide={onHide} />);
     }
-
-    showChangelog(true);
 
     // don't warn about logger, even with a new logger we don't want to re-register
     // eslint-disable-next-line

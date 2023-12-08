@@ -74,6 +74,7 @@ import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
 import {Notification} from './notification/Notification';
 import {SandyRatingButton} from './RatingButton';
 import {getFlipperServerConfig} from '../flipperServer';
+import {showChangelog} from '../chrome/ChangelogSheet';
 
 export const Navbar = withTrackingScope(function Navbar() {
   return (
@@ -686,6 +687,9 @@ function ExtrasMenu() {
             </Menu.Item>
             <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
               Help
+            </Menu.Item>
+            <Menu.Item key="changelog" onClick={showChangelog}>
+              Changelog
             </Menu.Item>
             {config.showLogin && loggedIn && (
               <Menu.Item key="logout" onClick={async () => await logoutUser()}>

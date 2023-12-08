@@ -32,40 +32,26 @@ const changelogSectionStyle = {
 
 type Props = {
   onHide: () => void;
-  recent?: boolean;
   changelog: string;
 };
 
 class ChangelogSheet extends Component<Props, {}> {
   componentDidMount() {
-    if (!this.props.recent) {
-      // opened through the menu
-      reportUsage('changelog:opened');
-    }
+    // opened through the menu
+    reportUsage('changelog:opened');
   }
 
   componentWillUnmount(): void {
-    if (this.props.recent) {
-      if (this.props.changelog) {
-        markChangelogRead(window.localStorage, this.props.changelog);
-      }
+    if (this.props.changelog) {
+      markChangelogRead(window.localStorage, this.props.changelog);
     }
-    if (!this.props.recent) {
-      reportUsage('changelog:closed');
-    }
+    reportUsage('changelog:closed');
   }
 
   render() {
     return this.props.changelog ? (
       <Modal open title="Changelog" onCancel={this.props.onHide} footer={null}>
-        <Markdown
-          source={
-            this.props.recent
-              ? getRecentChangelog(window.localStorage, this.props.changelog)
-              : this.props.changelog
-          }
-          style={changelogSectionStyle}
-        />
+        <Markdown source={this.props.changelog} style={changelogSectionStyle} />
       </Modal>
     ) : null;
   }
@@ -103,25 +89,6 @@ export function hasNewChangesToShow(
   return false;
 }
 
-export /*for test*/ function getRecentChangelog(
-  localStorage: Storage | undefined,
-  changelog: string,
-): string {
-  if (!localStorage) {
-    return 'Changelog not available';
-  }
-  const status = getChangelogStatus(localStorage);
-  if (!status || !status.lastHeader) {
-    return changelog.trim();
-  }
-  const lastHeaderIndex = changelog.indexOf(status.lastHeader);
-  if (lastHeaderIndex === -1) {
-    return changelog.trim();
-  } else {
-    return changelog.substr(0, lastHeaderIndex).trim();
-  }
-}
-
 export /*for test*/ function markChangelogRead(
   localStorage: Storage | undefined,
   changelog: string,
@@ -139,22 +106,13 @@ export /*for test*/ function markChangelogRead(
   localStorage.setItem(changelogKey, JSON.stringify(status));
 }
 
-export function showChangelog(onlyIfNewChanges: boolean) {
+export function showChangelog() {
   getFlipperServer()
     .exec('get-changelog')
     .then((changelog) => {
-      const show =
-        !onlyIfNewChanges ||
-        hasNewChangesToShow(window.localStorage, changelog);
-      if (show) {
-        Dialog.showModal((onHide) => (
-          <ChangelogSheet
-            onHide={onHide}
-            recent={onlyIfNewChanges}
-            changelog={changelog}
-          />
-        ));
-      }
+      Dialog.showModal((onHide) => (
+        <ChangelogSheet onHide={onHide} changelog={changelog} />
+      ));
     })
     .catch((e) => {
       console.error('Failed to load changelog', e);

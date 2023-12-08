@@ -193,9 +193,7 @@ function WelcomeScreenContent() {
                 size="small"
                 icon={<HistoryOutlined />}
                 title="Changelog"
-                onClick={() => {
-                  showChangelog(false);
-                }}
+                onClick={showChangelog}
               />
             </NUX>
           </Tooltip>

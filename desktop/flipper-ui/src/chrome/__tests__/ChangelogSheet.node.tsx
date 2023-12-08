@@ -7,11 +7,7 @@
  * @format
  */
 
-import {
-  hasNewChangesToShow,
-  getRecentChangelog,
-  markChangelogRead,
-} from '../ChangelogSheet';
+import {hasNewChangesToShow, markChangelogRead} from '../ChangelogSheet';
 
 class StubStorage {
   data: Record<string, string> = {};
@@ -47,7 +43,6 @@ describe('ChangelogSheet', () => {
 
   test('without storage, should show changes', () => {
     expect(hasNewChangesToShow(undefined, changelog)).toBe(false);
-    expect(getRecentChangelog(storage, changelog)).toEqual(changelog.trim());
     expect(hasNewChangesToShow(storage, changelog)).toBe(true);
   });
 
@@ -73,15 +68,6 @@ ${changelog}
 `;
 
     expect(hasNewChangesToShow(storage, newChangelog)).toBe(true);
-    expect(getRecentChangelog(storage, newChangelog)).toMatchInlineSnapshot(`
-      "# Version 3.0
-
-      * Cool!
-
-      # Version 2.5
-
-      * This is visible as well"
-    `);
     markChangelogRead(storage, newChangelog);
     expect(storage.data).toMatchInlineSnapshot(`
       {
