@@ -266,6 +266,13 @@ export class ServerController
         ),
       );
     }
+
+    const client: UninitializedClient = {
+      os: clientQuery.os,
+      deviceName: clientQuery.device,
+      appName: appNameWithUpdateHint(clientQuery),
+    };
+    this.emit('start-client-setup', client);
   }
 
   /**
