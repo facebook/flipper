@@ -540,7 +540,7 @@ object ViewDescriptor : ChainedDescriptor<View>() {
   private fun fromDrawable(d: Drawable?): Inspectable? {
     return if (d is ColorDrawable) {
       InspectableValue.Color(Color.fromColor(d.color))
-    } else  {
+    } else {
       InspectableValue.Text(d.toString())
     }
   }
