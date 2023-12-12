@@ -100,6 +100,7 @@ export interface ServerEventsListener {
  */
 abstract class ServerWebSocketBase {
   protected acceptingNewConections = true;
+  protected deviceLogRegex = /(\d+):(info|warning|error):(.*)/;
 
   constructor(protected listener: ServerEventsListener) {}
 
@@ -138,19 +139,20 @@ abstract class ServerWebSocketBase {
 
     const message: SignCertificateMessage = rawData;
 
-    console.info(
-      `[conn] Connection attempt: ${clientQuery.app} on ${clientQuery.device}, medium: ${message.medium}, cert: ${message.destination}`,
-      clientQuery,
-    );
-
     if (message.method === 'signCertificate') {
-      console.debug('CSR received from device', 'server');
+      console.info(
+        `[conn] Connection attempt: ${clientQuery.app} on ${clientQuery.device}, medium: ${message.medium}, cert: ${message.destination}`,
+        clientQuery,
+      );
 
-      const {csr, destination} = message;
+      const {csr, destination, logs} = message;
 
       console.info(
         `[conn] Starting certificate exchange: ${clientQuery.app} on ${clientQuery.device}`,
       );
+
+      this.debugLogs(logs);
+
       try {
         const result = await this.listener.onProcessCSR(
           csr,
@@ -168,6 +170,14 @@ abstract class ServerWebSocketBase {
       } catch (e) {
         this.listener.onClientSetupError(clientQuery, e);
       }
+    } else if (message.method === 'signCertificateAck') {
+      const {logs, ...remainder} = message;
+      console.info(
+        `[conn] Connection attempt, sign certificate ACK received: ${clientQuery.app} on ${clientQuery.device}`,
+        remainder,
+      );
+
+      this.debugLogs(logs);
     }
 
     return undefined;
@@ -186,6 +196,30 @@ abstract class ServerWebSocketBase {
     }
     this.acceptingNewConections = false;
     this.stopAcceptingNewConectionsImpl();
+  }
+
+  debugLogs(logs: string[] | undefined) {
+    if (logs) {
+      console.info(`[conn] Device logs until now are found below`);
+      logs.forEach((log: string) => {
+        const match = log.match(this.deviceLogRegex);
+        if (match) {
+          const timestamp = match[1];
+          const level = match[2];
+          const message = match[3];
+
+          const timestampMS: number = parseInt(timestamp, 10);
+          if (!isNaN(timestampMS)) {
+            const date: Date = new Date(timestampMS);
+            console.log(
+              `[conn][device][log][${date.toISOString()}][${level}] ${message}`,
+            );
+          }
+        } else {
+          console.log(`[conn][device][log] ${log}`);
+        }
+      });
+    }
   }
 
   protected abstract stopAcceptingNewConectionsImpl(): void;
