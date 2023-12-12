@@ -27,6 +27,13 @@ void log(const std::string& message) {
   return (*getHandle())(message);
 }
 
+void log_debug(LogLevel level, const std::string& message) {
+  Logger::shared().log(level, message);
+#ifdef FLIPPER_DEBUG_LOG
+  return (*getHandle())(message);
+#endif
+}
+
 void setLogHandler(LogHandlerFunc handler) {
   *getHandle() = handler;
 }

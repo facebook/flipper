@@ -10,17 +10,12 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include "FlipperLogLevel.h"
 
 #define FLIPPER_LOGS_CAPACITY 512
 
 namespace facebook {
 namespace flipper {
-
-enum class LogLevel {
-  Info,
-  Warning,
-  Error,
-};
 
 template <typename T>
 struct CircularContainer {
