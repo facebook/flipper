@@ -667,6 +667,7 @@ export type SignCertificateMessage = {
   csr: string;
   destination: string;
   medium: number | undefined;
+  logs?: string[];
 };
 export type GetPluginsMessage = {
   id: number;

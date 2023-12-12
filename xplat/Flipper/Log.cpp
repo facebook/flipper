@@ -6,6 +6,7 @@
  */
 
 #include "Log.h"
+#include "FlipperLogger.h"
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -22,6 +23,7 @@ static LogHandlerFunc* getHandle() {
 } // namespace
 
 void log(const std::string& message) {
+  Logger::shared().log(LogLevel::Info, message);
   return (*getHandle())(message);
 }
 

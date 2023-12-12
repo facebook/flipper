@@ -6,6 +6,7 @@
  */
 
 #include "FlipperConnectionManagerImpl.h"
+#include <folly/DynamicConverter.h>
 #include <folly/String.h>
 #include <folly/json.h>
 #include <stdexcept>
@@ -13,6 +14,7 @@
 #include "ConnectionContextStore.h"
 #include "FireAndForgetBasedFlipperResponder.h"
 #include "FlipperExceptions.h"
+#include "FlipperLogger.h"
 #include "FlipperSocketProvider.h"
 #include "FlipperStep.h"
 #include "Log.h"
@@ -439,10 +441,14 @@ void FlipperConnectionManagerImpl::requestSignedCertificate() {
   int medium = certificateProvider_ != nullptr
       ? certificateProvider_->getCertificateExchangeMedium()
       : FlipperCertificateExchangeMedium::FS_ACCESS;
+
+  auto logs = Logger::shared().getLogs();
+
   folly::dynamic message =
       folly::dynamic::object("method", "signCertificate")("csr", csr.c_str())(
           "destination",
-          store_->getCertificateDirectoryPath().c_str())("medium", medium);
+          store_->getCertificateDirectoryPath()
+              .c_str())("medium", medium)("logs", folly::toDynamic(logs));
 
   auto gettingCert = state_->start("Getting cert from desktop");
 
