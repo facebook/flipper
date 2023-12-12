@@ -25,6 +25,7 @@
 #include <Flipper/FlipperConnection.h>
 #include <Flipper/FlipperConnectionManager.h>
 #include <Flipper/FlipperFollyScheduler.h>
+#include <Flipper/FlipperLogger.h>
 #include <Flipper/FlipperResponder.h>
 #include <Flipper/FlipperSocket.h>
 #include <Flipper/FlipperSocketProvider.h>
@@ -149,7 +150,11 @@ class JFlipperSocketEventHandlerImpl : public jni::HybridClass<
     });
   }
 
-  void reportConnectionEvent(int code) {
+  void reportConnectionEvent(int code, const std::string& message) {
+    // Only error events use the message parameter.
+    if (message.length() > 0) {
+      log_debug(LogLevel::Error, "Connection Event Error: " + message);
+    }
     _eventHandler((SocketEvent)code);
   }
 

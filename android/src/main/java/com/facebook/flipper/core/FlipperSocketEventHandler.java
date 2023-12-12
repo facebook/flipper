@@ -26,7 +26,7 @@ public interface FlipperSocketEventHandler {
     }
   }
 
-  void onConnectionEvent(SocketEvent event);
+  void onConnectionEvent(SocketEvent event, String message);
 
   void onMessageReceived(String message);
 
