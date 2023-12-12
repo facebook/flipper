@@ -378,6 +378,11 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
     std::string response,
     bool isError) {
   DEBUG_LOG("[conn] Process signed certificate response");
+
+  folly::dynamic messageAck = folly::dynamic::object;
+  messageAck["method"] = "signCertificateAck";
+  messageAck["isError"] = isError;
+
   if (isError) {
     auto error =
         "Flipper failed to provide certificates. Error from Flipper Desktop:\n" +
@@ -392,6 +397,10 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
 
     if (!response.empty()) {
       folly::dynamic config = folly::parseJson(response);
+
+      messageAck["config"] = config;
+      messageAck["medium"] = medium;
+
       config["medium"] = medium;
       store_->storeConnectionConfig(config);
     }
@@ -420,10 +429,17 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
         gettingCert->fail("Exception thrown from Certificate Provider");
       }
     }
+
+    messageAck["hasRequiredFiles"] = store_->hasRequiredFiles();
+
     log("[conn] Certificate exchange complete");
     gettingCert->complete();
   }
 
+  auto logs = Logger::shared().getLogs();
+  messageAck["logs"] = folly::toDynamic(logs);
+
+  socket_->send(folly::toJson(messageAck), []() {});
   socket_ = nullptr;
   reconnect();
 }
