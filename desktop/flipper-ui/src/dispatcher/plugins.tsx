@@ -11,6 +11,7 @@ import type {Store} from '../reducers/index';
 import {
   FlipperServerConfig,
   FlipperServerDisconnectedError,
+  FlipperServerTimeoutError,
   InstalledPluginDetails,
   isProduction,
   Logger,
@@ -388,8 +389,9 @@ export const createRequirePluginFunction =
 
         let severity: 'error' | 'warn' = 'error';
         if (
-          e instanceof FlipperServerDisconnectedError &&
-          e.reason === 'ws-close'
+          (e instanceof FlipperServerDisconnectedError &&
+            e.reason === 'ws-close') ||
+          e instanceof FlipperServerTimeoutError
         ) {
           severity = 'warn';
         }

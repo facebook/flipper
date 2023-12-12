@@ -102,6 +102,12 @@ export class FlipperServerDisconnectedError extends Error {
   }
 }
 
+export class FlipperServerTimeoutError extends Error {
+  constructor(msg: string) {
+    super(`Flipper Server timeout. Reason: ${msg}`);
+  }
+}
+
 declare global {
   interface Error {
     interaction?: unknown;

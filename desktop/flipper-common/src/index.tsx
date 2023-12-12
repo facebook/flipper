@@ -54,6 +54,7 @@ export {
   isError,
   isAuthError,
   FlipperServerDisconnectedError,
+  FlipperServerTimeoutError,
   getStringFromErrorLike,
   getErrorFromErrorLike,
   deserializeRemoteError,
