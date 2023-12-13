@@ -159,7 +159,7 @@ export type FlipperServerEvents = {
     message: string;
   };
   'connectivity-troubleshoot-cmd': CommandRecordEntry;
-  'connectivity-troubleshoot-log': ConnectionRecordEntry;
+  'connectivity-troubleshoot-log': ConnectionRecordEntry[];
   'connectivity-troubleshoot-notification': {
     type: 'error' | 'warning';
     title: string;

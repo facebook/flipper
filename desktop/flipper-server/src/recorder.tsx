@@ -88,7 +88,7 @@ class Recorder {
         medium: clientQuery.medium,
       };
 
-      this.flipperServer_.emit('connectivity-troubleshoot-log', entry);
+      this.flipperServer_.emit('connectivity-troubleshoot-log', [entry]);
       getLogger().track('usage', 'connectivity-log', entry);
     }
   };
