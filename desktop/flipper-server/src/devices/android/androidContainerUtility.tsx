@@ -95,7 +95,8 @@ async function _push(
 
   const cmd = `echo "${contents}" > '${filename}' && chmod 644 '${filename}'`;
   const description = 'Push file to device using adb shell (echo / chmod)';
-  const troubleshoot = 'adb may be unresponsive, try `adb kill-server`';
+  const troubleshoot =
+    'Failed to execute adb command, adb may be unresponsive, try running `adb kill-server` from your terminal';
 
   const reportSuccess = () => {
     recorder.event('cmd', {
@@ -147,7 +148,8 @@ async function _pull(
 ): Promise<string> {
   const cmd = `cat '${path}'`;
   const description = 'Pull file from device using adb shell (cat)';
-  const troubleshoot = 'adb may be unresponsive, try `adb kill-server`';
+  const troubleshoot =
+    'Failed to execute adb command, adb may be unresponsive, try running `adb kill-server` from your terminal';
 
   const reportSuccess = () => {
     recorder.event('cmd', {
