@@ -109,6 +109,8 @@ export function FlipperSetupWizard({
 }) {
   const [closableState, _setClosableState] = React.useState();
   const [currentStep, setCurrentStep] = React.useState<StepName>('platform');
+  const [platformSettingsChanged, setPlatformSettingsChanged] =
+    React.useState(false);
   const doctorState = useStore<StepState>((store) => {
     const reportStatus = store.healthchecks.healthcheckReport.result.status;
     switch (reportStatus) {
@@ -138,7 +140,9 @@ export function FlipperSetupWizard({
             <Typography.Title level={2}>
               Select preferred development environment
             </Typography.Title>
-            <PlatformSelectWizard />
+            <PlatformSelectWizard
+              onSettingsChange={setPlatformSettingsChanged}
+            />
           </div>
         );
       case 'doctor':
@@ -208,6 +212,7 @@ export function FlipperSetupWizard({
               : () => setCurrentStep(getPrevStep(currentStep))
           }
           nextDisabled={
+            (currentStep === 'platform' && platformSettingsChanged) ||
             (currentStep === 'doctor' && doctorState !== 'success') ||
             (currentStep === 'login' && loginState !== 'success')
           }

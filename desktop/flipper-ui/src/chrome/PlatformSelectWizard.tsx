@@ -20,10 +20,12 @@ import {useStore} from '../utils/useStore';
 
 const WIZARD_FINISHED_LOCAL_STORAGE_KEY = 'platformSelectWizardFinished';
 
-type Props = {};
+type Props = {
+  onSettingsChange: (settingsChanged: boolean) => void;
+};
 
 export const PlatformSelectWizard = withTrackingScope(
-  function PlatformSelectWizard(_props: Props) {
+  function PlatformSelectWizard({onSettingsChange}: Props) {
     const store = useStore();
     const platform = getFlipperServerConfig().environmentInfo.os.platform;
     const settings = useStore((state) => state.settingsState);
@@ -59,6 +61,10 @@ export const PlatformSelectWizard = withTrackingScope(
     const {enableAndroid, enableIOS} = updatedSettings;
 
     const settingsPristine = isEqual(settings, updatedSettings);
+
+    useEffect(() => {
+      onSettingsChange(!settingsPristine);
+    }, [onSettingsChange, settingsPristine]);
 
     return (
       <Layout.Container gap>
