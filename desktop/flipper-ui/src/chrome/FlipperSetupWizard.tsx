@@ -15,9 +15,47 @@ import {useDispatch, useStore} from '../utils/useStore';
 import {SignInSheet} from '../chrome/fb-stubs/SignInSheet';
 import {toggleSetupWizardOpen} from '../reducers/application';
 import PWAInstallationWizard from './PWAppInstallationWizard';
+import constants from '../fb-stubs/constants';
 
 type StepName = 'platform' | 'doctor' | 'login' | 'pwa';
 type StepState = 'init' | 'pending' | 'success' | 'fail';
+
+function getNextStep(currentStep: StepName): StepName {
+  if (!constants.IS_PUBLIC_BUILD) {
+    return (
+      {
+        platform: 'doctor',
+        doctor: 'login',
+        login: 'pwa',
+      } as Record<StepName, StepName>
+    )[currentStep];
+  } else {
+    return (
+      {
+        platform: 'doctor',
+        doctor: 'pwa',
+      } as Record<StepName, StepName>
+    )[currentStep];
+  }
+}
+function getPrevStep(currentStep: StepName): StepName {
+  if (!constants.IS_PUBLIC_BUILD) {
+    return (
+      {
+        doctor: 'platform',
+        login: 'doctor',
+        pwa: 'login',
+      } as Record<StepName, StepName>
+    )[currentStep];
+  } else {
+    return (
+      {
+        doctor: 'platform',
+        pwa: 'doctor',
+      } as Record<StepName, StepName>
+    )[currentStep];
+  }
+}
 
 function Footer({
   onNext,
@@ -119,30 +157,13 @@ export function FlipperSetupWizard({
         <Footer
           onNext={() => {
             if (currentStep !== 'pwa') {
-              setCurrentStep(
-                (
-                  {
-                    platform: 'doctor',
-                    doctor: 'login',
-                    login: 'pwa',
-                  } as Record<StepName, StepName>
-                )[currentStep],
-              );
+              setCurrentStep(getNextStep(currentStep));
             }
           }}
           onPrev={
             currentStep === 'platform'
               ? undefined
-              : () =>
-                  setCurrentStep(
-                    (
-                      {
-                        doctor: 'platform',
-                        login: 'doctor',
-                        pwa: 'login',
-                      } as Record<StepName, StepName>
-                    )[currentStep],
-                  )
+              : () => setCurrentStep(getPrevStep(currentStep))
           }
           nextDisabled={
             (currentStep === 'doctor' && doctorState !== 'success') ||
