@@ -120,8 +120,43 @@ async function install(event: any) {
     });
 }
 
-export default function PWAInstallationWizard() {
+function useStandaloneMode() {
+  // Initialize the state based on the current display mode.
+  const [isStandalone, setIsStandalone] = React.useState(
+    window.matchMedia('(display-mode: standalone)').matches,
+  );
+
+  React.useEffect(() => {
+    // Create a MediaQueryList object for the standalone display mode.
+    const mediaQueryList = window.matchMedia('(display-mode: standalone)');
+
+    // Define a handler for the change event.
+    const handleChange = (event: MediaQueryListEvent) => {
+      setIsStandalone(event.matches);
+    };
+
+    // Add the event listener.
+    mediaQueryList.addEventListener('change', handleChange);
+
+    // Clean-up function to remove the event listener.
+    return () => mediaQueryList.removeEventListener('change', handleChange);
+  }, []);
+
+  return isStandalone;
+}
+
+export default function PWAInstallationWizard({
+  onInstall,
+}: {
+  onInstall?: () => void;
+}) {
   tracker.track('pwa-installation-wizard-shown', {});
+  const isPWA = useStandaloneMode();
+  React.useEffect(() => {
+    if (onInstall && isPWA) {
+      onInstall();
+    }
+  }, [isPWA, onInstall]);
   return (
     <div>
       <Layout.Container gap>

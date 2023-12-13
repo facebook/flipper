@@ -168,7 +168,7 @@ export function FlipperSetupWizard({
         return (
           <div>
             <Typography.Title level={2}>Install PWA</Typography.Title>
-            <PWAInstallationWizard />
+            <PWAInstallationWizard onInstall={onHide} />
           </div>
         );
     }
