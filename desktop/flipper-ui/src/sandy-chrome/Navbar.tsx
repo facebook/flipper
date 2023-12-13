@@ -75,6 +75,7 @@ import {Notification} from './notification/Notification';
 import {SandyRatingButton} from './RatingButton';
 import {getFlipperServerConfig} from '../flipperServer';
 import {showChangelog} from '../chrome/ChangelogSheet';
+import {FlipperSetupWizard} from '../chrome/FlipperSetupWizard';
 
 export const Navbar = withTrackingScope(function Navbar() {
   return (
@@ -684,6 +685,15 @@ function ExtrasMenu() {
               key="settings"
               onClick={() => store.dispatch(toggleSettingsModal(true))}>
               Settings
+            </Menu.Item>
+            <Menu.Item
+              key="setupWizard"
+              onClick={() => {
+                Dialog.showModal((onHide) => (
+                  <FlipperSetupWizard onHide={onHide} closable />
+                ));
+              }}>
+              Setup wizard
             </Menu.Item>
             <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
               Help
