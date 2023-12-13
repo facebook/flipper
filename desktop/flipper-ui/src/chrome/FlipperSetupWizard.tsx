@@ -7,34 +7,14 @@
  * @format
  */
 
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Modal, Typography, Button} from 'antd';
 import {PlatformSelectWizard} from './PlatformSelectWizard';
+import SetupDoctorScreen from '../sandy-chrome/SetupDoctorScreen';
+import {useStore} from '../utils/useStore';
 
 type StepName = 'platform' | 'doctor' | 'login' | 'pwa';
-type Step = {
-  key: StepName;
-  comp: () => JSX.Element;
-};
-
-const STEPS: Step[] = [
-  {
-    key: 'platform',
-    comp: () => <PlatformSelectWizard />,
-  },
-  {
-    key: 'doctor',
-    comp: () => <div>Doctor</div>,
-  },
-  {
-    key: 'login',
-    comp: () => <div>Login</div>,
-  },
-  {
-    key: 'pwa',
-    comp: () => <div>Install Pwa</div>,
-  },
-];
+type StepState = 'init' | 'pending' | 'success' | 'fail';
 
 function Footer({
   onNext,
@@ -67,9 +47,37 @@ export function FlipperSetupWizard({
   closable?: boolean;
 }) {
   const [closableState, _setClosableState] = React.useState();
-  const [step, setStep] = React.useState(STEPS[0]);
-  const isLastOptionalStep = step.key === 'pwa';
+  const [currentStep, setCurrentStep] = React.useState<StepName>('platform');
+  const doctorState = useStore<StepState>((store) => {
+    const reportStatus = store.healthchecks.healthcheckReport.result.status;
+    switch (reportStatus) {
+      case 'SUCCESS':
+      case 'WARNING':
+      case 'SKIPPED':
+        return 'success';
+      case 'FAILED':
+        return 'fail';
+      case 'IN_PROGRESS':
+        return 'pending';
+      default:
+        return 'init';
+    }
+  });
+  const [loginState, _setLoginState] = React.useState<StepState>('init');
+  const isLastOptionalStep = currentStep === 'pwa';
   const closable = isLastOptionalStep ? true : closableProp ?? closableState;
+  const content = useMemo(() => {
+    switch (currentStep) {
+      case 'platform':
+        return <PlatformSelectWizard />;
+      case 'doctor':
+        return <SetupDoctorScreen modal={false} visible onClose={() => {}} />;
+      case 'login':
+        return <>TODO</>;
+      case 'pwa':
+        return <>TODO</>;
+    }
+  }, [currentStep]);
   return (
     <Modal
       open
@@ -78,17 +86,36 @@ export function FlipperSetupWizard({
       footer={
         <Footer
           onNext={() => {
-            const nextStep = STEPS[STEPS.indexOf(step) + 1];
-            if (nextStep != null) {
-              setStep(STEPS[STEPS.indexOf(step) + 1]);
+            if (currentStep !== 'pwa') {
+              setCurrentStep(
+                (
+                  {
+                    platform: 'doctor',
+                    doctor: 'login',
+                    login: 'pwa',
+                  } as Record<StepName, StepName>
+                )[currentStep],
+              );
             }
           }}
           onPrev={
-            step.key === 'platform'
+            currentStep === 'platform'
               ? undefined
-              : () => setStep(STEPS[STEPS.indexOf(step) - 1])
+              : () =>
+                  setCurrentStep(
+                    (
+                      {
+                        doctor: 'platform',
+                        login: 'doctor',
+                        pwa: 'login',
+                      } as Record<StepName, StepName>
+                    )[currentStep],
+                  )
           }
-          nextDisabled={step.key === 'pwa'}
+          nextDisabled={
+            (currentStep === 'doctor' && doctorState !== 'success') ||
+            (currentStep === 'login' && loginState !== 'success')
+          }
           hasNext={!isLastOptionalStep}
         />
       }
@@ -100,7 +127,7 @@ export function FlipperSetupWizard({
       }}>
       <Typography.Title>Flipper Setup Wizard</Typography.Title>
       <hr />
-      {<step.comp />}
+      {content}
     </Modal>
   );
 }
