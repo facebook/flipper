@@ -89,9 +89,21 @@ const AndroidSdkInvalidAndroidHome = (
   props: PropsFor<'android.sdk--invalid_ANDROID_HOME'>,
 ) => (
   <Typography.Paragraph>
-    Android SDK Location points to a folder which does not exist:{' '}
-    {props.androidHome}. You can use <OpenFlippeSettingBtn /> to point to a
-    different location.
+    Android SDK Location points to a folder which does not exist:
+    <br />
+    <code>{props.androidHome}</code>
+    <br />
+    {props.existingAndroidHome != null ? (
+      <>
+        You have another location that can be used{' '}
+        <CliCommand title="" command={props.existingAndroidHome} /> you can set
+        it up in <OpenFlippeSettingBtn />.
+      </>
+    ) : (
+      <>
+        You can change it in <OpenFlippeSettingBtn />.
+      </>
+    )}
   </Typography.Paragraph>
 );
 

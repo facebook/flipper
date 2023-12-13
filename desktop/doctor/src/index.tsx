@@ -101,9 +101,21 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 message: ['android.sdk--no_ANDROID_HOME'],
               };
             } else if (!fs.existsSync(androidHome)) {
+              const androidStudioAndroidHome = `${os.homedir()}/Library/Android/sdk`;
+              const globalAndroidHome = '/opt/android_sdk';
+              const existingAndroidHome = (await fs_extra.exists(
+                androidStudioAndroidHome,
+              ))
+                ? androidStudioAndroidHome
+                : (await fs_extra.exists(globalAndroidHome))
+                ? globalAndroidHome
+                : null;
               return {
                 hasProblem: true,
-                message: ['android.sdk--invalid_ANDROID_HOME', {androidHome}],
+                message: [
+                  'android.sdk--invalid_ANDROID_HOME',
+                  {androidHome, existingAndroidHome},
+                ],
               };
             } else {
               const platformToolsDir = path.join(androidHome, 'platform-tools');
