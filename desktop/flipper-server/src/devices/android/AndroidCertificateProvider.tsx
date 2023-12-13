@@ -34,7 +34,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     recorder.log(clientQuery, 'Query available devices via adb');
     const devices = await this.adb.listDevices();
     if (devices.length === 0) {
-      recorder.error(clientQuery, 'No devices found via adb');
+      recorder.logError(clientQuery, 'No devices found via adb');
       throw new Error('No Android devices found');
     }
 
@@ -60,7 +60,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     const matchingIds = matches.filter((m) => m.isMatch).map((m) => m.id);
 
     if (matchingIds.length == 0) {
-      recorder.error(
+      recorder.logError(
         clientQuery,
         'Unable to find a matching device for the incoming request',
       );

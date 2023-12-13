@@ -256,7 +256,7 @@ async function _queryTargetsWithIdbCompanion(
 
       const devices = parseIdbTargets(stdout.toString());
       if (devices.length > 0 && !isPhysicalDeviceEnabled) {
-        recorder.rawError(
+        recorder.logErrorGeneric(
           `You are trying to connect Physical Device.
           Please enable the toggle "Enable physical iOS device" from the setting screen.`,
         );

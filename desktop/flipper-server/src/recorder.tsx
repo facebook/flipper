@@ -104,15 +104,24 @@ class Recorder {
     handler(payload);
   }
 
+  logConnectionRecordEntries(logs: ConnectionRecordEntry[]) {
+    if (this.flipperServer_) {
+      this.flipperServer_.emit('connectivity-troubleshoot-log', logs);
+      logs.forEach((entry) =>
+        getLogger().track('usage', 'connectivity-log', entry),
+      );
+    }
+  }
+
   log(clientQuery: ClientQuery, ...args: any[]) {
     this.log_('info', clientQuery, args);
   }
 
-  rawError(...args: any[]) {
+  logErrorGeneric(...args: any[]) {
     this.log_('error', this.undefinedClientQuery_, args);
   }
 
-  error(clientQuery: ClientQuery, ...args: any[]) {
+  logError(clientQuery: ClientQuery, ...args: any[]) {
     this.log_('error', clientQuery, args);
   }
 

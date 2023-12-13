@@ -678,6 +678,7 @@ export type SignCertificateAckMessage = {
   config: any;
   logs?: string[];
 };
+
 export type GetPluginsMessage = {
   id: number;
   method: 'getPlugins';
