@@ -105,6 +105,10 @@ export function FlipperSetupWizard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
+  const onClose = () => {
+    onHide();
+    localStorage.setItem(SETUP_WIZARD_FINISHED_LOCAL_STORAGE_KEY, 'true');
+  };
 
   return (
     <Modal
@@ -150,7 +154,7 @@ export function FlipperSetupWizard({
       width={650}
       onCancel={() => {
         if (closable) {
-          onHide();
+          onClose();
         }
       }}>
       <Typography.Title>Flipper Setup Wizard</Typography.Title>
