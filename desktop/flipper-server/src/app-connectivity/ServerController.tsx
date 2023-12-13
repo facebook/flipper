@@ -17,6 +17,7 @@ import {
   UninitializedClient,
   reportPlatformFailures,
   FlipperServerEvents,
+  ConnectionRecordEntry,
 } from 'flipper-common';
 import CertificateProvider from './certificate-exchange/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
@@ -153,6 +154,10 @@ export class ServerController
     ]);
   }
 
+  onDeviceLogs(logs: ConnectionRecordEntry[]) {
+    recorder.logConnectionRecordEntries(logs);
+  }
+
   onConnectionCreated(
     clientQuery: SecureClientQuery,
     clientConnection: ClientConnection,
@@ -231,7 +236,7 @@ export class ServerController
       clientQuery.os === 'iOS' &&
       !getFlipperServerConfig().settings.enableIOS
     ) {
-      recorder.error(
+      recorder.logError(
         clientQuery,
         `Refusing connection since iOS support is disabled in settings`,
       );
@@ -241,7 +246,7 @@ export class ServerController
       clientQuery.os === 'Android' &&
       !getFlipperServerConfig().settings.enableAndroid
     ) {
-      recorder.error(
+      recorder.logError(
         clientQuery,
         `Refusing connection since Android support is disabled in settings`,
       );
@@ -416,7 +421,7 @@ export class ServerController
   }
 
   onClientSetupError(clientQuery: ClientQuery, e: any) {
-    recorder.error(clientQuery, 'Failed to exchange certificate', e);
+    recorder.logError(clientQuery, 'Failed to exchange certificate', e);
     const client: UninitializedClient = {
       os: clientQuery.os,
       deviceName: clientQuery.device,
@@ -597,7 +602,7 @@ class ConnectionTracker {
 
     this.connectionAttempts.set(key, entry);
     if (entry.length >= this.connectionProblemThreshold) {
-      recorder.error(
+      recorder.logError(
         clientQuery,
         `Connection loop detected with ${key}. Connected ${
           this.connectionProblemThreshold

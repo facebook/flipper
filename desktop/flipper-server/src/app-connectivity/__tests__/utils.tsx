@@ -48,6 +48,7 @@ export class WSMessageAccumulator {
 export const processCSRResponse = {deviceId: 'dagobah'};
 
 export const createMockSEListener = (): ServerEventsListener => ({
+  onDeviceLogs: jest.fn(),
   onListening: jest.fn(),
   onConnectionAttempt: jest.fn(),
   onSecureConnectionAttempt: jest.fn(),

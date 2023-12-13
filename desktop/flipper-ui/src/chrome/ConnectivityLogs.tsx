@@ -39,8 +39,8 @@ const rows = createDataSource<ConnectionRecordEntry>([], {
 export function enableConnectivityHook(flipperServer: FlipperServer) {
   flipperServer.on(
     'connectivity-troubleshoot-log',
-    (entry: ConnectionRecordEntry) => {
-      rows.append(entry);
+    (entries: ConnectionRecordEntry[]) => {
+      entries.forEach((entry) => rows.append(entry));
     },
   );
   flipperServer.on(

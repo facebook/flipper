@@ -36,7 +36,7 @@ export default abstract class CertificateProvider {
     const csr = this.santitizeString(unsanitizedCsr);
     if (csr === '') {
       const msg = `Received empty CSR from ${clientQuery.os} device`;
-      recorder.error(clientQuery, msg);
+      recorder.logError(clientQuery, msg);
       return Promise.reject(new Error(msg));
     }
 

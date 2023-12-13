@@ -159,7 +159,7 @@ export type FlipperServerEvents = {
     message: string;
   };
   'connectivity-troubleshoot-cmd': CommandRecordEntry;
-  'connectivity-troubleshoot-log': ConnectionRecordEntry;
+  'connectivity-troubleshoot-log': ConnectionRecordEntry[];
   'connectivity-troubleshoot-notification': {
     type: 'error' | 'warning';
     title: string;
@@ -678,6 +678,7 @@ export type SignCertificateAckMessage = {
   config: any;
   logs?: string[];
 };
+
 export type GetPluginsMessage = {
   id: number;
   method: 'getPlugins';

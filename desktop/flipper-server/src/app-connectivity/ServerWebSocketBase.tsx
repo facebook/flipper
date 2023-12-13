@@ -11,6 +11,7 @@ import {ClientConnection} from './ClientConnection';
 import {
   ClientDescription,
   ClientQuery,
+  ConnectionRecordEntry,
   SecureClientQuery,
   SignCertificateMessage,
 } from 'flipper-common';
@@ -22,6 +23,7 @@ import GK from '../fb-stubs/GK';
  * with a client.
  */
 export interface ServerEventsListener {
+  onDeviceLogs(logs: ConnectionRecordEntry[]): void;
   /**
    * Server started and listening at the specified port.
    * @param port The port in which the server is listening to.
@@ -151,7 +153,7 @@ abstract class ServerWebSocketBase {
         `[conn] Starting certificate exchange: ${clientQuery.app} on ${clientQuery.device}`,
       );
 
-      this.debugLogs(logs);
+      this.processDeviceLogs(clientQuery, logs);
 
       try {
         const result = await this.listener.onProcessCSR(
@@ -177,7 +179,7 @@ abstract class ServerWebSocketBase {
         remainder,
       );
 
-      this.debugLogs(logs);
+      this.processDeviceLogs(clientQuery, logs);
     }
 
     return undefined;
@@ -198,27 +200,39 @@ abstract class ServerWebSocketBase {
     this.stopAcceptingNewConectionsImpl();
   }
 
-  debugLogs(logs: string[] | undefined) {
+  processDeviceLogs(clientQuery: ClientQuery, logs: string[] | undefined) {
     if (logs) {
       console.info(`[conn] Device logs until now are found below`);
-      logs.forEach((log: string) => {
+      const entries: ConnectionRecordEntry[] = [];
+      for (const log of logs) {
         const match = log.match(this.deviceLogRegex);
         if (match) {
           const timestamp = match[1];
-          const level = match[2];
+          const level = match[2] as 'info' | 'warning' | 'error';
           const message = match[3];
 
           const timestampMS: number = parseInt(timestamp, 10);
+
           if (!isNaN(timestampMS)) {
-            const date: Date = new Date(timestampMS);
+            const time: Date = new Date(timestampMS);
+            entries.push({
+              time,
+              type: level,
+              os: clientQuery.os,
+              device: clientQuery.device,
+              app: clientQuery.app,
+              message,
+              medium: clientQuery.medium,
+            });
+
             console.log(
-              `[conn][device][log][${date.toISOString()}][${level}] ${message}`,
+              `[conn][device][log][${time.toISOString()}][${level}] ${message}`,
             );
           }
-        } else {
-          console.log(`[conn][device][log] ${log}`);
         }
-      });
+      }
+
+      this.listener.onDeviceLogs(entries);
     }
   }
 

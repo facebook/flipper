@@ -246,7 +246,7 @@ class ServerWebSocket extends ServerWebSocketBase {
 
     const parsedMessage = parseMessageToJson(message);
     if (!parsedMessage) {
-      recorder.error(clientQuery, 'Failed to parse message', message);
+      recorder.logError(clientQuery, 'Failed to parse message', message);
       throw new Error(`Failed to parse message`);
     }
     return parsedMessage;

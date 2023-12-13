@@ -52,7 +52,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
       clientQuery,
     );
     if (targets.length === 0) {
-      recorder.error(clientQuery, 'No devices found');
+      recorder.logError(clientQuery, 'No devices found');
       throw new Error('No iOS devices found');
     }
     const deviceMatchList = targets.map(async (target) => {
@@ -66,7 +66,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
         );
         return {id: target.udid, isMatch};
       } catch (e) {
-        recorder.error(
+        recorder.logError(
           clientQuery,
           'Unable to find a matching device for the incoming request',
         );
