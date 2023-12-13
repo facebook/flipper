@@ -24,9 +24,6 @@ import {useStore} from '../utils/useStore';
 import {AppInspect} from './appinspect/AppInspect';
 import PluginContainer from '../PluginContainer';
 import {ContentContainer} from './ContentContainer';
-import PlatformSelectWizard, {
-  hasPlatformWizardBeenDone,
-} from '../chrome/PlatformSelectWizard';
 import PWAInstallationWizard, {
   shouldShowPWAInstallationWizard,
 } from '../chrome/PWAppInstallationWizard';
@@ -39,7 +36,6 @@ import {Button, Modal, notification} from 'antd';
 import isProduction from '../utils/isProduction';
 import {uiPerfTracker} from '../utils/UIPerfTracker';
 import {WarningOutlined} from '@ant-design/icons';
-import {getFlipperServerConfig} from '../flipperServer';
 import {
   FlipperSetupWizard,
   hasSetupWizardCompleted,
@@ -64,15 +60,6 @@ export function SandyApp() {
     if (hasSetupWizardCompleted(window.localStorage)) {
       Dialog.showModal((onHide) => (
         <FlipperSetupWizard onHide={onHide} closable={false} />
-      ));
-    }
-
-    if (hasPlatformWizardBeenDone(window.localStorage)) {
-      Dialog.showModal((onHide) => (
-        <PlatformSelectWizard
-          onHide={onHide}
-          platform={getFlipperServerConfig().environmentInfo.os.platform}
-        />
       ));
     }
 

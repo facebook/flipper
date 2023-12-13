@@ -7,77 +7,58 @@
  * @format
  */
 
-import React, {Component} from 'react';
-import {updateSettings, Action} from '../reducers/settings';
-import {connect} from 'react-redux';
-import {State as Store} from '../reducers';
+import React, {useState, useEffect, useCallback} from 'react';
+import {updateSettings} from '../reducers/settings';
 import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
 import {isEqual} from 'lodash';
-import {Platform, reportUsage, Settings} from 'flipper-common';
-import {Modal, Button} from 'antd';
+import {reportUsage, Settings} from 'flipper-common';
+import {Button} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
-import {getFlipperServer} from '../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
+import {useStore} from '../utils/useStore';
 
 const WIZARD_FINISHED_LOCAL_STORAGE_KEY = 'platformSelectWizardFinished';
 
-type OwnProps = {
-  onHide: () => void;
-  platform: Platform;
-};
+type Props = {};
 
-type StateFromProps = {
-  settings: Settings;
-};
-
-type DispatchFromProps = {
-  updateSettings: (settings: Settings) => Action;
-};
-
-type State = {
-  updatedSettings: Settings;
-  forcedRestartSettings: Partial<Settings>;
-};
-
-type Props = OwnProps & StateFromProps & DispatchFromProps;
-class PlatformSelectWizard extends Component<Props, State> {
-  state: State = {
-    updatedSettings: {...this.props.settings},
-    forcedRestartSettings: {},
-  };
-
-  componentDidMount() {
-    reportUsage('platformwizard:opened');
-  }
-
-  componentWillUnmount() {
-    reportUsage('platformwizard:closed');
-  }
-
-  applyChanges = async (settingsPristine: boolean) => {
-    this.props.updateSettings(this.state.updatedSettings);
-
-    markWizardAsCompleted();
-
-    this.props.onHide();
-
-    return flush().then(() => {
-      if (!settingsPristine) {
-        reportUsage('platformwizard:action:changed');
-        getFlipperServer().exec('shutdown');
-      } else {
-        reportUsage('platformwizard:action:noop');
-      }
+export const PlatformSelectWizard = withTrackingScope(
+  function PlatformSelectWizard(_props: Props) {
+    const store = useStore();
+    const platform = getFlipperServerConfig().environmentInfo.os.platform;
+    const settings = useStore((state) => state.settingsState);
+    const [updatedSettings, setUpdateSettings] = useState<Settings>({
+      ...settings,
     });
-  };
 
-  render() {
-    const {enableAndroid, enableIOS} = this.state.updatedSettings;
+    useEffect(() => {
+      reportUsage('platformwizard:opened');
+      return () => {
+        reportUsage('platformwizard:closed');
+      };
+    }, []);
 
-    const settingsPristine = isEqual(
-      this.props.settings,
-      this.state.updatedSettings,
+    const applyChanges = useCallback(
+      async (settingsPristine: boolean) => {
+        store.dispatch(updateSettings(updatedSettings));
+
+        markWizardAsCompleted();
+
+        return flush().then(() => {
+          if (!settingsPristine) {
+            reportUsage('platformwizard:action:changed');
+            getFlipperServer().exec('shutdown');
+          } else {
+            reportUsage('platformwizard:action:noop');
+          }
+        });
+      },
+      [store, updatedSettings],
     );
+
+    const {enableAndroid, enableIOS} = updatedSettings;
+
+    const settingsPristine = isEqual(settings, updatedSettings);
 
     const contents = (
       <Layout.Container gap>
@@ -91,19 +72,18 @@ class PlatformSelectWizard extends Component<Props, State> {
           label="Android Developer"
           toggled={enableAndroid}
           onChange={(v) => {
-            this.setState({
-              updatedSettings: {
-                ...this.state.updatedSettings,
-                enableAndroid: v,
-              },
+            setUpdateSettings({
+              ...updatedSettings,
+              enableAndroid: v,
             });
           }}></ToggledSection>
         <ToggledSection
           label="iOS Developer"
-          toggled={enableIOS && this.props.platform === 'darwin'}
+          toggled={enableIOS && platform === 'darwin'}
           onChange={(v) => {
-            this.setState({
-              updatedSettings: {...this.state.updatedSettings, enableIOS: v},
+            setUpdateSettings({
+              ...updatedSettings,
+              enableIOS: v,
             });
           }}></ToggledSection>
       </Layout.Container>
@@ -112,37 +92,20 @@ class PlatformSelectWizard extends Component<Props, State> {
     const footerText = settingsPristine ? 'Looks fine' : 'Apply and Restart';
     const footer = (
       <>
-        <Button
-          type="primary"
-          onClick={() => this.applyChanges(settingsPristine)}>
+        <Button type="primary" onClick={() => applyChanges(settingsPristine)}>
           {footerText}
         </Button>
       </>
     );
 
     return (
-      <Modal
-        open
-        centered
-        onCancel={() => {
-          this.props.onHide();
-          markWizardAsCompleted();
-        }}
-        width={570}
-        title="Select Platform Configuration"
-        footer={footer}>
+      <>
         {contents}
-      </Modal>
+        {footer}
+      </>
     );
-  }
-}
-
-export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({settingsState}) => ({
-    settings: settingsState,
-  }),
-  {updateSettings},
-)(withTrackingScope(PlatformSelectWizard));
+  },
+);
 
 export function hasPlatformWizardBeenDone(
   localStorage: Storage | undefined,
