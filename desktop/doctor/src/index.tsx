@@ -154,7 +154,11 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 run: async (
                   e: FlipperDoctor.EnvironmentInfo,
                 ): Promise<FlipperDoctor.HealthcheckRunResult> => {
-                  const hasProblem = e.IDEs == null || e.IDEs.Xcode == null;
+                  const hasProblem =
+                    e.IDEs == null ||
+                    e.IDEs.Xcode == null ||
+                    // error/edgecase in EnvironmentInfo
+                    e.IDEs.Xcode.version === '/undefined';
                   return {
                     hasProblem,
                     message: hasProblem
