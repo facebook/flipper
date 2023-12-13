@@ -479,16 +479,19 @@ function TroubleshootMenu() {
   const result = useStore(
     (state) => state.healthchecks.healthcheckReport.result,
   );
+  const isSetupWizardOpen = useStore(
+    (state) => state.application.isSetupWizardOpen,
+  );
   const hasProblem = useMemo(() => checkHasProblem(result), [result]);
   const hasNewProblem = useMemo(() => checkHasNewProblem(result), [result]);
 
   const [isDoctorVisible, setIsDoctorVisible] = useState(hasProblem);
 
   useEffect(() => {
-    if (hasNewProblem) {
+    if (hasNewProblem && !isSetupWizardOpen) {
       setIsDoctorVisible(true);
     }
-  }, [hasNewProblem]);
+  }, [hasNewProblem, isSetupWizardOpen]);
 
   const count = flipperErrorLogCount || hasNewProblem || 0;
 
