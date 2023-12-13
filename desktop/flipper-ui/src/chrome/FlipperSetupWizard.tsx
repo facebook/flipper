@@ -136,47 +136,48 @@ export function FlipperSetupWizard({
     switch (currentStep) {
       case 'platform':
         return (
-          <div>
-            <Typography.Title level={2}>
-              Select preferred development environment
-            </Typography.Title>
-            <PlatformSelectWizard
-              onSettingsChange={setPlatformSettingsChanged}
-            />
-          </div>
+          <PlatformSelectWizard onSettingsChange={setPlatformSettingsChanged} />
         );
       case 'doctor':
-        return (
-          <div>
-            <Typography.Title level={2}>Doctor</Typography.Title>
-            <SetupDoctorScreen modal={false} visible onClose={() => {}} />
-          </div>
-        );
+        return <SetupDoctorScreen modal={false} visible onClose={() => {}} />;
       case 'login':
-        return (
-          <div>
-            <Typography.Title level={2}>Log in</Typography.Title>
-            {loginState === 'success' ? (
-              <Typography.Paragraph>You are logged in</Typography.Paragraph>
-            ) : (
-              <SignInSheet
-                onHide={() => {
-                  setCurrentStep('pwa');
-                }}
-                fromSetupWizard
-              />
-            )}
-          </div>
+        return loginState === 'success' ? (
+          <Typography.Paragraph>You are logged in</Typography.Paragraph>
+        ) : (
+          <SignInSheet
+            onHide={() => {
+              setCurrentStep('pwa');
+            }}
+            fromSetupWizard
+          />
         );
       case 'pwa':
-        return (
-          <div>
-            <Typography.Title level={2}>Install PWA</Typography.Title>
-            <PWAInstallationWizard onInstall={onHide} />
-          </div>
-        );
+        return <PWAInstallationWizard onInstall={onHide} />;
     }
   }, [currentStep, loginState]);
+  const title = useMemo(() => {
+    let name = '';
+    switch (currentStep) {
+      case 'platform':
+        name = 'Select development environment';
+        break;
+      case 'doctor':
+        name = 'Health check';
+        break;
+      case 'login':
+        name = 'Log in';
+        break;
+      case 'pwa':
+        name = 'Install PWA';
+        break;
+    }
+    return (
+      <Typography.Title>
+        {name} {getCurrentStepNumber(currentStep)} /{' '}
+        {constants.IS_PUBLIC_BUILD ? 3 : 4}
+      </Typography.Title>
+    );
+  }, [currentStep]);
 
   React.useEffect(
     () => {
@@ -225,10 +226,7 @@ export function FlipperSetupWizard({
           onClose();
         }
       }}>
-      <Typography.Title>
-        Flipper Setup Wizard. Step {getCurrentStepNumber(currentStep)} /{' '}
-        {constants.IS_PUBLIC_BUILD ? 3 : 4}
-      </Typography.Title>
+      {title}
       <hr />
       {content}
     </Modal>
