@@ -14,6 +14,7 @@ import SetupDoctorScreen from '../sandy-chrome/SetupDoctorScreen';
 import {useDispatch, useStore} from '../utils/useStore';
 import {SignInSheet} from '../chrome/fb-stubs/SignInSheet';
 import {toggleSetupWizardOpen} from '../reducers/application';
+import PWAInstallationWizard from './PWAppInstallationWizard';
 
 type StepName = 'platform' | 'doctor' | 'login' | 'pwa';
 type StepState = 'init' | 'pending' | 'success' | 'fail';
@@ -89,7 +90,7 @@ export function FlipperSetupWizard({
           />
         );
       case 'pwa':
-        return <>PWA here</>;
+        return <PWAInstallationWizard />;
     }
   }, [currentStep, loginState]);
 

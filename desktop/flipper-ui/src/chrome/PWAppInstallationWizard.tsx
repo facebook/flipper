@@ -8,14 +8,10 @@
  */
 
 import React from 'react';
-import {Image, Modal, Button} from 'antd';
+import {Image, Button} from 'antd';
 import {getFlipperLib, Layout, _NuxManagerContext} from 'flipper-plugin';
 import isProduction from '../utils/isProduction';
 import {getFlipperServer} from '../flipperServer';
-
-type Props = {
-  onHide: () => void;
-};
 
 type TrackerEvents = {
   'pwa-installation-wizard-should-show': {show: boolean; reason: string};
@@ -103,19 +99,6 @@ export function shouldShowPWAInstallationWizard(): boolean {
   return true;
 }
 
-function neverShowPWAInstallationWizard() {
-  try {
-    // Only interested in setting any value. However,
-    // in this case, the time in which this option was selected is
-    // stored as it may be relevant in the future.
-    const neverShowTimestamp = Date.now();
-
-    window.localStorage.setItem(neverAskAgainKey, String(neverShowTimestamp));
-  } catch (e) {}
-
-  tracker.track('pwa-installation-wizard-should-never-show', {});
-}
-
 async function install(event: any) {
   event.prompt();
 
@@ -137,93 +120,63 @@ async function install(event: any) {
     });
 }
 
-export default function PWAInstallationWizard(props: Props) {
+export default function PWAInstallationWizard() {
   tracker.track('pwa-installation-wizard-shown', {});
-  const contents = (
-    <Layout.Container gap>
-      <Layout.Container style={{width: '100%', paddingBottom: 15}}>
-        <p>
-          Please install Flipper as a PWA. Installed Progressive Web Apps run in
-          a standalone window instead of a browser tab. They're launchable from
-          your home screen, dock, taskbar, or shelf. It's possible to search for
-          and jump between them with the app switcher, making them feel like
-          part of the device they're installed on. New capabilities open up
-          after a web app is installed. Keyboard shortcuts, usually reserved
-          when running in the browser, become available too.
-        </p>
-        <p>
-          <b>Install it by clicking the 'Install' button below.</b>
-        </p>
-        <p>
-          Alternatively, click on{' '}
-          <Image width={18} height={18} src="./install_desktop.svg" /> which can
-          be found at the right-side of the search bar next to the bookmarks
-          icon.{' '}
-        </p>
-        {getFlipperLib().isFB && (
-          <p>
-            Installation instructions can also be found{' '}
-            <a
-              target="_blank"
-              href="https://fb.workplace.com/groups/flipperfyi/permalink/1485547228878234/">
-              here
-            </a>
-            .
-          </p>
-        )}
-      </Layout.Container>
-    </Layout.Container>
-  );
-
-  const footer = (
-    <>
-      <Button
-        type="ghost"
-        onClick={() => {
-          props.onHide();
-        }}>
-        Not now, remind me next time
-      </Button>
-      <Button
-        type="ghost"
-        onClick={() => {
-          neverShowPWAInstallationWizard();
-          props.onHide();
-        }}>
-        Don't ask again
-      </Button>
-      <Button
-        type="primary"
-        onClick={async () => {
-          const installEvent = (globalThis as any).PWAppInstallationEvent;
-          if (installEvent) {
-            await install(installEvent).then(props.onHide);
-          } else {
-            console.warn(
-              '[PWA] Installation event was undefined, unable to install',
-            );
-            props.onHide();
-          }
-        }}>
-        Install
-      </Button>
-    </>
-  );
-
   return (
-    <Modal
-      closable={false}
-      keyboard={false} // Don't allow escape to close modal
-      maskClosable={false} // Don't allow clicking away
-      open
-      centered
-      onCancel={() => {
-        props.onHide();
-      }}
-      width={570}
-      title="Install Flipper"
-      footer={footer}>
-      {contents}
-    </Modal>
+    <div>
+      <Layout.Container gap>
+        <Layout.Container style={{width: '100%', paddingBottom: 15}}>
+          <p>
+            Please install Flipper as a PWA. Installed Progressive Web Apps run
+            in a standalone window instead of a browser tab. They're launchable
+            from your home screen, dock, taskbar, or shelf. It's possible to
+            search for and jump between them with the app switcher, making them
+            feel like part of the device they're installed on. New capabilities
+            open up after a web app is installed. Keyboard shortcuts, usually
+            reserved when running in the browser, become available too.
+          </p>
+          <p>
+            <b>Install it by clicking the 'Install' button below.</b>
+          </p>
+          <p>
+            Alternatively, click on{' '}
+            <Image width={18} height={18} src="./install_desktop.svg" /> which
+            can be found at the right-side of the search bar next to the
+            bookmarks icon.{' '}
+          </p>
+          {getFlipperLib().isFB && (
+            <p>
+              Installation instructions can also be found{' '}
+              <a
+                target="_blank"
+                href="https://fb.workplace.com/groups/flipperfyi/permalink/1485547228878234/">
+                here
+              </a>
+              .
+            </p>
+          )}
+        </Layout.Container>
+      </Layout.Container>
+
+      <br />
+
+      <div>
+        <Button
+          type="primary"
+          style={{marginLeft: 'auto', display: 'block'}}
+          onClick={async () => {
+            const installEvent = (globalThis as any).PWAppInstallationEvent;
+            if (installEvent) {
+              await install(installEvent);
+            } else {
+              console.warn(
+                '[PWA] Installation event was undefined, unable to install',
+              );
+            }
+          }}>
+          Install
+        </Button>
+      </div>
+    </div>
   );
 }
