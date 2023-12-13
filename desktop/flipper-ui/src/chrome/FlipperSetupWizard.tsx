@@ -9,6 +9,7 @@
 
 import React from 'react';
 import {Modal, Typography, Button} from 'antd';
+import {PlatformSelectWizard} from './PlatformSelectWizard';
 
 type StepName = 'platform' | 'doctor' | 'login' | 'pwa';
 type Step = {
@@ -19,7 +20,7 @@ type Step = {
 const STEPS: Step[] = [
   {
     key: 'platform',
-    comp: () => <div>Select Platform</div>,
+    comp: () => <PlatformSelectWizard />,
   },
   {
     key: 'doctor',

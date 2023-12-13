@@ -13,7 +13,7 @@ import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
 import {isEqual} from 'lodash';
 import {reportUsage, Settings} from 'flipper-common';
-import {Button} from 'antd';
+import {Button, Typography} from 'antd';
 import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
 import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 import {useStore} from '../utils/useStore';
@@ -60,14 +60,13 @@ export const PlatformSelectWizard = withTrackingScope(
 
     const settingsPristine = isEqual(settings, updatedSettings);
 
-    const contents = (
+    return (
       <Layout.Container gap>
-        <Layout.Container style={{width: '100%', paddingBottom: 15}}>
-          <>
-            Please select the targets you intend to debug, so that we can
-            optimise the configuration for the selected targets.
-          </>
-        </Layout.Container>
+        <Typography.Paragraph>
+          Please select the targets you intend to debug, so that we can optimise
+          the configuration for the selected targets. You can change it later in
+          the settings.
+        </Typography.Paragraph>
         <ToggledSection
           label="Android Developer"
           toggled={enableAndroid}
@@ -76,7 +75,8 @@ export const PlatformSelectWizard = withTrackingScope(
               ...updatedSettings,
               enableAndroid: v,
             });
-          }}></ToggledSection>
+          }}
+        />
         <ToggledSection
           label="iOS Developer"
           toggled={enableIOS && platform === 'darwin'}
@@ -85,24 +85,17 @@ export const PlatformSelectWizard = withTrackingScope(
               ...updatedSettings,
               enableIOS: v,
             });
-          }}></ToggledSection>
-      </Layout.Container>
-    );
-
-    const footerText = settingsPristine ? 'Looks fine' : 'Apply and Restart';
-    const footer = (
-      <>
-        <Button type="primary" onClick={() => applyChanges(settingsPristine)}>
-          {footerText}
+          }}
+        />
+        <hr />
+        <Button
+          type="primary"
+          onClick={() => applyChanges(settingsPristine)}
+          disabled={settingsPristine}
+          title={settingsPristine ? 'No changes made' : ''}>
+          Save changes
         </Button>
-      </>
-    );
-
-    return (
-      <>
-        {contents}
-        {footer}
-      </>
+      </Layout.Container>
     );
   },
 );
