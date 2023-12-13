@@ -113,10 +113,10 @@ const powerSearchConfigEntireRow: FieldConfig = {
   label: 'Row',
   key: 'entireRow',
   operators: {
-    searializable_object_contains:
-      dataTablePowerSearchOperators.searializable_object_contains(),
-    searializable_object_not_contains:
-      dataTablePowerSearchOperators.searializable_object_not_contains(),
+    searializable_object_contains_any_of:
+      dataTablePowerSearchOperators.searializable_object_contains_any_of(),
+    searializable_object_contains_none_of:
+      dataTablePowerSearchOperators.searializable_object_contains_none_of(),
     searializable_object_matches_regex:
       dataTablePowerSearchOperators.searializable_object_matches_regex(),
   },
@@ -521,8 +521,8 @@ export function DataTable<T extends object>(
           }
           case 'object': {
             columnPowerSearchOperators = [
-              dataTablePowerSearchOperators.searializable_object_contains(),
-              dataTablePowerSearchOperators.searializable_object_not_contains(),
+              dataTablePowerSearchOperators.searializable_object_contains_any_of(),
+              dataTablePowerSearchOperators.searializable_object_contains_none_of(),
               dataTablePowerSearchOperators.searializable_object_matches_regex(),
             ];
             break;

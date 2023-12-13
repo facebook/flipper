@@ -51,6 +51,11 @@ export const dataTablePowerSearchOperators = {
     key: 'searializable_object_contains',
     valueType: 'STRING',
   }),
+  searializable_object_contains_any_of: () => ({
+    label: 'contains any of',
+    key: 'searializable_object_contains_any_of',
+    valueType: 'STRING_SET',
+  }),
   searializable_object_matches_regex: () => ({
     label: 'matches regex',
     key: 'searializable_object_matches_regex',
@@ -60,6 +65,11 @@ export const dataTablePowerSearchOperators = {
     label: 'does not contain',
     key: 'searializable_object_not_contains',
     valueType: 'STRING',
+  }),
+  searializable_object_contains_none_of: () => ({
+    label: 'contains none of',
+    key: 'searializable_object_contains_none_of',
+    valueType: 'STRING_SET',
   }),
   string_set_contains_any_of: () => ({
     label: 'contains any of',
@@ -273,11 +283,27 @@ export const dataTablePowerSearchOperatorProcessorConfig = {
     searchValue: string,
     value: object,
   ) => JSON.stringify(value).toLowerCase().includes(searchValue.toLowerCase()),
+  searializable_object_contains_any_of: (
+    _operator,
+    searchValue: string[],
+    value: object,
+  ) =>
+    searchValue.some((item) =>
+      JSON.stringify(value)?.toLowerCase().includes(item.toLowerCase()),
+    ),
   searializable_object_not_contains: (
     _operator,
     searchValue: string,
     value: object,
   ) => !JSON.stringify(value).toLowerCase().includes(searchValue.toLowerCase()),
+  searializable_object_contains_none_of: (
+    _operator,
+    searchValue: string[],
+    value: object,
+  ) =>
+    !searchValue.some((item) =>
+      JSON.stringify(value)?.toLowerCase().includes(item.toLowerCase()),
+    ),
   string_matches_exactly: (_operator, searchValue: string, value: string) =>
     tryConvertingUnknownToString(value) === searchValue,
   string_not_matches_exactly: (_operator, searchValue: string, value: string) =>
