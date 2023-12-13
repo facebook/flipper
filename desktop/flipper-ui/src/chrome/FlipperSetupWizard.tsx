@@ -56,6 +56,26 @@ function getPrevStep(currentStep: StepName): StepName {
     )[currentStep];
   }
 }
+function getCurrentStepNumber(step: StepName): number {
+  if (!constants.IS_PUBLIC_BUILD) {
+    return (
+      {
+        platform: 1,
+        doctor: 2,
+        login: 3,
+        pwa: 4,
+      } as Record<StepName, number>
+    )[step];
+  } else {
+    return (
+      {
+        platform: 1,
+        doctor: 2,
+        pwa: 3,
+      } as Record<StepName, number>
+    )[step];
+  }
+}
 
 function Footer({
   onNext,
@@ -113,22 +133,44 @@ export function FlipperSetupWizard({
   const content = useMemo(() => {
     switch (currentStep) {
       case 'platform':
-        return <PlatformSelectWizard />;
+        return (
+          <div>
+            <Typography.Title level={2}>
+              Select preferred development environment
+            </Typography.Title>
+            <PlatformSelectWizard />
+          </div>
+        );
       case 'doctor':
-        return <SetupDoctorScreen modal={false} visible onClose={() => {}} />;
+        return (
+          <div>
+            <Typography.Title level={2}>Doctor</Typography.Title>
+            <SetupDoctorScreen modal={false} visible onClose={() => {}} />
+          </div>
+        );
       case 'login':
-        return loginState === 'success' ? (
-          <Typography.Paragraph>You are logged in</Typography.Paragraph>
-        ) : (
-          <SignInSheet
-            onHide={() => {
-              setCurrentStep('pwa');
-            }}
-            fromSetupWizard
-          />
+        return (
+          <div>
+            <Typography.Title level={2}>Log in</Typography.Title>
+            {loginState === 'success' ? (
+              <Typography.Paragraph>You are logged in</Typography.Paragraph>
+            ) : (
+              <SignInSheet
+                onHide={() => {
+                  setCurrentStep('pwa');
+                }}
+                fromSetupWizard
+              />
+            )}
+          </div>
         );
       case 'pwa':
-        return <PWAInstallationWizard />;
+        return (
+          <div>
+            <Typography.Title level={2}>Install PWA</Typography.Title>
+            <PWAInstallationWizard />
+          </div>
+        );
     }
   }, [currentStep, loginState]);
 
@@ -178,7 +220,10 @@ export function FlipperSetupWizard({
           onClose();
         }
       }}>
-      <Typography.Title>Flipper Setup Wizard</Typography.Title>
+      <Typography.Title>
+        Flipper Setup Wizard. Step {getCurrentStepNumber(currentStep)} /{' '}
+        {constants.IS_PUBLIC_BUILD ? 3 : 4}
+      </Typography.Title>
       <hr />
       {content}
     </Modal>
