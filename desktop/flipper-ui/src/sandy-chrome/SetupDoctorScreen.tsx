@@ -319,18 +319,21 @@ export default function SetupDoctorScreen({
       <HealthCheckList report={healthcheckReport} />
     </Modal>
   ) : (
-    <Layout.Container pad grow>
+    <Layout.Container grow>
       <HealthCheckList report={healthcheckReport} />
       <Space direction="vertical" size="middle" />
-      <SetupDoctorFooter
-        closable={false}
-        onClose={onCloseModal}
-        onRerunDoctor={runDoctor}
-        showAcknowledgeCheckbox={hasProblem}
-        acknowledgeCheck={acknowlodgeProblem}
-        onAcknowledgeCheck={(checked) => setAcknowlodgeProblem(checked)}
-        disableRerun={healthcheckReport.result.status === 'IN_PROGRESS'}
-      />
+      {/* otherwise footer colalpses into 0px */}
+      <div>
+        <SetupDoctorFooter
+          closable={false}
+          onClose={onCloseModal}
+          onRerunDoctor={runDoctor}
+          showAcknowledgeCheckbox={false}
+          acknowledgeCheck={acknowlodgeProblem}
+          onAcknowledgeCheck={(checked) => setAcknowlodgeProblem(checked)}
+          disableRerun={healthcheckReport.result.status === 'IN_PROGRESS'}
+        />
+      </div>
     </Layout.Container>
   );
 }
