@@ -7,6 +7,13 @@
  * @format
  */
 
+export function SignInSheet(_props: {
+  fromSetupWizard: boolean;
+  onHide: () => void;
+}) {
+  return null;
+}
+
 export function isSheetOpen(): boolean {
   return false;
 }

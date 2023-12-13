@@ -11,7 +11,9 @@ import React, {useMemo} from 'react';
 import {Modal, Typography, Button} from 'antd';
 import {PlatformSelectWizard} from './PlatformSelectWizard';
 import SetupDoctorScreen from '../sandy-chrome/SetupDoctorScreen';
-import {useStore} from '../utils/useStore';
+import {useDispatch, useStore} from '../utils/useStore';
+import {SignInSheet} from '../chrome/fb-stubs/SignInSheet';
+import {toggleSetupWizardOpen} from '../reducers/application';
 
 type StepName = 'platform' | 'doctor' | 'login' | 'pwa';
 type StepState = 'init' | 'pending' | 'success' | 'fail';
@@ -63,7 +65,10 @@ export function FlipperSetupWizard({
         return 'init';
     }
   });
-  const [loginState, _setLoginState] = React.useState<StepState>('init');
+  const loginState = useStore<StepState>((store) =>
+    store.user.id != null ? 'success' : 'init',
+  );
+  const dispatch = useDispatch();
   const isLastOptionalStep = currentStep === 'pwa';
   const closable = isLastOptionalStep ? true : closableProp ?? closableState;
   const content = useMemo(() => {
@@ -73,11 +78,33 @@ export function FlipperSetupWizard({
       case 'doctor':
         return <SetupDoctorScreen modal={false} visible onClose={() => {}} />;
       case 'login':
-        return <>TODO</>;
+        return loginState === 'success' ? (
+          <Typography.Paragraph>You are logged in</Typography.Paragraph>
+        ) : (
+          <SignInSheet
+            onHide={() => {
+              setCurrentStep('pwa');
+            }}
+            fromSetupWizard
+          />
+        );
       case 'pwa':
-        return <>TODO</>;
+        return <>PWA here</>;
     }
-  }, [currentStep]);
+  }, [currentStep, loginState]);
+
+  React.useEffect(
+    () => {
+      dispatch(toggleSetupWizardOpen(true));
+      return () => {
+        dispatch(toggleSetupWizardOpen(false));
+      };
+    },
+    // disabled to make sure it is called on unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   return (
     <Modal
       open

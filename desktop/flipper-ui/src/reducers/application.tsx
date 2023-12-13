@@ -37,6 +37,7 @@ export type ShareType = {
 export type State = {
   isTroubleshootingModalOpen: boolean;
   isSettingsModalOpen: boolean;
+  isSetupWizardOpen: boolean;
   isNotificationModalOpen: boolean;
   leftSidebarVisible: boolean;
   rightSidebarVisible: boolean;
@@ -52,6 +53,7 @@ type BooleanActionType =
   | 'leftSidebarVisible'
   | 'isNotificationModalOpen'
   | 'isSettingsModalOpen'
+  | 'isSetupWizardOpen'
   | 'rightSidebarVisible'
   | 'rightSidebarAvailable';
 
@@ -88,6 +90,7 @@ export const initialState: () => State = () => ({
   hasLeftSidebar: true,
   isTroubleshootingModalOpen: false,
   isSettingsModalOpen: false,
+  isSetupWizardOpen: false,
   isNotificationModalOpen: false,
   leftSidebarVisible: true,
   rightSidebarVisible: true,
@@ -122,6 +125,7 @@ export default function reducer(
   if (
     action.type === 'leftSidebarVisible' ||
     action.type === 'isSettingsModalOpen' ||
+    action.type === 'isSetupWizardOpen' ||
     action.type === 'rightSidebarVisible' ||
     action.type === 'isNotificationModalOpen' ||
     action.type === 'rightSidebarAvailable'
@@ -193,6 +197,11 @@ export const toggleConnectivityModal = (): Action => ({
 
 export const toggleSettingsModal = (payload?: boolean): Action => ({
   type: 'isSettingsModalOpen',
+  payload,
+});
+
+export const toggleSetupWizardOpen = (payload?: boolean): Action => ({
+  type: 'isSetupWizardOpen',
   payload,
 });
 
