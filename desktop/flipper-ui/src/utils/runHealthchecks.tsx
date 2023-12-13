@@ -45,42 +45,47 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
   });
   options.startHealthchecks(healthchecks);
   let hasProblems = false;
-  for (const [categoryKey, category] of Object.entries(healthchecks)) {
-    if (category.isSkipped) {
-      continue;
-    }
-    for (const h of category.healthchecks) {
-      const checkResult: FlipperDoctor.HealthcheckResult = await flipperServer
-        .exec(
-          'doctor-run-healthcheck',
-          {settings: options.settings},
-          categoryKey as keyof FlipperDoctor.Healthchecks,
-          h.key,
-        )
-        .catch((e) => {
-          console.warn('Failed to run doctor check', e);
-          return {
-            status: 'FAILED',
-            isAcknowledged: false,
-            message: ['doctor-failed', {error: e}],
-          };
-        });
-      const metricName = `doctor:${h.key.replace('.', ':')}.healthcheck`; // e.g. "doctor:ios:xcode-select.healthcheck"
-      if (checkResult.status !== 'SUCCESS') {
-        hasProblems = true;
-        logPlatformSuccessRate(metricName, {
-          kind: 'failure',
-          supportedOperation: true,
-          error: null,
-        });
-      } else {
-        logPlatformSuccessRate(metricName, {
-          kind: 'success',
-        });
+  await Promise.all(
+    Object.entries(healthchecks).map(async ([categoryKey, category]) => {
+      if (category.isSkipped) {
+        return;
       }
-      options.updateHealthcheckResult(categoryKey, h.key, checkResult);
-    }
-  }
+      await Promise.all(
+        category.healthchecks.map(async (h) => {
+          const checkResult: FlipperDoctor.HealthcheckResult =
+            await flipperServer
+              .exec(
+                'doctor-run-healthcheck',
+                {settings: options.settings},
+                categoryKey as keyof FlipperDoctor.Healthchecks,
+                h.key,
+              )
+              .catch((e) => {
+                console.warn('Failed to run doctor check', e);
+                return {
+                  status: 'FAILED',
+                  isAcknowledged: false,
+                  message: ['doctor-failed', {error: e}],
+                };
+              });
+          const metricName = `doctor:${h.key.replace('.', ':')}.healthcheck`; // e.g. "doctor:ios:xcode-select.healthcheck"
+          if (checkResult.status !== 'SUCCESS') {
+            hasProblems = true;
+            logPlatformSuccessRate(metricName, {
+              kind: 'failure',
+              supportedOperation: true,
+              error: null,
+            });
+          } else {
+            logPlatformSuccessRate(metricName, {
+              kind: 'success',
+            });
+          }
+          options.updateHealthcheckResult(categoryKey, h.key, checkResult);
+        }),
+      );
+    }),
+  );
   options.finishHealthchecks();
   if (hasProblems) {
     logPlatformSuccessRate('doctor.healthcheck', {
