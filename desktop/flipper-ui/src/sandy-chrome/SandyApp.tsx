@@ -40,6 +40,10 @@ import isProduction from '../utils/isProduction';
 import {uiPerfTracker} from '../utils/UIPerfTracker';
 import {WarningOutlined} from '@ant-design/icons';
 import {getFlipperServerConfig} from '../flipperServer';
+import {
+  FlipperSetupWizard,
+  hasSetupWizardCompleted,
+} from '../chrome/FlipperSetupWizard';
 
 export function SandyApp() {
   const logger = useLogger();
@@ -56,6 +60,12 @@ export function SandyApp() {
     document.title = title;
 
     uiPerfTracker.track('ui-perf-sandy-container-rendered');
+
+    if (hasSetupWizardCompleted(window.localStorage)) {
+      Dialog.showModal((onHide) => (
+        <FlipperSetupWizard onHide={onHide} closable={false} />
+      ));
+    }
 
     if (hasPlatformWizardBeenDone(window.localStorage)) {
       Dialog.showModal((onHide) => (
