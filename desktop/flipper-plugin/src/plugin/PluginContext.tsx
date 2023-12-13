@@ -8,20 +8,16 @@
  */
 
 import {createContext, useContext} from 'react';
-import {
-  _SandyDevicePluginInstance,
-  _DevicePluginFactory,
-  _SandyPluginInstance,
-  _PluginFactory,
-} from 'flipper-plugin-core';
+import {DevicePluginFactory, SandyDevicePluginInstance} from './DevicePlugin';
+import {PluginFactory, SandyPluginInstance} from './Plugin';
 
 export const SandyPluginContext = createContext<
-  _SandyPluginInstance | _SandyDevicePluginInstance | undefined
+  SandyPluginInstance | SandyDevicePluginInstance | undefined
 >(undefined);
 
 export function usePluginInstance():
-  | _SandyPluginInstance
-  | _SandyDevicePluginInstance {
+  | SandyPluginInstance
+  | SandyDevicePluginInstance {
   const pluginInstance = useContext(SandyPluginContext);
   if (!pluginInstance) {
     throw new Error('Sandy Plugin context not available');
@@ -30,14 +26,14 @@ export function usePluginInstance():
 }
 
 export function usePluginInstanceMaybe():
-  | _SandyPluginInstance
-  | _SandyDevicePluginInstance
+  | SandyPluginInstance
+  | SandyDevicePluginInstance
   | undefined {
   return useContext(SandyPluginContext);
 }
 
 export function usePlugin<
-  Factory extends _PluginFactory<any, any, any, any> | _DevicePluginFactory,
+  Factory extends PluginFactory<any, any, any, any> | DevicePluginFactory,
 >(plugin: Factory): ReturnType<Factory> {
   const pluginInstance = usePluginInstance();
   // In principle we don't *need* the plugin, but having it passed it makes sure the

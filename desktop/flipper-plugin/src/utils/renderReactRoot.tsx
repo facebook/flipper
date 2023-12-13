@@ -7,8 +7,7 @@
  * @format
  */
 
-import {createState} from 'flipper-plugin-core';
-import {useValue} from '../state/atom';
+import {createState, useValue} from '../state/atom';
 import React, {ReactPortal} from 'react';
 import {createPortal, unmountComponentAtNode} from 'react-dom';
 

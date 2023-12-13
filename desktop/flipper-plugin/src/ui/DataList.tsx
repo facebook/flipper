@@ -22,8 +22,8 @@ import {theme} from './theme';
 import styled from '@emotion/styled';
 import {DataTableManager} from './data-table/DataTableManager';
 import {useAssertStableRef} from '../utils/useAssertStableRef';
-import {DataSource} from 'flipper-plugin-core';
 import {useMakeStableCallback} from '../utils/useMakeStableCallback';
+import {DataSource} from '../data-source/index';
 
 const {Text} = Typography;
 

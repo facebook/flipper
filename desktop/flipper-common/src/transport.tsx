@@ -7,7 +7,6 @@
  * @format
  */
 
-import {FlipperCompanionEvents} from './companion-types';
 import {FlipperServerCommands, FlipperServerEvents} from './server-types';
 
 export type GenericWebSocketMessage<E = string, T = unknown> = {
@@ -46,16 +45,6 @@ export type ServerEventWebSocketMessage = GenericWebSocketMessage<
   {
     [K in keyof FlipperServerEvents]: {event: K; data: FlipperServerEvents[K]};
   }[keyof FlipperServerEvents]
->;
-
-export type CompanionEventWebSocketMessage = GenericWebSocketMessage<
-  'companion-event',
-  {
-    [K in keyof FlipperCompanionEvents]: {
-      event: K;
-      data: FlipperCompanionEvents[K];
-    };
-  }[keyof FlipperCompanionEvents]
 >;
 
 export type ClientWebSocketMessage = ExecWebSocketMessage;

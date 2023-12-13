@@ -10,18 +10,19 @@
 import React, {createRef} from 'react';
 import {DataTable, DataTableColumn} from '../DataTable';
 import {render, act} from '@testing-library/react';
-import {createDataSource} from 'flipper-plugin-core';
 import {computeDataTableFilter, DataTableManager} from '../DataTableManager';
 import {Button} from 'antd';
 import {sleep} from 'flipper-common';
-import {TestUtils, _setFlipperLibImplementation} from 'flipper-plugin-core';
+import {setFlipperLibImplementation} from '../../../plugin/FlipperLib';
+import {createMockFlipperLib} from '../../../test-utils/test-utils';
+import {createDataSource} from '../../../data-source/index';
 
 type Todo = {
   title: string;
   done: boolean;
 };
 
-_setFlipperLibImplementation(TestUtils.createMockFlipperLib());
+setFlipperLibImplementation(createMockFlipperLib());
 
 function createTestDataSource() {
   return createDataSource<Todo>([

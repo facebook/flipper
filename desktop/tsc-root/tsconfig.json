@@ -10,16 +10,10 @@
       "path": "../flipper-common"
     },
     {
-      "path": "../flipper-dump"
-    },
-    {
-      "path": "../flipper-frontend-core"
+      "path": "../examples/flipper-dump"
     },
     {
       "path": "../flipper-plugin"
-    },
-    {
-      "path": "../flipper-plugin-core"
     },
     {
       "path": "../flipper-server"
@@ -28,16 +22,7 @@
       "path": "../flipper-server-client"
     },
     {
-      "path": "../flipper-server-companion"
-    },
-    {
-      "path": "../flipper-server-core"
-    },
-    {
-      "path": "../flipper-ui-browser"
-    },
-    {
-      "path": "../flipper-ui-core"
+      "path": "../flipper-ui"
     },
     {
       "path": "../pkg"
@@ -56,6 +41,9 @@
     },
     {
       "path": "../scripts"
+    },
+    {
+      "path": "../deprecated-exports"
     }
   ]
 }

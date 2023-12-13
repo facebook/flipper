@@ -18,18 +18,17 @@ import {Badge, Tooltip, Typography, Button} from 'antd';
 import styled from '@emotion/styled';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import {SandyPluginContext} from '../plugin/PluginContext';
-import {createState} from 'flipper-plugin-core';
-import {useValue} from '../state/atom';
-import {_SandyDevicePluginInstance} from 'flipper-plugin-core';
+import {createState, useValue} from '../state/atom';
 import {Layout} from './Layout';
 import {BulbTwoTone} from '@ant-design/icons';
 // This import is OK since it is a type-only import
 // eslint-disable-next-line no-restricted-imports
 import type {TooltipPlacement} from 'antd/lib/tooltip';
-import {_SandyPluginInstance} from 'flipper-plugin-core';
 import {theme} from './theme';
 import {Tracked} from './Tracked';
 import {sha256} from '../utils/sha256';
+import {SandyDevicePluginInstance} from '../plugin/DevicePlugin';
+import {SandyPluginInstance} from '../plugin/Plugin';
 
 const {Text} = Typography;
 
@@ -39,7 +38,7 @@ const storageKey = `FLIPPER_NUX_STATE`;
 
 export async function getNuxKey(
   elem: React.ReactNode,
-  currentPlugin?: _SandyPluginInstance | _SandyDevicePluginInstance,
+  currentPlugin?: SandyPluginInstance | SandyDevicePluginInstance,
 ): Promise<string> {
   const hash = await sha256(reactElementToJSXString(elem));
   return `${currentPlugin?.definition.id ?? 'flipper'}:${hash}`;
@@ -61,14 +60,14 @@ export function createNuxManager() {
   return {
     async markRead(
       elem: React.ReactNode,
-      currentPlugin?: _SandyPluginInstance | _SandyDevicePluginInstance,
+      currentPlugin?: SandyPluginInstance | SandyDevicePluginInstance,
     ): Promise<void> {
       readMap[await getNuxKey(elem, currentPlugin)] = true;
       save();
     },
     async isRead(
       elem: React.ReactNode,
-      currentPlugin?: _SandyPluginInstance | _SandyDevicePluginInstance,
+      currentPlugin?: SandyPluginInstance | SandyDevicePluginInstance,
     ): Promise<boolean> {
       return !!readMap[await getNuxKey(elem, currentPlugin)];
     },

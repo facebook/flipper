@@ -357,7 +357,6 @@ object ViewDescriptor : ChainedDescriptor<View>() {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       props[ElevationAttributeId] = InspectableValue.Number(node.elevation)
-      node.elevation = 2.0f
     }
 
     props[VisibilityAttributeId] = VisibilityMapping.toInspectable(node.visibility)
@@ -541,7 +540,9 @@ object ViewDescriptor : ChainedDescriptor<View>() {
   private fun fromDrawable(d: Drawable?): Inspectable? {
     return if (d is ColorDrawable) {
       InspectableValue.Color(Color.fromColor(d.color))
-    } else null
+    } else {
+      InspectableValue.Text(d.toString())
+    }
   }
 
   private fun getLayoutParams(node: View): InspectableObject {

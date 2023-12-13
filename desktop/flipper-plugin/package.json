@@ -18,7 +18,6 @@
     "@types/react-dom": "^17.0.13",
     "dayjs": "^1.11.10",
     "flipper-common": "0.0.0",
-    "flipper-plugin-core": "0.0.0",
     "immer": "^9.0.18",
     "js-base64": "^3.7.5",
     "lodash": "^4.17.21",
@@ -26,11 +25,13 @@
     "react-element-to-jsx-string": "^14.3.4",
     "react-use": "^17.4.0",
     "react-virtual": "^2.10.4",
-    "string-natural-compare": "^3.0.0"
+    "string-natural-compare": "^3.0.0",
+    "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
     "@types/string-natural-compare": "^3.0.2",
-    "jest-mock-console": "^1.2.3"
+    "jest-mock-console": "^1.2.3",
+    "@types/react": "17.0.39"
   },
   "peerDependencies": {
     "@ant-design/icons": "^4.2.2",

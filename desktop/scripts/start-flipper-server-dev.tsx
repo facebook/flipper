@@ -21,6 +21,7 @@ import ensurePluginFoldersWatchable from './ensurePluginFoldersWatchable';
 import {Watchman} from 'flipper-pkg-lib';
 import fs from 'fs-extra';
 
+// eslint-disable-next-line node/no-sync
 const argv = yargs
   .usage('yarn flipper-server [args]')
   .options({
@@ -57,7 +58,7 @@ const argv = yargs
   })
   .version('DEV')
   .help()
-  .parse(process.argv.slice(1));
+  .parseSync(process.argv.slice(1));
 
 if (isFB) {
   process.env.FLIPPER_FB = 'true';
@@ -133,10 +134,6 @@ async function startWatchChanges() {
         'pkg-lib',
         'plugin-lib',
         'flipper-common',
-        'flipper-frontend-core',
-        'flipper-plugin-core',
-        'flipper-server-companion',
-        'flipper-server-core',
         'flipper-server',
       ].map((dir) =>
         watchman.startWatchFiles(

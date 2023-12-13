@@ -55,6 +55,12 @@ object UIDebuggerLithoSupport {
             FrameworkEventMetadata(
                 DebugEvent.RenderTreeMounted, "The mount phase for the entire render tree"),
             FrameworkEventMetadata(
+                "RenderCore.RenderTreeMount.Start",
+                "The process to mount an entire render tree has started"),
+            FrameworkEventMetadata(
+                "RenderCore.RenderTreeMount.End",
+                "The process to mount an entire render tree has ended"),
+            FrameworkEventMetadata(
                 DebugEvent.RenderUnitMounted,
                 "Component was added into the view hierarchy (this doesn't mean it is visible)"),
             FrameworkEventMetadata(
@@ -64,6 +70,11 @@ object UIDebuggerLithoSupport {
                 DebugEvent.RenderUnitUnmounted, "Component was removed from the view hierarchy"),
             FrameworkEventMetadata(DebugEvent.RenderUnitOnVisible, "Component became visible"),
             FrameworkEventMetadata(DebugEvent.RenderUnitOnInvisible, "Component became invisible"),
+            // TODO: Replace once a new Litho-OSS is released.
+            FrameworkEventMetadata(
+                "RenderCore.IncrementalMount.Start", "Incremental mount process starts"),
+            FrameworkEventMetadata(
+                "RenderCore.IncrementalMount.End", "Incremental mount process ends."),
         )
 
     val eventForwarder =
@@ -90,6 +101,19 @@ object UIDebuggerLithoSupport {
             if (source != null) {
               attributes["source"] = source
             }
+
+            event.attributeOrNull<Any?>("visibleRect")?.let {
+              attributes["visibleRect"] = it.toString()
+            }
+
+            event.attributeOrNull<Any?>("areBoundsVisible")?.let {
+              attributes["areBoundsVisible"] = it.toString()
+            }
+
+            event.attributeOrNull<Any?>("numMountableOutputs")?.let {
+              attributes["numMountableOutputs"] = it.toString()
+            }
+
             context.addFrameworkEvent(
                 FrameworkEvent(
                     treeId,

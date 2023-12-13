@@ -1,1 +1,0 @@
-# flipper-plugin-core

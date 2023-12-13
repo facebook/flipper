@@ -11,15 +11,9 @@ import path from 'path';
 
 export const rootDir = path.resolve(__dirname, '..');
 export const sonarDir = path.resolve(__dirname, '..', '..');
-export const appDir = path.join(rootDir, 'app');
-export const browserUiDir = path.join(rootDir, 'flipper-ui-browser');
+export const uiDir = path.join(rootDir, 'flipper-ui');
 export const staticDir = path.join(rootDir, 'static');
 export const serverDir = path.join(rootDir, 'flipper-server');
-export const serverCoreDir = path.join(rootDir, 'flipper-server-core');
-export const serverCompanionDir = path.join(
-  rootDir,
-  'flipper-server-companion',
-);
 export const defaultPluginsDir = path.join(staticDir, 'defaultPlugins');
 export const pluginsDir = path.join(rootDir, 'plugins');
 export const fbPluginsDir = path.join(pluginsDir, 'fb');

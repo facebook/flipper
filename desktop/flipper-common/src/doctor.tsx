@@ -185,7 +185,10 @@ export namespace FlipperDoctor {
 
     'ios.idb--no_context': [];
     'ios.idb--physical_device_disabled': [];
-    'ios.idb--not_installed': [{idbPath: string}];
+    'ios.idb--not_installed_but_present': [
+      {idbPath: string; idbInPath: string},
+    ];
+    'ios.idb--not_installed': [{idbPath: string; hasIdbCompanion: boolean}];
     'ios.idb--installed': [];
 
     'doctor-failed': [{error: any}];

@@ -12,13 +12,15 @@
 import {bumpVersions} from './workspaces';
 import yargs from 'yargs';
 
+// eslint-disable-next-line node/no-sync
 const argv = yargs
   .usage('$0 [args]')
   .options({
     newVersion: {key: 'new-version', alias: 'v', type: 'string'},
     dryRun: {key: 'dry-run', alias: 'd', type: 'boolean'},
   })
-  .help().argv;
+  .help()
+  .parseSync();
 
 bumpVersions(argv)
   .then((version) => {

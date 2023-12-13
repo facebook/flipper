@@ -21,22 +21,19 @@ import {
   buildDefaultPlugins,
   getDefaultPlugins,
   getWatchFolders,
-  stripSourceMapComment,
 } from 'flipper-pkg-lib';
-import getAppWatchFolders from './get-app-watch-folders';
 import {getPluginSourceFolders} from 'flipper-plugin-lib';
 import {
-  appDir,
-  staticDir,
   defaultPluginsDir,
   babelTransformationsDir,
   serverDir,
   rootDir,
-  browserUiDir,
+  uiDir,
 } from './paths';
 import pFilter from 'p-filter';
 import child from 'child_process';
 import isFB from './isFB';
+import {BUILTINS} from 'flipper-common';
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -84,93 +81,6 @@ const minifierConfig = {
   },
 };
 
-async function compile(
-  buildFolder: string,
-  projectRoot: string,
-  watchFolders: string[],
-  entry: string,
-) {
-  const out = path.join(buildFolder, 'bundle.js');
-  await Metro.runBuild(
-    {
-      reporter: {update: () => {}},
-      projectRoot,
-      watchFolders,
-      serializer: {},
-      transformer: {
-        babelTransformerPath: path.join(
-          babelTransformationsDir,
-          'transform-app',
-        ),
-        ...minifierConfig,
-      },
-      resolver: {
-        resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
-        blacklistRE: /\.native\.js$/,
-        sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
-      },
-    },
-    {
-      dev,
-      minify: !dev,
-      resetCache: !dev,
-      sourceMap: true,
-      sourceMapUrl: dev ? 'bundle.map' : undefined,
-      inlineSourceMap: false,
-      entry,
-      out,
-    },
-  );
-  if (!dev) {
-    await stripSourceMapComment(out);
-  }
-}
-
-export async function compileRenderer(buildFolder: string) {
-  console.log(`⚙️  Compiling renderer bundle...`);
-  const watchFolders = [
-    ...(await getAppWatchFolders()),
-    ...(await getPluginSourceFolders()),
-  ];
-  try {
-    await compile(
-      buildFolder,
-      appDir,
-      watchFolders,
-      path.join(appDir, 'src', 'init.tsx'),
-    );
-    console.log('✅  Compiled renderer bundle.');
-  } catch (err) {
-    die(err);
-  }
-}
-
-export async function moveSourceMaps(
-  buildFolder: string,
-  sourceMapFolder: string | undefined,
-) {
-  console.log(`⚙️  Moving source maps...`);
-  const mainBundleMap = path.join(buildFolder, 'bundle.map');
-  const rendererBundleMap = path.join(staticDir, 'main.bundle.map');
-  if (sourceMapFolder) {
-    await fs.ensureDir(sourceMapFolder);
-    await fs.move(mainBundleMap, path.join(sourceMapFolder, 'bundle.map'), {
-      overwrite: true,
-    });
-    await fs.move(
-      rendererBundleMap,
-      path.join(sourceMapFolder, 'main.bundle.map'),
-      {overwrite: true},
-    );
-    console.log(`✅  Moved to ${sourceMapFolder}.`);
-  } else {
-    // If we don't move them out of the build folders, they'll get included in the ASAR
-    // which we don't want.
-    console.log(`⏭  Removing source maps.`);
-    await Promise.all([fs.remove(mainBundleMap), fs.remove(rendererBundleMap)]);
-  }
-}
-
 export async function moveServerSourceMaps(
   buildFolder: string,
   sourceMapFolder: string | undefined,
@@ -195,48 +105,6 @@ export async function moveServerSourceMaps(
   }
 }
 
-export async function compileMain() {
-  const out = path.join(staticDir, 'main.bundle.js');
-  process.env.FLIPPER_ELECTRON_VERSION =
-    require('electron/package.json').version;
-  console.log('⚙️  Compiling main bundle...');
-  try {
-    const config = Object.assign({}, await Metro.loadConfig(), {
-      reporter: {update: () => {}},
-      projectRoot: staticDir,
-      watchFolders: await getWatchFolders(staticDir),
-      transformer: {
-        babelTransformerPath: path.join(
-          babelTransformationsDir,
-          'transform-main',
-        ),
-        ...minifierConfig,
-      },
-      resolver: {
-        sourceExts: ['tsx', 'ts', 'js'],
-        resolverMainFields: ['flipperBundlerEntry', 'module', 'main'],
-        blacklistRE: /\.native\.js$/,
-      },
-    });
-    await Metro.runBuild(config, {
-      platform: 'web',
-      entry: path.join(staticDir, 'main.tsx'),
-      out,
-      dev,
-      minify: !dev,
-      sourceMap: true,
-      sourceMapUrl: dev ? 'main.bundle.map' : undefined,
-      inlineSourceMap: false,
-      resetCache: !dev,
-    });
-    console.log('✅  Compiled main bundle.');
-    if (!dev) {
-      await stripSourceMapComment(out);
-    }
-  } catch (err) {
-    die(err);
-  }
-}
 export function buildFolder(
   prefix: string = 'flipper-build-',
 ): Promise<string> {
@@ -286,22 +154,13 @@ export async function compileServerMain() {
 }
 
 // TODO: needed?
-const uiSourceDirs = [
-  'flipper-ui-browser',
-  'flipper-ui-core',
-  'flipper-plugin',
-  'flipper-common',
-];
+const uiSourceDirs = ['flipper-ui', 'flipper-plugin', 'flipper-common'];
 
 export async function buildBrowserBundle(outDir: string, dev: boolean) {
   console.log('⚙️  Compiling browser bundle...');
   const out = path.join(outDir, 'bundle.js');
 
-  const electronRequires = path.join(
-    babelTransformationsDir,
-    'electron-requires',
-  );
-  const stubModules = new Set<string>(require(electronRequires).BUILTINS);
+  const stubModules = new Set<string>(BUILTINS);
   if (!stubModules.size) {
     throw new Error('Failed to load list of Node builtins');
   }
@@ -317,7 +176,7 @@ export async function buildBrowserBundle(outDir: string, dev: boolean) {
 
   const baseConfig = await Metro.loadConfig();
   const config = Object.assign({}, baseConfig, {
-    projectRoot: browserUiDir,
+    projectRoot: uiDir,
     watchFolders,
     transformer: {
       ...baseConfig.transformer,
@@ -335,12 +194,12 @@ export async function buildBrowserBundle(outDir: string, dev: boolean) {
       resolveRequest(context: any, moduleName: string, ...rest: any[]) {
         assertSaneImport(context, moduleName);
         // flipper is special cased, for plugins that we bundle,
-        // we want to resolve `import from 'flipper'` to 'flipper-ui-core', which
+        // we want to resolve `import from 'flipper'` to 'deprecated-exports', which
         // defines all the deprecated exports
         if (moduleName === 'flipper') {
-          return MetroResolver.resolve(context, 'flipper-ui-core', ...rest);
+          return MetroResolver.resolve(context, 'deprecated-exports', ...rest);
         }
-        // stubbed modules are modules that don't make sense outside a Node / Electron context,
+        // stubbed modules are modules that don't make sense outside a Node context,
         // like fs, child_process etc etc.
         // UI / plugins using these features should use the corresponding RenderHost api's instead
         // Ideally we'd fail hard on those, but not all plugins are properly converted yet, and some
@@ -359,7 +218,7 @@ export async function buildBrowserBundle(outDir: string, dev: boolean) {
   });
   await Metro.runBuild(config, {
     platform: 'web',
-    entry: path.join(browserUiDir, 'src', 'index.tsx'),
+    entry: path.join(uiDir, 'src', 'index.tsx'),
     out,
     dev,
     minify: !dev,
@@ -375,10 +234,6 @@ async function dedupeFolders(paths: string[]): Promise<string[]> {
     paths.filter((value, index, self) => self.indexOf(value) === index),
     (f) => fs.pathExists(f),
   );
-}
-
-export function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
 }
 
 let proc: child.ChildProcess | undefined;
@@ -418,7 +273,6 @@ function assertSaneImport(context: any, moduleName: string) {
     (moduleName.startsWith('babel') &&
       !moduleName.startsWith('babel-runtime')) ||
     moduleName.startsWith('typescript') ||
-    moduleName.startsWith('electron') ||
     moduleName.startsWith('@testing-library')
   ) {
     console.error(

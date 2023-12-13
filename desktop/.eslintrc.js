@@ -24,7 +24,6 @@ const builtInModules = [
   'flipper-plugin-lib',
   'react',
   'react-dom',
-  'electron',
   'antd',
   'immer',
   '@emotion/styled',
@@ -43,13 +42,6 @@ const prettierConfig = require('./.prettierrc.json');
 // Instead, we create a clone of the "no-restricted-imports" rule and use it to split out restricted imports in two groups: warn and error.
 // https://github.com/eslint/eslint/issues/14061#issuecomment-772490154
 const restrictedImportsUniversalErrorConfig = {
-  paths: [
-    {
-      name: 'electron',
-      message:
-        "Direct imports from 'electron' are deprecated. Most functions can be found in getFlipperLib() from flipper-plugin package instead.",
-    },
-  ],
   patterns: [
     {
       group: ['flipper-plugin/*'],
@@ -60,11 +52,6 @@ const restrictedImportsUniversalErrorConfig = {
       group: ['flipper-common/*'],
       message:
         "Imports from nested flipper-common directories are not allowed. Import from 'flipper-common' module directly. If it is missing an export, add it there.",
-    },
-    {
-      group: ['flipper-ui-core/*'],
-      message:
-        "Imports from nested flipper-ui-core directories are not allowed. Import from 'flipper-ui-core' module directly. If it is missing an export, add it there.",
     },
     {
       group: ['antd/*'],
@@ -133,19 +120,11 @@ module.exports = {
     'no-unsafe-negation': 2,
     'no-useless-computed-key': 2,
     'no-useless-rename': 2,
-    'no-restricted-properties': [
-      1,
-      {
-        object: 'electron',
-        property: 'remote',
-      },
-    ],
     'no-restricted-imports': [
       'error',
       {
         ...restrictedImportsUniversalErrorConfig,
         paths: [
-          ...restrictedImportsUniversalErrorConfig.paths,
           {
             name: 'flipper',
             message:
@@ -163,7 +142,6 @@ module.exports = {
     'node/no-extraneous-require': [2, {allowModules: builtInModules}],
     'node/no-sync': [1],
     'flipper/no-relative-imports-across-packages': [2],
-    'flipper/no-electron-remote-imports': [1],
     'flipper/no-console-error-without-context': [2],
     'flipper/no-ts-file-extension': 2,
     'flipper/no-i-prefix-interfaces': 2,
@@ -251,10 +229,8 @@ module.exports = {
       files: [
         'plugins/**/*.ts',
         'plugins/**/*.tsx',
-        'flipper-ui-core/**/*.tsx',
         'flipper-common/**/*.tsx',
-        'flipper-frontend-core/**/*.tsx',
-        'flipper-ui-browser/**/*.tsx',
+        'flipper-ui/**/*.tsx',
         'flipper-plugin/**/*.tsx',
       ],
       excludedFiles: [
@@ -267,7 +243,6 @@ module.exports = {
           {
             ...restrictedImportsUniversalErrorConfig,
             paths: [
-              ...restrictedImportsUniversalErrorConfig.paths,
               // Ban Node.js API
               'async_hooks',
               {
@@ -325,10 +300,8 @@ module.exports = {
       files: [
         'plugins/**/__tests__/**/*.tsx',
         'plugins/**/__tests__/**/*.ts',
-        'flipper-ui-core/**/__tests__/**/*.tsx',
         'flipper-common/**/__tests__/**/*.tsx',
-        'flipper-frontend-core/**/__tests__/**/*.tsx',
-        'flipper-ui-browser/**/__tests__/**/*.tsx',
+        'flipper-ui/**/__tests__/**/*.tsx',
         'flipper-plugin/**/__tests__/**/*.tsx',
         'plugins/postinstall.tsx',
         // TODO: Remove specific plugin overrides down below

@@ -7,7 +7,7 @@
  * @format
  */
 
-// This list should match `flipper-frontend-core/src/globalObject.tsx` and `builtInModules` in `desktop/.eslintrc.js`
+// This list should match `flipper-ui/src/displatcher/plugins.tsx` and `builtInModules` in `desktop/.eslintrc.js`
 export const pluginExternalModules = {
   flipper: 'Flipper',
   'flipper-plugin': 'FlipperPlugin',

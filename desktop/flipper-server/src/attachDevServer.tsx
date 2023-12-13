@@ -15,21 +15,14 @@ import fs from 'fs-extra';
 import {WebSocketServer} from 'ws';
 import pFilter from 'p-filter';
 import {homedir} from 'os';
-import {InstalledPluginDetails} from 'flipper-common';
-import {isFBBuild} from 'flipper-server-core';
+import {BUILTINS, InstalledPluginDetails} from 'flipper-common';
+import {isFBBuild} from './fb-stubs/constants';
 
 // This file is heavily inspired by scripts/start-dev-server.ts!
 // part of that is done by start-flipper-server-dev (compiling "main"),
 // the other part ("renderer") here.
 
-const uiSourceDirs = [
-  'flipper-ui-browser',
-  'flipper-ui-core',
-  'flipper-plugin-core',
-  'flipper-plugin',
-  'flipper-frontend-core',
-  'flipper-common',
-];
+const uiSourceDirs = ['flipper-ui', 'flipper-plugin', 'flipper-common'];
 
 // copied from plugin-lib/src/pluginPaths
 export async function getPluginSourceFolders(): Promise<string[]> {
@@ -60,11 +53,10 @@ export async function attachDevServer(
   socket: WebSocketServer,
   rootDir: string,
 ) {
-  // prevent bundling!
-  const Metro = electronRequire('metro');
-  const MetroResolver = electronRequire('metro-resolver');
-  const {getWatchFolders, startWatchPlugins} =
-    electronRequire('flipper-pkg-lib');
+  const Metro = require('metro');
+  // eslint-disable-next-line node/no-extraneous-require
+  const MetroResolver = require('metro-resolver');
+  const {getWatchFolders, startWatchPlugins} = require('flipper-pkg-lib');
 
   const babelTransformationsDir = path.resolve(
     rootDir,
@@ -72,13 +64,7 @@ export async function attachDevServer(
     'lib', // Note: required pre-compiled!
   );
 
-  const electronRequires = path.join(
-    babelTransformationsDir,
-    'electron-requires.js',
-  );
-  const stubModules = new Set<string>(
-    electronRequire(electronRequires).BUILTINS,
-  );
+  const stubModules = new Set<string>(BUILTINS);
   if (!stubModules.size) {
     throw new Error('Failed to load list of Node builtins');
   }
@@ -109,10 +95,10 @@ export async function attachDevServer(
       sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'mjs', 'cjs'],
       resolveRequest(context: any, moduleName: string, ...rest: any[]) {
         // flipper is special cased, for plugins that we bundle,
-        // we want to resolve `impoSrt from 'flipper'` to 'flipper-ui-core', which
+        // we want to resolve `impoSrt from 'flipper'` to 'deprecated-exports', which
         // defines all the deprecated exports
         if (moduleName === 'flipper') {
-          return MetroResolver.resolve(context, 'flipper-ui-core', ...rest);
+          return MetroResolver.resolve(context, 'deprecated-exports', ...rest);
         }
         // stubbed modules are modules that don't make sense outside a Node / Electron context,
         // like fs, child_process etc etc.

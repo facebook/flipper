@@ -1,0 +1,35 @@
+{
+  "name": "flipper-dump",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Flipper tool to dump data from clients",
+  "repository": "facebook/flipper",
+  "main": "lib/index.js",
+  "flipperBundlerEntry": "src",
+  "types": "lib/index.d.ts",
+  "license": "MIT",
+  "bugs": "https://github.com/facebook/flipper/issues",
+  "dependencies": {
+    "flipper-common": "0.0.0",
+    "flipper-server": "0.0.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.31"
+  },
+  "peerDependencies": {},
+  "scripts": {
+    "start": "ts-node src/index.tsx",
+    "reset": "rimraf lib *.tsbuildinfo",
+    "build": "tsc -b",
+    "prepack": "yarn reset && yarn build"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "homepage": "https://github.com/facebook/flipper",
+  "keywords": [
+    "Flipper"
+  ],
+  "author": "Facebook, Inc"
+}

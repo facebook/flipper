@@ -31,7 +31,7 @@ void FlipperState::started(std::string step) {
   {
     std::lock_guard<std::mutex> lock(mutex);
 
-    DEBUG_LOG("[step] [started] " + step);
+    log_debug(LogLevel::Info, "[step][started] " + step);
 
     if (stateMap.find(step) == stateMap.end()) {
       insertOrder.push_back(step);
@@ -58,9 +58,9 @@ void FlipperState::success(std::string step) {
   std::shared_ptr<FlipperStateUpdateListener> localListener;
   {
     std::lock_guard<std::mutex> lock(mutex);
-    std::string message = "[step] [success] " + step;
+    std::string message = "[step][success] " + step;
 
-    DEBUG_LOG(message);
+    log_debug(LogLevel::Info, message);
 
     ensureLogsCapacity();
     logs << message << std::endl;
@@ -79,9 +79,9 @@ void FlipperState::failed(std::string step, std::string errorMessage) {
   std::shared_ptr<FlipperStateUpdateListener> localListener;
   {
     std::lock_guard<std::mutex> lock(mutex);
-    std::string message = "[step] [failed] " + step + ": " + errorMessage;
+    std::string message = "[step][failed] " + step + ": " + errorMessage;
 
-    DEBUG_LOG(message);
+    log_debug(LogLevel::Error, message);
 
     ensureLogsCapacity();
     logs << message << std::endl;

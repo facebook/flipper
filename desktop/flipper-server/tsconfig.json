@@ -4,21 +4,26 @@
     "outDir": "lib",
     "rootDir": "src",
     "lib": ["DOM", "ES2021"],
-    "types": ["../types/flipperGlobals", "../types/metro-resolver", "../types/metro"]
+    "types": [
+      "../types/flipperGlobals",
+      "../types/metro-resolver",
+      "../types/metro",
+      "../types/JSONStream",
+      "../types/adbkit",
+      "../types/openssl-wrapper",
+      "../types/adbkit-logcat"
+    ]
   },
-  "include": ["./src/*"],
+  "include": ["./src/**/*"],
   "references": [
+    {
+      "path": "../doctor"
+    },
     {
       "path": "../flipper-common"
     },
     {
-      "path": "../flipper-server-core"
-    },
-    {
-      "path": "../flipper-server-companion"
-    },
-    {
-      "path": "../flipper-server-client"
+      "path": "../plugin-lib"
     },
     {
       "path": "../pkg-lib"

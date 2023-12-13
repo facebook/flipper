@@ -8,10 +8,9 @@
  */
 
 import * as React from 'react';
-import {DevicePluginClient, Device} from 'flipper-plugin-core';
+import {Device, DevicePluginClient} from '../plugin/DevicePlugin';
 import {usePlugin} from '../plugin/PluginContext';
-import {createState} from 'flipper-plugin-core';
-import {useValue} from '../state/atom';
+import {createState, useValue} from '../state/atom';
 
 export function supportsDevice(_device: Device) {
   return true;

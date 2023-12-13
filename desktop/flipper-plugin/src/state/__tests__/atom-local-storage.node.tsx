@@ -7,8 +7,8 @@
  * @format
  */
 
-import {createState} from 'flipper-plugin-core';
 import * as TestUtils from '../../test-utils/test-utils';
+import {createState} from '../atom';
 
 beforeEach(() => {
   window.localStorage.clear();

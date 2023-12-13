@@ -4,14 +4,17 @@
     "outDir": "lib",
     "rootDir": "src",
     "lib": ["dom", "ES2021"],
-    "types": ["jest", "../types/jest-extensions", "react/next", "react-dom/next"]
+    "types": [
+      "jest",
+      "../types/jest-extensions",
+      "react/next",
+      "react-dom/next"
+    ]
   },
+  "include": ["./src/**/*"],
   "references": [
     {
       "path": "../flipper-common"
-    },
-    {
-      "path": "../flipper-plugin-core"
     }
   ]
 }

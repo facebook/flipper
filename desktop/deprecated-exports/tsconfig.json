@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "emitDeclarationOnly": true,
+    "lib": ["dom", "es2019"]
+  },
+  "references": [
+    {
+      "path": "../flipper-ui"
+    }
+  ],
+  "exclude": ["**/node_modules/", "**/__tests__/", "**/lib/"]
+}

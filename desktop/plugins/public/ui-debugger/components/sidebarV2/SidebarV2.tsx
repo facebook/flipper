@@ -11,10 +11,10 @@ import {ClientNode, MetadataId, Metadata} from '../../ClientTypes';
 import {plugin} from '../../index';
 import React, {ReactNode} from 'react';
 import {Layout, Tab, Tabs, usePlugin, useValue} from 'flipper-plugin';
-import {NoData} from '../sidebar/inspector/NoData';
+import {NoData} from './NoData';
 import {Tooltip} from 'antd';
-import {AttributesInspector} from './AttributesInspector';
-import {FrameworkEventsInspector} from '../sidebar/inspector/FrameworkEventsInspector';
+import {AttributesInspector} from './attributes/AttributesInspector';
+import {FrameworkEventsInspector} from './frameworkevents/FrameworkEventsInspector';
 
 type Props = {
   selectedNode?: ClientNode;

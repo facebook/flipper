@@ -8,6 +8,19 @@
  */
 
 import {unstable_batchedUpdates} from 'react-dom';
-import {_setBatchedUpdateImplementation} from 'flipper-plugin-core';
 
-_setBatchedUpdateImplementation(unstable_batchedUpdates);
+export function batched<T extends Function>(fn: T): T;
+export function batched(fn: any) {
+  return function (this: any) {
+    let res: any;
+    unstable_batchedUpdates(() => {
+      // eslint-disable-next-line
+      res = fn.apply(this, arguments);
+    });
+    return res;
+  };
+}
+
+export function batch(fn: any) {
+  batched(fn)();
+}

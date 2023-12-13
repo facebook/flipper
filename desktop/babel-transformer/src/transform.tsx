@@ -49,7 +49,6 @@ const tsTransformPlugins = [
   optionalChainingPlugin,
   coalescingOperatorPlugin,
   // Sourcemap disabled because
-  // https://github.com/electron/electron/issues/17772#issuecomment-570795784
   // https://github.com/emotion-js/emotion/issues/1838
   [emotionPlugin, {autoLabel: 'always', sourceMap: false}],
 ];

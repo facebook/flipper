@@ -7,7 +7,7 @@
  * @format
  */
 
-import {options} from '../components/sidebar/inspector/FrameworkEventsInspector';
+import {options} from '../components/sidebarV2/frameworkevents/FrameworkEventsInspector';
 
 export function formatTimestampMillis(timestamp: number): string {
   const date = new Date(timestamp);

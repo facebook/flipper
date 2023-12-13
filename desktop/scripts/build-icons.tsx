@@ -11,7 +11,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import fetch from '@adobe/node-fetch-retry';
 // eslint-disable-next-line node/no-extraneous-import
-import type {Icon} from 'flipper-ui-core';
+import type {Icon} from 'flipper-ui/src/utils/icons';
 
 const AVAILABLE_SIZES: Icon['size'][] = [8, 10, 12, 16, 18, 20, 24, 28, 32, 48];
 
@@ -86,7 +86,7 @@ export async function downloadIcons(buildFolder: string) {
   );
 }
 
-// should match flipper-ui-core/src/utils/icons.tsx
+// should match flipper-ui/src/utils/icons.tsx
 export function getPublicIconUrl({name, variant, size}: Icon) {
   return `https://facebook.com/images/assets_DO_NOT_HARDCODE/facebook_icons/${name}_${variant}_${size}.png`;
 }

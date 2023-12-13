@@ -22,8 +22,8 @@ class FlipperSocketEventHandlerImpl implements FlipperSocketEventHandler {
   }
 
   @Override
-  public void onConnectionEvent(SocketEvent event) {
-    reportConnectionEvent(event.ordinal());
+  public void onConnectionEvent(SocketEvent event, String message) {
+    reportConnectionEvent(event.ordinal(), message);
   }
 
   @Override
@@ -36,7 +36,7 @@ class FlipperSocketEventHandlerImpl implements FlipperSocketEventHandler {
     return reportAuthenticationChallengeReceived();
   }
 
-  private native void reportConnectionEvent(int code);
+  private native void reportConnectionEvent(int code, String message);
 
   private native void reportMessageReceived(String message);
 

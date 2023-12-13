@@ -15,6 +15,7 @@ import {
   FlipperServerExecOptions,
   ServerWebSocketMessage,
   FlipperServerDisconnectedError,
+  FlipperServerTimeoutError,
 } from 'flipper-common';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
@@ -177,7 +178,9 @@ export function createFlipperServerWithSocket(
               timeout: setInterval(() => {
                 pendingRequests.delete(id);
                 reject(
-                  new Error(`flipper-server: timeout for command '${command}'`),
+                  new FlipperServerTimeoutError(
+                    `timeout for command '${command}'`,
+                  ),
                 );
               }, timeout),
             });

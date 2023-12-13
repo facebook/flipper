@@ -7,9 +7,8 @@
  * @format
  */
 
-// eslint-disable-next-line node/no-extraneous-import
-import type {_DataSourceView} from 'flipper-plugin-core';
 import React, {memo, useCallback, useEffect, useState} from 'react';
+import {DataSourceView} from './DataSource';
 
 import {RedrawContext} from './DataSourceRendererVirtual';
 
@@ -17,7 +16,7 @@ type DataSourceProps<T extends object, C> = {
   /**
    * The data view to render
    */
-  dataView: _DataSourceView<T, T[keyof T]>;
+  dataView: DataSourceView<T, T[keyof T]>;
   /**
    * additional context that will be passed verbatim to the itemRenderer, so that it can be easily memoized
    */
@@ -36,7 +35,7 @@ type DataSourceProps<T extends object, C> = {
   onUpdateAutoScroll?(autoScroll: boolean): void;
   emptyRenderer?:
     | null
-    | ((dataView: _DataSourceView<T, T[keyof T]>) => React.ReactElement);
+    | ((dataView: DataSourceView<T, T[keyof T]>) => React.ReactElement);
 };
 
 /**

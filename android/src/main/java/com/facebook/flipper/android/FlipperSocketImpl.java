@@ -71,7 +71,7 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
     this.mEventHandler =
         new FlipperSocketEventHandler() {
           @Override
-          public void onConnectionEvent(SocketEvent event) {}
+          public void onConnectionEvent(SocketEvent event, String message) {}
 
           @Override
           public void onMessageReceived(String message) {}
@@ -134,7 +134,8 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
       this.connect();
     } catch (Exception e) {
       Log.e("flipper", "Failed to initialize the socket before connect. Error: " + e.getMessage());
-      this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.ERROR);
+      this.mEventHandler.onConnectionEvent(
+          FlipperSocketEventHandler.SocketEvent.ERROR, e.getMessage());
     }
   }
 
@@ -145,7 +146,7 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
   @Override
   public void onOpen(ServerHandshake handshakedata) {
-    this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.OPEN);
+    this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.OPEN, "");
   }
 
   @Override
@@ -155,7 +156,7 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
   @Override
   public void onClose(int code, String reason, boolean remote) {
-    this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.CLOSE);
+    this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.CLOSE, "");
     // Clear the existing event handler as to ensure no other events are processed after the close
     // is handled.
     this.clearEventHandler();
@@ -174,9 +175,11 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
     // Check the exception for OpenSSL error and change the event type.
     // Required for Flipper as the current implementation treats these errors differently.
     if (ex instanceof javax.net.ssl.SSLHandshakeException) {
-      this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.SSL_ERROR);
+      this.mEventHandler.onConnectionEvent(
+          FlipperSocketEventHandler.SocketEvent.SSL_ERROR, ex.getMessage());
     } else {
-      this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.ERROR);
+      this.mEventHandler.onConnectionEvent(
+          FlipperSocketEventHandler.SocketEvent.ERROR, ex.getMessage());
     }
     // Clear the existing event handler as to ensure no other events are processed after the close
     // is handled.

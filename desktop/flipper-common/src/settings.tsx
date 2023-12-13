@@ -68,13 +68,13 @@ export enum ReleaseChannel {
   INSIDERS = 'insiders',
 }
 
-/** Launcher settings only apply to Electron, and aren't managed or relevant for flipper-server-core */
+/** Launcher settings only appllied to Electron, and aren't managed or relevant for flipper-server */
 export type LauncherSettings = {
   releaseChannel: ReleaseChannel;
   ignoreLocalPin: boolean;
 };
 
-// Settings that primarily only apply to Electron atm
+// Settings that primarily only applied to Electron atm
 // TODO: further separate between flipper-ui config and Electron config
 export type ProcessConfig = {
   disabledPlugins: string[];
@@ -109,7 +109,6 @@ export type Platform =
 export type EnvironmentInfo = {
   processId: number;
   isProduction: boolean;
-  isHeadlessBuild: boolean;
   releaseChannel: ReleaseChannel;
   flipperReleaseRevision?: string;
   appVersion: string;
@@ -119,7 +118,6 @@ export type EnvironmentInfo = {
     unixname: string;
   };
   versions: {
-    electron?: string;
     node: string;
     platform: string;
   };

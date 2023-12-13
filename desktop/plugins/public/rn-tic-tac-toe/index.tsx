@@ -18,7 +18,6 @@ import {
   styled,
   theme,
   Layout,
-  FlipperPluginInstance,
 } from 'flipper-plugin';
 
 type Player = ' ' | 'X' | 'O';
@@ -118,14 +117,6 @@ export const plugin = (client: PluginClient<Events, Methods>) => {
     makeMove,
     reset,
     state,
-  };
-};
-
-export const API = (pluginInstance: FlipperPluginInstance<typeof plugin>) => {
-  return {
-    makeMove: pluginInstance.makeMove,
-    reset: pluginInstance.reset,
-    state: pluginInstance.state,
   };
 };
 

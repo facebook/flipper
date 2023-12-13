@@ -7,6 +7,8 @@
  * @format
  */
 
+import {ClientQuery, UninitializedClient} from './server-types';
+
 /* A Client uniuely identifies an app running on some device.
 
   Always use this utility to construct and parse clientId strings.
@@ -56,6 +58,18 @@ export function buildClientId(clientInfo: {
     }
   }
   return result;
+}
+
+export function buildGenericClientId(client: UninitializedClient): string {
+  const escapedName = escape(client.appName);
+  return `${client.os}:${client.deviceName}:${escapedName}`.toLowerCase();
+}
+
+export function buildGenericClientIdFromQuery(
+  clientQuery: ClientQuery,
+): string {
+  const escapedName = escape(clientQuery.app);
+  return `${clientQuery.os}:${clientQuery.device}:${escapedName}`.toLowerCase();
 }
 
 export function deconstructClientId(clientId: string): ClientIdConstituents {

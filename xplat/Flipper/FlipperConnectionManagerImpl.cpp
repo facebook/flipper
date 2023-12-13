@@ -6,6 +6,7 @@
  */
 
 #include "FlipperConnectionManagerImpl.h"
+#include <folly/DynamicConverter.h>
 #include <folly/String.h>
 #include <folly/json.h>
 #include <stdexcept>
@@ -13,6 +14,7 @@
 #include "ConnectionContextStore.h"
 #include "FireAndForgetBasedFlipperResponder.h"
 #include "FlipperExceptions.h"
+#include "FlipperLogger.h"
 #include "FlipperSocketProvider.h"
 #include "FlipperStep.h"
 #include "Log.h"
@@ -85,7 +87,7 @@ FlipperConnectionManagerImpl::~FlipperConnectionManagerImpl() {
 
 void FlipperConnectionManagerImpl::setCertificateProvider(
     const std::shared_ptr<FlipperCertificateProvider> provider) {
-  DEBUG_LOG("[conn] Set certificate provider");
+  log_debug(LogLevel::Info, "[conn] Set certificate provider");
   certificateProvider_ = provider;
 };
 
@@ -99,7 +101,7 @@ void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
   scheduler_->schedule([this, event]() {
     switch (event) {
       case SocketEvent::OPEN:
-        DEBUG_LOG("[conn] Socket event: open");
+        log_debug(LogLevel::Info, "[conn] Socket event: open");
         isConnected_ = true;
         if (isConnectionTrusted_) {
           failedConnectionAttempts_ = 0;
@@ -109,13 +111,19 @@ void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
         }
         break;
       case SocketEvent::SSL_ERROR:
-        DEBUG_LOG("[conn] Socket event: SSL error");
+        log_debug(LogLevel::Error, "[conn] Socket event: SSL error");
         failedConnectionAttempts_++;
         reconnect();
         break;
       case SocketEvent::CLOSE:
       case SocketEvent::ERROR:
-        DEBUG_LOG("[conn] Socket event: close or error");
+
+        if (event == SocketEvent::ERROR) {
+          log_debug(LogLevel::Error, "[conn] Socket event: error");
+        } else {
+          log_debug(LogLevel::Info, "[conn] Socket event: close");
+        }
+
         if (!isConnected_) {
           reconnect();
           return;
@@ -136,7 +144,7 @@ void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
 }
 
 void FlipperConnectionManagerImpl::start() {
-  DEBUG_LOG("[conn] Start");
+  log_debug(LogLevel::Info, "[conn] Start");
 
   if (!FlipperSocketProvider::hasProvider()) {
     log("[conn] No socket provider has been set, unable to start");
@@ -158,7 +166,7 @@ void FlipperConnectionManagerImpl::start() {
 }
 
 void FlipperConnectionManagerImpl::startSync() {
-  DEBUG_LOG("[conn] Start sync");
+  log_debug(LogLevel::Info, "[conn] Start sync");
 
   if (!started_) {
     log("[conn] Not started");
@@ -188,7 +196,7 @@ void FlipperConnectionManagerImpl::startSync() {
 }
 
 void FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
-  DEBUG_LOG("[conn] Connect and exchange certificate");
+  log_debug(LogLevel::Info, "[conn] Connect and exchange certificate");
   auto port = insecurePort;
   auto endpoint = FlipperConnectionEndpoint(deviceData_.host, port, false);
 
@@ -217,7 +225,7 @@ void FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
 }
 
 void FlipperConnectionManagerImpl::connectSecurely() {
-  DEBUG_LOG("[conn] Connect securely");
+  log_debug(LogLevel::Info, "[conn] Connect securely");
   auto port = securePort;
   auto endpoint = FlipperConnectionEndpoint(deviceData_.host, port, true);
 
@@ -268,7 +276,7 @@ void FlipperConnectionManagerImpl::connectSecurely() {
 }
 
 void FlipperConnectionManagerImpl::reconnect() {
-  DEBUG_LOG("[conn] Reconnect");
+  log_debug(LogLevel::Info, "[conn] Reconnect");
   if (!started_) {
     log("[conn] Not started");
     return;
@@ -278,7 +286,7 @@ void FlipperConnectionManagerImpl::reconnect() {
 }
 
 void FlipperConnectionManagerImpl::stop() {
-  DEBUG_LOG("[conn] Stop");
+  log_debug(LogLevel::Info, "[conn] Stop");
   if (certificateProvider_ &&
       certificateProvider_->shouldResetCertificateFolder()) {
     store_->resetState();
@@ -343,7 +351,7 @@ void FlipperConnectionManagerImpl::onMessageReceived(
 }
 
 bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
-  DEBUG_LOG("[conn] Certificate exchange needed verification");
+  log_debug(LogLevel::Info, "[conn] Certificate exchange needed verification");
   if (failedConnectionAttempts_ >= 2) {
     return true;
   }
@@ -375,7 +383,12 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
     std::shared_ptr<FlipperStep> gettingCert,
     std::string response,
     bool isError) {
-  DEBUG_LOG("[conn] Process signed certificate response");
+  log_debug(LogLevel::Info, "[conn] Process signed certificate response");
+
+  folly::dynamic messageAck = folly::dynamic::object;
+  messageAck["method"] = "signCertificateAck";
+  messageAck["isError"] = isError;
+
   if (isError) {
     auto error =
         "Flipper failed to provide certificates. Error from Flipper Desktop:\n" +
@@ -390,6 +403,10 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
 
     if (!response.empty()) {
       folly::dynamic config = folly::parseJson(response);
+
+      messageAck["config"] = config;
+      messageAck["medium"] = medium;
+
       config["medium"] = medium;
       store_->storeConnectionConfig(config);
     }
@@ -418,16 +435,23 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
         gettingCert->fail("Exception thrown from Certificate Provider");
       }
     }
+
+    messageAck["hasRequiredFiles"] = store_->hasRequiredFiles();
+
     log("[conn] Certificate exchange complete");
     gettingCert->complete();
   }
 
+  auto logs = Logger::shared().getLogs();
+  messageAck["logs"] = folly::toDynamic(logs);
+
+  socket_->send(folly::toJson(messageAck), []() {});
   socket_ = nullptr;
   reconnect();
 }
 
 void FlipperConnectionManagerImpl::requestSignedCertificate() {
-  DEBUG_LOG("[conn] Request signed certificate");
+  log_debug(LogLevel::Info, "[conn] Request signed certificate");
   auto resettingState = state_->start("Reset connection store state");
   store_->resetState();
   resettingState->complete();
@@ -439,10 +463,14 @@ void FlipperConnectionManagerImpl::requestSignedCertificate() {
   int medium = certificateProvider_ != nullptr
       ? certificateProvider_->getCertificateExchangeMedium()
       : FlipperCertificateExchangeMedium::FS_ACCESS;
+
+  auto logs = Logger::shared().getLogs();
+
   folly::dynamic message =
       folly::dynamic::object("method", "signCertificate")("csr", csr.c_str())(
           "destination",
-          store_->getCertificateDirectoryPath().c_str())("medium", medium);
+          store_->getCertificateDirectoryPath()
+              .c_str())("medium", medium)("logs", folly::toDynamic(logs));
 
   auto gettingCert = state_->start("Getting cert from desktop");
 

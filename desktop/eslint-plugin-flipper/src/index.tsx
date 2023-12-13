@@ -10,9 +10,6 @@
 import noRelativeImportsAcrossPackages, {
   RULE_NAME as noRelativeImportsAcrossPackagesRuleName,
 } from './rules/noRelativeImportsAcrossPackages';
-import noElectronRemoteImports, {
-  RULE_NAME as noElectronRemoteImportsRuleName,
-} from './rules/noElectronRemoteImports';
 import noConsoleErrorWithoutContext, {
   RULE_NAME as noConsoleErrorWithoutContextRuleName,
 } from './rules/noConsoleErrorWithoutContext';
@@ -29,7 +26,6 @@ import noInterfaceProps, {
 module.exports = {
   rules: {
     [noRelativeImportsAcrossPackagesRuleName]: noRelativeImportsAcrossPackages,
-    [noElectronRemoteImportsRuleName]: noElectronRemoteImports,
     [noConsoleErrorWithoutContextRuleName]: noConsoleErrorWithoutContext,
     [noTsFileExtensionRuleName]: noTsFileExtension,
     [noIPrefixInterfacesRuleName]: noIPrefixInterfaces,

@@ -60,8 +60,6 @@ test.skip('It generates the correct files for client plugin', async () => {
     };
     ",
       "/dev/null/jest-setup.ts": "// See https://github.com/facebook/flipper/pull/3327 for why we need this
-    // @ts-ignore
-    global.electronRequire = require;
     require(\\"@testing-library/react\\");
     ",
       "/dev/null/package.json": "{

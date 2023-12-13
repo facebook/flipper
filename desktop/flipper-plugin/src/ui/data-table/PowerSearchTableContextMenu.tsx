@@ -17,19 +17,17 @@ import {
   Selection,
 } from './DataTableWithPowerSearchManager';
 import React from 'react';
-import {
-  _tryGetFlipperLibImplementation,
-  _DataSourceView,
-} from 'flipper-plugin-core';
 import {DataTableColumn} from './DataTableWithPowerSearch';
 import {toFirstUpper} from '../../utils/toFirstUpper';
 import {renderColumnValue} from './TableRow';
 import {textContent} from '../../utils/textContent';
+import {DataSourceView} from '../../data-source/index';
+import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
 
 const {Item, SubMenu} = Menu;
 
 export function tableContextMenuFactory<T extends object>(
-  dataView: _DataSourceView<T, T[keyof T]>,
+  dataView: DataSourceView<T, T[keyof T]>,
   dispatch: DataTableDispatch<T>,
   selection: Selection,
   columns: DataTableColumn<T>[],
@@ -41,7 +39,7 @@ export function tableContextMenuFactory<T extends object>(
   onContextMenu?: (selection: undefined | T) => React.ReactElement,
   sideBySideOption?: React.ReactElement,
 ) {
-  const lib = _tryGetFlipperLibImplementation();
+  const lib = tryGetFlipperLibImplementation();
   if (!lib) {
     return (
       <Menu>

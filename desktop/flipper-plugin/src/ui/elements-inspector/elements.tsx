@@ -14,11 +14,11 @@ import styled from '@emotion/styled';
 import React, {MouseEvent, KeyboardEvent} from 'react';
 import {theme} from '../theme';
 import {Layout} from '../Layout';
+import {DownOutlined, RightOutlined} from '@ant-design/icons';
 import {
   getFlipperLib,
-  _tryGetFlipperLibImplementation,
-} from 'flipper-plugin-core';
-import {DownOutlined, RightOutlined} from '@ant-design/icons';
+  tryGetFlipperLibImplementation,
+} from '../../plugin/FlipperLib';
 
 const {Text} = Typography;
 const contextMenuTrigger = ['contextMenu' as const];
@@ -533,7 +533,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
   };
 
   isDarwin =
-    _tryGetFlipperLibImplementation()?.environmentInfo.os.platform === 'darwin';
+    tryGetFlipperLibImplementation()?.environmentInfo.os.platform === 'darwin';
 
   onKeyDown = (e: KeyboardEvent<any>) => {
     const {selected} = this.props;

@@ -15,7 +15,7 @@ module.exports = {
   setupFiles: ['<rootDir>/scripts/jest-setup.tsx'],
   setupFilesAfterEnv: ['<rootDir>/scripts/jest-setup-after.tsx'],
   moduleNameMapper: {
-    '^flipper$': '<rootDir>/app/src',
+    '^flipper$': '<rootDir>/deprecated-exports/src',
     '^flipper-plugin$': '<rootDir>/flipper-plugin/src',
     '^flipper-(server-core|ui-core|frontend-core|common)$':
       '<rootDir>/flipper-$1/src',

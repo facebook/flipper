@@ -20,9 +20,6 @@ main () {
   cd "$INFINITY_DIR"
   "$INSTALL_NODE_MODULES"
 
-  # ensure electron gets installed
-  node node_modules/electron/install.js
-
   # go back
   cd "$PREV_DIR"
 

@@ -67,6 +67,7 @@ module.exports = {
           'getting-started/troubleshooting/android',
           'getting-started/troubleshooting/ios',
           'getting-started/troubleshooting/react-native',
+          ...fbInternalOnly(['getting-started/troubleshooting/fb/increase-anrdoid-emulator-storage']),
         ],
       },
       {
@@ -177,7 +178,6 @@ module.exports = {
                 'fb/error-logging',
               ]
             },
-            'fb/Electron-Upgrade',
             {
               'Launcher': [
                 'fb/hacking-on-launcher',

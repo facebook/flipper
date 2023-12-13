@@ -12,6 +12,7 @@
 import {publishPackages} from './workspaces';
 import yargs from 'yargs';
 
+// eslint-disable-next-line node/no-sync
 const argv = yargs
   .usage('$0 [args]')
   .options({
@@ -19,7 +20,8 @@ const argv = yargs
     proxy: {key: 'proxy', alias: 'p', type: 'string'},
     dryRun: {key: 'dry-run', alias: 'd', type: 'boolean'},
   })
-  .help().argv;
+  .help()
+  .parseSync();
 
 publishPackages(argv)
   .then(() => process.exit(0))

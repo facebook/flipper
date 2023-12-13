@@ -58,6 +58,7 @@ test('Correct top level API exposed', () => {
       "Tracked",
       "TrackingScope",
       "batch",
+      "batched",
       "createControlledPromise",
       "createDataSource",
       "createState",
@@ -90,7 +91,6 @@ test('Correct top level API exposed', () => {
   expect(exposedTypes.sort()).toMatchInlineSnapshot(`
     [
       "Atom",
-      "AtomPersistentStorage",
       "CrashLog",
       "CrashLogListener",
       "CreatePasteArgs",
@@ -160,7 +160,7 @@ test('All APIs documented', async () => {
     .forEach((key) => {
       // There should be a header with this identifier
       if (!new RegExp(`# ${key}\\b`).test(docs)) {
-        fail(`Not documented: '${key}'`);
+        throw new Error(`Not documented: '${key}'`);
       }
     });
 });
