@@ -112,7 +112,12 @@ const AndroidSdkNoAndroidSdk = (
 ) => (
   <Typography.Paragraph>
     Android SDK Platform Tools not found at the expected location "
-    {props.platformToolsDir}". Probably they are not installed.
+    {props.platformToolsDir}". Probably they are not installed. See{' '}
+    <a
+      href="https://fbflipper.com/docs/getting-started/troubleshooting/install-android-sdk/"
+      target="_blank">
+      Android SDK Install Instruction
+    </a>
   </Typography.Paragraph>
 );
 
