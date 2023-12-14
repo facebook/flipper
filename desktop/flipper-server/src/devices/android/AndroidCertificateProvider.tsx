@@ -16,12 +16,13 @@ import {
 } from '../../app-connectivity/certificate-exchange/certificate-utils';
 import {ClientQuery} from 'flipper-common';
 import {recorder} from '../../recorder';
+import {FlipperServerImpl} from '../../FlipperServerImpl';
 
 export default class AndroidCertificateProvider extends CertificateProvider {
   name = 'AndroidCertificateProvider';
   medium = 'FS_ACCESS' as const;
 
-  constructor(private adb: Client) {
+  constructor(private flipperServer: FlipperServerImpl, private adb: Client) {
     super();
   }
 
@@ -109,6 +110,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
       this.adb,
       deviceId,
       appName,
+      this.flipperServer.config.settings.androidUserId,
       destination + filename,
       contents,
       clientQuery,
@@ -126,6 +128,7 @@ export default class AndroidCertificateProvider extends CertificateProvider {
       this.adb,
       deviceId,
       processName,
+      this.flipperServer.config.settings.androidUserId,
       directory + csrFileName,
       clientQuery,
     );

@@ -7,14 +7,14 @@
  * @format
  */
 
-import React, {Component, useContext} from 'react';
+import React, {Component, useContext, useState} from 'react';
 import {Radio} from 'antd';
 import {updateSettings, Action} from '../reducers/settings';
 import {
   Action as LauncherAction,
   updateLauncherSettings,
 } from '../reducers/launcherSettings';
-import {connect} from 'react-redux';
+import {connect, useSelector} from 'react-redux';
 import {State as Store} from '../reducers';
 import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
@@ -22,6 +22,7 @@ import {
   FilePathConfigField,
   ConfigText,
   URLConfigField,
+  ComboBoxConfigField,
 } from './settings/configFields';
 import {isEqual, isMatch, isEmpty} from 'lodash';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
@@ -40,7 +41,9 @@ import {
   NUX,
 } from 'flipper-plugin';
 import {loadTheme} from '../utils/loadTheme';
+import {getActiveDevice} from '../selectors/connections';
 import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
+import BaseDevice from '../devices/BaseDevice';
 
 type OwnProps = {
   onHide: () => void;
@@ -119,6 +122,7 @@ class SettingsSheet extends Component<Props, State> {
     const {
       enableAndroid,
       androidHome,
+      androidUserId,
       enableIOS,
       enablePhysicalIOS,
       enablePrefetching,
@@ -165,6 +169,17 @@ class SettingsSheet extends Component<Props, State> {
                 updatedSettings: {
                   ...this.state.updatedSettings,
                   androidHome: v,
+                },
+              });
+            }}
+          />
+          <AndroidUserIdField
+            defaultValue={androidUserId}
+            onChange={(v) => {
+              this.setState({
+                updatedSettings: {
+                  ...this.state.updatedSettings,
+                  androidUserId: v,
                 },
               });
             }}
@@ -381,6 +396,46 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   }),
   {updateSettings, updateLauncherSettings},
 )(withTrackingScope(SettingsSheet));
+
+function AndroidUserIdField(props: {
+  defaultValue: string;
+  onChange: (path: string) => void;
+}) {
+  const activeDevice: BaseDevice = useSelector(getActiveDevice);
+  const [users, setUsers] = useState([] as {id: string; name: string}[]);
+
+  activeDevice
+    .executeShell('pm list users')
+    .then((result: string) => {
+      const users = result
+        .match(/(?<=UserInfo{)(.*?)(?=})/g)
+        ?.map((userInfo) => {
+          const infos = userInfo.split(':');
+          return {id: infos[0], name: `${infos[0]} (${infos[1]})`};
+        });
+      setUsers(users || []);
+    })
+    .catch((error: Error) => console.error(error));
+
+  if (users.length === 0) {
+    return (
+      <ConfigText
+        content={
+          'Loading... Please be sure to connect a device to show available users.'
+        }></ConfigText>
+    );
+  }
+
+  return (
+    <ComboBoxConfigField
+      label="Android User"
+      resetValue={getFlipperServerConfig().settings.androidUserId}
+      options={users}
+      defaultValue={props.defaultValue}
+      onChange={props.onChange}
+    />
+  );
+}
 
 function ResetTooltips() {
   const nuxManager = useContext(_NuxManagerContext);

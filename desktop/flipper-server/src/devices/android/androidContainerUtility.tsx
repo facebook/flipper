@@ -27,6 +27,7 @@ export async function push(
   adbClient: Client,
   deviceId: string,
   app: string,
+  user: string,
   filepath: string,
   contents: string,
   clientQuery?: ClientQuery,
@@ -34,19 +35,28 @@ export async function push(
   validateAppName(app);
   validateFilePath(filepath);
   validateFileContent(contents);
-  return await _push(adbClient, deviceId, app, filepath, contents, clientQuery);
+  return await _push(
+    adbClient,
+    deviceId,
+    app,
+    user,
+    filepath,
+    contents,
+    clientQuery,
+  );
 }
 
 export async function pull(
   adbClient: Client,
   deviceId: string,
   app: string,
+  user: string,
   path: string,
   clientQuery?: ClientQuery,
 ): Promise<string> {
   validateAppName(app);
   validateFilePath(path);
-  return await _pull(adbClient, deviceId, app, path, clientQuery);
+  return await _pull(adbClient, deviceId, app, user, path, clientQuery);
 }
 
 function validateAppName(app: string): void {
@@ -87,6 +97,7 @@ async function _push(
   adbClient: Client,
   deviceId: string,
   app: AppName,
+  user: string,
   filename: FilePath,
   contents: FileContent,
   clientQuery?: ClientQuery,
@@ -119,14 +130,14 @@ async function _push(
   };
 
   try {
-    await executeCommandAsApp(adbClient, deviceId, app, cmd);
+    await executeCommandAsApp(adbClient, deviceId, app, user, cmd);
     reportSuccess();
   } catch (error) {
     if (error instanceof RunAsError) {
       // Fall back to running the command directly.
       // This will work if adb is running as root.
       try {
-        await executeCommandWithSu(adbClient, deviceId, app, cmd, error);
+        await executeCommandWithSu(adbClient, deviceId, app, user, cmd, error);
         reportSuccess();
         return;
       } catch (suError) {
@@ -143,6 +154,7 @@ async function _pull(
   adbClient: Client,
   deviceId: string,
   app: AppName,
+  user: string,
   path: FilePath,
   clientQuery?: ClientQuery,
 ): Promise<string> {
@@ -172,7 +184,13 @@ async function _pull(
   };
 
   try {
-    const content = await executeCommandAsApp(adbClient, deviceId, app, cmd);
+    const content = await executeCommandAsApp(
+      adbClient,
+      deviceId,
+      app,
+      user,
+      cmd,
+    );
     reportSuccess();
     return content;
   } catch (error) {
@@ -184,6 +202,7 @@ async function _pull(
           adbClient,
           deviceId,
           app,
+          user,
           cmd,
           error,
         );
@@ -204,6 +223,7 @@ export function executeCommandAsApp(
   adbClient: Client,
   deviceId: string,
   app: string,
+  user: string,
   command: string,
 ): Promise<string> {
   return _executeCommandWithRunner(
@@ -211,7 +231,7 @@ export function executeCommandAsApp(
     deviceId,
     app,
     command,
-    `run-as '${app}'`,
+    `run-as '${app}' --user ${user}`,
   );
 }
 
@@ -219,11 +239,18 @@ async function executeCommandWithSu(
   adbClient: Client,
   deviceId: string,
   app: string,
+  user: string,
   command: string,
   originalErrorToThrow: RunAsError,
 ): Promise<string> {
   try {
-    return _executeCommandWithRunner(adbClient, deviceId, app, command, 'su');
+    return _executeCommandWithRunner(
+      adbClient,
+      deviceId,
+      app,
+      command,
+      `su --user ${user}`,
+    );
   } catch (e) {
     throw originalErrorToThrow;
   }

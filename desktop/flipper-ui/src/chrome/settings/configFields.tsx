@@ -41,6 +41,16 @@ const FileInputBox = styled(Input)<{isValid: boolean}>(({isValid}) => ({
   marginBottom: 'auto',
 }));
 
+const SelectBox = styled.select<{isValid: boolean}>(({isValid}) => ({
+  marginRight: 0,
+  flexGrow: 1,
+  fontFamily: 'monospace',
+  color: isValid ? undefined : colors.red,
+  marginLeft: 10,
+  marginTop: 'auto',
+  marginBottom: 'auto',
+}));
+
 const CenteredGlyph = styled(Glyph)({
   margin: 'auto',
   marginLeft: 10,
@@ -55,6 +65,66 @@ const GrayedOutOverlay = styled.div({
   left: 0,
   right: 0,
 });
+
+export function ComboBoxConfigField(props: {
+  label: string;
+  resetValue?: string;
+  options: {id: string; name: string}[];
+  defaultValue: string;
+  onChange: (path: string) => void;
+}) {
+  let defaultOption = props.options.find(
+    (opt) => opt.id === props.defaultValue,
+  );
+  const resetOption = props.options.find((opt) => opt.id === props.resetValue);
+  const [value, setValue] = useState(defaultOption?.id);
+
+  // If there is no valid default value, force setting the value to the first one
+  if (!value) {
+    defaultOption = props.options[0];
+    props.onChange(defaultOption.id);
+    setValue(defaultOption.id);
+  }
+
+  return (
+    <ConfigFieldContainer>
+      <InfoText>{props.label}</InfoText>
+      <SelectBox
+        name="select"
+        isValid={props.options.some((opt) => opt.id === value)}
+        value={value}
+        onChange={(event) => {
+          props.onChange(event.target.value);
+          setValue(props.options[event.target.selectedIndex].id);
+        }}>
+        {props.options.map((option) => {
+          return (
+            <option key={option.id} value={option.id}>
+              {option.name}
+            </option>
+          );
+        })}
+      </SelectBox>
+      {resetOption && (
+        <FlexColumn
+          title={`Reset to default ${props.resetValue}`}
+          onClick={() => {
+            props.onChange(props.resetValue!);
+            setValue(props.resetValue!);
+          }}>
+          <CenteredGlyph
+            color={theme.primaryColor}
+            name="undo"
+            variant="outline"
+          />
+        </FlexColumn>
+      )}
+      {props.options.some((opt) => opt.id === value) ? null : (
+        <CenteredGlyph name="caution-triangle" color={colors.yellow} />
+      )}
+    </ConfigFieldContainer>
+  );
+}
 
 export function FilePathConfigField(props: {
   label: string;

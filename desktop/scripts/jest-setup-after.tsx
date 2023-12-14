@@ -189,6 +189,7 @@ export function createStubFlipperServerConfig(): FlipperServerConfig {
     },
     settings: {
       androidHome: `/dev/null`,
+      androidUserId: '0',
       darkMode: 'light',
       enableAndroid: false,
       enableIOS: false,
