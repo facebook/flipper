@@ -420,19 +420,14 @@ export class ServerController
     return null;
   }
 
-  onClientSetupError(clientQuery: ClientQuery, e: any) {
-    recorder.logError(clientQuery, 'Failed to exchange certificate', e);
+  onClientSetupError(clientQuery: ClientQuery, error: Error) {
+    recorder.logError(clientQuery, 'Failed to exchange certificate', error);
     const client: UninitializedClient = {
       os: clientQuery.os,
       deviceName: clientQuery.device,
       appName: appNameWithUpdateHint(clientQuery),
     };
-    this.emit('client-setup-error', {
-      client,
-      error: `Failed to exchange certificate with ${clientQuery.app} on ${
-        clientQuery.device || clientQuery.device_id
-      }: ${e}`,
-    });
+    this.emit('client-setup-error', {client, error});
   }
 
   /**

@@ -91,7 +91,7 @@ export interface ServerEventsListener {
    */
   onClientMessage(clientId: string, payload: string): void;
 
-  onClientSetupError(clientQuery: ClientQuery, error: any): void;
+  onClientSetupError(clientQuery: ClientQuery, error: Error): void;
 
   onDeprecationNotice: (message: string) => void;
 }
@@ -169,8 +169,8 @@ abstract class ServerWebSocketBase {
           deviceId: result.deviceId,
         });
         return response;
-      } catch (e) {
-        this.listener.onClientSetupError(clientQuery, e);
+      } catch (error) {
+        this.listener.onClientSetupError(clientQuery, error);
       }
     } else if (message.method === 'signCertificateAck') {
       const {logs, ...remainder} = message;

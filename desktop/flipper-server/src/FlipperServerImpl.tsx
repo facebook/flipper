@@ -147,7 +147,7 @@ export class FlipperServerImpl implements FlipperServer {
       ({client, error}: {client: UninitializedClient; error: Error}) => {
         this.emit('connectivity-troubleshoot-notification', {
           title: `Connection to '${client.appName}' on '${client.deviceName}' failed`,
-          description: `Failed to start client connection: ${error}`,
+          description: `Failed to exchange certificates with the following error: ${error}`,
           type: 'error',
         });
       },
