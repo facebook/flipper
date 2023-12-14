@@ -625,12 +625,10 @@ function ExtrasMenu() {
     [store],
   );
 
-  const settings = useStore((state) => state.settingsState);
   const isSettingModalOpen = useStore(
     (state) => state.application.isSettingsModalOpen,
   );
-  const {showWelcomeAtStartup} = settings;
-  const [welcomeVisible, setWelcomeVisible] = useState(showWelcomeAtStartup);
+  const [welcomeVisible, setWelcomeVisible] = useState(false);
   const loggedIn = useValue(currentUser());
 
   return (
@@ -721,13 +719,6 @@ function ExtrasMenu() {
       <WelcomeScreen
         visible={welcomeVisible}
         onClose={() => setWelcomeVisible(false)}
-        showAtStartup={showWelcomeAtStartup}
-        onCheck={(value) =>
-          store.dispatch({
-            type: 'UPDATE_SETTINGS',
-            payload: {...settings, showWelcomeAtStartup: value},
-          })
-        }
       />
     </>
   );

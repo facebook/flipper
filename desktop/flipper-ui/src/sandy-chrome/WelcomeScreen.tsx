@@ -9,7 +9,7 @@
 
 import React, {cloneElement} from 'react';
 import {styled} from '../ui';
-import {Modal, Button, Image, Checkbox, Space, Typography, Tooltip} from 'antd';
+import {Modal, Button, Image, Space, Typography, Tooltip} from 'antd';
 import {
   RocketOutlined,
   AppstoreAddOutlined,
@@ -65,46 +65,14 @@ function Row(props: {
   );
 }
 
-const FooterContainer = styled(Layout.Horizontal)({
-  justifyContent: 'space-between',
-  alignItems: 'center',
-});
-
-function WelcomeFooter({
-  onClose,
-  checked,
-  onCheck,
-}: {
-  onClose: () => void;
-  checked: boolean;
-  onCheck: (value: boolean) => void;
-}) {
-  return (
-    <FooterContainer>
-      <Checkbox checked={checked} onChange={(e) => onCheck(e.target.checked)}>
-        <Text style={{fontSize: theme.fontSize.small}}>
-          Show this when app opens (or use ? icon on left)
-        </Text>
-      </Checkbox>
-      <Button type="primary" onClick={onClose}>
-        Close
-      </Button>
-    </FooterContainer>
-  );
-}
-
 const openExternal = (url: string) => () => getFlipperLib().openLink(url);
 
 export default function WelcomeScreen({
   visible,
   onClose,
-  showAtStartup,
-  onCheck,
 }: {
   visible: boolean;
   onClose: () => void;
-  showAtStartup: boolean;
-  onCheck: (value: boolean) => void;
 }) {
   return (
     <Modal
@@ -112,11 +80,11 @@ export default function WelcomeScreen({
       closable={false}
       open={visible}
       footer={
-        <WelcomeFooter
-          onClose={onClose}
-          checked={showAtStartup}
-          onCheck={onCheck}
-        />
+        <div style={{display: 'flex', justifyContent: 'end'}}>
+          <Button type="primary" onClick={onClose}>
+            Close
+          </Button>
+        </div>
       }
       onCancel={onClose}>
       <WelcomeScreenContent />
