@@ -66,6 +66,7 @@ module.exports = {
           'getting-started/troubleshooting/general',
           'getting-started/troubleshooting/android',
           'getting-started/troubleshooting/ios',
+          'getting-started/troubleshooting/install-android-sdk',
           'getting-started/troubleshooting/install-ios-sdk',
           'getting-started/troubleshooting/react-native',
           ...fbInternalOnly(['getting-started/troubleshooting/fb/increase-anrdoid-emulator-storage']),
