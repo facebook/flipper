@@ -197,19 +197,15 @@ const XcodeSelectNonExistingSelected = (
 );
 
 const IosSdkNotInstalled = (_props: PropsFor<'ios.sdk--not_installed'>) => (
-  <div>
-    <Typography.Paragraph>
-      The iOS SDK is not installed on your machine. Please follow these steps:
-    </Typography.Paragraph>
-    <List>
-      <List.Item>Launch Xcode</List.Item>
-      <List.Item>Create a new project</List.Item>
-      <List.Item>
-        Download SDK for iOS(other environments are optional)
-      </List.Item>
-      <List.Item>Re-run doctor</List.Item>
-    </List>
-  </div>
+  <Typography.Paragraph>
+    The iOS SDK is not installed on your machine. See{' '}
+    <a
+      href="https://fbflipper.com/docs/getting-started/troubleshooting/install-ios-sdk/"
+      target="_blank">
+      Install iOS SDK instructions
+    </a>
+    .
+  </Typography.Paragraph>
 );
 
 const IosSdkInstalled = (props: PropsFor<'ios.sdk--installed'>) => (
