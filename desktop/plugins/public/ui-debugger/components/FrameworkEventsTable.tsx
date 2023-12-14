@@ -90,7 +90,7 @@ export function FrameworkEventsTable({
         ({
           key: `payload.${customKey}` as any,
           title: startCase(customKey),
-          powerSearchConfig: stringConfig,
+          powerSearchConfig: {type: 'string'},
         } as DataTableColumn<AugmentedFrameworkEvent>),
     );
 
@@ -159,17 +159,7 @@ const MonoSpace = (t: any) => (
   <span style={{fontFamily: 'monospace'}}>{t}</span>
 );
 
-const stringConfig = [
-  dataTablePowerSearchOperators.string_contains(),
-  dataTablePowerSearchOperators.string_not_contains(),
-  dataTablePowerSearchOperators.string_matches_exactly(),
-];
 const idConfig = [dataTablePowerSearchOperators.int_equals()];
-
-const inferredEnum = [
-  dataTablePowerSearchOperators.enum_set_is_any_of({}),
-  dataTablePowerSearchOperators.enum_set_is_none_of({}),
-];
 
 const staticColumns: DataTableColumn<AugmentedFrameworkEvent>[] = [
   {
@@ -188,10 +178,7 @@ const staticColumns: DataTableColumn<AugmentedFrameworkEvent>[] = [
     key: 'type',
     title: 'Event type',
     onRender: (row: FrameworkEvent) => eventTypeToName(row.type),
-    powerSearchConfig: {
-      inferEnumOptionsFromData: true,
-      operators: inferredEnum,
-    },
+    powerSearchConfig: {type: 'enum', inferEnumOptionsFromData: true},
   },
   {
     key: 'duration',
@@ -199,14 +186,7 @@ const staticColumns: DataTableColumn<AugmentedFrameworkEvent>[] = [
     onRender: (row: FrameworkEvent) =>
       row.duration != null ? formatDuration(row.duration) : null,
     formatters: MonoSpace,
-
-    powerSearchConfig: [
-      dataTablePowerSearchOperators.int_greater_or_equal(),
-      dataTablePowerSearchOperators.int_greater_than(),
-      dataTablePowerSearchOperators.int_equals(),
-      dataTablePowerSearchOperators.int_less_or_equal(),
-      dataTablePowerSearchOperators.int_less_than(),
-    ],
+    powerSearchConfig: {type: 'int'},
   },
   {
     key: 'treeId',
@@ -218,7 +198,7 @@ const staticColumns: DataTableColumn<AugmentedFrameworkEvent>[] = [
   {
     key: 'rootComponentName',
     title: 'Root component name',
-    powerSearchConfig: stringConfig,
+    powerSearchConfig: {type: 'string'},
     formatters: MonoSpace,
   },
   {
@@ -230,14 +210,14 @@ const staticColumns: DataTableColumn<AugmentedFrameworkEvent>[] = [
   {
     key: 'nodeName',
     title: 'Component name',
-    powerSearchConfig: stringConfig,
+    powerSearchConfig: {type: 'string'},
     formatters: MonoSpace,
   },
   {
     key: 'thread',
     title: 'Thread',
     onRender: (row: FrameworkEvent) => startCase(row.thread),
-    powerSearchConfig: stringConfig,
+    powerSearchConfig: {type: 'enum', inferEnumOptionsFromData: true},
     formatters: MonoSpace,
   },
 ];
