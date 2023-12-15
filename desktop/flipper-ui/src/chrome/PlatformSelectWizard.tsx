@@ -50,6 +50,7 @@ export const PlatformSelectWizard = withTrackingScope(
           if (!settingsPristine) {
             reportUsage('platformwizard:action:changed');
             getFlipperServer().exec('shutdown');
+            window.close();
           } else {
             reportUsage('platformwizard:action:noop');
           }
@@ -99,7 +100,7 @@ export const PlatformSelectWizard = withTrackingScope(
           onClick={() => applyChanges(settingsPristine)}
           disabled={settingsPristine}
           title={settingsPristine ? 'No changes made' : ''}>
-          Save changes
+          Save changes and kill Flipper
         </Button>
       </Layout.Container>
     );
