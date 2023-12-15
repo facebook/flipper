@@ -14,7 +14,7 @@
 </p>
 
 ---
-## Important Accouncement
+## Important Announcement
 
 Flipper is moving away from its Electron distribution to an in-Browser experience.
 
