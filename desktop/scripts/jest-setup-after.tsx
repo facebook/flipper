@@ -13,12 +13,6 @@
 import {cleanup} from '@testing-library/react';
 
 import {TestUtils} from 'flipper-plugin';
-import {
-  FlipperServerConfig,
-  ReleaseChannel,
-  Tristate,
-  uuid,
-} from 'flipper-common';
 
 // eslint-disable-next-line node/no-extraneous-import
 import {
@@ -63,8 +57,8 @@ if (!test) {
 
 beforeEach(() => {
   setFlipperServer(TestUtils.createFlipperServerMock());
-  setFlipperServerConfig(createStubFlipperServerConfig());
-  setFlipperServerConfigServer(createStubFlipperServerConfig());
+  setFlipperServerConfig(TestUtils.createStubFlipperServerConfig());
+  setFlipperServerConfigServer(TestUtils.createStubFlipperServerConfig());
 });
 
 afterEach(cleanup);
@@ -138,71 +132,3 @@ Object.defineProperty(global, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 });
-
-export function createStubFlipperServerConfig(): FlipperServerConfig {
-  const rootPath = '/root';
-  const stubConfig: FlipperServerConfig = {
-    sessionId: uuid(),
-    environmentInfo: {
-      processId: 4242,
-      appVersion: '0.0.0',
-      isProduction: true,
-      releaseChannel: ReleaseChannel.DEFAULT,
-      flipperReleaseRevision: '000',
-      os: {
-        arch: 'arm64',
-        platform: 'darwin',
-        unixname: 'iamyourfather',
-      },
-      versions: {
-        node: '16.14.2',
-        platform: '22.6.0',
-      },
-    },
-    env: {
-      NODE_ENV: 'production',
-    },
-    gatekeepers: {
-      TEST_PASSING_GK: true,
-      TEST_FAILING_GK: false,
-    },
-    launcherSettings: {
-      ignoreLocalPin: false,
-      releaseChannel: ReleaseChannel.DEFAULT,
-    },
-    paths: {
-      appPath: rootPath,
-      desktopPath: `/dev/null`,
-      execPath: '/exec',
-      homePath: `/dev/null`,
-      staticPath: rootPath + '/static',
-      tempPath: '/temp',
-    },
-    processConfig: {
-      disabledPlugins: [],
-      lastWindowPosition: null,
-      launcherEnabled: false,
-      launcherMsg: null,
-      screenCapturePath: `/dev/null`,
-      updaterEnabled: true,
-      suppressPluginUpdateNotifications: false,
-    },
-    settings: {
-      androidHome: `/dev/null`,
-      darkMode: 'light',
-      enableAndroid: false,
-      enableIOS: false,
-      enablePhysicalIOS: false,
-      enablePrefetching: Tristate.False,
-      idbPath: `/dev/null`,
-      showWelcomeAtStartup: false,
-      suppressPluginErrors: false,
-      persistDeviceData: false,
-      enablePluginMarketplace: false,
-      marketplaceURL: '',
-      enablePluginMarketplaceAutoUpdate: true,
-    },
-    validWebSocketOrigins: [],
-  };
-  return stubConfig;
-}

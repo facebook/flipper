@@ -216,7 +216,10 @@ async function verifyLighthouseAndUserLoggedIn(
   store: Store,
   title: string,
 ): Promise<boolean> {
-  if (!getFlipperLib().isFB || process.env.NODE_ENV === 'test') {
+  if (
+    !getFlipperLib().isFB ||
+    getFlipperServerConfig().env.NODE_ENV === 'test'
+  ) {
     return true; // ok, continue
   }
 

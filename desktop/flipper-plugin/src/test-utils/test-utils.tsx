@@ -10,7 +10,13 @@
 import * as React from 'react';
 import type {RenderResult} from '@testing-library/react';
 import {queries} from '@testing-library/dom';
-import {ServerAddOnControls} from 'flipper-common';
+import {
+  FlipperServerConfig,
+  ReleaseChannel,
+  ServerAddOnControls,
+  Tristate,
+  uuid,
+} from 'flipper-common';
 import {SandyPluginRenderer} from '../plugin/PluginRenderer';
 import {DeviceLogEntry} from 'flipper-common';
 import {fsConstants, InstalledPluginDetails} from 'flipper-common';
@@ -659,4 +665,72 @@ function createServerAddOnControlsMock(): ServerAddOnControls {
     unsubscribePlugin: createStubFunction(),
     unsubscribe: createStubFunction(),
   };
+}
+
+export function createStubFlipperServerConfig(): FlipperServerConfig {
+  const rootPath = '/root';
+  const stubConfig: FlipperServerConfig = {
+    sessionId: uuid(),
+    environmentInfo: {
+      processId: 4242,
+      appVersion: '0.0.0',
+      isProduction: true,
+      releaseChannel: ReleaseChannel.DEFAULT,
+      flipperReleaseRevision: '000',
+      os: {
+        arch: 'arm64',
+        platform: 'darwin',
+        unixname: 'iamyourfather',
+      },
+      versions: {
+        node: '16.14.2',
+        platform: '22.6.0',
+      },
+    },
+    env: {
+      NODE_ENV: 'test',
+    },
+    gatekeepers: {
+      TEST_PASSING_GK: true,
+      TEST_FAILING_GK: false,
+    },
+    launcherSettings: {
+      ignoreLocalPin: false,
+      releaseChannel: ReleaseChannel.DEFAULT,
+    },
+    paths: {
+      appPath: rootPath,
+      desktopPath: `/dev/null`,
+      execPath: '/exec',
+      homePath: `/dev/null`,
+      staticPath: rootPath + '/static',
+      tempPath: '/temp',
+    },
+    processConfig: {
+      disabledPlugins: [],
+      lastWindowPosition: null,
+      launcherEnabled: false,
+      launcherMsg: null,
+      screenCapturePath: `/dev/null`,
+      updaterEnabled: true,
+      suppressPluginUpdateNotifications: false,
+    },
+    settings: {
+      androidHome: `/dev/null`,
+      darkMode: 'light',
+      enableAndroid: false,
+      enableIOS: false,
+      enablePhysicalIOS: false,
+      enablePrefetching: Tristate.False,
+      idbPath: `/dev/null`,
+      showWelcomeAtStartup: false,
+      suppressPluginErrors: false,
+      persistDeviceData: false,
+      enablePluginMarketplace: false,
+      marketplaceURL: '',
+      enablePluginMarketplaceAutoUpdate: true,
+    },
+    validWebSocketOrigins: [],
+  };
+  return stubConfig;
 }
