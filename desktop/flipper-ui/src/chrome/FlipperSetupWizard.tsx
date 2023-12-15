@@ -8,7 +8,7 @@
  */
 
 import React, {useMemo} from 'react';
-import {Modal, Typography, Button} from 'antd';
+import {Modal, Typography, Button, notification} from 'antd';
 import {PlatformSelectWizard} from './PlatformSelectWizard';
 import SetupDoctorScreen from '../sandy-chrome/SetupDoctorScreen';
 import {useDispatch, useStore} from '../utils/useStore';
@@ -82,20 +82,25 @@ function Footer({
   nextDisabled,
   onPrev,
   hasNext,
+  onSkip,
 }: {
   onNext: () => void;
   nextDisabled: boolean;
   onPrev: (() => void) | void;
+  onSkip: null | (() => void);
   hasNext: boolean;
 }) {
   return (
-    <div>
-      {onPrev && <Button onClick={onPrev}>Back</Button>}
-      {hasNext && (
-        <Button onClick={onNext} disabled={nextDisabled} type="primary">
-          Next
-        </Button>
-      )}
+    <div style={{display: 'flex'}}>
+      {onSkip && <Button onClick={onSkip}>Skip Setup Wizard</Button>}
+      <div style={{marginLeft: 'auto'}}>
+        {onPrev && <Button onClick={onPrev}>Back</Button>}
+        {hasNext && (
+          <Button onClick={onNext} disabled={nextDisabled} type="primary">
+            Next
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
@@ -154,7 +159,7 @@ export function FlipperSetupWizard({
       case 'pwa':
         return <PWAInstallationWizard onInstall={onHide} />;
     }
-  }, [currentStep, loginState]);
+  }, [currentStep, loginState, onHide]);
   const title = useMemo(() => {
     let name = '';
     switch (currentStep) {
@@ -202,6 +207,25 @@ export function FlipperSetupWizard({
       closable={closable}
       footer={
         <Footer
+          onSkip={
+            closable
+              ? null
+              : () => {
+                  onClose();
+                  notification.warn({
+                    key: 'setup-wizard-reopen',
+                    message: 'Setup Wizard is skipped',
+                    description: (
+                      <>
+                        Flipper may not be configured fully or function
+                        properly. You can reopen and finish setup from the menu{' '}
+                        {'More\u00A0⚙︎\u00A0>\u00A0Setup\u00A0wizard'}
+                      </>
+                    ),
+                    duration: 15,
+                  });
+                }
+          }
           onNext={() => {
             if (currentStep !== 'pwa') {
               setCurrentStep(getNextStep(currentStep));
