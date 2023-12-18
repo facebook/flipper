@@ -10,7 +10,6 @@
 import React from 'react';
 import {Image, Button} from 'antd';
 import {getFlipperLib, Layout, _NuxManagerContext} from 'flipper-plugin';
-import isProduction from '../utils/isProduction';
 import {getFlipperServer} from '../flipperServer';
 
 type TrackerEvents = {
@@ -35,69 +34,6 @@ class PWAWizardTracker {
 }
 
 const tracker = new PWAWizardTracker();
-
-const lastShownTimestampKey = 'flipper-pwa-wizard-last-shown-timestamp';
-const neverAskAgainKey = 'flipper-pwa-wizard-never-ask-again';
-export function shouldShowPWAInstallationWizard(): boolean {
-  if (!isProduction()) {
-    return false;
-  }
-
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    tracker.track('pwa-installation-wizard-should-show', {
-      show: false,
-      reason: 'Display mode is standalone, seems is already running as PWA',
-    });
-    return false;
-  }
-
-  let neverAskAgain = undefined;
-  try {
-    neverAskAgain = window.localStorage.getItem(neverAskAgainKey);
-  } catch (e) {}
-  if (neverAskAgain !== undefined && neverAskAgain !== null) {
-    return false;
-  }
-
-  let lastShownTimestampFromStorage = undefined;
-  try {
-    lastShownTimestampFromStorage = window.localStorage.getItem(
-      lastShownTimestampKey,
-    );
-  } catch (e) {}
-  if (lastShownTimestampFromStorage) {
-    const withinOneDay = (timestamp: number) => {
-      const Day = 1 * 24 * 60 * 60 * 1000;
-      const DayAgo = Date.now() - Day;
-
-      return timestamp > DayAgo;
-    };
-    const lastShownTimestamp = Number(lastShownTimestampFromStorage);
-
-    const notShownWithinOneDay = !withinOneDay(lastShownTimestamp);
-
-    tracker.track('pwa-installation-wizard-should-show', {
-      show: notShownWithinOneDay,
-      reason: 'Last shown timestamp from storage is available',
-    });
-    return notShownWithinOneDay;
-  }
-
-  const lastShownTimestamp = Date.now();
-  try {
-    window.localStorage.setItem(
-      lastShownTimestampKey,
-      String(lastShownTimestamp),
-    );
-  } catch (e) {}
-
-  tracker.track('pwa-installation-wizard-should-show', {
-    show: true,
-    reason: 'Last shown timestamp from storage is not available',
-  });
-
-  return true;
-}
 
 async function install(event: any) {
   event.prompt();
