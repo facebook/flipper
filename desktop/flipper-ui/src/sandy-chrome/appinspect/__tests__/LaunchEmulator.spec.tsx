@@ -50,13 +50,13 @@ test('Can render and launch android apps - no emulators', async () => {
         class="ant-typography"
         style="text-align: center;"
       >
-        Loading...
+        No emulators found
       </div>,
       <div
         class="ant-typography"
         style="text-align: center;"
       >
-        Loading...
+        No simulators found
       </div>,
     ]
   `);

@@ -91,7 +91,6 @@ export const LaunchEmulatorDialog = withTrackingScope(
     const [androidEmulators, setAndroidEmulators] = useState<string[]>([]);
     const [waitingForIos, setWaitingForIos] = useState(iosEnabled);
     const [waitingForAndroid, setWaitingForAndroid] = useState(androidEnabled);
-    const waitingForResults = waitingForIos || waitingForAndroid;
 
     const [iOSMessage, setiOSMessage] = useState<string>('Loading...');
     const [androidMessage, setAndroidMessage] = useState<string>('Loading...');
@@ -126,6 +125,9 @@ export const LaunchEmulatorDialog = withTrackingScope(
           );
           setWaitingForIos(false);
           setIosEmulators(nonPhysical);
+          if (nonPhysical.length === 0) {
+            setiOSMessage('No simulators found');
+          }
         } catch (error) {
           console.warn('Failed to find iOS simulators', error);
           setiOSMessage(`Error: ${error.message ?? error} \nRetrying...`);
@@ -148,6 +150,9 @@ export const LaunchEmulatorDialog = withTrackingScope(
           );
           setWaitingForAndroid(false);
           setAndroidEmulators(emulators);
+          if (emulators.length === 0) {
+            setAndroidMessage('No emulators found');
+          }
         } catch (error) {
           console.warn('Failed to find Android emulators', error);
           setAndroidMessage(`Error: ${error.message ?? error} \nRetrying...`);
@@ -297,25 +302,23 @@ export const LaunchEmulatorDialog = withTrackingScope(
     }
     items = items.filter((item) => item != null);
 
-    const loadingSpinner = (
-      <>
-        {waitingForResults && <Spinner key="spinner" />}
-        {!waitingForResults && items.length === 0 && (
-          <Alert
-            key=" alert-nodevices"
-            message={
-              <>
-                No virtual devices available.
-                <br />
-                <Link href="http://fbflipper.com/docs/getting-started/troubleshooting/general/#i-see-no-emulators-available">
-                  Learn more
-                </Link>
-              </>
-            }
-          />
-        )}
-      </>
-    );
+    const loadingSpinner =
+      waitingForIos || waitingForAndroid ? (
+        <Spinner key="spinner" />
+      ) : items.length === 0 ? (
+        <Alert
+          key=" alert-nodevices"
+          message={
+            <>
+              No virtual devices available.
+              <br />
+              <Link href="http://fbflipper.com/docs/getting-started/troubleshooting/general/#i-see-no-emulators-available">
+                Learn more
+              </Link>
+            </>
+          }
+        />
+      ) : null;
 
     return (
       <Modal
