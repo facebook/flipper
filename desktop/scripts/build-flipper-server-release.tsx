@@ -412,6 +412,18 @@ async function yarnInstall(dir: string) {
   await fs.rm(path.resolve(dir, 'yarn.lock'));
 }
 
+async function stripForwardingToolFromArchive(archive: string): Promise<void> {
+  // Remove package/static/PortForwardingMacApp.app from the tarball.
+  // This is a temporary (Fingers crossed!) hack as npm
+  // doesn't allow packages with symlinks in them.
+  const tmpDir = await fs.mkdtemp('flipper-server-npm-package-');
+  await tar.x({file: archive, cwd: tmpDir});
+  await fs.remove(path.join(tmpDir, 'package/static/PortForwardingMacApp.app'));
+  await tar.c({file: archive, cwd: tmpDir, gzip: true}, ['.']);
+  await fs.remove(tmpDir);
+  console.log('✅  Wrote stripped npm archive for flipper-server: ', archive);
+}
+
 async function buildServerRelease() {
   console.log(`⚙️  Starting build-flipper-server-release`);
   console.dir(argv);
@@ -446,6 +458,7 @@ async function buildServerRelease() {
   );
   const archive = await packNpmArchive(dir, versionNumber);
   await runPostBuildAction(archive, dir);
+  await stripForwardingToolFromArchive(archive);
 
   const platforms: BuildPlatform[] = [];
   if (argv.linux) {
