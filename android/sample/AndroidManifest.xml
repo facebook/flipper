@@ -13,8 +13,7 @@
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-sdk
       android:minSdkVersion="15"
-      android:targetSdkVersion="31"
-      tools:overrideLibrary="androidx.inspection" />
+      android:targetSdkVersion="31"/>
 
   <application
       android:name=".FlipperSampleApplication"
