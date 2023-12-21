@@ -13,6 +13,8 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
+    ndkVersion rootProject.ndkVersion
+
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
@@ -28,6 +30,7 @@ android {
         implementation 'androidx.compose.ui:ui:1.4.3'
         implementation 'androidx.compose.ui:ui-tooling:1.4.3'
         implementation 'org.jetbrains.kotlin:kotlin-reflect:1.9.21'
+        implementation(files("libs/inspection-1.0.0.aar"))
     }
 }
 
