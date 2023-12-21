@@ -484,31 +484,33 @@ class LayoutInspectorTree {
     val box = context.bounds
     val size = box.size.toSize()
     val coordinates = layoutInfo.coordinates
-    val topLeft = toIntOffset(coordinates.localToWindow(Offset.Zero))
-    val topRight = toIntOffset(coordinates.localToWindow(Offset(size.width, 0f)))
-    val bottomRight = toIntOffset(coordinates.localToWindow(Offset(size.width, size.height)))
-    val bottomLeft = toIntOffset(coordinates.localToWindow(Offset(0f, size.height)))
     var bounds: QuadBounds? = null
+    if (layoutInfo.isAttached && coordinates.isAttached) {
+      val topLeft = toIntOffset(coordinates.localToWindow(Offset.Zero))
+      val topRight = toIntOffset(coordinates.localToWindow(Offset(size.width, 0f)))
+      val bottomRight = toIntOffset(coordinates.localToWindow(Offset(size.width, size.height)))
+      val bottomLeft = toIntOffset(coordinates.localToWindow(Offset(0f, size.height)))
 
-    if (topLeft.x != box.left ||
-        topLeft.y != box.top ||
-        topRight.x != box.right ||
-        topRight.y != box.top ||
-        bottomRight.x != box.right ||
-        bottomRight.y != box.bottom ||
-        bottomLeft.x != box.left ||
-        bottomLeft.y != box.bottom) {
-      bounds =
-          QuadBounds(
-              topLeft.x,
-              topLeft.y,
-              topRight.x,
-              topRight.y,
-              bottomRight.x,
-              bottomRight.y,
-              bottomLeft.x,
-              bottomLeft.y,
-          )
+      if (topLeft.x != box.left ||
+          topLeft.y != box.top ||
+          topRight.x != box.right ||
+          topRight.y != box.top ||
+          bottomRight.x != box.right ||
+          bottomRight.y != box.bottom ||
+          bottomLeft.x != box.left ||
+          bottomLeft.y != box.bottom) {
+        bounds =
+            QuadBounds(
+                topLeft.x,
+                topLeft.y,
+                topRight.x,
+                topRight.y,
+                bottomRight.x,
+                bottomRight.y,
+                bottomLeft.x,
+                bottomLeft.y,
+            )
+      }
     }
     if (!includeNodesOutsizeOfWindow) {
       // Ignore this node if the bounds are completely outside the window
