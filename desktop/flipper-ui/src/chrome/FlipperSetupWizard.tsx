@@ -264,6 +264,6 @@ export function hasSetupWizardCompleted(
 ): boolean {
   return (
     !localStorage ||
-    localStorage.getItem(SETUP_WIZARD_FINISHED_LOCAL_STORAGE_KEY) !== 'true'
+    localStorage.getItem(SETUP_WIZARD_FINISHED_LOCAL_STORAGE_KEY) != null
   );
 }

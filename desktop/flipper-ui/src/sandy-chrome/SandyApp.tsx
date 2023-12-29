@@ -54,7 +54,7 @@ export function SandyApp() {
 
     uiPerfTracker.track('ui-perf-sandy-container-rendered');
 
-    if (hasSetupWizardCompleted(window.localStorage)) {
+    if (!hasSetupWizardCompleted(window.localStorage)) {
       Dialog.showModal((onHide) => (
         <FlipperSetupWizard onHide={onHide} closable={false} />
       ));
