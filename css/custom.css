@@ -570,4 +570,18 @@ div[class^="announcementBarContent"] a:hover {
     line-height: 22px;
     padding: 6px 30px;
   }
+  .splash {
+    min-height: 750px;
+  }
+
+  .splash h2 {
+    margin-bottom: 40px;
+  }
+
+  .splash .landing-btn {
+    margin-top: 15px;
+  }
+  a.landing-btn {
+    margin-top: 10px;
+  }
 }
