@@ -30,7 +30,7 @@ When using Flipper with React Native, two devices should show up:
 ### I see my device / emulator, but I can't see the app
 
 1. Make sure you are running a debug build. Flipper *only* supports debug builds.
-2. If you are upgraded from RN < 0.62.2, make sure you've updated all the dependencies and build related files according to the upgrade helper. For example: <https://react-native-community.github.io/upgrade-helper/?from=0.61.4&to=0.62.2>
+2. If you are upgraded from RN < 0.62.2, make sure you've updated all the dependencies and build related files according to the upgrade helper. For example: https://react-native-community.github.io/upgrade-helper/?from=0.61.4&to=0.62.2
 3. If you upgraded, make sure you made a clean build: `cd android && ./gradlew clean`, `cd iOS && pod install --repo-update`.
 4. For iOS, make sure it works on a simulator first.
 5. (Unconfirmed) check the deployment info target in the XCode project settings. Target should be `iOS 9.0`.
