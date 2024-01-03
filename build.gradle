@@ -82,7 +82,7 @@ ext.deps = [
         websocket          : 'org.java-websocket:Java-WebSocket:1.5.4',
         openssl            : 'com.android.ndk.thirdparty:openssl:1.1.1l-beta-1',
         // Annotations
-        kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1",
+        kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2",
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
         proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.19.0',
