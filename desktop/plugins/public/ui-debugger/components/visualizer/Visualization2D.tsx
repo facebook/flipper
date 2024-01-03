@@ -193,7 +193,7 @@ export const Visualization2D: React.FC<
             height: toPx(focusState.actualRoot.bounds.height),
           } as React.CSSProperties
         }>
-        {hoveredNodeId && (
+        {hoveredNodeId != null && (
           <DelayedHoveredToolTip
             key={hoveredNodeId}
             nodeId={hoveredNodeId}
@@ -207,7 +207,7 @@ export const Visualization2D: React.FC<
             />
           </DelayedHoveredToolTip>
         )}
-        {selectedNodeId && (
+        {selectedNodeId != null && (
           <OverlayBorder
             cursor={overlayCursor}
             type="selected"
