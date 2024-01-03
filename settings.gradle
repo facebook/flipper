@@ -45,3 +45,6 @@ project(':retrofit2-protobuf').projectDir = file('android/plugins/retrofit2-prot
 
 include ':jetpack-compose-plugin'
 project(':jetpack-compose-plugin').projectDir = file('android/plugins/jetpack-compose')
+
+include ':inspection-lib'
+project(':inspection-lib').projectDir = file('android/plugins/inspection-lib')
