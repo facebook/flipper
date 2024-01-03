@@ -1436,7 +1436,7 @@ The following members are only available for Client plugins:
 
 * `sendEvent(event, params)`: Emulates an event being sent by the client plugin. Will trigger the corresponding `onMessage` handler in the plugin.
 * `sendEvents({ method: string, params: object}[])`: Like `sendEvent`, but sends multiple events at once.
-* `onSend`: A `jest.fn()` that can be used to assert that `client.send()` was called by the plugin under test. For example, `expect(runner.onSend).toBeCalledWith('currentLogs`, { since: 0})`.
+* `onSend`: A `jest.fn()` that can be used to assert that `client.send()` was called by the plugin under test. For example, `expect(runner.onSend).toBeCalledWith('currentLogs', { since: 0})`.
 * `connect()`: Triggers the `onConnect()` event. (For non-background plugins `activate()` could as well be used for this).
 * `disconnect()`: Triggers the `onDisconnect()` event. (For non-background plugins `deactivate()` could as well be used for this).
 
