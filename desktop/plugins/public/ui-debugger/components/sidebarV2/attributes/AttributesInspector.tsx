@@ -346,7 +346,7 @@ function NamedAttribute({
         <AttributeValue
           onDisplayModal={onDisplayModal}
           name={name}
-          metadataPath={[...metadataPath, attributeMetadata.id]}
+          metadataPath={metadataPath}
           attributeMetadata={attributeMetadata}
           metadataMap={metadataMap}
           inspectable={value}
