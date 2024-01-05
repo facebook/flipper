@@ -269,11 +269,29 @@ object LayoutPropExtractor {
           HeightId -> node.setHeight(YogaValue.parse(value.asString()))
         }
       }
+      PaddingId -> node.setPadding(metadataToEdge(path.last()), YogaValue.parse(value.asString()))
+      MarginId -> node.setMargin(metadataToEdge(path.last()), YogaValue.parse(value.asString()))
+      PositionId -> node.setPosition(metadataToEdge(path.last()), YogaValue.parse(value.asString()))
+      BorderId -> node.setBorderWidth(metadataToEdge(path.last()), value.asFloat())
       AlphaId -> node.setAlpha(value.asFloat())
       ScaleId -> node.setScale(value.asFloat())
       RotationId -> node.setRotation(value.asFloat())
     }
   }
+
+  private fun metadataToEdge(metadata: Metadata) =
+      when (metadata.id) {
+        LeftId -> YogaEdge.LEFT
+        RightId -> YogaEdge.RIGHT
+        TopId -> YogaEdge.TOP
+        BottomId -> YogaEdge.BOTTOM
+        StartId -> YogaEdge.START
+        EndId -> YogaEdge.END
+        HorizontalId -> YogaEdge.HORIZONTAL
+        VerticalId -> YogaEdge.VERTICAL
+        AllId -> YogaEdge.ALL
+        else -> throw Exception("Unexpected metadata ${metadata}")
+      }
 
   fun getProps(component: DebugComponent): Map<MetadataId, Inspectable> {
     val props = mutableMapOf<MetadataId, Inspectable>()
