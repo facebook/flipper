@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.uidebugger.model
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -111,10 +112,13 @@ object NumberSerializer : KSerializer<Number> {
   override val descriptor: SerialDescriptor =
       PrimitiveSerialDescriptor("com.meta.NumberSerializer", PrimitiveKind.DOUBLE)
 
+  @OptIn(ExperimentalSerializationApi::class)
   override fun serialize(encoder: Encoder, value: Number) {
+
     when (value) {
-      is Double -> encoder.encodeDouble(value.toDouble())
-      is Float -> encoder.encodeFloat(value.toFloat())
+      is Double ->
+          if (value.isNaN()) encoder.encodeNull() else encoder.encodeDouble(value.toDouble())
+      is Float -> if (value.isNaN()) encoder.encodeNull() else encoder.encodeFloat(value.toFloat())
       is Long -> encoder.encodeLong(value.toLong())
       is Int -> encoder.encodeInt(value.toInt())
     }
