@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MessageCard(name: String) {
-  Row(modifier = Modifier.padding(all = 8.dp)) { Text(text = "Hello $name!") }
+  Row(modifier = Modifier.padding(all = 8.dp)) { Text(text = "Hello $name!", minLines = 1) }
 }
 
 @Preview
