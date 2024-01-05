@@ -9,130 +9,166 @@ package com.facebook.flipper.plugins.uidebugger.litho.descriptors.props
 
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.*
+import com.facebook.flipper.plugins.uidebugger.util.ColorUtil
 import com.facebook.flipper.plugins.uidebugger.util.enumToInspectableSet
 import com.facebook.litho.DebugComponent
+import com.facebook.litho.DebugLayoutNodeEditor
 import com.facebook.yoga.*
+import java.util.Locale
 
 object LayoutPropExtractor {
   private const val NAMESPACE = "LayoutPropExtractor"
 
   private var BackgroundId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "background")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "background", mutable = true)
   private var ForegroundId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "foreground")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "foreground", mutable = true)
 
   private val DirectionId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "direction",
-          false,
+          mutable = true,
           enumToInspectableSet<YogaDirection>())
   private val FlexDirectionId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "flexDirection",
-          false,
+          mutable = true,
           enumToInspectableSet<YogaFlexDirection>())
   private val JustifyContentId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "justifyContent",
-          false,
+          mutable = true,
           enumToInspectableSet<YogaJustify>())
   private val AlignItemsId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "alignItems",
-          false,
+          mutable = true,
           enumToInspectableSet<YogaAlign>())
   private val AlignSelfId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "alignSelf",
-          false,
+          mutable = true,
           enumToInspectableSet<YogaAlign>())
   private val AlignContentId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "alignContent",
-          false,
+          mutable = true,
           enumToInspectableSet<YogaAlign>())
   private val PositionTypeId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE,
           NAMESPACE,
           "positionType",
-          false,
+          mutable = true,
           enumToInspectableSet<YogaPositionType>())
 
   private val FlexGrowId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "flexGrow")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "flexGrow", mutable = true)
   private val FlexShrinkId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "flexShrink")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "flexShrink", mutable = true)
   private val FlexBasisId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "flexBasis")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "flexBasis", mutable = true)
   private val WidthId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "width")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "width", mutable = true)
   private val HeightId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "height")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "height", mutable = true)
   private val MinWidthId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minWidth")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minWidth", mutable = true)
   private val MinHeightId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minHeight")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "minHeight", mutable = true)
   private val MaxWidthId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxWidth")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxWidth", mutable = true)
   private val MaxHeightId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxHeight")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "maxHeight", mutable = true)
   private val AspectRatioId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "aspectRatio")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "aspectRatio", mutable = true)
 
   private val MarginId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "margin")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "margin", mutable = true)
   private val PaddingId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "padding")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "padding", mutable = true)
   private val BorderId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "border")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "border", mutable = true)
   private val PositionId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "position")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "position", mutable = true)
 
-  private val LeftId = MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "left")
-  private val TopId = MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "top")
+  private val LeftId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "left", mutable = true)
+  private val TopId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "top", mutable = true)
   private val RightId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "right")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "right", mutable = true)
   private val BottomId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "bottom")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "bottom", mutable = true)
   private val StartId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "start")
-  private val EndId = MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "end")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "start", mutable = true)
+  private val EndId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "end", mutable = true)
   private val HorizontalId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "horizontal")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "horizontal", mutable = true)
   private val VerticalId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "vertical")
-  private val AllId = MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "all")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "vertical", mutable = true)
+  private val AllId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "all", mutable = true)
 
   private val HasViewOutputId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "hasViewOutput")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "hasViewOutput", mutable = false)
   private val AlphaId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "alpha")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE,
+          NAMESPACE,
+          "alpha",
+          mutable = true,
+          minValue = 0,
+          maxValue = 1)
   private val ScaleId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "scale")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "scale", mutable = true)
   private val RotationId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "rotation")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "rotation", mutable = true)
 
   private val ResolvedId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "resolved")
-  private val NoneId = MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "none")
-  private val SizeId = MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "size")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "resolved", mutable = true)
+  private val SizeId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "size", mutable = true)
   private val ViewOutputId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "viewOutput")
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "viewOutput", mutable = true)
 
   /** constructs an object type containing any inputs that were provided and the resolved values */
   private fun getInspectableBox(
@@ -192,6 +228,52 @@ object LayoutPropExtractor {
         InspectableValue.Number(value)
       }
 
+  fun applyLayoutOverride(
+      node: DebugLayoutNodeEditor,
+      path: List<Metadata>,
+      value: FlipperDynamic
+  ) {
+    when (path[0].id) {
+      BackgroundId -> node.setBackgroundColor(ColorUtil.toColorInt(value))
+      ForegroundId -> node.setForegroundColor(ColorUtil.toColorInt(value))
+      DirectionId ->
+          node.setLayoutDirection(
+              YogaDirection.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+      FlexDirectionId ->
+          node.setFlexDirection(
+              YogaFlexDirection.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+      JustifyContentId ->
+          node.setJustifyContent(
+              YogaJustify.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+      AlignItemsId ->
+          node.setAlignItems(YogaAlign.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+      AlignSelfId ->
+          node.setAlignSelf(YogaAlign.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+      AlignContentId ->
+          node.setAlignContent(YogaAlign.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+      PositionTypeId ->
+          node.setPositionType(
+              YogaPositionType.valueOf(value.asString()!!.uppercase(Locale.getDefault())))
+      FlexGrowId -> node.setFlexGrow(value.asFloat())
+      FlexShrinkId -> node.setFlexShrink(value.asFloat())
+      FlexBasisId -> node.setFlexBasis(YogaValue.parse(value.asString()))
+      MinWidthId -> node.setMinWidth(YogaValue.parse(value.asString()))
+      MaxWidthId -> node.setMaxWidth(YogaValue.parse(value.asString()))
+      MinHeightId -> node.setMinHeight(YogaValue.parse(value.asString()))
+      MaxHeightId -> node.setMaxHeight(YogaValue.parse(value.asString()))
+      AspectRatioId -> node.setAspectRatio(value.asFloat())
+      SizeId -> {
+        when (path[1].id) {
+          WidthId -> node.setWidth(YogaValue.parse(value.asString()))
+          HeightId -> node.setHeight(YogaValue.parse(value.asString()))
+        }
+      }
+      AlphaId -> node.setAlpha(value.asFloat())
+      ScaleId -> node.setScale(value.asFloat())
+      RotationId -> node.setRotation(value.asFloat())
+    }
+  }
+
   fun getProps(component: DebugComponent): Map<MetadataId, Inspectable> {
     val props = mutableMapOf<MetadataId, Inspectable>()
 
@@ -201,7 +283,7 @@ object LayoutPropExtractor {
     props[AlignSelfId] = InspectableValue.Enum(layout.alignSelf.name)
     props[AlignContentId] = InspectableValue.Enum(layout.alignContent.name)
 
-    props[AspectRatioId] = InspectableValue.Text(layout.aspectRatio.toString())
+    props[AspectRatioId] = InspectableValue.Number(layout.aspectRatio)
 
     layout.background?.let { drawable -> props[BackgroundId] = fromDrawable(drawable) }
 
@@ -209,8 +291,8 @@ object LayoutPropExtractor {
 
     props[FlexBasisId] = InspectableValue.Text(layout.flexBasis.toString())
     props[FlexDirectionId] = InspectableValue.Enum(layout.flexDirection.name)
-    props[FlexGrowId] = InspectableValue.Text(layout.flexGrow.toString())
-    props[FlexShrinkId] = InspectableValue.Text(layout.flexShrink.toString())
+    props[FlexGrowId] = InspectableValue.Number(layout.flexGrow)
+    props[FlexShrinkId] = InspectableValue.Number(layout.flexShrink)
 
     layout.foreground?.let { drawable -> props[ForegroundId] = fromDrawable(drawable) }
 

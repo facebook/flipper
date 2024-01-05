@@ -7,6 +7,10 @@
 
 package com.facebook.flipper.plugins.uidebugger.litho.descriptors
 
+import android.util.Log
+import com.facebook.flipper.core.FlipperDynamic
+import com.facebook.flipper.plugins.uidebugger.LogTag
+import com.facebook.flipper.plugins.uidebugger.descriptors.CompoundTypeHint
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
@@ -20,13 +24,18 @@ import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
+import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.Deferred
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import com.facebook.litho.Component
 import com.facebook.litho.DebugComponent
+import com.facebook.litho.DebugLayoutNodeEditor
+import com.facebook.litho.StateContainer
 import com.facebook.rendercore.FastMath
 import com.facebook.yoga.YogaEdge
+
+typealias GlobalKey = String
 
 class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {
   private val NAMESPACE = "DebugComponent"
@@ -184,5 +193,52 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
     }
 
     return mountingData
+  }
+
+  class OverrideData(
+      val metadataPath: List<Metadata>,
+      val value: FlipperDynamic,
+      val hint: CompoundTypeHint?
+  )
+
+  private val allOverrides = mutableMapOf<GlobalKey, MutableList<OverrideData>>()
+
+  override fun editAttribute(
+      node: DebugComponent,
+      metadataPath: List<Metadata>,
+      value: FlipperDynamic,
+      hint: CompoundTypeHint?
+  ) {
+
+    val componentOverrides = allOverrides.getOrPut(node.globalKey) { mutableListOf() }
+    componentOverrides.add(OverrideData(metadataPath, value, hint))
+
+    val overrider =
+        object : DebugComponent.Overrider {
+
+          override fun applyComponentOverrides(key: String, component: Component) {}
+
+          override fun applyStateOverrides(key: String, state: StateContainer) {}
+
+          override fun applyLayoutOverrides(key: String, debugNodeEditor: DebugLayoutNodeEditor) {
+
+            componentOverrides
+                .filter { it.metadataPath.firstOrNull()?.id == LayoutId }
+                .forEach { overrideData ->
+                  try {
+                    LayoutPropExtractor.applyLayoutOverride(
+                        debugNodeEditor, overrideData.metadataPath.drop(1), overrideData.value)
+                  } catch (ex: Exception) {
+                    Log.w(
+                        LogTag,
+                        "Unable to apply override to ${this@DebugComponentDescriptor.getName(node)}, path=${overrideData.metadataPath} value=${overrideData.value.raw()} hint=${overrideData.hint}",
+                        ex)
+                  }
+                }
+          }
+        }
+
+    node.setOverrider(overrider)
+    node.rerender()
   }
 }
