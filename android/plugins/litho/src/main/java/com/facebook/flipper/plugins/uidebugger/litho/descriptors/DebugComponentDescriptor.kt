@@ -37,6 +37,10 @@ import com.facebook.yoga.YogaEdge
 
 typealias GlobalKey = String
 
+// each entry in the map is an override to a particular attribute, mutable updates to the same
+// attribute will replace the entry
+typealias NodeOverrides = MutableMap<List<MetadataId>, DebugComponentDescriptor.OverrideData>
+
 class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescriptor<DebugComponent> {
   private val NAMESPACE = "DebugComponent"
 
@@ -207,7 +211,7 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
       val hint: CompoundTypeHint?
   )
 
-  private val allOverrides = mutableMapOf<GlobalKey, MutableList<OverrideData>>()
+  private val allOverrides = mutableMapOf<GlobalKey, NodeOverrides>()
 
   override fun editAttribute(
       node: DebugComponent,
@@ -216,8 +220,8 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
       hint: CompoundTypeHint?
   ) {
 
-    val componentOverrides = allOverrides.getOrPut(node.globalKey) { mutableListOf() }
-    componentOverrides.add(OverrideData(metadataPath, value, hint))
+    val componentOverrides = allOverrides.getOrPut(node.globalKey) { mutableMapOf() }
+    componentOverrides[metadataPath.map { it.id }] = (OverrideData(metadataPath, value, hint))
 
     val overrider =
         object : DebugComponent.Overrider {
@@ -229,15 +233,20 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
           override fun applyLayoutOverrides(key: String, debugNodeEditor: DebugLayoutNodeEditor) {
 
             componentOverrides
-                .filter { it.metadataPath.firstOrNull()?.id == LayoutPropsId }
+                .filter { it.key.firstOrNull() == LayoutPropsId }
                 .forEach { overrideData ->
                   try {
+
                     LayoutPropExtractor.applyLayoutOverride(
-                        debugNodeEditor, overrideData.metadataPath.drop(1), overrideData.value)
+                        debugNodeEditor,
+                        overrideData.value.metadataPath.drop(1),
+                        overrideData.value.value)
                   } catch (ex: Exception) {
                     Log.w(
                         LogTag,
-                        "Unable to apply override to ${this@DebugComponentDescriptor.getName(node)}, path=${overrideData.metadataPath} value=${overrideData.value.raw()} hint=${overrideData.hint}",
+                        "Unable to apply override to ${this@DebugComponentDescriptor.getName(node)}, path=${
+                          overrideData.value.metadataPath.map { it.name }.joinToString(".")
+                        } value=${overrideData.value.value.raw()} hint=${overrideData.value.hint}",
                         ex)
                   }
                 }
