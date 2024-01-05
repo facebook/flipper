@@ -50,6 +50,6 @@ object OffsetChildDescriptor : NodeDescriptor<OffsetChild> {
       value: FlipperDynamic,
       hint: CompoundTypeHint?
   ) {
-    node.descriptor.editAttribute(node, metadataPath, value, hint)
+    node.descriptor.editAttribute(node.child, metadataPath, value, hint)
   }
 }
