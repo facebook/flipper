@@ -111,16 +111,16 @@ object LayoutPropExtractor {
 
   private val MarginId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "margin", mutable = true)
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "margin", mutable = false)
   private val PaddingId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "padding", mutable = true)
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "padding", mutable = false)
   private val BorderId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "border", mutable = true)
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "border", mutable = false)
   private val PositionId =
       MetadataRegister.register(
-          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "position", mutable = true)
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "position", mutable = false)
 
   private val LeftId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "left", mutable = true)
@@ -144,6 +144,9 @@ object LayoutPropExtractor {
   private val AllId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "all", mutable = true)
 
+  private val LayoutSize =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "size", mutable = false)
+
   private val HasViewOutputId =
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "hasViewOutput", mutable = false)
@@ -161,16 +164,10 @@ object LayoutPropExtractor {
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "rotation", mutable = true)
 
-  private val ResolvedId =
-      MetadataRegister.register(
-          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "resolved", mutable = true)
   private val SizeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "size", mutable = true)
-  private val ViewOutputId =
-      MetadataRegister.register(
-          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "viewOutput", mutable = true)
 
-  /** constructs an object type containing any inputs that were provided and the resolved values */
+  /** constructs an object type containing any inputs that were provided */
   private fun getInspectableBox(
       leftInput: Inspectable?,
       topInput: Inspectable?,
@@ -180,11 +177,7 @@ object LayoutPropExtractor {
       verticalInput: Inspectable?,
       allInput: Inspectable?,
       startInput: Inspectable?,
-      endInput: Inspectable?,
-      leftResolved: Float?,
-      topResolved: Float?,
-      rightResolved: Float?,
-      bottomResolved: Float?,
+      endInput: Inspectable?
   ): InspectableObject {
     val props = mutableMapOf<MetadataId, Inspectable>()
 
@@ -198,20 +191,28 @@ object LayoutPropExtractor {
     startInput?.let { props[StartId] = it }
     endInput?.let { props[EndId] = it }
 
-    if (leftResolved != null &&
+    return InspectableObject(props)
+  }
+
+  private fun getResolvedSpaceBox(
+      leftResolved: Float?,
+      topResolved: Float?,
+      rightResolved: Float?,
+      bottomResolved: Float?
+  ): InspectableValue.SpaceBox? {
+    return if (leftResolved != null &&
         rightResolved != null &&
         topResolved != null &&
         bottomResolved != null) {
-      props[ResolvedId] =
-          InspectableValue.SpaceBox(
-              SpaceBox(
-                  left = leftResolved.toInt(),
-                  right = rightResolved.toInt(),
-                  bottom = bottomResolved.toInt(),
-                  top = topResolved.toInt()))
+      InspectableValue.SpaceBox(
+          SpaceBox(
+              left = leftResolved.toInt(),
+              right = rightResolved.toInt(),
+              bottom = bottomResolved.toInt(),
+              top = topResolved.toInt()))
+    } else {
+      null
     }
-
-    return InspectableObject(props)
   }
 
   private fun toInspectable(yogaValue: YogaValue) =
@@ -325,10 +326,6 @@ object LayoutPropExtractor {
             allInput = toInspectable(layout.getMargin(YogaEdge.ALL)),
             startInput = toInspectable(layout.getMargin(YogaEdge.START)),
             endInput = toInspectable(layout.getMargin(YogaEdge.END)),
-            leftResolved = layout.getLayoutMargin(YogaEdge.LEFT),
-            rightResolved = layout.getLayoutMargin(YogaEdge.RIGHT),
-            topResolved = layout.getLayoutMargin(YogaEdge.TOP),
-            bottomResolved = layout.getLayoutMargin(YogaEdge.BOTTOM),
         )
 
     props[PaddingId] =
@@ -342,10 +339,7 @@ object LayoutPropExtractor {
             allInput = toInspectable(layout.getPadding(YogaEdge.ALL)),
             startInput = toInspectable(layout.getPadding(YogaEdge.START)),
             endInput = toInspectable(layout.getPadding(YogaEdge.END)),
-            leftResolved = layout.getLayoutPadding(YogaEdge.LEFT),
-            rightResolved = layout.getLayoutPadding(YogaEdge.RIGHT),
-            topResolved = layout.getLayoutPadding(YogaEdge.TOP),
-            bottomResolved = layout.getLayoutPadding(YogaEdge.BOTTOM))
+        )
 
     props[BorderId] =
         getInspectableBox(
@@ -358,10 +352,7 @@ object LayoutPropExtractor {
             toInspectable(layout.getBorderWidth(YogaEdge.ALL)),
             toInspectable(layout.getBorderWidth(YogaEdge.START)),
             toInspectable(layout.getBorderWidth(YogaEdge.END)),
-            null, // todo expose layout border from litho
-            null,
-            null,
-            null)
+        )
 
     props[PositionId] =
         getInspectableBox(
@@ -374,19 +365,35 @@ object LayoutPropExtractor {
             toInspectable(layout.getPosition(YogaEdge.ALL)),
             toInspectable(layout.getPosition(YogaEdge.START)),
             toInspectable(layout.getPosition(YogaEdge.END)),
-            null,
-            null,
-            null,
-            null)
+        )
 
-    val viewOutput: MutableMap<MetadataId, Inspectable> = mutableMapOf()
-    viewOutput[HasViewOutputId] = InspectableValue.Boolean(layout.hasViewOutput())
-    if (layout.hasViewOutput()) {
-      viewOutput[AlphaId] = InspectableValue.Number(layout.alpha)
-      viewOutput[RotationId] = InspectableValue.Number(layout.rotation)
-      viewOutput[ScaleId] = InspectableValue.Number(layout.scale)
-    }
-    props[ViewOutputId] = InspectableObject(viewOutput)
+    props[AlphaId] = InspectableValue.Number(layout.alpha)
+    props[RotationId] = InspectableValue.Number(layout.rotation)
+    props[ScaleId] = InspectableValue.Number(layout.scale)
+
+    return props
+  }
+
+  fun getResolvedOutputs(component: DebugComponent): Map<MetadataId, Inspectable> {
+    val props = mutableMapOf<MetadataId, Inspectable>()
+    val layout = component.layoutNode ?: return props
+
+    props[LayoutSize] = InspectableValue.Size(Size(layout.layoutWidth, layout.layoutHeight))
+    getResolvedSpaceBox(
+            layout.getLayoutMargin(YogaEdge.LEFT),
+            layout.getLayoutMargin(YogaEdge.RIGHT),
+            layout.getLayoutMargin(YogaEdge.TOP),
+            layout.getLayoutMargin(YogaEdge.BOTTOM))
+        ?.let { props[MarginId] = it }
+
+    getResolvedSpaceBox(
+            layout.getLayoutPadding(YogaEdge.LEFT),
+            layout.getLayoutPadding(YogaEdge.RIGHT),
+            layout.getLayoutPadding(YogaEdge.TOP),
+            layout.getLayoutPadding(YogaEdge.BOTTOM))
+        ?.let { props[PaddingId] = it }
+
+    props[HasViewOutputId] = InspectableValue.Boolean(layout.hasViewOutput())
 
     return props
   }

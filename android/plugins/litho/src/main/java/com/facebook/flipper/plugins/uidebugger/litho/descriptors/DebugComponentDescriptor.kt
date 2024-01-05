@@ -89,14 +89,17 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
   override fun getActiveChild(node: DebugComponent): Any? = null
 
-  private val LayoutId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho Layout")
+  private val LayoutPropsId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Layout Props")
+
+  private val LayoutOutputsId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Layout Outputs")
 
   private val UserPropsId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho Props")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "User Props")
 
   private val StateId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho State")
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "State")
 
   private val MountingDataId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Mount State")
@@ -117,11 +120,6 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
     return Deferred {
       val attributeSections = mutableMapOf<MetadataId, InspectableObject>()
 
-      attributeSections[MountingDataId] = InspectableObject(mountingData)
-
-      val layoutProps = LayoutPropExtractor.getProps(node)
-      attributeSections[LayoutId] = InspectableObject(layoutProps.toMap())
-
       if (!node.canResolve()) {
         val stateContainer = node.stateContainer
         if (stateContainer != null) {
@@ -133,6 +131,14 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
         attributeSections[UserPropsId] = InspectableObject(props.toMap())
       }
+
+      val layoutProps = LayoutPropExtractor.getProps(node)
+      attributeSections[LayoutPropsId] = InspectableObject(layoutProps.toMap())
+
+      val layoutOutputs = LayoutPropExtractor.getResolvedOutputs(node)
+      attributeSections[LayoutOutputsId] = InspectableObject(layoutOutputs.toMap())
+
+      attributeSections[MountingDataId] = InspectableObject(mountingData)
 
       attributeSections
     }
@@ -223,7 +229,7 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
           override fun applyLayoutOverrides(key: String, debugNodeEditor: DebugLayoutNodeEditor) {
 
             componentOverrides
-                .filter { it.metadataPath.firstOrNull()?.id == LayoutId }
+                .filter { it.metadataPath.firstOrNull()?.id == LayoutPropsId }
                 .forEach { overrideData ->
                   try {
                     LayoutPropExtractor.applyLayoutOverride(
