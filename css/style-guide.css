@@ -26187,14 +26187,6 @@ div.ant-typography-edit-content.ant-typography-rtl {
  * LICENSE file in the root directory of this source tree.
  *
  */
-.ant-notification-notice-message {
-  color: #fff;
-}
-.ant-notification-notice,
-.ant-message-notice-content {
-  background: #000;
-  color: #fff;
-}
 .ant-dropdown-button {
   flex-grow: 1;
 }
