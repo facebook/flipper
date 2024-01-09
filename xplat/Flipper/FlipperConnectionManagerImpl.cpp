@@ -470,11 +470,19 @@ void FlipperConnectionManagerImpl::requestSignedCertificate() {
 
   auto logs = Logger::shared().getLogs();
 
-  folly::dynamic message =
-      folly::dynamic::object("method", "signCertificate")("csr", csr.c_str())(
-          "destination",
-          store_->getCertificateDirectoryPath()
-              .c_str())("medium", medium)("logs", folly::toDynamic(logs));
+  auto timeSinceEpoch = std::chrono::system_clock::now().time_since_epoch();
+  auto ms =
+      std::chrono::duration_cast<std::chrono::milliseconds>(timeSinceEpoch);
+  auto timestamp = ms.count();
+
+  folly::dynamic message = folly::dynamic::object;
+
+  message["method"] = "signCertificate";
+  message["csr"] = csr.c_str();
+  message["destination"] = store_->getCertificateDirectoryPath().c_str();
+  message["medium"] = medium;
+  message["logs"] = folly::toDynamic(logs);
+  message["timestamp"] = timestamp;
 
   auto gettingCert = state_->start("Getting cert from desktop");
 

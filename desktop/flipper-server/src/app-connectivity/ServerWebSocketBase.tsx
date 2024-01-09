@@ -147,11 +147,16 @@ abstract class ServerWebSocketBase {
         clientQuery,
       );
 
-      const {csr, destination, logs} = message;
+      const {csr, destination, timestamp, logs} = message;
 
       console.info(
         `[conn] Starting certificate exchange: ${clientQuery.app} on ${clientQuery.device}`,
       );
+
+      if (timestamp) {
+        const date = new Date(timestamp);
+        console.info(`[conn] CSR created at`, date.toISOString());
+      }
 
       this.processDeviceLogs(clientQuery, logs);
 
