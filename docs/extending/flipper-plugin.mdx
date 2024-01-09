@@ -3,6 +3,9 @@ id: flipper-plugin
 title: Desktop Plugin API
 ---
 
+import {FbInternalOnly} from 'docusaurus-plugin-internaldocs-fb/internal';
+import Link from '@docusaurus/Link';
+
 `PluginClient` is the type of the `client` passed into a standard Sandy plugin.
 
 It takes two generic arguments:
@@ -1380,6 +1383,47 @@ await controllerPromise.promise
 Usage: `isAtom(value)`
 
 Checks if value is an [Atom](https://github.com/facebook/flipper/blob/566f7108c9efd8aefc8522af645bd0674fb91b20/desktop/flipper-plugin/src/state/atom.tsx#L30). Returns boolean.
+
+### reportPluginFailures
+
+Wraps a promise together with a description of the action that's performed and the name of the plugin
+to track success rates and duration of the actions. This is a no-op for the open-source version of Flipper
+as we do not collect any data from users.
+
+Example usage:
+
+```jsx
+import {reportPluginFailures} from 'flipper-plugin';	
+const lastCreatedBisect: PreviousBisects = await reportPluginFailures(
+  graphQLQuery(
+    `query MyQuery {
+      viewer {
+        data (first: 1) {
+          nodes {
+            id
+            date_created
+          }
+        }
+      }
+    }`,
+    60 * 1000,
+  ),
+  'queryMyQuery',
+  'myplugin',
+);
+```
+
+<FbInternalOnly>
+Refer to <Link to="/docs/fb/adding-analytics-0/">the fb-only documentation</Link> for adding analytics to your plugins.
+</FbInternalOnly>
+
+### tryCatchReportPluginFailures
+
+See above for [reportPluginFailures](#reportpluginfailures). This takes a callback and wraps it in a try/catch block instead of expecting a promise.
+
+### tryCatchReportPluginFailuresAsync
+
+Same as [tryCatchReportPluginFailures](#trycatchreportpluginfailures) but for async functions.
 
 ## TestUtils
 
