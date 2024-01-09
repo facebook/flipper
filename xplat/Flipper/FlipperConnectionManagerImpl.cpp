@@ -120,6 +120,7 @@ void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
 
         if (event == SocketEvent::ERROR) {
           log_debug(LogLevel::Error, "[conn] Socket event: error");
+          failedConnectionAttempts_++;
         } else {
           log_debug(LogLevel::Info, "[conn] Socket event: close");
         }
@@ -129,7 +130,6 @@ void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
           return;
         }
 
-        failedConnectionAttempts_++;
         isConnected_ = false;
 
         if (isConnectionTrusted_) {
@@ -446,8 +446,12 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
   messageAck["logs"] = folly::toDynamic(logs);
 
   socket_->send(folly::toJson(messageAck), []() {});
+
+  // Assigning null to the socket will disconnect the socket
+  // with the caviat that the socket event hander will not be invoked.
+  // Hence, call it ourselves.
   socket_ = nullptr;
-  reconnect();
+  handleSocketEvent(SocketEvent::CLOSE);
 }
 
 void FlipperConnectionManagerImpl::requestSignedCertificate() {
