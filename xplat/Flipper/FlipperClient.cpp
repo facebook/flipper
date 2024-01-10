@@ -25,7 +25,7 @@
 #include <execinfo.h>
 #endif
 
-#if FB_SONARKIT_ENABLED
+#ifdef FB_SONARKIT_ENABLED
 
 namespace facebook {
 namespace flipper {

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#if FB_SONARKIT_ENABLED
+#ifdef FB_SONARKIT_ENABLED
 
 #import "UICollectionView+SKInvalidation.h"
 

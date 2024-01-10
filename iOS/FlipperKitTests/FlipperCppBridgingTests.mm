@@ -7,7 +7,7 @@
 
 #import <XCTest/XCTest.h>
 
-#if FB_SONARKIT_ENABLED
+#ifdef FB_SONARKIT_ENABLED
 
 #import <FlipperKit/CppBridge/FlipperCppWrapperPlugin.h>
 #import <FlipperKit/FlipperPlugin.h>

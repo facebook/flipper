@@ -6,7 +6,7 @@
  */
 
 #import <XCTest/XCTest.h>
-#if FB_SONARKIT_ENABLED
+#ifdef FB_SONARKIT_ENABLED
 
 #import <FlipperKit/FlipperClient+Testing.h>
 #import <FlipperKit/FlipperClient.h>
