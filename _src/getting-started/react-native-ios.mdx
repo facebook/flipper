@@ -166,7 +166,7 @@ RCTAppSetupUtils takes care of initializing Flipper and the integrations mention
 ```swift
 ...
 #if DEBUG
-#if FB_SONARKIT_ENABLED
+#ifdef FB_SONARKIT_ENABLED
 import FlipperKit
 #endif
 #endif
@@ -185,7 +185,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   private func initializeFlipper(with application: UIApplication) {
     #if DEBUG
-    #if FB_SONARKIT_ENABLED
+    #ifdef FB_SONARKIT_ENABLED
       let client = FlipperClient.shared()
       let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
       FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper)
