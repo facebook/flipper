@@ -67,22 +67,38 @@ export function reportPluginFailures<T>(
   name: string,
   plugin: string,
 ): Promise<T> {
+  const start = performance.now();
   return promise.then(
     (fulfilledValue) => {
-      logPluginSuccessRate(name, plugin, {kind: 'success'});
+      logPluginSuccessRate(
+        name,
+        plugin,
+        {kind: 'success'},
+        performance.now() - start,
+      );
       return fulfilledValue;
     },
     (rejectionReason) => {
       if (rejectionReason instanceof CancelledPromiseError) {
-        logPluginSuccessRate(name, plugin, {
-          kind: 'cancelled',
-        });
+        logPluginSuccessRate(
+          name,
+          plugin,
+          {
+            kind: 'cancelled',
+          },
+          performance.now() - start,
+        );
       } else {
-        logPluginSuccessRate(name, plugin, {
-          kind: 'failure',
-          supportedOperation: !(rejectionReason instanceof UnsupportedError),
-          error: rejectionReason,
-        });
+        logPluginSuccessRate(
+          name,
+          plugin,
+          {
+            kind: 'failure',
+            supportedOperation: !(rejectionReason instanceof UnsupportedError),
+            error: rejectionReason,
+          },
+          performance.now() - start,
+        );
       }
       return Promise.reject(rejectionReason);
     },
@@ -184,17 +200,23 @@ export function logPlatformSuccessRate(name: string, result: Result) {
   }
 }
 
-function logPluginSuccessRate(name: string, plugin: string, result: Result) {
+function logPluginSuccessRate(
+  name: string,
+  plugin: string,
+  result: Result,
+  durationMs?: number | undefined,
+) {
   if (result.kind === 'success') {
-    getLogger().track('success-rate', name, {value: 1}, plugin);
+    getLogger().track('success-rate', name, {value: 1, durationMs}, plugin);
   } else if (result.kind === 'cancelled') {
-    getLogger().track('operation-cancelled', name, undefined, plugin);
+    getLogger().track('operation-cancelled', name, {durationMs}, plugin);
   } else {
     getLogger().track(
       'success-rate',
       name,
       {
         value: 0,
+        durationMs,
         supportedOperation: result.supportedOperation ? 1 : 0,
         error: extractMessage(result.error),
       },
