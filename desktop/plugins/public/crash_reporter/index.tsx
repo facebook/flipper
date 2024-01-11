@@ -63,7 +63,7 @@ export function devicePlugin(client: DevicePluginClient) {
       client.writeTextToClipboard(callstack);
     },
     createPaste(callstack: string) {
-      client.createPaste(callstack);
+      return client.createPaste(callstack);
     },
     isFB: client.isFB,
     clearCrashes() {

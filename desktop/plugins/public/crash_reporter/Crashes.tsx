@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {Button, Typography} from 'antd';
+import {Button, notification, Typography} from 'antd';
 import {CoffeeOutlined, CopyOutlined, DeleteOutlined} from '@ant-design/icons';
 import {
   usePlugin,
@@ -89,7 +89,22 @@ function CrashDetails({crash}: {crash: Crash}) {
         {plugin.isFB ? (
           <Button
             onClick={() => {
-              plugin.createPaste(crash.callstack!);
+              plugin
+                .createPaste(crash.callstack!)
+                .then((x) => {
+                  if (x) {
+                    notification.success({
+                      message: 'Created paste',
+                      description: <span>Created a paste P{x.number}</span>,
+                    });
+                  }
+                })
+                .catch((e) => {
+                  notification.error({
+                    message: 'Failed to create paste',
+                    description: <span>{e.toString()}</span>,
+                  });
+                });
             }}>
             Create paste
           </Button>
