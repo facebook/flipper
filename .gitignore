@@ -26,6 +26,11 @@ react-native/package-lock.json
 *.xcworkspace
 **/Pods/
 **/xcuserdata/
+**/idb-applications/
+**/idb-dsyms/
+**/idb-dylibs/
+**/idb-frameworks/
+**/idb-test-bundles/
 
 android/third-party/external/
 
