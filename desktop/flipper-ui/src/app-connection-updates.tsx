@@ -51,18 +51,22 @@ export const connectionUpdate = (
       errors.orderedEntries.push(update.detail);
     }
 
-    const content = errors.orderedEntries.reduce((accumulator, e) => {
-      return accumulator.length > 0 ? accumulator + '\n' + e : e;
-    });
-
     errorUpdates.set(update.key, errors);
     notification.error({
       key: update.key,
       message: title,
       description: (
         <Layout.Bottom>
-          <Typography.Text>{content}</Typography.Text>
-          <div style={{marginTop: 10}}>
+          <div>
+            {errors.orderedEntries.map((e, idx) => {
+              return (
+                <div key={idx} style={{marginBottom: 10}}>
+                  <Typography.Text>{e}</Typography.Text>
+                </div>
+              );
+            })}
+          </div>
+          <div>
             <Button
               type="primary"
               style={{float: 'right'}}
