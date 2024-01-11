@@ -29,7 +29,7 @@ import config from '../fb-stubs/config';
 import {WelcomeScreenStaticView} from './WelcomeScreen';
 import fbConfig from '../fb-stubs/config';
 import {isFBEmployee} from '../utils/fbEmployee';
-import {Button, Modal, notification} from 'antd';
+import {Button, Modal, message, notification} from 'antd';
 import isProduction from '../utils/isProduction';
 import {uiPerfTracker} from '../utils/UIPerfTracker';
 import {WarningOutlined} from '@ant-design/icons';
@@ -44,6 +44,12 @@ export function SandyApp() {
     (state) => state.application.leftSidebarVisible,
   );
   const staticView = useStore((state) => state.connections.staticView);
+
+  // Messages need to be pushed down to make sure they appear below
+  // the navigation bar which has a height of 68px.
+  message.config({
+    top: 68,
+  });
 
   useEffect(() => {
     const title = `Flipper (${getVersionString()}${

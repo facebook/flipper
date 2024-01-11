@@ -25,6 +25,7 @@ type ErrorUpdate = {
   entries: Set<string>;
   orderedEntries: Array<string>;
 };
+
 const errorUpdates = new Map<string, ErrorUpdate>();
 
 const className = css`
@@ -92,9 +93,6 @@ export const connectionUpdate = (
       type: update.type,
       content,
       className,
-      style: {
-        marginTop: '68px',
-      },
       duration: update.type === 'success' ? 3 : 0,
       onClick: () => message.destroy(update.key),
     });
