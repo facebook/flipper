@@ -129,8 +129,12 @@ function logPluginUpdateError(key: string, err: Error) {
 }
 
 async function refreshMarketplacePlugins(store: Store): Promise<void> {
-  if (getFlipperLib().isFB && !currentUser().get()) {
-    // inside FB we cannot refresh when user is not logged
+  if (
+    getFlipperLib().isFB &&
+    !currentUser().get() &&
+    !GK('flipper_use_interngraph_plugin_download')
+  ) {
+    // inside FB we cannot refresh when user is not logged unless we're using the interngraphg download mechanism
     return;
   }
   // We want to get granular logs here for all of the potential failure points. Hence
