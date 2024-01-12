@@ -114,25 +114,45 @@ export async function loadPluginsFromMarketplace(
   return selectCompatibleMarketplaceVersions(availablePlugins);
 }
 
+function logPluginUpdateError(key: string, err: Error) {
+  if (isConnectivityOrAuthError(err)) {
+    // This is handled elsewhere and we don't need to create another warning or error for it.
+    console.warn(
+      `Connectivity or auth error while performing Marketplace operation ${key}`,
+      err,
+    );
+  } else {
+    console.error(`Error while performing Marketplace operation ${key}`, err);
+  }
+
+  throw err;
+}
+
 async function refreshMarketplacePlugins(store: Store): Promise<void> {
   if (getFlipperLib().isFB && !currentUser().get()) {
     // inside FB we cannot refresh when user is not logged
     return;
   }
+  // We want to get granular logs here for all of the potential failure points. Hence
+  // the slightly awkward try/catch/throw pattern.
+  let plugins = [];
   try {
-    const plugins = await loadPluginsFromMarketplace(store);
+    plugins = await loadPluginsFromMarketplace(store);
+  } catch (err) {
+    logPluginUpdateError('loadPluginsFromMarketplace', err);
+    return;
+  }
+  try {
     store.dispatch(registerMarketplacePlugins(plugins));
+  } catch (err) {
+    logPluginUpdateError('registerMarketplacePlugins', err);
+    return;
+  }
+  try {
     autoUpdatePlugins(store, plugins);
   } catch (err) {
-    if (isConnectivityOrAuthError(err)) {
-      // This is handled elsewhere and we don't need to create another warning or error for it.
-      console.warn(
-        'Connectivity or auth error while refreshing plugins from Marketplace',
-        err,
-      );
-    } else {
-      console.error('Error while refreshing plugins from Marketplace', err);
-    }
+    logPluginUpdateError('autoUpdatePlugins', err);
+    return;
   }
 }
 
