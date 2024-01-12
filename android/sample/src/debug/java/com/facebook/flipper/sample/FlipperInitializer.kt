@@ -42,7 +42,6 @@ object FlipperInitializer {
 
     // Normally, you would want to make this dependent on a BuildConfig flag, but
     // for this demo application we can safely assume that you always want to debug.
-    // TODO: T174494880
     ComponentsConfiguration.isDebugModeEnabled = true
     LithoFlipperDescriptors.add(descriptorMapping)
     client.addPlugin(InspectorFlipperPlugin(context, descriptorMapping))
