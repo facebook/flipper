@@ -523,7 +523,7 @@ function handleMissingPermissions(e: Error): void {
   ) {
     console.warn(e);
     throw new Error(
-      'Cannot connect to iOS application. idb_certificate_pull_failed' +
+      'Cannot connect to iOS application. idb_certificate_pull_failed, ' +
         'idb lacks permissions to exchange certificates. Did you install a source build ([FB] or enable certificate exchange)? See console logs for more details.',
     );
   }
