@@ -16,6 +16,8 @@ import {
   isTest,
   DeviceDescription,
   FlipperServerState,
+  buildGenericClientId,
+  buildGenericClientIdFromQuery,
 } from 'flipper-common';
 import Client from '../Client';
 import {Button, notification} from 'antd';
@@ -27,24 +29,20 @@ import {waitFor} from '../utils/waitFor';
 import {NotificationBody} from '../ui/components/NotificationBody';
 import {Layout} from '../ui';
 import {toggleConnectivityModal} from '../reducers/application';
+import {connectionUpdate} from '../app-connection-updates';
 
 export function connectFlipperServerToStore(
   server: FlipperServer,
   store: Store,
   logger: Logger,
 ) {
+  const troubleshootConnection = () =>
+    store.dispatch(toggleConnectivityModal());
+
   server.on('notification', ({type, title, description}) => {
     const key = `[${type}] ${title}: ${description}`;
     showNotification(key, type, title, description);
   });
-
-  server.on(
-    'connectivity-troubleshoot-notification',
-    ({type, title, description}) => {
-      const key = `[${type}] ${title}: ${description}`;
-      showConnectivityTroubleshootNotification(store, key, title, description);
-    },
-  );
 
   server.on('server-state', handleServerStateChange);
 
@@ -76,15 +74,79 @@ export function connectFlipperServerToStore(
       type: 'START_CLIENT_SETUP',
       payload: client,
     });
+
+    // This is called again if coming from the TLS socket
+    // If going through the certificate exchange process, it means
+    // the event is triggered twice.
+    connectionUpdate(
+      {
+        key: buildGenericClientId(client),
+        type: 'loading',
+        app: client.appName,
+        device: client.deviceName,
+        title: 'is attempting to connect...',
+      },
+      troubleshootConnection,
+    );
   });
 
-  server.on('client-connected', (payload: ClientDescription) =>
-    handleClientConnected(server, store, logger, payload),
-  );
+  server.on('client-setup-error', ({client, type, message}) => {
+    connectionUpdate(
+      {
+        key: buildGenericClientId(client),
+        type,
+        app: client.appName,
+        device: client.deviceName,
+        title: 'failed to establish a connection',
+        detail: message,
+      },
+      troubleshootConnection,
+    );
+  });
+
+  server.on('client-setup-step', ({client, step}) => {
+    connectionUpdate(
+      {
+        key: buildGenericClientId(client),
+        type: 'info',
+        app: client.appName,
+        device: client.deviceName,
+        title: step,
+      },
+      troubleshootConnection,
+    );
+  });
+
+  server.on('client-connected', (payload: ClientDescription) => {
+    handleClientConnected(server, store, logger, payload);
+    connectionUpdate(
+      {
+        key: buildGenericClientIdFromQuery(payload.query),
+        type: 'success',
+        app: payload.query.app,
+        device: payload.query.device,
+        title: 'successfully connected',
+      },
+      troubleshootConnection,
+    );
+  });
 
   server.on('client-disconnected', ({id}) => {
     const existingClient = store.getState().connections.clients.get(id);
-    existingClient?.disconnect();
+
+    if (existingClient) {
+      existingClient.disconnect();
+      connectionUpdate(
+        {
+          key: buildGenericClientIdFromQuery(existingClient.query),
+          type: 'info',
+          app: existingClient.query.app,
+          device: existingClient.query.device,
+          title: 'disconnected',
+        },
+        troubleshootConnection,
+      );
+    }
   });
 
   server.on('client-message', ({id, message}) => {

@@ -152,6 +152,15 @@ export type FlipperServerEvents = {
     crash: CrashLog;
   };
   'client-setup': UninitializedClient;
+  'client-setup-error': {
+    client: UninitializedClient;
+    type: 'error' | 'warning';
+    message: string;
+  };
+  'client-setup-step': {
+    client: UninitializedClient;
+    step: string;
+  };
   'client-connected': ClientDescription;
   'client-disconnected': {id: string};
   'client-message': {
@@ -160,11 +169,6 @@ export type FlipperServerEvents = {
   };
   'connectivity-troubleshoot-cmd': CommandRecordEntry;
   'connectivity-troubleshoot-log': ConnectionRecordEntry[];
-  'connectivity-troubleshoot-notification': {
-    type: 'error' | 'warning';
-    title: string;
-    description: string;
-  };
   'plugins-server-add-on-message': ExecuteMessage;
   'download-file-update': DownloadFileUpdate;
   'server-log': LoggerInfo;

@@ -142,13 +142,17 @@ export class FlipperServerImpl implements FlipperServer {
       this.emit('client-setup', client);
     });
 
+    server.addListener('client-setup-step', ({client, step}) => {
+      this.emit('client-setup-step', {client, step});
+    });
+
     server.addListener(
       'client-setup-error',
       ({client, error}: {client: UninitializedClient; error: Error}) => {
-        this.emit('connectivity-troubleshoot-notification', {
-          title: `Connection to '${client.appName}' on '${client.deviceName}' failed`,
-          description: `Failed to exchange certificates with the following error: ${error}`,
+        this.emit('client-setup-error', {
+          client,
           type: 'error',
+          message: `Failed to exchange certificates with the following error: ${error}`,
         });
       },
     );
@@ -166,13 +170,23 @@ export class FlipperServerImpl implements FlipperServer {
         const clientIdentifier = `${client.deviceName}#${client.appName}`;
         if (!this.unresponsiveClients.has(clientIdentifier)) {
           this.unresponsiveClients.add(clientIdentifier);
-          this.emit('connectivity-troubleshoot-notification', {
+
+          // A timeout is very unlikely to take place. The client is constantly trying to connect.
+          // Even if there was an error. The only plausible explanations are:
+          // - The app stopped running during the certificate exchange process, VERY unlikely.
+          // - If WWW certificate exchange is enabled, the app is probably still waiting for a response from the server.
+          let message =
+            'Timeout establishing connection. It looks like the app is taking longer than it should to reconnect using the exchanged certificates. ';
+          message +=
+            medium === 'WWW'
+              ? `Verify that both your computer and mobile device are connected to Lighthouse/VPN and that you are logged in to 
+              Flipper with the same user account used by the app (unfortunately, test accounts are not currently supported), 
+              so that certificates can be exhanged. See: https://fburl.com/flippervpn. Once this is done, re-running the app may solve this issue.`
+              : 'Re-running the app may solve this issue.';
+          this.emit('client-setup-error', {
+            client,
             type: 'error',
-            title: `Timed out establishing connection with "${client.appName}" on "${client.deviceName}".`,
-            description:
-              medium === 'WWW'
-                ? `Verify that both your computer and mobile device are on Lighthouse/VPN that you are logged in to Facebook Intern so that certificates can be exhanged. See: https://fburl.com/flippervpn`
-                : 'Verify that your client is connected to Flipper and that there is no error related to idb or adb.',
+            message,
           });
         } else {
           console.warn(

@@ -381,7 +381,7 @@ export class ServerController
             // In the original insecure connection request, `device_id` is set to "unknown".
             // Flipper queries adb/idb to learn the device ID and provides it back to the app.
             // Once app knows it, it starts using the correct device ID for its subsequent secure connections.
-            // When the app re-connects securely after the cert exchange process, we need to cancel this timeout.
+            // When the app re-connects securely after the certificate exchange process, we need to cancel this timeout.
             // Since the original clientQuery has `device_id` set to "unknown", we update it here with the correct `device_id` to find it and cancel it later.
             clientQueryToKey({...clientQuery, device_id: response.deviceId}),
             setTimeout(() => {
