@@ -152,7 +152,7 @@ export class FlipperServerImpl implements FlipperServer {
         this.emit('client-setup-error', {
           client,
           type: 'error',
-          message: `Failed to exchange certificates with the following error: ${error}`,
+          message: `Failed to exchange certificates with the following error: ${error.message}`,
         });
       },
     );
