@@ -19,6 +19,7 @@ import {
 import path from 'path';
 import {ClientQuery} from 'flipper-common';
 import {recorder} from '../../recorder';
+import {isFBBuild} from '../../fb-stubs/constants';
 
 const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
 
@@ -81,7 +82,12 @@ export default class iOSCertificateProvider extends CertificateProvider {
     const devices = await Promise.all(deviceMatchList);
     const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
     if (matchingIds.length == 0) {
-      throw new Error(`No matching device found for app: ${appName}`);
+      let error = `No matching device found for app: ${appName}.`;
+      if (clientQuery.medium === 'FS_ACCESS' && isFBBuild) {
+        error += ` If you are using a physical device and a non-locally built app (i.e. Mobile Build), please make sure WWW certificate exchange is enabled in your app.`;
+      }
+
+      throw new Error(error);
     }
     if (matchingIds.length > 1) {
       console.warn(`[conn] Multiple devices found for app: ${appName}`);
@@ -180,8 +186,8 @@ export default class iOSCertificateProvider extends CertificateProvider {
       recorder.log(
         clientQuery,
         `Original idb pull failed. Most likely it is a physical device
-        that requires us to handle the dest path dirrently.
-        Forcing a re-try with the updated dest path. See D32106952 for details.`,
+        that requires us to handle the destination path dirrently.
+        Forcing a re-try with the updated destination path. See D32106952 for details.`,
         e,
       );
       await iosUtil.pull(
