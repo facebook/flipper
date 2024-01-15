@@ -171,15 +171,15 @@ export class FlipperServerImpl implements FlipperServer {
         if (!this.unresponsiveClients.has(clientIdentifier)) {
           this.unresponsiveClients.add(clientIdentifier);
 
-          // A timeout is very unlikely to take place. The client is constantly trying to connect.
+          // A timeout is very unlikely to take place as the app is constantly trying to reconnect.
           // Even if there was an error. The only plausible explanations are:
-          // - The app stopped running during the certificate exchange process, VERY unlikely.
+          // - The app stopped running during the certificate exchange process, which is very unlikely.
           // - If WWW certificate exchange is enabled, the app is probably still waiting for a response from the server.
           let message =
             'Timeout establishing connection. It looks like the app is taking longer than it should to reconnect using the exchanged certificates. ';
           message +=
             medium === 'WWW'
-              ? `Verify that both your computer and mobile device are connected to Lighthouse/VPN and that you are logged in to 
+              ? `Verify that your mobile device is connected to Lighthouse/VPN and that you are logged in to 
               Flipper with the same user account used by the app (unfortunately, test accounts are not currently supported), 
               so that certificates can be exhanged. See: https://fburl.com/flippervpn. Once this is done, re-running the app may solve this issue.`
               : 'Re-running the app may solve this issue.';
