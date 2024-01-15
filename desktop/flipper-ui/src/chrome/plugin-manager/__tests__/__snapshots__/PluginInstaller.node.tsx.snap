@@ -63,9 +63,9 @@ exports[`load PluginInstaller list 1`] = `
           class="css-1otvu18-View-FlexBox-FlexRow-TableHeadContainer ebt14ub1"
         >
           <div
-            class="css-it9ar6-TableHeadColumnContainer ebt14ub0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="name"
-            width="25%"
+            width="0"
           >
             <div
               class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -79,9 +79,9 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-1m9d124-TableHeadColumnContainer ebt14ub0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="version"
-            width="10%"
+            width="0"
           >
             <div
               class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -95,9 +95,9 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-qmwopt-TableHeadColumnContainer ebt14ub0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="description"
-            width="flex"
+            width="0"
           >
             <div
               class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -111,9 +111,9 @@ exports[`load PluginInstaller list 1`] = `
             </div>
           </div>
           <div
-            class="css-ux5muk-TableHeadColumnContainer ebt14ub0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="install"
-            width="15%"
+            width="0"
           >
             <div
               class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -139,9 +139,9 @@ exports[`load PluginInstaller list 1`] = `
             data-key="flipper-plugin-hello"
           >
             <div
-              class="css-hdg6vt-TableBodyColumnContainer ef77i510"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
-              width="25%"
+              width="0"
             >
               <div
                 style="display: inline-flex; align-items: center; overflow: hidden; gap: 8px;"
@@ -155,9 +155,9 @@ exports[`load PluginInstaller list 1`] = `
               </div>
             </div>
             <div
-              class="css-1rdsust-TableBodyColumnContainer ef77i510"
+              class="css-pfp0fy-TableBodyColumnContainer ef77i510"
               title=""
-              width="10%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -166,9 +166,9 @@ exports[`load PluginInstaller list 1`] = `
               </span>
             </div>
             <div
-              class="css-1bw2bjn-TableBodyColumnContainer ef77i510"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
-              width="flex"
+              width="0"
             >
               <div
                 class="css-s1wsbn-Container-Horizontal e1hsqii12"
@@ -192,9 +192,9 @@ exports[`load PluginInstaller list 1`] = `
               </div>
             </div>
             <div
-              class="css-4dx1ef-TableBodyColumnContainer ef77i510"
+              class="css-16v1lq1-TableBodyColumnContainer ef77i510"
               title=""
-              width="15%"
+              width="0"
             >
               <button
                 class="ant-btn ant-btn-primary ant-btn-sm"
@@ -211,9 +211,9 @@ exports[`load PluginInstaller list 1`] = `
             data-key="flipper-plugin-world"
           >
             <div
-              class="css-hdg6vt-TableBodyColumnContainer ef77i510"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
-              width="25%"
+              width="0"
             >
               <div
                 style="display: inline-flex; align-items: center; overflow: hidden; gap: 8px;"
@@ -227,9 +227,9 @@ exports[`load PluginInstaller list 1`] = `
               </div>
             </div>
             <div
-              class="css-1rdsust-TableBodyColumnContainer ef77i510"
+              class="css-pfp0fy-TableBodyColumnContainer ef77i510"
               title=""
-              width="10%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -238,9 +238,9 @@ exports[`load PluginInstaller list 1`] = `
               </span>
             </div>
             <div
-              class="css-1bw2bjn-TableBodyColumnContainer ef77i510"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
-              width="flex"
+              width="0"
             >
               <div
                 class="css-s1wsbn-Container-Horizontal e1hsqii12"
@@ -264,9 +264,9 @@ exports[`load PluginInstaller list 1`] = `
               </div>
             </div>
             <div
-              class="css-4dx1ef-TableBodyColumnContainer ef77i510"
+              class="css-16v1lq1-TableBodyColumnContainer ef77i510"
               title=""
-              width="15%"
+              width="0"
             >
               <button
                 class="ant-btn ant-btn-primary ant-btn-sm"
@@ -449,9 +449,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
           class="css-1otvu18-View-FlexBox-FlexRow-TableHeadContainer ebt14ub1"
         >
           <div
-            class="css-it9ar6-TableHeadColumnContainer ebt14ub0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="name"
-            width="25%"
+            width="0"
           >
             <div
               class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -465,9 +465,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-1m9d124-TableHeadColumnContainer ebt14ub0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="version"
-            width="10%"
+            width="0"
           >
             <div
               class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -481,9 +481,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-qmwopt-TableHeadColumnContainer ebt14ub0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="description"
-            width="flex"
+            width="0"
           >
             <div
               class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -497,9 +497,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             </div>
           </div>
           <div
-            class="css-ux5muk-TableHeadColumnContainer ebt14ub0"
+            class="css-mpoiz3-TableHeadColumnContainer ebt14ub0"
             title="install"
-            width="15%"
+            width="0"
           >
             <div
               class="ebt14ub3 css-x4q70f-InteractiveContainer-TableHeaderColumnInteractive e14xwmxq0"
@@ -525,9 +525,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             data-key="flipper-plugin-hello"
           >
             <div
-              class="css-hdg6vt-TableBodyColumnContainer ef77i510"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
-              width="25%"
+              width="0"
             >
               <div
                 style="display: inline-flex; align-items: center; overflow: hidden; gap: 8px;"
@@ -541,9 +541,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </div>
             </div>
             <div
-              class="css-1rdsust-TableBodyColumnContainer ef77i510"
+              class="css-pfp0fy-TableBodyColumnContainer ef77i510"
               title=""
-              width="10%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -552,9 +552,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </span>
             </div>
             <div
-              class="css-1bw2bjn-TableBodyColumnContainer ef77i510"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
-              width="flex"
+              width="0"
             >
               <div
                 class="css-s1wsbn-Container-Horizontal e1hsqii12"
@@ -578,9 +578,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </div>
             </div>
             <div
-              class="css-4dx1ef-TableBodyColumnContainer ef77i510"
+              class="css-16v1lq1-TableBodyColumnContainer ef77i510"
               title=""
-              width="15%"
+              width="0"
             >
               <button
                 class="ant-btn ant-btn-default ant-btn-sm"
@@ -597,9 +597,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
             data-key="flipper-plugin-world"
           >
             <div
-              class="css-hdg6vt-TableBodyColumnContainer ef77i510"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
-              width="25%"
+              width="0"
             >
               <div
                 style="display: inline-flex; align-items: center; overflow: hidden; gap: 8px;"
@@ -613,9 +613,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </div>
             </div>
             <div
-              class="css-1rdsust-TableBodyColumnContainer ef77i510"
+              class="css-pfp0fy-TableBodyColumnContainer ef77i510"
               title=""
-              width="10%"
+              width="0"
             >
               <span
                 class="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line"
@@ -624,9 +624,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </span>
             </div>
             <div
-              class="css-1bw2bjn-TableBodyColumnContainer ef77i510"
+              class="css-yt4330-TableBodyColumnContainer ef77i510"
               title=""
-              width="flex"
+              width="0"
             >
               <div
                 class="css-s1wsbn-Container-Horizontal e1hsqii12"
@@ -650,9 +650,9 @@ exports[`load PluginInstaller list with one plugin installed 1`] = `
               </div>
             </div>
             <div
-              class="css-4dx1ef-TableBodyColumnContainer ef77i510"
+              class="css-16v1lq1-TableBodyColumnContainer ef77i510"
               title=""
-              width="15%"
+              width="0"
             >
               <button
                 class="ant-btn ant-btn-primary ant-btn-sm"
