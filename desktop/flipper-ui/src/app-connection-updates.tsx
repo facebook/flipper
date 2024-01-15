@@ -14,7 +14,7 @@ import {Layout} from './ui';
 
 type ConnectionUpdate = {
   key: string;
-  type: 'loading' | 'info' | 'success' | 'error' | 'warning';
+  type: 'loading' | 'info' | 'success' | 'success-info' | 'error' | 'warning';
   app: string;
   device: string;
   title: string;
@@ -84,7 +84,7 @@ export const connectionUpdate = (
       onClose: () => message.destroy(update.key),
     });
   } else {
-    if (update.type === 'success') {
+    if (update.type === 'success' || update.type === 'success-info') {
       errorUpdates.delete(update.key);
     }
 
@@ -94,10 +94,11 @@ export const connectionUpdate = (
     }
     message.open({
       key: update.key,
-      type: update.type,
+      type: update.type === 'success-info' ? 'info' : update.type,
       content,
       className,
-      duration: update.type === 'success' ? 3 : 0,
+      duration:
+        update.type === 'success' || update.type === 'success-info' ? 3 : 0,
       onClick: () => message.destroy(update.key),
     });
   }

@@ -139,7 +139,7 @@ export function connectFlipperServerToStore(
       connectionUpdate(
         {
           key: buildGenericClientIdFromQuery(existingClient.query),
-          type: 'info',
+          type: 'success-info',
           app: existingClient.query.app,
           device: existingClient.query.device,
           title: 'disconnected',
