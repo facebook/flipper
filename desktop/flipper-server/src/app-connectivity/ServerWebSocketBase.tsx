@@ -153,14 +153,27 @@ abstract class ServerWebSocketBase {
         `[conn] Starting certificate exchange: ${clientQuery.app} on ${clientQuery.device}`,
       );
 
-      if (timestamp) {
-        const date = new Date(timestamp);
-        console.info(`[conn] CSR created at`, date.toISOString());
-      }
-
       this.processDeviceLogs(clientQuery, logs);
 
       try {
+        if (timestamp) {
+          const requestDate = new Date(timestamp);
+
+          function isSameDay(date: Date): boolean {
+            const currentDate = new Date();
+            return date.toDateString() === currentDate.toDateString();
+          }
+
+          console.info(`[conn] CSR created at`, requestDate.toISOString());
+          if (!isSameDay(requestDate)) {
+            throw new Error(
+              `The certificate request being processed was generated on a different date than the current system date. 
+               This discrepancy can lead to certificate verification errors. 
+               To resolve this issue, please ensure that the device's date and time settings match the system's current date and time.`,
+            );
+          }
+        }
+
         const result = await this.listener.onProcessCSR(
           csr,
           clientQuery,
@@ -176,6 +189,7 @@ abstract class ServerWebSocketBase {
         return response;
       } catch (error) {
         this.listener.onClientSetupError(clientQuery, error);
+        return JSON.stringify({});
       }
     } else if (message.method === 'signCertificateAck') {
       const {logs, ...remainder} = message;
