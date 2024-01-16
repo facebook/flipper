@@ -54,6 +54,7 @@ export function AppInspect() {
 }
 
 const Toolbar = styled(Layout.Horizontal)({
+  height: 32,
   '.ant-btn': {
     border: 'none',
   },
