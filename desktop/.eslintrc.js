@@ -312,6 +312,8 @@ module.exports = {
           'error',
           restrictedImportsUniversalErrorConfig,
         ],
+        // ! is allowed within tests.
+        '@typescript-eslint/no-non-null-assertion': 'off',
         'rulesdir/no-restricted-imports-clone': [
           'warn',
           {
