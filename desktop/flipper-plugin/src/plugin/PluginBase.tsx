@@ -212,8 +212,9 @@ export function registerStorageAtom(
   key: string | undefined,
   persistable: Persistable,
 ) {
-  if (key && getCurrentPluginInstance()) {
-    const {rootStates} = getCurrentPluginInstance()!;
+  const pluginInstance = getCurrentPluginInstance();
+  if (key && pluginInstance) {
+    const {rootStates} = pluginInstance;
     if (rootStates[key]) {
       throw new Error(
         `Some other state is already persisting with key "${key}"`,
@@ -572,11 +573,11 @@ export abstract class BasePluginInstance {
 
   protected startServerAddOn() {
     const pluginDetails = this.definition.details;
-    if (pluginDetails.serverAddOn) {
+    if (pluginDetails.serverAddOn && pluginDetails.serverAddOnEntry) {
       this.serverAddOnControls
         .start(
           pluginDetails.name,
-          {path: pluginDetails.serverAddOnEntry!},
+          {path: pluginDetails.serverAddOnEntry},
           this.serverAddOnOwner,
         )
         .then(() => {
