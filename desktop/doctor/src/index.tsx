@@ -108,8 +108,8 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
               ))
                 ? androidStudioAndroidHome
                 : (await fs_extra.exists(globalAndroidHome))
-                ? globalAndroidHome
-                : null;
+                  ? globalAndroidHome
+                  : null;
               return {
                 hasProblem: true,
                 message: [
@@ -306,9 +306,8 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   const result = await tryExecuteCommand(
                     `${settings?.idbPath} --help`,
                   );
-                  const hasIdbCompanion = await tryExecuteCommand(
-                    `idbCompanion --help`,
-                  );
+                  const hasIdbCompanion =
+                    await tryExecuteCommand(`idbCompanion --help`);
                   if (result.fail) {
                     const hasIdbInPath = await tryExecuteCommand(`which idb`);
 

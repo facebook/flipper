@@ -190,8 +190,8 @@ function InstallButton(props: {
     props.updateStatus.kind === 'update-available'
       ? {kind: 'Update'}
       : props.updateStatus.kind === 'not-installed'
-      ? {kind: 'Install'}
-      : {kind: 'Remove'},
+        ? {kind: 'Install'}
+        : {kind: 'Remove'},
   );
 
   if (action.kind === 'Waiting') {

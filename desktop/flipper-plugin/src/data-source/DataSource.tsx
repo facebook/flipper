@@ -930,8 +930,8 @@ export class DataSourceView<T, KeyType> {
         viewIndex < this.windowStart
           ? 'before'
           : viewIndex >= this.windowEnd
-          ? 'after'
-          : 'in',
+            ? 'after'
+            : 'in',
     });
   }
 

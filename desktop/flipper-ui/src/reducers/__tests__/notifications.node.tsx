@@ -242,9 +242,8 @@ test('notifications from plugins arrive in the notifications reducer', async () 
     },
   });
 
-  const {store, client, sendMessage} = await createMockFlipperWithPlugin(
-    TestPlugin,
-  );
+  const {store, client, sendMessage} =
+    await createMockFlipperWithPlugin(TestPlugin);
   sendMessage('testMessage', {});
   client.flushMessageBuffer();
   expect(store.getState().notifications).toMatchInlineSnapshot(`

@@ -137,8 +137,8 @@ export function wrapInteractionHandler<T extends Function>(
         element === null
           ? 'unknown'
           : typeof element === 'string'
-          ? element
-          : describeElementType(element),
+            ? element
+            : describeElementType(element),
       action:
         action ??
         (element && typeof element != 'string'
@@ -252,8 +252,8 @@ global.flipperTrackInteraction = function flipperTrackInteraction(
     !action
       ? 'unknown action'
       : typeof action === 'string'
-      ? action
-      : stringifyElement(action),
+        ? action
+        : stringifyElement(action),
   )(...args);
 };
 

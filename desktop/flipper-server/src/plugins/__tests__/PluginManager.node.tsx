@@ -67,9 +67,8 @@ describe('PluginManager', () => {
 
     describe.each([['installed', detailsInstalled]])('%s', (_name, details) => {
       test('stops the add-on when the initial owner is removed', async () => {
-        const {pluginManager, addOnCleanupMock} = await startServerAddOn(
-          details,
-        );
+        const {pluginManager, addOnCleanupMock} =
+          await startServerAddOn(details);
 
         const controlledP = createControlledPromise<void>();
         addOnCleanupMock.mockImplementation(() => controlledP.promise);
@@ -89,9 +88,8 @@ describe('PluginManager', () => {
       });
 
       test('adds a new owner, stops the add-on when all owners are removed', async () => {
-        const {pluginManager, addOnCleanupMock} = await startServerAddOn(
-          details,
-        );
+        const {pluginManager, addOnCleanupMock} =
+          await startServerAddOn(details);
 
         const newOwner = 'luke';
         await pluginManager.startServerAddOn(pluginName, details, newOwner);
@@ -179,9 +177,8 @@ describe('PluginManager', () => {
       });
 
       test('concurrent calls to stopServerAddOn stop add-on only once', async () => {
-        const {pluginManager, addOnCleanupMock} = await startServerAddOn(
-          details,
-        );
+        const {pluginManager, addOnCleanupMock} =
+          await startServerAddOn(details);
 
         const controlledP = createControlledPromise<void>();
         addOnCleanupMock.mockImplementation(() => controlledP.promise);

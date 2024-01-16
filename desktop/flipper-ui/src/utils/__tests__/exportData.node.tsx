@@ -1262,9 +1262,8 @@ test('Non sandy plugins are exported properly if they are still queued', async (
 });
 
 test('Sandy plugins with custom export are exported properly', async () => {
-  const {client, sendMessage, store} = await createMockFlipperWithPlugin(
-    sandyTestPlugin,
-  );
+  const {client, sendMessage, store} =
+    await createMockFlipperWithPlugin(sandyTestPlugin);
 
   // We do select another plugin, to verify that pending message queues are indeed processed before exporting
   store.dispatch(

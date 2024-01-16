@@ -67,9 +67,8 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
 }
 
 test('Plugin container can render plugin and receive updates', async () => {
-  const {renderer, sendMessage, act} = await renderMockFlipperWithPlugin(
-    TestPlugin,
-  );
+  const {renderer, sendMessage, act} =
+    await renderMockFlipperWithPlugin(TestPlugin);
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
       <div>
@@ -567,9 +566,8 @@ test('PluginContainer + Sandy plugin supports deeplink', async () => {
       },
     },
   );
-  const {renderer, act, client, store} = await renderMockFlipperWithPlugin(
-    definition,
-  );
+  const {renderer, act, client, store} =
+    await renderMockFlipperWithPlugin(definition);
 
   expect((client as any).rawSend).toBeCalledWith('init', {
     plugin: 'TestPlugin',
@@ -759,9 +757,8 @@ test('PluginContainer can render Sandy device plugins', async () => {
       Component: MySandyPlugin,
     },
   );
-  const {renderer, act, store, device} = await renderMockFlipperWithPlugin(
-    definition,
-  );
+  const {renderer, act, store, device} =
+    await renderMockFlipperWithPlugin(definition);
 
   expect(renderer.baseElement).toMatchInlineSnapshot(`
     <body>
@@ -912,9 +909,8 @@ test('PluginContainer + Sandy device plugin supports deeplink', async () => {
       },
     },
   );
-  const {renderer, act, store, device} = await renderMockFlipperWithPlugin(
-    definition,
-  );
+  const {renderer, act, store, device} =
+    await renderMockFlipperWithPlugin(definition);
 
   const theUniverse = {
     thisIs: 'theUniverse',

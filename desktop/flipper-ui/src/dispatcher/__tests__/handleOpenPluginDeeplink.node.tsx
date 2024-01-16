@@ -94,9 +94,8 @@ test('Triggering a deeplink will work', async () => {
       },
     },
   );
-  const {renderer, client, store, logger} = await renderMockFlipperWithPlugin(
-    definition,
-  );
+  const {renderer, client, store, logger} =
+    await renderMockFlipperWithPlugin(definition);
   logger.track = jest.fn();
 
   expect(linksSeen).toEqual([]);
@@ -348,9 +347,8 @@ test('triggering a deeplink with incompatible device will cause bail', async () 
       supportedDevices: [{os: 'iOS'}],
     },
   );
-  const {store, logger, createDevice} = await renderMockFlipperWithPlugin(
-    definition,
-  );
+  const {store, logger, createDevice} =
+    await renderMockFlipperWithPlugin(definition);
   logger.track = jest.fn();
 
   // Skipping user interactions.

@@ -67,8 +67,8 @@ export function VisualiserControls({
   const focusToolTip = focusDisabled
     ? 'Select a non leaf node to focus it'
     : focusedNode == null
-    ? 'Focus current node'
-    : 'Remove focus';
+      ? 'Focus current node'
+      : 'Remove focus';
 
   const targetToolTip =
     targetMode.state === 'disabled' ? 'Target Mode' : 'Exit  target mode';

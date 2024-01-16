@@ -100,8 +100,8 @@ export function normalizeSpace(spacing: Spacing, defaultSpace: number): number {
   return spacing === true
     ? defaultSpace
     : spacing === undefined || spacing === false
-    ? 0
-    : typeof spacing === 'string'
-    ? theme.space[spacing]
-    : spacing;
+      ? 0
+      : typeof spacing === 'string'
+        ? theme.space[spacing]
+        : spacing;
 }

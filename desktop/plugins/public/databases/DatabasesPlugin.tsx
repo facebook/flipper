@@ -539,19 +539,22 @@ export function Component() {
         return;
       }
 
-      const types = currentStructure.rows.reduce((acc, row) => {
-        const nameValue = row[nameKeyIdx];
-        const name = nameValue.type === 'string' ? nameValue.value : null;
-        const typeValue = row[typeIdx];
-        const type = typeValue.type === 'string' ? typeValue.value : null;
-        const nullableValue =
-          nullableIdx < 0 ? {type: 'null', value: null} : row[nullableIdx];
-        const nullable = nullableValue.value !== false;
-        if (name !== null && type !== null) {
-          acc[name] = {type, nullable};
-        }
-        return acc;
-      }, {} as {[key: string]: {type: string; nullable: boolean}});
+      const types = currentStructure.rows.reduce(
+        (acc, row) => {
+          const nameValue = row[nameKeyIdx];
+          const name = nameValue.type === 'string' ? nameValue.value : null;
+          const typeValue = row[typeIdx];
+          const type = typeValue.type === 'string' ? typeValue.value : null;
+          const nullableValue =
+            nullableIdx < 0 ? {type: 'null', value: null} : row[nullableIdx];
+          const nullable = nullableValue.value !== false;
+          if (name !== null && type !== null) {
+            acc[name] = {type, nullable};
+          }
+          return acc;
+        },
+        {} as {[key: string]: {type: string; nullable: boolean}},
+      );
 
       const changeValue = Object.entries(change).reduce(
         (acc, [key, value]: [string, string | null]) => {
@@ -563,10 +566,13 @@ export function Component() {
       instance.execute({
         query: constructUpdateQuery(
           selectedDatabaseTable,
-          primaryColumnIndexes.reduce((acc, idx) => {
-            acc[columns[idx]] = row[idx];
-            return acc;
-          }, {} as {[key: string]: Value}),
+          primaryColumnIndexes.reduce(
+            (acc, idx) => {
+              acc[columns[idx]] = row[idx];
+              return acc;
+            },
+            {} as {[key: string]: Value},
+          ),
           changeValue,
         ),
       });

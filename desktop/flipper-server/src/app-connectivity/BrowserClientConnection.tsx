@@ -34,7 +34,10 @@ export class BrowserClientConnection extends WebSocketClientConnection {
     );
   }
 
-  constructor(ws: WebSocket, public plugins?: string[]) {
+  constructor(
+    ws: WebSocket,
+    public plugins?: string[],
+  ) {
     super(ws);
   }
 

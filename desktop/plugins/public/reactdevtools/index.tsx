@@ -73,9 +73,8 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
       'flipper-plugin-react-devtools.maybeGetInitialGlobalDevTools',
     );
     try {
-      const newGlobalDevToolsSource = await client.sendToServerAddOn(
-        'globalDevTools',
-      );
+      const newGlobalDevToolsSource =
+        await client.sendToServerAddOn('globalDevTools');
 
       if (newGlobalDevToolsSource) {
         globalDevToolsInstance = {

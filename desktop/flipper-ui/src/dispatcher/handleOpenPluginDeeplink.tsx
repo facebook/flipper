@@ -112,8 +112,8 @@ export async function handleOpenPluginDeeplink(
     deviceOrClient instanceof BaseDevice
       ? deviceOrClient.description
       : deviceOrClient instanceof Client
-      ? deviceOrClient.query
-      : deviceOrClient,
+        ? deviceOrClient.query
+        : deviceOrClient,
   );
   if ('errorState' in deviceOrClient) {
     trackInteraction({

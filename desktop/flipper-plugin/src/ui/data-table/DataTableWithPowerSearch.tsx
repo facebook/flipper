@@ -540,10 +540,13 @@ export function DataTable<T extends object>(
       const columnFieldConfig: FieldConfig = {
         label: column.title || column.key,
         key: column.key,
-        operators: columnPowerSearchOperators.reduce((res, operatorConfig) => {
-          res[operatorConfig.key] = operatorConfig;
-          return res;
-        }, {} as Record<string, OperatorConfig>),
+        operators: columnPowerSearchOperators.reduce(
+          (res, operatorConfig) => {
+            res[operatorConfig.key] = operatorConfig;
+            return res;
+          },
+          {} as Record<string, OperatorConfig>,
+        ),
         useWholeRow,
       };
       res.fields[column.key] = columnFieldConfig;

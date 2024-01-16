@@ -65,10 +65,10 @@ export const Container = styled.div<ContainerProps>(
       grow && shrink
         ? `1 1 0` // allow growing, and shrinking smaller than actual size
         : grow
-        ? `1 0 auto` // allow grow, start at natural size
-        : shrink
-        ? `0 1 0` // allow shrinking smaller than natural size
-        : `0 0 auto`, // (default) use natural size, don't grow or shrink (in parent flex direction)
+          ? `1 0 auto` // allow grow, start at natural size
+          : shrink
+            ? `0 1 0` // allow shrinking smaller than natural size
+            : `0 0 auto`, // (default) use natural size, don't grow or shrink (in parent flex direction)
     alignItems: center ? 'center' : 'stretch',
     gap: normalizeSpace(gap, theme.space.small),
 

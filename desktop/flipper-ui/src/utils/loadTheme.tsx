@@ -11,7 +11,6 @@ import {Settings} from 'flipper-common';
 import {shouldUseDarkMode} from './useIsDarkMode';
 
 export function loadTheme(theme: Settings['darkMode']) {
-  (
-    document.getElementById('flipper-theme-import') as HTMLLinkElement
-  ).href = `themes/${shouldUseDarkMode(theme) ? 'dark' : 'light'}.css`;
+  (document.getElementById('flipper-theme-import') as HTMLLinkElement).href =
+    `themes/${shouldUseDarkMode(theme) ? 'dark' : 'light'}.css`;
 }

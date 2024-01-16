@@ -697,8 +697,8 @@ function dataInspectorPropsAreEqual(
     const path = !nextProps.name
       ? '' // root
       : !nextProps.parentPath.length
-      ? nextProps.name // root element
-      : nextProps.parentPath.join('.') + '.' + nextProps.name;
+        ? nextProps.name // root element
+        : nextProps.parentPath.join('.') + '.' + nextProps.name;
 
     // we are being collapsed
     if (props.expanded[path] !== nextProps.expanded[path]) {

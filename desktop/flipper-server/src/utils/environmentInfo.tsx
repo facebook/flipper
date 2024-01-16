@@ -25,10 +25,10 @@ export async function getEnvironmentInfo(
     process.env.FLIPPER_RELEASE_CHANNEL === 'insiders'
       ? ReleaseChannel.INSIDERS
       : process.env.FLIPPER_RELEASE_CHANNEL === 'stable'
-      ? ReleaseChannel.STABLE
-      : packageJson.releaseChannel === 'insiders'
-      ? ReleaseChannel.INSIDERS
-      : ReleaseChannel.STABLE;
+        ? ReleaseChannel.STABLE
+        : packageJson.releaseChannel === 'insiders'
+          ? ReleaseChannel.INSIDERS
+          : ReleaseChannel.STABLE;
 
   // This is provided as part of the bundling process for headless.
   const flipperReleaseRevision =

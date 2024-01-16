@@ -47,9 +47,8 @@ test('Triggering a deeplink will work', async () => {
       },
     },
   );
-  const {renderer, client, store, logger} = await renderMockFlipperWithPlugin(
-    definition,
-  );
+  const {renderer, client, store, logger} =
+    await renderMockFlipperWithPlugin(definition);
 
   expect(linksSeen).toEqual([]);
 

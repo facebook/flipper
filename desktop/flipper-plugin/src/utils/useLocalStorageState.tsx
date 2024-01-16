@@ -30,8 +30,8 @@ export function useLocalStorageState<T>(
       return item
         ? JSON.parse(item)
         : typeof initialValue === 'function'
-        ? (initialValue as any)()
-        : initialValue;
+          ? (initialValue as any)()
+          : initialValue;
     } catch (error) {
       // If error also return initialValue
       console.log(error);

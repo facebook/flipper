@@ -135,9 +135,8 @@ test('can handle device plugins that throw at start', async () => {
     },
   );
 
-  const {device, store, createDevice} = await createMockFlipperWithPlugin(
-    TestPlugin,
-  );
+  const {device, store, createDevice} =
+    await createMockFlipperWithPlugin(TestPlugin);
 
   expect(mockedConsole.errorCalls[0]).toMatchInlineSnapshot(`
     [

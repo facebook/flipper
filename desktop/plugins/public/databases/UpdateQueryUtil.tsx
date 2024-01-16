@@ -55,8 +55,8 @@ export function constructQueryClause(
         val.type === 'null'
           ? 'NULL'
           : val.type === 'string' || val.type === 'blob'
-          ? `'${val.value.replace(/'/g, "''")}'`
-          : `${val.value}`;
+            ? `'${val.value.replace(/'/g, "''")}'`
+            : `${val.value}`;
       if (idx <= 0) {
         return `\`${key}\`=${valueString}`;
       } else {

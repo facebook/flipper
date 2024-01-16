@@ -343,9 +343,9 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
           state.selectedPlugin && client.supportsPlugin(state.selectedPlugin)
             ? state.selectedPlugin
             : state.userPreferredPlugin &&
-              client.supportsPlugin(state.userPreferredPlugin)
-            ? state.userPreferredPlugin
-            : null,
+                client.supportsPlugin(state.userPreferredPlugin)
+              ? state.userPreferredPlugin
+              : null,
       };
     }
 

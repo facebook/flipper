@@ -107,9 +107,8 @@ function getTestPluginState(
 }
 
 test('queue - events are processed immediately if plugin is selected', async () => {
-  const {store, client, sendMessage} = await createMockFlipperWithPlugin(
-    TestPlugin,
-  );
+  const {store, client, sendMessage} =
+    await createMockFlipperWithPlugin(TestPlugin);
   expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');
   sendMessage('noop', {});
   sendMessage('noop', {});
@@ -227,9 +226,8 @@ test('queue - events ARE processed immediately if plugin is NOT selected / enabl
       },
     },
   );
-  const {store, client, sendMessage} = await createMockFlipperWithPlugin(
-    NavigationPlugin,
-  );
+  const {store, client, sendMessage} =
+    await createMockFlipperWithPlugin(NavigationPlugin);
 
   // Pre setup, deselect AND disable
   selectDeviceLogs(store);

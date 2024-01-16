@@ -113,8 +113,8 @@ test('editing some field after trigger Edit', async () => {
       (value.type === 'null'
         ? res.queryAllByPlaceholderText('NULL')
         : value.type === 'blob'
-        ? res.queryAllByText(searchValue!)
-        : res.queryAllByDisplayValue(searchValue!)
+          ? res.queryAllByText(searchValue!)
+          : res.queryAllByDisplayValue(searchValue!)
       ).length,
     ).toBeGreaterThan(0);
   }

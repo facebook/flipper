@@ -339,8 +339,8 @@ const IndentGuides = React.memo(
           const secondHalf = guide.trimBottom
             ? 'transparent'
             : guide.color === 'primary' && !drawHalfprimary
-            ? theme.primaryColor
-            : secondaryColor;
+              ? theme.primaryColor
+              : secondaryColor;
 
           return (
             <div
@@ -545,10 +545,10 @@ const TreeNodeContent = styled.li<{
     highlightColor != null
       ? highlightColor
       : isSelected
-      ? theme.selectionBackgroundColor
-      : isHovered
-      ? theme.backgroundWash
-      : theme.backgroundDefault,
+        ? theme.selectionBackgroundColor
+        : isHovered
+          ? theme.backgroundWash
+          : theme.backgroundDefault,
 }));
 
 function ExpandedIconOrSpace(props: {

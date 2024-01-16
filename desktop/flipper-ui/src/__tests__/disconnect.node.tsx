@@ -154,9 +154,8 @@ test('Persist data enabled reconnect same device does not wipe data', async () =
       },
     },
   );
-  const {device, store, logger} = await createMockFlipperWithPlugin(
-    deviceplugin,
-  );
+  const {device, store, logger} =
+    await createMockFlipperWithPlugin(deviceplugin);
   const server = TestUtils.createFlipperServerMock({
     'client-request-response': async () => ({
       success: [],
@@ -204,9 +203,8 @@ test('Persist data enabled multiple devices maintain same data', async () => {
       },
     },
   );
-  const {device, store, logger, server} = await createMockFlipperWithPlugin(
-    deviceplugin,
-  );
+  const {device, store, logger, server} =
+    await createMockFlipperWithPlugin(deviceplugin);
 
   const instance = device.sandyPluginStates.get(deviceplugin.id)!;
 
@@ -269,9 +267,8 @@ test('Persist data enabled device is disconnected and reconnected properly', asy
       },
     },
   );
-  const {device, store, logger, server} = await createMockFlipperWithPlugin(
-    deviceplugin,
-  );
+  const {device, store, logger, server} =
+    await createMockFlipperWithPlugin(deviceplugin);
 
   const instance = device.sandyPluginStates.get(deviceplugin.id)!;
 

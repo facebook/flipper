@@ -185,8 +185,8 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
             ? !children
               ? gutterWidth
               : onResize
-              ? width
-              : this.state.width
+                ? width
+                : this.state.width
             : undefined
         }
         minHeight={minHeight}

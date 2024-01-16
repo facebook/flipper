@@ -91,7 +91,7 @@ export function FrameworkEventsTable({
           key: `payload.${customKey}` as any,
           title: startCase(customKey),
           powerSearchConfig: {type: 'string'},
-        } as DataTableColumn<AugmentedFrameworkEvent>),
+        }) as DataTableColumn<AugmentedFrameworkEvent>,
     );
 
     return staticColumns.concat(customColumns);

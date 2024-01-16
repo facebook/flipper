@@ -150,8 +150,8 @@ export const Component = () => {
           {winner !== ' '
             ? `Winner! ${winner}`
             : turn === 'O'
-            ? 'Your turn'
-            : 'Mobile players turn..'}
+              ? 'Your turn'
+              : 'Mobile players turn..'}
         </Typography.Text>
         <GameBoard>
           {cells.map((c, idx) => (

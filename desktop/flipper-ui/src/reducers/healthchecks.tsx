@@ -59,16 +59,16 @@ function computeAggregatedResult(
   return results.some((r) => r.status === 'IN_PROGRESS')
     ? {status: 'IN_PROGRESS'}
     : results.every((r) => r.status === 'SUCCESS')
-    ? {status: 'SUCCESS'}
-    : results.some((r) => r.status === 'FAILED' && !r.isAcknowledged)
-    ? {status: 'FAILED', isAcknowledged: false}
-    : results.some((r) => r.status === 'FAILED')
-    ? {status: 'FAILED', isAcknowledged: true}
-    : results.some((r) => r.status === 'WARNING' && !r.isAcknowledged)
-    ? {status: 'WARNING', isAcknowledged: false}
-    : results.some((r) => r.status === 'WARNING')
-    ? {status: 'WARNING', isAcknowledged: true}
-    : {status: 'SKIPPED'};
+      ? {status: 'SUCCESS'}
+      : results.some((r) => r.status === 'FAILED' && !r.isAcknowledged)
+        ? {status: 'FAILED', isAcknowledged: false}
+        : results.some((r) => r.status === 'FAILED')
+          ? {status: 'FAILED', isAcknowledged: true}
+          : results.some((r) => r.status === 'WARNING' && !r.isAcknowledged)
+            ? {status: 'WARNING', isAcknowledged: false}
+            : results.some((r) => r.status === 'WARNING')
+              ? {status: 'WARNING', isAcknowledged: true}
+              : {status: 'SKIPPED'};
 }
 
 const updateCheckResult = produce(
@@ -200,14 +200,14 @@ export default function reducer(
   return action.type === 'START_HEALTHCHECKS'
     ? start(draft, action.payload)
     : action.type === 'FINISH_HEALTHCHECKS'
-    ? finish(draft)
-    : action.type === 'UPDATE_HEALTHCHECK_RESULT'
-    ? updateCheckResult(draft, action.payload)
-    : action.type === 'ACKNOWLEDGE_PROBLEMS'
-    ? acknowledge(draft)
-    : action.type === 'RESET_ACKNOWLEDGED_PROBLEMS'
-    ? resetAcknowledged(draft)
-    : draft;
+      ? finish(draft)
+      : action.type === 'UPDATE_HEALTHCHECK_RESULT'
+        ? updateCheckResult(draft, action.payload)
+        : action.type === 'ACKNOWLEDGE_PROBLEMS'
+          ? acknowledge(draft)
+          : action.type === 'RESET_ACKNOWLEDGED_PROBLEMS'
+            ? resetAcknowledged(draft)
+            : draft;
 }
 
 export const updateHealthcheckResult = (

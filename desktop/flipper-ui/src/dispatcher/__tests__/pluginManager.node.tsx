@@ -74,12 +74,12 @@ beforeEach(async () => {
       (details === pluginDetails1
         ? pluginDefinition1
         : details === pluginDetails2
-        ? pluginDefinition2
-        : details === pluginDetails1V2
-        ? pluginDefinition1V2
-        : details === devicePluginDetails
-        ? devicePluginDefinition
-        : undefined)!,
+          ? pluginDefinition2
+          : details === pluginDetails1V2
+            ? pluginDefinition1V2
+            : details === devicePluginDetails
+              ? devicePluginDefinition
+              : undefined)!,
   );
   mockFlipper = new MockFlipper();
   const initResult = await mockFlipper.initWithDeviceAndClient({

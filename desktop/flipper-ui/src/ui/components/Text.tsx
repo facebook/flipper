@@ -43,8 +43,8 @@ const Text = styled.span<{
     props.selectable === false
       ? 'none'
       : props.selectable === true
-      ? 'text'
-      : undefined,
+        ? 'text'
+        : undefined,
   wordWrap: props.code ? 'break-word' : props.wordWrap,
   whiteSpace:
     props.code && typeof props.whiteSpace === 'undefined'

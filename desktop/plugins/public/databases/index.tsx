@@ -317,8 +317,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
       event.row < 0
         ? 0
         : event.row >= state.currentPage.total - PAGE_SIZE
-        ? Math.max(state.currentPage.total - PAGE_SIZE, 0)
-        : event.row;
+          ? Math.max(state.currentPage.total - PAGE_SIZE, 0)
+          : event.row;
     pluginState.update((state) => {
       state.pageRowNumber = destinationRow;
       state.currentPage = null;
