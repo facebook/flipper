@@ -12,6 +12,9 @@
 #include <android/log.h>
 #endif
 
+// Uncomment to enable debug/verbose logging.
+// #define FLIPPER_DEBUG_LOG 1
+
 namespace facebook {
 namespace flipper {
 

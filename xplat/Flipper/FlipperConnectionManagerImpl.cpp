@@ -117,10 +117,8 @@ void FlipperConnectionManagerImpl::handleSocketEvent(SocketEvent event) {
         break;
       case SocketEvent::CLOSE:
       case SocketEvent::ERROR:
-
         if (event == SocketEvent::ERROR) {
           log_debug(LogLevel::Error, "[conn] Socket event: error");
-          failedConnectionAttempts_++;
         } else {
           log_debug(LogLevel::Info, "[conn] Socket event: close");
         }
@@ -436,9 +434,11 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
       }
     }
 
-    messageAck["hasRequiredFiles"] = store_->hasRequiredFiles();
+    bool hasRequiredFiles = store_->hasRequiredFiles();
+    messageAck["hasRequiredFiles"] = hasRequiredFiles;
 
-    log("[conn] Certificate exchange complete");
+    log("[conn] Certificate exchange complete with required files: " +
+        std::to_string(hasRequiredFiles));
     gettingCert->complete();
   }
 

@@ -44,8 +44,10 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
 
+/** WS Protocol (RFC-6455): https://datatracker.ietf.org/doc/html/rfc6455 */
 @DoNotStrip
 class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
@@ -58,9 +60,10 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
   }
 
   FlipperSocketEventHandler mEventHandler;
+  boolean mConnected = false;
 
   FlipperSocketImpl(String url) throws URISyntaxException {
-    super(new URI(url));
+    super(new URI(url), new Draft_6455(), null, 30);
   }
 
   public void flipperSetEventHandler(FlipperSocketEventHandler eventHandler) {
@@ -146,6 +149,7 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
   @Override
   public void onOpen(ServerHandshake handshakedata) {
+    mConnected = true;
     this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.OPEN, "");
   }
 
@@ -156,10 +160,33 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
   @Override
   public void onClose(int code, String reason, boolean remote) {
-    this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.CLOSE, "");
-    // Clear the existing event handler as to ensure no other events are processed after the close
-    // is handled.
-    this.clearEventHandler();
+    // 1000 (normal closure), 1001 (endpoint is "going away"), and 1006
+    // (connection was closed abnormally) are valid close codes, we are already connected.
+    boolean shouldReport = mConnected;
+
+    // Not a valid WS code as per RFC-6455. Usually found when the endpoint
+    // is not running. It can report an error, but can be safely ignored.
+    if (code == -1) {
+      shouldReport = true;
+    }
+
+    // 1002 (endpoint is terminating the connection due to a protocol error).
+    // Used whenever the endpoint is rejecting incoming connections.
+    // The connection is not open because is terminated prematurely.
+    if (code == 1002
+        && reason != null
+        && reason.contains("Invalid status code received: 401 Status")) {
+      shouldReport = true;
+    }
+
+    if (shouldReport) {
+      this.mEventHandler.onConnectionEvent(FlipperSocketEventHandler.SocketEvent.CLOSE, "");
+      // Clear the existing event handler as to ensure no other events are processed after the close
+      // is handled.
+      this.clearEventHandler();
+    }
+
+    mConnected = false;
   }
 
   /**
@@ -171,16 +198,25 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
    */
   @Override
   public void onError(Exception ex) {
-
-    // Check the exception for OpenSSL error and change the event type.
+    boolean isSSLError = true;
+    // Check the exception for SSL error and change the event type.
     // Required for Flipper as the current implementation treats these errors differently.
     if (ex instanceof javax.net.ssl.SSLHandshakeException) {
-      this.mEventHandler.onConnectionEvent(
-          FlipperSocketEventHandler.SocketEvent.SSL_ERROR, ex.getMessage());
+      Throwable cause = ex.getCause();
+      if (cause != null) {
+        isSSLError =
+            !(cause instanceof java.io.EOFException || cause instanceof java.net.ConnectException);
+      }
     } else {
-      this.mEventHandler.onConnectionEvent(
-          FlipperSocketEventHandler.SocketEvent.ERROR, ex.getMessage());
+      isSSLError = false;
     }
+
+    this.mEventHandler.onConnectionEvent(
+        isSSLError
+            ? FlipperSocketEventHandler.SocketEvent.SSL_ERROR
+            : FlipperSocketEventHandler.SocketEvent.ERROR,
+        ex.getMessage());
+
     // Clear the existing event handler as to ensure no other events are processed after the close
     // is handled.
     this.clearEventHandler();
@@ -188,6 +224,8 @@ class FlipperSocketImpl extends WebSocketClient implements FlipperSocket {
 
   @Override
   public void flipperDisconnect() {
+    mConnected = false;
+
     this.clearEventHandler();
     super.close();
   }
