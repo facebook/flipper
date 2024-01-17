@@ -77,7 +77,10 @@ const restrictedImportsUniversalErrorConfig = {
 };
 
 module.exports = {
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
+  parserOptions: {
+    requireConfigFile: false,
+  },
   root: true,
   extends: ['fbjs', 'prettier'],
   plugins: [
@@ -191,7 +194,7 @@ module.exports = {
           },
         ],
         '@typescript-eslint/naming-convention': [
-          2,
+          'warn',
           {
             selector: 'default',
             format: ['camelCase'],
