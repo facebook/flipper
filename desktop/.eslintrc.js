@@ -319,8 +319,6 @@ module.exports = {
           'error',
           restrictedImportsUniversalErrorConfig,
         ],
-        // ! is allowed within tests.
-        '@typescript-eslint/no-non-null-assertion': 'off',
         'rulesdir/no-restricted-imports-clone': [
           'error',
           {
@@ -333,6 +331,14 @@ module.exports = {
             ],
           },
         ],
+      },
+    },
+    // Overrides for all tests
+    {
+      files: ['**/__tests__/**/*.tsx', '**/__tests__/**/*.ts'],
+      rules: {
+        // ! is allowed within tests.
+        '@typescript-eslint/no-non-null-assertion': 'off',
       },
     },
   ],
