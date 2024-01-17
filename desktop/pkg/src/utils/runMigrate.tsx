@@ -114,7 +114,9 @@ export default async function (
       ...packageJson.scripts,
       prepack:
         (packageJson.scripts?.prepack
-          ? packageJson.scripts!.prepack! + ' && '
+          ? // TODO: Fix this the next time the file is edited.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            packageJson.scripts!.prepack! + ' && '
           : '') + 'flipper-pkg lint && flipper-pkg bundle',
     };
   }

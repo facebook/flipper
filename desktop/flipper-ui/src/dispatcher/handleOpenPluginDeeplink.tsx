@@ -52,11 +52,15 @@ export function parseOpenPluginParams(query: string): OpenPluginParams {
     throw new Error('Missing plugin-id param');
   }
   return {
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     pluginId: params.get('plugin-id')!,
     client: params.get('client'),
     devices: params.get('devices')?.split(',') ?? [],
     payload: params.get('payload')
-      ? decodeURIComponent(params.get('payload')!)
+      ? // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        decodeURIComponent(params.get('payload')!)
       : undefined,
   };
 }
@@ -99,8 +103,12 @@ export async function handleOpenPluginDeeplink(
     .getState()
     .plugins.devicePlugins.has(params.pluginId);
   const pluginDefinition = isDevicePlugin
-    ? store.getState().plugins.devicePlugins.get(params.pluginId)!
-    : store.getState().plugins.clientPlugins.get(params.pluginId)!;
+    ? // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      store.getState().plugins.devicePlugins.get(params.pluginId)!
+    : // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      store.getState().plugins.clientPlugins.get(params.pluginId)!;
   const deviceOrClient = await selectDevicesAndClient(
     store,
     params,
@@ -157,15 +165,21 @@ export async function handleOpenPluginDeeplink(
 
   console.debug('[deeplink] Client initialized ', client?.id);
 
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (!isDevicePlugin && !client!.plugins.has(params.pluginId)) {
     await Dialog.alert({
       title,
       type: 'error',
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       message: `This plugin is not supported by client ${client!.query.app}`,
     });
     trackInteraction({
       state: 'PLUGIN_CLIENT_UNSUPPORTED',
       plugin: params,
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       extra: {client: client!.query.app},
     });
     return;
@@ -181,6 +195,8 @@ export async function handleOpenPluginDeeplink(
       store.dispatch(switchPlugin({plugin: pluginDefinition}));
     }
   } else {
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     store.dispatch(setPluginEnabled(params.pluginId, client!.query.app));
   }
   console.debug('[deeplink] Cleared plugin enabling.');
@@ -199,6 +215,8 @@ export async function handleOpenPluginDeeplink(
     store.dispatch(
       selectPlugin({
         selectedPlugin: params.pluginId,
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         selectedAppId: client!.id,
         selectedDevice: device,
         deepLinkPayload: params.payload,

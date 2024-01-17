@@ -65,7 +65,9 @@ export const Dialog = {
                 try {
                   const value = opts.onConfirm
                     ? await opts.onConfirm(currentValue)
-                    : currentValue!;
+                    : // TODO: Fix this the next time the file is edited.
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      currentValue!;
                   onHide();
                   resolve(value);
                 } catch (e) {

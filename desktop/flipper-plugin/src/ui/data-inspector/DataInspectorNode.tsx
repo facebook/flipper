@@ -353,6 +353,8 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
       [extractValue, diff, depth, path],
     );
     const ancestry = useMemo(
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       () => (res ? parentAncestry!.concat([res.value]) : []),
       [parentAncestry, res?.value],
     );
@@ -372,6 +374,8 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
         shouldExpand.current = true;
       } else if (resDiff) {
         shouldExpand.current = isComponentExpanded(
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           res!.value,
           resDiff.type,
           resDiff.value,
@@ -439,6 +443,8 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
     const setValue = res.mutable ? setValueProp : null;
     const {value, type, extra} = res;
 
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (parentAncestry!.includes(value)) {
       return recursiveMarker;
     }

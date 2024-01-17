@@ -82,6 +82,8 @@ function CrashDetails({crash}: {crash: Crash}) {
         }>
         <Button
           onClick={() => {
+            // TODO: Fix this the next time the file is edited.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             plugin.copyCrashToClipboard(crash.callstack!);
           }}>
           <CopyOutlined />
@@ -89,7 +91,8 @@ function CrashDetails({crash}: {crash: Crash}) {
         {plugin.isFB ? (
           <Button
             onClick={() => {
-              plugin
+              plugin // TODO: Fix this the next time the file is edited.
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 .createPaste(crash.callstack!)
                 .then((x) => {
                   if (x) {
@@ -112,6 +115,8 @@ function CrashDetails({crash}: {crash: Crash}) {
         <Button
           disabled={!crash.callstack}
           onClick={() => {
+            // TODO: Fix this the next time the file is edited.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             plugin.openInLogs(crash.callstack!);
           }}>
           Open In Logs

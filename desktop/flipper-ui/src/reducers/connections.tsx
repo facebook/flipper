@@ -266,6 +266,8 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
 
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const client = state.clients.get(selectedAppId!);
       const device = action.payload.selectedDevice ?? client?.device;
 
@@ -285,6 +287,8 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
           : state.userPreferredDevice,
         selectedAppId: selectedAppId ?? null,
         userPreferredApp:
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           state.clients.get(selectedAppId!)?.query.app ??
           state.userPreferredApp,
         selectedPlugin,
@@ -308,6 +312,8 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         const selectNewClient =
           !draft.selectedAppId ||
           draft.userPreferredApp === payload.query.app ||
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           draft.clients.get(draft.selectedAppId!)?.connected.get() === false;
 
         if (selectNewClient) {

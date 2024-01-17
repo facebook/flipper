@@ -25,6 +25,8 @@ import {getEnvInfo} from './environmentInfo';
               category.healthchecks.map(async ({key, label, run}) => ({
                 key,
                 label,
+                // TODO: Fix this the next time the file is edited.
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 result: await run!(environmentInfo),
               })),
             ),

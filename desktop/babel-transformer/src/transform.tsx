@@ -105,6 +105,8 @@ export default function transform({
     throw new Error('Failed to transform');
   }
   const result = generate(
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     transformed.ast!,
     {
       filename,

@@ -45,9 +45,13 @@ function createDevToolsNode(
   wrapper.appendChild(iframe);
 
   if (marginTop) {
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     document.getElementById(TARGET_CONTAINER_ID)!.style.marginTop = marginTop;
   }
 
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.getElementById(TARGET_CONTAINER_ID)!.appendChild(wrapper);
   return wrapper;
 }
@@ -58,15 +62,25 @@ function findDevToolsNode(url: string): HTMLElement | null {
 
 function attachDevTools(devToolsNode: HTMLElement) {
   devToolsNode.style.display = 'block';
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.getElementById(TARGET_CONTAINER_ID)!.style.display = 'block';
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.getElementById(TARGET_CONTAINER_ID)!.parentElement!.style.display =
     'block';
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.getElementById(TARGET_CONTAINER_ID)!.parentElement!.style.height =
     '100%';
 }
 
 function detachDevTools(devToolsNode: HTMLElement | null) {
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.getElementById(TARGET_CONTAINER_ID)!.style.display = 'none';
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.getElementById(TARGET_CONTAINER_ID)!.parentElement!.style.display =
     'none';
 

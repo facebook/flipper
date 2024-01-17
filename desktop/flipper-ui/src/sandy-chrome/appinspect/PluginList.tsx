@@ -94,6 +94,8 @@ export const PluginList = memo(function PluginList({
   );
   const handleEnablePlugin = useCallback(
     (id: string) => {
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const plugin = (plugins.clientPlugins.get(id) ??
         plugins.devicePlugins.get(id))!;
       dispatch(
@@ -107,6 +109,8 @@ export const PluginList = memo(function PluginList({
   );
   const handleInstallPlugin = useCallback(
     (id: string) => {
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const plugin = downloadablePlugins.find((p) => p.id === id)!;
       reportUsage('plugin:install', {version: plugin.version}, plugin.id);
       dispatch(startPluginDownload({plugin, startedByUser: true}));
@@ -115,6 +119,8 @@ export const PluginList = memo(function PluginList({
   );
   const handleUninstallPlugin = useCallback(
     (id: string) => {
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const plugin = disabledPlugins.find((p) => p.id === id)!;
       reportUsage('plugin:uninstall', {version: plugin.version}, plugin.id);
       dispatch(uninstallPlugin({plugin}));

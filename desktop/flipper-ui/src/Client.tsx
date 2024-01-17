@@ -629,6 +629,8 @@ export default class Client extends EventEmitter {
 
       if (!fromPlugin || acceptingMessagesFromPlugin) {
         try {
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const response = await this.connection!.sendExpectResponse(data);
           if (!fromPlugin || acceptingMessagesFromPlugin) {
             const logEventName = this.getLogEventName(data);

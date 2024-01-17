@@ -14,5 +14,7 @@ export function getNode(
   nodes: Map<Id, ClientNode>,
 ): ClientNode | undefined {
   //map just returns undefined when you pass null or undefined as a key
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return nodes.get(id!);
 }

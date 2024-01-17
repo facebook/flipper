@@ -30,6 +30,8 @@ export function NavbarScreenshotButton() {
 
   const handleScreenshot = useCallback(() => {
     setIsTakingScreenshot(true);
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return capture(selectedDevice!)
       .then(openFile)
       .catch((e) => {

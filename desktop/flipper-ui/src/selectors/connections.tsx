@@ -24,6 +24,8 @@ const getPluginDownloads = (state: State) => state.pluginDownloads;
 
 // N.B. no useSelector, It can't memoise on maps :-/
 export const getActiveClient = (state: State) =>
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   state.connections.clients.get(state.connections.selectedAppId!) ?? null;
 
 export const getSelectableDevices = createSelector(

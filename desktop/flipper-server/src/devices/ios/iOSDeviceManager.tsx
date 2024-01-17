@@ -222,7 +222,11 @@ export class IOSDeviceManager {
             "pgrep Simulator | xargs ps -o command | grep -v grep | grep Simulator.app | awk '{print $1}'",
           ),
         ]);
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const xcodeCLIVersion = xcodeSelectStdout!.toString().trim();
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const runningSimulatorApplications = simulatorProcessStdout!
         .toString()
         .split('\n')

@@ -166,6 +166,8 @@ async function start(deviceQuery: string, appName: string, pluginId: string) {
         // device matching is promisified, as we clients can arrive before device is detected
         await devicePromise;
         if (clientDescription.query.app === appName) {
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           if (clientDescription.query.device_id === device!.serial) {
             logger.info(`Client matched: ${clientDescription.id}`);
             client = clientDescription;
@@ -275,6 +277,8 @@ function createLogger(): Logger {
   };
 }
 
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 start(argv.device!, argv.client!, argv.plugin!).catch((e) => {
   // eslint-disable-next-line
   console.error(e);

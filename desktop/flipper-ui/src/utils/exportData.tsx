@@ -167,6 +167,8 @@ async function exportSandyPluginStates(
         res[client.id] = {};
       }
       try {
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         res[client.id][pluginId] = await client.sandyPluginStates
           .get(pluginId)!
           .exportState(idler, statusUpdate);
@@ -437,6 +439,8 @@ async function getStoreExport(
   const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
   performance.mark(fetchMetaDataMarker);
 
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const client = clients.get(selectedAppId!);
 
   const pluginStates2 = pluginsToProcess
@@ -642,8 +646,12 @@ export async function exportEverythingEverywhereAllAtOnce(
     onStatusUpdate?.('files');
     const flipperFolderContent = await startDeviceFlipperFolderExport();
 
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const deviceFlipperFolder = zip.folder('device_flipper_folder')!;
     flipperFolderContent.forEach((deviceDebugItem) => {
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const deviceAppFolder = deviceFlipperFolder.folder(
         safeFilename(`${deviceDebugItem.serial}__${deviceDebugItem.appId}`),
       )!;

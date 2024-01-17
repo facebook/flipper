@@ -77,6 +77,8 @@ export const createServerAddOnControls = (
       if (!methodHandlers.has(pluginName)) {
         methodHandlers.set(pluginName, new Map());
       }
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       methodHandlers.get(pluginName)!.set(method, receiver);
 
       // Subscribe client/device to messages from flipper server only when the first plugin subscribes to them

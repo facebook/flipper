@@ -28,6 +28,8 @@ export default function FpsGraph({sampleRate = 200}: {sampleRate?: number}) {
     };
 
     const interval = setInterval(() => {
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const ctx = canvasRef.current!.getContext('2d')!;
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = '#bbb';

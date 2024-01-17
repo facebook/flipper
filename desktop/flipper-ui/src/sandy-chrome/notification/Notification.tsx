@@ -237,6 +237,8 @@ export function Notification() {
                 store.dispatch(
                   updateCategoryBlocklist([
                     ...notifications.blocklistedCategories,
+                    // TODO: Fix this the next time the file is edited.
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     noti.notification.category!,
                   ]),
                 )
@@ -339,6 +341,8 @@ export function openNotification(store: Store, noti: PluginNotificationOrig) {
 }
 
 function getClientById(store: Store, identifier: string | null) {
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return store.getState().connections.clients.get(identifier!);
 }
 

@@ -76,9 +76,15 @@ export async function getWorkspaces(): Promise<Workspaces> {
       getWorkspacesByRoot(fbPluginsDir),
     ]);
   const mergedWorkspaces: Workspaces = {
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     rootPackage: rootWorkspaces!.rootPackage,
     packages: [
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       ...rootWorkspaces!.packages,
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       ...publicPluginsWorkspaces!.packages,
       ...(fbPluginsWorkspaces ? fbPluginsWorkspaces.packages : []),
     ],

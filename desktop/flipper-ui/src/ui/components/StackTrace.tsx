@@ -141,6 +141,8 @@ export default class StackTrace extends Component<{
           ? 'flex'
           : children.reduce(
               (acc, line) =>
+                // TODO: Fix this the next time the file is edited.
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 Math.max(acc, line[cv] ? line[cv]!.length : 0 || 0),
               0,
             ) *

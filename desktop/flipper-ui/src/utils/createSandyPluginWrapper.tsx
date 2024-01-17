@@ -71,6 +71,8 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
               isDevicePlugin
                 ? undefined
                 : (method: string, params: any) =>
+                    // TODO: Fix this the next time the file is edited.
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     appClient!.send(method, params),
               persistedState.get(),
               undefined, // passing an undefined Store is safe, as no plugin actually uses this param
@@ -78,7 +80,9 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
               onStatusMessage,
               isDevicePlugin
                 ? undefined
-                : (method: string) => appClient!.supportsMethod(method),
+                : // TODO: Fix this the next time the file is edited.
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  (method: string) => appClient!.supportsMethod(method),
             )
           : persistedState.get();
         // respect custom serialization
@@ -131,10 +135,14 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
     if (Plugin.getActiveNotifications && !isDevicePlugin) {
       const unsub = persistedState.subscribe((state) => {
         try {
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const notifications = Plugin.getActiveNotifications!(state);
           store.dispatch(
             setActiveNotifications({
               notifications,
+              // TODO: Fix this the next time the file is edited.
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               client: appClient!.appId,
               pluginId: Plugin.id,
             }),
@@ -191,6 +199,8 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
 
     useEffect(
       function triggerInitAndTeardown() {
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const ref = instance.instanceRef.current!;
         ref._init();
         return () => {

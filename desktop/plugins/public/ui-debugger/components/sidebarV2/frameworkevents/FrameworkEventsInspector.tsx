@@ -71,6 +71,8 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
     )
     .filter(
       (event) =>
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         filteredThreads.size === 0 || filteredThreads.has(event.thread!),
     );
 

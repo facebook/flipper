@@ -116,6 +116,8 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
     let module;
     switch (instanceType) {
       case 'global':
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         module = globalDevToolsInstance!.module;
         break;
       case 'oss':
@@ -226,9 +228,15 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
           },
         };
 
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const bridge = devToolsInstance!.module.createBridge(window, wall);
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const store = devToolsInstance!.module.createStore(bridge);
 
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const DevTools = devToolsInstance!.module.initialize(window, {
           bridge,
           store,

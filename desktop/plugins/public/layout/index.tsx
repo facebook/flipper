@@ -649,6 +649,8 @@ export default class LayoutPlugin extends FlipperPlugin<
               compact
               style={{marginTop: 8, marginRight: 12}}
               onClick={() => {
+                // TODO: Fix this the next time the file is edited.
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 this.props.selectPlugin('YogaPerformance', element!.id);
               }}>
               Analyze Yoga Performance

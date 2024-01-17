@@ -40,6 +40,8 @@ function createDevToolsNode(nodeId: string): HTMLElement {
   wrapper.style.height = '100%';
   wrapper.style.width = '100%';
 
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.getElementById(TARGET_CONTAINER_ID)!.appendChild(wrapper);
   return wrapper;
 }
@@ -50,15 +52,27 @@ function findDevToolsNode(nodeId: string): HTMLElement | null {
 
 function attachDevTools(devToolsNode: HTMLElement, offset: number = 0) {
   devToolsNode.style.display = 'block';
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const container = document.getElementById(TARGET_CONTAINER_ID)!;
   container.style.display = 'block';
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   container.parentElement!.style.display = 'block';
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   container.parentElement!.style.height = `calc(100% - ${offset}px)`;
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   container.parentElement!.style.marginTop = '0px';
 }
 
 function detachDevTools(devToolsNode: HTMLElement | null) {
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.getElementById(TARGET_CONTAINER_ID)!.style.display = 'none';
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.getElementById(TARGET_CONTAINER_ID)!.parentElement!.style.display =
     'none';
 

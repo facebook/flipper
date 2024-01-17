@@ -120,11 +120,15 @@ export function assertSerializable(obj: any) {
         // - Second walk (which finds first object)
         if (duplicateFound && duplicateObject && value === duplicateObject) {
           console.warn(
+            // TODO: Fix this the next time the file is edited.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             `Duplicate value, object lives at path '.${duplicatePath!.join(
               '.',
-            )}', but also at path '.${path!.join(
-              '.',
-            )}': '${value}'. This might not behave correct after import and lead to unnecessary big exports.`,
+            )}', but also at path '.${
+              // TODO: Fix this the next time the file is edited.
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              path!.join('.')
+            }': '${value}'. This might not behave correct after import and lead to unnecessary big exports.`,
           );
           done = true; // no need to finish the second walk
           break;

@@ -345,10 +345,18 @@ export class Interactive extends React.Component<
 
     const {clientX: cursorLeft, clientY: cursorTop} = event;
 
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const movedLeft = movingInitialCursor!.left - cursorLeft;
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const movedTop = movingInitialCursor!.top - cursorTop;
 
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let newLeft = (movingInitialProps!.left || 0) - movedLeft;
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let newTop = (movingInitialProps!.top || 0) - movedTop;
 
     if (event.altKey) {
@@ -413,10 +421,18 @@ export class Interactive extends React.Component<
     const deltaLeft = resizingInitialCursor.left - event.clientX;
     const deltaTop = resizingInitialCursor.top - event.clientY;
 
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let newLeft = resizingInitialRect!.left;
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let newTop = resizingInitialRect!.top;
 
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let newWidth = resizingInitialRect!.width;
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let newHeight = resizingInitialRect!.height;
 
     // right
@@ -498,9 +514,13 @@ export class Interactive extends React.Component<
     if (!ref) throw new Error('expected ref');
 
     return {
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       height: ref!.offsetHeight || 0,
       left: props.left || 0,
       top: props.top || 0,
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       width: ref!.offsetWidth || 0,
     };
   }

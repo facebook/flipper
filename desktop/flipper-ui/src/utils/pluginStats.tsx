@@ -35,6 +35,8 @@ onBytesReceived((plugin: string, bytes: number) => {
   if (!pluginBackgroundStats.has(plugin)) {
     pluginBackgroundStats.set(plugin, createEmptyStat());
   }
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const stat = pluginBackgroundStats.get(plugin)!;
   stat.bytesReceivedTotal += bytes;
   stat.bytesReceivedDelta += bytes;
@@ -114,6 +116,8 @@ export function addBackgroundStat(
   if (!pluginBackgroundStats.has(plugin)) {
     pluginBackgroundStats.set(plugin, createEmptyStat());
   }
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const stat = pluginBackgroundStats.get(plugin)!;
   stat.cpuTimeDelta += cpuTime;
   stat.cpuTimeTotal += cpuTime;

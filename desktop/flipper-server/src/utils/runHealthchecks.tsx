@@ -62,6 +62,8 @@ export async function runHealthcheck(
 
   const envInfoPromise = getEnvInfo();
   const environmentInfo = await envInfoPromise;
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const checkResult = await check.run!(environmentInfo, options.settings);
   return checkResult.hasProblem && check.isRequired
     ? {

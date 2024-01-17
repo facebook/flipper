@@ -151,6 +151,8 @@ export function useValue<T>(
   defaultValue?: T,
 ): T {
   const [localValue, setLocalValue] = useState<T>(
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     atom ? atom.get() : defaultValue!,
   );
   useEffect(() => {

@@ -462,6 +462,8 @@ export class ManagedTable extends React.Component<
       highlightedRows.add(row.key);
     } else if (e.shiftKey && this.props.multiHighlight) {
       // range select
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const lastItemKey = Array.from(highlightedRows).pop()!;
       highlightedRows = new Set([
         ...highlightedRows,

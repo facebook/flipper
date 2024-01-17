@@ -354,6 +354,8 @@ export default class Inspector extends Component<Props, State> {
       ...Object.entries(tree),
     ];
     while (treeIteratorStack.length) {
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const [id, children] = treeIteratorStack.pop()!;
 
       if (leavesSet.has(id)) {

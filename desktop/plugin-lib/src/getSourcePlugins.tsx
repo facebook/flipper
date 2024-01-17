@@ -84,6 +84,8 @@ async function entryPointForPluginFolder(
     )
     .then((plugins) =>
       plugins.reduce<{[key: string]: InstalledPluginDetails}>((acc, cv) => {
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         acc[cv!.name] = cv!;
         return acc;
       }, {}),

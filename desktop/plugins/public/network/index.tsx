@@ -641,6 +641,8 @@ function Sidebar() {
   const selectedId = useValue(instance.selectedId);
   const detailBodyFormat = useValue(instance.detailBodyFormat);
 
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const request = instance.requests.getById(selectedId!);
   if (!request) {
     return (

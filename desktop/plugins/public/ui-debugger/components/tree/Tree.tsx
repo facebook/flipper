@@ -173,10 +173,15 @@ export function Tree2({
     if (initialHeightOffset.current == null) {
       //it is important to capture the initial height offset as we dont want to consider them again if elements are added dynamically later
       initialHeightOffset.current =
-        boundingClientRect!!.top +
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        boundingClientRect!!.top + // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         (window.innerHeight - boundingClientRect!!.bottom) -
         additionalHeightOffset;
     }
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     parentRef.current!!.style.height = `calc(100vh - ${initialHeightOffset.current}px - ${additionalHeightOffset}px )`;
   }, [additionalHeightOffset]);
 

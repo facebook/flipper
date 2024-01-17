@@ -229,7 +229,7 @@ module.exports = {
             format: ['camelCase', 'PascalCase', 'UPPER_CASE', 'snake_case'],
           },
         ],
-        '@typescript-eslint/no-non-null-assertion': 'warn',
+        '@typescript-eslint/no-non-null-assertion': 'error',
       },
     },
     {

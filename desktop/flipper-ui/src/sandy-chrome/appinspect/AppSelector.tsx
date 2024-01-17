@@ -81,6 +81,8 @@ export function AppSelector() {
     onSelectDevice,
     onSelectApp,
   );
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const client = clients.get(selectedAppId!);
   const gkSelfSufficiency = GK('flipper_self_sufficiency');
 
@@ -300,6 +302,8 @@ function ClientTitle({client}: {client: Client}) {
 }
 
 function getColorByApp(app?: string | null): string {
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   let iconColor: string | undefined = (brandColors as any)[app!];
 
   if (!iconColor) {

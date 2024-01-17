@@ -559,6 +559,8 @@ export class DataSource<T extends any, KeyType = never> {
   private getKey(value: T): KeyType;
   private getKey(value: any): any {
     this.assertKeySet();
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const key = value[this.keyAttribute!];
     if ((typeof key === 'string' || typeof key === 'number') && key !== '') {
       return key;
@@ -589,6 +591,8 @@ export class DataSource<T extends any, KeyType = never> {
         sortedIndex,
       );
       // maps are already set up in constructor
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const m = this._recordsBySecondaryIndex.get(indexKey)!;
       const a = m.get(indexValue);
       if (!a) {
@@ -613,8 +617,12 @@ export class DataSource<T extends any, KeyType = never> {
         sortedIndex,
       );
       // maps are already set up in constructor
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const m = this._recordsBySecondaryIndex.get(indexKey)!;
       // code belows assumes that we have an entry for this secondary
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const a = m.get(indexValue)!;
       a.splice(a.indexOf(value), 1);
     }

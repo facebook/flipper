@@ -41,6 +41,8 @@ export default function NetworkGraph() {
       // cause kiloBytesPerSecond === bytes per millisecond
       const kiloBytesPerSecond = Math.round(deltaBytes / deltaTime);
 
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const ctx = canvasRef.current!.getContext('2d')!;
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = kiloBytesPerSecond >= 1000 ? '#f00' : '#bbb';

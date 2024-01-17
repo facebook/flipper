@@ -368,6 +368,8 @@ class ImageFormatter {
           request.responseHeaders,
           'content-type',
         )};base64,${Base64.fromUint8Array(
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           bodyAsBinary(request.responseData)!,
         )}`;
         return <ImageWithSize src={src} />;
@@ -593,6 +595,8 @@ class GraphQLFormatter {
 
   formatResponse(request: Request) {
     return this.format(
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       bodyAsString(request.responseData!),
       getHeaderValue(request.responseHeaders, 'content-type'),
     );
@@ -694,6 +698,8 @@ class ProtobufFormatter {
 
       if (request.requestData) {
         const data = protobufDefinition.decode(
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           bodyAsBinary(request.requestData)!,
         );
         return <JSONText>{data.toJSON()}</JSONText>;
@@ -728,6 +734,8 @@ class ProtobufFormatter {
 
       if (request.responseData) {
         const data = protobufDefinition.decode(
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           bodyAsBinary(request.responseData)!,
         );
         return <JSONText>{data.toJSON()}</JSONText>;

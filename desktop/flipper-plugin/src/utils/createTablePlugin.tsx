@@ -127,6 +127,8 @@ export function createTablePlugin<
   }
 
   function SidebarComponent({record}: {record: Row}) {
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return props.renderSidebar!(record);
   }
 

@@ -28,8 +28,12 @@ export default class Watchman {
     this.client.setMaxListeners(250);
     await new Promise<void>((resolve, reject) => {
       const onError = (err: Error) => {
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.client!.removeAllListeners('error');
         reject(err);
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.client!.end();
         delete this.client;
       };
@@ -38,7 +42,11 @@ export default class Watchman {
         onError(new Error('Timeout when trying to start Watchman'));
       }, watchmanTimeout);
 
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.client!.once('error', onError);
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.client!.capabilityCheck(
         {optional: [], required: ['relative_root']},
         (error) => {
@@ -46,6 +54,8 @@ export default class Watchman {
             onError(error);
             return;
           }
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           this.client!.command(
             ['watch-project', this.rootDir],
             (error, resp) => {
@@ -79,6 +89,8 @@ export default class Watchman {
     }
     options = Object.assign({excludes: []}, options);
     return new Promise((resolve, reject) => {
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.client!.command(['clock', this.watch], (error, resp) => {
         if (error) {
           return reject(error);
@@ -91,6 +103,8 @@ export default class Watchman {
             expression: [
               'allof',
               ['not', ['type', 'd']],
+              // TODO: Fix this the next time the file is edited.
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               ...options!.excludes.map((e) => [
                 'not',
                 ['match', e, 'wholename'],
@@ -105,10 +119,14 @@ export default class Watchman {
 
           const id = uuid();
 
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           this.client!.command(['subscribe', this.watch, id, sub], (error) => {
             if (error) {
               return reject(error);
             }
+            // TODO: Fix this the next time the file is edited.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             this.client!.on('subscription', (resp) => {
               if (resp.subscription !== id || !resp.files) {
                 return;

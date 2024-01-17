@@ -374,6 +374,8 @@ export async function runHealthchecks(): Promise<
                 key,
                 label,
                 isRequired: isRequired ?? true,
+                // TODO: Fix this the next time the file is edited.
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 result: await run!(environmentInfo).catch((e) => {
                   console.warn(`Health check ${key}/${label} failed with:`, e);
                   // TODO Improve result type to be: OK | Problem(message, fix...)

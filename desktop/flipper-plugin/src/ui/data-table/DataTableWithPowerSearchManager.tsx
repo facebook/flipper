@@ -139,6 +139,8 @@ export const dataTableManagerReducer = produce<
   DataManagerState<any>,
   [DataManagerActions<any>]
 >(function (draft, action) {
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const config = original(draft.config)!;
   switch (action.type) {
     case 'reset': {
@@ -156,6 +158,8 @@ export const dataTableManagerReducer = produce<
     }
     case 'resizeColumn': {
       const {column, width} = action;
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const col = draft.columns.find((c) => c.key === column)!;
       col.width = width;
       break;
@@ -171,6 +175,8 @@ export const dataTableManagerReducer = produce<
     }
     case 'toggleColumnVisibility': {
       const {column} = action;
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const col = draft.columns.find((c) => c.key === column)!;
       col.visible = !col.visible;
       break;
@@ -424,7 +430,11 @@ export function createInitialState<T>(
     sorting: prefs?.sorting,
     selection: prefs?.selection
       ? {
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           current: prefs!.selection.current,
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           items: new Set(prefs!.selection.items),
         }
       : emptySelection,

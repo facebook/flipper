@@ -60,6 +60,8 @@ export const theme = {
   bold: 600,
   semanticColors: {
     attribute: antColors.orange[5],
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     nullValue: antColors.grey.primary!,
     stringValue: antColors.orange[5],
     colorValue: antColors.cyan[5],

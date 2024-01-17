@@ -108,6 +108,8 @@ const serverAddOn: ServerAddOn<Events, Methods> = async (
         'flipper-plugin-react-devtools.serverAddOn -> desktop sent a message',
         data,
       );
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       wss!.clients.forEach((ws) => {
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(JSON.stringify(data));
@@ -162,6 +164,8 @@ const serverAddOn: ServerAddOn<Events, Methods> = async (
         'flipper-plugin-react-devtools.serverAddOn -> stopping wss',
       );
       await new Promise<void>((resolve, reject) =>
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         wss!.close((err) => (err ? reject(err) : resolve())),
       );
       console.debug('flipper-plugin-react-devtools.serverAddOn -> stopped wss');

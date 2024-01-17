@@ -104,7 +104,11 @@ export function FilePathConfigField(props: {
         <FlexColumn
           title={`Reset to default path ${props.resetValue}`}
           onClick={() => {
+            // TODO: Fix this the next time the file is edited.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             setValue(props.resetValue!);
+            // TODO: Fix this the next time the file is edited.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             props.onChange(props.resetValue!);
           }}>
           <CenteredGlyph
@@ -170,7 +174,11 @@ export function URLConfigField(props: {
         <FlexColumn
           title={`Reset to default value ${props.resetValue}`}
           onClick={() => {
+            // TODO: Fix this the next time the file is edited.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             setValue(props.resetValue!);
+            // TODO: Fix this the next time the file is edited.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             props.onChange(props.resetValue!);
           }}>
           <CenteredGlyph

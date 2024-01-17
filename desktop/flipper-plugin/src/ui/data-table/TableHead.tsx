@@ -155,7 +155,11 @@ function TableHeadColumn({
     // normalise number to a percentage if we were originally passed a percentage
     if (isPercentage(column.width) && ref.current) {
       const {parentElement} = ref.current;
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const parentWidth = parentElement!.clientWidth;
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const {childNodes} = parentElement!;
 
       const lastElem = childNodes[childNodes.length - 1];
@@ -268,6 +272,8 @@ export const TableHead = memo(function TableHead({
           column={column}
           isResizable={i < visibleColumns.length - 1}
           dispatch={dispatch}
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           sorted={sorting?.key === column.key ? sorting!.direction : undefined}
           isFilterable={isFilterable}
         />

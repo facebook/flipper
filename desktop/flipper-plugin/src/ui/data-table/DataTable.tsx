@@ -268,6 +268,8 @@ export function DataTable<T extends object>(
         ? () => {
             // using a ref keeps the config stable, so that a new context menu doesn't need
             // all rows to be rerendered, but rather shows it conditionally
+            // TODO: Fix this the next time the file is edited.
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return contextMenuRef.current?.()!;
           }
         : undefined,
@@ -482,6 +484,8 @@ export function DataTable<T extends object>(
         });
       } else if (selection && selection.current >= 0) {
         dispatch({type: 'setAutoScroll', autoScroll: false});
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         virtualizerRef.current?.scrollToIndex(selection!.current, {
           align: 'auto',
         });
@@ -501,6 +505,8 @@ export function DataTable<T extends object>(
     (start: number, end: number, total: number, offset) => {
       setRange(`${start} - ${end} / ${total}`);
       lastOffset.current = offset;
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       clearTimeout(hideRange.current!);
       hideRange.current = setTimeout(() => {
         setRange('');

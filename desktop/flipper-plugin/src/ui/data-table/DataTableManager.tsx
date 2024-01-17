@@ -187,6 +187,8 @@ export const dataTableManagerReducer = produce<
   DataManagerState<any>,
   [DataManagerActions<any>]
 >(function (draft, action) {
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const config = original(draft.config)!;
   switch (action.type) {
     case 'reset': {
@@ -207,6 +209,8 @@ export const dataTableManagerReducer = produce<
     }
     case 'resizeColumn': {
       const {column, width} = action;
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const col = draft.columns.find((c) => c.key === column)!;
       col.width = width;
       break;
@@ -222,6 +226,8 @@ export const dataTableManagerReducer = produce<
     }
     case 'toggleColumnVisibility': {
       const {column} = action;
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const col = draft.columns.find((c) => c.key === column)!;
       col.visible = !col.visible;
       break;
@@ -316,9 +322,13 @@ export const dataTableManagerReducer = produce<
     case 'removeColumnFilter': {
       getFlipperLib().logger.track('usage', 'data-table:filter:remove-column');
       draft.filterExceptions = undefined;
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const column = draft.columns.find((c) => c.key === action.column)!;
       const index =
         action.index ??
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         column.filters?.findIndex((f) => f.label === action.label!);
 
       if (index === undefined || index < 0) {
@@ -331,20 +341,28 @@ export const dataTableManagerReducer = produce<
     case 'toggleColumnFilter': {
       getFlipperLib().logger.track('usage', 'data-table:filter:toggle-column');
       draft.filterExceptions = undefined;
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const column = draft.columns.find((c) => c.key === action.column)!;
       const index =
         action.index ??
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         column.filters?.findIndex((f) => f.label === action.label!);
 
       if (index === undefined || index < 0) {
         break;
       }
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const f = column.filters![index];
       f.enabled = !f.enabled;
       break;
     }
     case 'setColumnFilterInverse': {
       draft.filterExceptions = undefined;
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       draft.columns.find((c) => c.key === action.column)!.inversed =
         action.inversed;
       break;
@@ -561,7 +579,11 @@ export function createInitialState<T>(
     sorting: prefs?.sorting,
     selection: prefs?.selection
       ? {
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           current: prefs!.selection.current,
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           items: new Set(prefs!.selection.items),
         }
       : emptySelection,
@@ -593,14 +615,20 @@ function addColumnFilter<T>(
   options: AddColumnFilterOptions = {},
 ): void {
   options = Object.assign({disableOthers: false, strict: true}, options);
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const column = columns.find((c) => c.key === columnId)!;
   const filterValue = options.exact
     ? String(value)
     : String(value).toLowerCase();
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const existing = column.filters!.find((c) => c.value === filterValue);
   if (existing) {
     existing.enabled = true;
   } else {
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     column.filters!.push({
       label: String(value),
       value: filterValue,
@@ -610,6 +638,8 @@ function addColumnFilter<T>(
     });
   }
   if (options.disableOthers) {
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     column.filters!.forEach((c) => {
       if (c.value !== filterValue) {
         c.enabled = false;
@@ -751,6 +781,8 @@ export function computeDataTableFilter(
 
   return function dataTableFilter(item: any) {
     for (const column of filteringColumns) {
+      // TODO: Fix this the next time the file is edited.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const rowMatchesFilter = column.filters!.some((f) => {
         if (!f.enabled) {
           return false;

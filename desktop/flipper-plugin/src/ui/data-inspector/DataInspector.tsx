@@ -127,6 +127,8 @@ export class DataInspector extends PureComponent<
       };
     }
 
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const filter = nextProps.filter!.toLowerCase();
     const paths: (number | string)[][] = [];
 
@@ -139,6 +141,8 @@ export class DataInspector extends PureComponent<
         return;
       }
       if (typeof value !== 'object') {
+        // TODO: Fix this the next time the file is edited.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         if (('' + value).toLowerCase().includes(filter!)) {
           paths.push(path.slice());
         }

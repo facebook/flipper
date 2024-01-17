@@ -190,6 +190,8 @@ class PluginContainer extends PureComponent<Props, State> {
         const start = Date.now();
         this.idler = new IdlerImpl();
         processMessageQueue(
+          // TODO: Fix this the next time the file is edited.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           target.sandyPluginStates.get(activePlugin.definition.id)!,
           pluginKey,
           this.store,

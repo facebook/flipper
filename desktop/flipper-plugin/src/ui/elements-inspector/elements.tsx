@@ -741,6 +741,8 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
 function isInView(parent: HTMLElement, el: HTMLElement) {
   // find the scroll container. (This is fragile)
+  // TODO: Fix this the next time the file is edited.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const scrollContainer = parent.parentElement!.parentElement!;
   // check vertical scroll
   if (

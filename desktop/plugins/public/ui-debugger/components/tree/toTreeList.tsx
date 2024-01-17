@@ -51,6 +51,8 @@ export function toTreeList(
 
   let i = 0;
   while (stack.length > 0) {
+    // TODO: Fix this the next time the file is edited.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const stackItem = stack.pop()!!;
 
     const {node, depth} = stackItem;
