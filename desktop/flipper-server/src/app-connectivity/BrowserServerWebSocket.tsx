@@ -161,9 +161,11 @@ class BrowserServerWebSocket extends SecureServerWebSocket {
         } catch {}
       }
 
-      const ok = getFlipperServerConfig().validWebSocketOrigins.some(
-        (validPrefix) => info.origin.startsWith(validPrefix),
-      );
+      const ok =
+        typeof info.origin !== 'undefined' &&
+        getFlipperServerConfig().validWebSocketOrigins.some((validPrefix) =>
+          info.origin.startsWith(validPrefix),
+        );
       if (!ok) {
         console.warn(
           `[conn] Refused webSocket connection from ${info.origin} (secure: ${info.secure})`,
