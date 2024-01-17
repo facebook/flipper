@@ -194,7 +194,7 @@ module.exports = {
           },
         ],
         '@typescript-eslint/naming-convention': [
-          'warn',
+          'error',
           {
             selector: 'default',
             format: ['camelCase'],
@@ -223,6 +223,10 @@ module.exports = {
             // do not enforce naming convention for properties
             // no support for kebab-case
             format: null,
+          },
+          {
+            selector: 'import',
+            format: ['camelCase', 'PascalCase', 'UPPER_CASE', 'snake_case'],
           },
         ],
         '@typescript-eslint/no-non-null-assertion': 'warn',
