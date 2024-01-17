@@ -100,11 +100,12 @@ export const DataFormatter = {
       return createElement(
         Fragment,
         undefined,
-        // spreading children avoids the need for keys and reconciles by index
-        ...value.split(urlRegex).map((part, index) =>
+        value.split(urlRegex).map((part, index) =>
           // odd items are the links
           index % 2 === 1 ? (
-            <Typography.Link href={part}>{part}</Typography.Link>
+            <Typography.Link key={index} href={part}>
+              {part}
+            </Typography.Link>
           ) : (
             part
           ),
