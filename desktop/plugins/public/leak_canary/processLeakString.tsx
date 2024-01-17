@@ -8,6 +8,8 @@
  */
 
 import {Leak} from './index';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Element} from 'flipper';
 
 /**

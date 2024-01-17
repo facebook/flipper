@@ -7,6 +7,8 @@
  * @format
  */
 
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {styled, IconSize, colors} from 'flipper';
 import {IconButton} from './';
 import React from 'react';

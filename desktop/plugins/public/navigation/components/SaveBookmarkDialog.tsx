@@ -8,6 +8,8 @@
  */
 
 import {Modal} from 'antd';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Button, FlexColumn, Input, styled} from 'flipper';
 import React, {useState} from 'react';
 import {Bookmark, URI} from '../types';

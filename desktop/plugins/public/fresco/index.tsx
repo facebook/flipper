@@ -32,6 +32,8 @@ import {
 import React from 'react';
 import ImagesCacheOverview from './ImagesCacheOverview';
 import ImagesMemoryOverview from './ImagesMemoryOverview';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {isProduction} from 'flipper';
 
 import {Typography} from 'antd';

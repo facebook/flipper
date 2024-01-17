@@ -19,7 +19,9 @@ import {
   Switch,
   Badge,
 } from 'antd';
-import {Glyph} from 'flipper';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone, prettier/prettier
+import { Glyph } from 'flipper';
 import {
   EyeOutlined,
   PauseCircleOutlined,

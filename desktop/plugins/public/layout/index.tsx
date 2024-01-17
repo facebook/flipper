@@ -7,6 +7,8 @@
  * @format
  */
 
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {
   ElementID,
   Element,
@@ -28,6 +30,8 @@ import InspectorSidebar from './InspectorSidebar';
 import Search from './Search';
 import ProxyArchiveClient from './ProxyArchiveClient';
 import React from 'react';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {
   VisualizerPortal,
   getFlipperMediaCDN,

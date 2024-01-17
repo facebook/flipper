@@ -8,6 +8,8 @@
  */
 
 import React from 'react';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {styled, FlexColumn, FlexRow, Text, Glyph, colors} from 'flipper';
 
 const Container = styled(FlexColumn)({

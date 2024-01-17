@@ -102,7 +102,7 @@ module.exports = {
     'flowtype/use-flow-type': 0,
     'react/react-in-jsx-scope': 0, // not needed with our metro implementation
     // Disallow boolean JSX properties set to true, e.g. `grow={true}`.
-    'react/jsx-boolean-value': ['warn', 'never'],
+    'react/jsx-boolean-value': ['error', 'never'],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     'react/jsx-key': 'error',
@@ -143,7 +143,7 @@ module.exports = {
     'import/no-unresolved': [2, {commonjs: true, amd: true}],
     'node/no-extraneous-import': [2, {allowModules: builtInModules}],
     'node/no-extraneous-require': [2, {allowModules: builtInModules}],
-    'node/no-sync': [1],
+    'node/no-sync': ['error'],
     'flipper/no-relative-imports-across-packages': [2],
     'flipper/no-console-error-without-context': [2],
     'flipper/no-ts-file-extension': 2,
@@ -153,10 +153,10 @@ module.exports = {
 
     // promise rules, see https://github.com/xjamundx/eslint-plugin-promise for details on each of them
     'promise/catch-or-return': 'error',
-    'promise/no-nesting': 'warn',
-    'promise/no-promise-in-callback': 'warn',
-    'promise/no-callback-in-promise': 'warn',
-    'promise/no-return-in-finally': 'warn',
+    'promise/no-nesting': 'error',
+    'promise/no-promise-in-callback': 'error',
+    'promise/no-callback-in-promise': 'error',
+    'promise/no-return-in-finally': 'error',
     'promise/valid-params': 'error',
   },
   settings: {
@@ -183,7 +183,7 @@ module.exports = {
         'no-unused-vars': 0,
         'no-redeclare': 0,
         'no-dupe-class-members': 0,
-        '@typescript-eslint/no-redeclare': 1,
+        '@typescript-eslint/no-redeclare': 'error',
         '@typescript-eslint/no-unused-vars': [
           2,
           {
@@ -289,7 +289,7 @@ module.exports = {
           },
         ],
         'rulesdir/no-restricted-imports-clone': [
-          'warn',
+          'error',
           {
             paths: [
               {
@@ -322,7 +322,7 @@ module.exports = {
         // ! is allowed within tests.
         '@typescript-eslint/no-non-null-assertion': 'off',
         'rulesdir/no-restricted-imports-clone': [
-          'warn',
+          'error',
           {
             paths: [
               {

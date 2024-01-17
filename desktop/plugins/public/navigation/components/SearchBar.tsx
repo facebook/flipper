@@ -7,6 +7,8 @@
  * @format
  */
 
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {styled, SearchBox, SearchInput, Toolbar} from 'flipper';
 import {AutoCompleteSheet, IconButton, FavoriteButton} from './';
 import {AutoCompleteProvider, Bookmark, URI} from '../types';

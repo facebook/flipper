@@ -8,6 +8,8 @@
  */
 
 import {Typography} from 'antd';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Element, ElementID, ElementsInspector, styled} from 'flipper';
 import {Layout, theme} from 'flipper-plugin';
 import React, {memo, useState} from 'react';

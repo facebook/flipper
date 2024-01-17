@@ -8,8 +8,12 @@
  */
 
 import React from 'react';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {FlipperDevicePlugin, Device} from 'flipper';
 
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {
   Button,
   Toolbar,
@@ -20,6 +24,8 @@ import {
   Select,
 } from 'flipper';
 
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {sleep} from 'flipper';
 
 import util from 'util';

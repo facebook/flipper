@@ -12,6 +12,8 @@ import {
   searchNodes,
 } from '../ProxyArchiveClient';
 import {PersistedState, ElementMap} from '../index';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {ElementID, Element} from 'flipper';
 import {SearchResultTree} from '../Search';
 

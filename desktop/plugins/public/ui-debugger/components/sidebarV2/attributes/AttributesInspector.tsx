@@ -36,7 +36,7 @@ import {InspectableColor} from '../../../ClientTypes';
 import {transformAny} from '../../../utils/dataTransform';
 import {SearchOutlined} from '@ant-design/icons';
 import {plugin} from '../../../index';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, rulesdir/no-restricted-imports-clone
 import {Glyph} from 'flipper';
 import {
   NumberGroup,

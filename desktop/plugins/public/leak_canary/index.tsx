@@ -8,6 +8,8 @@
  */
 
 import React from 'react';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {
   Panel,
   FlexRow,
@@ -22,6 +24,8 @@ import {
   styled,
   DataDescriptionType,
 } from 'flipper';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Element} from 'flipper';
 import {processLeaks} from './processLeakString';
 

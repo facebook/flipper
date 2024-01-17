@@ -8,6 +8,8 @@
  */
 
 import Inspector, {ElementSelectorNode} from '../Inspector';
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {PluginClient, Element} from 'flipper';
 import React from 'react';
 import {render} from '@testing-library/react';

@@ -10,6 +10,8 @@
 import React from 'react';
 import {render, fireEvent} from '@testing-library/react';
 
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {Element} from 'flipper';
 import MultipleSelectorSection from '../MultipleSelectionSection';
 

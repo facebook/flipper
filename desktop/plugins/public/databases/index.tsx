@@ -7,6 +7,8 @@
  * @format
  */
 
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import {TableRowSortOrder, TableHighlightedRows} from 'flipper';
 import {Value} from './TypeBasedValueRenderer';
 import {Methods, Events} from './ClientProtocol';

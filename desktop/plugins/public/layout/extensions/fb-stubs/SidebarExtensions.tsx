@@ -7,6 +7,8 @@
  * @format
  */
 
+// TODO: Fix this the next time the file is edited.
+// eslint-disable-next-line rulesdir/no-restricted-imports-clone
 import type {Client, Logger, PluginClient, Element} from 'flipper';
 
 export const SidebarExtensions: Record<
