@@ -94,25 +94,14 @@ object UIDebuggerLithoSupport {
             val duration = event.attributeOrNull<Duration>("duration")
 
             val attributes = mutableMapOf<String, String>()
-            val source =
-                event.attributeOrNull<String>(
-                    "source") // todo replace magic strings with DebugEventAttribute.Source once
-            // litho open source is released
-            if (source != null) {
-              attributes["source"] = source
-            }
-
-            event.attributeOrNull<Any?>("visibleRect")?.let {
-              attributes["visibleRect"] = it.toString()
-            }
-
-            event.attributeOrNull<Any?>("areBoundsVisible")?.let {
-              attributes["areBoundsVisible"] = it.toString()
-            }
-
-            event.attributeOrNull<Any?>("numMountableOutputs")?.let {
-              attributes["numMountableOutputs"] = it.toString()
-            }
+            putAttributeInMap(event, attributes, "source")
+            putAttributeInMap(event, attributes, "visibleRect")
+            putAttributeInMap(event, attributes, "async")
+            putAttributeInMap(event, attributes, "attribution")
+            putAttributeInMap(event, attributes, "areBoundsVisible")
+            putAttributeInMap(event, attributes, "numMountableOutputs")
+            putAttributeInMap(event, attributes, "numItemsMounted")
+            putAttributeInMap(event, attributes, "numItemsUnmounted")
 
             context.addFrameworkEvent(
                 FrameworkEvent(
@@ -138,6 +127,14 @@ object UIDebuggerLithoSupport {
         })
 
     context.frameworkEventMetadata.addAll(eventMeta)
+  }
+
+  private fun putAttributeInMap(
+      event: DebugEvent,
+      attributes: MutableMap<String, String>,
+      attributeName: String
+  ) {
+    event.attributeOrNull<Any?>(attributeName)?.let { attributes[attributeName] = it.toString() }
   }
 
   private fun addDescriptors(register: DescriptorRegister) {
