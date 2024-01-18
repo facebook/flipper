@@ -155,7 +155,10 @@ class BrowserServerWebSocket extends SecureServerWebSocket {
       if (isFBBuild) {
         try {
           const urlObj = new URL(info.origin);
-          if (urlObj.hostname.endsWith('.facebook.com')) {
+          if (
+            urlObj.hostname.endsWith('.facebook.com') ||
+            urlObj.hostname.endsWith('.whatsapp.com')
+          ) {
             return true;
           }
         } catch {}
