@@ -1,3 +1,9 @@
+# 0.245.0 (17/1/2024)
+
+ * [D52601498](https://github.com/facebook/flipper/search?q=D52601498&type=Commits) -  Expose report* functions from flipper-plugin
+ * [D52601722](https://github.com/facebook/flipper/search?q=D52601722&type=Commits) -  logPluginSuccessRate() captures the duration in milliseconds
+
+
 # 0.240.0 (30/11/2023)
 
  * [D51349212](https://github.com/facebook/flipper/search?q=D51349212&type=Commits) -  UIDebugger - show bloks state & deeplink to bloks debugger
