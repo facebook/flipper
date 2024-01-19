@@ -17,6 +17,17 @@ function isReactElement(object: any) {
   );
 }
 
+function multilineTextContent(text: string): string {
+  // Replace any existing double quotes with two double quotes
+  const escapedText = text.replace(/"/g, '""');
+
+  if (escapedText.includes('\n')) {
+    return `"${escapedText}"`;
+  } else {
+    return escapedText;
+  }
+}
+
 /**
  * Recursively walks through all children of a React element and returns
  * the string representation of the leafs concatenated.
@@ -32,8 +43,10 @@ export function textContent(node: ReactNode): string {
       node.forEach(traverse);
     } else if (isReactElement(node)) {
       // node is a react element access its children an recursively stringify them
-      const {children} = (node as ReactElement).props;
-      if (Array.isArray(children)) {
+      const {children, value} = (node as ReactElement).props;
+      if (value) {
+        res += multilineTextContent(value);
+      } else if (Array.isArray(children)) {
         children.forEach(traverse);
       } else {
         traverse(children);
