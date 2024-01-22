@@ -7,15 +7,23 @@
 
 package com.facebook.flipper.plugins.jetpackcompose
 
+import android.os.Build
 import androidx.compose.ui.platform.ComposeView
 import com.facebook.flipper.plugins.jetpackcompose.descriptors.*
 import com.facebook.flipper.plugins.jetpackcompose.model.*
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+import com.facebook.soloader.SoLoader
 
-const val JetpackComposeTag = "JetpackCompose"
+const val JetpackComposeTag = "Compose"
 
 object UIDebuggerComposeSupport {
+
+  init {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      SoLoader.loadLibrary("art_tooling")
+    }
+  }
 
   fun enable(context: UIDContext) {
     addDescriptors(context.descriptorRegister)

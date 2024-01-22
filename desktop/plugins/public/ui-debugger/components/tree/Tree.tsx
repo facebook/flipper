@@ -623,6 +623,8 @@ function nodeData(node: TreeNode) {
     return ['icons/litho-logo-blue.png', 'Litho Mountable (Primitive)'];
   } else if (node.tags.includes('Litho')) {
     return ['icons/litho-logo.png', 'Litho Component'];
+  } else if (node.tags.includes('Compose')) {
+    return ['icons/compose-logo.png', 'Compose Component'];
   } else if (node.tags.includes('CK')) {
     if (node.tags.includes('iOS')) {
       return ['icons/ck-mounted-logo.png', 'CK Mounted Component'];

@@ -229,6 +229,7 @@ export type Tag =
   | 'Android'
   | 'Litho'
   | 'LithoMountable'
+  | 'Compose'
   | 'CK'
   | 'iOS'
   | 'BloksBoundTree'
