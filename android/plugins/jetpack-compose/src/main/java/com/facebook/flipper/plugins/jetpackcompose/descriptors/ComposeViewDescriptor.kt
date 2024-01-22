@@ -8,14 +8,32 @@
 package com.facebook.flipper.plugins.jetpackcompose.descriptors
 
 import android.os.Build
+import android.os.Debug
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
+import androidx.inspection.DefaultArtTooling
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
 import com.facebook.flipper.plugins.uidebugger.descriptors.ChainedDescriptor
+import facebook.internal.androidx.compose.ui.inspection.RecompositionHandler
 import facebook.internal.androidx.compose.ui.inspection.inspector.InspectorNode
 import facebook.internal.androidx.compose.ui.inspection.inspector.LayoutInspectorTree
+import java.io.IOException
 
 object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
+  private val recompositionHandler =
+      RecompositionHandler(DefaultArtTooling("Flipper")).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          try {
+            Debug.attachJvmtiAgent("nonexistent.so", null, null)
+          } catch (e: IOException) {
+            // expected: "nonexistent.so" doesn't exist, however attachJvmtiAgent call is enough
+            // to make art to load JVMTI plugin.
+          }
+
+          changeCollectionMode(startCollecting = true, keepCounts = true)
+        }
+      }
+
   override fun onGetName(node: ComposeView): String = node.javaClass.simpleName
 
   private fun transform(view: View, nodes: List<InspectorNode>): List<ComposeNode> {
@@ -25,7 +43,11 @@ object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
     val xOffset = positionOnScreen[0]
     val yOffset = positionOnScreen[1]
 
-    return nodes.map { node -> ComposeNode(view, node, xOffset, yOffset) }
+    return nodes.map { node ->
+      ComposeNode(view, node, xOffset, yOffset) { key, anchorId ->
+        recompositionHandler.getCounts(key, anchorId)
+      }
+    }
   }
 
   override fun onGetChildren(node: ComposeView): List<Any> {

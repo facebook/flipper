@@ -12,13 +12,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import com.facebook.flipper.plugins.uidebugger.model.*
+import facebook.internal.androidx.compose.ui.inspection.RecompositionHandler
 import facebook.internal.androidx.compose.ui.inspection.inspector.InspectorNode
 
 class ComposeNode(
     private val parentComposeView: View,
     val inspectorNode: InspectorNode,
     xOffset: Int,
-    yOffset: Int
+    yOffset: Int,
+    private val getRecompositionsCount: (Int, Int) -> RecompositionHandler.Data?
 ) {
   val bounds: Bounds =
       Bounds(
@@ -27,7 +29,17 @@ class ComposeNode(
           inspectorNode.width,
           inspectorNode.height)
 
+  val recompositionCount: Int?
+
+  val skipCount: Int?
+
   val children: List<Any> = collectChildren()
+
+  init {
+    val count = getRecompositionsCount(inspectorNode.key, inspectorNode.anchorId)
+    recompositionCount = count?.count
+    skipCount = count?.skips
+  }
 
   private fun collectChildren(): List<Any> {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -41,7 +53,8 @@ class ComposeNode(
     }
 
     return inspectorNode.children.map { child ->
-      ComposeNode(parentComposeView, child, inspectorNode.left, inspectorNode.top)
+      ComposeNode(
+          parentComposeView, child, inspectorNode.left, inspectorNode.top, getRecompositionsCount)
     }
   }
 

@@ -31,6 +31,7 @@ android {
         implementation "androidx.compose.ui:ui-tooling:$COMPOSE_VERSION"
         implementation "org.jetbrains.kotlin:kotlin-reflect:$KOTLIN_VERSION"
         implementation project(':inspection-lib')
+        implementation deps.soloader
     }
 }
 
