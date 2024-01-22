@@ -60,7 +60,7 @@ object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
       if (child.javaClass.simpleName.contains("AndroidComposeView") &&
           (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)) {
         val layoutInspector = LayoutInspectorTree()
-        layoutInspector.hideSystemNodes = false
+        layoutInspector.hideSystemNodes = true
         return transform(child, layoutInspector.convert(child))
       }
     }
