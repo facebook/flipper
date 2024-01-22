@@ -134,6 +134,8 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
     if (!node.inspectorNode.inlined) {
       node.recompositionCount?.let { attributes["🔄"] = it.toString() }
       node.skipCount?.let { attributes["⏭️"] = it.toString() }
+    } else {
+      attributes["inline"] = "true"
     }
     return attributes
   }
