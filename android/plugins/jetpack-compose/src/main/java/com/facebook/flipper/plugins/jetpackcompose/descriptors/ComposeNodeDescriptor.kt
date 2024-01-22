@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.jetpackcompose.descriptors
 
+import com.facebook.flipper.plugins.jetpackcompose.JetpackComposeTag
 import com.facebook.flipper.plugins.jetpackcompose.descriptors.ComposeNodeDescriptor.toInspectableValue
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
 import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
@@ -148,7 +149,7 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
 
   override fun getActiveChild(node: ComposeNode): Any? = null
 
-  override fun getTags(node: ComposeNode): Set<String> = setOf(BaseTags.Android, "Compose")
+  override fun getTags(node: ComposeNode): Set<String> = setOf(BaseTags.Android, JetpackComposeTag)
 
   override fun getId(node: ComposeNode): Id = node.inspectorNode.id.toInt()
 

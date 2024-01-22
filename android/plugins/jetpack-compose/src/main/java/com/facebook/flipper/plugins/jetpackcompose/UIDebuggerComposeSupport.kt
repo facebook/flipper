@@ -15,7 +15,7 @@ import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
 import com.facebook.soloader.SoLoader
 
-const val JetpackComposeTag = "JetpackCompose"
+const val JetpackComposeTag = "Compose"
 
 object UIDebuggerComposeSupport {
 
