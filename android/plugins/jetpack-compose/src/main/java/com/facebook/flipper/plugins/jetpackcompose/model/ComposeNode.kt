@@ -14,13 +14,21 @@ import androidx.annotation.RequiresApi
 import com.facebook.flipper.plugins.uidebugger.model.*
 import facebook.internal.androidx.compose.ui.inspection.RecompositionHandler
 import facebook.internal.androidx.compose.ui.inspection.inspector.InspectorNode
+import facebook.internal.androidx.compose.ui.inspection.inspector.LayoutInspectorTree
+import facebook.internal.androidx.compose.ui.inspection.inspector.NodeParameter
+import facebook.internal.androidx.compose.ui.inspection.inspector.ParameterKind
+
+// Same values as in AndroidX (ComposeLayoutInspector.kt)
+private const val MAX_RECURSIONS = 2
+private const val MAX_ITERABLE_SIZE = 5
 
 class ComposeNode(
     private val parentComposeView: View,
+    private val layoutInspectorTree: LayoutInspectorTree,
+    private val recompositionHandler: RecompositionHandler,
     val inspectorNode: InspectorNode,
     xOffset: Int,
     yOffset: Int,
-    private val getRecompositionsCount: (Int, Int) -> RecompositionHandler.Data?
 ) {
   val bounds: Bounds =
       Bounds(
@@ -35,10 +43,25 @@ class ComposeNode(
 
   val children: List<Any> = collectChildren()
 
+  val parameters: List<NodeParameter>
+
+  val mergedSemantics: List<NodeParameter>
+
+  val unmergedSemantics: List<NodeParameter>
+
   init {
-    val count = getRecompositionsCount(inspectorNode.key, inspectorNode.anchorId)
+    val count = recompositionHandler.getCounts(inspectorNode.key, inspectorNode.anchorId)
     recompositionCount = count?.count
     skipCount = count?.skips
+    parameters = getNodeParameters(ParameterKind.Normal)
+    mergedSemantics = getNodeParameters(ParameterKind.MergedSemantics)
+    unmergedSemantics = getNodeParameters(ParameterKind.UnmergedSemantics)
+  }
+
+  private fun getNodeParameters(kind: ParameterKind): List<NodeParameter> {
+    layoutInspectorTree.resetAccumulativeState()
+    return layoutInspectorTree.convertParameters(
+        inspectorNode.id, inspectorNode, kind, MAX_RECURSIONS, MAX_ITERABLE_SIZE)
   }
 
   private fun collectChildren(): List<Any> {
@@ -54,7 +77,12 @@ class ComposeNode(
 
     return inspectorNode.children.map { child ->
       ComposeNode(
-          parentComposeView, child, inspectorNode.left, inspectorNode.top, getRecompositionsCount)
+          parentComposeView,
+          layoutInspectorTree,
+          recompositionHandler,
+          child,
+          inspectorNode.left,
+          inspectorNode.top)
     }
   }
 

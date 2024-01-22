@@ -36,7 +36,11 @@ object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
 
   override fun onGetName(node: ComposeView): String = node.javaClass.simpleName
 
-  private fun transform(view: View, nodes: List<InspectorNode>): List<ComposeNode> {
+  private fun transform(
+      view: View,
+      nodes: List<InspectorNode>,
+      layoutInspectorTree: LayoutInspectorTree
+  ): List<ComposeNode> {
     val positionOnScreen = IntArray(2)
     view.getLocationOnScreen(positionOnScreen)
 
@@ -44,9 +48,7 @@ object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
     val yOffset = positionOnScreen[1]
 
     return nodes.map { node ->
-      ComposeNode(view, node, xOffset, yOffset) { key, anchorId ->
-        recompositionHandler.getCounts(key, anchorId)
-      }
+      ComposeNode(view, layoutInspectorTree, recompositionHandler, node, xOffset, yOffset)
     }
   }
 
@@ -61,7 +63,7 @@ object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
           (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)) {
         val layoutInspector = LayoutInspectorTree()
         layoutInspector.hideSystemNodes = true
-        return transform(child, layoutInspector.convert(child))
+        return transform(child, layoutInspector.convert(child), layoutInspector)
       }
     }
 
