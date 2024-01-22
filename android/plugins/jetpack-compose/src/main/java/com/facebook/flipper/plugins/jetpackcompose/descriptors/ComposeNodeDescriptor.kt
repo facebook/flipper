@@ -61,12 +61,6 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "mergedSemantics")
   private val UnmergedSemanticsAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "unmergedSemantics")
-  private val RecompositionInfoAttributeId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "recompositionInfo")
-  private val RecompositionCountId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "recompositionCount")
-  private val SkipCountId =
-      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "skipCount")
 
   override fun getName(node: ComposeNode): String = node.inspectorNode.name
 
@@ -124,14 +118,18 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
     }
     props[UnmergedSemanticsAttributeId] = InspectableObject(unmergedSemantics.toMap())
 
-    val recompositionInfos = mutableMapOf<Int, Inspectable>()
-    recompositionInfos[RecompositionCountId] = InspectableValue.Number(node.recompositionCount ?: 0)
-    recompositionInfos[SkipCountId] = InspectableValue.Number(node.skipCount ?: 0)
-    props[RecompositionInfoAttributeId] = InspectableObject(recompositionInfos.toMap())
-
     builder[SectionId] = InspectableObject(props.toMap())
 
     return Immediate(builder)
+  }
+
+  override fun getInlineAttributes(node: ComposeNode): Map<String, String> {
+    val attributes = mutableMapOf<String, String>()
+    if (!node.inspectorNode.inlined) {
+      node.recompositionCount?.let { attributes["🔄"] = it.toString() }
+      node.skipCount?.let { attributes["⏭️"] = it.toString() }
+    }
+    return attributes
   }
 
   override fun getBounds(node: ComposeNode): Bounds {
