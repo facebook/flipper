@@ -110,12 +110,6 @@ export async function writeKeychain(_token: string) {
   throw new Error('Feature not implemented');
 }
 
-export async function uploadFlipperMedia(
-  _path: string,
-  _kind: 'Image' | 'Video',
-): Promise<string> {
-  throw new Error('Feature not implemented');
-}
 export async function getFlipperMediaCDN(
   _uploadID: string,
   _kind: 'Image' | 'Video',
