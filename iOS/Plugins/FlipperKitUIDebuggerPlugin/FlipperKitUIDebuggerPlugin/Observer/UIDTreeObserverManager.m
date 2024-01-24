@@ -64,7 +64,11 @@
 
   // trigger another pass
   dispatch_async(dispatch_get_main_queue(), ^{
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
     [self->_rootObserver processNode:self->_context.application
+#pragma clang diagnostic pop
                         withSnapshot:YES
                          withContext:self->_context];
   });
@@ -78,7 +82,11 @@
 
   if (!_rootObserver) {
     _rootObserver =
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
         [_context.observerFactory createObserverForNode:context.application
+#pragma clang diagnostic pop
                                             withContext:_context];
   }
 
@@ -95,7 +103,11 @@
         if (maybeMode == nil) {
           return;
         }
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
         weakSelf.traversalMode = UIDTraversalModeFromString(maybeMode);
+#pragma clang diagnostic pop
       }];
 }
 
@@ -112,7 +124,11 @@
       [_context.descriptorRegister descriptorForClass:[UIApplication class]];
 
   UIDInitEvent* init = [UIDInitEvent new];
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
   init.rootId = [descriptor identifierForNode:_context.application];
+#pragma clang diagnostic pop
   init.frameworkEventMetadata = [_context.frameworkEventManager eventsMetadata];
   init.currentTraversalMode = _traversalMode;
 

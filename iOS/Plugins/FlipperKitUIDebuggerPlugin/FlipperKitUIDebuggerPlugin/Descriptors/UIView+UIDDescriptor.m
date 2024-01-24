@@ -370,7 +370,11 @@ FB_LINKABLE(UIView_UIDDescriptor)
   [viewAttributes setObject:[UIDInspectableBoolean
                                 fromBoolean:self.clearsContextBeforeDrawing]
                      forKey:ClearContextBeforeDrawingAttributeId];
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
   [viewAttributes setObject:[UIDInspectableColor fromColor:self.backgroundColor]
+#pragma clang diagnostic pop
                      forKey:BackgroundColorAttributeId];
   [viewAttributes setObject:[UIDInspectableColor fromColor:self.tintColor]
                      forKey:TintColorAttributeId];
@@ -384,7 +388,11 @@ FB_LINKABLE(UIView_UIDDescriptor)
 
   [layerAttributes
       setObject:[UIDInspectableColor
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
                     fromColor:[UIColor colorWithCGColor:self.layer.shadowColor]]
+#pragma clang diagnostic pop
          forKey:CALayerShadowColorAttributeId];
   [layerAttributes
       setObject:[UIDInspectableNumber fromCGFloat:self.layer.shadowOpacity]
@@ -398,11 +406,19 @@ FB_LINKABLE(UIView_UIDDescriptor)
   [layerAttributes
       setObject:[UIDInspectableColor
                     fromColor:[UIColor
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
                                   colorWithCGColor:self.layer.backgroundColor]]
+#pragma clang diagnostic pop
          forKey:CALayerBackgroundColorAttributeId];
   [layerAttributes
       setObject:[UIDInspectableColor
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
                     fromColor:[UIColor colorWithCGColor:self.layer.borderColor]]
+#pragma clang diagnostic pop
          forKey:CALayerBorderColorAttributeId];
   [layerAttributes
       setObject:[UIDInspectableNumber fromCGFloat:self.layer.borderWidth]
@@ -423,16 +439,32 @@ FB_LINKABLE(UIView_UIDDescriptor)
       setObject:[UIDInspectableBoolean fromBoolean:self.isAccessibilityElement]
          forKey:IsAccessibilityElementAttributeId];
   [accessibilityAttributes
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
       setObject:[UIDInspectableText fromText:self.accessibilityLabel]
+#pragma clang diagnostic pop
          forKey:AccessibilityLabelAttributeId];
   [accessibilityAttributes
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
       setObject:[UIDInspectableText fromText:self.accessibilityIdentifier]
+#pragma clang diagnostic pop
          forKey:AccessibilityIdentifierAttributeId];
   [accessibilityAttributes
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
       setObject:[UIDInspectableText fromText:self.accessibilityValue]
+#pragma clang diagnostic pop
          forKey:AccessibilityValueAttributeId];
   [accessibilityAttributes
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
       setObject:[UIDInspectableText fromText:self.accessibilityHint]
+#pragma clang diagnostic pop
          forKey:AccessibilityHintAttributeId];
   [accessibilityAttributes
       setObject:[UIDInspectableBoolean
@@ -551,7 +583,11 @@ FB_LINKABLE(UIView_UIDDescriptor)
 
     if (!child.isHidden) {
       if (isController && child.nextResponder != self.nextResponder) {
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
         [children addObject:child.nextResponder];
+#pragma clang diagnostic pop
       } else {
         [children addObject:child];
       }
@@ -574,7 +610,11 @@ FB_LINKABLE(UIView_UIDDescriptor)
 
     if (!activeChild.isHidden) {
       if (isController && activeChild.nextResponder != self.nextResponder) {
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
         return activeChild.nextResponder;
+#pragma clang diagnostic pop
       }
       return activeChild;
     }

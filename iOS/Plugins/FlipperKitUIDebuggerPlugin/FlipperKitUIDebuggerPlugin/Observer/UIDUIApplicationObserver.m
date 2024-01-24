@@ -58,7 +58,11 @@
             strongSelf->_lastInvocationTimestamp = currentTimestamp;
             if (strongSelf->_dirty) {
               strongSelf->_dirty = false;
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
               [self processNode:strongSelf->_context.application
+#pragma clang diagnostic pop
                    withSnapshot:true
                     withContext:strongSelf->_context];
             }

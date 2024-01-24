@@ -36,7 +36,11 @@ FB_LINKABLE(UIDNode_Foundation)
              forKey:@"hiddenAttributes"];
   }
   if (self.parent) {
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
     [data setObject:self.parent forKey:@"parent"];
+#pragma clang diagnostic pop
   }
 
   return data;

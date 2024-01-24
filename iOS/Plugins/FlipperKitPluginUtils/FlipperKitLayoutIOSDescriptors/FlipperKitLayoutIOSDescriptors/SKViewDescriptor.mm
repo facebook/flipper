@@ -47,7 +47,11 @@
     if (!child.isHidden) {
       if (responderIsUIViewController &&
           child.nextResponder != node.nextResponder) {
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
         [validChildren addObject:child.nextResponder];
+#pragma clang diagnostic pop
       } else {
         [validChildren addObject:child];
       }
@@ -76,15 +80,27 @@
               newWithName:@"CALayer"
                 withValue:@{
                   @"shadowColor" : SKMutableObject(
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
                       [UIColor colorWithCGColor:node.layer.shadowColor]),
+#pragma clang diagnostic pop
                   @"shadowOpacity" :
                       SKMutableObject(@(node.layer.shadowOpacity)),
                   @"shadowRadius" : SKMutableObject(@(node.layer.shadowRadius)),
                   @"shadowOffset" : SKMutableObject(node.layer.shadowOffset),
                   @"backgroundColor" : SKMutableObject(
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
                       [UIColor colorWithCGColor:node.layer.backgroundColor]),
+#pragma clang diagnostic pop
                   @"borderColor" : SKMutableObject(
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
                       [UIColor colorWithCGColor:node.layer.borderColor]),
+#pragma clang diagnostic pop
                   @"borderWidth" : SKMutableObject(@(node.layer.borderWidth)),
                   @"cornerRadius" : SKMutableObject(@(node.layer.cornerRadius)),
                   @"masksToBounds" :
@@ -290,7 +306,11 @@ return dataMutations;
     UIGraphicsBeginImageContext(node.bounds.size);
   }
 
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
   [node.layer renderInContext:UIGraphicsGetCurrentContext()];
+#pragma clang diagnostic pop
 
   UIImage* img = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();

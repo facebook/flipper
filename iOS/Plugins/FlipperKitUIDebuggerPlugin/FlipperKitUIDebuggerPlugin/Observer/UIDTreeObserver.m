@@ -52,7 +52,11 @@
   UIDNodeDescriptor* descriptor =
       [context.descriptorRegister descriptorForClass:[node class]];
   UIDNodeDescriptor* rootDescriptor = [context.descriptorRegister
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
       descriptorForClass:[context.application class]];
+#pragma clang diagnostic pop
 
   NSArray* nodes;
   switch (_traversalMode) {
@@ -65,7 +69,11 @@
     case UIDTraversalModeAccessibilityHierarchy: {
       UIDAllyTraversal* allyTraversal = [[UIDAllyTraversal alloc]
           initWithDescriptorRegister:context.descriptorRegister];
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
       nodes = [allyTraversal traverse:context.application root:node];
+#pragma clang diagnostic pop
       break;
     }
     default:
@@ -75,7 +83,11 @@
 
   uint64_t t1 = UIDPerformanceNow();
 
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
   UIImage* screenshot = [rootDescriptor snapshotForNode:context.application];
+#pragma clang diagnostic pop
 
   uint64_t t2 = UIDPerformanceNow();
 
