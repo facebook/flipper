@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.inspection.DefaultArtTooling
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
 import com.facebook.flipper.plugins.uidebugger.descriptors.ChainedDescriptor
+import com.facebook.flipper.plugins.uidebugger.descriptors.WarningMessage
 import facebook.internal.androidx.compose.ui.inspection.RecompositionHandler
 import facebook.internal.androidx.compose.ui.inspection.inspector.InspectorNode
 import facebook.internal.androidx.compose.ui.inspection.inspector.LayoutInspectorTree
@@ -60,7 +61,15 @@ object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
           (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)) {
         val layoutInspector = LayoutInspectorTree()
         layoutInspector.hideSystemNodes = true
-        return transform(child, layoutInspector.convert(child), layoutInspector)
+        val composeNodes = transform(child, layoutInspector.convert(child), layoutInspector)
+        return if (composeNodes.isNullOrEmpty()) {
+          listOf(
+              WarningMessage(
+                  "Go to developer options and make sure that \"Enable view attribute inspection\" option is enabled.",
+                  getBounds(node)))
+        } else {
+          composeNodes
+        }
       }
     }
 
