@@ -9,7 +9,9 @@ package com.facebook.flipper.plugins.jetpackcompose.descriptors
 
 import android.os.Build
 import android.os.Debug
+import android.util.Log
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.inspection.DefaultArtTooling
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
@@ -20,19 +22,14 @@ import facebook.internal.androidx.compose.ui.inspection.inspector.LayoutInspecto
 import java.io.IOException
 
 object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
-  private val recompositionHandler =
-      RecompositionHandler(DefaultArtTooling("Flipper")).apply {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          try {
-            Debug.attachJvmtiAgent("nonexistent.so", null, null)
-          } catch (e: IOException) {
-            // expected: "nonexistent.so" doesn't exist, however attachJvmtiAgent call is enough
-            // to make art to load JVMTI plugin.
-          }
-
-          changeCollectionMode(startCollecting = true, keepCounts = true)
-        }
+  private val recompositionHandler by lazy {
+    RecompositionHandler(DefaultArtTooling("Flipper")).apply {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        attachJvmtiAgent()
+        startTrackingRecompositions(this)
       }
+    }
+  }
 
   override fun onGetName(node: ComposeView): String = node.javaClass.simpleName
 
@@ -68,5 +65,23 @@ object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
     }
 
     return children
+  }
+
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private fun attachJvmtiAgent() {
+    try {
+      Debug.attachJvmtiAgent("nonexistent.so", null, null)
+    } catch (e: IOException) {
+      // expected: "nonexistent.so" doesn't exist, however attachJvmtiAgent call is enough
+      // to make art to load JVMTI plugin.
+    }
+  }
+
+  private fun startTrackingRecompositions(recompositionHandler: RecompositionHandler) {
+    try {
+      recompositionHandler.changeCollectionMode(startCollecting = true, keepCounts = true)
+    } catch (t: Throwable) {
+      Log.e("ComposeViewDescriptor", "Failed to start tracking recompositions", t)
+    }
   }
 }
