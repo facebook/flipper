@@ -48,13 +48,19 @@ import {getNode} from './utils/map';
 import {handleTraversalError} from './plugin/traversalError';
 
 export function plugin(client: PluginClient<Events, Methods>) {
-  const rootId = createState<Id | undefined>(undefined);
-  const metadata = createState<Map<MetadataId, Metadata>>(new Map());
+  const rootId = createState<Id | undefined>(undefined, {persist: 'rootId'});
+  const metadata = createState<Map<MetadataId, Metadata>>(new Map(), {
+    persist: 'metadata',
+  });
 
   const streamInterceptor = new EventEmitter() as StreamInterceptorEventEmitter;
   addInterceptors(client.device.os, streamInterceptor);
-  const snapshot = createState<SnapshotInfo | null>(null);
-  const nodesAtom = createState<Map<Id, ClientNode>>(new Map());
+  const snapshot = createState<SnapshotInfo | null>(null, {
+    persist: 'snapshot',
+  });
+  const nodesAtom = createState<Map<Id, ClientNode>>(new Map(), {
+    persist: 'nodes',
+  });
   const frameworkEvents = createDataSource<AugmentedFrameworkEvent>([], {
     indices: [
       ['nodeId'],
