@@ -35,7 +35,7 @@ export function FrameworkEventsTable({
   isTree,
   nodes,
 }: {
-  nodeId: Id;
+  nodeId: Id | null;
   nodes: NodeMap;
   isTree: boolean;
 }) {

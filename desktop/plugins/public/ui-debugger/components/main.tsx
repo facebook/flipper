@@ -109,7 +109,7 @@ export function Component() {
     return (
       <FrameworkEventsTable
         nodeId={viewMode.nodeId}
-        isTree={viewMode.isTree}
+        isTree={viewMode.isTree || false}
         nodes={nodes}
       />
     );

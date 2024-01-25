@@ -78,7 +78,7 @@ export type TraversalMode = 'view-hierarchy' | 'accessibility-hierarchy';
 
 export type ViewMode =
   | {mode: 'default'}
-  | {mode: 'frameworkEventsTable'; nodeId: Id; isTree: boolean};
+  | {mode: 'frameworkEventsTable'; nodeId: Id | null; isTree: boolean | null};
 
 export type NodeSelection = {
   id: Id;
