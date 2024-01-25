@@ -32,7 +32,7 @@ import {
   Typography,
 } from 'antd';
 import {frameworkEventSeparator} from '../../shared/FrameworkEventsTreeSelect';
-import {last, startCase, uniqBy} from 'lodash';
+import {startCase, uniqBy} from 'lodash';
 import {FilterOutlined, TableOutlined} from '@ant-design/icons';
 import {ViewMode} from '../../../DesktopTypes';
 import {MultiSelectableDropDownItem} from '../../shared/MultiSelectableDropDownItem';
@@ -161,7 +161,7 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
                           selectedValues={filteredEventTypes}
                           key={eventType}
                           value={eventType as string}
-                          text={last(eventType.split('.')) as string}
+                          text={eventTypeToName(eventType)}
                         />
                       ))}
                     </>
