@@ -33,7 +33,7 @@ import {
 } from 'antd';
 import {frameworkEventSeparator} from '../../shared/FrameworkEventsTreeSelect';
 import {startCase, uniqBy} from 'lodash';
-import {FilterOutlined, TableOutlined} from '@ant-design/icons';
+import {DeleteOutlined, FilterOutlined, TableOutlined} from '@ant-design/icons';
 import {ViewMode} from '../../../DesktopTypes';
 import {MultiSelectableDropDownItem} from '../../shared/MultiSelectableDropDownItem';
 import {formatDuration, formatTimestampMillis} from '../../../utils/timeUtils';
@@ -45,6 +45,7 @@ type Props = {
   showBottomPanel?: (title: string, element: ReactNode) => void;
   frameworkEventMetadata: Map<FrameworkEventType, FrameworkEventMetadata>;
   onSetViewMode: (viewMode: ViewMode) => void;
+  clearAllEvents: () => void;
 };
 
 export const FrameworkEventsInspector: React.FC<Props> = ({
@@ -53,6 +54,7 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
   showBottomPanel: showExtra,
   frameworkEventMetadata,
   onSetViewMode,
+  clearAllEvents,
 }) => {
   const allThreads = uniqBy(events, 'thread').map((event) => event.thread);
   const [filteredThreads, setFilteredThreads] = useState<Set<string>>(
@@ -84,6 +86,13 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
         <Typography.Title level={3}>Event timeline</Typography.Title>
 
         <Layout.Horizontal center gap padh="medium">
+          <Tooltip title="Clear all events">
+            <Button
+              shape="circle"
+              icon={<DeleteOutlined />}
+              onClick={clearAllEvents}
+            />
+          </Tooltip>
           <Tooltip title="Explore events in table">
             <Button
               shape="circle"

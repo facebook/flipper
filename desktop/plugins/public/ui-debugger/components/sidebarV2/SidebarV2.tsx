@@ -9,7 +9,7 @@
 
 import {ClientNode, MetadataId, Metadata} from '../../ClientTypes';
 import {plugin} from '../../index';
-import React, {ReactNode} from 'react';
+import React, {ReactNode, useState} from 'react';
 import {Layout, Tab, Tabs, usePlugin, useValue} from 'flipper-plugin';
 import {NoData} from './NoData';
 import {Tooltip} from 'antd';
@@ -26,9 +26,11 @@ export function SidebarV2({selectedNode, metadata, showBottomPanel}: Props) {
 
   const frameworkEventMetadata = useValue(instance.frameworkEventMetadata);
 
+  const [_, reRender] = useState(0);
   if (!selectedNode) {
     return <NoData message="Please select a node to view its details" />;
   }
+
   const selectedFrameworkEvents = selectedNode.id
     ? instance.frameworkEvents.getAllRecordsByIndex({nodeId: selectedNode.id})
     : [];
@@ -52,6 +54,10 @@ export function SidebarV2({selectedNode, metadata, showBottomPanel}: Props) {
               </Tooltip>
             }>
             <FrameworkEventsInspector
+              clearAllEvents={() => {
+                instance.frameworkEvents.clear();
+                reRender((x) => x + 1);
+              }}
               onSetViewMode={instance.uiActions.onSetViewMode}
               frameworkEventMetadata={frameworkEventMetadata}
               node={selectedNode}
