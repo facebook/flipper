@@ -9,10 +9,10 @@ package com.facebook.flipper.plugins.jetpackcompose
 
 import android.os.Build
 import android.util.Log
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.AbstractComposeView
+import com.facebook.flipper.plugins.jetpackcompose.descriptors.AbstractComposeViewDescriptor
 import com.facebook.flipper.plugins.jetpackcompose.descriptors.ComposeInnerViewDescriptor
 import com.facebook.flipper.plugins.jetpackcompose.descriptors.ComposeNodeDescriptor
-import com.facebook.flipper.plugins.jetpackcompose.descriptors.ComposeViewDescriptor
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeInnerViewNode
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext
@@ -38,7 +38,7 @@ object UIDebuggerComposeSupport {
   }
 
   private fun addDescriptors(register: DescriptorRegister) {
-    register.register(ComposeView::class.java, ComposeViewDescriptor)
+    register.register(AbstractComposeView::class.java, AbstractComposeViewDescriptor)
     register.register(ComposeNode::class.java, ComposeNodeDescriptor)
     register.register(ComposeInnerViewNode::class.java, ComposeInnerViewDescriptor)
   }

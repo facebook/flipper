@@ -12,7 +12,7 @@ import android.os.Debug
 import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.isDebugInspectorInfoEnabled
 import androidx.inspection.DefaultArtTooling
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
@@ -23,7 +23,7 @@ import facebook.internal.androidx.compose.ui.inspection.inspector.InspectorNode
 import facebook.internal.androidx.compose.ui.inspection.inspector.LayoutInspectorTree
 import java.io.IOException
 
-object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
+object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() {
   private val recompositionHandler by lazy {
     RecompositionHandler(DefaultArtTooling("Flipper")).apply {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -33,7 +33,7 @@ object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
     }
   }
 
-  override fun onGetName(node: ComposeView): String = node.javaClass.simpleName
+  override fun onGetName(node: AbstractComposeView): String = node.javaClass.simpleName
 
   private fun transform(
       view: View,
@@ -41,7 +41,7 @@ object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
       layoutInspectorTree: LayoutInspectorTree
   ): List<ComposeNode> {
     val positionOnScreen = IntArray(2)
-    view.getLocationOnScreen(positionOnScreen)
+    view.getLocationInWindow(positionOnScreen)
 
     val xOffset = positionOnScreen[0]
     val yOffset = positionOnScreen[1]
@@ -51,15 +51,14 @@ object ComposeViewDescriptor : ChainedDescriptor<ComposeView>() {
     }
   }
 
-  override fun onGetChildren(node: ComposeView): List<Any> {
+  override fun onGetChildren(node: AbstractComposeView): List<Any> {
     val children = mutableListOf<Any>()
     val count = node.childCount - 1
     for (i in 0..count) {
       val child: View = node.getChildAt(i)
       children.add(child)
 
-      if (child.javaClass.simpleName.contains("AndroidComposeView") &&
-          (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         enableDebugInspectorInfo()
         val layoutInspector = LayoutInspectorTree()
         layoutInspector.hideSystemNodes = true
