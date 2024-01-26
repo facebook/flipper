@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.jetpackcompose
 import android.os.Build
 import android.util.Log
 import androidx.compose.ui.platform.AbstractComposeView
+import androidx.compose.ui.platform.isDebugInspectorInfoEnabled
 import com.facebook.flipper.plugins.jetpackcompose.descriptors.AbstractComposeViewDescriptor
 import com.facebook.flipper.plugins.jetpackcompose.descriptors.ComposeInnerViewDescriptor
 import com.facebook.flipper.plugins.jetpackcompose.descriptors.ComposeNodeDescriptor
@@ -23,13 +24,16 @@ const val JetpackComposeTag = "Compose"
 
 object UIDebuggerComposeSupport {
 
+  private const val TAG = "UIDebuggerCompose"
+
   init {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       try {
         SoLoader.loadLibrary("art_tooling")
       } catch (t: Throwable) {
-        Log.e("UIDebuggerCompose", "Failed to load native library.", t)
+        Log.e(TAG, "Failed to load native library.", t)
       }
+      enableDebugInspectorInfo()
     }
   }
 
@@ -41,5 +45,20 @@ object UIDebuggerComposeSupport {
     register.register(AbstractComposeView::class.java, AbstractComposeViewDescriptor)
     register.register(ComposeNode::class.java, ComposeNodeDescriptor)
     register.register(ComposeInnerViewNode::class.java, ComposeInnerViewDescriptor)
+  }
+
+  private fun enableDebugInspectorInfo() {
+    // Set isDebugInspectorInfoEnabled to true via reflection such that Redex and R8 cannot see the
+    // assignment. This allows the InspectorInfo lambdas to be stripped from release builds.
+    if (!isDebugInspectorInfoEnabled) {
+      try {
+        val packageClass = Class.forName("androidx.compose.ui.platform.InspectableValueKt")
+        val field = packageClass.getDeclaredField("isDebugInspectorInfoEnabled")
+        field.isAccessible = true
+        field.setBoolean(null, true)
+      } catch (ex: Exception) {
+        Log.e(TAG, "Could not access isDebugInspectorInfoEnabled.", ex)
+      }
+    }
   }
 }

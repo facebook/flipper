@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.platform.AbstractComposeView
-import androidx.compose.ui.platform.isDebugInspectorInfoEnabled
 import androidx.inspection.DefaultArtTooling
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
 import com.facebook.flipper.plugins.uidebugger.descriptors.ChainedDescriptor
@@ -59,7 +58,6 @@ object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() 
       children.add(child)
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        enableDebugInspectorInfo()
         val layoutInspector = LayoutInspectorTree()
         layoutInspector.hideSystemNodes = true
         val composeNodes = transform(child, layoutInspector.convert(child), layoutInspector)
@@ -92,21 +90,6 @@ object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() 
       recompositionHandler.changeCollectionMode(startCollecting = true, keepCounts = true)
     } catch (t: Throwable) {
       Log.e("ComposeViewDescriptor", "Failed to start tracking recompositions", t)
-    }
-  }
-
-  private fun enableDebugInspectorInfo() {
-    // Set isDebugInspectorInfoEnabled to true via reflection such that Redex and R8 cannot see the
-    // assignment. This allows the InspectorInfo lambdas to be stripped from release builds.
-    if (!isDebugInspectorInfoEnabled) {
-      try {
-        val packageClass = Class.forName("androidx.compose.ui.platform.InspectableValueKt")
-        val field = packageClass.getDeclaredField("isDebugInspectorInfoEnabled")
-        field.isAccessible = true
-        field.setBoolean(null, true)
-      } catch (ex: Exception) {
-        Log.e("ComposeViewDescriptor", "Could not access isDebugInspectorInfoEnabled.", ex)
-      }
     }
   }
 }
