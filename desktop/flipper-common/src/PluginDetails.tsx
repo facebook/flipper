@@ -82,7 +82,7 @@ export type ActivatablePluginDetails = InstalledPluginDetails;
 export interface DownloadablePluginDetails extends ConcretePluginDetails {
   isActivatable: false;
   buildId: string;
-  downloadUrl: string;
+  downloadUrls: string[];
   lastUpdated: Date;
   // Indicates whether plugin should be enabled by default for new users
   isEnabledByDefault: boolean;
