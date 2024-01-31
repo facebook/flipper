@@ -111,6 +111,10 @@ const columns: DataTableColumn<DynamicPerformanceStatsEvent>[] = [
     title: 'Total nodes',
   },
   {
+    key: 'frameworkEventsCount',
+    title: 'Total events',
+  },
+  {
     key: 'start',
     title: 'Start',
     onRender: (row: PerformanceStatsEvent) => {
@@ -167,6 +171,16 @@ const columns: DataTableColumn<DynamicPerformanceStatsEvent>[] = [
         return 'NaN';
       }
       return formatSize(row.payloadSize);
+    },
+  },
+  {
+    key: 'snapshotSize',
+    title: 'Snapshot Size (KB)',
+    onRender: (row: PerformanceStatsEvent) => {
+      if (!row.snapshotSize) {
+        return 'NaN';
+      }
+      return formatSize(row.snapshotSize);
     },
   },
 ];

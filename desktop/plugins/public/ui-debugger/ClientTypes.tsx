@@ -121,6 +121,8 @@ export type PerformanceStatsEvent = {
   serializationMS: number;
   socketMS: number;
   payloadSize?: number;
+  snapshotSize?: number;
+  frameworkEventsCount?: number;
 };
 
 export type DynamicPerformanceStatsEvent = PerformanceStatsEvent & {
