@@ -58,7 +58,8 @@ async function handlePluginDownload(
   startedByUser: boolean,
   store: Store,
 ) {
-  const {title, version, downloadUrls} = plugin;
+  const {title, version} = plugin;
+  const downloadUrls = plugin.downloadUrls.join(', ');
   const dispatch = store.dispatch;
   console.log(
     `Downloading plugin "${title}" v${version} from "${downloadUrls}".`,
