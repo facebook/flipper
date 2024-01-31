@@ -158,28 +158,6 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
   });
 
-  /**
-   * The message handling below is a temporary measure for a couple of weeks until
-   * clients migrate to the newer message/format.
-   */
-  client.onMessage('perfStats', (event) => {
-    const stat = {
-      txId: event.txId,
-      observerType: event.observerType,
-      nodesCount: event.nodesCount,
-      start: event.start,
-      traversalMS: event.traversalComplete - event.start,
-      snapshotMS: event.snapshotComplete - event.traversalComplete,
-      queuingMS: event.queuingComplete - event.snapshotComplete,
-      deferredComputationMS:
-        event.deferredComputationComplete - event.queuingComplete,
-      serializationMS:
-        event.serializationComplete - event.deferredComputationComplete,
-      socketMS: event.socketComplete - event.serializationComplete,
-    };
-    client.logger.track('performance', 'subtreeUpdate', stat, 'ui-debugger');
-    perfEvents.append(stat);
-  });
   client.onMessage('performanceStats', (event) => {
     client.logger.track('performance', 'subtreeUpdate', event, 'ui-debugger');
     perfEvents.append(event);
