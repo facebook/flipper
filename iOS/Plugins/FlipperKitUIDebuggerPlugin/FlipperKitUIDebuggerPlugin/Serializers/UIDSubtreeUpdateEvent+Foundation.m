@@ -18,7 +18,7 @@ FB_LINKABLE(UIDSubtreeUpdateEvent_Foundation)
   return @{
     @"txId" : [NSNumber numberWithDouble:self.txId],
     @"observerType" : self.observerType,
-    @"rootId" : [NSNumber numberWithUnsignedInt:self.rootId],
+    @"rootId" : [NSNumber numberWithUnsignedInteger:self.rootId],
     @"nodes" : [self.nodes toFoundation],
     @"snapshot" : self.snapshot ? [self.snapshot toFoundation] : @"",
     @"frameworkEvents" : self.frameworkEvents

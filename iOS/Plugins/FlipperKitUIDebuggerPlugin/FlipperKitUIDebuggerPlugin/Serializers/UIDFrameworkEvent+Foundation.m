@@ -14,7 +14,7 @@ FB_LINKABLE(UIDFrameworkEvent_Foundation)
 
 - (id)toFoundation {
   NSMutableDictionary* data = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"nodeId" : [NSNumber numberWithUnsignedInt:self.nodeIdentifier],
+    @"nodeId" : [NSNumber numberWithUnsignedInteger:self.nodeIdentifier],
     @"type" : self.type,
     @"timestamp" :
         [NSNumber numberWithDouble:self.timestamp.timeIntervalSince1970],

@@ -17,7 +17,7 @@ FB_LINKABLE(UIDInitEvent_Foundation)
 
 - (id)toFoundation {
   return @{
-    @"rootId" : [NSNumber numberWithUnsignedInt:self.rootId],
+    @"rootId" : [NSNumber numberWithUnsignedInteger:self.rootId],
     @"frameworkEventMetadata" : self.frameworkEventMetadata
         ? [self.frameworkEventMetadata toFoundation]
         : @[],

@@ -79,7 +79,8 @@
     UIDNode* uidNode = [self _uidNodeForNode:node];
     uidNode.parent = @(rootIdentifier);
     [nodes addObject:uidNode];
-    [childrenIds addObject:[NSNumber numberWithUnsignedInt:uidNode.identifier]];
+    [childrenIds
+        addObject:[NSNumber numberWithUnsignedInteger:uidNode.identifier]];
   }
   rootNode.children = childrenIds;
   [nodes insertObject:rootNode atIndex:0];
