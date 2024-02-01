@@ -146,7 +146,9 @@ class UpdateQueue(val context: UIDContext) {
             deferredComputationMS = deferredComputationEndTimestamp,
             serializationMS = serializationTimeMs,
             socketMS = sendTimeMs,
-            payloadSize = serialized.length)
+            payloadSize = serialized.length,
+            snapshotSize = snapshot?.data?.length ?: 0,
+            frameworkEventsCount = frameworkEvents.size)
 
     context.connectionRef.connection?.send(
         PerfStatsEvent.name, Json.encodeToString(PerfStatsEvent.serializer(), perfStats))
