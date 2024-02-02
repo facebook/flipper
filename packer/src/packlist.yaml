@@ -33,3 +33,20 @@ server-linux:
     static:
       - '!*'
       - static
+
+server-windows:
+  mode: glob
+  basedir: flipper-server-windows
+  files:
+    frameworks:
+      - '!*'
+      - flipper-runtime
+      - flipper.bat
+    core:
+      - '!flipper-runtime'
+      - '!static'
+      - '!lib'
+    static:
+      - '!*'
+      - static
+      - lib
