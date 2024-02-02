@@ -12,13 +12,13 @@
 #import "UIDCompoundTypeHint.h"
 #import "UIDContext.h"
 #import "UIDDescriptorRegister.h"
+#import "UIDFrameScanEvent.h"
 #import "UIDInitEvent.h"
 #import "UIDJSONSerializer.h"
 #import "UIDMetadataRegister.h"
 #import "UIDMetadataUpdateEvent.h"
 #import "UIDPerfStatsEvent.h"
 #import "UIDPerformance.h"
-#import "UIDSubtreeUpdateEvent.h"
 #import "UIDTimeUtilities.h"
 #import "UIDTreeObserverFactory.h"
 
@@ -218,18 +218,21 @@
 
     UIDSubtreeUpdate* subtreeUpdate = (UIDSubtreeUpdate*)update;
 
-    UIDSubtreeUpdateEvent* subtreeUpdateEvent = [UIDSubtreeUpdateEvent new];
-    subtreeUpdateEvent.txId = UIDPerformanceTimeIntervalSince1970();
-    subtreeUpdateEvent.observerType = subtreeUpdate.observerType;
-    subtreeUpdateEvent.rootId = subtreeUpdate.rootId;
-    subtreeUpdateEvent.nodes = subtreeUpdate.nodes;
-    subtreeUpdateEvent.snapshot = subtreeUpdate.snapshot;
-    subtreeUpdateEvent.frameworkEvents =
+    UIDFrameScanEvent* frameScanEvent = [UIDFrameScanEvent new];
+    frameScanEvent.timestamp = UIDPerformanceTimeIntervalSince1970();
+    frameScanEvent.nodes = subtreeUpdate.nodes;
+
+    UIDSnapshotInfo* snapshot = [UIDSnapshotInfo new];
+    snapshot.image = subtreeUpdate.snapshot;
+    snapshot.nodeId = subtreeUpdate.rootId;
+
+    frameScanEvent.snapshot = snapshot;
+    frameScanEvent.frameworkEvents =
         [self->_context.frameworkEventManager events];
 
     uint64_t t2 = UIDPerformanceNow();
 
-    id intermediate = UID_toFoundation(subtreeUpdateEvent);
+    id intermediate = UID_toFoundation(frameScanEvent);
 
     uint64_t t3 = UIDPerformanceNow();
 
@@ -239,16 +242,16 @@
 
     [self sendMetadataUpdate];
 
-    [self->_context.connection send:[UIDSubtreeUpdateEvent name]
+    [self->_context.connection send:[UIDFrameScanEvent name]
                       withRawParams:JSON];
 
     uint64_t t5 = UIDPerformanceNow();
 
     UIDPerfStatsEvent* perfStats = [UIDPerfStatsEvent new];
-    perfStats.txId = subtreeUpdateEvent.txId;
+    perfStats.txId = frameScanEvent.timestamp;
     perfStats.observerType = subtreeUpdate.observerType;
     perfStats.nodesCount = subtreeUpdate.nodes.count;
-    perfStats.eventsCount = subtreeUpdateEvent.frameworkEvents.count;
+    perfStats.eventsCount = frameScanEvent.frameworkEvents.count;
     perfStats.start = UIDTimeIntervalToMS(subtreeUpdate.timestamp);
     perfStats.traversalMS = subtreeUpdate.traversalMS;
     perfStats.snapshotMS = subtreeUpdate.snapshotMS;

@@ -9,10 +9,10 @@
 
 #import <Foundation/Foundation.h>
 #import "UIDFoundation.h"
+#import "UIDFrameScanEvent+Foundation.h"
 #import "UIDInitEvent+Foundation.h"
 #import "UIDMetadataUpdateEvent+Foundation.h"
 #import "UIDPerfStatsEvent+Foundation.h"
-#import "UIDSubtreeUpdateEvent+Foundation.h"
 
 #ifdef __cplusplus
 extern "C" {
