@@ -216,15 +216,15 @@
 
     UIDPerformanceClear();
 
-    UIDSubtreeUpdate* subtreeUpdate = (UIDSubtreeUpdate*)update;
+    UIDFrameUpdate* frameUpdate = (UIDFrameUpdate*)update;
 
     UIDFrameScanEvent* frameScanEvent = [UIDFrameScanEvent new];
     frameScanEvent.timestamp = UIDPerformanceTimeIntervalSince1970();
-    frameScanEvent.nodes = subtreeUpdate.nodes;
+    frameScanEvent.nodes = frameUpdate.nodes;
 
     UIDSnapshotInfo* snapshot = [UIDSnapshotInfo new];
-    snapshot.image = subtreeUpdate.snapshot;
-    snapshot.nodeId = subtreeUpdate.rootId;
+    snapshot.image = frameUpdate.snapshot;
+    snapshot.nodeId = frameUpdate.rootId;
 
     frameScanEvent.snapshot = snapshot;
     frameScanEvent.frameworkEvents =
@@ -249,12 +249,12 @@
 
     UIDPerfStatsEvent* perfStats = [UIDPerfStatsEvent new];
     perfStats.txId = frameScanEvent.timestamp;
-    perfStats.observerType = subtreeUpdate.observerType;
-    perfStats.nodesCount = subtreeUpdate.nodes.count;
+    perfStats.observerType = frameUpdate.observerType;
+    perfStats.nodesCount = frameUpdate.nodes.count;
     perfStats.eventsCount = frameScanEvent.frameworkEvents.count;
-    perfStats.start = UIDTimeIntervalToMS(subtreeUpdate.timestamp);
-    perfStats.traversalMS = subtreeUpdate.traversalMS;
-    perfStats.snapshotMS = subtreeUpdate.snapshotMS;
+    perfStats.start = UIDTimeIntervalToMS(frameUpdate.timestamp);
+    perfStats.traversalMS = frameUpdate.traversalMS;
+    perfStats.snapshotMS = frameUpdate.snapshotMS;
     perfStats.queuingMS = UIDMonotonicTimeConvertMachUnitsToMS(t1 - t0);
     perfStats.frameworkEventsMS = UIDMonotonicTimeConvertMachUnitsToMS(t2 - t1);
     perfStats.deferredComputationMS =

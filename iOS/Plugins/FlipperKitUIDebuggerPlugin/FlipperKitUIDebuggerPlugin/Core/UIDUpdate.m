@@ -9,7 +9,7 @@
 
 #import "UIDUpdate.h"
 
-@implementation UIDSubtreeUpdate
+@implementation UIDFrameUpdate
 @end
 
 #endif

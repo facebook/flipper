@@ -91,7 +91,7 @@
 
   uint64_t t2 = UIDPerformanceNow();
 
-  UIDSubtreeUpdate* update = [UIDSubtreeUpdate new];
+  UIDFrameUpdate* update = [UIDFrameUpdate new];
   update.observerType = _type;
   update.rootId = [descriptor identifierForNode:node];
   update.nodes = nodes;
