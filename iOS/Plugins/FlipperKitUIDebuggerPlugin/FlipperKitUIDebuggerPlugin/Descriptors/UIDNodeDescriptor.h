@@ -9,7 +9,9 @@
 
 #import <UIKit/UIKit.h>
 #import "UIDBounds.h"
+#import "UIDCompoundTypeHint.h"
 #import "UIDInspectable.h"
+#import "UIDMetadata.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,6 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
   object will be shown in order and with a header matching the given name.
   */
 - (UIDAttributes*)attributesForNode:(T)node;
+
+- (void)editAttributeForNode:(T)node
+                   withValue:(id)value
+                metadataPath:(NSArray<UIDMetadataId>*)metadataPath
+                        hint:(UIDCompoundTypeHint)hint;
 
 /**
   These are shown inline in the tree view on the desktop, will likely be removed

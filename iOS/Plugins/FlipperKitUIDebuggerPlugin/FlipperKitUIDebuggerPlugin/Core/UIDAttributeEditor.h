@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, AttributeEditorErrorType) {
   AttributeEditorErrorTypeMissingNodeId,
   AttributeEditorErrorTypeMissingMetadataIds,
+  AttributeEditorErrorTypeNodeNotFound,
   AttributeEditorErrorTypeUnknown,
 };
 

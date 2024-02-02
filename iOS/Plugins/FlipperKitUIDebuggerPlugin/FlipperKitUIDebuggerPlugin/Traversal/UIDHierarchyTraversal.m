@@ -136,6 +136,34 @@
   return nodes;
 }
 
+- (id<NSObject>)findWithId:(NSUInteger)nodeId inHierarchyWithRoot:(id)root {
+  if (root == nil) {
+    return nil;
+  }
+
+  NSMutableArray<UIDTransientNode*>* stack = [NSMutableArray new];
+  [stack addObject:root];
+
+  while (stack.count) {
+    id node = [stack lastObject];
+    [stack removeLastObject];
+
+    UIDNodeDescriptor* descriptor =
+        [self.descriptorRegister descriptorForClass:[node class]];
+
+    NSUInteger nodeIdentifier = [descriptor identifierForNode:node];
+
+    if (nodeIdentifier == nodeId) {
+      return node;
+    }
+
+    NSArray* children = [descriptor childrenOfNode:node];
+    [stack addObjectsFromArray:children];
+  }
+
+  return nil;
+}
+
 @end
 
 #endif

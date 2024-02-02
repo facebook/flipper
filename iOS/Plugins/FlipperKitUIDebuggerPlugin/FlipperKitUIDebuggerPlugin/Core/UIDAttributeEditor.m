@@ -9,15 +9,21 @@
 
 #import "UIDAttributeEditor.h"
 #import "UIDDescriptorRegister.h"
+#import "UIDHierarchyTraversal.h"
+#import "UIDMainThread.h"
 
 static NSString* const AttributeEditorErrorMissingRequiredArgumentDomain =
     @"Missing required argument";
+static NSString* const AttributeEditorErrorInfrastructureDomain =
+    @"Attribute editor infrastructure error";
 static NSString* const AttributeEditorErrorUnknownDomain = @"Unknown";
 
 static NSString* const AttributeEditorMissingNodeIdMessage =
     @"Node identifier not provided";
 static NSString* const AttributeEditorMissingMetadataIdsMessage =
     @"Metadata identifiers not provided";
+static NSString* const AttributeEditorNodeNotFoundMessage =
+    @"Unable to locate node for which changes were requested";
 static NSString* const AttributeEditorUnknownMessage = @"Unknown error found";
 
 FB_LINKABLE(NSError_AttributeEditorError)
@@ -33,6 +39,10 @@ FB_LINKABLE(NSError_AttributeEditorError)
     case AttributeEditorErrorTypeMissingMetadataIds:
       domain = AttributeEditorErrorMissingRequiredArgumentDomain;
       message = AttributeEditorMissingMetadataIdsMessage;
+      break;
+    case AttributeEditorErrorTypeNodeNotFound:
+      domain = AttributeEditorErrorInfrastructureDomain;
+      message = AttributeEditorNodeNotFoundMessage;
       break;
     case AttributeEditorErrorTypeUnknown:
       domain = AttributeEditorErrorUnknownDomain;
@@ -88,6 +98,35 @@ FB_LINKABLE(NSError_AttributeEditorError)
     metadataIdentifiers:(NSArray<UIDMetadataId>*)metadataIdentifiers
        compoundTypeHint:(UIDCompoundTypeHint)compoundTypeHint
            reportResult:(ReportAttributeEditorResult)reportResult {
+  UIDHierarchyTraversal* const traversal =
+      [UIDHierarchyTraversal createWithDescriptorRegister:_descriptorRegister];
+
+  __weak __typeof(self) weakSelf = self;
+  UIDRunBlockOnMainThreadAsync(^{
+    UIDAttributeEditor* editor = weakSelf;
+    if (!editor) {
+      reportResult([NSError UID_errorWithType:AttributeEditorErrorTypeUnknown]);
+      return;
+    }
+
+    id<NSObject> node = [traversal findWithId:[nodeId unsignedIntegerValue]
+                          inHierarchyWithRoot:editor->_application];
+    if (!node) {
+      reportResult(
+          [NSError UID_errorWithType:AttributeEditorErrorTypeNodeNotFound]);
+      return;
+    }
+
+    UIDNodeDescriptor* descriptor =
+        [editor->_descriptorRegister descriptorForClass:[node class]];
+
+    [descriptor editAttributeForNode:node
+                           withValue:value
+                        metadataPath:metadataIdentifiers
+                                hint:compoundTypeHint];
+
+    reportResult(nil);
+  });
 }
 
 @end
