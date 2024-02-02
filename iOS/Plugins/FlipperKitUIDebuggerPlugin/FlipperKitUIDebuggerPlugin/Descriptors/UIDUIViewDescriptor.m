@@ -38,6 +38,15 @@
                                               hint:hint];
 }
 
+- (UIDGenericAttributes*)hiddenAttributesForNode:(UIView*)node {
+  if (node.isHidden) {
+    return @{
+      @"invisible" : @(node.isHidden),
+    };
+  }
+  return nil;
+}
+
 @end
 
 #endif
