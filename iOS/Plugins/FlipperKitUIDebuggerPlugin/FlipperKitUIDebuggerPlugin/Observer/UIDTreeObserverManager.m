@@ -8,6 +8,8 @@
 #ifdef FB_SONARKIT_ENABLED
 
 #import "UIDTreeObserverManager.h"
+#import <FlipperKit/FlipperResponder.h>
+#import "UIDCompoundTypeHint.h"
 #import "UIDContext.h"
 #import "UIDDescriptorRegister.h"
 #import "UIDInitEvent.h"
@@ -108,6 +110,63 @@
 #pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
         weakSelf.traversalMode = UIDTraversalModeFromString(maybeMode);
 #pragma clang diagnostic pop
+      }];
+
+  [_context.connection
+        receive:@"editAttribute"
+      withBlock:^(NSDictionary* data, id<FlipperResponder> responder) {
+        NSNumber* nodeId = [data[@"nodeId"] isKindOfClass:NSNumber.class]
+            ? data[@"nodeId"]
+            : nil;
+        if (nodeId == nil) {
+          [responder error:[NSError UID_errorPayloadWithType:
+                                        AttributeEditorErrorTypeMissingNodeId]];
+          return;
+        }
+
+        NSMutableArray<UIDMetadataId>* metadataIds =
+            [data[@"metadataIdPath"] isKindOfClass:NSArray.class]
+            ? data[@"metadataIdPath"]
+            : nil;
+        if (metadataIds == nil) {
+          [responder
+              error:[NSError UID_errorPayloadWithType:
+                                 AttributeEditorErrorTypeMissingMetadataIds]];
+          return;
+        }
+
+        id value = data[@"value"];
+
+        UIDCompoundTypeHint hint = UIDCompoundTypeHintNone;
+        NSString* _Nullable maybeHint = data[@"compoundTypeHint"];
+        if (maybeHint && [maybeHint isKindOfClass:NSString.class]) {
+          hint = UIDCompoundTypeHintFromString(maybeHint);
+        }
+
+        UIDTreeObserverManager* strongSelf = weakSelf;
+        if (strongSelf == nil) {
+          [responder error:[NSError UID_errorPayloadWithType:
+                                        AttributeEditorErrorTypeUnknown]];
+          return;
+        }
+
+        __weak id<FlipperResponder> weakReponder = responder;
+        ReportAttributeEditorResult reportResult = ^(NSError* error) {
+          id<FlipperResponder> strongReponder = weakReponder;
+          if (!strongReponder) {
+            return;
+          }
+          if (error == nil) {
+            [responder success:@{}];
+          } else {
+            [responder error:[NSError UID_errorPayloadWithError:error]];
+          }
+        };
+        [strongSelf->_context.attributeEditor editNodeWithId:nodeId
+                                                       value:value
+                                         metadataIdentifiers:metadataIds
+                                            compoundTypeHint:hint
+                                                reportResult:reportResult];
       }];
 }
 
