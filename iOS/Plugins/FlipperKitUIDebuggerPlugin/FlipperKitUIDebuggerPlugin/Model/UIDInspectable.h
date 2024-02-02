@@ -168,7 +168,7 @@ typedef NSDictionary<NSNumber*, UIDInspectable*> UIDAttributes;
 typedef NSMutableDictionary<NSNumber*, UIDInspectable*> UIDMutableAttributes;
 typedef NSDictionary<NSString*, NSString*> UIDInlineAttributes;
 typedef NSMutableDictionary<NSString*, NSString*> UIDMutableInlineAttributes;
-typedef NSDictionary<NSString*, id<UIDFoundation>> UIDGenericAttributes;
+typedef NSDictionary<NSString*, id> UIDGenericAttributes;
 
 NS_ASSUME_NONNULL_END
 
