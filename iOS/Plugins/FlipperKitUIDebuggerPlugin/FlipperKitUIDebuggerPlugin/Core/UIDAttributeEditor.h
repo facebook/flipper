@@ -33,14 +33,14 @@ typedef void (^ReportAttributeEditorResult)(NSError* _Nullable);
 @class UIDDescriptorRegister;
 @interface UIDAttributeEditor : NSObject
 
-+ (instancetype)attributeEditorForApplication:(UIApplication*)application
-                       withDescriptorRegister:
-                           (UIDDescriptorRegister*)descriptorRegister;
++ (instancetype)attributeEditorWithDescriptorRegister:
+    (UIDDescriptorRegister*)descriptorRegister;
 
 - (void)editNodeWithId:(NSNumber*)nodeId
                   value:(id)value
     metadataIdentifiers:(NSArray<UIDMetadataId>*)metadataIdentifiers
        compoundTypeHint:(UIDCompoundTypeHint)compoundTypeHint
+                   root:(id _Nullable)root
            reportResult:(ReportAttributeEditorResult)reportResult;
 
 @end

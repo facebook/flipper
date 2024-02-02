@@ -31,9 +31,8 @@
     _observerFactory = observerFactory;
     _connection = nil;
     _frameworkEventManager = [UIDSerialFrameworkEventManager new];
-    _attributeEditor =
-        [UIDAttributeEditor attributeEditorForApplication:application
-                                   withDescriptorRegister:descriptorRegister];
+    _attributeEditor = [UIDAttributeEditor
+        attributeEditorWithDescriptorRegister:descriptorRegister];
     _connectionListeners = [NSMutableSet new];
     _accessQueue =
         dispatch_queue_create("ui-debugger.context", DISPATCH_QUEUE_SERIAL);

@@ -162,10 +162,12 @@
             [responder error:[NSError UID_errorPayloadWithError:error]];
           }
         };
+        id root = strongSelf->_context.application;
         [strongSelf->_context.attributeEditor editNodeWithId:nodeId
                                                        value:value
                                          metadataIdentifiers:metadataIds
                                             compoundTypeHint:hint
+                                                        root:root
                                                 reportResult:reportResult];
       }];
 }

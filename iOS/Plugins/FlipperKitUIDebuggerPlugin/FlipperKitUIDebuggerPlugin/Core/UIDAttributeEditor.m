@@ -67,7 +67,6 @@ FB_LINKABLE(NSError_AttributeEditorError)
 @end
 
 @interface UIDAttributeEditor () {
-  __weak UIApplication* _application;
   __weak UIDDescriptorRegister* _descriptorRegister;
 }
 
@@ -75,28 +74,26 @@ FB_LINKABLE(NSError_AttributeEditorError)
 
 @implementation UIDAttributeEditor
 
-- (id)initWithApplication:(UIApplication*)application
-    withDescriptorRegister:(UIDDescriptorRegister*)descriptorRegister {
+- (id)initWithDescriptorRegister:(UIDDescriptorRegister*)descriptorRegister {
   self = [super init];
   if (self) {
-    _application = application;
     _descriptorRegister = descriptorRegister;
   }
 
   return self;
 }
 
-+ (instancetype)attributeEditorForApplication:(UIApplication*)application
-                       withDescriptorRegister:
-                           (UIDDescriptorRegister*)descriptorRegister {
-  return [[UIDAttributeEditor alloc] initWithApplication:application
-                                  withDescriptorRegister:descriptorRegister];
++ (instancetype)attributeEditorWithDescriptorRegister:
+    (UIDDescriptorRegister*)descriptorRegister {
+  return [[UIDAttributeEditor alloc]
+      initWithDescriptorRegister:descriptorRegister];
 }
 
 - (void)editNodeWithId:(NSNumber*)nodeId
                   value:(id)value
     metadataIdentifiers:(NSArray<UIDMetadataId>*)metadataIdentifiers
        compoundTypeHint:(UIDCompoundTypeHint)compoundTypeHint
+                   root:(id)root
            reportResult:(ReportAttributeEditorResult)reportResult {
   UIDHierarchyTraversal* const traversal =
       [UIDHierarchyTraversal createWithDescriptorRegister:_descriptorRegister];
@@ -110,7 +107,7 @@ FB_LINKABLE(NSError_AttributeEditorError)
     }
 
     id<NSObject> node = [traversal findWithId:[nodeId unsignedIntegerValue]
-                          inHierarchyWithRoot:editor->_application];
+                          inHierarchyWithRoot:root];
     if (!node) {
       reportResult(
           [NSError UID_errorWithType:AttributeEditorErrorTypeNodeNotFound]);
