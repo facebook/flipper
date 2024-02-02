@@ -55,8 +55,8 @@
           if (strongSelf->_lastInvocationTimestamp == 0 ||
               (currentTimestamp - strongSelf->_lastInvocationTimestamp >=
                UID_THROTTLE_SECONDS)) {
-            strongSelf->_lastInvocationTimestamp = currentTimestamp;
             if (strongSelf->_dirty) {
+              strongSelf->_lastInvocationTimestamp = currentTimestamp;
               strongSelf->_dirty = false;
 /* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
 #pragma clang diagnostic push
@@ -105,7 +105,7 @@
 }
 
 - (void)viewUpdateWith:(UIView*)node {
-  _dirty = true;
+  self->_dirty = true;
 }
 
 @end
