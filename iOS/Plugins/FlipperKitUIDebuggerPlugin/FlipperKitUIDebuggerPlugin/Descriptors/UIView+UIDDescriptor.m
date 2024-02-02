@@ -7,11 +7,67 @@
 
 #ifdef FB_SONARKIT_ENABLED
 
+#import "UIDCompoundTypeHint.h"
 #import "UIDInspectable.h"
 #import "UIDMetadata.h"
 #import "UIDMetadataRegister.h"
 #import "UIDSnapshot.h"
 #import "UIView+UIDDescriptor.h"
+
+static UIDMetadataId UIViewAttributeId;
+static UIDMetadataId FrameAttributeId;
+static UIDMetadataId BoundsAttributeId;
+static UIDMetadataId CenterAttributeId;
+static UIDMetadataId AnchorPointAttributeId;
+static UIDMetadataId SafeAreaInsetsAttributeId;
+static UIDMetadataId ClipsToBoundsAttributeId;
+static UIDMetadataId HiddenAttributeId;
+static UIDMetadataId AlphaAttributeId;
+static UIDMetadataId OpaqueAttributeId;
+static UIDMetadataId ClearContextBeforeDrawingAttributeId;
+static UIDMetadataId BackgroundColorAttributeId;
+static UIDMetadataId TintColorAttributeId;
+static UIDMetadataId TagAttributeId;
+
+static UIDMetadataId CALayerAttributeId;
+static UIDMetadataId CALayerShadowColorAttributeId;
+static UIDMetadataId CALayerShadowOpacityAttributeId;
+static UIDMetadataId CALayerShadowRadiusAttributeId;
+static UIDMetadataId CALayerShadowOffsetAttributeId;
+static UIDMetadataId CALayerBackgroundColorAttributeId;
+static UIDMetadataId CALayerBorderColorAttributeId;
+static UIDMetadataId CALayerBorderWidthAttributeId;
+static UIDMetadataId CALayerCornerRadiusAttributeId;
+static UIDMetadataId CALayerMasksToBoundsAttributeId;
+
+static UIDMetadataId AccessibilityAttributeId;
+static UIDMetadataId IsAccessibilityElementAttributeId;
+static UIDMetadataId AccessibilityLabelAttributeId;
+static UIDMetadataId AccessibilityIdentifierAttributeId;
+static UIDMetadataId AccessibilityValueAttributeId;
+static UIDMetadataId AccessibilityHintAttributeId;
+static UIDMetadataId AccessibilityTraitsAttributeId;
+static UIDMetadataId AccessibilityViewIsModalAttributeId;
+static UIDMetadataId ShouldGroupAccessibilityChildrenAttributeId;
+
+static UIDMetadataId AccessibilityTraitNoneAttributeId;
+static UIDMetadataId AccessibilityTraitButtonAttributeId;
+static UIDMetadataId AccessibilityTraitLinkAttributeId;
+static UIDMetadataId AccessibilityTraitImageAttributeId;
+static UIDMetadataId AccessibilityTraitSearchFieldAttributeId;
+static UIDMetadataId AccessibilityTraitKeyboardKeyAttributeId;
+static UIDMetadataId AccessibilityTraitStaticTextAttributeId;
+static UIDMetadataId AccessibilityTraitHeaderAttributeId;
+static UIDMetadataId AccessibilityTraitTabBarAttributeId;
+static UIDMetadataId AccessibilityTraitSummaryElementAttributeId;
+static UIDMetadataId AccessibilityTraitSelectedAttributeId;
+static UIDMetadataId AccessibilityTraitNotEnabledAttributeId;
+static UIDMetadataId AccessibilityTraitAdjustableAttributeId;
+static UIDMetadataId AccessibilityTraitAllowsDirectInteractionAttributeId;
+static UIDMetadataId AccessibilityTraitUpdatesFrequentlyAttributeId;
+static UIDMetadataId AccessibilityTraitCausesPageTurnAttributeId;
+static UIDMetadataId AccessibilityTraitPlaysSoundAttributeId;
+static UIDMetadataId AccessibilityTraitStartsMediaSessionAttributeId;
 
 FB_LINKABLE(UIView_UIDDescriptor)
 @implementation UIView (UIDDescriptor)
@@ -25,61 +81,6 @@ FB_LINKABLE(UIView_UIDDescriptor)
 }
 
 - (void)UID_aggregateAttributes:(nonnull UIDMutableAttributes*)attributes {
-  static UIDMetadataId UIViewAttributeId;
-  static UIDMetadataId FrameAttributeId;
-  static UIDMetadataId BoundsAttributeId;
-  static UIDMetadataId CenterAttributeId;
-  static UIDMetadataId AnchorPointAttributeId;
-  static UIDMetadataId SafeAreaInsetsAttributeId;
-  static UIDMetadataId ClipsToBoundsAttributeId;
-  static UIDMetadataId HiddenAttributeId;
-  static UIDMetadataId AlphaAttributeId;
-  static UIDMetadataId OpaqueAttributeId;
-  static UIDMetadataId ClearContextBeforeDrawingAttributeId;
-  static UIDMetadataId BackgroundColorAttributeId;
-  static UIDMetadataId TintColorAttributeId;
-  static UIDMetadataId TagAttributeId;
-
-  static UIDMetadataId CALayerAttributeId;
-  static UIDMetadataId CALayerShadowColorAttributeId;
-  static UIDMetadataId CALayerShadowOpacityAttributeId;
-  static UIDMetadataId CALayerShadowRadiusAttributeId;
-  static UIDMetadataId CALayerShadowOffsetAttributeId;
-  static UIDMetadataId CALayerBackgroundColorAttributeId;
-  static UIDMetadataId CALayerBorderColorAttributeId;
-  static UIDMetadataId CALayerBorderWidthAttributeId;
-  static UIDMetadataId CALayerCornerRadiusAttributeId;
-  static UIDMetadataId CALayerMasksToBoundsAttributeId;
-
-  static UIDMetadataId AccessibilityAttributeId;
-  static UIDMetadataId IsAccessibilityElementAttributeId;
-  static UIDMetadataId AccessibilityLabelAttributeId;
-  static UIDMetadataId AccessibilityIdentifierAttributeId;
-  static UIDMetadataId AccessibilityValueAttributeId;
-  static UIDMetadataId AccessibilityHintAttributeId;
-  static UIDMetadataId AccessibilityTraitsAttributeId;
-  static UIDMetadataId AccessibilityViewIsModalAttributeId;
-  static UIDMetadataId ShouldGroupAccessibilityChildrenAttributeId;
-
-  static UIDMetadataId AccessibilityTraitNoneAttributeId;
-  static UIDMetadataId AccessibilityTraitButtonAttributeId;
-  static UIDMetadataId AccessibilityTraitLinkAttributeId;
-  static UIDMetadataId AccessibilityTraitImageAttributeId;
-  static UIDMetadataId AccessibilityTraitSearchFieldAttributeId;
-  static UIDMetadataId AccessibilityTraitKeyboardKeyAttributeId;
-  static UIDMetadataId AccessibilityTraitStaticTextAttributeId;
-  static UIDMetadataId AccessibilityTraitHeaderAttributeId;
-  static UIDMetadataId AccessibilityTraitTabBarAttributeId;
-  static UIDMetadataId AccessibilityTraitSummaryElementAttributeId;
-  static UIDMetadataId AccessibilityTraitSelectedAttributeId;
-  static UIDMetadataId AccessibilityTraitNotEnabledAttributeId;
-  static UIDMetadataId AccessibilityTraitAdjustableAttributeId;
-  static UIDMetadataId AccessibilityTraitAllowsDirectInteractionAttributeId;
-  static UIDMetadataId AccessibilityTraitUpdatesFrequentlyAttributeId;
-  static UIDMetadataId AccessibilityTraitCausesPageTurnAttributeId;
-  static UIDMetadataId AccessibilityTraitPlaysSoundAttributeId;
-  static UIDMetadataId AccessibilityTraitStartsMediaSessionAttributeId;
-
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     UIViewAttributeId = [[UIDMetadataRegister shared]
@@ -118,7 +119,7 @@ FB_LINKABLE(UIView_UIDDescriptor)
     HiddenAttributeId = [[UIDMetadataRegister shared]
         registerMetadataWithType:UIDEBUGGER_METADATA_TYPE_ATTRIBUTE
                             name:@"hidden"
-                       isMutable:false
+                       isMutable:true
                        definedBy:UIViewAttributeId];
     AlphaAttributeId = [[UIDMetadataRegister shared]
         registerMetadataWithType:UIDEBUGGER_METADATA_TYPE_ATTRIBUTE
@@ -639,6 +640,17 @@ FB_LINKABLE(UIView_UIDDescriptor)
   }
 
   return [UIDBounds fromRect:self.frame];
+}
+
+- (void)UID_aggregateEditAttributeWithValue:(id)value
+                               metadataPath:
+                                   (NSArray<UIDMetadataId>*)metadataPath
+                                       hint:(UIDCompoundTypeHint)hint {
+  UIDMetadataId lastMetadataId = metadataPath.lastObject;
+
+  if (lastMetadataId == HiddenAttributeId) {
+    self.hidden = [value boolValue];
+  }
 }
 
 @end
