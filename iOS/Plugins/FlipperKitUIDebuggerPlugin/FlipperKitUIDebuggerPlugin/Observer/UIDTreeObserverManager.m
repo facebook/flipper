@@ -170,6 +170,12 @@
                                                         root:root
                                                 reportResult:reportResult];
       }];
+  UIApplication* application = _context.application;
+  if (application) {
+    [_rootObserver processNode:application
+                  withSnapshot:YES
+                   withContext:_context];
+  }
 }
 
 - (void)stop {
