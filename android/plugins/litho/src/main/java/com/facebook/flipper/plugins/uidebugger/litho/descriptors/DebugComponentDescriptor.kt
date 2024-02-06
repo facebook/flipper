@@ -94,6 +94,9 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
   override fun getActiveChild(node: DebugComponent): Any? = null
 
+  private val MeasureSpecId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho Measure Specs")
+
   private val LayoutPropsId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Layout Props")
 
@@ -146,6 +149,9 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
       val layoutOutputs = LayoutPropExtractor.getResolvedOutputs(node)
       attributeSections[LayoutOutputsId] = InspectableObject(layoutOutputs.toMap())
+
+      val measureSpecs = LayoutPropExtractor.getMeasureSpecs(node)
+      attributeSections[MeasureSpecId] = InspectableObject(measureSpecs.toMap())
 
       attributeSections[MountingDataId] = InspectableObject(mountingData)
 

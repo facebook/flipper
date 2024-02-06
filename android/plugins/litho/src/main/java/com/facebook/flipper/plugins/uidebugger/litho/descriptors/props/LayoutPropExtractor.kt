@@ -122,6 +122,12 @@ object LayoutPropExtractor {
       MetadataRegister.register(
           MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "position", mutable = false)
 
+  private val WidthSpecId =
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "widthSpec", mutable = false)
+  private val HeightSpecId =
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "heightSpec", mutable = false)
   private val LeftId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "left", mutable = true)
   private val TopId =
@@ -277,6 +283,13 @@ object LayoutPropExtractor {
       ScaleId -> node.setScale(value.asFloat())
       RotationId -> node.setRotation(value.asFloat())
     }
+  }
+
+  fun getMeasureSpecs(component: DebugComponent): Map<MetadataId, Inspectable> {
+    return mapOf(
+        WidthSpecId to InspectableValue.Text(component.widthSpec),
+        HeightSpecId to InspectableValue.Text(component.heightSpec),
+    )
   }
 
   private fun metadataToEdge(metadata: Metadata) =
