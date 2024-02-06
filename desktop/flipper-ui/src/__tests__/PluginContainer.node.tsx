@@ -66,6 +66,20 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
   }
 }
 
+let errorSpy: any, warnSpy: any, infoSpy: any;
+
+beforeAll(() => {
+  errorSpy = jest.spyOn(console, 'error');
+  warnSpy = jest.spyOn(console, 'warn');
+  infoSpy = jest.spyOn(console, 'info');
+});
+
+afterAll(() => {
+  errorSpy.mockRestore();
+  warnSpy.mockRestore();
+  infoSpy.mockRestore();
+});
+
 test('Plugin container can render plugin and receive updates', async () => {
   const {renderer, sendMessage, act} =
     await renderMockFlipperWithPlugin(TestPlugin);
@@ -108,6 +122,23 @@ test('Plugin container can render plugin and receive updates', async () => {
   });
 
   expect((await renderer.findByTestId('counter')).textContent).toBe('2');
+});
+
+test('Number of times console errors/warning during plugin render', async () => {
+  await renderMockFlipperWithPlugin(TestPlugin);
+
+  expect(errorSpy.mock.calls).toEqual([
+    [
+      "Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot",
+    ],
+  ]);
+  expect(warnSpy.mock.calls).toEqual([]);
+  expect(infoSpy.mock.calls).toEqual([
+    [
+      "Received plugins from 'TestApp' on device 'MockAndroidDevice'",
+      ['TestPlugin'],
+    ],
+  ]);
 });
 
 // TODO(T119353406): Disabled due to flakiness.
