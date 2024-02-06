@@ -8,8 +8,20 @@
  */
 
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {Bounds, Coordinate, Id, ClientNode} from '../../ClientTypes';
-import {NestedNode, TraversalMode, WireFrameMode} from '../../DesktopTypes';
+import {
+  Bounds,
+  Coordinate,
+  Id,
+  ClientNode,
+  SnapshotInfo,
+  NodeMap,
+} from '../../ClientTypes';
+import {
+  NestedNode,
+  NodeSelection,
+  TraversalMode,
+  WireFrameMode,
+} from '../../DesktopTypes';
 
 import {
   produce,
@@ -27,31 +39,19 @@ import {TargetModeState, VisualiserControls} from './VisualizerControls';
 import {getNode} from '../../utils/map';
 import {filterOutFalsy} from '../../utils/array';
 
-const horizontalPadding = 16; //allows space for vertical scroll bar
 export const Visualization2D: React.FC<
   {
-    availableWidth: number;
     nodes: Map<Id, ClientNode>;
     hideControls?: boolean;
     disableInteractivity?: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({availableWidth, nodes, hideControls, disableInteractivity}) => {
-  const rootNodeRef = useRef<HTMLDivElement>();
-
-  const availableWidthConsideringPadding =
-    availableWidth - horizontalPadding * 2;
-
+> = ({nodes, hideControls, disableInteractivity}) => {
   const instance = usePlugin(plugin);
-
   const snapshot = useValue(instance.snapshot);
   const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
   const focusedNodeId = useValue(instance.uiState.focusedNode);
-
   const nodeSelection = useValue(instance.uiState.nodeSelection);
-  const hoveredNodes = useValue(instance.uiState.hoveredNodes);
-  const hoveredNodeId = head(hoveredNodes);
   const wireFrameMode = useValue(instance.uiState.wireFrameMode);
-  const traversalMode = useValue(instance.uiState.traversalMode);
 
   const [targetMode, setTargetMode] = useState<TargetModeState>({
     state: 'disabled',
@@ -61,6 +61,74 @@ export const Visualization2D: React.FC<
     const rootNode = snapshot && toNestedNode(snapshot.nodeId, nodes);
     return rootNode && caclulateFocusState(rootNode, focusedNodeId);
   }, [snapshot, nodes, focusedNodeId]);
+
+  if (!focusState || !snapshotNode) {
+    return null;
+  }
+
+  return (
+    <Layout.Container grow>
+      {!hideControls && (
+        <VisualiserControls
+          onSetWireFrameMode={instance.uiActions.onSetWireFrameMode}
+          wireFrameMode={wireFrameMode}
+          focusedNode={focusedNodeId}
+          selectedNode={nodeSelection?.node}
+          setTargetMode={setTargetMode}
+          targetMode={targetMode}
+        />
+      )}
+      <Visualization2DContent
+        disableInteractivity={disableInteractivity ?? false}
+        focusState={focusState}
+        nodes={nodes}
+        snapshotInfo={snapshot}
+        snapshotNode={snapshotNode}
+        targetMode={targetMode}
+        setTargetMode={setTargetMode}
+        wireframeMode={wireFrameMode}
+        nodeSelection={nodeSelection}
+      />
+    </Layout.Container>
+  );
+};
+
+const horizontalPadding = 16; //allows space for vertical scroll bar
+
+function Visualization2DContent({
+  disableInteractivity,
+  snapshotInfo,
+  snapshotNode,
+  nodes,
+  focusState,
+  targetMode,
+  setTargetMode,
+  wireframeMode,
+  nodeSelection,
+}: {
+  targetMode: TargetModeState;
+  setTargetMode: (targetMode: TargetModeState) => void;
+
+  wireframeMode: WireFrameMode;
+  nodeSelection?: NodeSelection;
+  focusState: FocusState;
+  nodes: NodeMap;
+  snapshotNode: ClientNode;
+  snapshotInfo: SnapshotInfo;
+  disableInteractivity: boolean;
+}) {
+  const instance = usePlugin(plugin);
+  const hoveredNodes = useValue(instance.uiState.hoveredNodes);
+  const hoveredNodeId = head(hoveredNodes);
+  const rootNodeRef = useRef<HTMLDivElement>();
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const traversalMode = useValue(instance.uiState.traversalMode);
+
+  const measuredWidth = useMeasuredWidth(containerRef);
+
+  const availableWidthConsideringPadding =
+    measuredWidth - horizontalPadding * 2;
 
   //this ref is to ensure the mouse has entered the visualiser, otherwise when you have overlapping modals
   //the hover state / tooltips all fire
@@ -86,7 +154,6 @@ export const Visualization2D: React.FC<
       }
 
       //make the mouse coord relative to the dom rect of the visualizer
-
       const pxScaleFactor = calcPxScaleFactor(
         snapshotNode.bounds,
         availableWidthConsideringPadding,
@@ -133,10 +200,6 @@ export const Visualization2D: React.FC<
     });
   }, [instance.uiState.isContextMenuOpen]);
 
-  if (!focusState || !snapshotNode) {
-    return null;
-  }
-
   const pxScaleFactor = calcPxScaleFactor(
     snapshotNode.bounds,
     availableWidthConsideringPadding,
@@ -169,115 +232,103 @@ export const Visualization2D: React.FC<
   };
 
   return (
-    <Layout.Container grow>
-      {!hideControls && (
-        <VisualiserControls
-          onSetWireFrameMode={instance.uiActions.onSetWireFrameMode}
-          wireFrameMode={wireFrameMode}
-          focusedNode={focusedNodeId}
-          selectedNode={nodeSelection?.node}
-          setTargetMode={setTargetMode}
-          targetMode={targetMode}
-        />
-      )}
+    <Layout.ScrollContainer
+      ref={containerRef}
+      style={{
+        paddingLeft: horizontalPadding,
+      }}
+      vertical>
+      <div
+        onMouseLeave={(e) => {
+          e.stopPropagation();
+          //the context menu triggers this callback but we dont want to remove hover effect
+          if (!instance.uiState.isContextMenuOpen.get()) {
+            instance.uiActions.onHoverNode();
+          }
 
-      <Layout.ScrollContainer
-        style={{
-          paddingLeft: horizontalPadding,
+          visualizerActive.current = false;
         }}
-        vertical>
-        <div
-          onMouseLeave={(e) => {
-            e.stopPropagation();
-            //the context menu triggers this callback but we dont want to remove hover effect
-            if (!instance.uiState.isContextMenuOpen.get()) {
-              instance.uiActions.onHoverNode();
-            }
-
-            visualizerActive.current = false;
-          }}
-          onMouseEnter={() => {
-            visualizerActive.current = true;
-          }}
-          //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
-          style={
-            {
-              backgroundColor: theme.backgroundWash,
-              borderRadius: theme.borderRadius,
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              position: 'relative', //this is for the absolutely positioned overlays
-              [pxScaleFactorCssVar]: pxScaleFactor,
-              width: toPx(focusState.actualRoot.bounds.width),
-              height: toPx(focusState.actualRoot.bounds.height),
-            } as React.CSSProperties
-          }>
-          {hoveredNodeId != null && (
-            <DelayedHoveredToolTip
-              key={hoveredNodeId}
-              nodeId={hoveredNodeId}
-              nodes={nodes}>
-              <OverlayBorder
-                cursor={overlayCursor}
-                onClick={onClickOverlay}
-                nodeId={hoveredNodeId}
-                nodes={nodes}
-                type="hovered"
-              />
-            </DelayedHoveredToolTip>
-          )}
-          {nodeSelection != null && (
+        onMouseEnter={() => {
+          visualizerActive.current = true;
+        }}
+        //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
+        style={
+          {
+            backgroundColor: theme.backgroundWash,
+            borderRadius: theme.borderRadius,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            position: 'relative', //this is for the absolutely positioned overlays
+            [pxScaleFactorCssVar]: pxScaleFactor,
+            width: toPx(focusState.actualRoot.bounds.width),
+            height: toPx(focusState.actualRoot.bounds.height),
+          } as React.CSSProperties
+        }>
+        {hoveredNodeId != null && (
+          <DelayedHoveredToolTip
+            key={hoveredNodeId}
+            nodeId={hoveredNodeId}
+            nodes={nodes}>
             <OverlayBorder
               cursor={overlayCursor}
-              type="selected"
-              nodeId={nodeSelection.node.id}
+              onClick={onClickOverlay}
+              nodeId={hoveredNodeId}
               nodes={nodes}
+              type="hovered"
+            />
+          </DelayedHoveredToolTip>
+        )}
+        {nodeSelection != null && (
+          <OverlayBorder
+            cursor={overlayCursor}
+            type="selected"
+            nodeId={nodeSelection.node.id}
+            nodes={nodes}
+          />
+        )}
+        <div
+          ref={rootNodeRef as any}
+          style={{
+            /**
+             * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
+             * position itself relative to.
+             *
+             * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
+             * which despite the name acts are a reference point for absolute positioning...
+             *
+             * When focused the global offset of the focussed node is used to offset and size this 'root' node
+             */
+            position: 'relative',
+            marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
+            marginTop: toPx(focusState.focusedRootGlobalOffset.y),
+            width: toPx(focusState.focusedRoot.bounds.width),
+            height: toPx(focusState.focusedRoot.bounds.height),
+            overflow: 'hidden',
+          }}>
+          {snapshotNode && (
+            <img
+              src={'data:image/png;base64,' + snapshotInfo.data}
+              style={{
+                marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
+                marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
+                width: toPx(snapshotNode.bounds.width),
+                height: toPx(snapshotNode.bounds.height),
+              }}
             />
           )}
-          <div
-            ref={rootNodeRef as any}
-            style={{
-              /**
-               * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
-               * position itself relative to.
-               *
-               * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
-               * which despite the name acts are a reference point for absolute positioning...
-               *
-               * When focused the global offset of the focussed node is used to offset and size this 'root' node
-               */
-              position: 'relative',
-              marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
-              marginTop: toPx(focusState.focusedRootGlobalOffset.y),
-              width: toPx(focusState.focusedRoot.bounds.width),
-              height: toPx(focusState.focusedRoot.bounds.height),
-              overflow: 'hidden',
-            }}>
-            {snapshotNode && (
-              <img
-                src={'data:image/png;base64,' + snapshot.data}
-                style={{
-                  marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
-                  marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
-                  width: toPx(snapshotNode.bounds.width),
-                  height: toPx(snapshotNode.bounds.height),
-                }}
-              />
-            )}
-            <MemoedVisualizationNode2D
-              wireframeMode={wireFrameMode}
-              isSelectedOrChildOrSelected={false}
-              selectedNodeId={nodeSelection?.node.id}
-              node={focusState.focusedRoot}
-              traversalMode={traversalMode}
-              runThroughIndex={0}
-            />
-          </div>
+          <MemoedVisualizationNode2D
+            wireframeMode={wireframeMode}
+            isSelectedOrChildOrSelected={false}
+            selectedNodeId={nodeSelection?.node.id}
+            node={focusState.focusedRoot}
+            traversalMode={traversalMode}
+            runThroughIndex={0}
+          />
         </div>
-      </Layout.ScrollContainer>
-    </Layout.Container>
+      </div>
+    </Layout.ScrollContainer>
   );
-};
+}
 
 const MemoedVisualizationNode2D = React.memo(
   Visualization2DNode,
@@ -653,4 +704,24 @@ function offsetCoordinate(
 
 function calcPxScaleFactor(snapshotBounds: Bounds, availableWidth: number) {
   return snapshotBounds.width / availableWidth;
+}
+
+function useMeasuredWidth(ref: React.RefObject<HTMLDivElement>) {
+  const [measuredWidth, setMeasuredWidth] = useState(0);
+
+  useEffect(() => {
+    if (ref.current == null) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setMeasuredWidth(entry.target.clientWidth);
+      }
+    });
+    resizeObserver.observe(ref.current);
+    setMeasuredWidth(ref.current.clientWidth);
+
+    return () => resizeObserver.disconnect();
+  }, [ref]);
+
+  return measuredWidth;
 }

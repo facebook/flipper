@@ -149,9 +149,9 @@ export function Component() {
               instance.uiActions.setVisualiserWidth(width);
             }}
             gutter>
-            <Visualization2D availableWidth={visualiserWidth} nodes={nodes} />
+            <Visualization2D nodes={nodes} />
           </ResizablePanel>
-          <DetailSidebar width={450}>
+          <DetailSidebar minWidth={300} width={450}>
             <SidebarV2
               nodeSelection={nodeSelection}
               metadata={metadata}

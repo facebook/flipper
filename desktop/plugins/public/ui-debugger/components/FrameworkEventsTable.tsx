@@ -140,12 +140,7 @@ export function FrameworkEventsTable({
       />
       <DetailSidebar width={450}>
         {getNode(focusedNode, nodes) != null ? (
-          <Visualization2D
-            disableInteractivity
-            hideControls
-            availableWidth={400}
-            nodes={nodes}
-          />
+          <Visualization2D disableInteractivity hideControls nodes={nodes} />
         ) : (
           <Result title="Node is no longer on screen" />
         )}
