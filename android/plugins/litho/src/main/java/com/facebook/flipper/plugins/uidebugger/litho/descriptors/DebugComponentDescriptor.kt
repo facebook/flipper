@@ -33,8 +33,13 @@ import com.facebook.litho.ComponentTree
 import com.facebook.litho.DebugComponent
 import com.facebook.litho.DebugLayoutNodeEditor
 import com.facebook.litho.StateContainer
+import com.facebook.litho.sections.widget.SectionBinderTarget
+import com.facebook.litho.widget.Binder
+import com.facebook.litho.widget.Recycler
+import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.rendercore.FastMath
 import com.facebook.yoga.YogaEdge
+import java.lang.reflect.Modifier
 
 typealias GlobalKey = String
 
@@ -106,6 +111,10 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
   private val UserPropsId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "User Props")
 
+  private val RecyclerConfigurationId =
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Recycler Configuration")
+
   private val StateId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "State")
 
@@ -139,8 +148,12 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
               ComponentDataExtractor.getState(stateContainer, node.component.simpleName)
         }
 
-        val props = ComponentDataExtractor.getProps(node.component)
+        val component = node.component
+        if (component is Recycler) {
+          setRecyclerAttributes(component, attributeSections)
+        }
 
+        val props = ComponentDataExtractor.getProps(node.component)
         attributeSections[UserPropsId] = InspectableObject(props.toMap())
       }
 
@@ -156,6 +169,51 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
       attributeSections[MountingDataId] = InspectableObject(mountingData)
 
       attributeSections
+    }
+  }
+
+  private fun setRecyclerAttributes(
+      component: Recycler,
+      attributeSections: MutableMap<MetadataId, InspectableObject>
+  ) {
+    try {
+      val binder = component.extractRecyclerBinder()
+
+      if (binder != null) {
+        val recyclerBinderConfigField =
+            binder.javaClass.getDeclaredField("mRecyclerBinderConfig").apply { isAccessible = true }
+
+        val recyclerBinderConfig = recyclerBinderConfigField.get(binder)
+
+        if (recyclerBinderConfig != null) {
+          val configurationFields = recyclerBinderConfig.javaClass.declaredFields ?: emptyArray()
+
+          val attributes =
+              configurationFields
+                  .filter { !Modifier.isStatic(it.modifiers) }
+                  .associate { field ->
+                    val metadataId =
+                        MetadataRegister.register(
+                            MetadataRegister.TYPE_ATTRIBUTE, "recyclerBinderConfig", field.name)
+
+                    field.isAccessible = true
+
+                    val inspectableValue =
+                        when (val value = field.get(recyclerBinderConfig)) {
+                          is Number -> InspectableValue.Number(value)
+                          is Boolean -> InspectableValue.Boolean(value)
+                          is String -> InspectableValue.Text(value)
+                          else -> InspectableValue.Unknown(value?.toString() ?: "null")
+                        }
+
+                    metadataId to inspectableValue
+                  }
+
+          attributeSections[RecyclerConfigurationId] = InspectableObject(attributes)
+        }
+      }
+    } catch (exception: Exception) {
+      // Reflection is brittle - we safely catch the Exception
     }
   }
 
@@ -289,5 +347,30 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
     node.setOverrider(overrider)
     node.rerender()
+  }
+}
+
+private fun Recycler.extractRecyclerBinder(): RecyclerBinder? {
+  val binderField =
+      this.javaClass.declaredFields
+          .firstOrNull { Binder::class.java.isAssignableFrom(it.type) }
+          ?.apply { isAccessible = true }
+
+  return when (val binderInstance = binderField?.get(this)) {
+    is RecyclerBinder -> {
+      binderInstance
+    }
+    is SectionBinderTarget -> {
+      val recyclerBinderField =
+          (binderInstance as SectionBinderTarget)::class.java.declaredFields.firstOrNull {
+            it.isAccessible = true
+            it.name == "mRecyclerBinder"
+          }
+
+      recyclerBinderField?.get(binderInstance) as? RecyclerBinder
+    }
+    else -> {
+      null
+    }
   }
 }
