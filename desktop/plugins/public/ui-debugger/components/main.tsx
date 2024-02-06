@@ -151,7 +151,7 @@ export function Component() {
             }}
             gutter>
             <Visualization2D
-              width={visualiserWidth}
+              availableWidth={visualiserWidth}
               nodes={nodes}
               onSelectNode={instance.uiActions.onSelectNode}
             />

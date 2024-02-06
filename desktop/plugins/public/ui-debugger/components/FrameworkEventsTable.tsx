@@ -143,7 +143,7 @@ export function FrameworkEventsTable({
           <Visualization2D
             disableInteractivity
             hideControls
-            width={400}
+            availableWidth={400}
             nodes={nodes}
             onSelectNode={instance.uiActions.onSelectNode}
           />

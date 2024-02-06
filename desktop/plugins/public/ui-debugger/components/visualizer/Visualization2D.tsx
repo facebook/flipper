@@ -31,16 +31,27 @@ import {Tooltip} from 'antd';
 import {TargetModeState, VisualiserControls} from './VisualizerControls';
 import {getNode} from '../../utils/map';
 
+const horizontalPadding = 16; //allows space for vertical scroll bar
 export const Visualization2D: React.FC<
   {
-    width: number;
+    availableWidth: number;
     nodes: Map<Id, ClientNode>;
     onSelectNode: OnSelectNode;
     hideControls?: boolean;
     disableInteractivity?: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({width, nodes, onSelectNode, hideControls, disableInteractivity}) => {
+> = ({
+  availableWidth,
+  nodes,
+  onSelectNode,
+  hideControls,
+  disableInteractivity,
+}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
+
+  const availableWidthConsideringPadding =
+    availableWidth - horizontalPadding * 2;
+
   const instance = usePlugin(plugin);
 
   const snapshot = useValue(instance.snapshot);
@@ -87,7 +98,10 @@ export const Visualization2D: React.FC<
 
       //make the mouse coord relative to the dom rect of the visualizer
 
-      const pxScaleFactor = calcPxScaleFactor(snapshotNode.bounds, width);
+      const pxScaleFactor = calcPxScaleFactor(
+        snapshotNode.bounds,
+        availableWidthConsideringPadding,
+      );
 
       const offsetMouse = offsetCoordinate(rawMouse, domRect);
       const scaledMouse = {
@@ -116,10 +130,10 @@ export const Visualization2D: React.FC<
     focusState,
     nodes,
     instance.uiState.isContextMenuOpen,
-    width,
     snapshotNode,
     instance.uiActions,
     disableInteractivity,
+    availableWidthConsideringPadding,
   ]);
 
   useEffect(() => {
@@ -134,7 +148,10 @@ export const Visualization2D: React.FC<
     return null;
   }
 
-  const pxScaleFactor = calcPxScaleFactor(snapshotNode.bounds, width);
+  const pxScaleFactor = calcPxScaleFactor(
+    snapshotNode.bounds,
+    availableWidthConsideringPadding,
+  );
 
   const overlayCursor =
     targetMode.state === 'disabled' ? 'pointer' : 'crosshair';
@@ -155,7 +172,7 @@ export const Visualization2D: React.FC<
   };
 
   return (
-    <Layout.Container>
+    <Layout.Container grow>
       {!hideControls && (
         <VisualiserControls
           onSetWireFrameMode={instance.uiActions.onSetWireFrameMode}
@@ -167,95 +184,101 @@ export const Visualization2D: React.FC<
         />
       )}
 
-      <div
-        onMouseLeave={(e) => {
-          e.stopPropagation();
-          //the context menu triggers this callback but we dont want to remove hover effect
-          if (!instance.uiState.isContextMenuOpen.get()) {
-            instance.uiActions.onHoverNode();
-          }
+      <Layout.ScrollContainer
+        style={{
+          paddingLeft: horizontalPadding,
+        }}
+        vertical>
+        <div
+          onMouseLeave={(e) => {
+            e.stopPropagation();
+            //the context menu triggers this callback but we dont want to remove hover effect
+            if (!instance.uiState.isContextMenuOpen.get()) {
+              instance.uiActions.onHoverNode();
+            }
 
-          visualizerActive.current = false;
-        }}
-        onMouseEnter={() => {
-          visualizerActive.current = true;
-        }}
-        //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
-        style={
-          {
-            backgroundColor: theme.backgroundWash,
-            borderRadius: theme.borderRadius,
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            position: 'relative', //this is for the absolutely positioned overlays
-            [pxScaleFactorCssVar]: pxScaleFactor,
-            width: toPx(focusState.actualRoot.bounds.width),
-            height: toPx(focusState.actualRoot.bounds.height),
-          } as React.CSSProperties
-        }>
-        {hoveredNodeId != null && (
-          <DelayedHoveredToolTip
-            key={hoveredNodeId}
-            nodeId={hoveredNodeId}
-            nodes={nodes}>
+            visualizerActive.current = false;
+          }}
+          onMouseEnter={() => {
+            visualizerActive.current = true;
+          }}
+          //this div is to ensure that the size of the visualiser doesnt change when focusings on a subtree
+          style={
+            {
+              backgroundColor: theme.backgroundWash,
+              borderRadius: theme.borderRadius,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              position: 'relative', //this is for the absolutely positioned overlays
+              [pxScaleFactorCssVar]: pxScaleFactor,
+              width: toPx(focusState.actualRoot.bounds.width),
+              height: toPx(focusState.actualRoot.bounds.height),
+            } as React.CSSProperties
+          }>
+          {hoveredNodeId != null && (
+            <DelayedHoveredToolTip
+              key={hoveredNodeId}
+              nodeId={hoveredNodeId}
+              nodes={nodes}>
+              <OverlayBorder
+                cursor={overlayCursor}
+                onClick={onClickOverlay}
+                nodeId={hoveredNodeId}
+                nodes={nodes}
+                type="hovered"
+              />
+            </DelayedHoveredToolTip>
+          )}
+          {selectedNodeId != null && (
             <OverlayBorder
               cursor={overlayCursor}
-              onClick={onClickOverlay}
-              nodeId={hoveredNodeId}
+              type="selected"
+              nodeId={selectedNodeId.id}
               nodes={nodes}
-              type="hovered"
-            />
-          </DelayedHoveredToolTip>
-        )}
-        {selectedNodeId != null && (
-          <OverlayBorder
-            cursor={overlayCursor}
-            type="selected"
-            nodeId={selectedNodeId.id}
-            nodes={nodes}
-          />
-        )}
-        <div
-          ref={rootNodeRef as any}
-          style={{
-            /**
-             * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
-             * position itself relative to.
-             *
-             * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
-             * which despite the name acts are a reference point for absolute positioning...
-             *
-             * When focused the global offset of the focussed node is used to offset and size this 'root' node
-             */
-            position: 'relative',
-            marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
-            marginTop: toPx(focusState.focusedRootGlobalOffset.y),
-            width: toPx(focusState.focusedRoot.bounds.width),
-            height: toPx(focusState.focusedRoot.bounds.height),
-            overflow: 'hidden',
-          }}>
-          {snapshotNode && (
-            <img
-              src={'data:image/png;base64,' + snapshot.data}
-              style={{
-                marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
-                marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
-                width: toPx(snapshotNode.bounds.width),
-                height: toPx(snapshotNode.bounds.height),
-              }}
             />
           )}
-          <MemoedVisualizationNode2D
-            wireframeMode={wireFrameMode}
-            isSelectedOrChildOrSelected={false}
-            selectedNode={selectedNodeId?.id}
-            node={focusState.focusedRoot}
-            onSelectNode={onSelectNode}
-            traversalMode={traversalMode}
-            runThroughIndex={0}
-          />
+          <div
+            ref={rootNodeRef as any}
+            style={{
+              /**
+               * This relative position is so the rootNode visualization 2DNode and outer border has a non static element to
+               * position itself relative to.
+               *
+               * Subsequent Visualization2DNode are positioned relative to their parent as each one is position absolute
+               * which despite the name acts are a reference point for absolute positioning...
+               *
+               * When focused the global offset of the focussed node is used to offset and size this 'root' node
+               */
+              position: 'relative',
+              marginLeft: toPx(focusState.focusedRootGlobalOffset.x),
+              marginTop: toPx(focusState.focusedRootGlobalOffset.y),
+              width: toPx(focusState.focusedRoot.bounds.width),
+              height: toPx(focusState.focusedRoot.bounds.height),
+              overflow: 'hidden',
+            }}>
+            {snapshotNode && (
+              <img
+                src={'data:image/png;base64,' + snapshot.data}
+                style={{
+                  marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
+                  marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
+                  width: toPx(snapshotNode.bounds.width),
+                  height: toPx(snapshotNode.bounds.height),
+                }}
+              />
+            )}
+            <MemoedVisualizationNode2D
+              wireframeMode={wireFrameMode}
+              isSelectedOrChildOrSelected={false}
+              selectedNode={selectedNodeId?.id}
+              node={focusState.focusedRoot}
+              onSelectNode={onSelectNode}
+              traversalMode={traversalMode}
+              runThroughIndex={0}
+            />
+          </div>
         </div>
-      </div>
+      </Layout.ScrollContainer>
     </Layout.Container>
   );
 };
