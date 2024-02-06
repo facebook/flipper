@@ -40,7 +40,7 @@ export type UIState = {
   searchTerm: Atom<string>;
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
-  selectedNode: Atom<NodeSelection | undefined>;
+  nodeSelection: Atom<NodeSelection | undefined>;
   highlightedNodes: Atom<Map<Id, Color>>;
   focusedNode: Atom<Id | undefined>;
   expandedNodes: Atom<Set<Id>>;
@@ -78,10 +78,10 @@ export type TraversalMode = 'view-hierarchy' | 'accessibility-hierarchy';
 
 export type ViewMode =
   | {mode: 'default'}
-  | {mode: 'frameworkEventsTable'; nodeId: Id; isTree: boolean};
+  | {mode: 'frameworkEventsTable'; nodeId: Id | null; isTree: boolean | null};
 
 export type NodeSelection = {
-  id: Id;
+  node: ClientNode;
   source: SelectionSource;
 };
 
@@ -91,7 +91,7 @@ export type AugmentedFrameworkEvent = FrameworkEvent & {
 };
 
 export type OnSelectNode = (
-  node: Id | undefined,
+  node: ClientNode | undefined,
   source: SelectionSource,
 ) => void;
 

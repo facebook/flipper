@@ -405,7 +405,7 @@ mod test {
     fn test_included_packlist_parses() {
         let res: PackList =
             serde_yaml::from_str(DEFAULT_PACKLIST).expect("Default packlist doesn't deserialize");
-        assert_eq!(res.0.len(), 3);
+        assert_eq!(res.0.len(), 4);
     }
 
     #[test]

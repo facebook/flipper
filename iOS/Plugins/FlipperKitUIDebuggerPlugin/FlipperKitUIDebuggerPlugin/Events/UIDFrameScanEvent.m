@@ -7,12 +7,16 @@
 
 #ifdef FB_SONARKIT_ENABLED
 
-#import "UIDSubtreeUpdateEvent.h"
+#import "UIDFrameScanEvent.h"
 
-@implementation UIDSubtreeUpdateEvent
+@implementation UIDSnapshotInfo
+
+@end
+
+@implementation UIDFrameScanEvent
 
 + (NSString*)name {
-  return @"subtreeUpdate";
+  return @"frameScan";
 }
 
 @end

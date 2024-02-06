@@ -184,10 +184,18 @@
                     forNode:(UILabel*)node {
   NSMutableDictionary* labelAttributes = [NSMutableDictionary new];
 
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
   [labelAttributes setObject:[UIDInspectableText fromText:node.text]
+#pragma clang diagnostic pop
                       forKey:TextAttributeId];
   [labelAttributes
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
       setObject:[UIDInspectableText fromText:[node.attributedText string]]
+#pragma clang diagnostic pop
          forKey:AttributedTextAttributeId];
   [labelAttributes setObject:[UIDInspectableText fromText:node.font.fontName]
                       forKey:FontAttributeId];
@@ -195,11 +203,19 @@
                       forKey:TextColorAttributeId];
   [labelAttributes
       setObject:[UIDInspectableEnum
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
                     from:NSTextAlignmentEnum[@(node.textAlignment)]]
+#pragma clang diagnostic pop
          forKey:TextAlignmentAttributeId];
   [labelAttributes
       setObject:[UIDInspectableEnum
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
                     from:NSLineBreakModeEnum[@(node.lineBreakMode)]]
+#pragma clang diagnostic pop
          forKey:LineBreakModeAttributeId];
   [labelAttributes setObject:[UIDInspectableBoolean fromBoolean:node.enabled]
                       forKey:EnabledAttributeId];
@@ -219,7 +235,11 @@
          forKey:AllowsDefaultTightneningForTruncationAttributeId];
   [labelAttributes
       setObject:[UIDInspectableEnum
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
                     from:UIBaselineAdjustmentEnum[@(node.baselineAdjustment)]]
+#pragma clang diagnostic pop
          forKey:BaselineAdjustmentAttributeId];
   [labelAttributes
       setObject:[UIDInspectableNumber fromCGFloat:node.minimumScaleFactor]
@@ -229,12 +249,20 @@
                     fromNumber:[NSNumber numberWithInt:node.numberOfLines]]
          forKey:NumberOfLinesAttributeId];
   [labelAttributes
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
       setObject:[UIDInspectableColor fromColor:node.highlightedTextColor]
+#pragma clang diagnostic pop
          forKey:HighlightedTextColorAttributeId];
   [labelAttributes
       setObject:[UIDInspectableBoolean fromBoolean:node.highlighted]
          forKey:HighlightedAttributeId];
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
   [labelAttributes setObject:[UIDInspectableColor fromColor:node.shadowColor]
+#pragma clang diagnostic pop
                       forKey:ShadowColorAttributeId];
   [labelAttributes setObject:[UIDInspectableSize fromSize:node.shadowOffset]
                       forKey:ShadowOffsetAttributeId];

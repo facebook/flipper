@@ -16,7 +16,7 @@ FB_LINKABLE(UIDNode_Foundation)
 
 - (id)toFoundation {
   NSMutableDictionary* data = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"id" : [NSNumber numberWithUnsignedInt:self.identifier],
+    @"id" : [NSNumber numberWithUnsignedInteger:self.identifier],
     @"qualifiedName" : self.qualifiedName ?: @"",
     @"name" : self.name,
     @"bounds" : [self.bounds toFoundation],
@@ -36,7 +36,11 @@ FB_LINKABLE(UIDNode_Foundation)
              forKey:@"hiddenAttributes"];
   }
   if (self.parent) {
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
     [data setObject:self.parent forKey:@"parent"];
+#pragma clang diagnostic pop
   }
 
   return data;

@@ -48,13 +48,19 @@ import {getNode} from './utils/map';
 import {handleTraversalError} from './plugin/traversalError';
 
 export function plugin(client: PluginClient<Events, Methods>) {
-  const rootId = createState<Id | undefined>(undefined);
-  const metadata = createState<Map<MetadataId, Metadata>>(new Map());
+  const rootId = createState<Id | undefined>(undefined, {persist: 'rootId'});
+  const metadata = createState<Map<MetadataId, Metadata>>(new Map(), {
+    persist: 'metadata',
+  });
 
   const streamInterceptor = new EventEmitter() as StreamInterceptorEventEmitter;
   addInterceptors(client.device.os, streamInterceptor);
-  const snapshot = createState<SnapshotInfo | null>(null);
-  const nodesAtom = createState<Map<Id, ClientNode>>(new Map());
+  const snapshot = createState<SnapshotInfo | null>(null, {
+    persist: 'snapshot',
+  });
+  const nodesAtom = createState<Map<Id, ClientNode>>(new Map(), {
+    persist: 'nodes',
+  });
   const frameworkEvents = createDataSource<AugmentedFrameworkEvent>([], {
     indices: [
       ['nodeId'],
@@ -152,28 +158,6 @@ export function plugin(client: PluginClient<Events, Methods>) {
     });
   });
 
-  /**
-   * The message handling below is a temporary measure for a couple of weeks until
-   * clients migrate to the newer message/format.
-   */
-  client.onMessage('perfStats', (event) => {
-    const stat = {
-      txId: event.txId,
-      observerType: event.observerType,
-      nodesCount: event.nodesCount,
-      start: event.start,
-      traversalMS: event.traversalComplete - event.start,
-      snapshotMS: event.snapshotComplete - event.traversalComplete,
-      queuingMS: event.queuingComplete - event.snapshotComplete,
-      deferredComputationMS:
-        event.deferredComputationComplete - event.queuingComplete,
-      serializationMS:
-        event.serializationComplete - event.deferredComputationComplete,
-      socketMS: event.socketComplete - event.serializationComplete,
-    };
-    client.logger.track('performance', 'subtreeUpdate', stat, 'ui-debugger');
-    perfEvents.append(stat);
-  });
   client.onMessage('performanceStats', (event) => {
     client.logger.track('performance', 'subtreeUpdate', event, 'ui-debugger');
     perfEvents.append(event);
@@ -194,9 +178,9 @@ export function plugin(client: PluginClient<Events, Methods>) {
     if (frame.frameTime > lastProcessedFrameTime.get()) {
       applyFrameData(frame.nodes, frame.snapshot);
       lastProcessedFrameTime.set(frame.frameTime);
-      const selectedNode = uiState.selectedNode.get();
+      const selectedNode = uiState.nodeSelection.get();
       if (selectedNode != null)
-        _uiActions.ensureAncestorsExpanded(selectedNode.id);
+        _uiActions.ensureAncestorsExpanded(selectedNode.node.id);
     }
   });
 
@@ -326,7 +310,7 @@ function createUIState(): UIState {
 
     highlightedNodes: createState(new Map<Id, Color>()),
 
-    selectedNode: createState<NodeSelection | undefined>(undefined),
+    nodeSelection: createState<NodeSelection | undefined>(undefined),
     //used to indicate whether we will higher the visualizer / tree when a matching event comes in
     //also whether or not will show running total  in the tree
     frameworkEventMonitoring: createState(

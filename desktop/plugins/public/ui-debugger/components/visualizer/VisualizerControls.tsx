@@ -24,7 +24,7 @@ import {WireFrameMode} from '../../DesktopTypes';
 export type TargetModeState =
   | {
       state: 'selected';
-      targetedNodes: Id[];
+      targetedNodes: ClientNode[];
       sliderPosition: number;
     }
   | {
@@ -74,13 +74,24 @@ export function VisualiserControls({
     targetMode.state === 'disabled' ? 'Target Mode' : 'Exit  target mode';
 
   return (
-    <Layout.Right style={{padding: theme.space.medium}} gap="medium" center>
+    <Layout.Right
+      style={{padding: theme.space.medium, flexGrow: 0}}
+      gap="medium"
+      center>
       <Layout.Container style={{userSelect: 'none'}}>
         {targetMode.state === 'active' && (
           <Typography.Text strong>Target mode: Select element</Typography.Text>
         )}
         {targetMode.state === 'disabled' && (
-          <Typography.Text strong>Interactive Visualizer</Typography.Text>
+          <Typography.Text
+            strong
+            style={{
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}>
+            Interactive Visualizer
+          </Typography.Text>
         )}
         {targetMode.state === 'selected' && (
           <Slider

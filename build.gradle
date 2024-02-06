@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.2'
+        classpath 'com.android.tools.build:gradle:8.2.1'
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.25.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
@@ -78,6 +78,7 @@ ext.deps = [
         fbjni              : "com.facebook.fbjni:fbjni:$FBJNI_VERSION",
         screenshot         : 'com.facebook.testing.screenshot:core:0.15.0',
         boltsTasks         : 'com.parse.bolts:bolts-tasks:1.4.0',
+        curtains           : 'com.squareup.curtains:curtains:1.2.5',
         // Third-party
         websocket          : 'org.java-websocket:Java-WebSocket:1.5.4',
         openssl            : 'com.android.ndk.thirdparty:openssl:1.1.1l-beta-1',

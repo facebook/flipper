@@ -45,28 +45,31 @@ export function uiActions(
       draft.add(node);
     });
   };
-  const onSelectNode = (node: Id | undefined, source: SelectionSource) => {
+  const onSelectNode = (
+    node: ClientNode | undefined,
+    source: SelectionSource,
+  ) => {
     if (
       node == null ||
-      (uiState.selectedNode.get()?.id === node && source !== 'context-menu')
+      (uiState.nodeSelection.get()?.node.id === node.id &&
+        source !== 'context-menu')
     ) {
-      uiState.selectedNode.set(undefined);
+      uiState.nodeSelection.set(undefined);
     } else {
-      uiState.selectedNode.set({id: node, source});
+      uiState.nodeSelection.set({
+        source,
+        node: node, //last known state of the node, may be offscreen
+      });
     }
 
-    if (node) {
-      const selectedNode = nodes.get().get(node);
-      const tags = selectedNode?.tags;
-      if (tags) {
-        tracker.track('node-selected', {
-          name: selectedNode.name,
-          tags,
-          source: source,
-        });
-      }
+    if (node != null) {
+      tracker.track('node-selected', {
+        name: node.name,
+        tags: node.tags,
+        source: source,
+      });
 
-      let current = selectedNode?.parent;
+      let current = node.parent;
       // expand entire ancestory in case it has been manually collapsed
       uiState.expandedNodes.update((expandedNodesDraft) => {
         while (current != null) {
@@ -145,12 +148,18 @@ export function uiActions(
   const onFocusNode = (node?: Id) => {
     if (node != null) {
       const focusedNode = nodes.get().get(node);
+      if (focusedNode == null) {
+        return;
+      }
       const tags = focusedNode?.tags;
       if (tags) {
         tracker.track('node-focused', {name: focusedNode.name, tags});
       }
 
-      uiState.selectedNode.set({id: node, source: 'visualiser'});
+      uiState.nodeSelection.set({
+        node: focusedNode,
+        source: 'visualiser',
+      });
     }
 
     uiState.focusedNode.set(node);

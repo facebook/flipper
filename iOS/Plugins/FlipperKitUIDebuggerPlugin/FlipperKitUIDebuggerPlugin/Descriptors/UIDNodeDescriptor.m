@@ -31,6 +31,12 @@
   return [NSDictionary dictionary];
 }
 
+- (void)editAttributeForNode:(id)node
+                   withValue:(id)value
+                metadataPath:(NSArray<UIDMetadataId>*)metadataPath
+                        hint:(UIDCompoundTypeHint)hint {
+}
+
 - (NSArray<id<NSObject>>*)childrenOfNode:(id)node {
   return [NSArray array];
 }

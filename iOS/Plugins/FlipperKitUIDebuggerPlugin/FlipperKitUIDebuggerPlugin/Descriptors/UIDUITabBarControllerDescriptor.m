@@ -12,11 +12,19 @@
 @implementation UIDUITabBarControllerDescriptor
 
 - (NSArray<id<NSObject>>*)childrenOfNode:(UITabBarController*)node {
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
   return node.viewControllers;
+#pragma clang diagnostic pop
 }
 
 - (id<NSObject>)activeChildForNode:(UITabBarController*)node {
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
   return node.selectedViewController;
+#pragma clang diagnostic pop
 }
 
 - (UIDBounds*)boundsForNode:(UITabBarController*)node {

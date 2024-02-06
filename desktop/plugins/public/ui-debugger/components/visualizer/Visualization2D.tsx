@@ -8,10 +8,17 @@
  */
 
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {Bounds, Coordinate, Id, ClientNode} from '../../ClientTypes';
+import {
+  Bounds,
+  Coordinate,
+  Id,
+  ClientNode,
+  SnapshotInfo,
+  NodeMap,
+} from '../../ClientTypes';
 import {
   NestedNode,
-  OnSelectNode,
+  NodeSelection,
   TraversalMode,
   WireFrameMode,
 } from '../../DesktopTypes';
@@ -30,28 +37,21 @@ import {useDelay} from '../../hooks/useDelay';
 import {Tooltip} from 'antd';
 import {TargetModeState, VisualiserControls} from './VisualizerControls';
 import {getNode} from '../../utils/map';
+import {filterOutFalsy} from '../../utils/array';
 
 export const Visualization2D: React.FC<
   {
-    width: number;
     nodes: Map<Id, ClientNode>;
-    onSelectNode: OnSelectNode;
     hideControls?: boolean;
     disableInteractivity?: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({width, nodes, onSelectNode, hideControls, disableInteractivity}) => {
-  const rootNodeRef = useRef<HTMLDivElement>();
+> = ({nodes, hideControls, disableInteractivity}) => {
   const instance = usePlugin(plugin);
-
   const snapshot = useValue(instance.snapshot);
   const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
   const focusedNodeId = useValue(instance.uiState.focusedNode);
-
-  const selectedNodeId = useValue(instance.uiState.selectedNode);
-  const hoveredNodes = useValue(instance.uiState.hoveredNodes);
-  const hoveredNodeId = head(hoveredNodes);
+  const nodeSelection = useValue(instance.uiState.nodeSelection);
   const wireFrameMode = useValue(instance.uiState.wireFrameMode);
-  const traversalMode = useValue(instance.uiState.traversalMode);
 
   const [targetMode, setTargetMode] = useState<TargetModeState>({
     state: 'disabled',
@@ -61,6 +61,74 @@ export const Visualization2D: React.FC<
     const rootNode = snapshot && toNestedNode(snapshot.nodeId, nodes);
     return rootNode && caclulateFocusState(rootNode, focusedNodeId);
   }, [snapshot, nodes, focusedNodeId]);
+
+  if (!focusState || !snapshotNode) {
+    return null;
+  }
+
+  return (
+    <Layout.Container grow>
+      {!hideControls && (
+        <VisualiserControls
+          onSetWireFrameMode={instance.uiActions.onSetWireFrameMode}
+          wireFrameMode={wireFrameMode}
+          focusedNode={focusedNodeId}
+          selectedNode={nodeSelection?.node}
+          setTargetMode={setTargetMode}
+          targetMode={targetMode}
+        />
+      )}
+      <Visualization2DContent
+        disableInteractivity={disableInteractivity ?? false}
+        focusState={focusState}
+        nodes={nodes}
+        snapshotInfo={snapshot}
+        snapshotNode={snapshotNode}
+        targetMode={targetMode}
+        setTargetMode={setTargetMode}
+        wireframeMode={wireFrameMode}
+        nodeSelection={nodeSelection}
+      />
+    </Layout.Container>
+  );
+};
+
+const horizontalPadding = 16; //allows space for vertical scroll bar
+
+function Visualization2DContent({
+  disableInteractivity,
+  snapshotInfo,
+  snapshotNode,
+  nodes,
+  focusState,
+  targetMode,
+  setTargetMode,
+  wireframeMode,
+  nodeSelection,
+}: {
+  targetMode: TargetModeState;
+  setTargetMode: (targetMode: TargetModeState) => void;
+
+  wireframeMode: WireFrameMode;
+  nodeSelection?: NodeSelection;
+  focusState: FocusState;
+  nodes: NodeMap;
+  snapshotNode: ClientNode;
+  snapshotInfo: SnapshotInfo;
+  disableInteractivity: boolean;
+}) {
+  const instance = usePlugin(plugin);
+  const hoveredNodes = useValue(instance.uiState.hoveredNodes);
+  const hoveredNodeId = head(hoveredNodes);
+  const rootNodeRef = useRef<HTMLDivElement>();
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const traversalMode = useValue(instance.uiState.traversalMode);
+
+  const measuredWidth = useMeasuredWidth(containerRef);
+
+  const availableWidthConsideringPadding =
+    measuredWidth - horizontalPadding * 2;
 
   //this ref is to ensure the mouse has entered the visualiser, otherwise when you have overlapping modals
   //the hover state / tooltips all fire
@@ -86,8 +154,10 @@ export const Visualization2D: React.FC<
       }
 
       //make the mouse coord relative to the dom rect of the visualizer
-
-      const pxScaleFactor = calcPxScaleFactor(snapshotNode.bounds, width);
+      const pxScaleFactor = calcPxScaleFactor(
+        snapshotNode.bounds,
+        availableWidthConsideringPadding,
+      );
 
       const offsetMouse = offsetCoordinate(rawMouse, domRect);
       const scaledMouse = {
@@ -116,10 +186,10 @@ export const Visualization2D: React.FC<
     focusState,
     nodes,
     instance.uiState.isContextMenuOpen,
-    width,
     snapshotNode,
     instance.uiActions,
     disableInteractivity,
+    availableWidthConsideringPadding,
   ]);
 
   useEffect(() => {
@@ -130,43 +200,44 @@ export const Visualization2D: React.FC<
     });
   }, [instance.uiState.isContextMenuOpen]);
 
-  if (!focusState || !snapshotNode) {
-    return null;
-  }
-
-  const pxScaleFactor = calcPxScaleFactor(snapshotNode.bounds, width);
+  const pxScaleFactor = calcPxScaleFactor(
+    snapshotNode.bounds,
+    availableWidthConsideringPadding,
+  );
 
   const overlayCursor =
     targetMode.state === 'disabled' ? 'pointer' : 'crosshair';
 
   const onClickOverlay = () => {
-    instance.uiActions.onSelectNode(hoveredNodeId, 'visualiser');
-    if (hoveredNodeId != null) {
-      instance.uiActions.ensureAncestorsExpanded(hoveredNodeId);
+    const selectedNode = getNode(hoveredNodeId, nodes);
+    if (selectedNode != null) {
+      instance.uiActions.onSelectNode(selectedNode, 'visualiser');
+      instance.uiActions.ensureAncestorsExpanded(selectedNode.id);
+    } else {
+      instance.uiActions.onSelectNode(undefined, 'visualiser');
     }
 
     if (targetMode.state !== 'disabled') {
       setTargetMode({
         state: 'selected',
-        targetedNodes: hoveredNodes.slice().reverse(),
+        targetedNodes: filterOutFalsy(
+          hoveredNodes
+            .slice()
+            .reverse()
+            .map((n) => getNode(n, nodes)),
+        ),
         sliderPosition: hoveredNodes.length - 1,
       });
     }
   };
 
   return (
-    <Layout.Container>
-      {!hideControls && (
-        <VisualiserControls
-          onSetWireFrameMode={instance.uiActions.onSetWireFrameMode}
-          wireFrameMode={wireFrameMode}
-          focusedNode={focusedNodeId}
-          selectedNode={getNode(selectedNodeId?.id, nodes)}
-          setTargetMode={setTargetMode}
-          targetMode={targetMode}
-        />
-      )}
-
+    <Layout.ScrollContainer
+      ref={containerRef}
+      style={{
+        paddingLeft: horizontalPadding,
+      }}
+      vertical>
       <div
         onMouseLeave={(e) => {
           e.stopPropagation();
@@ -207,11 +278,11 @@ export const Visualization2D: React.FC<
             />
           </DelayedHoveredToolTip>
         )}
-        {selectedNodeId != null && (
+        {nodeSelection != null && (
           <OverlayBorder
             cursor={overlayCursor}
             type="selected"
-            nodeId={selectedNodeId.id}
+            nodeId={nodeSelection.node.id}
             nodes={nodes}
           />
         )}
@@ -236,7 +307,7 @@ export const Visualization2D: React.FC<
           }}>
           {snapshotNode && (
             <img
-              src={'data:image/png;base64,' + snapshot.data}
+              src={'data:image/png;base64,' + snapshotInfo.data}
               style={{
                 marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
                 marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
@@ -246,19 +317,18 @@ export const Visualization2D: React.FC<
             />
           )}
           <MemoedVisualizationNode2D
-            wireframeMode={wireFrameMode}
+            wireframeMode={wireframeMode}
             isSelectedOrChildOrSelected={false}
-            selectedNode={selectedNodeId?.id}
+            selectedNodeId={nodeSelection?.node.id}
             node={focusState.focusedRoot}
-            onSelectNode={onSelectNode}
             traversalMode={traversalMode}
             runThroughIndex={0}
           />
         </div>
       </div>
-    </Layout.Container>
+    </Layout.ScrollContainer>
   );
-};
+}
 
 const MemoedVisualizationNode2D = React.memo(
   Visualization2DNode,
@@ -272,7 +342,7 @@ const MemoedVisualizationNode2D = React.memo(
       return true;
     } else {
       //with other modes the selected node affects the drawing
-      return prev.selectedNode === next.selectedNode;
+      return prev.selectedNodeId === next.selectedNodeId;
     }
   },
 );
@@ -280,23 +350,22 @@ const MemoedVisualizationNode2D = React.memo(
 function Visualization2DNode({
   wireframeMode,
   isSelectedOrChildOrSelected,
-  selectedNode,
+  selectedNodeId,
   node,
-  onSelectNode,
   runThroughIndex,
   traversalMode,
 }: {
   wireframeMode: WireFrameMode;
   isSelectedOrChildOrSelected: boolean;
-  selectedNode?: Id;
+  selectedNodeId?: Id;
   node: NestedNode;
-  onSelectNode: OnSelectNode;
+
   runThroughIndex?: number;
   traversalMode: TraversalMode;
 }) {
   const instance = usePlugin(plugin);
 
-  const isSelected = node.id === selectedNode;
+  const isSelected = node.id === selectedNodeId;
   const ref = useRef<HTMLDivElement>(null);
   let nestedChildren: NestedNode[];
 
@@ -315,11 +384,10 @@ function Visualization2DNode({
   const children = nestedChildren.map((child, index) => (
     <Visualization2DNode
       wireframeMode={wireframeMode}
-      selectedNode={selectedNode}
+      selectedNodeId={selectedNodeId}
       isSelectedOrChildOrSelected={isSelected || isSelectedOrChildOrSelected}
       key={child.id}
       node={child}
-      onSelectNode={onSelectNode}
       runThroughIndex={index + 1}
       traversalMode={traversalMode}
     />
@@ -636,4 +704,24 @@ function offsetCoordinate(
 
 function calcPxScaleFactor(snapshotBounds: Bounds, availableWidth: number) {
   return snapshotBounds.width / availableWidth;
+}
+
+function useMeasuredWidth(ref: React.RefObject<HTMLDivElement>) {
+  const [measuredWidth, setMeasuredWidth] = useState(0);
+
+  useEffect(() => {
+    if (ref.current == null) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setMeasuredWidth(entry.target.clientWidth);
+      }
+    });
+    resizeObserver.observe(ref.current);
+    setMeasuredWidth(ref.current.clientWidth);
+
+    return () => resizeObserver.disconnect();
+  }, [ref]);
+
+  return measuredWidth;
 }

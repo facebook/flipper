@@ -37,6 +37,9 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
 import okio.BufferedSource;
+import okio.Okio;
+import okio.Source;
+import okio.Timeout;
 
 public class FlipperOkhttpInterceptor
     implements Interceptor, BufferingFlipperPlugin.MockResponseConnectionListener {
@@ -49,6 +52,7 @@ public class FlipperOkhttpInterceptor
   private final NetworkFlipperPlugin mPlugin;
 
   private static class PartialRequestInfo extends Pair<String, String> {
+
     PartialRequestInfo(String url, String method) {
       super(url, method);
     }
@@ -95,11 +99,20 @@ public class FlipperOkhttpInterceptor
 
     // Check if there is a mock response
     final Response mockResponse = mIsMockResponseSupported ? getMockResponse(request) : null;
-    final Response response = mockResponse != null ? mockResponse : chain.proceed(request);
-    final Buffer responseBody = cloneBodyForResponse(response, mMaxBodyBytes);
+    Response response = mockResponse != null ? mockResponse : chain.proceed(request);
+
     final ResponseInfo responseInfo =
-        convertResponse(response, responseBody, identifier, mockResponse != null);
-    mPlugin.reportResponse(responseInfo);
+        createResponseInfo(response, identifier, mockResponse != null);
+    final ResponseBody body = response.body();
+    response =
+        response
+            .newBuilder()
+            .body(
+                ResponseBody.create(
+                    body.contentType(),
+                    body.contentLength(),
+                    Okio.buffer(new LoggingSource(responseInfo, body.source()))))
+            .build();
     return response;
   }
 
@@ -154,8 +167,8 @@ public class FlipperOkhttpInterceptor
     return null;
   }
 
-  private ResponseInfo convertResponse(
-      Response response, Buffer bodyBuffer, String identifier, boolean isMock) throws IOException {
+  private ResponseInfo createResponseInfo(Response response, String identifier, boolean isMock)
+      throws IOException {
     final List<NetworkReporter.Header> headers = convertHeader(response.headers());
     final ResponseInfo info = new ResponseInfo();
     info.requestId = identifier;
@@ -163,11 +176,6 @@ public class FlipperOkhttpInterceptor
     info.statusCode = response.code();
     info.headers = headers;
     info.isMock = isMock;
-    if (bodyBuffer != null) {
-      info.body = bodyBufferToByteArray(bodyBuffer, mMaxBodyBytes);
-      bodyBuffer.close();
-    }
-
     return info;
   }
 
@@ -281,5 +289,50 @@ public class FlipperOkhttpInterceptor
   @Override
   public void onDisconnect() {
     mMockResponseMap.clear();
+  }
+
+  private class LoggingSource implements Source {
+
+    private final ResponseInfo mResponseInfo;
+    private final Source mSource;
+
+    /** Used to cache reads until replication is confirmed. */
+    private final Buffer cacheBuffer = new Buffer();
+
+    private final Buffer bodyCopyBuffer = new Buffer();
+
+    public LoggingSource(final ResponseInfo responseInfo, final Source source) {
+      mResponseInfo = responseInfo;
+      mSource = source;
+    }
+
+    @Override
+    public long read(Buffer sink, long byteCount) throws IOException {
+      // Read from source into cache buffer.
+      long result = mSource.read(cacheBuffer, byteCount);
+      if (result == -1) {
+        return result;
+      }
+      // Write cached bytes to sink.
+      final byte[] bytes = cacheBuffer.readByteArray(result);
+      sink.write(bytes);
+      // and also copy them to the copy buffer.
+      bodyCopyBuffer.write(bytes);
+      return result;
+    }
+
+    @Override
+    public Timeout timeout() {
+      return mSource.timeout();
+    }
+
+    @Override
+    public void close() throws IOException {
+      mSource.close();
+      mResponseInfo.body = bodyBufferToByteArray(bodyCopyBuffer, mMaxBodyBytes);
+      cacheBuffer.close();
+      bodyCopyBuffer.close();
+      mPlugin.reportResponse(mResponseInfo);
+    }
   }
 }

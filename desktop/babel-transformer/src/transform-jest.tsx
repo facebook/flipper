@@ -11,7 +11,7 @@ import {default as doTransform} from './transform';
 import {default as getCacheKey} from './get-cache-key';
 
 const presets = [require('@babel/preset-react')];
-const plugins = [require('./import-react'), require('./fb-stubs')];
+const plugins = [require('./fb-stubs')];
 
 module.exports = {
   transform,

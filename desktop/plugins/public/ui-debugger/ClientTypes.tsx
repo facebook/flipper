@@ -14,7 +14,6 @@ export type Events = {
   subtreeUpdate: SubtreeUpdateEvent;
   frameScan: FrameScanEvent;
   traversalError: TraversalErrorEvent;
-  perfStats: PerfStatsEvent;
   performanceStats: PerformanceStatsEvent;
   metadataUpdate: UpdateMetadataEvent;
   setTraversalMode: SetTraversalModeEvent;
@@ -110,23 +109,6 @@ export type InitEvent = {
   currentTraversalMode?: TraversalMode;
 };
 
-/**
- * @deprecated This performance event should not be used and soon will
- * be removed. PerformanceStatsEvent should be used instead.
- */
-export type PerfStatsEvent = {
-  txId: number;
-  observerType: string;
-  start: number;
-  traversalComplete: number;
-  snapshotComplete: number;
-  queuingComplete: number;
-  deferredComputationComplete: number;
-  serializationComplete: number;
-  socketComplete: number;
-  nodesCount: number;
-};
-
 export type PerformanceStatsEvent = {
   txId: number;
   observerType: string;
@@ -139,6 +121,8 @@ export type PerformanceStatsEvent = {
   serializationMS: number;
   socketMS: number;
   payloadSize?: number;
+  snapshotSize?: number;
+  frameworkEventsCount?: number;
 };
 
 export type DynamicPerformanceStatsEvent = PerformanceStatsEvent & {

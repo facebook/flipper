@@ -58,10 +58,11 @@ async function handlePluginDownload(
   startedByUser: boolean,
   store: Store,
 ) {
-  const {title, version, downloadUrl} = plugin;
+  const {title, version} = plugin;
+  const downloadUrls = plugin.downloadUrls.join(', ');
   const dispatch = store.dispatch;
   console.log(
-    `Downloading plugin "${title}" v${version} from "${downloadUrl}".`,
+    `Downloading plugin "${title}" v${version} from "${downloadUrls}".`,
   );
   try {
     dispatch(pluginDownloadStarted({plugin}));
@@ -80,11 +81,11 @@ async function handlePluginDownload(
       );
     }
     console.log(
-      `Successfully downloaded and installed plugin "${title}" v${version} from "${downloadUrl}".`,
+      `Successfully downloaded and installed plugin "${title}" v${version} from "${downloadUrls}".`,
     );
   } catch (error) {
     console.warn(
-      `Failed to download plugin "${title}" v${version} from "${downloadUrl}".`,
+      `Failed to download plugin "${title}" v${version} from "${downloadUrls}".`,
       error,
     );
     if (startedByUser) {

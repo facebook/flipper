@@ -64,7 +64,7 @@ export function createMockDownloadablePluginDetails(
     pluginType: 'client',
     title: title ?? id,
     version: version,
-    downloadUrl: `http://localhost/${lowercasedID}/${version}`,
+    downloadUrls: [`http://localhost/${lowercasedID}/${version}`],
     lastUpdated: lastUpdated,
     isActivatable: false,
     isEnabledByDefault: false,

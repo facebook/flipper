@@ -21,12 +21,13 @@ import {
 } from 'antd';
 // TODO: Fix this the next time the file is edited.
 // eslint-disable-next-line rulesdir/no-restricted-imports-clone, prettier/prettier
-import { Glyph } from 'flipper';
+import {Glyph} from 'flipper';
 import {
   EyeOutlined,
   PauseCircleOutlined,
   PlayCircleOutlined,
   SearchOutlined,
+  TableOutlined,
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout, theme} from 'flipper-plugin';
 import {FrameworkEventMetadata, FrameworkEventType} from '../../ClientTypes';
@@ -128,6 +129,13 @@ export const TreeControls: React.FC = () => {
               }></Button>
           </Badge>
           <FrameworkEventsMonitoringModal
+            showTable={() => {
+              instance.uiActions.onSetViewMode({
+                mode: 'frameworkEventsTable',
+                isTree: false,
+                nodeId: null,
+              });
+            }}
             metadata={frameworkEventMetadata}
             filterMainThreadMonitoring={filterMainThreadMonitoring}
             onSetFilterMainThreadMonitoring={
@@ -147,6 +155,7 @@ export const TreeControls: React.FC = () => {
 };
 
 function FrameworkEventsMonitoringModal({
+  showTable,
   visible,
   onCancel,
   onSetEventMonitored,
@@ -155,6 +164,7 @@ function FrameworkEventsMonitoringModal({
   frameworkEventTypes,
   metadata,
 }: {
+  showTable: () => void;
   metadata: Map<FrameworkEventType, FrameworkEventMetadata>;
   visible: boolean;
   onCancel: () => void;
@@ -177,7 +187,16 @@ function FrameworkEventsMonitoringModal({
 
   return (
     <Modal
-      title="Framework event monitoring"
+      title={
+        <Layout.Horizontal center gap="large">
+          <Typography.Title level={2}>
+            Framework event monitoring
+          </Typography.Title>
+          <Button icon={<TableOutlined />} onClick={showTable}>
+            Show Table
+          </Button>
+        </Layout.Horizontal>
+      }
       open={visible}
       footer={null}
       onCancel={onCancel}>

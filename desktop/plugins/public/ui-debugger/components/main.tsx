@@ -30,7 +30,6 @@ import {queryClient} from '../utils/reactQuery';
 import {FrameworkEventsTable} from './FrameworkEventsTable';
 import {Centered} from './shared/Centered';
 import {SidebarV2} from './sidebarV2/SidebarV2';
-import {getNode} from '../utils/map';
 
 export function Component() {
   const instance = usePlugin(plugin);
@@ -39,7 +38,7 @@ export function Component() {
   const visualiserWidth = useValue(instance.uiState.visualiserWidth);
   const nodes: Map<Id, ClientNode> = useValue(instance.nodes);
   const metadata: Map<MetadataId, Metadata> = useValue(instance.metadata);
-  const selectedNodeId = useValue(instance.uiState.selectedNode);
+  const nodeSelection = useValue(instance.uiState.nodeSelection);
 
   const [showPerfStats, setShowPerfStats] = useState(false);
 
@@ -109,7 +108,7 @@ export function Component() {
     return (
       <FrameworkEventsTable
         nodeId={viewMode.nodeId}
-        isTree={viewMode.isTree}
+        isTree={viewMode.isTree || false}
         nodes={nodes}
       />
     );
@@ -150,16 +149,13 @@ export function Component() {
               instance.uiActions.setVisualiserWidth(width);
             }}
             gutter>
-            <Visualization2D
-              width={visualiserWidth}
-              nodes={nodes}
-              onSelectNode={instance.uiActions.onSelectNode}
-            />
+            <Visualization2D nodes={nodes} />
           </ResizablePanel>
-          <DetailSidebar width={450}>
+          <DetailSidebar minWidth={300} width={450}>
             <SidebarV2
+              nodeSelection={nodeSelection}
               metadata={metadata}
-              selectedNode={getNode(selectedNodeId?.id, nodes)}
+              nodes={nodes}
               showBottomPanel={openBottomPanelWithContent}
             />
           </DetailSidebar>

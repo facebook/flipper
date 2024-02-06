@@ -54,6 +54,7 @@ class TraversalError(
 class PerfStatsEvent(
     val txId: Long,
     val nodesCount: Int,
+    val frameworkEventsCount: Int,
     val start: Long,
     val traversalMS: Long,
     val snapshotMS: Long,
@@ -62,6 +63,7 @@ class PerfStatsEvent(
     val serializationMS: Long,
     val socketMS: Long,
     val payloadSize: Int,
+    val snapshotSize: Int,
 ) {
   companion object {
     const val name = "performanceStats"

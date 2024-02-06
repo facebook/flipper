@@ -50,6 +50,7 @@ export {
   NoLongerConnectedToClientError,
   UserError,
   SystemError,
+  X2PAgentdError,
   isConnectivityOrAuthError,
   isError,
   isAuthError,

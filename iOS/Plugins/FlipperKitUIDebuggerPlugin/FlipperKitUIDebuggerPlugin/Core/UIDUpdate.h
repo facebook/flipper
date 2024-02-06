@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol UIDUpdate
 @end
 
-@interface UIDSubtreeUpdate : NSObject<UIDUpdate>
+@interface UIDFrameUpdate : NSObject<UIDUpdate>
 
 @property(nonatomic) NSString* observerType;
 @property(nonatomic) NSUInteger rootId;
