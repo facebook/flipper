@@ -12,7 +12,6 @@
     "@babel/core": "^7.20.12",
     "@babel/generator": "^7.20.14",
     "@babel/parser": "^7.20.13",
-    "@babel/plugin-transform-flow-strip-types": "^7.19.0",
     "@babel/plugin-transform-modules-commonjs": "^7.20.11",
     "@babel/plugin-transform-typescript": "^7.20.13",
     "@babel/preset-env": "^7.20.2",

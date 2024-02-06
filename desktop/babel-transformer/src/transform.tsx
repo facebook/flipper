@@ -13,7 +13,7 @@ import {transformFromAstSync} from '@babel/core';
 import {default as flipperEnv} from './flipper-env';
 import {resolve} from 'path';
 
-const jsParsePlugins: ParserPlugin[] = ['jsx', ['flow', {all: true}]];
+const jsParsePlugins: ParserPlugin[] = ['jsx'];
 const tsParsePluins: ParserPlugin[] = ['jsx', 'typescript'];
 const commonJsPlugin = [
   require('@babel/plugin-transform-modules-commonjs'),
@@ -21,7 +21,6 @@ const commonJsPlugin = [
     strictMode: false,
   },
 ];
-const flowStripTypesPlugin = require('@babel/plugin-transform-flow-strip-types');
 const dynamicRequiresPlugin = require('./dynamic-requires');
 const typeScriptPlugin = require('@babel/plugin-transform-typescript');
 const emotionPlugin = require('@emotion/babel-plugin');
@@ -34,7 +33,6 @@ const tsTransformPlugins = [
 ];
 const jsTransformPlugins = [
   commonJsPlugin,
-  flowStripTypesPlugin,
   dynamicRequiresPlugin,
   [emotionPlugin, {autoLabel: 'always', sourceMap: false}],
 ];
