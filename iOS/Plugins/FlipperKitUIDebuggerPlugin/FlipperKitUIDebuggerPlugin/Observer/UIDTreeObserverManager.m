@@ -15,6 +15,7 @@
 #import "UIDFrameScanEvent.h"
 #import "UIDInitEvent.h"
 #import "UIDJSONSerializer.h"
+#import "UIDMainThread.h"
 #import "UIDMetadataRegister.h"
 #import "UIDMetadataUpdateEvent.h"
 #import "UIDPerfStatsEvent.h"
@@ -170,12 +171,19 @@
                                                         root:root
                                                 reportResult:reportResult];
       }];
-  UIApplication* application = _context.application;
-  if (application) {
-    [_rootObserver processNode:application
-                  withSnapshot:YES
-                   withContext:_context];
-  }
+
+  UIDRunBlockOnMainThreadAsync(^{
+    UIDTreeObserverManager* strongSelf = weakSelf;
+    if (strongSelf == nil) {
+      return;
+    }
+    UIApplication* application = strongSelf->_context.application;
+    if (application) {
+      [strongSelf->_rootObserver processNode:application
+                                withSnapshot:YES
+                                 withContext:strongSelf->_context];
+    }
+  });
 }
 
 - (void)stop {
