@@ -71,7 +71,7 @@ export function Tree2({
   const focusedNode = useValue(instance.uiState.focusedNode);
   const expandedNodes = useValue(instance.uiState.expandedNodes);
   const searchTerm = useValue(instance.uiState.searchTerm);
-  const selectedNode = useValue(instance.uiState.selectedNode);
+  const nodeSelection = useValue(instance.uiState.nodeSelection);
   const isContextMenuOpen = useValue(instance.uiState.isContextMenuOpen);
   const hoveredNode = head(useValue(instance.uiState.hoveredNodes));
 
@@ -88,7 +88,7 @@ export function Tree2({
       nodes,
       focusedNode || rootId,
       expandedNodes,
-      selectedNode?.id,
+      nodeSelection?.node?.id,
       instance.frameworkEvents,
       frameworkEventsMonitoring,
       filterMainThreadMonitoring,
@@ -107,7 +107,7 @@ export function Tree2({
     instance.frameworkEvents,
     nodes,
     rootId,
-    selectedNode?.id,
+    nodeSelection?.node?.id,
   ]);
 
   const isUsingKBToScrollUtill = useRef<MillisSinceEpoch>(0);
@@ -149,12 +149,12 @@ export function Tree2({
     //when inputs in the sidebar are focused it will defocus the tree and yield kb controls
     //to the sidebar
     grandParentRef.current?.focus();
-  }, [selectedNode]);
+  }, [nodeSelection]);
 
   const onKeyDown = useKeyboardControlsCallback(
     treeNodes,
     rowVirtualizer,
-    selectedNode?.id,
+    nodeSelection?.node?.id,
     hoveredNode,
     instance.uiActions.onSelectNode,
     instance.uiActions.onHoverNode,
@@ -208,16 +208,16 @@ export function Tree2({
   });
 
   useLayoutEffect(() => {
-    if (selectedNode != null) {
+    if (nodeSelection != null) {
       const selectedTreeNode = treeNodes.find(
-        (node) => node.id === selectedNode?.id,
+        (node) => node.id === nodeSelection?.node.id,
       );
 
       const ref = parentRef.current;
       if (
         ref != null &&
         selectedTreeNode != null &&
-        selectedNode?.source === 'visualiser'
+        nodeSelection?.source === 'visualiser'
       ) {
         ref.scrollLeft =
           Math.max(0, selectedTreeNode.depth - 10) * renderDepthOffset;
@@ -235,7 +235,7 @@ export function Tree2({
     // otherwise we will keep scrolling back to the selected node overriding the users manual scroll offset.
     // We only should scroll when selection changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedNode, focusedNode]);
+  }, [nodeSelection, focusedNode]);
 
   return (
     <HighlightProvider
@@ -291,7 +291,7 @@ export function Tree2({
                   key={virtualRow.index}
                   treeNode={treeNodes[virtualRow.index]}
                   highlightedNodes={highlightedNodes}
-                  selectedNode={selectedNode?.id}
+                  selectedNode={nodeSelection?.node.id}
                   hoveredNode={hoveredNode}
                   isUsingKBToScroll={isUsingKBToScrollUtill}
                   isContextMenuOpen={isContextMenuOpen}
@@ -454,7 +454,7 @@ function TreeNodeRow({
         onClick={(event) => {
           if (event.detail === 1) {
             //single click
-            onSelectNode(treeNode.id, 'tree');
+            onSelectNode(treeNode, 'tree');
           } else if (event.detail === 2) {
             //double click
             expandOrCollapse();

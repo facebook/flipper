@@ -34,7 +34,10 @@ export function useKeyboardControlsCallback(
       switch (event.key) {
         case 'Enter': {
           if (hoveredNodeId != null) {
-            onSelectNode(hoveredNodeId, 'keyboard');
+            onSelectNode(
+              treeNodes.find((node) => node.id === hoveredNodeId),
+              'keyboard',
+            );
           }
 
           break;
@@ -155,7 +158,7 @@ function moveSelectedNodeViaKeyBoard(
     const newNode = treeNodes[newIdx];
 
     extendKBControlLease(isUsingKBToScrollUntil);
-    onSelectNode(newNode.id, 'keyboard');
+    onSelectNode(newNode, 'keyboard');
     onHoverNode(newNode.id);
 
     rowVirtualizer.scrollToIndex(newIdx, {align: 'auto'});

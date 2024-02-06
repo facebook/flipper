@@ -24,7 +24,7 @@ import {WireFrameMode} from '../../DesktopTypes';
 export type TargetModeState =
   | {
       state: 'selected';
-      targetedNodes: Id[];
+      targetedNodes: ClientNode[];
       sliderPosition: number;
     }
   | {

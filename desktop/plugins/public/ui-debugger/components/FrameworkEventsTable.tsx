@@ -145,7 +145,6 @@ export function FrameworkEventsTable({
             hideControls
             availableWidth={400}
             nodes={nodes}
-            onSelectNode={instance.uiActions.onSelectNode}
           />
         ) : (
           <Result title="Node is no longer on screen" />

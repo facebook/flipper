@@ -9,12 +9,7 @@
 
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Bounds, Coordinate, Id, ClientNode} from '../../ClientTypes';
-import {
-  NestedNode,
-  OnSelectNode,
-  TraversalMode,
-  WireFrameMode,
-} from '../../DesktopTypes';
+import {NestedNode, TraversalMode, WireFrameMode} from '../../DesktopTypes';
 
 import {
   produce,
@@ -30,23 +25,17 @@ import {useDelay} from '../../hooks/useDelay';
 import {Tooltip} from 'antd';
 import {TargetModeState, VisualiserControls} from './VisualizerControls';
 import {getNode} from '../../utils/map';
+import {filterOutFalsy} from '../../utils/array';
 
 const horizontalPadding = 16; //allows space for vertical scroll bar
 export const Visualization2D: React.FC<
   {
     availableWidth: number;
     nodes: Map<Id, ClientNode>;
-    onSelectNode: OnSelectNode;
     hideControls?: boolean;
     disableInteractivity?: boolean;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({
-  availableWidth,
-  nodes,
-  onSelectNode,
-  hideControls,
-  disableInteractivity,
-}) => {
+> = ({availableWidth, nodes, hideControls, disableInteractivity}) => {
   const rootNodeRef = useRef<HTMLDivElement>();
 
   const availableWidthConsideringPadding =
@@ -58,7 +47,7 @@ export const Visualization2D: React.FC<
   const snapshotNode = snapshot && nodes.get(snapshot.nodeId);
   const focusedNodeId = useValue(instance.uiState.focusedNode);
 
-  const selectedNodeId = useValue(instance.uiState.selectedNode);
+  const nodeSelection = useValue(instance.uiState.nodeSelection);
   const hoveredNodes = useValue(instance.uiState.hoveredNodes);
   const hoveredNodeId = head(hoveredNodes);
   const wireFrameMode = useValue(instance.uiState.wireFrameMode);
@@ -157,15 +146,23 @@ export const Visualization2D: React.FC<
     targetMode.state === 'disabled' ? 'pointer' : 'crosshair';
 
   const onClickOverlay = () => {
-    instance.uiActions.onSelectNode(hoveredNodeId, 'visualiser');
-    if (hoveredNodeId != null) {
-      instance.uiActions.ensureAncestorsExpanded(hoveredNodeId);
+    const selectedNode = getNode(hoveredNodeId, nodes);
+    if (selectedNode != null) {
+      instance.uiActions.onSelectNode(selectedNode, 'visualiser');
+      instance.uiActions.ensureAncestorsExpanded(selectedNode.id);
+    } else {
+      instance.uiActions.onSelectNode(undefined, 'visualiser');
     }
 
     if (targetMode.state !== 'disabled') {
       setTargetMode({
         state: 'selected',
-        targetedNodes: hoveredNodes.slice().reverse(),
+        targetedNodes: filterOutFalsy(
+          hoveredNodes
+            .slice()
+            .reverse()
+            .map((n) => getNode(n, nodes)),
+        ),
         sliderPosition: hoveredNodes.length - 1,
       });
     }
@@ -178,7 +175,7 @@ export const Visualization2D: React.FC<
           onSetWireFrameMode={instance.uiActions.onSetWireFrameMode}
           wireFrameMode={wireFrameMode}
           focusedNode={focusedNodeId}
-          selectedNode={getNode(selectedNodeId?.id, nodes)}
+          selectedNode={nodeSelection?.node}
           setTargetMode={setTargetMode}
           targetMode={targetMode}
         />
@@ -229,11 +226,11 @@ export const Visualization2D: React.FC<
               />
             </DelayedHoveredToolTip>
           )}
-          {selectedNodeId != null && (
+          {nodeSelection != null && (
             <OverlayBorder
               cursor={overlayCursor}
               type="selected"
-              nodeId={selectedNodeId.id}
+              nodeId={nodeSelection.node.id}
               nodes={nodes}
             />
           )}
@@ -270,9 +267,8 @@ export const Visualization2D: React.FC<
             <MemoedVisualizationNode2D
               wireframeMode={wireFrameMode}
               isSelectedOrChildOrSelected={false}
-              selectedNode={selectedNodeId?.id}
+              selectedNodeId={nodeSelection?.node.id}
               node={focusState.focusedRoot}
-              onSelectNode={onSelectNode}
               traversalMode={traversalMode}
               runThroughIndex={0}
             />
@@ -295,7 +291,7 @@ const MemoedVisualizationNode2D = React.memo(
       return true;
     } else {
       //with other modes the selected node affects the drawing
-      return prev.selectedNode === next.selectedNode;
+      return prev.selectedNodeId === next.selectedNodeId;
     }
   },
 );
@@ -303,23 +299,22 @@ const MemoedVisualizationNode2D = React.memo(
 function Visualization2DNode({
   wireframeMode,
   isSelectedOrChildOrSelected,
-  selectedNode,
+  selectedNodeId,
   node,
-  onSelectNode,
   runThroughIndex,
   traversalMode,
 }: {
   wireframeMode: WireFrameMode;
   isSelectedOrChildOrSelected: boolean;
-  selectedNode?: Id;
+  selectedNodeId?: Id;
   node: NestedNode;
-  onSelectNode: OnSelectNode;
+
   runThroughIndex?: number;
   traversalMode: TraversalMode;
 }) {
   const instance = usePlugin(plugin);
 
-  const isSelected = node.id === selectedNode;
+  const isSelected = node.id === selectedNodeId;
   const ref = useRef<HTMLDivElement>(null);
   let nestedChildren: NestedNode[];
 
@@ -338,11 +333,10 @@ function Visualization2DNode({
   const children = nestedChildren.map((child, index) => (
     <Visualization2DNode
       wireframeMode={wireframeMode}
-      selectedNode={selectedNode}
+      selectedNodeId={selectedNodeId}
       isSelectedOrChildOrSelected={isSelected || isSelectedOrChildOrSelected}
       key={child.id}
       node={child}
-      onSelectNode={onSelectNode}
       runThroughIndex={index + 1}
       traversalMode={traversalMode}
     />

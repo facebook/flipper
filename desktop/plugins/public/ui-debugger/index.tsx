@@ -178,9 +178,9 @@ export function plugin(client: PluginClient<Events, Methods>) {
     if (frame.frameTime > lastProcessedFrameTime.get()) {
       applyFrameData(frame.nodes, frame.snapshot);
       lastProcessedFrameTime.set(frame.frameTime);
-      const selectedNode = uiState.selectedNode.get();
+      const selectedNode = uiState.nodeSelection.get();
       if (selectedNode != null)
-        _uiActions.ensureAncestorsExpanded(selectedNode.id);
+        _uiActions.ensureAncestorsExpanded(selectedNode.node.id);
     }
   });
 
@@ -310,7 +310,7 @@ function createUIState(): UIState {
 
     highlightedNodes: createState(new Map<Id, Color>()),
 
-    selectedNode: createState<NodeSelection | undefined>(undefined),
+    nodeSelection: createState<NodeSelection | undefined>(undefined),
     //used to indicate whether we will higher the visualizer / tree when a matching event comes in
     //also whether or not will show running total  in the tree
     frameworkEventMonitoring: createState(
