@@ -62,7 +62,7 @@ const WINDOWS_STARTUP_SCRIPT = `@echo off
 setlocal
 set "THIS_DIR=%~dp0"
 cd /d "%THIS_DIR%"
-flipper-runtime server %*
+flipper-runtime.exe ./server %*
 `;
 
 // eslint-disable-next-line node/no-sync
@@ -909,7 +909,12 @@ async function bundleServerReleaseForPlatform(
     }
   } else {
     const outputPaths = {
-      nodePath: path.join(outputDir, 'flipper-runtime'),
+      nodePath: path.join(
+        outputDir,
+        platform === BuildPlatform.WINDOWS
+          ? 'flipper-runtime.exe'
+          : 'flipper-runtime',
+      ),
       resourcesPath: outputDir,
     };
 
