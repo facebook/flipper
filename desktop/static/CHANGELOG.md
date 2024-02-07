@@ -1,3 +1,10 @@
+# 0.247.0 (7/2/2024)
+
+ * [D53223203](https://github.com/facebook/flipper/search?q=D53223203&type=Commits) -  Plugin marketplace downloads now expect a  `downloadUrls: string[]` instead of a singular url for fallbacks
+ * [D53308772](https://github.com/facebook/flipper/search?q=D53308772&type=Commits) -  UIDebugger add vertical scroll bar to visualiser when height exceeds viewport
+ * [D53352198](https://github.com/facebook/flipper/search?q=D53352198&type=Commits) -   UIDebugger - Keep showing node level event timeline when node goes offscreen
+
+
 # 0.245.0 (17/1/2024)
 
  * [D52601498](https://github.com/facebook/flipper/search?q=D52601498&type=Commits) -  Expose report* functions from flipper-plugin
