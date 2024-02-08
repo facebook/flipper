@@ -137,6 +137,10 @@ export function FlipperSetupWizard({
   const dispatch = useDispatch();
   const isLastOptionalStep = currentStep === 'pwa';
   const closable = isLastOptionalStep ? true : closableProp ?? closableState;
+  const onClose = () => {
+    onHide();
+    localStorage.setItem(SETUP_WIZARD_FINISHED_LOCAL_STORAGE_KEY, 'true');
+  };
   const content = useMemo(() => {
     switch (currentStep) {
       case 'platform':
@@ -157,7 +161,7 @@ export function FlipperSetupWizard({
           />
         );
       case 'pwa':
-        return <PWAInstallationWizard onInstall={onHide} />;
+        return <PWAInstallationWizard onInstall={onClose} />;
     }
   }, [currentStep, loginState, onHide]);
   const title = useMemo(() => {
@@ -195,10 +199,6 @@ export function FlipperSetupWizard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const onClose = () => {
-    onHide();
-    localStorage.setItem(SETUP_WIZARD_FINISHED_LOCAL_STORAGE_KEY, 'true');
-  };
 
   return (
     <Modal
