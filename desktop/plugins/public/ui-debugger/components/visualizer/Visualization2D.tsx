@@ -53,6 +53,8 @@ export const Visualization2D: React.FC<
   const nodeSelection = useValue(instance.uiState.nodeSelection);
   const wireFrameMode = useValue(instance.uiState.wireFrameMode);
 
+  const [alignmentModeEnabled, setAlignmentModeEnabled] = useState(false);
+
   const [targetMode, setTargetMode] = useState<TargetModeState>({
     state: 'disabled',
   });
@@ -76,6 +78,8 @@ export const Visualization2D: React.FC<
           selectedNode={nodeSelection?.node}
           setTargetMode={setTargetMode}
           targetMode={targetMode}
+          alignmentModeEnabled={alignmentModeEnabled}
+          setAlignmentModeEnabled={setAlignmentModeEnabled}
         />
       )}
       <Visualization2DContent
@@ -88,12 +92,17 @@ export const Visualization2D: React.FC<
         setTargetMode={setTargetMode}
         wireframeMode={wireFrameMode}
         nodeSelection={nodeSelection}
+        alignmentModeEnabled={alignmentModeEnabled}
       />
     </Layout.Container>
   );
 };
 
 const horizontalPadding = 16; //allows space for vertical scroll bar
+
+const ThickBorder = 3;
+const MediumBorder = 2;
+const ThinBorder = 1;
 
 function Visualization2DContent({
   disableInteractivity,
@@ -105,6 +114,7 @@ function Visualization2DContent({
   setTargetMode,
   wireframeMode,
   nodeSelection,
+  alignmentModeEnabled,
 }: {
   targetMode: TargetModeState;
   setTargetMode: (targetMode: TargetModeState) => void;
@@ -116,6 +126,7 @@ function Visualization2DContent({
   snapshotNode: ClientNode;
   snapshotInfo: SnapshotInfo;
   disableInteractivity: boolean;
+  alignmentModeEnabled: boolean;
 }) {
   const instance = usePlugin(plugin);
   const hoveredNodes = useValue(instance.uiState.hoveredNodes);
@@ -264,12 +275,21 @@ function Visualization2DContent({
             height: toPx(focusState.actualRoot.bounds.height),
           } as React.CSSProperties
         }>
+        {alignmentModeEnabled && nodeSelection?.node != null && (
+          <AlignmentOverlay
+            selectedNode={nodeSelection.node}
+            nodes={nodes}
+            snapshotHeight={snapshotNode.bounds.height}
+            snapshotWidth={snapshotNode.bounds.width}
+          />
+        )}
         {hoveredNodeId != null && (
           <DelayedHoveredToolTip
             key={hoveredNodeId}
             nodeId={hoveredNodeId}
             nodes={nodes}>
             <OverlayBorder
+              borderWidth={alignmentModeEnabled ? MediumBorder : ThickBorder}
               cursor={overlayCursor}
               onClick={onClickOverlay}
               nodeId={hoveredNodeId}
@@ -278,8 +298,10 @@ function Visualization2DContent({
             />
           </DelayedHoveredToolTip>
         )}
+
         {nodeSelection != null && (
           <OverlayBorder
+            borderWidth={alignmentModeEnabled ? ThinBorder : ThickBorder}
             cursor={overlayCursor}
             type="selected"
             nodeId={nodeSelection.node.id}
@@ -471,12 +493,51 @@ const DelayedHoveredToolTip: React.FC<{
   );
 };
 
+const borderStyle = `1px dashed ${theme.primaryColor}`;
+
+const AlignmentOverlay: React.FC<{
+  selectedNode: ClientNode;
+  nodes: Map<Id, ClientNode>;
+  snapshotWidth: number;
+  snapshotHeight: number;
+}> = ({selectedNode, nodes, snapshotHeight, snapshotWidth}) => {
+  const globalOffset = getTotalOffset(selectedNode.id, nodes);
+
+  return (
+    <>
+      <div
+        style={{
+          position: 'absolute',
+          zIndex: 99,
+          borderLeft: borderStyle,
+          borderRight: borderStyle,
+          width: toPx(selectedNode.bounds.width),
+          height: toPx(snapshotHeight),
+          left: toPx(globalOffset.x),
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          zIndex: 99,
+          borderTop: borderStyle,
+          borderBottom: borderStyle,
+          width: toPx(snapshotWidth),
+          height: toPx(selectedNode.bounds.height),
+          top: toPx(globalOffset.y),
+        }}
+      />
+    </>
+  );
+};
+
 const OverlayBorder = styled.div<{
+  borderWidth: number;
   cursor: 'pointer' | 'crosshair';
   type: 'selected' | 'hovered';
   nodeId: Id;
   nodes: Map<Id, ClientNode>;
-}>(({type, nodeId, nodes, cursor}) => {
+}>(({type, nodeId, nodes, cursor, borderWidth}) => {
   const offset = getTotalOffset(nodeId, nodes);
   const node = nodes.get(nodeId);
   return {
@@ -489,7 +550,7 @@ const OverlayBorder = styled.div<{
     width: toPx(node?.bounds?.width ?? 0),
     height: toPx(node?.bounds?.height ?? 0),
     boxSizing: 'border-box',
-    borderWidth: 3,
+    borderWidth: borderWidth,
     borderStyle: 'solid',
     color: 'transparent',
     borderColor:

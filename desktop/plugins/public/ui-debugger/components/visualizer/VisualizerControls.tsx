@@ -14,6 +14,7 @@ import {plugin} from '../../index';
 import React from 'react';
 import {
   AimOutlined,
+  AlignLeftOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
   PicCenterOutlined,
@@ -51,6 +52,8 @@ export function VisualiserControls({
   focusedNode,
   wireFrameMode,
   onSetWireFrameMode,
+  alignmentModeEnabled,
+  setAlignmentModeEnabled,
 }: {
   wireFrameMode: WireFrameMode;
   onSetWireFrameMode: (mode: WireFrameMode) => void;
@@ -58,6 +61,8 @@ export function VisualiserControls({
   focusedNode?: Id;
   setTargetMode: (targetMode: TargetModeState) => void;
   targetMode: TargetModeState;
+  alignmentModeEnabled: boolean;
+  setAlignmentModeEnabled: (enabled: boolean) => void;
 }) {
   const instance = usePlugin(plugin);
 
@@ -116,6 +121,21 @@ export function VisualiserControls({
       </Layout.Container>
 
       <Layout.Horizontal gap="medium" center>
+        <Tooltip title="Alignment mode">
+          <Button
+            shape="circle"
+            onClick={() => setAlignmentModeEnabled(!alignmentModeEnabled)}
+            icon={
+              <AlignLeftOutlined
+                style={{
+                  color: alignmentModeEnabled
+                    ? theme.primaryColor
+                    : theme.black,
+                }}
+              />
+            }
+          />
+        </Tooltip>
         <Dropdown
           menu={{
             selectable: true,
@@ -155,6 +175,7 @@ export function VisualiserControls({
             }
           />
         </Tooltip>
+
         <Tooltip title={focusToolTip}>
           <Button
             shape="circle"
