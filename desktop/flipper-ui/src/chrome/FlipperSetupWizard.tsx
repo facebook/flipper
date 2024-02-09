@@ -131,9 +131,8 @@ export function FlipperSetupWizard({
         return 'init';
     }
   });
-  const loginState = useStore<StepState>((store) =>
-    store.user.id != null ? 'success' : 'init',
-  );
+  const user = useStore((store) => store.user);
+  const loginState: StepState = user?.id != null ? 'success' : 'init';
   const dispatch = useDispatch();
   const isLastOptionalStep = currentStep === 'pwa';
   const closable = isLastOptionalStep ? true : closableProp ?? closableState;
@@ -151,7 +150,14 @@ export function FlipperSetupWizard({
         return <SetupDoctorScreen modal={false} visible onClose={() => {}} />;
       case 'login':
         return loginState === 'success' ? (
-          <Typography.Paragraph>You are logged in</Typography.Paragraph>
+          <Typography.Paragraph>
+            Logged in as{' '}
+            <img
+              style={{width: 24, height: 24, borderRadius: 12}}
+              src={user.profile_picture?.uri}
+            />{' '}
+            {user.name}
+          </Typography.Paragraph>
         ) : (
           <SignInSheet
             onHide={() => {
