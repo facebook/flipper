@@ -83,9 +83,9 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
 
   final override fun getHiddenAttributes(node: T): JsonObject? {
 
-    val descriptors = mutableListOf(this)
+    val descriptors = mutableListOf<ChainedDescriptor<T>>()
 
-    var curDescriptor: ChainedDescriptor<T>? = mSuper
+    var curDescriptor: ChainedDescriptor<T>? = this
 
     while (curDescriptor != null) {
       descriptors.add(curDescriptor)
@@ -116,9 +116,8 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
 
   final override fun getAttributes(node: T): MaybeDeferred<Map<MetadataId, InspectableObject>> {
     val builder = mutableMapOf<MetadataId, InspectableObject>()
-    onGetAttributes(node, builder)
 
-    var curDescriptor: ChainedDescriptor<T>? = mSuper
+    var curDescriptor: ChainedDescriptor<T>? = this
 
     while (curDescriptor != null) {
       curDescriptor.onGetAttributes(node, builder)
@@ -137,9 +136,8 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
   final override fun getInlineAttributes(node: T): Map<String, String> {
 
     val builder = mutableMapOf<String, String>()
-    onGetInlineAttributes(node, builder)
 
-    var curDescriptor: ChainedDescriptor<T>? = mSuper
+    var curDescriptor: ChainedDescriptor<T>? = this
 
     while (curDescriptor != null) {
       curDescriptor.onGetInlineAttributes(node, builder)
