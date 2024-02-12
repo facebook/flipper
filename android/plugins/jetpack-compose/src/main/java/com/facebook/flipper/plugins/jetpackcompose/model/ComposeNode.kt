@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.jetpackcompose.model
 
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -60,8 +61,13 @@ class ComposeNode(
 
   private fun getNodeParameters(kind: ParameterKind): List<NodeParameter> {
     layoutInspectorTree.resetAccumulativeState()
-    return layoutInspectorTree.convertParameters(
-        inspectorNode.id, inspectorNode, kind, MAX_RECURSIONS, MAX_ITERABLE_SIZE)
+    return try {
+      layoutInspectorTree.convertParameters(
+          inspectorNode.id, inspectorNode, kind, MAX_RECURSIONS, MAX_ITERABLE_SIZE)
+    } catch (t: Throwable) {
+      Log.e(TAG, "Failed to get parameters.", t)
+      emptyList()
+    }
   }
 
   private fun collectChildren(): List<Any> {
@@ -101,5 +107,9 @@ class ComposeNode(
       }
     }
     return null
+  }
+
+  companion object {
+    private const val TAG = "ComposeNode"
   }
 }
