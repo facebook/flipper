@@ -18,6 +18,8 @@ package facebook.internal.androidx.compose.ui.inspection.inspector
 
 import android.util.Log
 import android.view.View
+import androidx.collection.mutableIntListOf
+import androidx.collection.mutableLongObjectMapOf
 import androidx.compose.runtime.internal.ComposableLambda
 import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Modifier
@@ -28,6 +30,8 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.inspection.util.copy
+import androidx.compose.ui.inspection.util.removeLast
 import androidx.compose.ui.platform.InspectableModifier
 import androidx.compose.ui.platform.InspectableValue
 import androidx.compose.ui.text.AnnotatedString
@@ -326,10 +330,10 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
     private var maxRecursions = 0
     private var maxInitialIterableSize = 0
     private var recursions = 0
-    private val valueIndex = mutableListOf<Int>()
+    private val valueIndex = mutableIntListOf()
     private val valueLazyReferenceMap = IdentityHashMap<Any, MutableList<NodeParameter>>()
     private val rootValueIndexCache =
-        mutableMapOf<Long, IdentityHashMap<Any, NodeParameterReference>>()
+        mutableLongObjectMapOf<IdentityHashMap<Any, NodeParameterReference>>()
     private var valueIndexMap = IdentityHashMap<Any, NodeParameterReference>()
 
     fun create(
@@ -373,12 +377,12 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
           maxInitialIterableSize)
       var parent: Pair<String, Any?>? = null
       var new = Pair(name, value)
-      for (i in reference.indices) {
+      reference.indices.forEach { index ->
         parent = new
-        new = find(new.first, new.second, i) ?: return null
+        new = find(new.first, new.second, index) ?: return null
       }
       recursions = 0
-      valueIndex.addAll(reference.indices.asSequence())
+      valueIndex.addAll(reference.indices)
       val parameter =
           if (startIndex == 0) {
             create(new.first, new.second, parent?.second)
@@ -609,7 +613,7 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
     }
 
     private fun valueIndexToReference(): NodeParameterReference =
-        NodeParameterReference(nodeId, anchorId, kind, parameterIndex, valueIndex)
+        NodeParameterReference(nodeId, anchorId, kind, parameterIndex, valueIndex.copy())
 
     private fun createEmptyParameter(name: String): NodeParameter =
         NodeParameter(name, ParameterType.String, "")

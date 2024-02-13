@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package facebook.internal.androidx.compose.ui.inspection.util
-
-import java.util.IdentityHashMap
+package androidx.compose.ui.inspection.util
 
 const val NO_ANCHOR_ID = 0
 
 /** A map of anchors with a unique id generator. */
 class AnchorMap {
   private val anchorLookup = mutableMapOf<Int, Any>()
-  private val idLookup = IdentityHashMap<Any, Int>()
+  private val idLookup = mutableMapOf<Any, Int>()
 
   /** Return a unique id for the specified [anchor] instance. */
   operator fun get(anchor: Any?): Int =

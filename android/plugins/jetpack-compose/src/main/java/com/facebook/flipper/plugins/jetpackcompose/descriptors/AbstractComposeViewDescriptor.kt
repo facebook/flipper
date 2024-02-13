@@ -60,7 +60,15 @@ object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val layoutInspector = LayoutInspectorTree()
         layoutInspector.hideSystemNodes = true
-        val composeNodes = transform(child, layoutInspector.convert(child), layoutInspector)
+        val composeNodes =
+            try {
+              transform(child, layoutInspector.convert(child), layoutInspector)
+            } catch (t: Throwable) {
+              listOf(
+                  WarningMessage(
+                      "Unknown error occurred while trying to inspect compose node: ${t.message}",
+                      getBounds(node)))
+            }
         return if (composeNodes.isNullOrEmpty()) {
           listOf(
               WarningMessage(
