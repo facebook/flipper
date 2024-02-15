@@ -267,6 +267,20 @@ const Skipped = (props: PropsFor<'skipped'>) => (
   <Typography.Paragraph>{props.reason}</Typography.Paragraph>
 );
 
+const DoctorFailed = (props: PropsFor<'doctor-failed'>) => {
+  const error =
+    typeof props.error === 'object'
+      ? JSON.stringify(props.error, null, 2)
+      : props.error.toString();
+
+  return (
+    <>
+      <b>Doctor failed</b>
+      <CodeBlock>{error}</CodeBlock>
+    </>
+  );
+};
+
 const messageToComp: {
   [K in keyof FlipperDoctor.HealthcheckResultMessageMapping]: React.FC<
     PropsFor<K>
@@ -314,7 +328,7 @@ const messageToComp: {
   'ios.idb--not_installed': Noop,
   'ios.idb--installed': IosIdbInstalled,
 
-  'doctor-failed': Noop,
+  'doctor-failed': DoctorFailed,
 
   skipped: Skipped,
 };
