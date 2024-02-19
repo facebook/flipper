@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.BoxData
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
@@ -41,6 +42,10 @@ abstract class ChainedDescriptor<T> : NodeDescriptor<T> {
   fun getSuper(): ChainedDescriptor<T>? {
     return mSuper
   }
+
+  final override fun getBoxData(node: T): BoxData? = onGetBoxData(node) ?: mSuper?.getBoxData(node)
+
+  open fun onGetBoxData(node: T): BoxData? = null
 
   final override fun getActiveChild(node: T): Any? {
     // ask each descriptor in the chain for an active child, if none available look up the chain

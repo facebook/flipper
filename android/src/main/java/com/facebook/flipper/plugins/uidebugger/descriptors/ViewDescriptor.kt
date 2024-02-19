@@ -527,6 +527,33 @@ object ViewDescriptor : ChainedDescriptor<View>() {
     }
   }
 
+  private val emptyBox = listOf(0f, 0f, 0f, 0f)
+
+  override fun onGetBoxData(node: View): BoxData {
+
+    val layoutParams = node.layoutParams
+    val margin =
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
+          listOf(
+              layoutParams.topMargin.toFloat(),
+              layoutParams.rightMargin.toFloat(),
+              layoutParams.bottomMargin.toFloat(),
+              layoutParams.leftMargin.toFloat())
+        } else {
+          emptyBox
+        }
+
+    val padding =
+        listOf<Float>(
+            node.paddingLeft.toFloat(),
+            node.paddingRight.toFloat(),
+            node.paddingTop.toFloat(),
+            node.paddingBottom.toFloat(),
+        )
+
+    return BoxData(margin, emptyBox, padding)
+  }
+
   override fun onGetInlineAttributes(node: View, attributes: MutableMap<String, String>) {
     val id = node.id
     if (id == View.NO_ID) {
