@@ -18,6 +18,10 @@ import {
   getCACertificate,
 } from './certificate-utils';
 
+export type CertificateExchangeRequestResult = {
+  deviceId: string;
+};
+
 export default abstract class CertificateProvider {
   abstract medium: CertificateExchangeMedium;
   abstract name: string;
@@ -32,7 +36,7 @@ export default abstract class CertificateProvider {
     clientQuery: ClientQuery,
     unsanitizedCsr: string,
     appDirectory: string,
-  ): Promise<{deviceId: string}> {
+  ): Promise<CertificateExchangeRequestResult> {
     const csr = this.santitizeString(unsanitizedCsr);
     if (csr === '') {
       const msg = `Received empty CSR from ${clientQuery.os} device`;
