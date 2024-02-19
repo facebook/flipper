@@ -400,12 +400,14 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
         : FlipperCertificateExchangeMedium::FS_ACCESS;
 
     if (!response.empty()) {
-      folly::dynamic config = folly::parseJson(response);
+      folly::dynamic parsedResponse = folly::parseJson(response);
+
+      folly::dynamic config = folly::dynamic::object;
+      config["deviceId"] = parsedResponse["deviceId"];
+      config["medium"] = medium;
 
       messageAck["config"] = config;
-      messageAck["medium"] = medium;
 
-      config["medium"] = medium;
       store_->storeConnectionConfig(config);
     }
     if (certificateProvider_) {
