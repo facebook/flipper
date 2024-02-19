@@ -265,8 +265,7 @@ export class ServerController
         new DummyDevice(
           this.flipperServer,
           clientQuery.device_id,
-          clientQuery.app +
-            (clientQuery.medium === 'WWW' ? ' Server Exchanged' : ''),
+          clientQuery.app + ' (Unknown Device)',
           clientQuery.os,
         ),
       );
