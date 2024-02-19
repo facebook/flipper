@@ -9,6 +9,7 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.BoxData
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
@@ -58,6 +59,8 @@ interface NodeDescriptor<T> {
 
   /** The children this node exposes in the inspector. */
   fun getChildren(node: T): List<Any>
+
+  fun getBoxData(node: T): BoxData? = null
 
   /**
    * If you have overlapping children this indicates which child is active / on top, we will only
