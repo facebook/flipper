@@ -21,6 +21,7 @@ import com.facebook.flipper.plugins.uidebugger.litho.LithoTag
 import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.ComponentDataExtractor
 import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.LayoutPropExtractor
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.BoxData
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
@@ -60,6 +61,32 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
   override fun getQualifiedName(node: com.facebook.litho.DebugComponent): String =
       node.component::class.qualifiedName ?: ""
+
+  override fun getBoxData(node: DebugComponent): BoxData? {
+    val layoutNode = node.layoutNode ?: return null
+    val margin =
+        listOf<Float>(
+            layoutNode.getLayoutMargin(YogaEdge.LEFT),
+            layoutNode.getLayoutMargin(YogaEdge.RIGHT),
+            layoutNode.getLayoutMargin(YogaEdge.TOP),
+            layoutNode.getLayoutMargin(YogaEdge.BOTTOM))
+
+    val border =
+        listOf<Float>(
+            layoutNode.getLayoutBorderWidth(YogaEdge.LEFT),
+            layoutNode.getLayoutBorderWidth(YogaEdge.RIGHT),
+            layoutNode.getLayoutBorderWidth(YogaEdge.TOP),
+            layoutNode.getLayoutBorderWidth(YogaEdge.BOTTOM))
+
+    val padding =
+        listOf<Float>(
+            layoutNode.getLayoutPadding(YogaEdge.LEFT),
+            layoutNode.getLayoutPadding(YogaEdge.RIGHT),
+            layoutNode.getLayoutPadding(YogaEdge.TOP),
+            layoutNode.getLayoutPadding(YogaEdge.BOTTOM))
+
+    return BoxData(margin, border, padding)
+  }
 
   override fun getChildren(node: DebugComponent): List<Any> {
     val result = mutableListOf<Any>()
