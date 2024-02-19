@@ -36,7 +36,7 @@ class FlipperWebSocket : public FlipperSocket {
       Scheduler* scheduler,
       ConnectionContextStore* connectionContextStore);
 
-  virtual ~FlipperWebSocket();
+  virtual ~FlipperWebSocket() override;
 
   virtual void setEventHandler(SocketEventHandler eventHandler) override;
   virtual void setMessageHandler(SocketMessageHandler messageHandler) override;
