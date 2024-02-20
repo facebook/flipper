@@ -24,6 +24,7 @@ import {
   withTrackingScope,
   useLocalStorageState,
   theme,
+  getFlipperLib,
 } from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {DeviceTarget} from 'flipper-common';
@@ -74,6 +75,7 @@ function NoSDKsEnabledAlert({onClose}: {onClose: () => void}) {
         <SettingsSheet
           platform={getFlipperServerConfig().environmentInfo.os.platform}
           onHide={() => setShowSettings(false)}
+          isFB={getFlipperLib().isFB}
         />
       )}
     </>

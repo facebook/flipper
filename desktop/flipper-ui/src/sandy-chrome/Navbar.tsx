@@ -9,6 +9,7 @@
 
 import {
   Dialog,
+  getFlipperLib,
   Layout,
   NUX,
   theme,
@@ -748,6 +749,7 @@ function ExtrasMenu() {
         <SettingsSheet
           platform={getFlipperServerConfig().environmentInfo.os.platform}
           onHide={() => store.dispatch(toggleSettingsModal())}
+          isFB={getFlipperLib().isFB}
         />
       )}
       <WelcomeScreen
