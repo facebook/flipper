@@ -34,10 +34,10 @@ export default abstract class CertificateProvider {
 
   async processCertificateSigningRequest(
     clientQuery: ClientQuery,
-    unsanitizedCsr: string,
-    appDirectory: string,
+    unsanitizedCSR: string,
+    sandboxDirectory: string,
   ): Promise<CertificateExchangeRequestResult> {
-    const csr = this.santitizeString(unsanitizedCsr);
+    const csr = this.santitizeString(unsanitizedCSR);
     if (csr === '') {
       const msg = `Received empty CSR from ${clientQuery.os} device`;
       recorder.logError(clientQuery, msg);
@@ -48,19 +48,19 @@ export default abstract class CertificateProvider {
     await ensureOpenSSLIsAvailable();
 
     recorder.log(clientQuery, 'Obtain CA certificate');
-    const caCert = await getCACertificate();
+    const caCertificate = await getCACertificate();
 
     recorder.log(clientQuery, 'Deploy CA certificate to application sandbox');
     await this.deployOrStageFileForDevice(
       clientQuery,
-      appDirectory,
+      sandboxDirectory,
       deviceCAcertFile,
-      caCert,
+      caCertificate,
       csr,
     );
 
     recorder.log(clientQuery, 'Generate client certificate');
-    const clientCert = await generateClientCertificate(csr);
+    const clientCertificate = await generateClientCertificate(csr);
 
     recorder.log(
       clientQuery,
@@ -68,9 +68,9 @@ export default abstract class CertificateProvider {
     );
     await this.deployOrStageFileForDevice(
       clientQuery,
-      appDirectory,
+      sandboxDirectory,
       deviceClientCertFile,
-      clientCert,
+      clientCertificate,
       csr,
     );
 
@@ -84,7 +84,7 @@ export default abstract class CertificateProvider {
     const deviceId = await this.getTargetDeviceId(
       clientQuery,
       bundleId,
-      appDirectory,
+      sandboxDirectory,
       csr,
     );
 
