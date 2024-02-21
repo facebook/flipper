@@ -8,6 +8,7 @@
  */
 
 import {promisify} from 'util';
+import crypto from 'crypto';
 import fs from 'fs-extra';
 import os from 'os';
 import {
@@ -207,6 +208,28 @@ const generateServerCertificate = async (): Promise<void> => {
     CAserial: serverSrl,
     out: serverCert,
   });
+};
+
+export interface EphemeralEncryptionResult {
+  data: Buffer;
+  key: string;
+}
+export const ephemeralEncryption = async (
+  path: string,
+): Promise<EphemeralEncryptionResult> => {
+  const algorithm = 'aes-256-cbc';
+  const key = crypto.randomBytes(32);
+  const iv = crypto.randomBytes(16);
+
+  const fileContent = await fs.readFile(path);
+
+  const cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
+  const encrypted = Buffer.concat([cipher.update(fileContent), cipher.final()]);
+
+  return {
+    data: Buffer.concat([iv, encrypted]),
+    key: key.toString('base64'),
+  };
 };
 
 const ensureCertificateAuthorityExists = async (): Promise<void> => {
