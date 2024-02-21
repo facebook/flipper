@@ -25,13 +25,11 @@ export type CertificateExchangeRequestResult = {
 export default abstract class CertificateProvider {
   abstract medium: CertificateExchangeMedium;
   abstract name: string;
-
   verifyMedium(medium: CertificateExchangeMedium) {
     if (this.medium !== medium) {
       throw new Error(`${this.name} does not support medium ${medium}`);
     }
   }
-
   async processCertificateSigningRequest(
     clientQuery: ClientQuery,
     unsanitizedCSR: string,
@@ -47,8 +45,25 @@ export default abstract class CertificateProvider {
     recorder.log(clientQuery, 'Ensure OpenSSL is available');
     await ensureOpenSSLIsAvailable();
 
+    recorder.log(clientQuery, 'Extract bundle identifier from CSR');
+    const bundleId = await extractBundleIdFromCSR(csr);
+
+    recorder.log(
+      clientQuery,
+      'Get target device from CSR and bundle identifier',
+    );
+    const deviceId = await this.getTargetDeviceId(
+      clientQuery,
+      bundleId,
+      sandboxDirectory,
+      csr,
+    );
+
     recorder.log(clientQuery, 'Obtain CA certificate');
     const caCertificate = await getCACertificate();
+
+    recorder.log(clientQuery, 'Generate client certificate');
+    const clientCertificate = await generateClientCertificate(csr);
 
     recorder.log(clientQuery, 'Deploy CA certificate to application sandbox');
     await this.deployOrStageFileForDevice(
@@ -58,9 +73,6 @@ export default abstract class CertificateProvider {
       caCertificate,
       csr,
     );
-
-    recorder.log(clientQuery, 'Generate client certificate');
-    const clientCertificate = await generateClientCertificate(csr);
 
     recorder.log(
       clientQuery,
@@ -74,24 +86,11 @@ export default abstract class CertificateProvider {
       csr,
     );
 
-    recorder.log(clientQuery, 'Extract application name from CSR');
-    const bundleId = await extractBundleIdFromCSR(csr);
-
-    recorder.log(
-      clientQuery,
-      'Get target device from CSR and application name',
-    );
-    const deviceId = await this.getTargetDeviceId(
-      clientQuery,
-      bundleId,
-      sandboxDirectory,
-      csr,
-    );
-
     recorder.log(
       clientQuery,
       `Finished processing CSR, device identifier is '${deviceId}'`,
     );
+
     return {
       deviceId,
     };
