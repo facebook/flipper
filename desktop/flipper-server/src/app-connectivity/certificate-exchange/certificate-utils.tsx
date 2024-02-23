@@ -211,7 +211,7 @@ const generateServerCertificate = async (): Promise<void> => {
 };
 
 export interface EphemeralEncryptionResult {
-  data: Buffer;
+  data: string;
   key: string;
 }
 export const ephemeralEncryption = async (
@@ -227,7 +227,7 @@ export const ephemeralEncryption = async (
   const encrypted = Buffer.concat([cipher.update(fileContent), cipher.final()]);
 
   return {
-    data: Buffer.concat([iv, encrypted]),
+    data: Buffer.concat([iv, encrypted]).toString('base64'),
     key: key.toString('base64'),
   };
 };
