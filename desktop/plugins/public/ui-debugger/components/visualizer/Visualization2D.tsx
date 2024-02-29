@@ -136,6 +136,8 @@ function Visualization2DContent({
   const containerRef = useRef<HTMLDivElement>(null);
   const traversalMode = useValue(instance.uiState.traversalMode);
 
+  const referenceImage = useValue(instance.uiState.referenceImage);
+
   const measuredWidth = useMeasuredWidth(containerRef);
 
   const availableWidthConsideringPadding =
@@ -280,12 +282,26 @@ function Visualization2DContent({
           <img
             src={'data:image/png;base64,' + snapshotInfo.data}
             style={{
+              position: 'absolute',
               marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
               marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
               width: toPx(snapshotNode.bounds.width),
               height: toPx(snapshotNode.bounds.height),
             }}
           />
+          {referenceImage != null && (
+            <img
+              src={referenceImage.url}
+              style={{
+                position: 'absolute',
+                opacity: referenceImage.opacity,
+                marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
+                marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
+                width: toPx(snapshotNode.bounds.width),
+                height: toPx(snapshotNode.bounds.height),
+              }}
+            />
+          )}
 
           <MemoedVisualizationWireframeNode
             wireframeMode={wireframeMode}

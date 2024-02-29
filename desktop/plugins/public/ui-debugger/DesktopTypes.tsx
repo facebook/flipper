@@ -47,9 +47,14 @@ export type UIState = {
   visualiserWidth: Atom<number>;
   frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
   filterMainThreadMonitoring: Atom<boolean>;
-
+  referenceImage: Atom<ReferenceImageState | null>;
   supportedTraversalModes: Atom<TraversalMode[]>;
   traversalMode: Atom<TraversalMode>;
+};
+
+export type ReferenceImageState = {
+  url: string;
+  opacity: number;
 };
 
 //enumerates the keys of input type and casts each to ReadOnlyAtom, this is so we only expose read only atoms to the UI
@@ -59,6 +64,7 @@ type TransformToReadOnly<T> = {
 };
 
 export type WireFrameMode = 'All' | 'SelectedAndChildren' | 'SelectedOnly';
+export type ReferenceImageAction = 'Import' | 'Clear' | number; //number is a change opacity
 
 export type ReadOnlyUIState = TransformToReadOnly<UIState>;
 
@@ -118,6 +124,7 @@ export type UIActions = {
   onCollapseAllRecursively: (nodeId: Id) => void;
   ensureAncestorsExpanded: (nodeId: Id) => void;
   onSetTraversalMode: (mode: TraversalMode) => void;
+  onReferenceImageAction: (action: ReferenceImageAction) => Promise<void>;
   editClientAttribute: (
     nodeId: Id,
     value: any,

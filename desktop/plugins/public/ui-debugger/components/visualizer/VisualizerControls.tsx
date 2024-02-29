@@ -8,7 +8,7 @@
  */
 
 import {Button, Dropdown, Slider, Tooltip, Typography} from 'antd';
-import {Layout, produce, theme, usePlugin} from 'flipper-plugin';
+import {Layout, produce, theme, usePlugin, useValue} from 'flipper-plugin';
 import {ClientNode, Id} from '../../ClientTypes';
 import {plugin} from '../../index';
 import React from 'react';
@@ -19,10 +19,15 @@ import {
   FullscreenExitOutlined,
   FullscreenOutlined,
   PicCenterOutlined,
+  PictureOutlined,
 } from '@ant-design/icons';
 import {tracker} from '../../utils/tracker';
 import {debounce} from 'lodash';
-import {WireFrameMode} from '../../DesktopTypes';
+import {
+  ReferenceImageAction,
+  ReferenceImageState,
+  WireFrameMode,
+} from '../../DesktopTypes';
 export type TargetModeState =
   | {
       state: 'selected';
@@ -36,14 +41,23 @@ export type TargetModeState =
       state: 'disabled';
     };
 
-function createItem(wireframeMode: WireFrameMode, label: string) {
+function createItem<T>(wireframeMode: T, label: string) {
   return {key: wireframeMode, label: label};
 }
 
 const wireFrameModeDropDownItems = [
-  createItem('All', 'All'),
-  createItem('SelectedAndChildren', 'Selected and children'),
-  createItem('SelectedOnly', 'Selected only'),
+  createItem<WireFrameMode>('All', 'All'),
+  createItem<WireFrameMode>('SelectedAndChildren', 'Selected and children'),
+  createItem<WireFrameMode>('SelectedOnly', 'Selected only'),
+];
+
+const refernceImageItemsWithOutClear = [
+  createItem<ReferenceImageAction>('Import', 'Load reference image from disk'),
+];
+
+const refernceImageItemsWithClear = [
+  createItem<ReferenceImageAction>('Import', 'Load reference image from disk'),
+  createItem<ReferenceImageAction>('Clear', 'Clear reference image'),
 ];
 
 export function VisualiserControls({
@@ -71,6 +85,8 @@ export function VisualiserControls({
 }) {
   const instance = usePlugin(plugin);
 
+  const referenceImage = useValue(instance.uiState.referenceImage);
+
   const focusDisabled =
     focusedNode == null &&
     (selectedNode == null || selectedNode.children.length === 0);
@@ -84,148 +100,221 @@ export function VisualiserControls({
     targetMode.state === 'disabled' ? 'Target Mode' : 'Exit  target mode';
 
   return (
-    <Layout.Right
-      style={{padding: theme.space.medium, flexGrow: 0}}
-      gap="medium"
-      center>
-      <Layout.Container style={{userSelect: 'none'}}>
-        {targetMode.state === 'active' && (
-          <Typography.Text strong>Target mode: Select element</Typography.Text>
-        )}
-        {targetMode.state === 'disabled' && (
-          <Typography.Text
-            strong
-            style={{
-              whiteSpace: 'nowrap',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-            }}>
-            Interactive Visualizer
-          </Typography.Text>
-        )}
-        {targetMode.state === 'selected' && (
-          <Slider
-            min={0}
-            value={targetMode.sliderPosition}
-            max={targetMode.targetedNodes.length - 1}
-            onChange={(value) => {
-              setTargetMode(
-                produce(targetMode, (draft) => {
-                  draft.sliderPosition = value;
-                }),
-              );
-              instance.uiActions.onSelectNode(
-                targetMode.targetedNodes[value],
-                'visualiser',
-              );
-
-              debouncedReportTargetAdjusted();
-            }}
-          />
-        )}
-      </Layout.Container>
-
-      <Layout.Horizontal gap="medium" center>
-        <Tooltip title="Box model visualisation mode">
-          <Button
-            shape="circle"
-            onClick={() => setBoxVisualiserEnabled(!boxVisualiserEnabled)}
-            icon={
-              <BorderOutlined
-                style={{
-                  color: boxVisualiserEnabled
-                    ? theme.primaryColor
-                    : theme.black,
-                }}
-              />
-            }
-          />
-        </Tooltip>
-        <Tooltip title="Alignment mode">
-          <Button
-            shape="circle"
-            onClick={() => setAlignmentModeEnabled(!alignmentModeEnabled)}
-            icon={
-              <AlignLeftOutlined
-                style={{
-                  color: alignmentModeEnabled
-                    ? theme.primaryColor
-                    : theme.black,
-                }}
-              />
-            }
-          />
-        </Tooltip>
-        <Dropdown
-          menu={{
-            selectable: true,
-            selectedKeys: [wireFrameMode],
-            items: wireFrameModeDropDownItems,
-            onSelect: (event) => {
-              onSetWireFrameMode(event.selectedKeys[0] as WireFrameMode);
-            },
+    <Layout.Container>
+      <Layout.Right
+        style={{padding: theme.space.medium, flexGrow: 0}}
+        gap="medium"
+        center>
+        <Typography.Text
+          strong
+          style={{
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
           }}>
-          <Tooltip title="Wireframe Mode">
-            <Button shape="circle">
-              <PicCenterOutlined />
-            </Button>
-          </Tooltip>
-        </Dropdown>
-        <Tooltip title={targetToolTip}>
-          <Button
-            shape="circle"
-            onClick={() => {
-              if (targetMode.state === 'disabled') {
-                setTargetMode({state: 'active'});
-                tracker.track('target-mode-switched', {on: true});
-              } else {
-                setTargetMode({state: 'disabled'});
-                tracker.track('target-mode-switched', {on: false});
-              }
-            }}
-            icon={
-              <AimOutlined
-                style={{
-                  color:
-                    targetMode.state === 'disabled'
-                      ? theme.black
-                      : theme.primaryColor,
-                }}
-              />
-            }
-          />
-        </Tooltip>
+          Visualizer
+        </Typography.Text>
 
-        <Tooltip title={focusToolTip}>
-          <Button
-            shape="circle"
-            disabled={focusDisabled}
-            onClick={() => {
-              if (focusedNode == null) {
-                instance.uiActions.onFocusNode(selectedNode?.id);
-              } else {
-                instance.uiActions.onFocusNode();
+        <Layout.Horizontal gap="medium" center>
+          <Tooltip title="Box model visualisation mode">
+            <Button
+              shape="circle"
+              onClick={() => setBoxVisualiserEnabled(!boxVisualiserEnabled)}
+              icon={
+                <BorderOutlined
+                  style={{
+                    color: boxVisualiserEnabled
+                      ? theme.primaryColor
+                      : theme.black,
+                  }}
+                />
               }
-            }}
-            icon={
-              focusedNode == null ? (
-                <FullscreenExitOutlined
+            />
+          </Tooltip>
+          <Tooltip title="Alignment mode">
+            <Button
+              shape="circle"
+              onClick={() => setAlignmentModeEnabled(!alignmentModeEnabled)}
+              icon={
+                <AlignLeftOutlined
                   style={{
-                    color: theme.black,
+                    color: alignmentModeEnabled
+                      ? theme.primaryColor
+                      : theme.black,
                   }}
                 />
-              ) : (
-                <FullscreenOutlined
+              }
+            />
+          </Tooltip>
+          <Dropdown
+            menu={{
+              selectable: true,
+              selectedKeys: [wireFrameMode],
+              items: wireFrameModeDropDownItems,
+              onSelect: (event) => {
+                onSetWireFrameMode(event.selectedKeys[0] as WireFrameMode);
+              },
+            }}>
+            <Tooltip title="Wireframe Mode">
+              <Button shape="circle">
+                <PicCenterOutlined />
+              </Button>
+            </Tooltip>
+          </Dropdown>
+          <Dropdown
+            menu={{
+              selectable: false,
+              items:
+                referenceImage == null
+                  ? refernceImageItemsWithOutClear
+                  : refernceImageItemsWithClear,
+
+              onClick: async (event) => {
+                instance.uiActions.onReferenceImageAction(
+                  event.key as ReferenceImageAction,
+                );
+              },
+            }}>
+            <Tooltip title="Reference image">
+              <Button shape="circle">
+                <PictureOutlined />
+              </Button>
+            </Tooltip>
+          </Dropdown>
+          <Tooltip title={targetToolTip}>
+            <Button
+              shape="circle"
+              onClick={() => {
+                if (targetMode.state === 'disabled') {
+                  setTargetMode({state: 'active'});
+                  tracker.track('target-mode-switched', {on: true});
+                } else {
+                  setTargetMode({state: 'disabled'});
+                  tracker.track('target-mode-switched', {on: false});
+                }
+              }}
+              icon={
+                <AimOutlined
                   style={{
-                    color: theme.primaryColor,
+                    color:
+                      targetMode.state === 'disabled'
+                        ? theme.black
+                        : theme.primaryColor,
                   }}
                 />
-              )
-            }
-          />
-        </Tooltip>
-      </Layout.Horizontal>
-    </Layout.Right>
+              }
+            />
+          </Tooltip>
+
+          <Tooltip title={focusToolTip}>
+            <Button
+              shape="circle"
+              disabled={focusDisabled}
+              onClick={() => {
+                if (focusedNode == null) {
+                  instance.uiActions.onFocusNode(selectedNode?.id);
+                } else {
+                  instance.uiActions.onFocusNode();
+                }
+              }}
+              icon={
+                focusedNode == null ? (
+                  <FullscreenExitOutlined
+                    style={{
+                      color: theme.black,
+                    }}
+                  />
+                ) : (
+                  <FullscreenOutlined
+                    style={{
+                      color: theme.primaryColor,
+                    }}
+                  />
+                )
+              }
+            />
+          </Tooltip>
+        </Layout.Horizontal>
+      </Layout.Right>
+      <SecondaryControlArea
+        referenceImage={referenceImage}
+        targetMode={targetMode}
+        setTargetMode={setTargetMode}
+      />
+    </Layout.Container>
+  );
+}
+
+/**
+ * Panel below that shows additional controls when certain functions are active
+ */
+function SecondaryControlArea({
+  targetMode,
+  setTargetMode,
+  referenceImage,
+}: {
+  referenceImage: ReferenceImageState | null;
+  targetMode: TargetModeState;
+  setTargetMode: (state: TargetModeState) => void;
+}) {
+  const instance = usePlugin(plugin);
+
+  let textContent: string | null = '';
+  let additionalContent: React.ReactElement | null = null;
+
+  if (targetMode.state !== 'disabled') {
+    textContent =
+      targetMode.state === 'active'
+        ? 'Target mode: Select overlapping elements'
+        : targetMode.targetedNodes.length === 1
+          ? 'No overlapping elements detected'
+          : 'Pick element';
+
+    if (
+      targetMode.state === 'selected' &&
+      targetMode.targetedNodes.length > 1
+    ) {
+      additionalContent = (
+        <Slider
+          min={0}
+          value={targetMode.sliderPosition}
+          max={targetMode.targetedNodes.length - 1}
+          onChange={(value) => {
+            setTargetMode(
+              produce(targetMode, (draft) => {
+                draft.sliderPosition = value;
+              }),
+            );
+            instance.uiActions.onSelectNode(
+              targetMode.targetedNodes[value],
+              'visualiser',
+            );
+
+            debouncedReportTargetAdjusted();
+          }}
+        />
+      );
+    }
+  } else if (referenceImage != null) {
+    textContent = 'Opacity';
+    additionalContent = (
+      <Slider
+        min={0}
+        max={1}
+        step={0.05}
+        value={referenceImage.opacity}
+        onChange={(value) => {
+          instance.uiActions.onReferenceImageAction(value);
+        }}
+      />
+    );
+  }
+
+  return (
+    <Layout.Horizontal padh="large" gap="medium">
+      <Typography.Text style={{flexGrow: 1}}>{textContent}</Typography.Text>
+      <div style={{flexGrow: 3.5}}>{additionalContent}</div>
+    </Layout.Horizontal>
   );
 }
 

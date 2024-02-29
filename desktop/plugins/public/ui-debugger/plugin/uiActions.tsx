@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Atom, PluginClient} from 'flipper-plugin';
+import {Atom, PluginClient, getFlipperLib} from 'flipper-plugin';
 import {debounce, last} from 'lodash';
 import {
   ClientNode,
@@ -28,6 +28,7 @@ import {
   UIState,
   ViewMode,
   WireFrameMode,
+  ReferenceImageAction,
 } from '../DesktopTypes';
 import {tracker} from '../utils/tracker';
 import {checkFocusedNodeStillActive} from './ClientDataUtils';
@@ -265,6 +266,28 @@ export function uiActions(
     100,
   );
 
+  const onReferenceImageAction = async (action: ReferenceImageAction) => {
+    if (action === 'Import') {
+      const fileDescriptor = await getFlipperLib().importFile({
+        title: 'Select a reference image',
+        extensions: ['.png'],
+        encoding: 'binary',
+      });
+
+      if (fileDescriptor?.data != null) {
+        const blob = new Blob([fileDescriptor.data], {type: 'image/png'});
+        const imageUrl = URL.createObjectURL(blob);
+        uiState.referenceImage.set({url: imageUrl, opacity: 0.7});
+      }
+    } else if (action === 'Clear') {
+      uiState.referenceImage.set(null);
+    } else if (typeof action === 'number') {
+      uiState.referenceImage.update((draft) => {
+        if (draft != null) draft.opacity = action;
+      });
+    }
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
@@ -284,6 +307,7 @@ export function uiActions(
     onCollapseAllRecursively,
     ensureAncestorsExpanded,
     onSetTraversalMode,
+    onReferenceImageAction,
     editClientAttribute,
   };
 }
