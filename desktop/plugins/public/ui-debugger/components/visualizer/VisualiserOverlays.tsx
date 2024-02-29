@@ -51,8 +51,12 @@ export function VisualiserOverlays({
   const hoveredNodes = useValue(instance.uiState.hoveredNodes);
   const hoveredNodeId = head(hoveredNodes);
 
+  const hoveredNode = getNode(hoveredNodeId, nodes);
   //make sure to resolve the stale node
   const selectedNode = getNode(nodeSelection?.node.id, nodes);
+
+  const selectedNodeGlobalOffset = getGlobalOffset(selectedNode?.id, nodes);
+  const hoveredNodeGlobalOffset = getGlobalOffset(hoveredNodeId, nodes);
   const overlayCursor =
     targetMode.state === 'disabled' ? 'pointer' : 'crosshair';
 
@@ -83,6 +87,7 @@ export function VisualiserOverlays({
     <>
       {alignmentModeEnabled && selectedNode != null && (
         <AlignmentOverlay
+          globalOffset={selectedNodeGlobalOffset}
           selectedNode={selectedNode}
           nodes={nodes}
           snapshotHeight={snapshotNode.bounds.height}
@@ -91,26 +96,31 @@ export function VisualiserOverlays({
       )}
 
       {boxVisualiserEnabled && selectedNode != null && (
-        <BoxModelOverlay selectedNode={selectedNode} nodes={nodes} />
+        <BoxModelOverlay
+          selectedNode={selectedNode}
+          globalOffset={selectedNodeGlobalOffset}
+        />
       )}
-      {hoveredNodeId != null && (
+      {hoveredNode != null && (
         <DelayedHoveredToolTip
-          key={hoveredNodeId}
-          nodeId={hoveredNodeId}
+          key={hoveredNode.id}
+          node={hoveredNode}
           nodes={nodes}>
           <WireframeOverlay
             borderWidth={alignmentModeEnabled ? MediumBorder : ThickBorder}
             cursor={overlayCursor}
             onClick={onClickHoveredOverlay}
-            nodeId={hoveredNodeId}
-            nodes={nodes}
+            globalOffset={hoveredNodeGlobalOffset}
+            node={hoveredNode}
             type="hovered"
           />
         </DelayedHoveredToolTip>
       )}
 
-      {nodeSelection != null && (
+      {selectedNode != null && (
         <WireframeOverlay
+          node={selectedNode}
+          globalOffset={selectedNodeGlobalOffset}
           borderWidth={
             alignmentModeEnabled || boxVisualiserEnabled
               ? ThinBorder
@@ -118,8 +128,6 @@ export function VisualiserOverlays({
           }
           cursor={overlayCursor}
           type="selected"
-          nodeId={nodeSelection.node.id}
-          nodes={nodes}
         />
       )}
     </>
@@ -132,22 +140,20 @@ const ThinBorder = 1;
 const longHoverDelay = 500;
 
 const DelayedHoveredToolTip: React.FC<{
-  nodeId: Id;
+  node: ClientNode;
   nodes: Map<Id, ClientNode>;
   children: JSX.Element;
-}> = ({nodeId, nodes, children}) => {
-  const node = nodes.get(nodeId);
-
+}> = ({node, children}) => {
   const isVisible = useDelay(longHoverDelay);
 
   return (
     <Tooltip
       open={isVisible}
-      key={nodeId}
+      key={node.id}
       placement="top"
       zIndex={100}
       trigger={[]}
-      title={node?.name}
+      title={node.name}
       align={{
         offset: [0, 7],
       }}>
@@ -162,10 +168,8 @@ const borderColor = 'rgba(68, 175, 105)';
 
 const BoxModelOverlay: React.FC<{
   selectedNode: ClientNode;
-  nodes: Map<Id, ClientNode>;
-}> = ({selectedNode, nodes}) => {
-  const globalOffset = getTotalOffset(selectedNode.id, nodes);
-
+  globalOffset: Coordinate;
+}> = ({selectedNode, globalOffset}) => {
   const boxData = selectedNode.boxData;
   if (boxData == null) return null;
 
@@ -238,9 +242,8 @@ const AlignmentOverlay: React.FC<{
   nodes: Map<Id, ClientNode>;
   snapshotWidth: number;
   snapshotHeight: number;
-}> = ({selectedNode, nodes, snapshotHeight, snapshotWidth}) => {
-  const globalOffset = getTotalOffset(selectedNode.id, nodes);
-
+  globalOffset: Coordinate;
+}> = ({selectedNode, snapshotHeight, snapshotWidth, globalOffset}) => {
   return (
     <>
       <div
@@ -276,20 +279,18 @@ const WireframeOverlay = styled.div<{
   borderWidth: number;
   cursor: 'pointer' | 'crosshair';
   type: 'selected' | 'hovered';
-  nodeId: Id;
-  nodes: Map<Id, ClientNode>;
-}>(({type, nodeId, nodes, cursor, borderWidth}) => {
-  const offset = getTotalOffset(nodeId, nodes);
-  const node = nodes.get(nodeId);
+  node: ClientNode;
+  globalOffset: Coordinate;
+}>(({type, node, globalOffset, cursor, borderWidth}) => {
   return {
     zIndex: 100,
     pointerEvents: type === 'selected' ? 'none' : 'auto',
     cursor: cursor,
     position: 'absolute',
-    top: toPx(offset.y),
-    left: toPx(offset.x),
-    width: toPx(node?.bounds?.width ?? 0),
-    height: toPx(node?.bounds?.height ?? 0),
+    top: toPx(globalOffset.y),
+    left: toPx(globalOffset.x),
+    width: toPx(node.bounds.width),
+    height: toPx(node.bounds.height),
     boxSizing: 'border-box',
     borderWidth: borderWidth,
     borderStyle: 'solid',
@@ -303,7 +304,10 @@ const WireframeOverlay = styled.div<{
  * computes the x,y offset of a given node from the root of the visualization
  * in node coordinates
  */
-function getTotalOffset(id: Id, nodes: Map<Id, ClientNode>): Coordinate {
+function getGlobalOffset(
+  id: Id | undefined,
+  nodes: Map<Id, ClientNode>,
+): Coordinate {
   const offset = {x: 0, y: 0};
   let curId: Id | undefined = id;
 
