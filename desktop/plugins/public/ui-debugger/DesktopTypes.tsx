@@ -81,6 +81,7 @@ export type ViewMode =
   | {mode: 'frameworkEventsTable'; nodeId: Id | null; isTree: boolean | null};
 
 export type NodeSelection = {
+  /** This node may be stale, look up from node map via id to check if it is still in frame*/
   node: ClientNode;
   source: SelectionSource;
 };

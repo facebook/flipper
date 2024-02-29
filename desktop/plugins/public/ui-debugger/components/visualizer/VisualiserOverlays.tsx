@@ -51,6 +51,8 @@ export function VisualiserOverlays({
   const hoveredNodes = useValue(instance.uiState.hoveredNodes);
   const hoveredNodeId = head(hoveredNodes);
 
+  //make sure to resolve the stale node
+  const selectedNode = getNode(nodeSelection?.node.id, nodes);
   const overlayCursor =
     targetMode.state === 'disabled' ? 'pointer' : 'crosshair';
 
@@ -79,17 +81,17 @@ export function VisualiserOverlays({
 
   return (
     <>
-      {alignmentModeEnabled && nodeSelection?.node != null && (
+      {alignmentModeEnabled && selectedNode != null && (
         <AlignmentOverlay
-          selectedNode={nodeSelection.node}
+          selectedNode={selectedNode}
           nodes={nodes}
           snapshotHeight={snapshotNode.bounds.height}
           snapshotWidth={snapshotNode.bounds.width}
         />
       )}
 
-      {boxVisualiserEnabled && nodeSelection?.node != null && (
-        <BoxModelOverlay selectedNode={nodeSelection.node} nodes={nodes} />
+      {boxVisualiserEnabled && selectedNode != null && (
+        <BoxModelOverlay selectedNode={selectedNode} nodes={nodes} />
       )}
       {hoveredNodeId != null && (
         <DelayedHoveredToolTip
