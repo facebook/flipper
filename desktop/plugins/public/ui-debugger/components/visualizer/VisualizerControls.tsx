@@ -100,11 +100,8 @@ export function VisualiserControls({
     targetMode.state === 'disabled' ? 'Target Mode' : 'Exit  target mode';
 
   return (
-    <Layout.Container>
-      <Layout.Right
-        style={{padding: theme.space.medium, flexGrow: 0}}
-        gap="medium"
-        center>
+    <Layout.Container padh="large" gap="small" padv="medium">
+      <Layout.Right style={{flexGrow: 0}} gap="medium" center>
         <Typography.Text
           strong
           style={{
@@ -279,6 +276,10 @@ function SecondaryControlArea({
           min={0}
           value={targetMode.sliderPosition}
           max={targetMode.targetedNodes.length - 1}
+          tooltip={{
+            formatter: (number) =>
+              number != null ? targetMode.targetedNodes[number].name : '',
+          }}
           onChange={(value) => {
             setTargetMode(
               produce(targetMode, (draft) => {
@@ -308,12 +309,19 @@ function SecondaryControlArea({
         }}
       />
     );
+  } else {
+    return null;
   }
 
   return (
-    <Layout.Horizontal padh="large" gap="medium">
+    <Layout.Horizontal center style={{paddingTop: theme.space.tiny}}>
       <Typography.Text style={{flexGrow: 1}}>{textContent}</Typography.Text>
-      <div style={{flexGrow: 3.5}}>{additionalContent}</div>
+      <div
+        style={{
+          flexGrow: 3.5,
+        }}>
+        {additionalContent}
+      </div>
     </Layout.Horizontal>
   );
 }
