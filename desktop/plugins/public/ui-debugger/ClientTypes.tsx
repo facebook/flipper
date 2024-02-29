@@ -218,6 +218,7 @@ export type Tag =
   | 'iOS'
   | 'BloksBoundTree'
   | 'BloksDerived'
+  | 'BloksRootHost'
   | 'TreeRoot'
   | 'Warning';
 
