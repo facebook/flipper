@@ -15,6 +15,7 @@ import React from 'react';
 import {
   AimOutlined,
   AlignLeftOutlined,
+  BorderOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
   PicCenterOutlined,
@@ -54,6 +55,8 @@ export function VisualiserControls({
   onSetWireFrameMode,
   alignmentModeEnabled,
   setAlignmentModeEnabled,
+  boxVisualiserEnabled,
+  setBoxVisualiserEnabled,
 }: {
   wireFrameMode: WireFrameMode;
   onSetWireFrameMode: (mode: WireFrameMode) => void;
@@ -63,6 +66,8 @@ export function VisualiserControls({
   targetMode: TargetModeState;
   alignmentModeEnabled: boolean;
   setAlignmentModeEnabled: (enabled: boolean) => void;
+  boxVisualiserEnabled: boolean;
+  setBoxVisualiserEnabled: (enabled: boolean) => void;
 }) {
   const instance = usePlugin(plugin);
 
@@ -121,6 +126,21 @@ export function VisualiserControls({
       </Layout.Container>
 
       <Layout.Horizontal gap="medium" center>
+        <Tooltip title="Box model visualisation mode">
+          <Button
+            shape="circle"
+            onClick={() => setBoxVisualiserEnabled(!boxVisualiserEnabled)}
+            icon={
+              <BorderOutlined
+                style={{
+                  color: boxVisualiserEnabled
+                    ? theme.primaryColor
+                    : theme.black,
+                }}
+              />
+            }
+          />
+        </Tooltip>
         <Tooltip title="Alignment mode">
           <Button
             shape="circle"

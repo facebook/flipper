@@ -54,6 +54,7 @@ export const Visualization2D: React.FC<
   const wireFrameMode = useValue(instance.uiState.wireFrameMode);
 
   const [alignmentModeEnabled, setAlignmentModeEnabled] = useState(false);
+  const [boxVisualiserEnabled, setBoxVisualiserEnabled] = useState(false);
 
   const [targetMode, setTargetMode] = useState<TargetModeState>({
     state: 'disabled',
@@ -80,6 +81,8 @@ export const Visualization2D: React.FC<
           targetMode={targetMode}
           alignmentModeEnabled={alignmentModeEnabled}
           setAlignmentModeEnabled={setAlignmentModeEnabled}
+          boxVisualiserEnabled={boxVisualiserEnabled}
+          setBoxVisualiserEnabled={setBoxVisualiserEnabled}
         />
       )}
       <Visualization2DContent
@@ -93,6 +96,7 @@ export const Visualization2D: React.FC<
         wireframeMode={wireFrameMode}
         nodeSelection={nodeSelection}
         alignmentModeEnabled={alignmentModeEnabled}
+        boxVisualiserEnabled={boxVisualiserEnabled}
       />
     </Layout.Container>
   );
@@ -115,10 +119,10 @@ function Visualization2DContent({
   wireframeMode,
   nodeSelection,
   alignmentModeEnabled,
+  boxVisualiserEnabled,
 }: {
   targetMode: TargetModeState;
   setTargetMode: (targetMode: TargetModeState) => void;
-
   wireframeMode: WireFrameMode;
   nodeSelection?: NodeSelection;
   focusState: FocusState;
@@ -127,6 +131,7 @@ function Visualization2DContent({
   snapshotInfo: SnapshotInfo;
   disableInteractivity: boolean;
   alignmentModeEnabled: boolean;
+  boxVisualiserEnabled: boolean;
 }) {
   const instance = usePlugin(plugin);
   const hoveredNodes = useValue(instance.uiState.hoveredNodes);
@@ -283,6 +288,10 @@ function Visualization2DContent({
             snapshotWidth={snapshotNode.bounds.width}
           />
         )}
+
+        {boxVisualiserEnabled && nodeSelection?.node != null && (
+          <BoxModelOverlay selectedNode={nodeSelection.node} nodes={nodes} />
+        )}
         {hoveredNodeId != null && (
           <DelayedHoveredToolTip
             key={hoveredNodeId}
@@ -301,7 +310,11 @@ function Visualization2DContent({
 
         {nodeSelection != null && (
           <OverlayBorder
-            borderWidth={alignmentModeEnabled ? ThinBorder : ThickBorder}
+            borderWidth={
+              alignmentModeEnabled || boxVisualiserEnabled
+                ? ThinBorder
+                : ThickBorder
+            }
             cursor={overlayCursor}
             type="selected"
             nodeId={nodeSelection.node.id}
@@ -493,7 +506,82 @@ const DelayedHoveredToolTip: React.FC<{
   );
 };
 
-const borderStyle = `1px dashed ${theme.primaryColor}`;
+const marginColor = 'rgba(100, 200, 20, 0.5)';
+const borderColor = 'rgba(200, 50, 120, 0.5)';
+const paddingColor = 'rgba(30, 150, 220, 0.5)';
+
+const BoxModelOverlay: React.FC<{
+  selectedNode: ClientNode;
+  nodes: Map<Id, ClientNode>;
+}> = ({selectedNode, nodes}) => {
+  const globalOffset = getTotalOffset(selectedNode.id, nodes);
+
+  const boxData = selectedNode.boxData;
+  if (boxData == null) return null;
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        zIndex: 99,
+        left: toPx(globalOffset.x),
+        top: toPx(globalOffset.y),
+        width: toPx(selectedNode.bounds.width),
+        height: toPx(selectedNode.bounds.height),
+      }}>
+      <OuterBoxOverlay boxdata={boxData.margin} color={marginColor}>
+        <InnerBoxOverlay boxdata={boxData.border} color={borderColor}>
+          <InnerBoxOverlay boxdata={boxData.padding} color={paddingColor} />
+        </InnerBoxOverlay>
+      </OuterBoxOverlay>
+    </div>
+  );
+};
+
+/**
+ * Draws outwards from parent to simulate margin
+ */
+const OuterBoxOverlay = styled.div<{
+  boxdata: [number, number, number, number];
+  color: string;
+}>(({boxdata, color}) => {
+  const [left, right, top, bottom] = boxdata;
+  return {
+    position: 'absolute',
+    top: toPx(-top),
+    bottom: toPx(-bottom),
+    left: toPx(-left),
+    right: toPx(-right),
+    borderLeft: toPx(left),
+    borderRightWidth: toPx(right),
+    borderTopWidth: toPx(top),
+    borderBottomWidth: toPx(bottom),
+    borderStyle: 'solid',
+    borderColor: color,
+  };
+});
+
+/**
+ * Draws inside parent to simulate border and padding
+ */
+const InnerBoxOverlay = styled.div<{
+  boxdata: [number, number, number, number];
+  color: string;
+}>(({boxdata, color}) => {
+  const [left, right, top, bottom] = boxdata;
+  return {
+    width: '100%',
+    height: '100%',
+    borderLeftWidth: toPx(left),
+    borderRightWidth: toPx(right),
+    borderTopWidth: toPx(top),
+    borderBottomWidth: toPx(bottom),
+    borderStyle: 'solid',
+    borderColor: color,
+  };
+});
+
+const alignmentOverlayBorder = `1px dashed ${theme.primaryColor}`;
 
 const AlignmentOverlay: React.FC<{
   selectedNode: ClientNode;
@@ -509,8 +597,8 @@ const AlignmentOverlay: React.FC<{
         style={{
           position: 'absolute',
           zIndex: 99,
-          borderLeft: borderStyle,
-          borderRight: borderStyle,
+          borderLeft: alignmentOverlayBorder,
+          borderRight: alignmentOverlayBorder,
           width: toPx(selectedNode.bounds.width),
           height: toPx(snapshotHeight),
           left: toPx(globalOffset.x),
@@ -520,8 +608,8 @@ const AlignmentOverlay: React.FC<{
         style={{
           position: 'absolute',
           zIndex: 99,
-          borderTop: borderStyle,
-          borderBottom: borderStyle,
+          borderTop: alignmentOverlayBorder,
+          borderBottom: alignmentOverlayBorder,
           width: toPx(snapshotWidth),
           height: toPx(selectedNode.bounds.height),
           top: toPx(globalOffset.y),

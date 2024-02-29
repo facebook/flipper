@@ -142,6 +142,7 @@ export type ClientNode = {
   parent?: Id;
   qualifiedName: string; //this is the name of the component plus qualification so myles has a chance of finding it. E.g com.facebook.MyView
   lineNumber?: number;
+  boxData?: BoxData;
   name: string;
   attributes: Record<MetadataId, Inspectable>;
   inlineAttributes: Record<string, string>;
@@ -150,6 +151,18 @@ export type ClientNode = {
   bounds: Bounds;
   tags: Tag[];
   activeChild?: Id;
+};
+
+/**
+ * Space efficient representation of a box, order is:
+ * Left, Right, Top, Bottom,
+ */
+type CompactBox = [number, number, number, number];
+
+export type BoxData = {
+  margin: CompactBox;
+  border: CompactBox;
+  padding: CompactBox;
 };
 
 export type Metadata = {
