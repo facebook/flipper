@@ -385,6 +385,7 @@ export type FlipperServerCommands = {
   ) => Promise<void>;
   'intern-cloud-upload': (path: string) => Promise<string>;
   shutdown: () => Promise<void>;
+  restart: () => Promise<void>;
   'is-logged-in': () => Promise<boolean>;
   'environment-info': () => Promise<EnvironmentInfo>;
   'move-pwa': () => Promise<void>;

@@ -19,13 +19,18 @@ import {
   FlipperServerEvents,
   ConnectionRecordEntry,
 } from 'flipper-common';
-import CertificateProvider from './certificate-exchange/CertificateProvider';
+import CertificateProvider, {
+  CertificateExchangeRequestResult,
+} from './certificate-exchange/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import DummyDevice from '../devices/DummyDevice';
 import {appNameWithUpdateHint, assertNotNull} from './Utilities';
-import ServerWebSocketBase, {ServerEventsListener} from './ServerWebSocketBase';
+import ServerWebSocketBase, {
+  CertificateExchangeRequestResponse,
+  ServerEventsListener,
+} from './ServerWebSocketBase';
 import {
   createBrowserServer,
   createServer,
@@ -89,7 +94,6 @@ export class ServerController
 
     recorder.enable(flipperServer);
   }
-
   onClientMessage(clientId: string, payload: string): void {
     this.flipperServer.emit('client-message', {
       id: clientId,
@@ -312,7 +316,7 @@ export class ServerController
     unsanitizedCSR: string,
     clientQuery: ClientQuery,
     appDirectory: string,
-  ): Promise<{deviceId: string}> {
+  ): Promise<CertificateExchangeRequestResponse> {
     let certificateProvider: CertificateProvider;
     switch (clientQuery.os) {
       case 'Android': {
@@ -364,7 +368,11 @@ export class ServerController
         ),
         'processCertificateSigningRequest',
       )
-        .then((response) => {
+        .then((result: CertificateExchangeRequestResult) => {
+          if (result.error) {
+            throw result.error;
+          }
+
           recorder.log(
             clientQuery,
             'Certificate Signing Request successfully processed',
@@ -382,12 +390,12 @@ export class ServerController
             // Once app knows it, it starts using the correct device ID for its subsequent secure connections.
             // When the app re-connects securely after the certificate exchange process, we need to cancel this timeout.
             // Since the original clientQuery has `device_id` set to "unknown", we update it here with the correct `device_id` to find it and cancel it later.
-            clientQueryToKey({...clientQuery, device_id: response.deviceId}),
+            clientQueryToKey({...clientQuery, device_id: result.deviceId}),
             setTimeout(() => {
               this.emit('client-unresponsive-error', {
                 client,
                 medium: clientQuery.medium,
-                deviceID: response.deviceId,
+                deviceID: result.deviceId,
               });
             }, 30 * 1000),
           );
@@ -395,10 +403,10 @@ export class ServerController
           tracker.track('app-connection-certificate-exchange', {
             ...clientQuery,
             successful: true,
-            device_id: response.deviceId,
+            device_id: result.deviceId,
           });
 
-          resolve(response);
+          resolve({deviceId: result.deviceId});
         })
         .catch((error: Error) => {
           tracker.track('app-connection-certificate-exchange', {

@@ -14,7 +14,12 @@ import ToggledSection from './settings/ToggledSection';
 import {isEqual} from 'lodash';
 import {reportUsage, Settings} from 'flipper-common';
 import {Button, Typography} from 'antd';
-import {Layout, withTrackingScope, _NuxManagerContext} from 'flipper-plugin';
+import {
+  getFlipperLib,
+  Layout,
+  withTrackingScope,
+  _NuxManagerContext,
+} from 'flipper-plugin';
 import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 import {useStore} from '../utils/useStore';
 
@@ -49,7 +54,14 @@ export const PlatformSelectWizard = withTrackingScope(
         return flush().then(() => {
           if (!settingsPristine) {
             reportUsage('platformwizard:action:changed');
-            getFlipperServer().exec('shutdown');
+            if (
+              getFlipperLib().environmentInfo.os.platform === 'darwin' &&
+              getFlipperLib().isFB
+            ) {
+              getFlipperServer().exec('restart');
+            } else {
+              getFlipperServer().exec('shutdown');
+            }
             window.close();
           } else {
             reportUsage('platformwizard:action:noop');
@@ -100,7 +112,7 @@ export const PlatformSelectWizard = withTrackingScope(
           onClick={() => applyChanges(settingsPristine)}
           disabled={settingsPristine}
           title={settingsPristine ? 'No changes made' : ''}>
-          Save changes and kill Flipper
+          Save changes and {platform === 'darwin' ? 'restart' : 'kill'} Flipper
         </Button>
       </Layout.Container>
     );

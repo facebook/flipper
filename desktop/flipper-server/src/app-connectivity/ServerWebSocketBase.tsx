@@ -18,6 +18,11 @@ import {
 import {SecureServerConfig} from './certificate-exchange/certificate-utils';
 import GK from '../fb-stubs/GK';
 
+export type CertificateExchangeRequestResponse = {
+  deviceId?: string;
+  certificates?: string;
+};
+
 /**
  * Defines an interface for events triggered by a running server interacting
  * with a client.
@@ -61,7 +66,7 @@ export interface ServerEventsListener {
     unsanitizedCSR: string,
     clientQuery: ClientQuery,
     appDirectory: string,
-  ): Promise<{deviceId: string}>;
+  ): Promise<CertificateExchangeRequestResponse>;
   /**
    * A secure connection has been established with a validated client.
    * A promise to a Client instance needs to be returned.
@@ -183,9 +188,7 @@ abstract class ServerWebSocketBase {
         console.info(
           `[conn] Exchanged certificate: ${clientQuery.app} on ${result.deviceId}`,
         );
-        const response = JSON.stringify({
-          deviceId: result.deviceId,
-        });
+        const response = JSON.stringify(result);
         return response;
       } catch (error) {
         this.listener.onClientSetupError(clientQuery, error);

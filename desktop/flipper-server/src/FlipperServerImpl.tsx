@@ -7,6 +7,9 @@
  * @format
  */
 
+import cp from 'child_process';
+import os from 'os';
+import {promisify} from 'util';
 import './utils/macCa';
 import './utils/fetch-polyfill';
 import EventEmitter from 'events';
@@ -633,6 +636,15 @@ export class FlipperServerImpl implements FlipperServer {
         throw new Error('Upload failed');
       }
       return uploadRes;
+    },
+    restart: async () => {
+      if (os.platform() === 'darwin') {
+        const execAsPromise = promisify(cp.exec);
+        await execAsPromise('open flipper://execute?cmd=restart');
+        return;
+      }
+
+      throw new Error('Restarting the app is only supported on macOS');
     },
     shutdown: async () => {
       // Do not use processExit helper. We want to server immediatelly quit when this call is triggerred

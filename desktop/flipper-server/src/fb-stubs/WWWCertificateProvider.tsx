@@ -8,7 +8,9 @@
  */
 
 import {KeytarManager} from '../utils/keytar';
-import CertificateProvider from '../app-connectivity/certificate-exchange/CertificateProvider';
+import CertificateProvider, {
+  CertificateExchangeRequestResult,
+} from '../app-connectivity/certificate-exchange/CertificateProvider';
 
 export default class WWWCertificateProvider extends CertificateProvider {
   name = 'WWWCertificateProvider';
@@ -18,7 +20,7 @@ export default class WWWCertificateProvider extends CertificateProvider {
     super();
   }
 
-  async processCertificateSigningRequest(): Promise<{deviceId: string}> {
+  async processCertificateSigningRequest(): Promise<CertificateExchangeRequestResult> {
     throw new Error('WWWCertificateProvider is not implemented');
   }
 

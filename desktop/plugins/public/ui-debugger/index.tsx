@@ -332,5 +332,7 @@ function createUIState(): UIState {
     // view-hierarchy is the default state so we start with it until we fetch supported modes from the client
     supportedTraversalModes: createState<TraversalMode[]>(['view-hierarchy']),
     traversalMode: createState<TraversalMode>('view-hierarchy'),
+
+    referenceImage: createState(null),
   };
 }
