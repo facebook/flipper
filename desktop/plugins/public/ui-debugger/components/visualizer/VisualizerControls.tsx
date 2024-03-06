@@ -122,7 +122,12 @@ export function VisualiserControls({
           <Tooltip title="Box model visualisation mode">
             <Button
               shape="circle"
-              onClick={() => setBoxVisualiserEnabled(!boxVisualiserEnabled)}
+              onClick={() => {
+                tracker.track('box-visualiser-switched', {
+                  on: !boxVisualiserEnabled,
+                });
+                setBoxVisualiserEnabled(!boxVisualiserEnabled);
+              }}
               icon={
                 <BorderOutlined
                   style={{
@@ -137,7 +142,12 @@ export function VisualiserControls({
           <Tooltip title="Alignment mode">
             <Button
               shape="circle"
-              onClick={() => setAlignmentModeEnabled(!alignmentModeEnabled)}
+              onClick={() => {
+                tracker.track('alignment-mode-switched', {
+                  on: !alignmentModeEnabled,
+                });
+                setAlignmentModeEnabled(!alignmentModeEnabled);
+              }}
               icon={
                 <AlignLeftOutlined
                   style={{

@@ -279,9 +279,11 @@ export function uiActions(
         const blob = new Blob([fileDescriptor.data], {type: 'image/png'});
         const imageUrl = URL.createObjectURL(blob);
         uiState.referenceImage.set({url: imageUrl, opacity: 0.7});
+        tracker.track('reference-image-switched', {on: true});
       }
     } else if (action === 'Clear') {
       uiState.referenceImage.set(null);
+      tracker.track('reference-image-switched', {on: false});
     } else if (typeof action === 'number') {
       uiState.referenceImage.update((draft) => {
         if (draft != null) draft.opacity = action;
