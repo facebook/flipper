@@ -386,7 +386,7 @@ const IndentGuides = React.memo(
     props.isSelected === nextProps.isSelected,
 );
 
-function TreeNodeRow({
+export function TreeNodeRow({
   transform,
   innerRef,
   treeNode,

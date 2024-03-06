@@ -28,6 +28,7 @@ import {
   ReferenceImageState,
   WireFrameMode,
 } from '../../DesktopTypes';
+import {createDropDownItem} from '../shared/createDropDownItem';
 export type TargetModeState =
   | {
       state: 'selected';
@@ -41,23 +42,28 @@ export type TargetModeState =
       state: 'disabled';
     };
 
-function createItem<T>(wireframeMode: T, label: string) {
-  return {key: wireframeMode, label: label};
-}
-
 const wireFrameModeDropDownItems = [
-  createItem<WireFrameMode>('All', 'All'),
-  createItem<WireFrameMode>('SelectedAndChildren', 'Selected and children'),
-  createItem<WireFrameMode>('SelectedOnly', 'Selected only'),
+  createDropDownItem<WireFrameMode>('All', 'All'),
+  createDropDownItem<WireFrameMode>(
+    'SelectedAndChildren',
+    'Selected and children',
+  ),
+  createDropDownItem<WireFrameMode>('SelectedOnly', 'Selected only'),
 ];
 
 const refernceImageItemsWithOutClear = [
-  createItem<ReferenceImageAction>('Import', 'Load reference image from disk'),
+  createDropDownItem<ReferenceImageAction>(
+    'Import',
+    'Load reference image from disk',
+  ),
 ];
 
 const refernceImageItemsWithClear = [
-  createItem<ReferenceImageAction>('Import', 'Load reference image from disk'),
-  createItem<ReferenceImageAction>('Clear', 'Clear reference image'),
+  createDropDownItem<ReferenceImageAction>(
+    'Import',
+    'Load reference image from disk',
+  ),
+  createDropDownItem<ReferenceImageAction>('Clear', 'Clear reference image'),
 ];
 
 export function VisualiserControls({
