@@ -471,13 +471,16 @@ export function TreeNodeRow({
         {nodeIcon(treeNode)}
         <TreeNodeTextContent treeNode={treeNode} />
         {treeNode.frameworkEvents && (
-          <Badge
-            count={treeNode.frameworkEvents}
-            style={{
-              backgroundColor: theme.primaryColor,
-              marginLeft: theme.space.small,
-            }}
-          />
+          <Tooltip
+            title={`${treeNode.frameworkEvents} monitored framework events`}>
+            <Badge
+              count={treeNode.frameworkEvents}
+              style={{
+                backgroundColor: theme.primaryColor,
+                marginLeft: theme.space.small,
+              }}
+            />
+          </Tooltip>
         )}
       </TreeNodeContent>
     </div>
