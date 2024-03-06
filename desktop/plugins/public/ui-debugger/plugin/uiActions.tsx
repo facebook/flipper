@@ -29,6 +29,7 @@ import {
   ViewMode,
   WireFrameMode,
   ReferenceImageAction,
+  Operation,
 } from '../DesktopTypes';
 import {tracker} from '../utils/tracker';
 import {checkFocusedNodeStillActive} from './ClientDataUtils';
@@ -288,6 +289,26 @@ export function uiActions(
     }
   };
 
+  const onChangeNodeLevelEventTypeFilter = (thread: string, op: Operation) => {
+    uiState.nodeLevelFrameworkEventFilters.update((draft) => {
+      if (op === 'add') {
+        draft.eventTypes.add(thread);
+      } else {
+        draft.eventTypes.delete(thread);
+      }
+    });
+  };
+
+  const onChangeNodeLevelThreadFilter = (eventType: string, op: Operation) => {
+    uiState.nodeLevelFrameworkEventFilters.update((draft) => {
+      if (op === 'add') {
+        draft.threads.add(eventType);
+      } else {
+        draft.threads.delete(eventType);
+      }
+    });
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
@@ -308,6 +329,8 @@ export function uiActions(
     ensureAncestorsExpanded,
     onSetTraversalMode,
     onReferenceImageAction,
+    onChangeNodeLevelEventTypeFilter,
+    onChangeNodeLevelThreadFilter,
     editClientAttribute,
   };
 }

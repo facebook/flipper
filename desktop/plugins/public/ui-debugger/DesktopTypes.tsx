@@ -45,11 +45,17 @@ export type UIState = {
   focusedNode: Atom<Id | undefined>;
   expandedNodes: Atom<Set<Id>>;
   visualiserWidth: Atom<number>;
+  nodeLevelFrameworkEventFilters: Atom<NodeLevelFrameworkEventFilters>;
   frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
   filterMainThreadMonitoring: Atom<boolean>;
   referenceImage: Atom<ReferenceImageState | null>;
   supportedTraversalModes: Atom<TraversalMode[]>;
   traversalMode: Atom<TraversalMode>;
+};
+
+type NodeLevelFrameworkEventFilters = {
+  threads: Set<string>;
+  eventTypes: Set<string>;
 };
 
 export type ReferenceImageState = {
@@ -102,6 +108,8 @@ export type OnSelectNode = (
   source: SelectionSource,
 ) => void;
 
+export type Operation = 'add' | 'remove';
+
 export type UIActions = {
   onHoverNode: (...node: Id[]) => void;
   onFocusNode: (focused?: Id) => void;
@@ -125,6 +133,8 @@ export type UIActions = {
   ensureAncestorsExpanded: (nodeId: Id) => void;
   onSetTraversalMode: (mode: TraversalMode) => void;
   onReferenceImageAction: (action: ReferenceImageAction) => Promise<void>;
+  onChangeNodeLevelThreadFilter: (thread: string, op: Operation) => void;
+  onChangeNodeLevelEventTypeFilter: (eventType: string, op: Operation) => void;
   editClientAttribute: (
     nodeId: Id,
     value: any,

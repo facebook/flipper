@@ -324,6 +324,11 @@ function createUIState(): UIState {
     //The nodes are sorted by area since you most likely want to select the smallest node under your cursor
     hoveredNodes: createState<Id[]>([]),
 
+    nodeLevelFrameworkEventFilters: createState({
+      threads: new Set(),
+      eventTypes: new Set(),
+    }),
+
     searchTerm: createState<string>(''),
     focusedNode: createState<Id | undefined>(undefined),
     expandedNodes: createState<Set<Id>>(new Set()),
