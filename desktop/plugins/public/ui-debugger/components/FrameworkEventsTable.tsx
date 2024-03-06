@@ -7,7 +7,7 @@
  * @format
  */
 
-import {DeleteOutlined, PartitionOutlined} from '@ant-design/icons';
+import {CloseOutlined, DeleteOutlined} from '@ant-design/icons';
 import {
   DataTable,
   DataTableColumn,
@@ -125,7 +125,7 @@ export function FrameworkEventsTable({
                   instance.uiActions.onFocusNode(undefined);
                   instance.uiActions.onSetViewMode({mode: 'default'});
                 }}
-                icon={<PartitionOutlined />}></Button>
+                icon={<CloseOutlined />}></Button>
             </Tooltip>
             <Tooltip title="Delete all events">
               <Button
