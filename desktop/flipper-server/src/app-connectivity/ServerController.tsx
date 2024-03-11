@@ -373,17 +373,18 @@ export class ServerController
         .then((result: CertificateExchangeRequestResult) => {
           const shouldSendEncryptedCertificates =
             GK.get('flipper_encrypted_exchange') && clientQuery.os === 'iOS';
+
+          const client: UninitializedClient = {
+            os: clientQuery.os,
+            deviceName: clientQuery.device,
+            appName: appNameWithUpdateHint(clientQuery),
+          };
+
           if (!result.error) {
             recorder.log(
               clientQuery,
               'Certificate Signing Request successfully processed',
             );
-
-            const client: UninitializedClient = {
-              os: clientQuery.os,
-              deviceName: clientQuery.device,
-              appName: appNameWithUpdateHint(clientQuery),
-            };
 
             this.timeHandlers.set(
               // In the original insecure connection request, `device_id` is set to "unknown".
@@ -416,6 +417,12 @@ export class ServerController
             recorder.log(
               clientQuery,
               'Certificate Signing Request failed, attempt fallback exchange',
+            );
+
+            this.emit(
+              'client-setup-secret-exchange',
+              client,
+              result.certificates?.key,
             );
 
             const deviceId = uuid();
