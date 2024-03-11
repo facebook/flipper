@@ -18,6 +18,7 @@ import {
   reportPlatformFailures,
   FlipperServerEvents,
   ConnectionRecordEntry,
+  uuid,
 } from 'flipper-common';
 import CertificateProvider, {
   CertificateExchangeRequestResult,
@@ -49,6 +50,7 @@ import DesktopCertificateProvider from '../devices/desktop/DesktopCertificatePro
 import WWWCertificateProvider from '../fb-stubs/WWWCertificateProvider';
 import {tracker} from '../tracker';
 import {recorder} from '../recorder';
+import GK from '../fb-stubs/GK';
 
 type ClientTimestampTracker = {
   insecureStart?: number;
@@ -369,44 +371,72 @@ export class ServerController
         'processCertificateSigningRequest',
       )
         .then((result: CertificateExchangeRequestResult) => {
-          if (result.error) {
+          const shouldSendEncryptedCertificates =
+            GK.get('flipper_encrypted_exchange') && clientQuery.os === 'iOS';
+          if (!result.error) {
+            recorder.log(
+              clientQuery,
+              'Certificate Signing Request successfully processed',
+            );
+
+            const client: UninitializedClient = {
+              os: clientQuery.os,
+              deviceName: clientQuery.device,
+              appName: appNameWithUpdateHint(clientQuery),
+            };
+
+            this.timeHandlers.set(
+              // In the original insecure connection request, `device_id` is set to "unknown".
+              // Flipper queries adb/idb to learn the device ID and provides it back to the app.
+              // Once app knows it, it starts using the correct device ID for its subsequent secure connections.
+              // When the app re-connects securely after the certificate exchange process, we need to cancel this timeout.
+              // Since the original clientQuery has `device_id` set to "unknown", we update it here with the correct `device_id` to find it and cancel it later.
+              clientQueryToKey({...clientQuery, device_id: result.deviceId}),
+              setTimeout(() => {
+                this.emit('client-unresponsive-error', {
+                  client,
+                  medium: clientQuery.medium,
+                  deviceID: result.deviceId,
+                });
+              }, 30 * 1000),
+            );
+
+            tracker.track('app-connection-certificate-exchange', {
+              ...clientQuery,
+              successful: true,
+              device_id: result.deviceId,
+            });
+
+            const response: CertificateExchangeRequestResponse = {
+              deviceId: result.deviceId,
+            };
+
+            resolve(response);
+          } else if (shouldSendEncryptedCertificates) {
+            recorder.log(
+              clientQuery,
+              'Certificate Signing Request failed, attempt fallback exchange',
+            );
+
+            const deviceId = uuid();
+            this.flipperServer.registerDevice(
+              new DummyDevice(
+                this.flipperServer,
+                deviceId,
+                clientQuery.app,
+                clientQuery.os,
+              ),
+            );
+
+            const response: CertificateExchangeRequestResponse = {
+              deviceId,
+              certificates: result.certificates?.data,
+            };
+
+            resolve(response);
+          } else {
             throw result.error;
           }
-
-          recorder.log(
-            clientQuery,
-            'Certificate Signing Request successfully processed',
-          );
-
-          const client: UninitializedClient = {
-            os: clientQuery.os,
-            deviceName: clientQuery.device,
-            appName: appNameWithUpdateHint(clientQuery),
-          };
-
-          this.timeHandlers.set(
-            // In the original insecure connection request, `device_id` is set to "unknown".
-            // Flipper queries adb/idb to learn the device ID and provides it back to the app.
-            // Once app knows it, it starts using the correct device ID for its subsequent secure connections.
-            // When the app re-connects securely after the certificate exchange process, we need to cancel this timeout.
-            // Since the original clientQuery has `device_id` set to "unknown", we update it here with the correct `device_id` to find it and cancel it later.
-            clientQueryToKey({...clientQuery, device_id: result.deviceId}),
-            setTimeout(() => {
-              this.emit('client-unresponsive-error', {
-                client,
-                medium: clientQuery.medium,
-                deviceID: result.deviceId,
-              });
-            }, 30 * 1000),
-          );
-
-          tracker.track('app-connection-certificate-exchange', {
-            ...clientQuery,
-            successful: true,
-            device_id: result.deviceId,
-          });
-
-          resolve({deviceId: result.deviceId});
         })
         .catch((error: Error) => {
           tracker.track('app-connection-certificate-exchange', {
