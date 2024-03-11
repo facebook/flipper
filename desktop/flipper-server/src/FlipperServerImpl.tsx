@@ -161,6 +161,16 @@ export class FlipperServerImpl implements FlipperServer {
     );
 
     server.addListener(
+      'client-setup-secret-exchange',
+      (client: UninitializedClient, secret: string) => {
+        this.emit('client-setup-secret-exchange', {
+          client,
+          secret,
+        });
+      },
+    );
+
+    server.addListener(
       'client-unresponsive-error',
       ({
         client,

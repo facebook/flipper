@@ -152,6 +152,10 @@ export type FlipperServerEvents = {
     crash: CrashLog;
   };
   'client-setup': UninitializedClient;
+  'client-setup-secret-exchange': {
+    client: UninitializedClient;
+    secret: string;
+  };
   'client-setup-error': {
     client: UninitializedClient;
     type: 'error' | 'warning';
