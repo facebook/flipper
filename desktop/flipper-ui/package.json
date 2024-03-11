@@ -17,6 +17,7 @@
     "@nicksrandall/console-feed": "^3.5.0",
     "@tanishiking/aho-corasick": "^0.0.1",
     "antd": "^4.24",
+    "qrcode.react": "^3.1.0",
     "cbuffer": "^2.2.0",
     "deep-equal": "^2.2.2",
     "eventemitter3": "^4.0.7",
