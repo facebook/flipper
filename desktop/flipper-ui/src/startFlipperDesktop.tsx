@@ -131,7 +131,7 @@ class AppFrame extends React.Component<
     console.error(
       `Flipper chrome crash: ${error}`,
       error,
-      '\nComponents: ' + errorInfo?.componentStack,
+      `\nComponents: ${errorInfo?.componentStack}`,
     );
     this.setState({
       error,

@@ -79,7 +79,7 @@ export class PluginManager {
      */
     let css = undefined;
     const idx = path.lastIndexOf('.');
-    const cssPath = path.substring(0, idx < 0 ? path.length : idx) + '.css';
+    const cssPath = `${path.substring(0, idx < 0 ? path.length : idx)}.css`;
     try {
       await fs.promises.access(cssPath);
 

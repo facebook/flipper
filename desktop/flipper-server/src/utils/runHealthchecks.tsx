@@ -50,14 +50,14 @@ export async function runHealthcheck(
   const healthchecks = getHealthchecks();
   const category = healthchecks[categoryName];
   if (!category) {
-    throw new Error('Unknown category: ' + categoryName);
+    throw new Error(`Unknown category: ${categoryName}`);
   }
   if (!('healthchecks' in category)) {
-    throw new Error('Skipped category: ' + categoryName);
+    throw new Error(`Skipped category: ${categoryName}`);
   }
   const check = category.healthchecks.find((h) => h.key === ruleName);
   if (!check) {
-    throw new Error('Unknown healthcheck: ' + ruleName);
+    throw new Error(`Unknown healthcheck: ${ruleName}`);
   }
 
   const envInfoPromise = getEnvInfo();

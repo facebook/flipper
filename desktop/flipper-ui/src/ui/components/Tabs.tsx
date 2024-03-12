@@ -266,7 +266,7 @@ export default function Tabs(props: {
                   'Tabs',
                   'onTabClick',
                   scope as any,
-                  'tab:' + key + ':' + comp.props.label,
+                  `tab:${key}:${comp.props.label}`,
                 )
               : undefined
           }>

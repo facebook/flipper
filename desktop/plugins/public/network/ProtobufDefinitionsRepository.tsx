@@ -30,7 +30,7 @@ export class ProtobufDefinitionsRepository {
   public addDefinitions(baseUrl: string, definitions: ProtobufDefinition[]) {
     for (const d of definitions) {
       if (!baseUrl.endsWith('/') && d.path.substr(0, 1) != '/') {
-        this.rawDefinitions[this.key(d.method, baseUrl + '/' + d.path)] = d;
+        this.rawDefinitions[this.key(d.method, `${baseUrl}/${d.path}`)] = d;
       } else {
         this.rawDefinitions[this.key(d.method, baseUrl + d.path)] = d;
       }
@@ -84,7 +84,7 @@ export class ProtobufDefinitionsRepository {
   }
 
   private key(method: string, path: string): string {
-    return method + '::' + path.split('?')[0];
+    return `${method}::${path.split('?')[0]}`;
   }
 }
 

@@ -19,11 +19,10 @@ function generateTodos(amount: number): Todo[] {
   const res = new Array<Todo>(amount);
   for (let i = 0; i < amount; i++) {
     res[i] = {
-      id: 'todo_' + i,
-      title:
-        '' +
-        ((i % 20) * 1000000 + (amount - i)) +
-        GKChesterton.replace(/Chesterton/g, '' + i),
+      id: `todo_${i}`,
+      title: `${
+        (i % 20) * 1000000 + (amount - i)
+      }${GKChesterton.replace(/Chesterton/g, `${i}`)}`,
       done: i % 3 === 0,
     };
   }
@@ -101,8 +100,8 @@ test.skip('run perf test', () => {
   measure('append', (ds) => {
     for (let i = 0; i < 1000; i++) {
       ds.append({
-        id: 'test_' + i,
-        title: i + 'read some more chesterton!',
+        id: `test_${i}`,
+        title: `${i}read some more chesterton!`,
         done: false,
       });
     }
@@ -111,8 +110,8 @@ test.skip('run perf test', () => {
   measure('update', (ds) => {
     for (let i = 0; i < 1000; i++) {
       ds.update(i, {
-        id: 'test_update_' + i,
-        title: i + 'read some more chesterton!',
+        id: `test_update_${i}`,
+        title: `${i}read some more chesterton!`,
         done: true,
       });
     }

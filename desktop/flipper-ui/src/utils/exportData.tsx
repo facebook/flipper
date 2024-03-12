@@ -171,7 +171,7 @@ async function exportSandyPluginStates(
           .get(pluginId)!
           .exportState(idler, statusUpdate);
       } catch (error) {
-        console.error('Error while serializing plugin ' + pluginId, error);
+        console.error(`Error while serializing plugin ${pluginId}`, error);
         throw new Error(`Failed to serialize plugin ${pluginId}: ${error}`);
       }
     }
@@ -205,7 +205,7 @@ async function addSaltToDeviceSerial({
   devicePluginStates,
 }: AddSaltToDeviceSerialOptions): Promise<ExportType> {
   const {serial} = device;
-  const newSerial = salt + '-' + serial;
+  const newSerial = `${salt}-${serial}`;
   const newDevice = new ArchivedDevice({
     serial: newSerial,
     deviceType: device.deviceType,

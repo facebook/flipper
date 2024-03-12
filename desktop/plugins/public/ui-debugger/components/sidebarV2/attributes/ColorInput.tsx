@@ -123,5 +123,5 @@ const RGBAtoHEX = (color: Color) => {
     (color.g | (1 << 8)).toString(16).slice(1) +
     (color.b | (1 << 8)).toString(16).slice(1);
 
-  return '#' + hex.toUpperCase();
+  return `#${hex.toUpperCase()}`;
 };

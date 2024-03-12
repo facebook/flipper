@@ -151,7 +151,7 @@ test('Throwing async action', async () => {
   } catch (e) {
     error = e;
   }
-  expect('' + error).toBe(`Error: Oops`);
+  expect(`${error}`).toBe(`Error: Oops`);
   expect(events[0]).toEqual({
     action: `<button />`,
     componentType: 'button',

@@ -426,7 +426,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     default: {
-      throw new Error('Unknown action ' + (action as any).type);
+      throw new Error(`Unknown action ${(action as any).type}`);
     }
   }
 });

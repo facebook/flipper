@@ -62,7 +62,7 @@ export function plugin(client: PluginClient<Events, {}>) {
   });
 
   function setSelection(id: number) {
-    selectedID.set('' + id);
+    selectedID.set(`${id}`);
   }
 
   return {

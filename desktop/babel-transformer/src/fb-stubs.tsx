@@ -16,7 +16,7 @@ import fs from 'fs-extra';
 const isFBFile = (filePath: string) => filePath.includes(`${sep}fb${sep}`);
 
 const requireFromFolder = (folder: string, path: string) =>
-  new RegExp(folder + '/[\\w.-]+(.js)?$', 'g').test(path);
+  new RegExp(`${folder}/[\\w.-]+(.js)?$`, 'g').test(path);
 
 const pathExistsCache = new Map<string, boolean>();
 

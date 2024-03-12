@@ -21,7 +21,7 @@ SidebarInteractiveContainer.displayName = 'Sidebar:SidebarInteractiveContainer';
 
 type SidebarPosition = 'left' | 'top' | 'right' | 'bottom';
 
-const borderStyle = '1px solid ' + theme.dividerColor;
+const borderStyle = `1px solid ${theme.dividerColor}`;
 
 const SidebarContainer = styled(FlexColumn)<{
   position: 'right' | 'top' | 'left' | 'bottom';

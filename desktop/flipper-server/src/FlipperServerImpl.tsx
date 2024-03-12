@@ -91,11 +91,9 @@ function setProcessState(settings: Settings) {
   // emulator/emulator is more reliable than tools/emulator, so prefer it if
   // it exists
   process.env.PATH =
-    ['emulator', 'tools', 'platform-tools']
+    `${['emulator', 'tools', 'platform-tools']
       .map((directory) => path.resolve(androidHome, directory))
-      .join(':') +
-    `:${idbPath}` +
-    `:${process.env.PATH}`;
+      .join(':')}:${idbPath}` + `:${process.env.PATH}`;
 }
 
 /**
@@ -127,7 +125,7 @@ export class FlipperServerImpl implements FlipperServer {
     keytarModule?: KeytarModule,
   ) {
     setFlipperServerConfig(config);
-    console.info('Loaded flipper config: ' + JSON.stringify(config, null, 2));
+    console.info(`Loaded flipper config: ${JSON.stringify(config, null, 2)}`);
 
     setProcessState(config.settings);
     const server = (this.server = new ServerController(this));
@@ -241,7 +239,7 @@ export class FlipperServerImpl implements FlipperServer {
 
   setServerState(state: FlipperServerState, error?: Error) {
     this.state = state;
-    this.stateError = '' + error;
+    this.stateError = `${error}`;
     this.emit('server-state', {state, error: this.stateError});
   }
 
@@ -519,7 +517,7 @@ export class FlipperServerImpl implements FlipperServer {
     'metro-command': async (serial: string, command: string) => {
       const device = this.getDevice(serial);
       if (!(device instanceof MetroDevice)) {
-        throw new Error('Not a Metro device: ' + serial);
+        throw new Error(`Not a Metro device: ${serial}`);
       }
       device.sendCommand(command);
     },

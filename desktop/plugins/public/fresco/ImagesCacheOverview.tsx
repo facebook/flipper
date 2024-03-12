@@ -35,11 +35,11 @@ export function toKB(bytes: number) {
 }
 
 export function formatMB(bytes: number) {
-  return toMB(bytes) + 'MB';
+  return `${toMB(bytes)}MB`;
 }
 
 export function formatKB(bytes: number) {
-  return Math.floor(bytes / 1024) + 'KB';
+  return `${Math.floor(bytes / 1024)}KB`;
 }
 
 type ToggleProps = {
@@ -204,7 +204,7 @@ export default class ImagesCacheOverview extends PureComponent<
             {this.props.images.map((data: CacheInfo, index: number) => {
               const maxSize = data.maxSizeBytes;
               const subtitle = maxSize
-                ? formatMB(data.sizeBytes) + ' / ' + formatMB(maxSize)
+                ? `${formatMB(data.sizeBytes)} / ${formatMB(maxSize)}`
                 : formatMB(data.sizeBytes);
               const onClear =
                 data.clearKey !== undefined

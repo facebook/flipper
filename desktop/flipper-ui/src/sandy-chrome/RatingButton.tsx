@@ -233,7 +233,7 @@ class FeedbackComponent extends Component<
         ];
         break;
       default: {
-        console.error('Illegal state: nextAction: ' + this.state.nextAction);
+        console.error(`Illegal state: nextAction: ${this.state.nextAction}`);
         return null;
       }
     }

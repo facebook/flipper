@@ -117,7 +117,7 @@ export function decodeBody(
           // on iOS, the stream send to flipper is already inflated, so the content-encoding will not
           // match the actual data anymore, and we should skip inflating.
           // In that case, we intentionally fall-through
-          if (!('' + e).includes('incorrect header check')) {
+          if (!`${e}`.includes('incorrect header check')) {
             throw e;
           }
           break;
@@ -201,7 +201,7 @@ export const queryToObj = (query: string) => {
 
 function escapeCharacter(x: string) {
   const code = x.charCodeAt(0);
-  return code < 16 ? '\\u0' + code.toString(16) : '\\u' + code.toString(16);
+  return code < 16 ? `\\u0${code.toString(16)}` : `\\u${code.toString(16)}`;
 }
 
 const needsEscapingRegex = /[\u0000-\u001f\u007f-\u009f!]/g;
@@ -210,20 +210,16 @@ const needsEscapingRegex = /[\u0000-\u001f\u007f-\u009f!]/g;
 // based systems.
 function escapedString(str: string) {
   if (needsEscapingRegex.test(str) || str.includes("'")) {
-    return (
-      "$'" +
-      str
-        .replace(/\\/g, '\\\\')
-        .replace(/\'/g, "\\'")
-        .replace(/\n/g, '\\n')
-        .replace(/\r/g, '\\r')
-        .replace(needsEscapingRegex, escapeCharacter) +
-      "'"
-    );
+    return `$'${str
+      .replace(/\\/g, '\\\\')
+      .replace(/\'/g, "\\'")
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(needsEscapingRegex, escapeCharacter)}'`;
   }
 
   // Simply use singly quoted string.
-  return "'" + str + "'";
+  return `'${str}'`;
 }
 
 export function getResponseLength(response: ResponseInfo): number {
@@ -251,7 +247,7 @@ export function getRequestLength(request: Request): number {
 }
 
 export function formatDuration(duration: number | undefined) {
-  if (typeof duration === 'number') return duration + 'ms';
+  if (typeof duration === 'number') return `${duration}ms`;
   return '';
 }
 
@@ -260,12 +256,12 @@ export function formatBytes(count: number | undefined): string {
     return '';
   }
   if (count > 1024 * 1024) {
-    return (count / (1024.0 * 1024)).toFixed(1) + ' MB';
+    return `${(count / (1024.0 * 1024)).toFixed(1)} MB`;
   }
   if (count > 1024) {
-    return (count / 1024.0).toFixed(1) + ' kB';
+    return `${(count / 1024.0).toFixed(1)} kB`;
   }
-  return count + ' B';
+  return `${count} B`;
 }
 
 export function formatOperationName(requestData: string): string {

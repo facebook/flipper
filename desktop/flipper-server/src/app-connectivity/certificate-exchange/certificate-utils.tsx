@@ -279,7 +279,7 @@ const checkCertIsValid = async (filename: string): Promise<void> => {
     const expiryDate = Date.parse(dateString);
     if (isNaN(expiryDate)) {
       console.error(
-        'Unable to parse certificate expiry date: ' + endDateOutput,
+        `Unable to parse certificate expiry date: ${endDateOutput}`,
       );
       throw new Error(
         'Cannot parse certificate expiry date. Assuming it has expired.',

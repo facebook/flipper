@@ -50,11 +50,10 @@ export default function NetworkGraph() {
       ctx.fillText(`${kiloBytesPerSecond} kB/s`, 0, height - 4);
 
       setHoverText(
-        'Total data traffic per plugin:\n\n' +
-          Object.entries(pluginStats.current)
-            .sort(([_p, bytes], [_p2, bytes2]) => bytes2 - bytes)
-            .map(([key, bytes]) => `${key}: ${Math.round(bytes / 1000)}kb`)
-            .join('\n'),
+        `Total data traffic per plugin:\n\n${Object.entries(pluginStats.current)
+          .sort(([_p, bytes], [_p2, bytes2]) => bytes2 - bytes)
+          .map(([key, bytes]) => `${key}: ${Math.round(bytes / 1000)}kb`)
+          .join('\n')}`,
       );
     }, 1000);
 

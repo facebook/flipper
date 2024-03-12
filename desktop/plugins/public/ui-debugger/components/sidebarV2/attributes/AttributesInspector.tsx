@@ -217,7 +217,7 @@ function AttributeSection(
         if (attributeValue.type === 'object') {
           return (
             <SubSection
-              key={'subsection_' + attributeName}
+              key={`subsection_${attributeName}`}
               nodeId={nodeId}
               onDisplayModal={onDisplayModal}
               attributeName={attributeName}

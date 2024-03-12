@@ -40,9 +40,9 @@ afterEach(() => {
 
 test('open-plugin deeplink parsing', () => {
   const testpayload = 'http://www.google/?test=c o%20o+l';
-  const testLink =
-    'flipper://open-plugin?plugin-id=graphql&client=facebook&devices=android,ios&chrome=1&payload=' +
-    encodeURIComponent(testpayload);
+  const testLink = `flipper://open-plugin?plugin-id=graphql&client=facebook&devices=android,ios&chrome=1&payload=${encodeURIComponent(
+    testpayload,
+  )}`;
   const res = parseOpenPluginParams(testLink);
   expect(res).toEqual({
     pluginId: 'graphql',

@@ -251,7 +251,7 @@ function computeEntries(
         Currently connecting...
       </Menu.Item>,
       ...uninitializedClients.map((client) => (
-        <Menu.Item key={'connecting' + client.appName}>
+        <Menu.Item key={`connecting${client.appName}`}>
           {`${client.appName} (${client.deviceName})`}
         </Menu.Item>
       )),

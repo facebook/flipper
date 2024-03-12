@@ -280,7 +280,7 @@ function Visualization2DContent({
             overflow: 'hidden',
           }}>
           <img
-            src={'data:image/png;base64,' + snapshotInfo.data}
+            src={`data:image/png;base64,${snapshotInfo.data}`}
             style={{
               position: 'absolute',
               marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),

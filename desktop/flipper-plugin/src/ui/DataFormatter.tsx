@@ -44,7 +44,7 @@ export const DataFormatter = {
         res = value ? 'true' : 'false';
         break;
       case 'number':
-        res = '' + value;
+        res = `${value}`;
         break;
       case 'undefined':
         break;
@@ -54,10 +54,11 @@ export const DataFormatter = {
       case 'object': {
         if (value === null) break;
         if (value instanceof Date) {
-          res =
-            value.toTimeString().split(' ')[0] +
-            '.' +
-            padStart('' + value.getMilliseconds(), 3, '0');
+          res = `${value.toTimeString().split(' ')[0]}.${padStart(
+            `${value.getMilliseconds()}`,
+            3,
+            '0',
+          )}`;
           break;
         }
         if (value instanceof Map) {

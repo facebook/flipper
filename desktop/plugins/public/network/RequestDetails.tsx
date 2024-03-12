@@ -238,7 +238,7 @@ class RequestBodyInspector extends Component<{
           }
         } catch (e) {
           console.warn(
-            'BodyFormatter exception from ' + formatter.constructor.name,
+            `BodyFormatter exception from ${formatter.constructor.name}`,
             e.message,
           );
         }
@@ -274,7 +274,7 @@ class ResponseBodyInspector extends Component<{
           }
         } catch (e) {
           console.warn(
-            'BodyFormatter exception from ' + formatter.constructor.name,
+            `BodyFormatter exception from ${formatter.constructor.name}`,
             e.message,
           );
         }
@@ -571,8 +571,9 @@ class GraphQLFormatter {
     const timeAtFlushMs = serverMetadata['time_at_flush_ms'];
     return (
       <Text type="secondary">
-        {'Server wall time for initial response (ms): ' +
-          (timeAtFlushMs - requestStartMs)}
+        {`Server wall time for initial response (ms): ${
+          timeAtFlushMs - requestStartMs
+        }`}
       </Text>
     );
   }

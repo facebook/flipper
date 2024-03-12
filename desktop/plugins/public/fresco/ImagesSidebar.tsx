@@ -134,7 +134,7 @@ class EventDetails extends Component<{
         <span key="sep">: </span>
         <DataDescription
           type="string"
-          value={viewport.width + 'x' + viewport.height}
+          value={`${viewport.width}x${viewport.height}`}
           setValue={null}
         />
       </p>
@@ -145,9 +145,9 @@ class EventDetails extends Component<{
 
 function requestHeader(event: ImageEventWithId) {
   const date = new Date(event.startTime);
-  const dateString = `${date.toTimeString().split(' ')[0]}.${(
-    '000' + date.getMilliseconds()
-  ).substr(-3)}`;
+  const dateString = `${date.toTimeString().split(' ')[0]}.${`000${date.getMilliseconds()}`.substr(
+    -3,
+  )}`;
 
-  return (event.viewport ? 'Request' : 'Prefetch') + ' at ' + dateString;
+  return `${event.viewport ? 'Request' : 'Prefetch'} at ${dateString}`;
 }

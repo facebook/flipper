@@ -85,7 +85,7 @@ describe('getWatchFolders', () => {
     mockfs(files);
     const readJsonMock = async (file: string) => {
       if (!file.startsWith(rootDir)) {
-        throw new Error('File not found: ' + file);
+        throw new Error(`File not found: ${file}`);
       }
       const parts = file.substring(rootDir.length + 1).split(path.sep);
       let cur = files[rootDir] as any;

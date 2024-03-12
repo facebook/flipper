@@ -578,7 +578,7 @@ function createBasePluginResult(
     triggerMenuEntry: (action: string) => {
       const entry = pluginInstance.menuEntries.find((e) => e.action === action);
       if (!entry) {
-        throw new Error('No menu entry found with action: ' + action);
+        throw new Error(`No menu entry found with action: ${action}`);
       }
       entry.handler();
     },
@@ -703,7 +703,7 @@ export function createStubFlipperServerConfig(): FlipperServerConfig {
       desktopPath: `/dev/null`,
       execPath: '/exec',
       homePath: `/dev/null`,
-      staticPath: rootPath + '/static',
+      staticPath: `${rootPath}/static`,
       tempPath: '/temp',
     },
     processConfig: {

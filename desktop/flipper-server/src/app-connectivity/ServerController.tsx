@@ -271,7 +271,7 @@ export class ServerController
         new DummyDevice(
           this.flipperServer,
           clientQuery.device_id,
-          clientQuery.app + ' (Unknown Device)',
+          `${clientQuery.app} (Unknown Device)`,
           clientQuery.os,
         ),
       );

@@ -81,10 +81,10 @@ export default class DataPreview extends PureComponent<{
         if (propValue === null) propValueElement = <NullValue>null</NullValue>;
         break;
       case 'boolean':
-        propValueElement = <BooleanValue>{'' + propValue}</BooleanValue>;
+        propValueElement = <BooleanValue>{`${propValue}`}</BooleanValue>;
         break;
       case 'number':
-        propValueElement = <NumberValue>{'' + propValue}</NumberValue>;
+        propValueElement = <NumberValue>{`${propValue}`}</NumberValue>;
         break;
       case 'string':
         if (propValue.length <= 20) {

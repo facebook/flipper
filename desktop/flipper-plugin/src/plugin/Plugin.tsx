@@ -307,8 +307,8 @@ export class SandyPluginInstance extends BasePluginInstance {
 
   receiveMessages(messages: Message[]) {
     messages.forEach((message) => {
-      if (this.events.listenerCount('event-' + message.method) > 0) {
-        this.events.emit('event-' + message.method, message.params);
+      if (this.events.listenerCount(`event-${message.method}`) > 0) {
+        this.events.emit(`event-${message.method}`, message.params);
       } else {
         this.events.emit('unhandled-event', message.method, message.params);
       }

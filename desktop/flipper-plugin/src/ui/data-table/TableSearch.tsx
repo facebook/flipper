@@ -149,7 +149,7 @@ export const TableSearch = memo(function TableSearch({
     try {
       new RegExp(searchValue);
     } catch (e) {
-      return '' + e;
+      return `${e}`;
     }
   }, [useRegex, searchValue]);
 

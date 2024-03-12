@@ -116,7 +116,7 @@ export class AndroidDeviceManager {
           message.includes('device still connecting') ||
           message.includes('device still authorizing')
         ) {
-          console.log('[conn] Device still connecting: ' + device.id);
+          console.log(`[conn] Device still connecting: ${device.id}`);
         } else {
           const isAuthorizationError = message.includes('device unauthorized');
           if (!isAuthorizationError) {
@@ -124,10 +124,10 @@ export class AndroidDeviceManager {
           }
           this.flipperServer.emit('notification', {
             type: 'error',
-            title: 'Could not connect to ' + device.id,
+            title: `Could not connect to ${device.id}`,
             description: isAuthorizationError
               ? 'Make sure to authorize debugging on the phone'
-              : 'Failed to setup connection: ' + message,
+              : `Failed to setup connection: ${message}`,
           });
         }
         resolve(undefined); // not ready yet, we will find it in the next tick

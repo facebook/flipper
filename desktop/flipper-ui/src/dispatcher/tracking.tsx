@@ -358,7 +358,7 @@ export function persistExitData(
     return;
   }
   const exitData: ExitData = {
-    lastSeen: '' + Date.now(),
+    lastSeen: `${Date.now()}`,
     deviceOs: state.selectedDevice ? state.selectedDevice.os : '',
     deviceType: state.selectedDevice ? state.selectedDevice.deviceType : '',
     deviceTitle: state.selectedDevice ? state.selectedDevice.title : '',

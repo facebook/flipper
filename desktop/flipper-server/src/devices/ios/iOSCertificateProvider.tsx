@@ -133,7 +133,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
     if (matches && matches.length === 2) {
       return matches[1];
     }
-    throw new Error("Path didn't match expected pattern: " + absolutePath);
+    throw new Error(`Path didn't match expected pattern: ${absolutePath}`);
   }
 
   private async pushFileToiOSDevice(

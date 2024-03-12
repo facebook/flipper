@@ -704,7 +704,7 @@ function dataInspectorPropsAreEqual(
       ? '' // root
       : !nextProps.parentPath.length
         ? nextProps.name // root element
-        : nextProps.parentPath.join('.') + '.' + nextProps.name;
+        : `${nextProps.parentPath.join('.')}.${nextProps.name}`;
 
     // we are being collapsed
     if (props.expanded[path] !== nextProps.expanded[path]) {

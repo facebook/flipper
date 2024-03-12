@@ -208,7 +208,7 @@ const Sidebar: React.FC<Props> = (props: Props) => {
             marginRight: 'auto',
             width: '100%',
           }}
-          src={'data:image/png;base64,' + elementSnapshot?.snapshot}
+          src={`data:image/png;base64,${elementSnapshot?.snapshot}`}
         />
       </Panel>
     ) : null;

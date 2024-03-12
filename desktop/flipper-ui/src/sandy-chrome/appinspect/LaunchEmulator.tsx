@@ -201,7 +201,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
                 onClose();
               } catch (e) {
                 console.error('Failed to start emulator: ', e);
-                message.error('Failed to start emulator: ' + e);
+                message.error(`Failed to start emulator: ${e}`);
               } finally {
                 setPendingEmulators(
                   produce((draft) => {
@@ -285,7 +285,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
                     onClose();
                   } catch (e) {
                     console.warn('Failed to start simulator: ', e);
-                    message.error('Failed to start simulator: ' + e);
+                    message.error(`Failed to start simulator: ${e}`);
                   } finally {
                     setPendingEmulators(
                       produce((draft) => {

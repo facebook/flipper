@@ -130,5 +130,5 @@ export const pluginDownloadFinished = (payload: {
 }): Action => ({type: 'PLUGIN_DOWNLOAD_FINISHED', payload});
 
 function getDownloadKey(name: string, version: string) {
-  return name.replace('/', '__') + '@' + version;
+  return `${name.replace('/', '__')}@${version}`;
 }

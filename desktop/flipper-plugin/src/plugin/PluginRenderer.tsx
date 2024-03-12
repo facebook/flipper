@@ -23,7 +23,7 @@ type Props = {
  */
 export const SandyPluginRenderer = memo(({plugin}: Props) => {
   if (!plugin || !(plugin instanceof BasePluginInstance)) {
-    throw new Error('Expected plugin, got ' + plugin);
+    throw new Error(`Expected plugin, got ${plugin}`);
   }
   useEffect(() => {
     const style = document.createElement('style');
@@ -42,7 +42,7 @@ export const SandyPluginRenderer = memo(({plugin}: Props) => {
   }, [plugin]);
 
   return (
-    <TrackingScope scope={'plugin:' + plugin.definition.id}>
+    <TrackingScope scope={`plugin:${plugin.definition.id}`}>
       <SandyPluginContext.Provider value={plugin}>
         {createElement(plugin.definition.module.Component, {
           key: plugin.instanceId,

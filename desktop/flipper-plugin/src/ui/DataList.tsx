@@ -108,7 +108,7 @@ export const DataList: (<T extends object>(
         if (!item) {
           onSelect?.(undefined, undefined);
         } else {
-          const id = '' + item[idAttribute as keyof T];
+          const id = `${item[idAttribute as keyof T]}`;
           if (id == null) {
             throw new Error(`No valid identifier for attribute ${idAttribute}`);
           }

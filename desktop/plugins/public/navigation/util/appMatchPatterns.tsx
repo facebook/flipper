@@ -43,7 +43,7 @@ export const getAppMatchPatterns = (
         await getFlipperLib().remoteServerContext.fs.readFile(patternsFilePath);
       return JSON.parse(patternsFileContentString);
     } else if (appName != null) {
-      console.log('No rule for app ' + appName);
+      console.log(`No rule for app ${appName}`);
       resolve([]);
     } else {
       reject(new Error('selectedApp was null'));

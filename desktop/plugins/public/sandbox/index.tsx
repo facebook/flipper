@@ -55,9 +55,8 @@ export function plugin(client: PluginClient<{}, ClientMethods>) {
         sandbox,
       })
       .then((result: SetSandboxResult) => {
-        if (result.result)
-          displaySuccess('Update to ' + sandbox + ' successful');
-        else displayError('Update to ' + sandbox + ' failed');
+        if (result.result) displaySuccess(`Update to ${sandbox} successful`);
+        else displayError(`Update to ${sandbox} failed`);
       })
       .catch((e) => {
         console.error('[sandbox] setSandbox call failed:', e);

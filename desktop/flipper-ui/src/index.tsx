@@ -100,9 +100,7 @@ async function start() {
           token,
         );
         window.flipperShowMessage?.({
-          detail:
-            '[flipper-client][ui-browser] Failed to get token from HTML: ' +
-            token,
+          detail: `[flipper-client][ui-browser] Failed to get token from HTML: ${token}`,
         });
       }
     }
@@ -214,7 +212,7 @@ start().catch((e) => {
     error: getStringFromErrorLike(e),
     pwa: window.matchMedia('(display-mode: standalone)').matches,
   });
-  window.flipperShowMessage?.({detail: 'Failed to start UI with error: ' + e});
+  window.flipperShowMessage?.({detail: `Failed to start UI with error: ${e}`});
 });
 
 async function initializePWA() {

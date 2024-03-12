@@ -49,7 +49,7 @@ export function connectFlipperServerToStore(
 
   server.on('server-error', (err) => {
     if (err.code === 'EADDRINUSE') {
-      handeEADDRINUSE('' + err);
+      handeEADDRINUSE(`${err}`);
     } else {
       const text = err.message ?? err;
       notification.error({
@@ -287,7 +287,7 @@ function handleServerStateChange({
       notification.error({
         key: `server-${state}-error`,
         message: 'Failed to start flipper-server',
-        description: '' + error,
+        description: `${error}`,
         duration: null,
       });
     }
