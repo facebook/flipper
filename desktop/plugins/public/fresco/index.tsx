@@ -168,7 +168,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
         });
         imageDataList.push(imageData);
       } catch (e) {
-        console.error('[fresco] getImage failed:', e);
+        console.warn('[fresco] getImage failed:', e);
       }
     }
 
