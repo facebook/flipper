@@ -25,6 +25,7 @@ class ConnectionContextStore {
     PRIVATE_KEY,
     CERTIFICATE,
     CONNECTION_CONFIG,
+    ENCRYPTED_CERTS,
   };
   ConnectionContextStore(DeviceData deviceData);
   bool hasRequiredFiles();
@@ -38,6 +39,7 @@ class ConnectionContextStore {
    */
   folly::Optional<FlipperCertificateExchangeMedium> getLastKnownMedium();
   void storeConnectionConfig(folly::dynamic& config);
+  void storeConnectionEncryptedCertificates(folly::dynamic& config);
   /**
    * Reset state just removes all certificate exchange related files stored on
    * the client. These are:
