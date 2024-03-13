@@ -32,7 +32,7 @@ If you are debugging React Native applications, [v0.239.0](https://github.com/fa
 ---
 
 <p align="center">
-  Flipper (formerly Sonar) is a platform for debugging mobile apps on iOS and Android and JS apps in your browser or in Node.js. Visualize, inspect, and control your apps from a simple desktop interface. Use Flipper as is or extend it using the plugin API.
+  Flipper is a platform for debugging mobile apps on iOS and Android and JS apps in your browser or in Node.js. Visualize, inspect, and control your apps from a simple desktop interface. Use Flipper as is or extend it using the plugin API.
 </p>
 
 ![Flipper](website/static/img/inspector.png)
@@ -83,27 +83,23 @@ This repository includes all parts of Flipper. This includes:
   (`/desktop`)
 - native Flipper SDKs for iOS (`/iOS`)
 - native Flipper SDKs for Android (`/android`)
+- cross-platform C++ SDK (`/xplat`)
 - React Native Flipper SDK (`/react-native`)
 - JS Flipper SDK (`/js`)
-- Plugins:
-  - Logs (`/desktop/plugins/public/logs`)
-  - Layout inspector (`/desktop/plugins/public/layout`)
-  - Network inspector (`/desktop/plugins/public/network`)
-  - Shared Preferences/NSUserDefaults inspector
-    (`/desktop/plugins/public/shared_preferences`)
-- website and documentation (`/website` / `/docs`)
+- Plugins (`/desktop/plugins/public/`)
+- website and documentation (`/website`, `/docs`)
 
 # Getting started
 
 Please refer to our
 [Getting Started guide](https://fbflipper.com/docs/getting-started) to set up
-Flipper. Or, (still experimental) run `npx flipper-server` for a browser based
+Flipper. Or, run `npx flipper-server` for a browser based
 version of Flipper.
 
 ## Requirements
 
-- node >= 8
-- yarn >= 1.5
+- node >= 18
+- yarn >= 1.16
 - iOS developer tools (for developing iOS plugins)
 - Android SDK and adb
 
@@ -120,16 +116,13 @@ yarn
 yarn start
 ```
 
-NOTE: If you're on Windows, you need to use Yarn 1.5.1 until
-[this issue](https://github.com/yarnpkg/yarn/issues/6048) is resolved.
-
 ### Building standalone application
 
 Provide either `--mac`, `--win`, `--linux` or any combination of them to
 `yarn build` to build a release zip file for the given platform(s). E.g.
 
 ```bash
-yarn build --mac --version $buildNumber
+yarn build --mac
 ```
 
 You can find the resulting artifact in the `dist/` folder.
