@@ -1,3 +1,10 @@
+# 0.250.0 (13/3/2024)
+
+ * [D54306266](https://github.com/facebook/flipper/search?q=D54306266&type=Commits) -  UIDebugger framework event table given its own button in menu
+ * [D54306265](https://github.com/facebook/flipper/search?q=D54306265&type=Commits) -  UIDebugger -> Component level framework event fitlers preseve between selection
+ * [D54679238](https://github.com/facebook/flipper/search?q=D54679238&type=Commits) -  [Internal]
+
+
 # 0.247.0 (7/2/2024)
 
  * [D53223203](https://github.com/facebook/flipper/search?q=D53223203&type=Commits) -  Plugin marketplace downloads now expect a  `downloadUrls: string[]` instead of a singular url for fallbacks
