@@ -16,5 +16,6 @@ target 'FlipperKit' do
   pod 'Flipper-Folly', '~>2.2'
   pod 'CocoaAsyncSocket', '~>7.6'
   pod 'SocketRocket', '~> 0.7.0'
+  pod 'SSZipArchive', '~> 2.4.3'
 
 end

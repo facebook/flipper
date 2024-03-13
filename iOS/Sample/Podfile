@@ -6,9 +6,9 @@ target 'Sample' do
   platform :ios, '11.0'
 
   # See docs/getting-started/ios-native.mdx
-  pod 'FlipperKit', :path => '../../FlipperKit.podspec', :configuration => 'Debug'  
-  pod 'FlipperKit/FlipperKitLayoutPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug' 
-  pod 'FlipperKit/FlipperKitUIDebuggerPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug' 
+  pod 'FlipperKit', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUIDebuggerPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitExamplePlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
@@ -23,5 +23,6 @@ target 'Sample' do
   pod 'OpenSSL-Universal', :configuration => 'Debug'
   pod 'CocoaAsyncSocket', :configuration => 'Debug'
   pod 'SocketRocket', '~> 0.7.0'
-  
+  pod 'SSZipArchive', '~> 2.4.3'
+
 end
