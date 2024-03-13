@@ -27,7 +27,7 @@ The last Electron release is [v0.239.0](https://github.com/facebook/flipper/rele
 
 ### React Native support
 
-If you are debugging React Native applications, v0.239.0 will be the last release with support for it due to technical limitations for React Dev Tools and Hermes Debugger plugins. As such, please refer to that release when debugging React Native applications.
+If you are debugging React Native applications, [v0.239.0](https://github.com/facebook/flipper/releases/tag/v0.239.0) will be the last release with support for it due to technical limitations for React Dev Tools and Hermes Debugger plugins. As such, please refer to that release when debugging React Native applications.
 
 ---
 
