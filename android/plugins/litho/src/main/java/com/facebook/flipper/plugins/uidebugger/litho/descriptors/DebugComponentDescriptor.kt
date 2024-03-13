@@ -30,7 +30,6 @@ import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.Deferred
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentTree
 import com.facebook.litho.DebugComponent
 import com.facebook.litho.DebugLayoutNodeEditor
 import com.facebook.litho.StateContainer
@@ -279,49 +278,29 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
     }
 
     val mountState = lithoView.mountDelegateTarget
-    val componentTree = lithoView.componentTree ?: return mountingData
+    val layoutState = lithoView.currentLayoutState ?: return mountingData
 
     val component = node.component
 
     if (component.mountType != Component.MountType.NONE) {
-      val renderUnit = DebugComponent.getRenderUnit(node, componentTree)
+      val renderUnit = DebugComponent.getRenderUnit(node, layoutState)
       if (renderUnit != null) {
         val renderUnitId = renderUnit.id
         val isMounted = mountState.getContentById(renderUnitId) != null
         mountingData[isMountedAttributeId] = InspectableValue.Boolean(isMounted)
-        isExcludedFromIncrementalMount(node, componentTree)?.let {
-          mountingData[excludeFromIncrementalMountAttributeId] = InspectableValue.Boolean(it)
-        }
+        mountingData[excludeFromIncrementalMountAttributeId] =
+            InspectableValue.Boolean(
+                DebugComponent.isExcludedFromIncrementalMount(node, layoutState))
       }
     }
 
-    val visibilityOutput = DebugComponent.getVisibilityOutput(node, componentTree)
+    val visibilityOutput = DebugComponent.getVisibilityOutput(node, layoutState)
     if (visibilityOutput != null) {
       val isVisible = DebugComponent.isVisible(node, lithoView)
       mountingData[isVisibleAttributeId] = InspectableValue.Boolean(isVisible)
     }
 
     return mountingData
-  }
-
-  private fun isExcludedFromIncrementalMount(
-      node: DebugComponent,
-      componentTree: ComponentTree
-  ): Boolean? {
-    return try {
-      // TODO: T174494880 Remove reflection approach once litho-oss releases new version. When
-      // ready, just replace by DebugComponent.isExcludedFromIncrementalMount(node, componentTree)
-      val debugComponentClass = DebugComponent::class.java
-      val isExcludedFromIncrementalMountMethod =
-          debugComponentClass.getDeclaredMethod(
-              "isExcludedFromIncrementalMount",
-              DebugComponent::class.java,
-              ComponentTree::class.java)
-      isExcludedFromIncrementalMountMethod.invoke(null, node, componentTree) as? Boolean
-    } catch (exception: Exception) {
-      // Reflection is really brittle and we don't want to break the UI Debugger in that case.
-      null
-    }
   }
 
   class OverrideData(
