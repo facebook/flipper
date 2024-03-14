@@ -91,6 +91,12 @@ void FlipperConnectionManagerImpl::setCertificateProvider(
   certificateProvider_ = provider;
 };
 
+void FlipperConnectionManagerImpl::setBackupCertificateProvider(
+    const std::shared_ptr<FlipperCertificateProvider> provider) {
+  log_debug(LogLevel::Info, "[conn] Set backup certificate provider");
+  backupCertificateProvider_ = provider;
+}
+
 std::shared_ptr<FlipperCertificateProvider>
 FlipperConnectionManagerImpl::getCertificateProvider() {
   return certificateProvider_;

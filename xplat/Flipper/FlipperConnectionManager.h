@@ -32,9 +32,17 @@ class FlipperConnectionManager {
   virtual void stop() = 0;
 
   /**
-   Sets the Auth token to be used for hitting an Intern end point
+   Set a certificate provider to be used to obtain the client certificate needed
+   to establish the connection.
    */
   virtual void setCertificateProvider(
+      const std::shared_ptr<FlipperCertificateProvider> provider) = 0;
+
+  /**
+   Set an alternate certificate provider to be used in case the primary provider
+   fails to obtain the client certificate needed to establish the connection.
+   */
+  virtual void setBackupCertificateProvider(
       const std::shared_ptr<FlipperCertificateProvider> provider) = 0;
 
   /**
