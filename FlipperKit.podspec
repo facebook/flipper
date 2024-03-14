@@ -18,6 +18,7 @@ Pod::Spec.new do |spec|
   spec.module_name = 'FlipperKit'
   spec.platforms = { :ios => "11.0" }
   spec.default_subspecs = "Core"
+  spec.frameworks = 'AVFoundation'
 
   # This subspec is necessary since FBDefines.h is imported as <FBDefines/FBDefines.h>
   # inside SKMacros.h, which is a public header file. Defining this directory as a
