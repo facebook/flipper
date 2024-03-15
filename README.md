@@ -29,6 +29,9 @@ The last Electron release is [v0.239.0](https://github.com/facebook/flipper/rele
 
 If you are debugging React Native applications, [v0.239.0](https://github.com/facebook/flipper/releases/tag/v0.239.0) will be the last release with support for it due to technical limitations for React Dev Tools and Hermes Debugger plugins. As such, please refer to that release when debugging React Native applications.
 
+New, dedicated debug tooling for React Native is currently being developed at Meta.
+In the mean time we recommend this [blog post](https://shift.infinite.red/why-you-dont-need-flipper-in-your-react-native-app-and-how-to-get-by-without-it-3af461955109) with guidance on how to get the capibilities of Flipper through several alternatives.
+
 ---
 
 <p align="center">
