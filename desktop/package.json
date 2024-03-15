@@ -177,7 +177,6 @@
       "flipper-server-client",
       "flipper-ui",
       "flipper-server",
-      "e2e",
       "plugin-lib",
       "test-utils",
       "eslint-plugin-flipper",
