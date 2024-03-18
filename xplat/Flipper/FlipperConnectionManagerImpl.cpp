@@ -415,6 +415,7 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
       messageAck["config"] = config;
 
       store_->storeConnectionConfig(config);
+      store_->storeConnectionEncryptedCertificates(parsedResponse);
     }
     if (certificateProvider_) {
       certificateProvider_->setFlipperState(state_);
