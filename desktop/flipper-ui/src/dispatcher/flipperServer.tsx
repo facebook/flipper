@@ -120,7 +120,11 @@ export function connectFlipperServerToStore(
       return;
     }
 
-    const secretExchangeModal = Modal.confirm({
+    // Find and dismiss any existing QR modal.
+    let secretExchangeModal = modals.get(key);
+    secretExchangeModal?.destroy();
+
+    secretExchangeModal = Modal.confirm({
       title: `${client.appName} is trying to connect. Please use your device to scan the QR code.`,
       centered: true,
       width: 350,
