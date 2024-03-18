@@ -246,7 +246,11 @@ typedef NS_ENUM(NSInteger, QRActionButtonState) {
           case QRReaderResultError: {
             dispatch_async(dispatch_get_main_queue(), ^{
               self->_dismissButton.customState = QRActionButtonStateError;
-              dispatch_async(dispatch_get_main_queue(), ^{
+              double retryAfterDelayInSeconds = 1.0;
+              dispatch_time_t retryTime = dispatch_time(
+                  DISPATCH_TIME_NOW,
+                  (int64_t)(retryAfterDelayInSeconds * NSEC_PER_SEC));
+              dispatch_after(retryTime, dispatch_get_main_queue(), ^{
                 self->_isReading = YES;
                 self->_dismissButton.customState = QRActionButtonStateReading;
               });
