@@ -130,7 +130,7 @@ export class PluginManager {
       tmpDir,
       `${getPluginDirNameFromPackageName(name)}-${version}.tgz`,
     );
-    let finalError = null;
+    let finalError: Error | null = null;
     for (const downloadUrl of downloadUrls) {
       try {
         const cancelationSource = axios.CancelToken.source();
@@ -184,10 +184,6 @@ export class PluginManager {
           return await installPluginFromFileOrBuffer(tmpFile);
         }
       } catch (error) {
-        console.warn(
-          `Failed to download plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}".`,
-          error,
-        );
         finalError = error;
         continue;
       } finally {
@@ -195,6 +191,10 @@ export class PluginManager {
       }
     }
 
+    console.info(
+      `Failed to download plugin "${title}" v${version} from "${downloadUrls}" to "${installationDir}".`,
+      finalError,
+    );
     throw finalError;
   }
 
