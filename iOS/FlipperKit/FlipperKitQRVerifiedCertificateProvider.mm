@@ -102,6 +102,13 @@ void QRVerifiedCertificateProvider::getCertificates(
     // Get the data from the base64-encoded key.
     NSData* keyData = [[NSData alloc] initWithBase64EncodedString:key
                                                           options:0];
+    // QR codes may be corrupt, invalid, or just contain a different
+    // content to the one that is expected i.e. base-64 encoded key.
+    // If that is the case, then just return with an error.
+    if (!keyData) {
+      readResultAck(QRReaderResultError);
+      return;
+    }
 
     auto success = AESDecrypt(
         [encryptedCertificatesPath UTF8String],
