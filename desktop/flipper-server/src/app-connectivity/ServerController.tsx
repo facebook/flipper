@@ -435,6 +435,14 @@ export class ServerController
               ),
             );
 
+            tracker.track('app-connection-insecure-attempt-fallback', {
+              app: clientQuery.app,
+              os: clientQuery.os,
+              device: clientQuery.device,
+              medium: clientQuery.medium,
+              device_id: deviceId,
+            });
+
             const response: CertificateExchangeRequestResponse = {
               deviceId,
               certificates: result.certificates?.data,
