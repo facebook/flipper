@@ -98,6 +98,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
       std::shared_ptr<FlipperStep> gettingCertificateStep,
       std::string response,
       bool isError);
+  void getCertificatesFromProvider(FlipperCertificateProvider& provider);
   bool isRunningInOwnThread();
   void reevaluateSocketProvider();
   std::string getDeviceId();
