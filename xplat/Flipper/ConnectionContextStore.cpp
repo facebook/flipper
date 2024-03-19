@@ -175,6 +175,12 @@ std::string ConnectionContextStore::getPath(StoreItem storeItem) {
   }
 }
 
+bool ConnectionContextStore::hasItem(StoreItem storeItem) {
+  std::string path = getPath(storeItem);
+
+  return fileExists(path);
+}
+
 bool ConnectionContextStore::resetState() {
   // Clear in-memory state
   csr_ = "";

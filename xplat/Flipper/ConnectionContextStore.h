@@ -34,6 +34,7 @@ class ConnectionContextStore {
   std::string getCACertificatePath();
   std::string getDeviceId();
   std::string getPath(StoreItem storeItem);
+  bool hasItem(StoreItem storeItem);
   /**
    * Get medium over which the certificate was received.
    */
