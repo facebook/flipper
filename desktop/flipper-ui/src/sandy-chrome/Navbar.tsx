@@ -74,7 +74,7 @@ import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
 import {Notification} from './notification/Notification';
 import {SandyRatingButton} from './RatingButton';
-import {getFlipperServerConfig} from '../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 import {showChangelog} from '../chrome/ChangelogSheet';
 import {FlipperSetupWizard} from '../chrome/FlipperSetupWizard';
 // eslint-disable-next-line no-restricted-imports
@@ -542,6 +542,20 @@ function TroubleshootMenu() {
               <Layout.Horizontal center gap="small">
                 Flipper Logs <Badge count={flipperErrorLogCount} />
               </Layout.Horizontal>
+            </Menu.Item>
+            <Menu.Item
+              key="restart-idb"
+              onClick={() => {
+                getFlipperServer().exec('ios-idb-kill');
+              }}>
+              Restart IDB (iOS connections)
+            </Menu.Item>
+            <Menu.Item
+              key="restart-adb"
+              onClick={() => {
+                getFlipperServer().exec('android-adb-kill');
+              }}>
+              Restart ADB (Android connections)
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>
