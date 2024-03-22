@@ -25,6 +25,8 @@ public interface Touch {
    */
   void continueWithOffset(int childIndex, int offsetX, int offsetY);
 
-  /** @return Whether or not this Touch is contained within the provided bounds. */
+  /**
+   * @return Whether or not this Touch is contained within the provided bounds.
+   */
   boolean containedIn(int l, int t, int r, int b);
 }
