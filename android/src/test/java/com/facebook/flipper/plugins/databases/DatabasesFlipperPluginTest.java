@@ -383,7 +383,8 @@ public class DatabasesFlipperPluginTest {
             new FlipperObject.Builder()
                 .put(
                     "definition",
-                    "CREATE TABLE first_table (_id INTEGER PRIMARY KEY AUTOINCREMENT,column1 TEXT,column2 TEXT)")
+                    "CREATE TABLE first_table (_id INTEGER PRIMARY KEY AUTOINCREMENT,column1"
+                        + " TEXT,column2 TEXT)")
                 .build()));
   }
 

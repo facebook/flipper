@@ -75,6 +75,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   public interface ExtensionCommand {
     /** The command to respond to */
     String command();
+
     /** The corresponding FlipperReceiver for the command */
     FlipperReceiver receiver(ObjectTracker tracker, FlipperConnection connection);
   }
