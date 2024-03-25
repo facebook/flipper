@@ -326,7 +326,7 @@ function getLogExtraArgs(deviceType: DeviceType) {
 }
 
 function makeTempScreenshotFilePath() {
-  const imageName = uuid() + '.png';
+  const imageName = `${uuid()}.png`;
   return path.join(getFlipperServerConfig().paths.tempPath, imageName);
 }
 

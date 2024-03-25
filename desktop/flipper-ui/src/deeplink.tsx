@@ -63,7 +63,7 @@ export async function handleDeeplink(
           console.warn('Failed to download Flipper trace', e);
           message.error({
             duration: 0,
-            content: 'Failed to download Flipper trace: ' + e,
+            content: `Failed to download Flipper trace: ${e}`,
           });
         })
         .finally(() => {

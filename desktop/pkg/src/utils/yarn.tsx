@@ -12,7 +12,7 @@ import {exec as execImport} from 'child_process';
 const exec = util.promisify(execImport);
 
 const WINDOWS = /^win/.test(process.platform);
-const YARN_PATH = 'yarn' + (WINDOWS ? '.cmd' : '');
+const YARN_PATH = `yarn${WINDOWS ? '.cmd' : ''}`;
 
 export async function install(pkgDir: string) {
   const {stderr} = await exec(YARN_PATH, {

@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 folly_compiler_flags = '-DDEBUG=1 -DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_HAVE_BACKTRACE=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
-flipperkit_version = '0.233.0'
+flipperkit_version = '0.250.0'
 Pod::Spec.new do |spec|
   spec.name = 'FlipperKit'
   spec.version = flipperkit_version
@@ -18,6 +18,7 @@ Pod::Spec.new do |spec|
   spec.module_name = 'FlipperKit'
   spec.platforms = { :ios => "11.0" }
   spec.default_subspecs = "Core"
+  spec.frameworks = 'AVFoundation'
 
   # This subspec is necessary since FBDefines.h is imported as <FBDefines/FBDefines.h>
   # inside SKMacros.h, which is a public header file. Defining this directory as a
@@ -77,6 +78,7 @@ Pod::Spec.new do |spec|
     ss.dependency 'FlipperKit/FKPortForwarding'
     ss.dependency 'Flipper', '~>'+flipperkit_version
     ss.dependency 'SocketRocket', '~> 0.7.0'
+    ss.dependency 'SSZipArchive', '~> 2.4.3'
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/FlipperKit/*.{h,m,mm}', 'iOS/FlipperKit/CppBridge/*.{h,mm}'
     ss.public_header_files = 'iOS/FlipperKit/**/{FlipperDiagnosticsViewController,FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,FlipperResponder,SKMacros,FlipperKitCertificateProvider}.h'

@@ -91,6 +91,12 @@ void FlipperConnectionManagerImpl::setCertificateProvider(
   certificateProvider_ = provider;
 };
 
+void FlipperConnectionManagerImpl::setBackupCertificateProvider(
+    const std::shared_ptr<FlipperCertificateProvider> provider) {
+  log_debug(LogLevel::Info, "[conn] Set backup certificate provider");
+  backupCertificateProvider_ = provider;
+}
+
 std::shared_ptr<FlipperCertificateProvider>
 FlipperConnectionManagerImpl::getCertificateProvider() {
   return certificateProvider_;
@@ -377,6 +383,23 @@ bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
   return !hasRequiredFiles;
 }
 
+void FlipperConnectionManagerImpl::getCertificatesFromProvider(
+    FlipperCertificateProvider& provider) {
+  provider.setFlipperState(state_);
+  auto gettingCertFromProvider =
+      state_->start("Getting client certificate from certificate provider");
+
+  try {
+    provider.getCertificates(
+        store_->getCertificateDirectoryPath(), store_->getDeviceId());
+    gettingCertFromProvider->complete();
+  } catch (std::exception& e) {
+    gettingCertFromProvider->fail(e.what());
+  } catch (...) {
+    gettingCertFromProvider->fail("Exception thrown from certificate provider");
+  }
+}
+
 void FlipperConnectionManagerImpl::processSignedCertificateResponse(
     std::shared_ptr<FlipperStep> gettingCert,
     std::string response,
@@ -400,41 +423,29 @@ void FlipperConnectionManagerImpl::processSignedCertificateResponse(
         : FlipperCertificateExchangeMedium::FS_ACCESS;
 
     if (!response.empty()) {
-      folly::dynamic config = folly::parseJson(response);
+      folly::dynamic parsedResponse = folly::parseJson(response);
+
+      folly::dynamic config = folly::dynamic::object;
+      config["deviceId"] = parsedResponse["deviceId"];
+      config["medium"] = medium;
 
       messageAck["config"] = config;
-      messageAck["medium"] = medium;
 
-      config["medium"] = medium;
       store_->storeConnectionConfig(config);
+      store_->storeConnectionEncryptedCertificates(parsedResponse);
     }
     if (certificateProvider_) {
-      certificateProvider_->setFlipperState(state_);
-      auto gettingCertFromProvider =
-          state_->start("Getting client certificate from Certificate Provider");
-
-      try {
-        // Certificates should be present in app's sandbox after it is
-        // returned. The reason we can't have a completion block here
-        // is because if the certs are not present after it returns
-        // then the flipper tries to reconnect on insecured channel
-        // and recreates the app.csr. By the time completion block is
-        // called the DeviceCA cert doesn't match app's csr and it
-        // throws an SSL error.
-        certificateProvider_->getCertificates(
-            store_->getCertificateDirectoryPath(), store_->getDeviceId());
-        gettingCertFromProvider->complete();
-      } catch (std::exception& e) {
-        gettingCertFromProvider->fail(e.what());
-        gettingCert->fail(e.what());
-      } catch (...) {
-        gettingCertFromProvider->fail(
-            "Exception thrown from Certificate Provider");
-        gettingCert->fail("Exception thrown from Certificate Provider");
-      }
+      getCertificatesFromProvider(*certificateProvider_);
     }
 
     bool hasRequiredFiles = store_->hasRequiredFiles();
+
+    if (!hasRequiredFiles && backupCertificateProvider_ &&
+        store_->hasItem(ConnectionContextStore::StoreItem::ENCRYPTED_CERTS)) {
+      getCertificatesFromProvider(*backupCertificateProvider_);
+    }
+
+    hasRequiredFiles = store_->hasRequiredFiles();
     messageAck["hasRequiredFiles"] = hasRequiredFiles;
 
     log("[conn] Certificate exchange complete with required files: " +

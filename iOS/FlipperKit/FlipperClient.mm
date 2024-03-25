@@ -16,6 +16,7 @@
 #import "FlipperClient+Testing.h"
 #import "FlipperCppWrapperPlugin.h"
 #import "FlipperKitCertificateProvider.h"
+#import "FlipperKitQRVerifiedCertificateProvider.h"
 #import "FlipperWebSocket.h"
 #import "SKEnvironmentVariables.h"
 #include "SKStateUpdateCPPWrapper.h"
@@ -35,6 +36,7 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
   std::unique_ptr<facebook::flipper::Scheduler> connectionScheduler;
 
   id<FlipperKitCertificateProvider> _certProvider;
+  id<FlipperKitCertificateProvider> _backupCertProvider;
 #if !TARGET_OS_OSX && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST
   FKPortForwardingServer* _secureServer;
   FKPortForwardingServer* _insecureServer;
@@ -123,6 +125,11 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
       // Probably ran out of disk space.
       return nil;
     }
+
+#if !TARGET_OS_OSX
+    [self setBackupCertificateProvider:[[FlipperKitQRVerifiedCertificateProvider
+                                           alloc] initCPPCertificateProvider]];
+#endif
   }
   return self;
 }
@@ -134,6 +141,16 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
           std::shared_ptr<facebook::flipper::FlipperCertificateProvider>*>(
           [provider getCPPCertificateProvider]);
   _cppClient->setCertificateProvider(*prov);
+}
+
+- (void)setBackupCertificateProvider:
+    (id<FlipperKitCertificateProvider>)provider {
+  _backupCertProvider = provider;
+  std::shared_ptr<facebook::flipper::FlipperCertificateProvider>* prov =
+      static_cast<
+          std::shared_ptr<facebook::flipper::FlipperCertificateProvider>*>(
+          [provider getCPPCertificateProvider]);
+  _cppClient->setBackupCertificateProvider(*prov);
 }
 
 - (id<FlipperKitCertificateProvider>)getCertificateProvider {

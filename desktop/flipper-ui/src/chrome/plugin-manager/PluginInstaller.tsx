@@ -25,34 +25,17 @@ import {Dispatch, Action} from 'redux';
 import PluginPackageInstaller from './PluginPackageInstaller';
 import {Toolbar} from 'flipper-plugin';
 import {Alert, Button, Input, Tooltip, Typography} from 'antd';
-import {WarningOutlined} from '@ant-design/icons';
+import {
+  CloudDownloadOutlined,
+  CloudSyncOutlined,
+  DeleteOutlined,
+  WarningOutlined,
+} from '@ant-design/icons';
 import {getFlipperServer} from '../../flipperServer';
 
 const {Text, Link} = Typography;
 
 const TAG = 'PluginInstaller';
-
-const columnSizes = {
-  name: '25%',
-  version: '10%',
-  description: 'flex',
-  install: '15%',
-};
-
-const columns = {
-  name: {
-    value: 'Name',
-  },
-  version: {
-    value: 'Version',
-  },
-  description: {
-    value: 'Description',
-  },
-  install: {
-    value: 'Action',
-  },
-};
 
 type PropsFromState = {
   installedPlugins: Map<string, InstalledPluginDetails>;
@@ -77,6 +60,36 @@ const PluginInstaller = function ({
   installedPlugins,
   autoHeight,
 }: Props) {
+  /**
+   * By initializing columnSizes and columns in the render function instead of globally,
+   * with each render the child component ManagedTable sees new objects (even though the
+   * content is semantically the same) and so it updates as if those properties had changed.
+   *
+   * Reference: https://github.com/facebook/flipper/pull/5161
+   * TODO: Revisit this change as to find the rightful solution.
+   */
+  const columnSizes = {
+    name: '25%',
+    version: '10%',
+    description: 'flex',
+    install: '15%',
+  };
+
+  const columns = {
+    name: {
+      value: 'Name',
+    },
+    version: {
+      value: 'Version',
+    },
+    description: {
+      value: 'Description',
+    },
+    install: {
+      value: 'Action',
+    },
+  };
+
   const [restartRequired, setRestartRequired] = useState(false);
   const [query, setQuery] = useState('');
 
@@ -199,25 +212,36 @@ function InstallButton(props: {
   }
   if ((action.kind === 'Install' || action.kind === 'Remove') && action.error) {
   }
+
+  let icon: JSX.Element;
+  let onClick: () => void;
+  switch (action.kind) {
+    case 'Install':
+      onClick = () =>
+        reportPlatformFailures(performInstall(), `${TAG}:install`);
+      icon = <CloudDownloadOutlined />;
+      break;
+    case 'Remove':
+      onClick = () => reportPlatformFailures(performRemove(), `${TAG}:remove`);
+      icon = <DeleteOutlined />;
+      break;
+    case 'Update':
+      onClick = () => reportPlatformFailures(performUpdate(), `${TAG}:update`);
+      icon = <CloudSyncOutlined />;
+      break;
+  }
+
   const button = (
-    <Button
-      size="small"
-      type={action.kind !== 'Remove' ? 'primary' : undefined}
-      onClick={() => {
-        switch (action.kind) {
-          case 'Install':
-            reportPlatformFailures(performInstall(), `${TAG}:install`);
-            break;
-          case 'Remove':
-            reportPlatformFailures(performRemove(), `${TAG}:remove`);
-            break;
-          case 'Update':
-            reportPlatformFailures(performUpdate(), `${TAG}:update`);
-            break;
-        }
-      }}>
-      {action.kind}
-    </Button>
+    <Tooltip title={action.kind}>
+      <Button
+        size="small"
+        icon={icon}
+        shape="circle"
+        type={action.kind !== 'Remove' ? 'primary' : undefined}
+        style={{margin: 1}}
+        onClick={onClick}
+      />
+    </Tooltip>
   );
 
   if (action.error) {

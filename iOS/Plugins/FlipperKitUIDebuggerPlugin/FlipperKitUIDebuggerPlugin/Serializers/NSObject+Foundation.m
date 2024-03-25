@@ -7,12 +7,14 @@
 
 #ifdef FB_SONARKIT_ENABLED
 
-#import <FlipperKit/FlipperPlugin.h>
-#import <Foundation/Foundation.h>
+#import "NSArray+Foundation.h"
 
-@interface FlipperKitBloksPlugin : NSObject<FlipperPlugin>
+FB_LINKABLE(NSObject_Foundation)
+@implementation NSObject (Foundation)
 
-- (void)logAction:(NSString*)action withData:(NSDictionary*)data;
+- (id)toFoundation {
+  return [self description];
+}
 
 @end
 

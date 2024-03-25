@@ -143,7 +143,7 @@ export class DataInspector extends PureComponent<
       if (typeof value !== 'object') {
         // TODO: Fix this the next time the file is edited.
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        if (('' + value).toLowerCase().includes(filter!)) {
+        if (`${value}`.toLowerCase().includes(filter!)) {
           paths.push(path.slice());
         }
       } else if (Array.isArray(value)) {

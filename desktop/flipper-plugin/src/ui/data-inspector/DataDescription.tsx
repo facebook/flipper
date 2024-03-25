@@ -679,7 +679,7 @@ class DataDescriptionContainer extends PureComponent<{
             onChange={this.onChangeCheckbox}
           />
         ) : (
-          <BooleanValue>{'' + val}</BooleanValue>
+          <BooleanValue>{`${val}`}</BooleanValue>
         );
 
       case 'undefined':

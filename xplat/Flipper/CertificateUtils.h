@@ -28,6 +28,11 @@ bool generateCertPKCS12(
     const char* pkcs12Name,
     const char* pkcs12Password);
 
+bool AESDecrypt(
+    const char* encryptedFilePath,
+    const char* decryptedFilePath,
+    const unsigned char* key);
+
 } // namespace flipper
 } // namespace facebook
 

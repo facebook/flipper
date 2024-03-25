@@ -72,6 +72,15 @@ type TrackerEvents = {
   'target-mode-switched': {
     on: boolean;
   };
+  'box-visualiser-switched': {
+    on: boolean;
+  };
+  'alignment-mode-switched': {
+    on: boolean;
+  };
+  'reference-image-switched': {
+    on: boolean;
+  };
   'target-mode-adjusted': {};
   'context-menu-expand-recursive': {};
   'context-menu-collapse-recursive': {};

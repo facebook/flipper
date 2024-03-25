@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package facebook.internal.androidx.compose.ui.inspection.util
+package androidx.compose.ui.inspection.util
 
 import android.os.Handler
 import android.os.Looper

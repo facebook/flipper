@@ -19,9 +19,14 @@ export function isAuthError(
 
 export function isConnectivityOrAuthError(
   err: any,
-): err is ConnectivityError | UserNotSignedInError | UserUnauthorizedError {
+): err is
+  | ConnectivityError
+  | UserNotSignedInError
+  | UserUnauthorizedError
+  | X2PAgentdError {
   return (
     err instanceof ConnectivityError ||
+    err instanceof X2PAgentdError ||
     isAuthError(err) ||
     String(err).startsWith('Failed to fetch') ||
     // In cases where the error message is wrapped but the
@@ -78,6 +83,14 @@ export class UserUnauthorizedError extends Error {
     this.name = 'UserUnauthorizedError';
   }
   name: 'UserUnauthorizedError';
+}
+
+export class X2PAgentdError extends Error {
+  constructor(msg: string) {
+    super(msg);
+    this.name = 'X2PAgentdError';
+  }
+  name: 'X2PAgentdError';
 }
 
 export class UserNotSignedInError extends Error {
@@ -150,7 +163,7 @@ export function getStringFromErrorLike(e: any): string {
     } catch (e) {
       // Stringify might fail on arbitrary structures
       // Last resort: toString it.
-      return '' + e;
+      return `${e}`;
     }
   }
 }

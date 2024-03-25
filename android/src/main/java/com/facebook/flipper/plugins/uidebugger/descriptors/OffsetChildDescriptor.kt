@@ -13,6 +13,7 @@ import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
+import kotlinx.serialization.json.JsonObject
 
 /** a drawable or view that is mounted, along with the correct descriptor */
 class OffsetChild(val child: Any, val descriptor: NodeDescriptor<Any>, val x: Int, val y: Int) {
@@ -43,6 +44,9 @@ object OffsetChildDescriptor : NodeDescriptor<OffsetChild> {
       node.descriptor.getAttributes(node.child)
 
   override fun getTags(node: OffsetChild): Set<String> = node.descriptor.getTags(node.child)
+
+  override fun getHiddenAttributes(node: OffsetChild): JsonObject? =
+      node.descriptor.getHiddenAttributes(node.child)
 
   override fun editAttribute(
       node: OffsetChild,

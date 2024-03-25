@@ -101,7 +101,7 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5"
+    "typescript": "^5.4.2"
   },
   "homepage": "https://fbflipper.com/",
   "icon": "icon.png",
@@ -164,7 +164,7 @@
     "npm": "use yarn instead",
     "yarn": "^1.16"
   },
-  "version": "0.245.0",
+  "version": "0.250.0",
   "workspaces": {
     "packages": [
       "scripts",
@@ -177,7 +177,6 @@
       "flipper-server-client",
       "flipper-ui",
       "flipper-server",
-      "e2e",
       "plugin-lib",
       "test-utils",
       "eslint-plugin-flipper",
@@ -188,5 +187,6 @@
   },
   "dependencies": {
     "js-flipper": "^0.182.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

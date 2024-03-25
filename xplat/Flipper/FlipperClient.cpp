@@ -80,6 +80,11 @@ void FlipperClient::setCertificateProvider(
   socket_->setCertificateProvider(provider);
 }
 
+void FlipperClient::setBackupCertificateProvider(
+    const std::shared_ptr<FlipperCertificateProvider> provider) {
+  socket_->setBackupCertificateProvider(provider);
+}
+
 std::shared_ptr<FlipperCertificateProvider>
 FlipperClient::getCertificateProvider() {
   return socket_->getCertificateProvider();

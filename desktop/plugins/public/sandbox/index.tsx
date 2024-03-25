@@ -15,7 +15,9 @@ import {
   usePlugin,
   useValue,
   Layout,
+  getFlipperLib,
 } from 'flipper-plugin';
+import {InternBox} from './fb-stubs/internBox';
 
 export type Sandbox = {
   name: string;
@@ -55,9 +57,8 @@ export function plugin(client: PluginClient<{}, ClientMethods>) {
         sandbox,
       })
       .then((result: SetSandboxResult) => {
-        if (result.result)
-          displaySuccess('Update to ' + sandbox + ' successful');
-        else displayError('Update to ' + sandbox + ' failed');
+        if (result.result) displaySuccess(`Update to ${sandbox} successful`);
+        else displayError(`Update to ${sandbox} failed`);
       })
       .catch((e) => {
         console.error('[sandbox] setSandbox call failed:', e);
@@ -101,43 +102,49 @@ export function Component() {
         style={{
           width: '350px',
         }}>
-        <Typography.Text type="secondary">
-          Select the environment:
-        </Typography.Text>
-        <Spin spinning={isLoadingSandboxes} />
-        {sandboxes.map((sandbox) => (
-          <Button
-            key={sandbox.value}
-            onClick={() => instance.onSendSandboxEnvironment(sandbox.value)}
-            style={{
-              width: '100%',
-            }}>
-            {sandbox.name}
-          </Button>
-        ))}
-        <Typography.Text type="secondary">
-          Provide custom Sandbox URL
-        </Typography.Text>
-        <Input.Group compact>
-          <Input
-            style={{
-              width: 'calc(100% - 80px)',
-            }}
-            placeholder="e.g. unixname.sb.facebook.com"
-            onChange={instance.onChangeSandbox}
-            onKeyPress={(event) => {
-              if (event.key === 'Enter') {
-                instance.onSendSandboxEnvironment(customSandbox);
-              }
-            }}
-          />
-          <Button
-            type="primary"
-            onClick={() => instance.onSendSandboxEnvironment(customSandbox)}
-            disabled={customSandbox == null}>
-            Submit
-          </Button>
-        </Input.Group>
+        {getFlipperLib().isFB ? (
+          <InternBox />
+        ) : (
+          <>
+            <Typography.Text type="secondary">
+              Select the environment:
+            </Typography.Text>
+            <Spin spinning={isLoadingSandboxes} />
+            {sandboxes.map((sandbox) => (
+              <Button
+                key={sandbox.value}
+                onClick={() => instance.onSendSandboxEnvironment(sandbox.value)}
+                style={{
+                  width: '100%',
+                }}>
+                {sandbox.name}
+              </Button>
+            ))}
+            <Typography.Text type="secondary">
+              Provide custom Sandbox URL
+            </Typography.Text>
+            <Input.Group compact>
+              <Input
+                style={{
+                  width: 'calc(100% - 80px)',
+                }}
+                placeholder="e.g. unixname.sb.facebook.com"
+                onChange={instance.onChangeSandbox}
+                onKeyPress={(event) => {
+                  if (event.key === 'Enter') {
+                    instance.onSendSandboxEnvironment(customSandbox);
+                  }
+                }}
+              />
+              <Button
+                type="primary"
+                onClick={() => instance.onSendSandboxEnvironment(customSandbox)}
+                disabled={customSandbox == null}>
+                Submit
+              </Button>
+            </Input.Group>
+          </>
+        )}
       </Layout.Container>
     </Layout.Container>
   );

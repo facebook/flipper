@@ -264,9 +264,6 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
     public final int mode;
 
     public SharedPreferencesDescriptor(String name, int mode) {
-      if (name == null || name.length() == 0) {
-        throw new IllegalArgumentException("Given null or empty name");
-      }
       this.name = name;
       this.mode = mode;
     }

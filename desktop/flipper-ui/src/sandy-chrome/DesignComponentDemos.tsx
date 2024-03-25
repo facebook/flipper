@@ -90,7 +90,7 @@ const demos: PreviewProps[] = [
       ['rounded', 'boolean (false)', 'Make the corners rounded'],
       [
         'padv / padh / pad',
-        Object.keys(theme.space).join(' | ') + ' | number | true',
+        `${Object.keys(theme.space).join(' | ')} | number | true`,
         'Short-hand to set the horizontal, vertical or both paddings. The keys correspond to the theme space settings. Using `true` picks the default horizontal / vertical padding for inline elements.',
       ],
       [

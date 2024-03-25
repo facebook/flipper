@@ -131,12 +131,15 @@ export function FlipperSetupWizard({
         return 'init';
     }
   });
-  const loginState = useStore<StepState>((store) =>
-    store.user.id != null ? 'success' : 'init',
-  );
+  const user = useStore((store) => store.user);
+  const loginState: StepState = user?.id != null ? 'success' : 'init';
   const dispatch = useDispatch();
   const isLastOptionalStep = currentStep === 'pwa';
   const closable = isLastOptionalStep ? true : closableProp ?? closableState;
+  const onClose = () => {
+    onHide();
+    localStorage.setItem(SETUP_WIZARD_FINISHED_LOCAL_STORAGE_KEY, 'true');
+  };
   const content = useMemo(() => {
     switch (currentStep) {
       case 'platform':
@@ -147,7 +150,14 @@ export function FlipperSetupWizard({
         return <SetupDoctorScreen modal={false} visible onClose={() => {}} />;
       case 'login':
         return loginState === 'success' ? (
-          <Typography.Paragraph>You are logged in</Typography.Paragraph>
+          <Typography.Paragraph>
+            Logged in as{' '}
+            <img
+              style={{width: 24, height: 24, borderRadius: 12}}
+              src={user.profile_picture?.uri}
+            />{' '}
+            {user.name}
+          </Typography.Paragraph>
         ) : (
           <SignInSheet
             onHide={() => {
@@ -157,7 +167,7 @@ export function FlipperSetupWizard({
           />
         );
       case 'pwa':
-        return <PWAInstallationWizard onInstall={onHide} />;
+        return <PWAInstallationWizard onInstall={onClose} />;
     }
   }, [currentStep, loginState, onHide]);
   const title = useMemo(() => {
@@ -195,10 +205,6 @@ export function FlipperSetupWizard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const onClose = () => {
-    onHide();
-    localStorage.setItem(SETUP_WIZARD_FINISHED_LOCAL_STORAGE_KEY, 'true');
-  };
 
   return (
     <Modal

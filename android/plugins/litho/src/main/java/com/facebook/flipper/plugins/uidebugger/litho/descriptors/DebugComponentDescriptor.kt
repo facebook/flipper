@@ -21,6 +21,7 @@ import com.facebook.flipper.plugins.uidebugger.litho.LithoTag
 import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.ComponentDataExtractor
 import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.LayoutPropExtractor
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.BoxData
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
@@ -32,8 +33,13 @@ import com.facebook.litho.Component
 import com.facebook.litho.DebugComponent
 import com.facebook.litho.DebugLayoutNodeEditor
 import com.facebook.litho.StateContainer
+import com.facebook.litho.sections.widget.SectionBinderTarget
+import com.facebook.litho.widget.Binder
+import com.facebook.litho.widget.Recycler
+import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.rendercore.FastMath
 import com.facebook.yoga.YogaEdge
+import java.lang.reflect.Modifier
 
 typealias GlobalKey = String
 
@@ -54,6 +60,32 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
   override fun getQualifiedName(node: com.facebook.litho.DebugComponent): String =
       node.component::class.qualifiedName ?: ""
+
+  override fun getBoxData(node: DebugComponent): BoxData? {
+    val layoutNode = node.layoutNode ?: return null
+    val margin =
+        listOf<Float>(
+            layoutNode.getLayoutMargin(YogaEdge.LEFT),
+            layoutNode.getLayoutMargin(YogaEdge.RIGHT),
+            layoutNode.getLayoutMargin(YogaEdge.TOP),
+            layoutNode.getLayoutMargin(YogaEdge.BOTTOM))
+
+    val border =
+        listOf<Float>(
+            layoutNode.getLayoutBorderWidth(YogaEdge.LEFT),
+            layoutNode.getLayoutBorderWidth(YogaEdge.RIGHT),
+            layoutNode.getLayoutBorderWidth(YogaEdge.TOP),
+            layoutNode.getLayoutBorderWidth(YogaEdge.BOTTOM))
+
+    val padding =
+        listOf<Float>(
+            layoutNode.getLayoutPadding(YogaEdge.LEFT),
+            layoutNode.getLayoutPadding(YogaEdge.RIGHT),
+            layoutNode.getLayoutPadding(YogaEdge.TOP),
+            layoutNode.getLayoutPadding(YogaEdge.BOTTOM))
+
+    return BoxData(margin, border, padding)
+  }
 
   override fun getChildren(node: DebugComponent): List<Any> {
     val result = mutableListOf<Any>()
@@ -93,6 +125,9 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
   override fun getActiveChild(node: DebugComponent): Any? = null
 
+  private val MeasureSpecId =
+      MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Litho Measure Specs")
+
   private val LayoutPropsId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Layout Props")
 
@@ -102,6 +137,10 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
   private val UserPropsId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "User Props")
 
+  private val RecyclerConfigurationId =
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "Recycler Configuration")
+
   private val StateId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "State")
 
@@ -110,6 +149,10 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
   private val isMountedAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "mounted")
+
+  private val excludeFromIncrementalMountAttributeId =
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "excluded from incremental mount")
 
   private val isVisibleAttributeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "visible")
@@ -131,8 +174,12 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
               ComponentDataExtractor.getState(stateContainer, node.component.simpleName)
         }
 
-        val props = ComponentDataExtractor.getProps(node.component)
+        val component = node.component
+        if (component is Recycler) {
+          setRecyclerAttributes(component, attributeSections)
+        }
 
+        val props = ComponentDataExtractor.getProps(node.component)
         attributeSections[UserPropsId] = InspectableObject(props.toMap())
       }
 
@@ -142,9 +189,57 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
       val layoutOutputs = LayoutPropExtractor.getResolvedOutputs(node)
       attributeSections[LayoutOutputsId] = InspectableObject(layoutOutputs.toMap())
 
+      val measureSpecs = LayoutPropExtractor.getMeasureSpecs(node)
+      attributeSections[MeasureSpecId] = InspectableObject(measureSpecs.toMap())
+
       attributeSections[MountingDataId] = InspectableObject(mountingData)
 
       attributeSections
+    }
+  }
+
+  private fun setRecyclerAttributes(
+      component: Recycler,
+      attributeSections: MutableMap<MetadataId, InspectableObject>
+  ) {
+    try {
+      val binder = component.extractRecyclerBinder()
+
+      if (binder != null) {
+        val recyclerBinderConfigField =
+            binder.javaClass.getDeclaredField("mRecyclerBinderConfig").apply { isAccessible = true }
+
+        val recyclerBinderConfig = recyclerBinderConfigField.get(binder)
+
+        if (recyclerBinderConfig != null) {
+          val configurationFields = recyclerBinderConfig.javaClass.declaredFields ?: emptyArray()
+
+          val attributes =
+              configurationFields
+                  .filter { !Modifier.isStatic(it.modifiers) }
+                  .associate { field ->
+                    val metadataId =
+                        MetadataRegister.register(
+                            MetadataRegister.TYPE_ATTRIBUTE, "recyclerBinderConfig", field.name)
+
+                    field.isAccessible = true
+
+                    val inspectableValue =
+                        when (val value = field.get(recyclerBinderConfig)) {
+                          is Number -> InspectableValue.Number(value)
+                          is Boolean -> InspectableValue.Boolean(value)
+                          is String -> InspectableValue.Text(value)
+                          else -> InspectableValue.Unknown(value?.toString() ?: "null")
+                        }
+
+                    metadataId to inspectableValue
+                  }
+
+          attributeSections[RecyclerConfigurationId] = InspectableObject(attributes)
+        }
+      }
+    } catch (exception: Exception) {
+      // Reflection is brittle - we safely catch the Exception
     }
   }
 
@@ -182,21 +277,24 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
       return mountingData
     }
 
-    val mountState = lithoView.mountDelegateTarget ?: return mountingData
-    val componentTree = lithoView.componentTree ?: return mountingData
+    val mountState = lithoView.mountDelegateTarget
+    val layoutState = lithoView.currentLayoutState ?: return mountingData
 
     val component = node.component
 
     if (component.mountType != Component.MountType.NONE) {
-      val renderUnit = DebugComponent.getRenderUnit(node, componentTree)
+      val renderUnit = DebugComponent.getRenderUnit(node, layoutState)
       if (renderUnit != null) {
         val renderUnitId = renderUnit.id
         val isMounted = mountState.getContentById(renderUnitId) != null
         mountingData[isMountedAttributeId] = InspectableValue.Boolean(isMounted)
+        mountingData[excludeFromIncrementalMountAttributeId] =
+            InspectableValue.Boolean(
+                DebugComponent.isExcludedFromIncrementalMount(node, layoutState))
       }
     }
 
-    val visibilityOutput = DebugComponent.getVisibilityOutput(node, componentTree)
+    val visibilityOutput = DebugComponent.getVisibilityOutput(node, layoutState)
     if (visibilityOutput != null) {
       val isVisible = DebugComponent.isVisible(node, lithoView)
       mountingData[isVisibleAttributeId] = InspectableValue.Boolean(isVisible)
@@ -255,5 +353,30 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
     node.setOverrider(overrider)
     node.rerender()
+  }
+}
+
+private fun Recycler.extractRecyclerBinder(): RecyclerBinder? {
+  val binderField =
+      this.javaClass.declaredFields
+          .firstOrNull { Binder::class.java.isAssignableFrom(it.type) }
+          ?.apply { isAccessible = true }
+
+  return when (val binderInstance = binderField?.get(this)) {
+    is RecyclerBinder -> {
+      binderInstance
+    }
+    is SectionBinderTarget -> {
+      val recyclerBinderField =
+          (binderInstance as SectionBinderTarget)::class.java.declaredFields.firstOrNull {
+            it.isAccessible = true
+            it.name == "mRecyclerBinder"
+          }
+
+      recyclerBinderField?.get(binderInstance) as? RecyclerBinder
+    }
+    else -> {
+      null
+    }
   }
 }

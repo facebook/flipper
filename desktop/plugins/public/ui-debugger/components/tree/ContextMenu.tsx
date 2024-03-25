@@ -122,7 +122,7 @@ export const ContextMenu: React.FC<{
             icon: <MenuUnfoldOutlined />,
             onClick: () => {
               onExpandRecursively(hoveredNode.id);
-              onSelectNode(hoveredNode.id, 'context-menu');
+              onSelectNode(hoveredNode, 'context-menu');
               tracker.track('context-menu-expand-recursive', {});
             },
           },
@@ -132,7 +132,7 @@ export const ContextMenu: React.FC<{
             icon: <MenuFoldOutlined />,
             onClick: () => {
               onCollapseRecursively(hoveredNode.id);
-              onSelectNode(hoveredNode.id, 'context-menu');
+              onSelectNode(hoveredNode, 'context-menu');
               tracker.track('context-menu-collapse-recursive', {});
             },
           },
@@ -142,7 +142,7 @@ export const ContextMenu: React.FC<{
             icon: <NodeExpandOutlined />,
             onClick: () => {
               onCollapseNonAncestors(hoveredNode.id);
-              onSelectNode(hoveredNode.id, 'context-menu');
+              onSelectNode(hoveredNode, 'context-menu');
               tracker.track('context-menu-collapse-non-ancestors', {});
             },
           },

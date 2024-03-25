@@ -190,7 +190,7 @@ export const requirePluginInternal = async (
   // Note that we use 'eval', and not 'new Function', because the latter will cause the source maps
   // to be off by two lines (as the function declaration uses two lines in the generated source)
   // eslint-disable-next-line no-eval
-  const cjsLoader = eval('(module) => {' + js + '\n}');
+  const cjsLoader = eval(`(module) => {${js}\n}`);
   const theModule = {exports: {}};
   cjsLoader(theModule);
 

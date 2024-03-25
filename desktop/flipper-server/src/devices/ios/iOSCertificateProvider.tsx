@@ -23,8 +23,6 @@ import {isFBBuild} from '../../fb-stubs/constants';
 
 const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
 
-const logTag = 'iOSCertificateProvider';
-
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export default class iOSCertificateProvider extends CertificateProvider {
   name = 'iOSCertificateProvider';
@@ -56,6 +54,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
       recorder.logError(clientQuery, 'No devices found');
       throw new Error('No iOS devices found');
     }
+    let isPhysicalDevice = false;
     const deviceMatchList = targets.map(async (target) => {
       try {
         const isMatch = await this.iOSDeviceHasMatchingCSR(
@@ -65,16 +64,14 @@ export default class iOSCertificateProvider extends CertificateProvider {
           appName,
           csr,
         );
+        if (!isPhysicalDevice) {
+          isPhysicalDevice = target.type === 'physical';
+        }
         return {id: target.udid, isMatch};
       } catch (e) {
         recorder.logError(
           clientQuery,
           'Unable to find a matching device for the incoming request',
-        );
-        console.warn(
-          `[conn] Unable to check for matching CSR in ${target.udid}:${appName}`,
-          logTag,
-          e,
         );
         return {id: target.udid, isMatch: false};
       }
@@ -83,7 +80,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
     const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
     if (matchingIds.length == 0) {
       let error = `No matching device found for app: ${appName}.`;
-      if (clientQuery.medium === 'FS_ACCESS' && isFBBuild) {
+      if (clientQuery.medium === 'FS_ACCESS' && isPhysicalDevice && isFBBuild) {
         error += ` If you are using a physical device and a non-locally built app (i.e. Mobile Build), please make sure WWW certificate exchange is enabled in your app.`;
       }
 
@@ -136,7 +133,7 @@ export default class iOSCertificateProvider extends CertificateProvider {
     if (matches && matches.length === 2) {
       return matches[1];
     }
-    throw new Error("Path didn't match expected pattern: " + absolutePath);
+    throw new Error(`Path didn't match expected pattern: ${absolutePath}`);
   }
 
   private async pushFileToiOSDevice(

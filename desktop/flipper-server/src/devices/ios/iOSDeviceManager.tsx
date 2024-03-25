@@ -269,10 +269,9 @@ function confirmSimulatorAppMatchesThatOfXcodeSelect(
     if (runningSimulatorApp.startsWith(xcodeCLIVersion)) {
       continue;
     }
-    return (
-      runningSimulatorApp.split('/Contents/Developer')[0] +
-      '/Contents/Developer'
-    );
+    return `${
+      runningSimulatorApp.split('/Contents/Developer')[0]
+    }/Contents/Developer`;
   }
   return undefined;
 }

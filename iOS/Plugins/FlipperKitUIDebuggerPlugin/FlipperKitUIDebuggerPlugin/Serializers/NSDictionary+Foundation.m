@@ -17,7 +17,11 @@ FB_LINKABLE(NSDictionary_Foundation)
       [NSMutableDictionary dictionaryWithCapacity:self.count];
 
   for (id key in self) {
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
     [copy setObject:[self[key] toFoundation] forKey:[key description]];
+#pragma clang diagnostic pop
   }
 
   return copy;

@@ -65,6 +65,7 @@ export async function downloadIcons(buildFolder: string) {
           // not available at this size, pick the next
           continue;
         }
+        console.log(`🔵 icon url: ${url}`);
         return new Promise((resolve, reject) => {
           const fileStream = fs.createWriteStream(
             path.join(buildFolder, buildLocalIconPath(icon)),

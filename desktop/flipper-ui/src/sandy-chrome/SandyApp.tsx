@@ -145,9 +145,11 @@ export function SandyApp() {
               paddingRight: theme.space.large,
             }}>
             <Layout.Horizontal>
-              <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
-                {leftSidebarVisible ? <AppInspect /> : null}
-              </_Sidebar>
+              {leftSidebarVisible ? (
+                <_Sidebar width={250} minWidth={220} maxWidth={800} gutter>
+                  {<AppInspect />}
+                </_Sidebar>
+              ) : null}
             </Layout.Horizontal>
             <MainContainer>
               {staticView ? (

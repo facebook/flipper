@@ -85,7 +85,7 @@ export class AndroidCrashWatcher extends DeviceListener {
         shouldParseAndroidLog(entry, referenceDate)
       ) {
         if (androidLogUnderProcess) {
-          androidLog += '\n' + entry.message;
+          androidLog += `\n${entry.message}`;
           androidLog = androidLog.trim();
           if (timer) {
             clearTimeout(timer);

@@ -8,6 +8,7 @@
  */
 
 import {promisify} from 'util';
+import crypto from 'crypto';
 import fs from 'fs-extra';
 import os from 'os';
 import {
@@ -209,6 +210,28 @@ const generateServerCertificate = async (): Promise<void> => {
   });
 };
 
+export interface EphemeralEncryptionResult {
+  data: string;
+  key: string;
+}
+export const ephemeralEncryption = async (
+  path: string,
+): Promise<EphemeralEncryptionResult> => {
+  const algorithm = 'aes-256-cbc';
+  const key = crypto.randomBytes(32);
+  const iv = crypto.randomBytes(16);
+
+  const fileContent = await fs.readFile(path);
+
+  const cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
+  const encrypted = Buffer.concat([cipher.update(fileContent), cipher.final()]);
+
+  return {
+    data: Buffer.concat([iv, encrypted]).toString('base64'),
+    key: key.toString('base64'),
+  };
+};
+
 const ensureCertificateAuthorityExists = async (): Promise<void> => {
   if (!(await fs.pathExists(caKey))) {
     return generateCertificateAuthority();
@@ -256,7 +279,7 @@ const checkCertIsValid = async (filename: string): Promise<void> => {
     const expiryDate = Date.parse(dateString);
     if (isNaN(expiryDate)) {
       console.error(
-        'Unable to parse certificate expiry date: ' + endDateOutput,
+        `Unable to parse certificate expiry date: ${endDateOutput}`,
       );
       throw new Error(
         'Cannot parse certificate expiry date. Assuming it has expired.',

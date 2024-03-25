@@ -118,7 +118,10 @@ export enum WSCloseCode {
 // global.WebSocket interface is not 100% compatible with ws.WebSocket interface
 // We need to support both, so defining our own with only required props
 export interface FlipperWebSocket {
-  onclose: ((ev: {code: WSCloseCode}) => void) | null;
+  onclose:
+    | ((ev: {code: WSCloseCode}) => void)
+    | ((ev: {detail?: {code: WSCloseCode}}) => void)
+    | null;
   onerror: ((ev: unknown) => void) | null;
   onmessage:
     | ((ev: {data: Buffer | ArrayBuffer | Buffer[] | string}) => void)
@@ -235,7 +238,11 @@ export class FlipperClient {
     this.ws.onerror = (error) => {
       this.onError(error);
     };
-    this.ws.onclose = ({code}) => {
+    this.ws.onclose = (ev: {
+      code: WSCloseCode;
+      detail?: {code: WSCloseCode};
+    }) => {
+      const code = ev.code || ev.detail?.code;
       // Some WS implementations do not properly set `wasClean`
       if (![WSCloseCode.NormalClosure, WSCloseCode.GoingAway].includes(code)) {
         this.reconnect();

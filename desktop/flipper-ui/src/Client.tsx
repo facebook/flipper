@@ -557,7 +557,7 @@ export default class Client extends EventEmitter {
     const data = await timeout(
       30 * 1000,
       this.rawCall<{plugins: PluginsArr}>('getBackgroundPlugins', false),
-      'Fetch background plugins timeout for ' + this.id,
+      `Fetch background plugins timeout for ${this.id}`,
     );
     return data.plugins;
   }

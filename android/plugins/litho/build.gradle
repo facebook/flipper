@@ -33,6 +33,7 @@ android {
             exclude group:'com.facebook.flipper', module:'flipper'
         }
         implementation deps.lithoSectionsDebug
+        implementation deps.lithoSectionsWidget
         implementation deps.lithoSectionsCore
         implementation deps.lithoWidget
         implementation deps.supportAppCompat

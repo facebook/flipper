@@ -20,7 +20,7 @@ export function getStringFromErrorLike(e: any): string {
     } catch (e) {
       // Stringify might fail on arbitrary structures
       // Last resort: toString it.
-      return '' + e;
+      return `${e}`;
     }
   }
 }

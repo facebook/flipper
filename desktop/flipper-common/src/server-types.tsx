@@ -152,6 +152,10 @@ export type FlipperServerEvents = {
     crash: CrashLog;
   };
   'client-setup': UninitializedClient;
+  'client-setup-secret-exchange': {
+    client: UninitializedClient;
+    secret: string;
+  };
   'client-setup-error': {
     client: UninitializedClient;
     type: 'error' | 'warning';
@@ -385,6 +389,7 @@ export type FlipperServerCommands = {
   ) => Promise<void>;
   'intern-cloud-upload': (path: string) => Promise<string>;
   shutdown: () => Promise<void>;
+  restart: () => Promise<void>;
   'is-logged-in': () => Promise<boolean>;
   'environment-info': () => Promise<EnvironmentInfo>;
   'move-pwa': () => Promise<void>;

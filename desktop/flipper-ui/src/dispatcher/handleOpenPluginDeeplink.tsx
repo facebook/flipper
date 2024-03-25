@@ -418,7 +418,7 @@ async function verifyPluginStatus(
         break;
       }
       default:
-        throw new Error('Unhandled state: ' + status);
+        throw new Error(`Unhandled state: ${status}`);
     }
   }
 }
@@ -623,7 +623,7 @@ async function launchDeviceDialog(
       message: (
         <p>
           To open the current deeplink for plugin {params.pluginId} a device{' '}
-          {params.devices.length ? ' of type ' + params.devices.join(', ') : ''}{' '}
+          {params.devices.length ? ` of type ${params.devices.join(', ')}` : ''}{' '}
           should be up and running. No device was found. Please connect a device
           or launch an emulator / simulator.
         </p>

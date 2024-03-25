@@ -139,7 +139,7 @@ export function NUX({
                 style={{color: theme.textColorPrimary}}>
                 <BulbTwoTone style={{fontSize: 24}} />
                 <Text>{title}</Text>
-                <Tracked action={'nux:dismiss:' + title.substr(0, 50)}>
+                <Tracked action={`nux:dismiss:${title.substr(0, 50)}`}>
                   <Button size="small" type="default" onClick={dismiss}>
                     Dismiss
                   </Button>

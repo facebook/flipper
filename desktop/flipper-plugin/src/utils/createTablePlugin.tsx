@@ -110,7 +110,7 @@ export function createTablePlugin<
       }
       unhandledMessagesSeen.add(message);
       notification.warn({
-        message: 'Unhandled message: ' + message,
+        message: `Unhandled message: ${message}`,
         description: (
           <Typography.Paragraph>
             <pre>{JSON.stringify(params, null, 2)}</pre>

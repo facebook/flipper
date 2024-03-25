@@ -64,7 +64,10 @@ public class Database2Helper extends SQLiteOpenHelper {
       contentValues.put("column1", "Long text data for testing resizing");
       contentValues.put(
           "column2",
-          "extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra Long text data for testing resizing");
+          "extra extra extra extra extra extra extra extra extra extra extra extra extra extra"
+              + " extra extra extra extra extra extra extra extra extra extra extra extra extra"
+              + " extra extra extra extra extra extra extra extra extra Long text data for testing"
+              + " resizing");
       db.insert("db2_first_table", null, contentValues);
       db.insert("db2_second_table", null, contentValues);
     }

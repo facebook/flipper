@@ -27,12 +27,15 @@ The last Electron release is [v0.239.0](https://github.com/facebook/flipper/rele
 
 ### React Native support
 
-If you are debugging React Native applications, v0.239.0 will be the last release with support for it due to technical limitations for React Dev Tools and Hermes Debugger plugins. As such, please refer to that release when debugging React Native applications.
+If you are debugging React Native applications, [v0.239.0](https://github.com/facebook/flipper/releases/tag/v0.239.0) will be the last release with support for it due to technical limitations for React Dev Tools and Hermes Debugger plugins. As such, please refer to that release when debugging React Native applications.
+
+New, dedicated debug tooling for React Native is currently being developed at Meta.
+In the mean time we recommend this [blog post](https://shift.infinite.red/why-you-dont-need-flipper-in-your-react-native-app-and-how-to-get-by-without-it-3af461955109) with guidance on how to get the capibilities of Flipper through several alternatives.
 
 ---
 
 <p align="center">
-  Flipper (formerly Sonar) is a platform for debugging mobile apps on iOS and Android and JS apps in your browser or in Node.js. Visualize, inspect, and control your apps from a simple desktop interface. Use Flipper as is or extend it using the plugin API.
+  Flipper is a platform for debugging mobile apps on iOS and Android and JS apps in your browser or in Node.js. Visualize, inspect, and control your apps from a simple desktop interface. Use Flipper as is or extend it using the plugin API.
 </p>
 
 ![Flipper](website/static/img/inspector.png)
@@ -83,27 +86,23 @@ This repository includes all parts of Flipper. This includes:
   (`/desktop`)
 - native Flipper SDKs for iOS (`/iOS`)
 - native Flipper SDKs for Android (`/android`)
+- cross-platform C++ SDK (`/xplat`)
 - React Native Flipper SDK (`/react-native`)
 - JS Flipper SDK (`/js`)
-- Plugins:
-  - Logs (`/desktop/plugins/public/logs`)
-  - Layout inspector (`/desktop/plugins/public/layout`)
-  - Network inspector (`/desktop/plugins/public/network`)
-  - Shared Preferences/NSUserDefaults inspector
-    (`/desktop/plugins/public/shared_preferences`)
-- website and documentation (`/website` / `/docs`)
+- Plugins (`/desktop/plugins/public/`)
+- website and documentation (`/website`, `/docs`)
 
 # Getting started
 
 Please refer to our
 [Getting Started guide](https://fbflipper.com/docs/getting-started) to set up
-Flipper. Or, (still experimental) run `npx flipper-server` for a browser based
+Flipper. Or, run `npx flipper-server` for a browser based
 version of Flipper.
 
 ## Requirements
 
-- node >= 8
-- yarn >= 1.5
+- node >= 18
+- yarn >= 1.16
 - iOS developer tools (for developing iOS plugins)
 - Android SDK and adb
 
@@ -120,16 +119,13 @@ yarn
 yarn start
 ```
 
-NOTE: If you're on Windows, you need to use Yarn 1.5.1 until
-[this issue](https://github.com/yarnpkg/yarn/issues/6048) is resolved.
-
 ### Building standalone application
 
 Provide either `--mac`, `--win`, `--linux` or any combination of them to
 `yarn build` to build a release zip file for the given platform(s). E.g.
 
 ```bash
-yarn build --mac --version $buildNumber
+yarn build --mac
 ```
 
 You can find the resulting artifact in the `dist/` folder.

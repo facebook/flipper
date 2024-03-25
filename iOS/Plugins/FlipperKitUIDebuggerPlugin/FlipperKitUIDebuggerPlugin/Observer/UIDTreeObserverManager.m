@@ -8,15 +8,18 @@
 #ifdef FB_SONARKIT_ENABLED
 
 #import "UIDTreeObserverManager.h"
+#import <FlipperKit/FlipperResponder.h>
+#import "UIDCompoundTypeHint.h"
 #import "UIDContext.h"
 #import "UIDDescriptorRegister.h"
+#import "UIDFrameScanEvent.h"
 #import "UIDInitEvent.h"
 #import "UIDJSONSerializer.h"
+#import "UIDMainThread.h"
 #import "UIDMetadataRegister.h"
 #import "UIDMetadataUpdateEvent.h"
 #import "UIDPerfStatsEvent.h"
 #import "UIDPerformance.h"
-#import "UIDSubtreeUpdateEvent.h"
 #import "UIDTimeUtilities.h"
 #import "UIDTreeObserverFactory.h"
 
@@ -64,7 +67,11 @@
 
   // trigger another pass
   dispatch_async(dispatch_get_main_queue(), ^{
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
     [self->_rootObserver processNode:self->_context.application
+#pragma clang diagnostic pop
                         withSnapshot:YES
                          withContext:self->_context];
   });
@@ -78,7 +85,11 @@
 
   if (!_rootObserver) {
     _rootObserver =
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
         [_context.observerFactory createObserverForNode:context.application
+#pragma clang diagnostic pop
                                             withContext:_context];
   }
 
@@ -95,8 +106,84 @@
         if (maybeMode == nil) {
           return;
         }
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
         weakSelf.traversalMode = UIDTraversalModeFromString(maybeMode);
+#pragma clang diagnostic pop
       }];
+
+  [_context.connection
+        receive:@"editAttribute"
+      withBlock:^(NSDictionary* data, id<FlipperResponder> responder) {
+        NSNumber* nodeId = [data[@"nodeId"] isKindOfClass:NSNumber.class]
+            ? data[@"nodeId"]
+            : nil;
+        if (nodeId == nil) {
+          [responder error:[NSError UID_errorPayloadWithType:
+                                        AttributeEditorErrorTypeMissingNodeId]];
+          return;
+        }
+
+        NSMutableArray<UIDMetadataId>* metadataIds =
+            [data[@"metadataIdPath"] isKindOfClass:NSArray.class]
+            ? data[@"metadataIdPath"]
+            : nil;
+        if (metadataIds == nil) {
+          [responder
+              error:[NSError UID_errorPayloadWithType:
+                                 AttributeEditorErrorTypeMissingMetadataIds]];
+          return;
+        }
+
+        id value = data[@"value"];
+
+        UIDCompoundTypeHint hint = UIDCompoundTypeHintNone;
+        NSString* _Nullable maybeHint = data[@"compoundTypeHint"];
+        if (maybeHint && [maybeHint isKindOfClass:NSString.class]) {
+          hint = UIDCompoundTypeHintFromString(maybeHint);
+        }
+
+        UIDTreeObserverManager* strongSelf = weakSelf;
+        if (strongSelf == nil) {
+          [responder error:[NSError UID_errorPayloadWithType:
+                                        AttributeEditorErrorTypeUnknown]];
+          return;
+        }
+
+        __weak id<FlipperResponder> weakReponder = responder;
+        ReportAttributeEditorResult reportResult = ^(NSError* error) {
+          id<FlipperResponder> strongReponder = weakReponder;
+          if (!strongReponder) {
+            return;
+          }
+          if (error == nil) {
+            [responder success:@{}];
+          } else {
+            [responder error:[NSError UID_errorPayloadWithError:error]];
+          }
+        };
+        id root = strongSelf->_context.application;
+        [strongSelf->_context.attributeEditor editNodeWithId:nodeId
+                                                       value:value
+                                         metadataIdentifiers:metadataIds
+                                            compoundTypeHint:hint
+                                                        root:root
+                                                reportResult:reportResult];
+      }];
+
+  UIDRunBlockOnMainThreadAsync(^{
+    UIDTreeObserverManager* strongSelf = weakSelf;
+    if (strongSelf == nil) {
+      return;
+    }
+    UIApplication* application = strongSelf->_context.application;
+    if (application) {
+      [strongSelf->_rootObserver processNode:application
+                                withSnapshot:YES
+                                 withContext:strongSelf->_context];
+    }
+  });
 }
 
 - (void)stop {
@@ -112,7 +199,11 @@
       [_context.descriptorRegister descriptorForClass:[UIApplication class]];
 
   UIDInitEvent* init = [UIDInitEvent new];
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
   init.rootId = [descriptor identifierForNode:_context.application];
+#pragma clang diagnostic pop
   init.frameworkEventMetadata = [_context.frameworkEventManager eventsMetadata];
   init.currentTraversalMode = _traversalMode;
 
@@ -141,20 +232,23 @@
 
     UIDPerformanceClear();
 
-    UIDSubtreeUpdate* subtreeUpdate = (UIDSubtreeUpdate*)update;
+    UIDFrameUpdate* frameUpdate = (UIDFrameUpdate*)update;
 
-    UIDSubtreeUpdateEvent* subtreeUpdateEvent = [UIDSubtreeUpdateEvent new];
-    subtreeUpdateEvent.txId = UIDPerformanceTimeIntervalSince1970();
-    subtreeUpdateEvent.observerType = subtreeUpdate.observerType;
-    subtreeUpdateEvent.rootId = subtreeUpdate.rootId;
-    subtreeUpdateEvent.nodes = subtreeUpdate.nodes;
-    subtreeUpdateEvent.snapshot = subtreeUpdate.snapshot;
-    subtreeUpdateEvent.frameworkEvents =
+    UIDFrameScanEvent* frameScanEvent = [UIDFrameScanEvent new];
+    frameScanEvent.timestamp = UIDPerformanceTimeIntervalSince1970();
+    frameScanEvent.nodes = frameUpdate.nodes;
+
+    UIDSnapshotInfo* snapshot = [UIDSnapshotInfo new];
+    snapshot.image = frameUpdate.snapshot;
+    snapshot.nodeId = frameUpdate.rootId;
+
+    frameScanEvent.snapshot = snapshot;
+    frameScanEvent.frameworkEvents =
         [self->_context.frameworkEventManager events];
 
     uint64_t t2 = UIDPerformanceNow();
 
-    id intermediate = UID_toFoundation(subtreeUpdateEvent);
+    id intermediate = UID_toFoundation(frameScanEvent);
 
     uint64_t t3 = UIDPerformanceNow();
 
@@ -164,19 +258,19 @@
 
     [self sendMetadataUpdate];
 
-    [self->_context.connection send:[UIDSubtreeUpdateEvent name]
+    [self->_context.connection send:[UIDFrameScanEvent name]
                       withRawParams:JSON];
 
     uint64_t t5 = UIDPerformanceNow();
 
     UIDPerfStatsEvent* perfStats = [UIDPerfStatsEvent new];
-    perfStats.txId = subtreeUpdateEvent.txId;
-    perfStats.observerType = subtreeUpdate.observerType;
-    perfStats.nodesCount = subtreeUpdate.nodes.count;
-    perfStats.eventsCount = subtreeUpdateEvent.frameworkEvents.count;
-    perfStats.start = UIDTimeIntervalToMS(subtreeUpdate.timestamp);
-    perfStats.traversalMS = subtreeUpdate.traversalMS;
-    perfStats.snapshotMS = subtreeUpdate.snapshotMS;
+    perfStats.txId = frameScanEvent.timestamp;
+    perfStats.observerType = frameUpdate.observerType;
+    perfStats.nodesCount = frameUpdate.nodes.count;
+    perfStats.eventsCount = frameScanEvent.frameworkEvents.count;
+    perfStats.start = UIDTimeIntervalToMS(frameUpdate.timestamp);
+    perfStats.traversalMS = frameUpdate.traversalMS;
+    perfStats.snapshotMS = frameUpdate.snapshotMS;
     perfStats.queuingMS = UIDMonotonicTimeConvertMachUnitsToMS(t1 - t0);
     perfStats.frameworkEventsMS = UIDMonotonicTimeConvertMachUnitsToMS(t2 - t1);
     perfStats.deferredComputationMS =

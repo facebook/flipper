@@ -150,7 +150,7 @@ async function start(deviceQuery: string, appName: string, pluginId: string) {
 
     server.on('device-disconnected', (deviceInfo) => {
       if (device && deviceInfo.serial === device.serial) {
-        reject(new Error('Device disconnected: ' + deviceInfo.serial));
+        reject(new Error(`Device disconnected: ${deviceInfo.serial}`));
       }
     });
 
@@ -186,14 +186,14 @@ async function start(deviceQuery: string, appName: string, pluginId: string) {
                 return;
               }
               const plugins: string[] = (response.success as any).plugins;
-              logger.info('Detected plugins ' + plugins.join(','));
+              logger.info(`Detected plugins ${plugins.join(',')}`);
               if (!plugins.includes(pluginId)) {
                 // TODO: what if it only registers later?
                 throw new Error(
                   `Plugin ${pluginId} was not registered on client ${client.id}`,
                 );
               }
-              logger.info(`Starting plugin ` + pluginId);
+              logger.info(`Starting plugin ${pluginId}`);
               const response2 = await server.exec(
                 'client-request-response',
                 client.id,

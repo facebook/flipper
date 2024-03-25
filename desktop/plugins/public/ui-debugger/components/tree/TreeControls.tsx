@@ -18,15 +18,19 @@ import {
   Space,
   Switch,
   Badge,
+  Dropdown,
+  Divider,
 } from 'antd';
 // TODO: Fix this the next time the file is edited.
 // eslint-disable-next-line rulesdir/no-restricted-imports-clone, prettier/prettier
-import { Glyph } from 'flipper';
+import {Glyph} from 'flipper';
 import {
   EyeOutlined,
   PauseCircleOutlined,
   PlayCircleOutlined,
   SearchOutlined,
+  TableOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
 import {usePlugin, useValue, Layout, theme} from 'flipper-plugin';
 import {FrameworkEventMetadata, FrameworkEventType} from '../../ClientTypes';
@@ -34,6 +38,29 @@ import {
   buildTreeSelectData,
   FrameworkEventsTreeSelect,
 } from '../shared/FrameworkEventsTreeSelect';
+import {createDropDownItem} from '../shared/createDropDownItem';
+import {TreeNodeRow} from './Tree';
+
+type FrameworkEventsDropDownItems = 'OpenTable' | 'Monitoring';
+const frameworkEventsDropDownItems = [
+  {
+    key: 'group',
+    type: 'group',
+    label: 'Framework Events',
+    children: [
+      createDropDownItem<FrameworkEventsDropDownItems>(
+        'OpenTable',
+        'Open global table',
+        <TableOutlined />,
+      ),
+      createDropDownItem<FrameworkEventsDropDownItems>(
+        'Monitoring',
+        'Real time monitoring',
+        <EyeOutlined />,
+      ),
+    ],
+  },
+];
 
 export const TreeControls: React.FC = () => {
   const instance = usePlugin(plugin);
@@ -108,25 +135,37 @@ export const TreeControls: React.FC = () => {
         )}
       {frameworkEventMonitoring.size > 0 && (
         <>
-          <Badge
-            size="small"
-            count={
-              [...frameworkEventMonitoring.values()].filter(
-                (val) => val === true,
-              ).length
-            }>
-            <Button
-              type="default"
-              shape="circle"
-              onClick={() => {
-                setShowFrameworkEventsModal(true);
-              }}
-              icon={
-                <Tooltip title="Framework event monitoring">
-                  <EyeOutlined />
-                </Tooltip>
-              }></Button>
-          </Badge>
+          <Dropdown
+            menu={{
+              selectable: false,
+              items: frameworkEventsDropDownItems,
+              onClick: (event) => {
+                const key: FrameworkEventType = event.key;
+                if (key === 'Monitoring') {
+                  setShowFrameworkEventsModal(true);
+                } else if (key === 'OpenTable') {
+                  instance.uiActions.onSetViewMode({
+                    mode: 'frameworkEventsTable',
+                    isTree: false,
+                    nodeId: null,
+                  });
+                }
+              },
+            }}>
+            <Badge
+              size="small"
+              count={
+                [...frameworkEventMonitoring.values()].filter(
+                  (val) => val === true,
+                ).length
+              }>
+              <Button
+                type="default"
+                shape="circle"
+                icon={<BellOutlined />}></Button>
+            </Badge>
+          </Dropdown>
+
           <FrameworkEventsMonitoringModal
             metadata={frameworkEventMetadata}
             filterMainThreadMonitoring={filterMainThreadMonitoring}
@@ -177,35 +216,75 @@ function FrameworkEventsMonitoringModal({
 
   return (
     <Modal
-      title="Framework event monitoring"
+      title={
+        <Typography.Title level={2}>
+          Real time event monitoring
+        </Typography.Title>
+      }
       open={visible}
       footer={null}
       onCancel={onCancel}>
       <Space direction="vertical" size="large">
-        <Typography.Text>
-          Monitoring an event will cause the relevant node in the visualizer and
-          tree to highlight briefly. Additionally counter will show the number
-          of matching events in the tree
-        </Typography.Text>
-
-        <FrameworkEventsTreeSelect
-          placeholder="Select node types to monitor"
-          onSetEventSelected={onSetEventMonitored}
-          selected={selectedFrameworkEvents}
-          treeData={treeData}
-        />
-
-        <Layout.Horizontal gap="medium">
-          <Switch
-            checked={filterMainThreadMonitoring}
-            onChange={(event) => {
-              onSetFilterMainThreadMonitoring(event);
-            }}
+        <Layout.Container gap="large">
+          <FrameworkEventsTreeSelect
+            placeholder="Select event types to real time monitor"
+            onSetEventSelected={onSetEventMonitored}
+            selected={selectedFrameworkEvents}
+            treeData={treeData}
           />
-          <Typography.Text>
-            Only highlight events that occured on the main thread
-          </Typography.Text>
-        </Layout.Horizontal>
+
+          <Layout.Horizontal gap="medium">
+            <Switch
+              checked={filterMainThreadMonitoring}
+              onChange={(event) => {
+                onSetFilterMainThreadMonitoring(event);
+              }}
+            />
+            <Typography.Text>
+              Only highlight events that occured on the main thread
+            </Typography.Text>
+          </Layout.Horizontal>
+
+          <Divider style={{margin: 0}} />
+
+          <Layout.Container gap="small">
+            <Typography.Text style={{fontStyle: 'italic'}}>
+              When monitoring an event type, any components that fired this
+              event will highlight in the visualizer briefly. Additionally a
+              counter will show the total number of monitored events per
+              component in the tree view like so
+            </Typography.Text>
+
+            <div style={{position: 'relative', height: 26, marginTop: 16}}>
+              <TreeNodeRow
+                transform=""
+                onCollapseNode={() => {}}
+                onExpandNode={() => {}}
+                onHoverNode={() => {}}
+                onSelectNode={() => {}}
+                highlightedNodes={new Map()}
+                isContextMenuOpen={false}
+                innerRef={React.createRef<HTMLLIElement>()}
+                isUsingKBToScroll={React.createRef<number>()}
+                treeNode={{
+                  attributes: {},
+                  bounds: {x: 0, y: 0, width: 10, height: 10},
+                  children: [],
+                  depth: 0,
+                  frameworkEvents: 4,
+                  id: '12',
+                  idx: 0,
+                  indentGuides: [],
+                  inlineAttributes: {},
+                  isExpanded: true,
+                  name: 'Example mountable component',
+                  qualifiedName: '',
+                  tags: ['Litho'],
+                }}
+              />
+            </div>
+          </Layout.Container>
+        </Layout.Container>
       </Space>
     </Modal>
   );

@@ -10,12 +10,11 @@
 #import <FlipperKit/SKMacros.h>
 #import <Foundation/Foundation.h>
 #import "UIDFoundation.h"
-#import "UIDSubtreeUpdateEvent.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-FB_LINK_REQUIRE_CATEGORY(UIDSubtreeUpdateEvent_Foundation)
-@interface UIDSubtreeUpdateEvent (Foundation)<UIDFoundation>
+FB_LINK_REQUIRE_CATEGORY(NSObject_Foundation)
+@interface NSObject (Foundation)<UIDFoundation>
 
 @end
 

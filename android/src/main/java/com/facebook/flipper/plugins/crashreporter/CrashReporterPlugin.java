@@ -31,6 +31,7 @@ public class CrashReporterPlugin implements FlipperPlugin {
 
     return crashreporterPlugin;
   }
+
   /*
    * Activity to be used to display incoming messages
    */
@@ -42,6 +43,7 @@ public class CrashReporterPlugin implements FlipperPlugin {
   public void onConnect(FlipperConnection connection) {
     mConnection = connection;
   }
+
   // This function is called from Litho's error boundary.
   public void sendExceptionMessage(Thread paramThread, Throwable paramThrowable) {
     if (mConnection != null) {

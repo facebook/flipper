@@ -108,9 +108,7 @@ export const DataList: (<T extends object>(
         if (!item) {
           onSelect?.(undefined, undefined);
         } else {
-          // TODO: Fix this the next time the file is edited.
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const id = '' + item[idAttribute!];
+          const id = `${item[idAttribute as keyof T]}`;
           if (id == null) {
             throw new Error(`No valid identifier for attribute ${idAttribute}`);
           }
@@ -131,9 +129,7 @@ export const DataList: (<T extends object>(
     const dataListColumns: DataTableColumn<T>[] = useMemo(
       () => [
         {
-          // TODO: Fix this the next time the file is edited.
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          key: idAttribute!,
+          key: idAttribute as keyof T & string,
           wrap: true,
           onRender(item: T, selected: boolean, index: number) {
             return onRenderItem ? (

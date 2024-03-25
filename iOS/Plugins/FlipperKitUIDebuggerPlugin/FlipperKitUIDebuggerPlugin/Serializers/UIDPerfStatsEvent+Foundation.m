@@ -32,7 +32,11 @@ FB_LINKABLE(UIDPerfStatsEvent_Foundation)
 
   if (self.dynamicMeasures) {
     for (id key in self.dynamicMeasures) {
+/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
       [data setObject:self.dynamicMeasures[key] forKey:key];
+#pragma clang diagnostic pop
     }
   }
   return data;

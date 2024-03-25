@@ -13,52 +13,26 @@ import {transformFromAstSync} from '@babel/core';
 import {default as flipperEnv} from './flipper-env';
 import {resolve} from 'path';
 
-const jsParsePlugins: ParserPlugin[] = [
-  'jsx',
-  ['flow', {all: true}],
-  'classProperties',
-  'objectRestSpread',
-  'optionalChaining',
-  'nullishCoalescingOperator',
-];
-const tsParsePluins: ParserPlugin[] = [
-  'jsx',
-  'typescript',
-  'classProperties',
-  'optionalChaining',
-  'nullishCoalescingOperator',
-];
+const jsParsePlugins: ParserPlugin[] = ['jsx'];
+const tsParsePluins: ParserPlugin[] = ['jsx', 'typescript'];
 const commonJsPlugin = [
   require('@babel/plugin-transform-modules-commonjs'),
   {
     strictMode: false,
   },
 ];
-const classPropertiesPlugin = require('@babel/plugin-proposal-class-properties');
-const optionalChainingPlugin = require('@babel/plugin-proposal-optional-chaining');
-const coalescingOperatorPlugin = require('@babel/plugin-proposal-nullish-coalescing-operator');
-const objectRestSpreadPlugin = require('@babel/plugin-proposal-object-rest-spread');
-const flowStripTypesPlugin = require('@babel/plugin-transform-flow-strip-types');
 const dynamicRequiresPlugin = require('./dynamic-requires');
 const typeScriptPlugin = require('@babel/plugin-transform-typescript');
 const emotionPlugin = require('@emotion/babel-plugin');
 const tsTransformPlugins = [
   typeScriptPlugin,
-  classPropertiesPlugin,
   commonJsPlugin,
-  optionalChainingPlugin,
-  coalescingOperatorPlugin,
   // Sourcemap disabled because
   // https://github.com/emotion-js/emotion/issues/1838
   [emotionPlugin, {autoLabel: 'always', sourceMap: false}],
 ];
 const jsTransformPlugins = [
   commonJsPlugin,
-  objectRestSpreadPlugin,
-  classPropertiesPlugin,
-  flowStripTypesPlugin,
-  optionalChainingPlugin,
-  coalescingOperatorPlugin,
   dynamicRequiresPlugin,
   [emotionPlugin, {autoLabel: 'always', sourceMap: false}],
 ];

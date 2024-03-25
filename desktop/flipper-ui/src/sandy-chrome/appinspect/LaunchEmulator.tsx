@@ -24,6 +24,7 @@ import {
   withTrackingScope,
   useLocalStorageState,
   theme,
+  getFlipperLib,
 } from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {DeviceTarget} from 'flipper-common';
@@ -74,6 +75,7 @@ function NoSDKsEnabledAlert({onClose}: {onClose: () => void}) {
         <SettingsSheet
           platform={getFlipperServerConfig().environmentInfo.os.platform}
           onHide={() => setShowSettings(false)}
+          isFB={getFlipperLib().isFB}
         />
       )}
     </>
@@ -199,7 +201,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
                 onClose();
               } catch (e) {
                 console.error('Failed to start emulator: ', e);
-                message.error('Failed to start emulator: ' + e);
+                message.error(`Failed to start emulator: ${e}`);
               } finally {
                 setPendingEmulators(
                   produce((draft) => {
@@ -283,7 +285,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
                     onClose();
                   } catch (e) {
                     console.warn('Failed to start simulator: ', e);
-                    message.error('Failed to start simulator: ' + e);
+                    message.error(`Failed to start simulator: ${e}`);
                   } finally {
                     setPendingEmulators(
                       produce((draft) => {

@@ -643,7 +643,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     const childrenValue = children.toString().replace(',', '');
     const indentation = depth === 0 ? '' : '\n'.padEnd(depth * 2 + 1, ' ');
     const attrs = element.attributes.reduce(
-      (acc, val) => acc + ` ${val.name}=${val.value}`,
+      (acc, val) => `${acc} ${val.name}=${val.value}`,
       '',
     );
 

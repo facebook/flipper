@@ -36,7 +36,7 @@ export function NavbarScreenshotButton() {
       .then(openFile)
       .catch((e) => {
         console.error('Taking screenshot failed:', e);
-        message.error('Taking screenshot failed:' + e);
+        message.error(`Taking screenshot failed:${e}`);
       })
       .finally(() => {
         setIsTakingScreenshot(false);
@@ -70,7 +70,7 @@ export function NavbarScreenRecordButton() {
       const videoPath = path.join(getCaptureLocation(), getFileName('mp4'));
       return selectedDevice.startScreenCapture(videoPath).catch((e) => {
         console.warn('Failed to start recording', e);
-        message.error('Failed to start recording' + e);
+        message.error(`Failed to start recording${e}`);
         setIsRecording(false);
       });
     } else {
@@ -83,7 +83,7 @@ export function NavbarScreenRecordButton() {
         })
         .catch((e) => {
           console.warn('Failed to stop recording', e);
-          message.error('Failed to stop recording' + e);
+          message.error(`Failed to stop recording${e}`);
         })
         .finally(() => {
           setIsRecording(false);

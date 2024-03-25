@@ -79,7 +79,7 @@ export class PluginManager {
      */
     let css = undefined;
     const idx = path.lastIndexOf('.');
-    const cssPath = path.substring(0, idx < 0 ? path.length : idx) + '.css';
+    const cssPath = `${path.substring(0, idx < 0 ? path.length : idx)}.css`;
     try {
       await fs.promises.access(cssPath);
 
@@ -120,74 +120,82 @@ export class PluginManager {
   async downloadPlugin(
     plugin: DownloadablePluginDetails,
   ): Promise<InstalledPluginDetails> {
-    const {name, title, version, downloadUrl} = plugin;
+    const {name, title, version, downloadUrls} = plugin;
     const installationDir = getPluginVersionInstallationDir(name, version);
     console.log(
-      `Downloading plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}".`,
+      `Downloading plugin "${title}" v${version} from "${downloadUrls}" to "${installationDir}".`,
     );
     const tmpDir = await getTempDirName();
     const tmpFile = path.join(
       tmpDir,
       `${getPluginDirNameFromPackageName(name)}-${version}.tgz`,
     );
-    try {
-      const cancelationSource = axios.CancelToken.source();
-      if (await fs.pathExists(installationDir)) {
-        console.log(
-          `Using existing files instead of downloading plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}"`,
-        );
-        return await getInstalledPluginDetails(installationDir);
-      } else {
-        await fs.ensureDir(tmpDir);
-
-        let percentCompleted = 0;
-        const response = await httpGet(new URL(plugin.downloadUrl), {
-          cancelToken: cancelationSource.token,
-          onDownloadProgress: async (progressEvent) => {
-            const newPercentCompleted = !progressEvent.total
-              ? 0
-              : Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            if (newPercentCompleted - percentCompleted >= 20) {
-              percentCompleted = newPercentCompleted;
-              console.log(
-                `Downloading plugin "${title}" v${version} from "${downloadUrl}": ${percentCompleted}% completed (${progressEvent.loaded} from ${progressEvent.total})`,
-              );
-            }
-          },
-        });
-        function parseHeaderValue(header: string) {
-          const values = header.split(';');
-          // remove white space
-          return values.map((value) => value.trim());
-        }
-
-        if (
-          !parseHeaderValue(response.headers['content-type']).includes(
-            'application/octet-stream',
-          )
-        ) {
-          throw new Error(
-            `It looks like you are not on VPN/Lighthouse. Unexpected content type received: ${response.headers['content-type']}.`,
+    let finalError: Error | null = null;
+    for (const downloadUrl of downloadUrls) {
+      try {
+        const cancelationSource = axios.CancelToken.source();
+        if (await fs.pathExists(installationDir)) {
+          console.log(
+            `Using existing files instead of downloading plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}"`,
           );
+          return await getInstalledPluginDetails(installationDir);
+        } else {
+          await fs.ensureDir(tmpDir);
+
+          let percentCompleted = 0;
+          const response = await httpGet(new URL(downloadUrl), {
+            cancelToken: cancelationSource.token,
+            onDownloadProgress: async (progressEvent) => {
+              const newPercentCompleted = !progressEvent.total
+                ? 0
+                : Math.round(
+                    (progressEvent.loaded * 100) / progressEvent.total,
+                  );
+              if (newPercentCompleted - percentCompleted >= 20) {
+                percentCompleted = newPercentCompleted;
+                console.log(
+                  `Downloading plugin "${title}" v${version} from "${downloadUrl}": ${percentCompleted}% completed (${progressEvent.loaded} from ${progressEvent.total})`,
+                );
+              }
+            },
+          });
+          function parseHeaderValue(header: string) {
+            const values = header.split(';');
+            // remove white space
+            return values.map((value) => value.trim());
+          }
+
+          if (
+            !parseHeaderValue(response.headers['content-type']).includes(
+              'application/octet-stream',
+            )
+          ) {
+            throw new Error(
+              `It looks like you are not on VPN/Lighthouse. Unexpected content type received: ${response.headers['content-type']}.`,
+            );
+          }
+          const responseStream = response.data as fs.ReadStream;
+          const writeStream = responseStream.pipe(
+            fs.createWriteStream(tmpFile, {autoClose: true}),
+          );
+          await new Promise((resolve, reject) =>
+            writeStream.once('finish', resolve).once('error', reject),
+          );
+          return await installPluginFromFileOrBuffer(tmpFile);
         }
-        const responseStream = response.data as fs.ReadStream;
-        const writeStream = responseStream.pipe(
-          fs.createWriteStream(tmpFile, {autoClose: true}),
-        );
-        await new Promise((resolve, reject) =>
-          writeStream.once('finish', resolve).once('error', reject),
-        );
-        return await installPluginFromFileOrBuffer(tmpFile);
+      } catch (error) {
+        finalError = error;
+        continue;
+      } finally {
+        await fs.remove(tmpDir);
       }
-    } catch (error) {
-      console.warn(
-        `Failed to download plugin "${title}" v${version} from "${downloadUrl}" to "${installationDir}".`,
-        error,
-      );
-      throw error;
-    } finally {
-      await fs.remove(tmpDir);
     }
+
+    console.info(
+      `Failed to download plugin "${title}" v${version} from "${downloadUrls}" to "${installationDir}".`,
+      finalError,
+    );
+    throw finalError;
   }
 
   getServerAddOnForMessage(message: object) {

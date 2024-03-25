@@ -54,10 +54,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
    */
   client.onMessage('triggerNotification', ({id}) => {
     client.showNotification({
-      id: 'test-notification:' + id,
+      id: `test-notification:${id}`,
       message: 'Example Notification',
       severity: 'warning' as 'warning',
-      title: 'Notification: ' + id,
+      title: `Notification: ${id}`,
     });
   });
 
@@ -78,7 +78,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
         nextMessage.set('');
       } catch (e) {
         console.warn('Error returned from client', e);
-        message.error('Failed to get response from client ' + e);
+        message.error(`Failed to get response from client ${e}`);
       }
     }
   }

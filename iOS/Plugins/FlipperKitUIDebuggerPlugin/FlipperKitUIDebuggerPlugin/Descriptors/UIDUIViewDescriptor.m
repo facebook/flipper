@@ -29,6 +29,24 @@
   return [node UID_bounds];
 }
 
+- (void)aggregateEditAttributeForNode:(id)node
+                            withValue:(id)value
+                         metadataPath:(NSArray<UIDMetadataId>*)metadataPath
+                                 hint:(UIDCompoundTypeHint)hint {
+  return [node UID_aggregateEditAttributeWithValue:value
+                                      metadataPath:metadataPath
+                                              hint:hint];
+}
+
+- (UIDGenericAttributes*)hiddenAttributesForNode:(UIView*)node {
+  if (node.isHidden) {
+    return @{
+      @"invisible" : @(node.isHidden),
+    };
+  }
+  return nil;
+}
+
 @end
 
 #endif

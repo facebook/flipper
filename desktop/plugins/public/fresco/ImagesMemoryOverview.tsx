@@ -64,7 +64,7 @@ export default class ImagesMemoryOverview extends PureComponent<ImagesMemoryOver
     this.filterCachesToDisplay(this.props.images).forEach((cache) => {
       if (cache.maxSizeBytes) {
         imagesList.push({
-          cacheType: 'Free space - ' + cache.cacheType,
+          cacheType: `Free space - ${cache.cacheType}`,
           sizeBytes: cache.maxSizeBytes - cache.sizeBytes,
           imageIds: [],
         });
@@ -84,8 +84,7 @@ export default class ImagesMemoryOverview extends PureComponent<ImagesMemoryOver
           return {
             size: toKB(cacheInfo.sizeBytes),
             style: STYLE,
-            title:
-              cacheInfo.cacheType + ' (' + formatMB(cacheInfo.sizeBytes) + ')',
+            title: `${cacheInfo.cacheType} (${formatMB(cacheInfo.sizeBytes)})`,
             value: toKB(cacheInfo.sizeBytes),
             children: cacheInfo.imageIds
               .filter((imageId) => this.props.imagesMap[imageId] != null)

@@ -1056,7 +1056,7 @@
     "@babel/plugin-syntax-object-rest-spread" "^7.8.3"
     "@babel/plugin-transform-parameters" "^7.16.7"
 
-"@babel/plugin-proposal-object-rest-spread@^7.20.2", "@babel/plugin-proposal-object-rest-spread@^7.20.7":
+"@babel/plugin-proposal-object-rest-spread@^7.20.2":
   version "7.20.7"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-object-rest-spread/-/plugin-proposal-object-rest-spread-7.20.7.tgz#aa662940ef425779c75534a5c41e9d936edc390a"
   integrity sha512-d2S98yCiLxDVmBmE8UjGcfPvNEUbA1U5q5WxaWFUGRzJSVAZqm5W6MbPct0jxnegUZ0niLeNX+IOzEs7wYg9Dg==
@@ -1190,13 +1190,6 @@
   integrity sha512-UDo3YGQO0jH6ytzVwgSLv9i/CzMcUjbKenL67dTrAZPPv6GFAtDhe6jqnvmoKzC/7htNTohhos+onPtDMqJwaQ==
   dependencies:
     "@babel/helper-plugin-utils" "^7.16.7"
-
-"@babel/plugin-syntax-flow@^7.18.6":
-  version "7.18.6"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-flow/-/plugin-syntax-flow-7.18.6.tgz#774d825256f2379d06139be0c723c4dd444f3ca1"
-  integrity sha512-LUbR+KNTBWCUAqRG9ex5Gnzu2IOkt8jRJbHHXFT9q+L9zm7M/QQbEqXyw1n1pohYvOyWC8CjeyjrSaIwiYjK7A==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.18.6"
 
 "@babel/plugin-syntax-import-assertions@^7.20.0":
   version "7.20.0"
@@ -1474,14 +1467,6 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.16.7"
     "@babel/plugin-syntax-flow" "^7.16.7"
-
-"@babel/plugin-transform-flow-strip-types@^7.19.0":
-  version "7.19.0"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-flow-strip-types/-/plugin-transform-flow-strip-types-7.19.0.tgz#e9e8606633287488216028719638cbbb2f2dde8f"
-  integrity sha512-sgeMlNaQVbCSpgLSKP4ZZKfsJVnFnNQlUSk6gPYzR/q7tzCgQF2t8RBKAP6cKJeZdveei7Q7Jm527xepI8lNLg==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.19.0"
-    "@babel/plugin-syntax-flow" "^7.18.6"
 
 "@babel/plugin-transform-for-of@^7.0.0":
   version "7.16.7"
@@ -10605,6 +10590,11 @@ qqjs@^0.3.10:
     tmp "^0.1.0"
     write-json-file "^4.1.1"
 
+qrcode.react@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/qrcode.react/-/qrcode.react-3.1.0.tgz#5c91ddc0340f768316fbdb8fff2765134c2aecd8"
+  integrity sha512-oyF+Urr3oAMUG/OiOuONL3HXM+53wvuH3mtIWQrYmsXoAq0DkvZp2RYUWFSMFtbdOpuS++9v+WAkzNVkMlNW6Q==
+
 qs@6.9.7:
   version "6.9.7"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.7.tgz#4610846871485e1e048f44ae3b94033f0e675afe"
@@ -12872,10 +12862,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@^4.9.5:
-  version "4.9.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
-  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
+typescript@^5.4.2:
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.2.tgz#0ae9cebcfae970718474fe0da2c090cad6577372"
+  integrity sha512-+2/g0Fds1ERlP6JsakQQDXjZdZMM+rqpamFZJEKh4kwTIn3iDkgKtby0CeNd5ATNZ4Ry1ax15TMx0W2V+miizQ==
 
 ua-parser-js@^0.7.18:
   version "0.7.24"

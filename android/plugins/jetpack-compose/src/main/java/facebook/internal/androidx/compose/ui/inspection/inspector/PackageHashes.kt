@@ -10,6 +10,7 @@
 package facebook.internal.androidx.compose.ui.inspection.inspector
 
 import androidx.annotation.VisibleForTesting
+import androidx.collection.intSetOf
 import kotlin.math.absoluteValue
 
 @VisibleForTesting
@@ -17,7 +18,7 @@ fun packageNameHash(packageName: String) =
     packageName.fold(0) { hash, char -> hash * 31 + char.code }.absoluteValue
 
 val systemPackages =
-    setOf(
+    intSetOf(
         -1,
         packageNameHash("androidx.compose.animation"),
         packageNameHash("androidx.compose.animation.core"),
@@ -37,7 +38,6 @@ val systemPackages =
         packageNameHash("androidx.compose.foundation.text.selection"),
         packageNameHash("androidx.compose.foundation.text2"),
         packageNameHash("androidx.compose.foundation.text2.input"),
-        packageNameHash("androidx.compose.foundation.text2.input.internal.selection"),
         packageNameHash("androidx.compose.foundation.window"),
         packageNameHash("androidx.compose.material"),
         packageNameHash("androidx.compose.material.internal"),
@@ -46,8 +46,9 @@ val systemPackages =
         packageNameHash("androidx.compose.material3"),
         packageNameHash("androidx.compose.material3.adaptive"),
         packageNameHash("androidx.compose.material3.adaptive.navigation.suite"),
+        packageNameHash("androidx.compose.material3.common"),
         packageNameHash("androidx.compose.material3.internal"),
-        packageNameHash("androidx.compose.material3.pullrefresh"),
+        packageNameHash("androidx.compose.material3.pulltorefresh"),
         packageNameHash("androidx.compose.material3.windowsizeclass"),
         packageNameHash("androidx.compose.runtime"),
         packageNameHash("androidx.compose.runtime.livedata"),
@@ -66,4 +67,5 @@ val systemPackages =
         packageNameHash("androidx.compose.ui.util"),
         packageNameHash("androidx.compose.ui.viewinterop"),
         packageNameHash("androidx.compose.ui.window"),
+        packageNameHash("androidx.navigation.compose"),
     )

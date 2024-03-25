@@ -26,13 +26,11 @@ import {v4 as uuidv4} from 'uuid';
 import {TestIdler} from './Idler';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
-import {capture} from './screenshot';
 import {Dialog, getFlipperLib, Idler} from 'flipper-plugin';
 import {ClientQuery} from 'flipper-common';
 import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
-import {uploadFlipperMedia} from '../fb-stubs/user';
 import {exportLogs} from '../chrome/ConsoleLogs';
 import JSZip from 'jszip';
 import {safeFilename} from './safeFilename';
@@ -173,7 +171,7 @@ async function exportSandyPluginStates(
           .get(pluginId)!
           .exportState(idler, statusUpdate);
       } catch (error) {
-        console.error('Error while serializing plugin ' + pluginId, error);
+        console.error(`Error while serializing plugin ${pluginId}`, error);
         throw new Error(`Failed to serialize plugin ${pluginId}: ${error}`);
       }
     }
@@ -207,7 +205,7 @@ async function addSaltToDeviceSerial({
   devicePluginStates,
 }: AddSaltToDeviceSerialOptions): Promise<ExportType> {
   const {serial} = device;
-  const newSerial = salt + '-' + serial;
+  const newSerial = `${salt}-${serial}`;
   const newDevice = new ArchivedDevice({
     serial: newSerial,
     deviceType: device.deviceType,
@@ -293,14 +291,6 @@ export async function processStore(
       statusUpdate = () => {};
     }
     statusUpdate('Capturing screenshot...');
-    const deviceScreenshot = device.connected.get()
-      ? await capture(device).catch((e) => {
-          console.warn(
-            'Failed to capture device screenshot when exporting. ' + e,
-          );
-          return null;
-        })
-      : null;
     const processedClients = processClients(clients, serial, statusUpdate);
 
     const processedActiveNotifications = processNotificationStates({
@@ -317,18 +307,12 @@ export async function processStore(
       selectedPlugins,
     );
 
-    statusUpdate('Uploading screenshot...');
-    const deviceScreenshotLink =
-      deviceScreenshot &&
-      (await uploadFlipperMedia(deviceScreenshot, 'Image').catch((e) => {
-        console.warn('Failed to upload device screenshot when exporting. ' + e);
-        return null;
-      }));
     // Adding salt to the device id, so that the device_id in the device list is unique.
     const exportFlipperData = await addSaltToDeviceSerial({
       salt,
       device,
-      deviceScreenshot: deviceScreenshotLink,
+      // This is no longer being used and is only kept for backwards compatibility.
+      deviceScreenshot: null,
       clients: processedClients,
       pluginNotification: processedActiveNotifications,
       statusUpdate,

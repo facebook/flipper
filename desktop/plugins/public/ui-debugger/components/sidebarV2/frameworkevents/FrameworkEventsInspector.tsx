@@ -10,9 +10,10 @@
 import {
   DataInspector,
   Layout,
-  produce,
   theme,
   TimelineDataDescription,
+  usePlugin,
+  useValue,
 } from 'flipper-plugin';
 import {
   FrameworkEvent,
@@ -20,7 +21,7 @@ import {
   FrameworkEventType,
   FrameworkEventMetadata,
 } from '../../../ClientTypes';
-import React, {ReactNode, useState} from 'react';
+import React, {ReactNode} from 'react';
 import {StackTraceInspector} from './StackTraceInspector';
 import {
   Badge,
@@ -32,12 +33,13 @@ import {
   Typography,
 } from 'antd';
 import {frameworkEventSeparator} from '../../shared/FrameworkEventsTreeSelect';
-import {last, startCase, uniqBy} from 'lodash';
-import {FilterOutlined, TableOutlined} from '@ant-design/icons';
+import {startCase, uniq} from 'lodash';
+import {DeleteOutlined, FilterOutlined, TableOutlined} from '@ant-design/icons';
 import {ViewMode} from '../../../DesktopTypes';
 import {MultiSelectableDropDownItem} from '../../shared/MultiSelectableDropDownItem';
 import {formatDuration, formatTimestampMillis} from '../../../utils/timeUtils';
 import {tracker} from '../../../utils/tracker';
+import {plugin} from '../../../index';
 
 type Props = {
   node: ClientNode;
@@ -45,6 +47,7 @@ type Props = {
   showBottomPanel?: (title: string, element: ReactNode) => void;
   frameworkEventMetadata: Map<FrameworkEventType, FrameworkEventMetadata>;
   onSetViewMode: (viewMode: ViewMode) => void;
+  clearAllEvents: () => void;
 };
 
 export const FrameworkEventsInspector: React.FC<Props> = ({
@@ -53,27 +56,30 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
   showBottomPanel: showExtra,
   frameworkEventMetadata,
   onSetViewMode,
+  clearAllEvents,
 }) => {
-  const allThreads = uniqBy(events, 'thread').map((event) => event.thread);
-  const [filteredThreads, setFilteredThreads] = useState<Set<string>>(
-    new Set(),
-  );
+  const instance = usePlugin(plugin);
+  const filters = useValue(instance.uiState.nodeLevelFrameworkEventFilters);
 
-  const allEventTypes = uniqBy(events, 'type').map((event) => event.type);
-  const [filteredEventTypes, setFilteredEventTypes] = useState<Set<string>>(
-    new Set(),
-  );
+  const allThreads = uniq([
+    ...events.map((e) => e.thread),
+    ...filters.threads.values(),
+  ]);
+
+  const allEventTypes = uniq([
+    ...events.map((e) => e.type),
+    ...filters.eventTypes.values(),
+  ]);
 
   const filteredEvents = events
     .filter(
       (event) =>
-        filteredEventTypes.size === 0 || filteredEventTypes.has(event.type),
+        filters.eventTypes.size === 0 || filters.eventTypes.has(event.type),
     )
     .filter(
       (event) =>
-        // TODO: Fix this the next time the file is edited.
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        filteredThreads.size === 0 || filteredThreads.has(event.thread!),
+        filters.threads.size === 0 ||
+        filters.threads.has(event.thread ?? 'nothread'),
     );
 
   const showThreadsSection = allThreads.length > 1;
@@ -84,6 +90,13 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
         <Typography.Title level={3}>Event timeline</Typography.Title>
 
         <Layout.Horizontal center gap padh="medium">
+          <Tooltip title="Clear all events">
+            <Button
+              shape="circle"
+              icon={<DeleteOutlined />}
+              onClick={clearAllEvents}
+            />
+          </Tooltip>
           <Tooltip title="Explore events in table">
             <Button
               shape="circle"
@@ -123,17 +136,12 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
                       {allThreads.map((thread) => (
                         <MultiSelectableDropDownItem
                           onSelect={(thread, selected) => {
-                            setFilteredThreads((cur) =>
-                              produce(cur, (draft) => {
-                                if (selected) {
-                                  draft.add(thread);
-                                } else {
-                                  draft.delete(thread);
-                                }
-                              }),
+                            instance.uiActions.onChangeNodeLevelThreadFilter(
+                              thread,
+                              selected ? 'add' : 'remove',
                             );
                           }}
-                          selectedValues={filteredThreads}
+                          selectedValues={filters.threads}
                           key={thread}
                           value={thread as string}
                           text={startCase(thread) as string}
@@ -148,20 +156,15 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
                       {allEventTypes.map((eventType) => (
                         <MultiSelectableDropDownItem
                           onSelect={(eventType, selected) => {
-                            setFilteredEventTypes((cur) =>
-                              produce(cur, (draft) => {
-                                if (selected) {
-                                  draft.add(eventType);
-                                } else {
-                                  draft.delete(eventType);
-                                }
-                              }),
+                            instance.uiActions.onChangeNodeLevelEventTypeFilter(
+                              eventType,
+                              selected ? 'add' : 'remove',
                             );
                           }}
-                          selectedValues={filteredEventTypes}
+                          selectedValues={filters.eventTypes}
                           key={eventType}
                           value={eventType as string}
-                          text={last(eventType.split('.')) as string}
+                          text={eventTypeToName(eventType)}
                         />
                       ))}
                     </>
@@ -174,7 +177,7 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
                   <Badge
                     offset={[8, -8]}
                     size="small"
-                    count={filteredEventTypes.size + filteredThreads.size}>
+                    count={filters.eventTypes.size + filters.threads.size}>
                     <FilterOutlined style={{}} />
                   </Badge>
                 }

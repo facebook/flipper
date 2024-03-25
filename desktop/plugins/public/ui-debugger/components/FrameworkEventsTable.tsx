@@ -7,7 +7,7 @@
  * @format
  */
 
-import {DeleteOutlined, PartitionOutlined} from '@ant-design/icons';
+import {CloseOutlined, DeleteOutlined} from '@ant-design/icons';
 import {
   DataTable,
   DataTableColumn,
@@ -35,7 +35,7 @@ export function FrameworkEventsTable({
   isTree,
   nodes,
 }: {
-  nodeId: Id;
+  nodeId: Id | null;
   nodes: NodeMap;
   isTree: boolean;
 }) {
@@ -125,7 +125,7 @@ export function FrameworkEventsTable({
                   instance.uiActions.onFocusNode(undefined);
                   instance.uiActions.onSetViewMode({mode: 'default'});
                 }}
-                icon={<PartitionOutlined />}></Button>
+                icon={<CloseOutlined />}></Button>
             </Tooltip>
             <Tooltip title="Delete all events">
               <Button
@@ -140,13 +140,7 @@ export function FrameworkEventsTable({
       />
       <DetailSidebar width={450}>
         {getNode(focusedNode, nodes) != null ? (
-          <Visualization2D
-            disableInteractivity
-            hideControls
-            width={400}
-            nodes={nodes}
-            onSelectNode={instance.uiActions.onSelectNode}
-          />
+          <Visualization2D disableInteractivity hideControls nodes={nodes} />
         ) : (
           <Result title="Node is no longer on screen" />
         )}

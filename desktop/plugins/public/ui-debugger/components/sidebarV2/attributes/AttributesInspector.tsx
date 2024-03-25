@@ -217,7 +217,7 @@ function AttributeSection(
         if (attributeValue.type === 'object') {
           return (
             <SubSection
-              key={'subsection_' + attributeName}
+              key={`subsection_${attributeName}`}
               nodeId={nodeId}
               onDisplayModal={onDisplayModal}
               attributeName={attributeName}
@@ -337,7 +337,6 @@ function NamedAttribute({
           flex: '0 0 30%', //take 40% of the width
           color: theme.textColorSecondary,
           opacity: 0.7,
-          fontWeight: 50,
           fontSize: 'small',
         }}>
         {name}

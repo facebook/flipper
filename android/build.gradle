@@ -76,6 +76,7 @@ android {
         implementation deps.openssl
         implementation deps.fbjni
         implementation deps.soloader
+        implementation deps.curtains
         implementation deps.jsr305
         implementation deps.supportAppCompat
         implementation deps.supportSqlite

@@ -13,13 +13,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIDSubtreeUpdateEvent : NSObject
+@interface UIDSnapshotInfo : NSObject
 
-@property(nonatomic) double txId;
-@property(nonatomic, strong) NSString* observerType;
-@property(nonatomic) NSUInteger rootId;
+@property(nonatomic) NSUInteger nodeId;
+@property(nonatomic, strong) UIImage* image;
+
+@end
+
+@interface UIDFrameScanEvent : NSObject
+
+@property(nonatomic) double timestamp;
 @property(nonatomic, strong) NSArray<UIDNode*>* nodes;
-@property(nonatomic, strong) UIImage* snapshot;
+@property(nonatomic, strong) UIDSnapshotInfo* snapshot;
 @property(nonatomic, strong) NSArray<UIDFrameworkEvent*>* frameworkEvents;
 
 + (NSString*)name;

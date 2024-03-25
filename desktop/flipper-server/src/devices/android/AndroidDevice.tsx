@@ -247,7 +247,7 @@ export default class AndroidDevice
         if (!isValid) {
           const outputMessage = output.toString().trim();
           throw new Error(
-            'Recording was not properly started: \n' + outputMessage,
+            `Recording was not properly started: \n${outputMessage}`,
           );
         }
       })

@@ -7,41 +7,59 @@
  * @format
  */
 
-import {ClientNode, MetadataId, Metadata} from '../../ClientTypes';
+import {MetadataId, Metadata, NodeMap} from '../../ClientTypes';
 import {plugin} from '../../index';
-import React, {ReactNode} from 'react';
+import React, {ReactNode, useState} from 'react';
 import {Layout, Tab, Tabs, usePlugin, useValue} from 'flipper-plugin';
 import {NoData} from './NoData';
 import {Tooltip} from 'antd';
 import {AttributesInspector} from './attributes/AttributesInspector';
 import {FrameworkEventsInspector} from './frameworkevents/FrameworkEventsInspector';
+import {getNode} from '../../utils/map';
+import {NodeSelection} from '../../DesktopTypes';
 
 type Props = {
-  selectedNode?: ClientNode;
+  nodeSelection?: NodeSelection;
+  nodes: NodeMap;
   metadata: Map<MetadataId, Metadata>;
   showBottomPanel: (title: string, element: ReactNode) => void;
 };
-export function SidebarV2({selectedNode, metadata, showBottomPanel}: Props) {
+export function SidebarV2({
+  nodeSelection,
+  nodes,
+  metadata,
+  showBottomPanel,
+}: Props) {
   const instance = usePlugin(plugin);
 
   const frameworkEventMetadata = useValue(instance.frameworkEventMetadata);
 
-  if (!selectedNode) {
+  const [_, reRender] = useState(0);
+  if (!nodeSelection) {
     return <NoData message="Please select a node to view its details" />;
   }
-  const selectedFrameworkEvents = selectedNode.id
-    ? instance.frameworkEvents.getAllRecordsByIndex({nodeId: selectedNode.id})
+
+  const selectedFrameworkEvents = nodeSelection
+    ? instance.frameworkEvents.getAllRecordsByIndex({
+        nodeId: nodeSelection.node.id,
+      })
     : [];
 
+  //when select node not in frame, dont show data as its stale
+  const actualNode = getNode(nodeSelection.node.id, nodes);
   return (
     <Layout.Container gap pad>
       <Tabs
         localStorageKeyOverride="sidebar-tabs"
         grow
         centered
-        key={selectedNode.id}>
+        key={nodeSelection?.node?.id}>
         <Tab tab={<Tooltip title="Attributes">Attributes</Tooltip>}>
-          <AttributesInspector node={selectedNode} metadata={metadata} />
+          {actualNode == null ? (
+            <NoData message="Node is no longer on screen" />
+          ) : (
+            <AttributesInspector node={actualNode} metadata={metadata} />
+          )}
         </Tab>
         {selectedFrameworkEvents?.length > 0 && (
           <Tab
@@ -52,9 +70,13 @@ export function SidebarV2({selectedNode, metadata, showBottomPanel}: Props) {
               </Tooltip>
             }>
             <FrameworkEventsInspector
+              clearAllEvents={() => {
+                instance.frameworkEvents.clear();
+                reRender((x) => x + 1);
+              }}
               onSetViewMode={instance.uiActions.onSetViewMode}
               frameworkEventMetadata={frameworkEventMetadata}
-              node={selectedNode}
+              node={nodeSelection.node}
               events={selectedFrameworkEvents}
               showBottomPanel={showBottomPanel}
             />

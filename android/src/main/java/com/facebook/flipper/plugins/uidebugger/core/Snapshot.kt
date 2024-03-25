@@ -7,7 +7,6 @@
 
 package com.facebook.flipper.plugins.uidebugger.core
 
-import android.app.Activity
 import android.graphics.Canvas
 import android.os.Build
 import android.os.Handler
@@ -17,6 +16,7 @@ import android.view.PixelCopy
 import android.view.View
 import androidx.annotation.RequiresApi
 import com.facebook.flipper.plugins.uidebugger.LogTag
+import curtains.phoneWindow
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -92,25 +92,26 @@ class PixelCopySnapshotter(
 
     return if (view.isHardwareAccelerated) {
       SnapshotCommon.doSnapshotWithErrorHandling(bitmapPool, view, fallback) {
-        tryCopyViaActivityWindow(view, it) || tryCopyViaInternalSurface(view, it)
+        tryCopyViaPhoneWindow(view, it) || tryCopyViaInternalSurface(view, it)
       }
     } else {
       fallback.takeSnapshot(view)
     }
   }
 
-  private suspend fun tryCopyViaActivityWindow(
+  /**
+   * This is the preferred method, passing a window into pixel copy correctly accounts for the
+   * surface insets, this means dialog fragments are snapshotted correctly
+   */
+  private suspend fun tryCopyViaPhoneWindow(
       view: View,
       bitmap: BitmapPool.ReusableBitmap
   ): Boolean {
 
-    val decorViewToActivity: Map<View, Activity> = ActivityTracker.decorViewToActivityMap
-
-    val activityForDecorView = decorViewToActivity[view] ?: return false
+    val window = view.phoneWindow ?: return false
 
     return suspendCoroutine { continuation ->
-      PixelCopy.request(
-          activityForDecorView.window, bitmap.bitmap, pixelCopyCallback(continuation), handler)
+      PixelCopy.request(window, bitmap.bitmap, pixelCopyCallback(continuation), handler)
     }
   }
 

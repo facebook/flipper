@@ -9,6 +9,7 @@
 
 #import <FlipperKit/FlipperConnection.h>
 #import <Foundation/Foundation.h>
+#import "UIDAttributeEditor.h"
 #import "UIDConnectionListener.h"
 #import "UIDFrameworkEventManager.h"
 #import "UIDUpdateDigester.h"
@@ -27,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly) UIDDescriptorRegister* descriptorRegister;
 @property(nonatomic, readonly) UIDTreeObserverFactory* observerFactory;
 @property(nonatomic, nullable) id<UIDUpdateDigester> updateDigester;
+@property(nonatomic, nullable) UIDAttributeEditor* attributeEditor;
 @property(nonatomic, strong, readonly) id<UIDFrameworkEventManager>
     frameworkEventManager;
 

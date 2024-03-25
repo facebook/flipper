@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Atom, PluginClient} from 'flipper-plugin';
+import {Atom, PluginClient, getFlipperLib} from 'flipper-plugin';
 import {debounce, last} from 'lodash';
 import {
   ClientNode,
@@ -28,6 +28,8 @@ import {
   UIState,
   ViewMode,
   WireFrameMode,
+  ReferenceImageAction,
+  Operation,
 } from '../DesktopTypes';
 import {tracker} from '../utils/tracker';
 import {checkFocusedNodeStillActive} from './ClientDataUtils';
@@ -45,28 +47,31 @@ export function uiActions(
       draft.add(node);
     });
   };
-  const onSelectNode = (node: Id | undefined, source: SelectionSource) => {
+  const onSelectNode = (
+    node: ClientNode | undefined,
+    source: SelectionSource,
+  ) => {
     if (
       node == null ||
-      (uiState.selectedNode.get()?.id === node && source !== 'context-menu')
+      (uiState.nodeSelection.get()?.node.id === node.id &&
+        source !== 'context-menu')
     ) {
-      uiState.selectedNode.set(undefined);
+      uiState.nodeSelection.set(undefined);
     } else {
-      uiState.selectedNode.set({id: node, source});
+      uiState.nodeSelection.set({
+        source,
+        node: node, //last known state of the node, may be offscreen
+      });
     }
 
-    if (node) {
-      const selectedNode = nodes.get().get(node);
-      const tags = selectedNode?.tags;
-      if (tags) {
-        tracker.track('node-selected', {
-          name: selectedNode.name,
-          tags,
-          source: source,
-        });
-      }
+    if (node != null) {
+      tracker.track('node-selected', {
+        name: node.name,
+        tags: node.tags,
+        source: source,
+      });
 
-      let current = selectedNode?.parent;
+      let current = node.parent;
       // expand entire ancestory in case it has been manually collapsed
       uiState.expandedNodes.update((expandedNodesDraft) => {
         while (current != null) {
@@ -145,12 +150,18 @@ export function uiActions(
   const onFocusNode = (node?: Id) => {
     if (node != null) {
       const focusedNode = nodes.get().get(node);
+      if (focusedNode == null) {
+        return;
+      }
       const tags = focusedNode?.tags;
       if (tags) {
         tracker.track('node-focused', {name: focusedNode.name, tags});
       }
 
-      uiState.selectedNode.set({id: node, source: 'visualiser'});
+      uiState.nodeSelection.set({
+        node: focusedNode,
+        source: 'visualiser',
+      });
     }
 
     uiState.focusedNode.set(node);
@@ -256,6 +267,50 @@ export function uiActions(
     100,
   );
 
+  const onReferenceImageAction = async (action: ReferenceImageAction) => {
+    if (action === 'Import') {
+      const fileDescriptor = await getFlipperLib().importFile({
+        title: 'Select a reference image',
+        extensions: ['.png'],
+        encoding: 'binary',
+      });
+
+      if (fileDescriptor?.data != null) {
+        const blob = new Blob([fileDescriptor.data], {type: 'image/png'});
+        const imageUrl = URL.createObjectURL(blob);
+        uiState.referenceImage.set({url: imageUrl, opacity: 0.7});
+        tracker.track('reference-image-switched', {on: true});
+      }
+    } else if (action === 'Clear') {
+      uiState.referenceImage.set(null);
+      tracker.track('reference-image-switched', {on: false});
+    } else if (typeof action === 'number') {
+      uiState.referenceImage.update((draft) => {
+        if (draft != null) draft.opacity = action;
+      });
+    }
+  };
+
+  const onChangeNodeLevelEventTypeFilter = (thread: string, op: Operation) => {
+    uiState.nodeLevelFrameworkEventFilters.update((draft) => {
+      if (op === 'add') {
+        draft.eventTypes.add(thread);
+      } else {
+        draft.eventTypes.delete(thread);
+      }
+    });
+  };
+
+  const onChangeNodeLevelThreadFilter = (eventType: string, op: Operation) => {
+    uiState.nodeLevelFrameworkEventFilters.update((draft) => {
+      if (op === 'add') {
+        draft.threads.add(eventType);
+      } else {
+        draft.threads.delete(eventType);
+      }
+    });
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
@@ -275,6 +330,9 @@ export function uiActions(
     onCollapseAllRecursively,
     ensureAncestorsExpanded,
     onSetTraversalMode,
+    onReferenceImageAction,
+    onChangeNodeLevelEventTypeFilter,
+    onChangeNodeLevelThreadFilter,
     editClientAttribute,
   };
 }

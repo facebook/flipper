@@ -40,16 +40,27 @@ export type UIState = {
   searchTerm: Atom<string>;
   isContextMenuOpen: Atom<boolean>;
   hoveredNodes: Atom<Id[]>;
-  selectedNode: Atom<NodeSelection | undefined>;
+  nodeSelection: Atom<NodeSelection | undefined>;
   highlightedNodes: Atom<Map<Id, Color>>;
   focusedNode: Atom<Id | undefined>;
   expandedNodes: Atom<Set<Id>>;
   visualiserWidth: Atom<number>;
+  nodeLevelFrameworkEventFilters: Atom<NodeLevelFrameworkEventFilters>;
   frameworkEventMonitoring: Atom<Map<FrameworkEventType, boolean>>;
   filterMainThreadMonitoring: Atom<boolean>;
-
+  referenceImage: Atom<ReferenceImageState | null>;
   supportedTraversalModes: Atom<TraversalMode[]>;
   traversalMode: Atom<TraversalMode>;
+};
+
+type NodeLevelFrameworkEventFilters = {
+  threads: Set<string>;
+  eventTypes: Set<string>;
+};
+
+export type ReferenceImageState = {
+  url: string;
+  opacity: number;
 };
 
 //enumerates the keys of input type and casts each to ReadOnlyAtom, this is so we only expose read only atoms to the UI
@@ -59,6 +70,7 @@ type TransformToReadOnly<T> = {
 };
 
 export type WireFrameMode = 'All' | 'SelectedAndChildren' | 'SelectedOnly';
+export type ReferenceImageAction = 'Import' | 'Clear' | number; //number is a change opacity
 
 export type ReadOnlyUIState = TransformToReadOnly<UIState>;
 
@@ -78,10 +90,11 @@ export type TraversalMode = 'view-hierarchy' | 'accessibility-hierarchy';
 
 export type ViewMode =
   | {mode: 'default'}
-  | {mode: 'frameworkEventsTable'; nodeId: Id; isTree: boolean};
+  | {mode: 'frameworkEventsTable'; nodeId: Id | null; isTree: boolean | null};
 
 export type NodeSelection = {
-  id: Id;
+  /** This node may be stale, look up from node map via id to check if it is still in frame*/
+  node: ClientNode;
   source: SelectionSource;
 };
 
@@ -91,9 +104,11 @@ export type AugmentedFrameworkEvent = FrameworkEvent & {
 };
 
 export type OnSelectNode = (
-  node: Id | undefined,
+  node: ClientNode | undefined,
   source: SelectionSource,
 ) => void;
+
+export type Operation = 'add' | 'remove';
 
 export type UIActions = {
   onHoverNode: (...node: Id[]) => void;
@@ -117,6 +132,9 @@ export type UIActions = {
   onCollapseAllRecursively: (nodeId: Id) => void;
   ensureAncestorsExpanded: (nodeId: Id) => void;
   onSetTraversalMode: (mode: TraversalMode) => void;
+  onReferenceImageAction: (action: ReferenceImageAction) => Promise<void>;
+  onChangeNodeLevelThreadFilter: (thread: string, op: Operation) => void;
+  onChangeNodeLevelEventTypeFilter: (eventType: string, op: Operation) => void;
   editClientAttribute: (
     nodeId: Id,
     value: any,

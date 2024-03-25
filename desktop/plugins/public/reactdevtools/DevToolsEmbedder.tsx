@@ -47,7 +47,7 @@ function createDevToolsNode(nodeId: string): HTMLElement {
 }
 
 function findDevToolsNode(nodeId: string): HTMLElement | null {
-  return document.querySelector('#' + nodeId);
+  return document.querySelector(`#${nodeId}`);
 }
 
 function attachDevTools(devToolsNode: HTMLElement, offset: number = 0) {

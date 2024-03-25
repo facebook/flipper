@@ -58,6 +58,7 @@ type TrackerEvents = {
   'app-connection-created': AppConnectionPayload;
   'app-connection-secure-attempt': AppConnectionPayload;
   'app-connection-insecure-attempt': AppConnectionPayload;
+  'app-connection-insecure-attempt-fallback': AppConnectionPayload;
   'app-connection-certificate-exchange': AppConnectionCertificateExchangePayload;
 };
 

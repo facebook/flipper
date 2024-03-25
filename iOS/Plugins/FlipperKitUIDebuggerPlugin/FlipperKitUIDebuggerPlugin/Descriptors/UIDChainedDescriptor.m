@@ -59,6 +59,26 @@
   return attributes;
 }
 
+- (void)editAttributeForNode:(id)node
+                   withValue:(id)value
+                metadataPath:(NSArray<UIDMetadataId>*)metadataPath
+                        hint:(UIDCompoundTypeHint)hint {
+  UIDChainedDescriptor* currentDescriptor = self;
+  while (currentDescriptor) {
+    [currentDescriptor aggregateEditAttributeForNode:node
+                                           withValue:value
+                                        metadataPath:metadataPath
+                                                hint:hint];
+    currentDescriptor = currentDescriptor.parent;
+  }
+}
+
+- (void)aggregateEditAttributeForNode:(id)node
+                            withValue:(id)value
+                         metadataPath:(NSArray<UIDMetadataId>*)metadataPath
+                                 hint:(UIDCompoundTypeHint)hint {
+}
+
 - (void)aggregateAttributes:(UIDMutableAttributes*)attributes forNode:(id)node {
 }
 

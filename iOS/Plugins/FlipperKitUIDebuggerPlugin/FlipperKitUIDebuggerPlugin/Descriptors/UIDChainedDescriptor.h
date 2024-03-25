@@ -37,6 +37,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)aggregateAttributes:(UIDMutableAttributes*)attributes forNode:(id)node;
 
 /**
+        Edit the attribute for the given node with the specified value.
+ */
+- (void)aggregateEditAttributeForNode:(id)node
+                            withValue:(id)value
+                         metadataPath:(NSArray<UIDMetadataId>*)metadataPath
+                                 hint:(UIDCompoundTypeHint)hint;
+
+/**
   These are shown inline in the tree view on the desktop, will likely be removed
   in the future.
  */

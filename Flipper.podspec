@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-flipperkit_version = '0.233.0'
+flipperkit_version = '0.250.0'
 Pod::Spec.new do |spec|
   spec.name = 'Flipper'
   spec.cocoapods_version = '>= 1.10'

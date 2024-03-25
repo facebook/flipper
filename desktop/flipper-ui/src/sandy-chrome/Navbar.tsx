@@ -9,6 +9,7 @@
 
 import {
   Dialog,
+  getFlipperLib,
   Layout,
   NUX,
   theme,
@@ -73,9 +74,11 @@ import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
 import {Notification} from './notification/Notification';
 import {SandyRatingButton} from './RatingButton';
-import {getFlipperServerConfig} from '../flipperServer';
+import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 import {showChangelog} from '../chrome/ChangelogSheet';
 import {FlipperSetupWizard} from '../chrome/FlipperSetupWizard';
+// eslint-disable-next-line no-restricted-imports
+import {ItemType} from 'antd/lib/menu/hooks/useItems';
 
 export const Navbar = withTrackingScope(function Navbar() {
   return (
@@ -540,6 +543,20 @@ function TroubleshootMenu() {
                 Flipper Logs <Badge count={flipperErrorLogCount} />
               </Layout.Horizontal>
             </Menu.Item>
+            <Menu.Item
+              key="restart-idb"
+              onClick={() => {
+                getFlipperServer().exec('ios-idb-kill');
+              }}>
+              Restart IDB (iOS connections)
+            </Menu.Item>
+            <Menu.Item
+              key="restart-adb"
+              onClick={() => {
+                getFlipperServer().exec('android-adb-kill');
+              }}>
+              Restart ADB (Android connections)
+            </Menu.Item>
           </Menu.SubMenu>
         </Menu>
       </Badge>
@@ -631,6 +648,104 @@ function ExtrasMenu() {
   const [welcomeVisible, setWelcomeVisible] = useState(false);
   const loggedIn = useValue(currentUser());
 
+  const menuItems: ItemType[] = [
+    {
+      key: 'extras',
+      popupOffset: [-50, 50],
+      label: <NavbarButton icon={SettingOutlined} label="More" />,
+      className: submenu,
+      children: [
+        {
+          key: 'addplugins',
+          label: 'Add plugins',
+          onClick: () => {
+            Dialog.showModal((onHide) => <PluginManager onHide={onHide} />);
+          },
+        },
+        {
+          key: 'importFlipperFile',
+          label: 'Import Flipper file',
+          onClick: startFileImportTracked,
+        },
+        {
+          key: 'exportFlipperFile',
+          label: 'Export Flipper file',
+          onClick: startFileExportTracked,
+        },
+        ...(constants.ENABLE_SHAREABLE_LINK
+          ? [
+              {
+                key: 'exportShareableLink',
+                label: 'Export shareable link',
+                onClick: startLinkExportTracked,
+              },
+            ]
+          : []),
+        {
+          type: 'divider',
+        },
+        {
+          key: 'plugin developers',
+          label: 'Plugin developers',
+          children: [
+            {
+              key: 'styleguide',
+              label: 'Flipper Style Guide',
+              onClick: () => {
+                store.dispatch(setStaticView(StyleGuide));
+              },
+            },
+            {
+              key: 'triggerDeeplink',
+              label: 'Trigger deeplink',
+              onClick: () => openDeeplinkDialog(store),
+            },
+          ],
+        },
+        {
+          type: 'divider',
+        },
+        {
+          key: 'settings',
+          label: 'Settings',
+          onClick: () => store.dispatch(toggleSettingsModal(true)),
+        },
+        {
+          key: 'setupWizard',
+          label: 'Setup Wizard',
+          onClick: () => {
+            Dialog.showModal((onHide) => (
+              <FlipperSetupWizard onHide={onHide} closable />
+            ));
+          },
+        },
+        {
+          key: 'help',
+          label: 'Help',
+          onClick: () => {
+            setWelcomeVisible(true);
+          },
+        },
+        {
+          key: 'changelog',
+          label: 'Changelog',
+          onClick: showChangelog,
+        },
+        ...(config.showLogin && loggedIn
+          ? [
+              {
+                key: 'logout',
+                label: 'Log out',
+                onClick: () => {
+                  logoutUser();
+                },
+              },
+            ]
+          : []),
+      ] satisfies ItemType[],
+    },
+  ];
+
   return (
     <>
       <NUX
@@ -640,80 +755,15 @@ function ExtrasMenu() {
           mode="vertical"
           className={menu}
           selectable={false}
-          style={{backgroundColor: theme.backgroundDefault}}>
-          <Menu.SubMenu
-            popupOffset={[-50, 50]}
-            key="extras"
-            title={<NavbarButton icon={SettingOutlined} label="More" />}
-            className={submenu}>
-            <Menu.Item
-              key="addplugins"
-              onClick={() => {
-                Dialog.showModal((onHide) => <PluginManager onHide={onHide} />);
-              }}>
-              Add Plugins
-            </Menu.Item>
-            <Menu.Item key="importFlipperFile" onClick={startFileImportTracked}>
-              Import Flipper file
-            </Menu.Item>
-            <Menu.Item key="exportFlipperFile" onClick={startFileExportTracked}>
-              Export Flipper file
-            </Menu.Item>
-            {constants.ENABLE_SHAREABLE_LINK ? (
-              <Menu.Item
-                key="exportShareableLink"
-                onClick={startLinkExportTracked}>
-                Export shareable link
-              </Menu.Item>
-            ) : null}
-            <Menu.Divider />
-            <Menu.SubMenu key="plugin developers" title="Plugin developers">
-              <Menu.Item
-                key="styleguide"
-                onClick={() => {
-                  store.dispatch(setStaticView(StyleGuide));
-                }}>
-                Flipper Style Guide
-              </Menu.Item>
-              <Menu.Item
-                key="triggerDeeplink"
-                onClick={() => openDeeplinkDialog(store)}>
-                Trigger deeplink
-              </Menu.Item>
-            </Menu.SubMenu>
-            <Menu.Divider />
-            <Menu.Item
-              key="settings"
-              onClick={() => store.dispatch(toggleSettingsModal(true))}>
-              Settings
-            </Menu.Item>
-            <Menu.Item
-              key="setupWizard"
-              onClick={() => {
-                Dialog.showModal((onHide) => (
-                  <FlipperSetupWizard onHide={onHide} closable />
-                ));
-              }}>
-              Setup wizard
-            </Menu.Item>
-            <Menu.Item key="help" onClick={() => setWelcomeVisible(true)}>
-              Help
-            </Menu.Item>
-            <Menu.Item key="changelog" onClick={showChangelog}>
-              Changelog
-            </Menu.Item>
-            {config.showLogin && loggedIn && (
-              <Menu.Item key="logout" onClick={async () => await logoutUser()}>
-                Logout
-              </Menu.Item>
-            )}
-          </Menu.SubMenu>
-        </Menu>
+          style={{backgroundColor: theme.backgroundDefault}}
+          items={menuItems}
+        />
       </NUX>
       {isSettingModalOpen && (
         <SettingsSheet
           platform={getFlipperServerConfig().environmentInfo.os.platform}
           onHide={() => store.dispatch(toggleSettingsModal())}
+          isFB={getFlipperLib().isFB}
         />
       )}
       <WelcomeScreen
