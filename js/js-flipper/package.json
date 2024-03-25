@@ -40,7 +40,7 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "@babel/core": "^7.23.2",
-    "@babel/eslint-parser": "7.22.15",
+    "@babel/eslint-parser": "7.24.1",
     "@types/jest": "^29.5.6",
     "@types/node": "^20.8.8",
     "@types/sinon": "^10.0.20",
