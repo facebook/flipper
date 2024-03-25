@@ -1,0 +1,30 @@
+name: facebook/flipper/build-and-deploy
+on:
+  push:
+    branches:
+    - main
+env:
+  ANDROID_PUBLISH_KEY: ${{ secrets.ANDROID_PUBLISH_KEY }}
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sdkmanager
+    - name: Install JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+    - name: Install Retry
+      run: scripts/install-retry.sh
+    - name: Build
+      run: |
+        yes | sdkmanager "platforms;android-33" || true
+        /tmp/retry -m 3 ./gradlew :android:assembleRelease --info
+    - name: Deploy Snapshot
+      run: "/tmp/retry -m 3 scripts/publish-android-snapshot.sh"

@@ -425,15 +425,22 @@ export class ServerController
               result.certificates?.key,
             );
 
-            const deviceId = uuid();
-            this.flipperServer.registerDevice(
-              new DummyDevice(
-                this.flipperServer,
-                deviceId,
-                clientQuery.app,
-                clientQuery.os,
-              ),
+            let deviceId = uuid();
+            const device = this.flipperServer.getDeviceWithName(
+              clientQuery.device,
             );
+            if (device) {
+              deviceId = device.serial;
+            } else {
+              this.flipperServer.registerDevice(
+                new DummyDevice(
+                  this.flipperServer,
+                  deviceId,
+                  `${clientQuery.device} via QR Exchange`,
+                  clientQuery.os,
+                ),
+              );
+            }
 
             tracker.track('app-connection-insecure-attempt-fallback', {
               app: clientQuery.app,

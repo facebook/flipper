@@ -190,8 +190,8 @@ export class FlipperServerImpl implements FlipperServer {
             'Timeout establishing connection. It looks like the app is taking longer than it should to reconnect using the exchanged certificates. ';
           message +=
             medium === 'WWW'
-              ? `Verify that your mobile device is connected to Lighthouse/VPN and that you are logged in to 
-              Flipper with the same user account used by the app (unfortunately, test accounts are not currently supported), 
+              ? `Verify that your mobile device is connected to Lighthouse/VPN and that you are logged in to
+              Flipper with the same user account used by the app (unfortunately, test accounts are not currently supported),
               so that certificates can be exhanged. See: https://fburl.com/flippervpn. Once this is done, re-running the app may solve this issue.`
               : 'Re-running the app may solve this issue.';
           this.emit('client-setup-error', {
@@ -717,6 +717,14 @@ export class FlipperServerImpl implements FlipperServer {
 
   hasDevice(serial: string): boolean {
     return !!this.devices.get(serial);
+  }
+
+  getDeviceWithName(name: string): ServerDevice | undefined {
+    const devices = this.getDevices();
+    const matches = devices.filter((device) => device.info.title === name);
+    if (matches.length === 1) {
+      return matches[0];
+    }
   }
 
   getDeviceSerials(): string[] {
