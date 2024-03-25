@@ -20,7 +20,7 @@
 }
 
 - (UIDInlineAttributes*)inlineAttributesForNode:(id)node {
-  return @{@"address" : [NSString stringWithFormat:@"%p", node]};
+  return nil;
 }
 
 - (UIDGenericAttributes*)hiddenAttributesForNode:(id)node {
