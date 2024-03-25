@@ -735,6 +735,34 @@ async function createMacDMG(
   });
 }
 
+async function createTar(
+  platform: BuildPlatform,
+  outputPath: string,
+  destPath: string,
+) {
+  console.log(`⚙️  Create tar of: ${outputPath}`);
+
+  const name = `flipper-server-${platform}.tar.gz`;
+  const temporaryDirectory = os.tmpdir();
+  const tempTarPath = path.resolve(temporaryDirectory, name);
+  const finalTarPath = path.resolve(destPath, name);
+
+  // Create a tar.gz based on the output path
+  await tar.c(
+    {
+      gzip: true,
+      file: tempTarPath,
+      cwd: outputPath,
+    },
+    ['.'],
+  );
+
+  await fs.move(tempTarPath, finalTarPath);
+  await fs.remove(outputPath);
+
+  console.log(`✅  Tar successfully created: ${finalTarPath}`);
+}
+
 async function setUpLinuxBundle(outputDir: string) {
   console.log(`⚙️  Creating Linux startup script in ${outputDir}/flipper`);
   await fs.writeFile(path.join(outputDir, 'flipper'), LINUX_STARTUP_SCRIPT);
@@ -920,8 +948,14 @@ async function bundleServerReleaseForPlatform(
 
     if (platform === BuildPlatform.LINUX) {
       await setUpLinuxBundle(outputDir);
+      if (argv.tar) {
+        await createTar(platform, outputDir, distDir);
+      }
     } else if (platform === BuildPlatform.WINDOWS) {
       await setUpWindowsBundle(outputDir);
+      if (argv.tar) {
+        await createTar(platform, outputDir, distDir);
+      }
     }
 
     console.log(
