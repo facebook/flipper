@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'desktop/package.json'
+      - "desktop/package.json"
 
 jobs:
   release:
@@ -29,7 +29,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ steps.extract-version-commit.outputs.commit }}
-          version_tag_prefix: 'v'
+          version_tag_prefix: "v"
           version_assertion_command: 'grep -q "\"version\": \"$version\"" desktop/package.json'
       - name: Create release
         if: ${{ steps.tag-version-commit.outputs.tag != '' }}
@@ -53,32 +53,42 @@ jobs:
       desktop-directory: ./desktop
 
     steps:
-    - uses: actions/checkout@v3.5.3
-      with:
-        ref: ${{ needs.release.outputs.tag }}
-    - uses: actions/setup-node@v3.6.0
-      with:
-        node-version: '18.x'
-    - name: Install
-      uses: nick-invision/retry@v2.0.0
-      with:
-        timeout_minutes: 10
-        max_attempts: 3
-        command: cd ${{env.desktop-directory}} && yarn
-    - name: Build
-      run: cd ${{env.desktop-directory}} && yarn build:flipper-server --mac --dmg
-    - name: List dist artifacts
-      run: ls -l dist/
-    - name: Upload x86-64
-      uses: actions/upload-artifact@v3.1.2
-      with:
-        name: 'Flipper-server-mac-x64.dmg'
-        path: 'dist/Flipper-server-mac-x64.dmg'
-    - name: Upload aarch64
-      uses: actions/upload-artifact@v3.1.2
-      with:
-        name: 'Flipper-server-mac-aarch64.dmg'
-        path: 'dist/Flipper-server-mac-aarch64.dmg'
+      - uses: actions/checkout@v3.5.3
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+      - uses: actions/setup-node@v3.6.0
+        with:
+          node-version: "18.x"
+      - name: Install
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: cd ${{env.desktop-directory}} && yarn
+      - name: Build
+        run: cd ${{env.desktop-directory}} && yarn build:flipper-server --mac --dmg --linux --win --tar
+      - name: List dist artifacts
+        run: ls -l dist/
+      - name: Upload Mac x86-64
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: "Flipper-server-mac-x64.dmg"
+          path: "dist/Flipper-server-mac-x64.dmg"
+      - name: Upload Mac aarch64
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: "Flipper-server-mac-aarch64.dmg"
+          path: "dist/Flipper-server-mac-aarch64.dmg"
+      - name: Upload Linux x64
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: "flipper-server-linux.tar.gz"
+          path: "dist/flipper-server-linux.tar.gz"
+      - name: Upload Windows x64
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: "flipper-server-windows.tar.gz"
+          path: "dist/flipper-server-windows.tar.gz"
 
   build-flipper-server:
     needs:
@@ -88,27 +98,27 @@ jobs:
       desktop-directory: ./desktop
 
     steps:
-    - uses: actions/checkout@v3.5.3
-      with:
-        ref: ${{ needs.release.outputs.tag }}
-    - uses: actions/setup-node@v3.6.0
-      with:
-        node-version: '18.x'
-    - name: Install
-      uses: nick-invision/retry@v2.0.0
-      with:
-        timeout_minutes: 10
-        max_attempts: 3
-        command: cd ${{env.desktop-directory}} && yarn
-    - name: Build
-      run: cd ${{env.desktop-directory}} && yarn build:flipper-server
-    - name: List dist artifacts
-      run: ls -l dist/
-    - name: Upload flipper-server
-      uses: actions/upload-artifact@v3.1.2
-      with:
-        name: 'flipper-server.tgz'
-        path: 'dist/flipper-server.tgz'
+      - uses: actions/checkout@v3.5.3
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+      - uses: actions/setup-node@v3.6.0
+        with:
+          node-version: "18.x"
+      - name: Install
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: cd ${{env.desktop-directory}} && yarn
+      - name: Build
+        run: cd ${{env.desktop-directory}} && yarn build:flipper-server
+      - name: List dist artifacts
+        run: ls -l dist/
+      - name: Upload flipper-server
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: "flipper-server.tgz"
+          path: "dist/flipper-server.tgz"
 
   publish:
     needs:
@@ -118,53 +128,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3.5.3
-      with:
-        ref: ${{ needs.release.outputs.tag }}
-    - name: Download Flipper Server x86-64
-      if: ${{ needs.release.outputs.tag != '' }}
-      uses: actions/download-artifact@v1
-      with:
-        name: 'Flipper-server-mac-x64.dmg'
-        path: 'Flipper-server-mac-x64.dmg'
-    - name: Download Flipper Server aarch64
-      if: ${{ needs.release.outputs.tag != '' }}
-      uses: actions/download-artifact@v1
-      with:
-        name: 'Flipper-server-mac-aarch64.dmg'
-        path: 'Flipper-server-mac-aarch64.dmg'
-    - name: Download Flipper Server
-      if: ${{ needs.release.outputs.tag != '' }}
-      uses: actions/download-artifact@v1
-      with:
-        name: 'flipper-server.tgz'
-        path: 'flipper-server.tgz'
-    - name: GitHub Upload Release Artifacts
-      if: ${{ needs.release.outputs.tag != '' }}
-      uses: aigoncharov/github-upload-release-artifacts-action@2.2.3
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        created_tag: ${{ needs.release.outputs.tag }}
-        args: flipper-server.tgz/flipper-server.tgz Flipper-server-mac-x64.dmg/Flipper-server-mac-x64.dmg Flipper-server-mac-aarch64.dmg/Flipper-server-mac-aarch64.dmg
-    - name: Set up npm token
-      run: echo "//registry.yarnpkg.com/:_authToken=${{ secrets.FLIPPER_NPM_TOKEN }}" >> ~/.npmrc
-    - name: Publish flipper-server on NPM
-      if: ${{ needs.release.outputs.tag != '' }}
-      run: |
-        tar zxvf flipper-server.tgz/flipper-server.tgz
-        cd package
-        yarn publish
-    - name: Open issue on failure
-      if: failure()
-      uses: JasonEtco/create-an-issue@v2.9.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPOSITORY: ${{ github.repository }}
-        RUN_ID: ${{ github.run_id }}
-        WORKFLOW_NAME: "Publish"
-      with:
-        filename: .github/action-failure-template.md
+      - uses: actions/checkout@v3.5.3
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+      - name: Download Flipper Server x86-64
+        if: ${{ needs.release.outputs.tag != '' }}
+        uses: actions/download-artifact@v1
+        with:
+          name: "Flipper-server-mac-x64.dmg"
+          path: "Flipper-server-mac-x64.dmg"
+      - name: Download Flipper Server aarch64
+        if: ${{ needs.release.outputs.tag != '' }}
+        uses: actions/download-artifact@v1
+        with:
+          name: "Flipper-server-mac-aarch64.dmg"
+          path: "Flipper-server-mac-aarch64.dmg"
+      - name: Download Flipper Server
+        if: ${{ needs.release.outputs.tag != '' }}
+        uses: actions/download-artifact@v1
+        with:
+          name: "flipper-server.tgz"
+          path: "flipper-server.tgz"
+      - name: GitHub Upload Release Artifacts
+        if: ${{ needs.release.outputs.tag != '' }}
+        uses: aigoncharov/github-upload-release-artifacts-action@2.2.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          created_tag: ${{ needs.release.outputs.tag }}
+          args: flipper-server.tgz/flipper-server.tgz Flipper-server-mac-x64.dmg/Flipper-server-mac-x64.dmg Flipper-server-mac-aarch64.dmg/Flipper-server-mac-aarch64.dmg
+      - name: Set up npm token
+        run: echo "//registry.yarnpkg.com/:_authToken=${{ secrets.FLIPPER_NPM_TOKEN }}" >> ~/.npmrc
+      - name: Publish flipper-server on NPM
+        if: ${{ needs.release.outputs.tag != '' }}
+        run: |
+          tar zxvf flipper-server.tgz/flipper-server.tgz
+          cd package
+          yarn publish
+      - name: Open issue on failure
+        if: failure()
+        uses: JasonEtco/create-an-issue@v2.9.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          WORKFLOW_NAME: "Publish"
+        with:
+          filename: .github/action-failure-template.md
 
   dispatch:
     needs:
@@ -172,22 +182,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Publish Workflow Dispatch
-      if: ${{ needs.release.outputs.tag != '' }}
-      uses: benc-uk/workflow-dispatch@v1.2.2
-      with:
-        workflow: Publish Pods
-        ref: ${{ needs.release.outputs.tag }}
-    - name: Publish NPM
-      if: ${{ needs.release.outputs.tag != '' }}
-      uses: benc-uk/workflow-dispatch@v1.2.2
-      with:
-        workflow: Publish NPM
-        ref: ${{ needs.release.outputs.tag }}
-    - name: Publish Android
-      if: ${{ needs.release.outputs.tag != '' }}
-      uses: benc-uk/workflow-dispatch@v1.2.2
-      with:
-        workflow: Publish Android
-        ref: ${{ needs.release.outputs.tag }}
-        inputs: '{"tag": "${{ needs.release.outputs.tag }}"}'
+      - name: Publish Workflow Dispatch
+        if: ${{ needs.release.outputs.tag != '' }}
+        uses: benc-uk/workflow-dispatch@v1.2.2
+        with:
+          workflow: Publish Pods
+          ref: ${{ needs.release.outputs.tag }}
+      - name: Publish NPM
+        if: ${{ needs.release.outputs.tag != '' }}
+        uses: benc-uk/workflow-dispatch@v1.2.2
+        with:
+          workflow: Publish NPM
+          ref: ${{ needs.release.outputs.tag }}
+      - name: Publish Android
+        if: ${{ needs.release.outputs.tag != '' }}
+        uses: benc-uk/workflow-dispatch@v1.2.2
+        with:
+          workflow: Publish Android
+          ref: ${{ needs.release.outputs.tag }}
+          inputs: '{"tag": "${{ needs.release.outputs.tag }}"}'
