@@ -48,6 +48,7 @@ def safeExtGet(prop, fallback) {
 apply plugin: 'com.android.library'
 
 android {
+    namespace 'com.facebook.flipper.reactnative'
     compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
     buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
     defaultConfig {
