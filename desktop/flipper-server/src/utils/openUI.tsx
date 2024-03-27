@@ -31,12 +31,21 @@ export async function openUI(preference: UIPreference, port: number) {
 
     console.info(`[flipper-server] Go to: ${url.toString()}`);
 
-    open(url.toString(), {app: {name: open.apps.chrome}});
-
-    tracker.track('server-open-ui', {
-      browser: true,
-      hasToken: token?.length != 0,
-    });
+    try {
+      const process = await open(url.toString(), {
+        app: {name: open.apps.chrome},
+      });
+      await new Promise((resolve, reject) => {
+        process.on('spawn', resolve);
+        process.on('error', reject);
+      });
+      tracker.track('server-open-ui', {
+        browser: true,
+        hasToken: token?.length != 0,
+      });
+    } catch (err: unknown) {
+      console.error('[flipper-server] Failed to open browser', err);
+    }
   };
 
   if (preference === UIPreference.Browser) {
