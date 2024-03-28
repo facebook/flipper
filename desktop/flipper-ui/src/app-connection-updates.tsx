@@ -93,7 +93,7 @@ export const connectionUpdate = (
       content += `\n ${update.detail}`;
     }
     message.open({
-      key: update.key,
+      key: update.app,
       type: update.type === 'success-info' ? 'info' : update.type,
       content,
       className,
