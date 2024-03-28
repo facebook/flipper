@@ -37,7 +37,7 @@ class ExportDataPluginSheet extends Component<Props, {}> {
       <Container>
         <ListView
           type="multiple"
-          title="Select the plugins for which you want to export the data"
+          title="Select the plugins of the currently active device / application for which you want to export the data"
           leftPadding={8}
           onChange={(selectedArray) => {
             this.props.setSelectedPlugins(selectedArray);

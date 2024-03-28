@@ -772,6 +772,8 @@ async function selectPlugins() {
   return await Dialog.select<string[]>({
     title: 'Select plugins to export',
     defaultValue: [],
+    onValidate: (plugins) =>
+      plugins.length === 0 ? 'Please select at least one plugin.' : '',
     renderer: (value, onChange, onCancel) => (
       <ExportDataPluginSheet
         onHide={onCancel}
