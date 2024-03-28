@@ -296,7 +296,11 @@ export function Notification() {
   return (
     <LeftSidebar>
       <Layout.Top>
-        <Layout.Container gap="tiny" padv="tiny" borderBottom>
+        <Layout.Container
+          gap="tiny"
+          padv="tiny"
+          borderBottom
+          style={{paddingRight: 24}}>
           <SidebarTitle actions={actions}>notifications</SidebarTitle>
           <Layout.Container padh="medium" padv="small">
             <Input
