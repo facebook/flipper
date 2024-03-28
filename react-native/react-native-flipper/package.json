@@ -28,7 +28,7 @@
     "react-native": ">0.62.0"
   },
   "devDependencies": {
-    "metro-config": "^0.76.0",
+    "metro-config": "^0.80.7",
     "react": "^17.0.2",
     "react-native": "^0.68.2",
     "react-native-windows": "0.68.2"
