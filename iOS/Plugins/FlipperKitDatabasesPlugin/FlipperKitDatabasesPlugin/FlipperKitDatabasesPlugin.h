@@ -9,8 +9,8 @@
 
 #import <FlipperKit/FlipperPlugin.h>
 #import <Foundation/Foundation.h>
-#import "DatabaseDriver.h"
 
+@protocol DatabaseDriver;
 @class DatabasesManager;
 
 @interface FlipperKitDatabasesPlugin : NSObject<FlipperPlugin>
