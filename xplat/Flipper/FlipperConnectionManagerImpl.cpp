@@ -330,6 +330,10 @@ void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
       // Skip sending messages that are too large.
       log(e.what());
       return;
+    } catch (json::print_error& e) {
+      // Skip sending messages with invalid K/V
+      log(e.what());
+      return;
     }
   });
 }
