@@ -330,8 +330,12 @@ void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
       // Skip sending messages that are too large.
       log(e.what());
       return;
-    } catch (json::print_error& e) {
-      // Skip sending messages with invalid K/V
+    } catch (std::runtime_error& e) {
+      // Skip sending messages with invalid K/V.
+      // On newer versions of folly, this will throw a json::print_error.
+      // Because we are using an older version of folly, we need to catch
+      // the more generic std::runtime_error which is the base class for
+      // json::print_error.
       log(e.what());
       return;
     }
