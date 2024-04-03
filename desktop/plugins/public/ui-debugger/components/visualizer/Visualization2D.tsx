@@ -103,7 +103,7 @@ export const Visualization2D: React.FC<
   );
 };
 
-const horizontalPadding = 16; //allows space for vertical scroll bar
+const horizontalPadding = 8; //allows space for vertical scroll bar
 
 function Visualization2DContent({
   disableInteractivity,
@@ -223,6 +223,8 @@ function Visualization2DContent({
       ref={containerRef}
       style={{
         paddingLeft: horizontalPadding,
+        overflowY: 'scroll',
+        scrollbarWidth: 'thin',
       }}
       vertical>
       <div
