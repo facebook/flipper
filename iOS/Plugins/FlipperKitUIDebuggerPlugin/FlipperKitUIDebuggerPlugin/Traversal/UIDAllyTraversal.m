@@ -71,16 +71,15 @@
       _accessibilityLeafDescendantsWithOptions:options] mutableCopy];
 
   UIDNode* rootNode = [self _uidNodeForNode:root];
-  NSInteger rootIdentifier = rootNode.identifier;
+  NSString* rootIdentifier = rootNode.identifier;
 
   NSMutableArray<UIDNode*>* nodes = [NSMutableArray new];
   NSMutableArray* childrenIds = [NSMutableArray new];
   for (NSObject* node in allyNodes) {
     UIDNode* uidNode = [self _uidNodeForNode:node];
-    uidNode.parent = @(rootIdentifier);
+    uidNode.parent = rootIdentifier;
     [nodes addObject:uidNode];
-    [childrenIds
-        addObject:[NSNumber numberWithUnsignedInteger:uidNode.identifier]];
+    [childrenIds addObject:uidNode.identifier];
   }
   rootNode.children = childrenIds;
   [nodes insertObject:rootNode atIndex:0];
@@ -90,7 +89,7 @@
 - (UIDNode*)_uidNodeForNode:(NSObject*)node {
   UIDNodeDescriptor* descriptor =
       [_descriptorRegister descriptorForClass:[node class]];
-  NSUInteger nodeIdentifier = [descriptor identifierForNode:node];
+  NSString* nodeIdentifier = [descriptor identifierForNode:node];
   UIDNode* uidNode = [[UIDNode alloc]
       initWithIdentifier:nodeIdentifier
            qualifiedName:[descriptor nameForNode:node]

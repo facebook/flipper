@@ -11,7 +11,7 @@
 
 @implementation UIDNode
 
-- (instancetype)initWithIdentifier:(NSUInteger)identifier
+- (instancetype)initWithIdentifier:(NSString*)identifier
                      qualifiedName:(NSString*)qualifiedName
                               name:(NSString*)name
                             bounds:(UIDBounds*)bounds

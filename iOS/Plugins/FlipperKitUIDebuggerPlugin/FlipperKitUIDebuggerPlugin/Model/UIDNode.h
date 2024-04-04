@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIDNode : NSObject
 
-@property(nonatomic) NSUInteger identifier;
+@property(nonatomic) NSString* identifier;
 @property(nonatomic, strong) NSString* qualifiedName;
 @property(nonatomic, strong) NSString* name;
 @property(nonatomic, strong) UIDBounds* bounds;
@@ -24,11 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) UIDAttributes* attributes;
 @property(nonatomic, strong) UIDInlineAttributes* inlineAttributes;
 @property(nonatomic, strong) UIDGenericAttributes* hiddenAttributes;
-@property(nonatomic, nullable) NSNumber* parent;
+@property(nonatomic, nullable) NSString* parent;
 @property(nonatomic, strong) NSArray<NSNumber*>* children;
-@property(nonatomic) NSNumber* activeChild;
+@property(nonatomic) NSString* activeChild;
 
-- (instancetype)initWithIdentifier:(NSUInteger)identifier
+- (instancetype)initWithIdentifier:(NSString*)identifier
                      qualifiedName:(NSString*)qualifiedName
                               name:(NSString*)name
                             bounds:(UIDBounds*)bounds

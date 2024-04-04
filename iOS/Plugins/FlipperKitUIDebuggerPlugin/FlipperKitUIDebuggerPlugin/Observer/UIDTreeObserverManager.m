@@ -116,7 +116,7 @@
   [_context.connection
         receive:@"editAttribute"
       withBlock:^(NSDictionary* data, id<FlipperResponder> responder) {
-        NSNumber* nodeId = [data[@"nodeId"] isKindOfClass:NSNumber.class]
+        NSString* nodeId = [data[@"nodeId"] isKindOfClass:NSString.class]
             ? data[@"nodeId"]
             : nil;
         if (nodeId == nil) {

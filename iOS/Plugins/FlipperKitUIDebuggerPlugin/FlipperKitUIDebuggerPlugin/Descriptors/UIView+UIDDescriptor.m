@@ -73,8 +73,8 @@ static UIDMetadataId AccessibilityTraitStartsMediaSessionAttributeId;
 FB_LINKABLE(UIView_UIDDescriptor)
 @implementation UIView (UIDDescriptor)
 
-- (NSUInteger)UID_identifier {
-  return [self hash];
+- (NSString*)UID_identifier {
+  return [NSString stringWithFormat:@"%lu", [self hash]];
 }
 
 - (nonnull NSString*)UID_name {
