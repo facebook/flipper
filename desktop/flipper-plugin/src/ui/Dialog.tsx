@@ -149,7 +149,7 @@ export const Dialog = {
       ...rest,
       defaultValue: true,
       children: () => message,
-      onConfirm: onConfirm,
+      onConfirm,
     });
   },
 

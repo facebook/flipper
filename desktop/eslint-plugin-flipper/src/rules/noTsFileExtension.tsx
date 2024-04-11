@@ -38,7 +38,7 @@ export default createESLintRule<Options, MessageIds>({
       Program(node) {
         if (isTs) {
           context.report({
-            node: node,
+            node,
             messageId: 'noTsFileExtension',
           });
         }

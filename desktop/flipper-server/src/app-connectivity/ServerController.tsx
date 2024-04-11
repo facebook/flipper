@@ -538,7 +538,7 @@ export class ServerController
 
     const info = {
       client,
-      connection: connection,
+      connection,
     };
 
     recorder.log(

@@ -285,14 +285,14 @@ const WireframeOverlay = styled.div<{
   return {
     zIndex: 100,
     pointerEvents: type === 'selected' ? 'none' : 'auto',
-    cursor: cursor,
+    cursor,
     position: 'absolute',
     top: toPx(globalOffset.y),
     left: toPx(globalOffset.x),
     width: toPx(node.bounds.width),
     height: toPx(node.bounds.height),
     boxSizing: 'border-box',
-    borderWidth: borderWidth,
+    borderWidth,
     borderStyle: 'solid',
     color: 'transparent',
     borderColor:

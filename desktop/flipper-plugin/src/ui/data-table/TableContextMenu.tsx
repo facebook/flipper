@@ -228,7 +228,7 @@ export function tableContextMenuFactory<T extends object>(
               onChange={(color: string) => {
                 dispatch({
                   type: 'setSearchHighlightColor',
-                  color: color,
+                  color,
                 });
               }}>
               {Object.entries(theme.searchHighlightBackground).map(

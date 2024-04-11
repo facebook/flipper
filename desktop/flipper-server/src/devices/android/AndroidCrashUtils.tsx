@@ -31,8 +31,8 @@ export function parseAndroidCrash(content: string, logDate?: Date) {
   }
   const crash: CrashLog = {
     callstack: content,
-    name: name,
-    reason: reason,
+    name,
+    reason,
     date: logDate?.getTime(),
   };
   return crash;

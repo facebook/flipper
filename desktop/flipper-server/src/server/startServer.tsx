@@ -167,7 +167,7 @@ async function startHTTPServer(
       debug: !isProduction(),
       graphSecret: GRAPH_SECRET,
       appVersion: environmentInfo.appVersion,
-      sessionId: sessionId,
+      sessionId,
       unixname: environmentInfo.os.unixname,
       authToken: token,
     };

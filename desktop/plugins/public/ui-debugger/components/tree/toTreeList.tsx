@@ -135,8 +135,8 @@ export function toTreeList(
               stackItem.parentIndentGuideDepths,
               depth,
             ),
-            isChildOfSelectedNode: isChildOfSelectedNode,
-            selectedNodeDepth: selectedNodeDepth,
+            isChildOfSelectedNode,
+            selectedNodeDepth,
           });
         }
       }

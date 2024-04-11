@@ -341,7 +341,7 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
       }
       cpuState.set({
         cpuCount: count,
-        cpuFreq: cpuFreq,
+        cpuFreq,
         monitoring: false,
         hardwareInfo: '',
         temperatureMap: {},
@@ -520,7 +520,7 @@ function buildAvailableGovList(freq: CPUFrequency): string {
 
 function buildSidebarRow(key: string, val: any) {
   return {
-    key: key,
+    key,
     value: val,
   };
 }

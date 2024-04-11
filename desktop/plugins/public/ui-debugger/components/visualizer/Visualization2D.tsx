@@ -490,7 +490,7 @@ function toNestedNode(
       ),
       bounds: node.bounds,
       tags: node.tags,
-      activeChildIdx: activeChildIdx,
+      activeChildIdx,
     };
   }
 

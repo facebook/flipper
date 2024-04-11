@@ -298,7 +298,7 @@ export default class LayoutPlugin extends FlipperPlugin<
       this.client
         .call('setResolvedPath', {
           className: params.className,
-          resolvedPath: resolvedPath,
+          resolvedPath,
         })
         .catch((e) => {
           console.warn('[Layout] setResolvePath failed with error', e);
@@ -451,10 +451,10 @@ export default class LayoutPlugin extends FlipperPlugin<
         this.setState({visualizerWindow: null});
       };
       visualizerWindow.onresize = () => {
-        this.setState({visualizerWindow: visualizerWindow});
+        this.setState({visualizerWindow});
       };
       visualizerWindow.onload = () => {
-        this.setState({visualizerWindow: visualizerWindow});
+        this.setState({visualizerWindow});
       };
     }
   };

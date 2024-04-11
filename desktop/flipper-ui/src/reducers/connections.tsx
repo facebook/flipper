@@ -293,7 +293,7 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
           state.userPreferredApp,
         selectedPlugin,
         userPreferredPlugin: selectedPlugin,
-        deepLinkPayload: deepLinkPayload,
+        deepLinkPayload,
       };
     }
 

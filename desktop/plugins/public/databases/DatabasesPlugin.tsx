@@ -122,7 +122,7 @@ const QueryHistory = React.memo(({history}: {history: Array<Query>}) => {
       const value = query.value;
       rows.push({
         key: `${i}`,
-        columns: {time: {value: time}, query: {value: value}},
+        columns: {time: {value: time}, query: {value}},
       });
     }
   }
@@ -445,7 +445,7 @@ export function Component() {
 
   const onGoToRow = useCallback(
     (row: number, _count: number) => {
-      instance.goToRow({row: row});
+      instance.goToRow({row});
     },
     [instance],
   );

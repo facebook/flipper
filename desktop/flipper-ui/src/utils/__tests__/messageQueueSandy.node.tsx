@@ -742,6 +742,6 @@ test('queue will be cleaned up when it exceeds maximum size', () => {
   });
   expect(state[pluginKey][newLength - 1]).toEqual({
     method: 'test',
-    params: {i: i}, // ~50001
+    params: {i}, // ~50001
   });
 });

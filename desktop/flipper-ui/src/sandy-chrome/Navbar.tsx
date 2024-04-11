@@ -392,7 +392,7 @@ export function NavbarButton({
   if (count !== undefined) {
     return (
       <Badge
-        style={{zIndex: zIndex}}
+        style={{zIndex}}
         {...{onClick}}
         dot={count === true}
         count={count}

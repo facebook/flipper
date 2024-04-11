@@ -166,7 +166,7 @@ export function SandyApp() {
                   ) : (
                     <ContentContainer>
                       {React.createElement(staticView, {
-                        logger: logger,
+                        logger,
                       })}
                     </ContentContainer>
                   )}

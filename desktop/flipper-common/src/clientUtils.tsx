@@ -109,7 +109,7 @@ export function deconstructPluginKey(pluginKey: string): PluginKeyConstituents {
       type: 'client',
       ...deconstructClientId(clientId),
       client: clientId,
-      pluginName: pluginName,
+      pluginName,
     };
   }
 }
