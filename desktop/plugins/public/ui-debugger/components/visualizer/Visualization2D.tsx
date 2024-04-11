@@ -562,7 +562,14 @@ function hitTest(node: NestedNode, mouseCoordinate: Coordinate): NestedNode[] {
     let children = node.children;
 
     if (node.activeChildIdx != null) {
-      children = [node.children[node.activeChildIdx]];
+      const activeChild = node.children[node.activeChildIdx];
+      if (activeChild == null) {
+        console.error(
+          `[ui-debugger] activeChildIdx not found for ${node.name}: ${node.activeChildIdx} not within ${node.children.length}`,
+        );
+      } else {
+        children = [activeChild];
+      }
     }
     const offsetMouseCoord = offsetCoordinate(mouseCoordinate, nodeBounds);
     let anyChildHitRecursive = false;
