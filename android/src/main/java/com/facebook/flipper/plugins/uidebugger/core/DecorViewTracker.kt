@@ -17,6 +17,8 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.ViewDescriptor
 import com.facebook.flipper.plugins.uidebugger.util.StopWatch
 import com.facebook.flipper.plugins.uidebugger.util.Throttler
 import com.facebook.flipper.plugins.uidebugger.util.objectIdentity
+import curtains.Curtains
+import curtains.OnRootViewsChangedListener
 
 /**
  * The UIDebugger does 3 things:
@@ -44,61 +46,66 @@ class DecorViewTracker(private val context: UIDContext, private val snapshotter:
 
   fun start() {
 
-    val applicationRef = context.applicationRef
+    val rootViewChangedListener = OnRootViewsChangedListener { view, added ->
+      if (currentDecorView != null) {
+        // remove predraw listen from current view as its going away or will be covered
+        Log.d(LogTag, "Removing pre draw listener from ${currentDecorView?.objectIdentity()}")
+        currentDecorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
+      }
 
-    val rootViewListener =
-        object : RootViewResolver.Listener {
-          override fun onRootViewAdded(rootView: View) {}
+      val decorViewToActivity: Map<View, Activity> = ActivityTracker.decorViewToActivityMap
 
-          override fun onRootViewRemoved(rootView: View) {}
-
-          override fun onRootViewsChanged(rootViews: List<View>) {
-            // remove predraw listen from current view as its going away or will be covered
-            Log.i(LogTag, "Removing pre draw listener from ${currentDecorView?.objectIdentity()}")
-            currentDecorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
-
-            // setup new listener on top most view, that will be the active child in traversal
-
-            val decorViewToActivity: Map<View, Activity> = ActivityTracker.decorViewToActivityMap
-
-            val topView =
-                rootViews.lastOrNull { view ->
-                  val activityOrView = decorViewToActivity[view] ?: view
-                  ApplicationRefDescriptor.isUsefulRoot(activityOrView)
-                }
-
-            if (topView != null) {
-              val throttler =
-                  Throttler(500) { currentDecorView?.let { traverseSnapshotAndSend(it) } }
-
-              preDrawListener =
-                  ViewTreeObserver.OnPreDrawListener {
-                    throttler.trigger()
-                    true
-                  }
-
-              topView.viewTreeObserver.addOnPreDrawListener(preDrawListener)
-              currentDecorView = topView
-
-              Log.i(LogTag, "Added pre draw listener to ${topView.objectIdentity()}")
-
-              // schedule traversal immediately when we detect a new decor view
-              throttler.trigger()
+      // at the time of this callback curtains.rootViews is not updated yet, so we need to use the
+      // 'view' and 'added' params to the callback to see any new root views
+      val topView =
+          if (added && ApplicationRefDescriptor.isUsefulRoot(decorViewToActivity[view] ?: view)) {
+            view
+          } else {
+            // this is technically the preview set of root view but this is the branch where the new
+            // root view is not 'useful' or we are popping a view off the stack so the old roots are
+            // fine here
+            Curtains.rootViews.lastOrNull {
+              ApplicationRefDescriptor.isUsefulRoot(decorViewToActivity[it] ?: it)
             }
           }
-        }
 
-    context.applicationRef.rootsResolver.attachListener(rootViewListener)
+      if (topView != null) {
+        val throttler = Throttler(500) { currentDecorView?.let { traverseSnapshotAndSend(it) } }
+
+        preDrawListener =
+            ViewTreeObserver.OnPreDrawListener {
+              throttler.trigger()
+              true
+            }
+
+        topView.viewTreeObserver.addOnPreDrawListener(preDrawListener)
+        currentDecorView = topView
+
+        Log.i(LogTag, "Added pre draw listener to ${topView.objectIdentity()}")
+
+        // schedule traversal immediately when we detect a new decor view
+        throttler.trigger()
+      }
+    }
+
+    Curtains.onRootViewsChangedListeners.add(rootViewChangedListener)
+
     // On subscribe, trigger a traversal on whatever roots we have
-    rootViewListener.onRootViewsChanged(applicationRef.rootsResolver.rootViews())
+    val decorViewToActivity: Map<View, Activity> = ActivityTracker.decorViewToActivityMap
 
-    Log.i(
-        LogTag,
-        "Starting tracking root views, currently ${context.applicationRef.rootsResolver.rootViews().size} root views")
+    val topView =
+        Curtains.rootViews.lastOrNull {
+          ApplicationRefDescriptor.isUsefulRoot(decorViewToActivity[it] ?: it)
+        }
+    if (topView != null) {
+      rootViewChangedListener.onRootViewsChanged(topView, true)
+    }
+
+    Log.i(LogTag, "Starting tracking root views, currently ${Curtains.rootViews.size} root views")
   }
 
   fun stop() {
-    context.applicationRef.rootsResolver.attachListener(null)
+    Curtains.onRootViewsChangedListeners.clear()
     currentDecorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
     currentDecorView = null
     preDrawListener = null
