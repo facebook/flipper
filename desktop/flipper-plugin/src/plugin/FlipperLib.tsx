@@ -116,6 +116,7 @@ export interface FlipperLib {
     children: any;
     width?: number;
     minWidth?: number;
+    onResize?: (width: number, height: number) => void;
   }): ReactElement | null;
   /**
    * @returns
