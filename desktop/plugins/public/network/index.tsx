@@ -611,11 +611,16 @@ export function Component() {
           enableAutoScroll
           extraActions={
             <Layout.Horizontal gap>
-              <Button title="Clear logs" onClick={instance.clearLogs}>
+              <Button
+                type="ghost"
+                title="Clear logs"
+                onClick={instance.clearLogs}>
                 <DeleteOutlined />
               </Button>
               {isMockResponseSupported && (
-                <Button onClick={instance.onMockButtonPressed}>Mock</Button>
+                <Button type="ghost" onClick={instance.onMockButtonPressed}>
+                  Mock
+                </Button>
               )}
             </Layout.Horizontal>
           }

@@ -923,7 +923,7 @@ export function DataTable<T extends object>(
     <Layout.Container>
       {props.actionsTop ? <Searchbar gap>{props.actionsTop}</Searchbar> : null}
       {props.enableSearchbar && (
-        <Searchbar grow shrink gap style={{alignItems: 'baseline'}}>
+        <Searchbar grow shrink gap style={{alignItems: 'flex-start'}}>
           <PowerSearch
             config={powerSearchConfig}
             searchExpression={searchExpression}
@@ -943,7 +943,7 @@ export function DataTable<T extends object>(
           />
           {contexMenu && (
             <Dropdown overlay={contexMenu} placement="bottomRight">
-              <Button type="text" size="small">
+              <Button type="ghost">
                 <MenuOutlined />
               </Button>
             </Dropdown>

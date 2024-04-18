@@ -27,7 +27,7 @@ import {
   PauseCircleOutlined,
   PlayCircleOutlined,
 } from '@ant-design/icons';
-import {Button} from 'antd';
+import {Button, Tooltip} from 'antd';
 import {usePluginInstance} from '../plugin/PluginContext';
 import {useAssertStableRef} from '../utils/useAssertStableRef';
 import {Atom, createState, useValue} from '../state/atom';
@@ -213,23 +213,22 @@ export function MasterDetailWithPowerSearch<T extends object>({
       actionsRight={
         <>
           {connected && isPaused && (
-            <Button
-              size="small"
-              type="text"
-              title={`Click to ${pausedState ? 'resume' : 'pause'} the stream`}
-              danger={pausedState}
-              onClick={handleTogglePause}>
-              {pausedState ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
-            </Button>
+            <Tooltip
+              title={`Click to ${pausedState ? 'resume' : 'pause'} the stream`}>
+              <Button
+                type="ghost"
+                danger={pausedState}
+                onClick={handleTogglePause}>
+                {pausedState ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
+              </Button>
+            </Tooltip>
           )}
           {connected && enableClear && (
-            <Button
-              size="small"
-              type="text"
-              title="Clear records"
-              onClick={handleClear}>
-              <DeleteOutlined />
-            </Button>
+            <Tooltip title="Clear records">
+              <Button type="ghost" onClick={handleClear}>
+                <DeleteOutlined />
+              </Button>
+            </Tooltip>
           )}
         </>
       }
