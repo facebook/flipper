@@ -266,12 +266,15 @@ export class ServerController
       clearTimeout(timeout);
     }
 
-    if (clientQuery.medium === 'WWW' || clientQuery.medium === 'NONE') {
+    const device = this.flipperServer.getDeviceWithSerial(
+      clientQuery.device_id,
+    );
+    if (!device) {
       this.flipperServer.registerDevice(
         new DummyDevice(
           this.flipperServer,
           clientQuery.device_id,
-          `${clientQuery.app} (Unknown Device)`,
+          `${clientQuery.device}`,
           clientQuery.os,
         ),
       );
@@ -282,6 +285,7 @@ export class ServerController
       deviceName: clientQuery.device,
       appName: appNameWithUpdateHint(clientQuery),
     };
+
     this.emit('start-client-setup', client);
   }
 
