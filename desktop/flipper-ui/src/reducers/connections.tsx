@@ -92,6 +92,10 @@ export type Action =
       payload: BaseDevice;
     }
   | {
+      type: 'UNREGISTER_DEVICE';
+      payload: BaseDevice;
+    }
+  | {
       type: 'SELECT_DEVICE';
       payload: BaseDevice;
     }
@@ -256,6 +260,40 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
         devices: newDevices,
         selectedDevice: selectNewDevice ? payload : state.selectedDevice,
         selectedAppId,
+      };
+    }
+
+    case 'UNREGISTER_DEVICE': {
+      const {payload} = action;
+
+      const newDevices = state.devices.slice();
+      const existing = state.devices.findIndex(
+        (device) => device.serial === payload.serial,
+      );
+      if (existing !== -1) {
+        const d = newDevices[existing];
+        if (d.connected.get()) {
+          throw new Error(
+            `Cannot unregister, '${d.serial}' as is still connected`,
+          );
+        }
+        newDevices.splice(existing, 1);
+      }
+
+      let selectedNewDevice: BaseDevice | null = null;
+      let selectedNewAppId: null | string = null;
+      if (newDevices.length > 0) {
+        selectedNewDevice = newDevices[0];
+        selectedNewAppId =
+          getAllClients(state).find((c) => c.device === selectedNewDevice)
+            ?.id ?? null;
+      }
+
+      return {
+        ...state,
+        devices: newDevices,
+        selectedDevice: selectedNewDevice,
+        selectedAppId: selectedNewAppId,
       };
     }
 
