@@ -143,6 +143,7 @@ export type FlipperServerEvents = {
   };
   'device-connected': DeviceDescription;
   'device-disconnected': DeviceDescription;
+  'device-removed': DeviceDescription;
   'device-log': {
     serial: string;
     entry: DeviceLogEntry;

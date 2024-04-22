@@ -70,6 +70,23 @@ export function connectFlipperServerToStore(
     handleDeviceDisconnected(store, logger, deviceInfo);
   });
 
+  server.on('device-removed', (deviceInfo) => {
+    const device = store
+      .getState()
+      .connections.devices.find((d) => d.serial === deviceInfo.serial);
+
+    if (device) {
+      if (device.connected) {
+        device.disconnect();
+      }
+
+      store.dispatch({
+        type: 'UNREGISTER_DEVICE',
+        payload: device,
+      });
+    }
+  });
+
   server.on('client-setup', (client) => {
     store.dispatch({
       type: 'START_CLIENT_SETUP',
