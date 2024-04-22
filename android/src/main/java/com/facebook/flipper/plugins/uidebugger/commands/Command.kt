@@ -17,8 +17,10 @@ import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 abstract class Command(val context: UIDContext) {
   /** The command identifier to respond to */
   abstract fun identifier(): String
+
   /** Execute the command */
   abstract fun execute(params: FlipperObject, response: FlipperResponder)
+
   /** Receiver which is the low-level handler for the incoming request */
   open fun receiver(): FlipperReceiver {
     return object : MainThreadFlipperReceiver() {
