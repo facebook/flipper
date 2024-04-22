@@ -727,6 +727,10 @@ export class FlipperServerImpl implements FlipperServer {
     }
   }
 
+  getDeviceWithSerial(serial: string): ServerDevice | undefined {
+    return this.devices.get(serial);
+  }
+
   getDeviceSerials(): string[] {
     return Array.from(this.devices.keys());
   }
