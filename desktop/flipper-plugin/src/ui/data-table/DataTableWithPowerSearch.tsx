@@ -239,7 +239,7 @@ export interface TableRowRenderContext<T = any> {
 
 const Searchbar = styled(Layout.Horizontal)({
   backgroundColor: theme.backgroundWash,
-  padding: theme.space.small,
+  paddingBottom: theme.space.medium,
 });
 
 export type DataTableProps<T> = DataTableInput<T> & DataTableBaseProps<T>;
