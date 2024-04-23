@@ -941,15 +941,17 @@ export function DataTable<T extends object>(
                 : undefined
             }
           />
-          {contexMenu && (
-            <Dropdown overlay={contexMenu} placement="bottomRight">
-              <Button type="ghost">
-                <MenuOutlined />
-              </Button>
-            </Dropdown>
-          )}
-          {props.actionsRight}
-          {props.extraActions}
+          <ActionsPanel>
+            {contexMenu && (
+              <Dropdown overlay={contexMenu} placement="bottomRight">
+                <Button type="ghost">
+                  <MenuOutlined />
+                </Button>
+              </Dropdown>
+            )}
+            {props.actionsRight}
+            {props.extraActions}
+          </ActionsPanel>
         </Searchbar>
       )}
     </Layout.Container>
@@ -1155,6 +1157,8 @@ function EmptyTable<T>({
     </Layout.Container>
   );
 }
+
+const ActionsPanel = styled.div({display: 'flex', flexWrap: 'wrap', gap: 4});
 
 const RangeFinder = styled.div({
   backgroundColor: theme.backgroundWash,

@@ -96,6 +96,7 @@ export function MasterDetailWithPowerSearch<T extends object>({
   isPaused,
   selection,
   onClear,
+  actionsRight,
   ...tableProps
 }: MasterDetailProps<T> & DataTableProps<T>) {
   useAssertStableRef(isPaused, 'isPaused');
@@ -236,6 +237,7 @@ export function MasterDetailWithPowerSearch<T extends object>({
               </Button>
             </Tooltip>
           )}
+          {actionsRight}
         </>
       }
       actionsTop={actionsTop}

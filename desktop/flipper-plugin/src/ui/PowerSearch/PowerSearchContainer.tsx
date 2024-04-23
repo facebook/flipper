@@ -12,7 +12,7 @@ import {css} from '@emotion/css';
 import {theme} from '../theme';
 
 const containerStyle = css`
-  flex: 1 1 auto;
+  flex-grow: 1;
   background-color: ${theme.backgroundDefault};
   display: flex;
   flex-direction: row;
