@@ -73,6 +73,11 @@
     "@types/ws": "^8.5.3",
     "mock-fs": "^5.2.0"
   },
+  "resolutions": {
+    "adbkit-logcat": "^2.0.1",
+    "minimist": "1.2.6",
+    "node-forge": "^1.0.6"
+  },
   "peerDependencies": {},
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
