@@ -16,7 +16,6 @@
     "@types/node": "^17.0.31",
     "@types/yargs": "^17.0.32",
     "ansi-to-html": "^0.7.2",
-    "app-builder-lib": "23.6.0",
     "chalk": "^4",
     "detect-port": "^1.1.1",
     "dotenv": "^14.2.0",
