@@ -202,6 +202,20 @@ export class IOSDeviceManager {
     }
   }
 
+  async launchApp(udid: string, appName: string) {
+    try {
+      const bridge = await this.getBridge();
+      const installedApps = await bridge.getInstalledApps(udid);
+      const app = installedApps.find((x) => x.name === appName);
+      if (!app) {
+        throw new Error(`Could not find requested app "${appName}"`);
+      }
+      await bridge.openApp(udid, app.bundleID);
+    } catch (e) {
+      console.warn('Failed to launch simulator:', e);
+    }
+  }
+
   private async queryDevicesForever(bridge: IOSBridge) {
     try {
       await this.queryDevices(bridge);

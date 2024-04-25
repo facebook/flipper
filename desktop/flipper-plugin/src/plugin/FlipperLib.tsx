@@ -211,6 +211,18 @@ export interface FlipperLib {
   settings: () => {
     isDarkMode: boolean;
   };
+  /**
+   * Exposes a subset of server actions to be performed on devises
+   */
+  runDeviceAction: <
+    T extends Extract<
+      keyof FlipperServerCommands,
+      `ios-${string}` | `android-${string}`
+    >,
+  >(
+    cmd: T,
+    ...params: Parameters<FlipperServerCommands[T]>
+  ) => ReturnType<FlipperServerCommands[T]>;
 }
 
 interface InternAPI {

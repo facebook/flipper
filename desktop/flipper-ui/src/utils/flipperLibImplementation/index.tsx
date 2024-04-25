@@ -127,6 +127,13 @@ export function initializeFlipperLibImplementation(
       isConnected,
       isLoggedIn: () => getFlipperServer().exec('is-logged-in'),
     },
+    runDeviceAction(cmd, ...params) {
+      if (!(cmd.startsWith('ios-') || cmd.startsWith('android-'))) {
+        throw new Error(`Unsupported device action "${cmd}"`);
+      }
+
+      return getFlipperServer().exec(cmd, ...params);
+    },
     enableMenuEntries(entries) {
       store.dispatch(setMenuEntries(entries));
     },
