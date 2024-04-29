@@ -16,6 +16,7 @@ import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.OffsetChild
+import com.facebook.flipper.plugins.uidebugger.litho.ILithoDebugComponentDescriptorExtensionStatic
 import com.facebook.flipper.plugins.uidebugger.litho.LithoMountableTag
 import com.facebook.flipper.plugins.uidebugger.litho.LithoTag
 import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.ComponentDataExtractor
@@ -40,6 +41,7 @@ import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.rendercore.FastMath
 import com.facebook.yoga.YogaEdge
 import java.lang.reflect.Modifier
+import kotlinx.serialization.json.JsonObject
 
 typealias GlobalKey = String
 
@@ -247,7 +249,14 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
       Bounds.fromRect(node.boundsInParentDebugComponent)
 
   override fun getTags(node: DebugComponent): Set<String> {
-    val tags = mutableSetOf(LithoTag)
+    val tags: MutableSet<String> = mutableSetOf(LithoTag)
+
+    for (id in ILithoDebugComponentDescriptorExtensionStatic.getKeys()) {
+      val extraTags = ILithoDebugComponentDescriptorExtensionStatic.getExtraTags(id, node)
+      if (extraTags != null) {
+        tags.addAll(extraTags)
+      }
+    }
 
     if (node.component.mountType != Component.MountType.NONE) {
       tags.add(LithoMountableTag)
@@ -301,6 +310,22 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
     }
 
     return mountingData
+  }
+
+  private fun mergeJsonObjects(obj1: JsonObject, obj2: JsonObject): JsonObject {
+    return JsonObject(obj1.toMap() + obj2.toMap())
+  }
+
+  override fun getHiddenAttributes(node: DebugComponent): JsonObject? {
+    var hiddenAttributes = JsonObject(mapOf())
+    for (id in ILithoDebugComponentDescriptorExtensionStatic.getKeys()) {
+      val extraHiddenAttributes =
+          ILithoDebugComponentDescriptorExtensionStatic.getExtraHiddenAttributes(id, node)
+      if (extraHiddenAttributes != null) {
+        hiddenAttributes = mergeJsonObjects(hiddenAttributes, extraHiddenAttributes)
+      }
+    }
+    return hiddenAttributes
   }
 
   class OverrideData(
