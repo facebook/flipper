@@ -163,16 +163,27 @@ const UnanimatedBadge = styled(Badge)(({count}) => ({
   },
 }));
 
-const Pulse = styled.div({
-  cursor: 'pointer',
-  background: theme.warningColor,
-  opacity: 0.6,
-  borderRadius: 20,
-  height: 12,
-  width: 12,
-  ':hover': {
-    opacity: `1 !important`,
-    background: theme.errorColor,
-    animationPlayState: 'paused',
-  },
-});
+const Pulse = (props: object & {style?: React.CSSProperties}) => (
+  <div
+    {...props}
+    style={{
+      ...props.style,
+      background: 'rgba(64, 128, 255, .5)',
+      width: 12,
+      height: 12,
+      cursor: 'pointer',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+    <div
+      style={{
+        background: '#3578e5',
+        width: 8,
+        height: 8,
+        borderRadius: '50%',
+      }}
+    />
+  </div>
+);
