@@ -213,6 +213,7 @@ void FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
   payload->device = deviceData_.device;
   payload->device_id = "unknown";
   payload->app = deviceData_.app;
+  payload->app_id = deviceData_.appId;
   payload->sdk_version = SDK_VERSION;
   payload->medium = medium;
 
@@ -248,6 +249,7 @@ void FlipperConnectionManagerImpl::connectSecurely() {
   payload->device = deviceData_.device;
   payload->device_id = deviceId;
   payload->app = deviceData_.app;
+  payload->app_id = deviceData_.appId;
   payload->sdk_version = SDK_VERSION;
   payload->medium = medium;
   payload->csr = store_->getCertificateSigningRequest().c_str();

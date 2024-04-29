@@ -73,6 +73,7 @@ struct FlipperSocketBasePayload {
   std::string device;
   std::string device_id;
   std::string app;
+  std::string app_id;
   int sdk_version;
   int medium;
   FlipperSocketBasePayload() {}
@@ -91,6 +92,7 @@ struct FlipperSocketBasePayload {
     serializer.put("device", device);
     serializer.put("device_id", device_id);
     serializer.put("app", app);
+    serializer.put("app_id", app_id);
     serializer.put("sdk_version", sdk_version);
     serializer.put("medium", medium);
   }
