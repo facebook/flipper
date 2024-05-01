@@ -14,16 +14,32 @@
 FB_LINKABLE(UIImage_Foundation)
 @implementation UIImage (Foundation)
 
+- (UIImage*)resizeImage:(UIImage*)image withRatio:(CGFloat)ratio {
+  CGSize newSize =
+      CGSizeMake(image.size.width * ratio, image.size.height * ratio);
+  UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
+  [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+  UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return newImage;
+}
+
 - (NSString*)toFoundation {
   uint64_t t0 = UIDPerformanceNow();
-  NSData* data = UIImagePNGRepresentation(self);
+
+  UIImage* resized = [self resizeImage:self withRatio:0.5];
+  uint64_t t1 = UIDPerformanceNow();
+  UIDPerformanceAggregate(
+      @"snapshotResizeMs", UIDMonotonicTimeConvertMachUnitsToMS(t1 - t0));
+
+  NSData* data = UIImagePNGRepresentation(resized);
   NSString* base64 = [data
       base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-  uint64_t t1 = UIDPerformanceNow();
+  uint64_t t2 = UIDPerformanceNow();
 
   UIDPerformanceAggregate(
       @"snapshotSerialisationMS",
-      UIDMonotonicTimeConvertMachUnitsToMS(t1 - t0));
+      UIDMonotonicTimeConvertMachUnitsToMS(t2 - t1));
 
   UIDPerformanceAggregate(@"snapshotSizeKB", base64.length / 1000);
 
