@@ -25,6 +25,8 @@ FB_LINKABLE(UIImage_Foundation)
       @"snapshotSerialisationMS",
       UIDMonotonicTimeConvertMachUnitsToMS(t1 - t0));
 
+  UIDPerformanceAggregate(@"snapshotSizeKB", base64.length / 1000);
+
   return base64;
 }
 
