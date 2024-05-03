@@ -182,6 +182,10 @@ export namespace FlipperDoctor {
     'ios.sdk--installed': [{platforms: string[]}];
     'ios.sdk--not_installed': [];
 
+    'ios.has-simulators--idb-failed': [{message: string}];
+    'ios.has-simulators--no-devices': [];
+    'ios.has-simulators--ok': [{count: number}];
+
     'ios.xctrace--installed': [{output: string}];
     'ios.xctrace--not_installed': [{message: string}];
 

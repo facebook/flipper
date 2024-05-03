@@ -256,6 +256,49 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 },
               },
               {
+                key: 'ios.has-simulators',
+                label: 'Simulators are available',
+                isRequired: true,
+                run: async (
+                  _e: FlipperDoctor.EnvironmentInfo,
+                  settings?: {enablePhysicalIOS: boolean; idbPath: string},
+                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
+                  const result = await tryExecuteCommand(
+                    `${settings?.idbPath ?? 'idb'} list-targets --json`,
+                  );
+                  if (result.fail) {
+                    return {
+                      hasProblem: true,
+                      message: [
+                        'ios.has-simulators--idb-failed',
+                        {message: result.message},
+                      ],
+                    };
+                  }
+
+                  const devices = result.stdout
+                    .trim()
+                    .split('\n')
+                    .map((x) => JSON.parse(x))
+                    .filter((x) => x.type === 'simulator');
+
+                  if (devices.length === 0) {
+                    return {
+                      hasProblem: true,
+                      message: ['ios.has-simulators--no-devices'],
+                    };
+                  }
+
+                  return {
+                    hasProblem: false,
+                    message: [
+                      'ios.has-simulators--ok',
+                      {count: devices.length},
+                    ],
+                  };
+                },
+              },
+              {
                 key: 'ios.xctrace',
                 label: 'xctrace exists',
                 isRequired: true,
