@@ -89,7 +89,7 @@ class LayoutInspectorTree {
   private var foundNode: InspectorNode? = null
   private var windowSize = emptySize
   private val inlineClassConverter = InlineClassConverter()
-  private val parameterFactory = ParameterFactory(inlineClassConverter)
+  private val parameterFactory = ReflectionFreeParameterFactory()
   private val cache = ArrayDeque<MutableInspectorNode>()
   private var generatedId = -1L
   private val subCompositions = SubCompositionRoots()
@@ -183,38 +183,6 @@ class LayoutInspectorTree {
           maxRecursions,
           maxInitialIterableSize)
     }
-  }
-
-  /**
-   * Converts a part of the [RawParameter] identified by [reference] into a displayable parameter.
-   * If the parameter is some sort of a collection then [startIndex] and [maxElements] describes the
-   * scope of the data returned.
-   */
-  fun expandParameter(
-      rootId: Long,
-      node: InspectorNode,
-      reference: NodeParameterReference,
-      startIndex: Int,
-      maxElements: Int,
-      maxRecursions: Int,
-      maxInitialIterableSize: Int
-  ): NodeParameter? {
-    val parameters = node.parametersByKind(reference.kind)
-    if (reference.parameterIndex !in parameters.indices) {
-      return null
-    }
-    val parameter = parameters[reference.parameterIndex]
-    return parameterFactory.expand(
-        rootId,
-        node.id,
-        node.anchorId,
-        parameter.name,
-        parameter.value,
-        reference,
-        startIndex,
-        maxElements,
-        maxRecursions,
-        maxInitialIterableSize)
   }
 
   /** Reset any state accumulated between windows. */
