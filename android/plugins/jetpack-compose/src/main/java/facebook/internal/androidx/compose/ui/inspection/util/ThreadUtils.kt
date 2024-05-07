@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package androidx.compose.ui.inspection.util
+package facebook.internal.androidx.compose.ui.inspection.util
 
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.RequiresApi
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 
+@RequiresApi(Build.VERSION_CODES.P)
 object ThreadUtils {
   fun assertOnMainThread() {
     if (!Looper.getMainLooper().isCurrentThread) {

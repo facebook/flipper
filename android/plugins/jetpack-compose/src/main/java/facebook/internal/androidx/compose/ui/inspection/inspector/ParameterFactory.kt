@@ -30,8 +30,6 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.inspection.util.copy
-import androidx.compose.ui.inspection.util.removeLast
 import androidx.compose.ui.platform.InspectableModifier
 import androidx.compose.ui.platform.InspectableValue
 import androidx.compose.ui.text.AnnotatedString
@@ -48,6 +46,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import facebook.internal.androidx.compose.ui.inspection.inspector.ParameterType.DimensionDp
+import facebook.internal.androidx.compose.ui.inspection.util.copy
+import facebook.internal.androidx.compose.ui.inspection.util.removeLast
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier as JavaModifier
 import java.util.IdentityHashMap

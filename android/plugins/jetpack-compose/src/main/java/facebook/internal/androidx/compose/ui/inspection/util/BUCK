@@ -1,0 +1,9 @@
+load("@fbsource//tools/build_defs/android:fb_android_library.bzl", "fb_android_library")
+
+fb_android_library(
+    name = "util",
+    oncall = "flipper",
+    deps = [
+        "//third-party/java/androidx/collection/collection:collection",
+    ],
+)

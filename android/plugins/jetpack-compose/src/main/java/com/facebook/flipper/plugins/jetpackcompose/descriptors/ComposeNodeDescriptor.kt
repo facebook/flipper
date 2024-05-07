@@ -7,6 +7,8 @@
 
 package com.facebook.flipper.plugins.jetpackcompose.descriptors
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.facebook.flipper.plugins.jetpackcompose.JetpackComposeTag
 import com.facebook.flipper.plugins.jetpackcompose.descriptors.ComposeNodeDescriptor.toInspectableValue
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
@@ -26,6 +28,7 @@ import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import facebook.internal.androidx.compose.ui.inspection.inspector.NodeParameter
 import facebook.internal.androidx.compose.ui.inspection.inspector.ParameterType
 
+@RequiresApi(Build.VERSION_CODES.Q)
 object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
 
   private const val NAMESPACE = "ComposeNode"

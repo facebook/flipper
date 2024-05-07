@@ -1,5 +1,5 @@
 This is a check-in of https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-main/compose/ui/ui-inspection/src/main/java/androidx/compose/ui/inspection
 
-The classes are currently not exported but we rely on them for debug information.
+The classes are currently not exported but we rely on them for debug information. The package name was updated in all of the files to avoid collisions with AOSP versions of these files which are used by Android Studio Layout Inspector.
 
 Tree: 80c942dfbd74be7bf1931364d0157a85a3517287

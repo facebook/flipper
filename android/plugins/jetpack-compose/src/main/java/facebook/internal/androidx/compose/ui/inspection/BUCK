@@ -1,0 +1,17 @@
+load("@fbsource//tools/build_defs/android:fb_android_library.bzl", "fb_android_library")
+
+fb_android_library(
+    name = "ui-inspection",
+    create_suffixed_alias = True,
+    dataclass_generate = {
+        "mode": "EXPLICIT",
+    },
+    oncall = "flipper",
+    deps = [
+        "//third-party/java/androidx/compose/ui/ui-android:ui-android-aar",
+    ],
+    exported_deps = [
+        "//third-party/java/androidx/inspection/inspection:inspection",
+        "//xplat/sonar/android/plugins/jetpack-compose/src/main/java/facebook/internal/androidx/compose/ui/inspection/inspector:inspector",
+    ],
+)

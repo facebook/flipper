@@ -22,6 +22,7 @@ import facebook.internal.androidx.compose.ui.inspection.inspector.InspectorNode
 import facebook.internal.androidx.compose.ui.inspection.inspector.LayoutInspectorTree
 import java.io.IOException
 
+@RequiresApi(Build.VERSION_CODES.Q)
 object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() {
   private val recompositionHandler by lazy {
     RecompositionHandler(DefaultArtTooling("Flipper")).apply {
@@ -51,6 +52,13 @@ object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() 
   }
 
   override fun onGetChildren(node: AbstractComposeView): List<Any> {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      return listOf(
+          WarningMessage(
+              "Flipper Compose Plugin works only on devices with Android Q (API 29) and above.",
+              getBounds(node)))
+    }
+
     val children = mutableListOf<Any>()
     val count = node.childCount - 1
     for (i in 0..count) {

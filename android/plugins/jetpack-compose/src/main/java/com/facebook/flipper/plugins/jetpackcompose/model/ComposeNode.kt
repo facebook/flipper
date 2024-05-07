@@ -23,6 +23,7 @@ import facebook.internal.androidx.compose.ui.inspection.inspector.ParameterKind
 private const val MAX_RECURSIONS = 2
 private const val MAX_ITERABLE_SIZE = 5
 
+@RequiresApi(Build.VERSION_CODES.Q)
 class ComposeNode(
     private val parentComposeView: View,
     private val layoutInspectorTree: LayoutInspectorTree,
