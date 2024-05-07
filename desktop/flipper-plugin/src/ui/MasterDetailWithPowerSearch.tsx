@@ -27,7 +27,7 @@ import {
   PauseCircleOutlined,
   PlayCircleOutlined,
 } from '@ant-design/icons';
-import {Button} from 'antd';
+import {Button, Tooltip} from 'antd';
 import {usePluginInstance} from '../plugin/PluginContext';
 import {useAssertStableRef} from '../utils/useAssertStableRef';
 import {Atom, createState, useValue} from '../state/atom';
@@ -50,9 +50,14 @@ type MasterDetailProps<T> = {
     tableManagerRef?: React.RefObject<DataTableManager<T> | undefined>;
   }>;
   /**
-   * Default size of the sidebar.
+   * Size of the sidebar, can be controlled by listening to onResize, otherwise the initial size
    */
   sidebarSize?: number;
+
+  /**
+   * Fired when user changes sidebar, allows you to control size of side bar and have it persist at whatever level is appropriate
+   */
+  onResize?: (width: number, height: number) => void;
   /**
    * If provided, this atom will be used to store selection in.
    */
@@ -82,6 +87,7 @@ export function MasterDetailWithPowerSearch<T extends object>({
   sidebarComponent,
   sidebarPosition,
   sidebarSize,
+  onResize,
   onSelect,
   actionsTop,
   extraActions,
@@ -90,6 +96,7 @@ export function MasterDetailWithPowerSearch<T extends object>({
   isPaused,
   selection,
   onClear,
+  actionsRight,
   ...tableProps
 }: MasterDetailProps<T> & DataTableProps<T>) {
   useAssertStableRef(isPaused, 'isPaused');
@@ -213,24 +220,24 @@ export function MasterDetailWithPowerSearch<T extends object>({
       actionsRight={
         <>
           {connected && isPaused && (
-            <Button
-              size="small"
-              type="text"
-              title={`Click to ${pausedState ? 'resume' : 'pause'} the stream`}
-              danger={pausedState}
-              onClick={handleTogglePause}>
-              {pausedState ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
-            </Button>
+            <Tooltip
+              title={`Click to ${pausedState ? 'resume' : 'pause'} the stream`}>
+              <Button
+                type="ghost"
+                danger={pausedState}
+                onClick={handleTogglePause}>
+                {pausedState ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
+              </Button>
+            </Tooltip>
           )}
           {connected && enableClear && (
-            <Button
-              size="small"
-              type="text"
-              title="Clear records"
-              onClick={handleClear}>
-              <DeleteOutlined />
-            </Button>
+            <Tooltip title="Clear records">
+              <Button type="ghost" onClick={handleClear}>
+                <DeleteOutlined />
+              </Button>
+            </Tooltip>
           )}
+          {actionsRight}
         </>
       }
       actionsTop={actionsTop}
@@ -245,7 +252,9 @@ export function MasterDetailWithPowerSearch<T extends object>({
       return (
         <Layout.Container grow>
           {table}
-          <DetailSidebar width={sidebarSize}>{sidebar}</DetailSidebar>
+          <DetailSidebar onResize={onResize} width={sidebarSize}>
+            {sidebar}
+          </DetailSidebar>
         </Layout.Container>
       );
     case 'right':

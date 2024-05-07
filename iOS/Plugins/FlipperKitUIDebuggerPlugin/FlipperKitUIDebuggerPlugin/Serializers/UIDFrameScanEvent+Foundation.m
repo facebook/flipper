@@ -16,7 +16,7 @@ FB_LINKABLE(UIDSnapshotInfo_Foundation)
 
 - (id)toFoundation {
   return @{
-    @"nodeId" : [NSNumber numberWithInteger:self.nodeId],
+    @"nodeId" : self.nodeId,
     @"data" : self.image ? [self.image toFoundation] : @"",
   };
 }

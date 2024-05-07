@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIDInitEvent : NSObject
 
-@property(nonatomic) NSUInteger rootId;
+@property(nonatomic) NSString* rootId;
 @property(nonatomic) UIDTraversalMode currentTraversalMode;
 @property(nonatomic, strong)
     NSArray<UIDFrameworkEventMetadata*>* frameworkEventMetadata;

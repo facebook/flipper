@@ -143,6 +143,7 @@ export type FlipperServerEvents = {
   };
   'device-connected': DeviceDescription;
   'device-disconnected': DeviceDescription;
+  'device-removed': DeviceDescription;
   'device-log': {
     serial: string;
     entry: DeviceLogEntry;
@@ -318,6 +319,7 @@ export type FlipperServerCommands = {
   'android-adb-kill': () => Promise<void>;
   'ios-get-simulators': (bootedOnly: boolean) => Promise<DeviceTarget[]>;
   'ios-launch-simulator': (udid: string) => Promise<void>;
+  'ios-launch-app': (udid: string, appName: string) => Promise<void>;
   'ios-idb-kill': () => Promise<void>;
   'persist-settings': (settings: Settings) => Promise<void>;
   'persist-launcher-settings': (settings: LauncherSettings) => Promise<void>;

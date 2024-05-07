@@ -430,7 +430,7 @@ export function TreeNodeRow({
         top: 0,
         left: 0,
         height: TreeItemHeight,
-        transform: transform,
+        transform,
         //Due to absolute positioning width is set outside of react via a useLayoutEffect in parent
       }}>
       <IndentGuides

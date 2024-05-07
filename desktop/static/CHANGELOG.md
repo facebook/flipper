@@ -1,3 +1,8 @@
+# 0.252.0 (10/4/2024)
+
+ * [D55696687](https://github.com/facebook/flipper/search?q=D55696687&type=Commits) -  UIDebugger fix visualiser shaking
+
+
 # 0.250.0 (13/3/2024)
 
  * [D54306266](https://github.com/facebook/flipper/search?q=D54306266&type=Commits) -  UIDebugger framework event table given its own button in menu

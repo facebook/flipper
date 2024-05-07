@@ -108,6 +108,9 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
       currentUser: () => createState(null),
       isConnected: () => createState(true),
     },
+    runDeviceAction: () => {
+      return undefined as any;
+    },
     remoteServerContext: {
       childProcess: {
         exec: createStubFunction(),

@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
   A globally unique ID used to identify a node in the hierarchy.
  */
-- (NSUInteger)UID_identifier;
+- (NSString*)UID_identifier;
 
 /**
   The name used to identify this node in the inspector.  Does not need to be

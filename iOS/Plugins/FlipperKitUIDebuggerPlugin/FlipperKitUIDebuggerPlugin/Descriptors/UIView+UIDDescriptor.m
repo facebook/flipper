@@ -14,6 +14,7 @@
 #import "UIDSnapshot.h"
 #import "UIView+UIDDescriptor.h"
 
+static UIDMetadataId AddressAttributeId;
 static UIDMetadataId UIViewAttributeId;
 static UIDMetadataId FrameAttributeId;
 static UIDMetadataId BoundsAttributeId;
@@ -72,8 +73,8 @@ static UIDMetadataId AccessibilityTraitStartsMediaSessionAttributeId;
 FB_LINKABLE(UIView_UIDDescriptor)
 @implementation UIView (UIDDescriptor)
 
-- (NSUInteger)UID_identifier {
-  return [self hash];
+- (NSString*)UID_identifier {
+  return [NSString stringWithFormat:@"%lu", [self hash]];
 }
 
 - (nonnull NSString*)UID_name {
@@ -83,6 +84,9 @@ FB_LINKABLE(UIView_UIDDescriptor)
 - (void)UID_aggregateAttributes:(nonnull UIDMutableAttributes*)attributes {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
+    AddressAttributeId = [[UIDMetadataRegister shared]
+        registerMetadataWithType:UIDEBUGGER_METADATA_TYPE_ATTRIBUTE
+                            name:@"Address"];
     UIViewAttributeId = [[UIDMetadataRegister shared]
         registerMetadataWithType:UIDEBUGGER_METADATA_TYPE_ATTRIBUTE
                             name:@"UIView"];
@@ -344,6 +348,11 @@ FB_LINKABLE(UIView_UIDDescriptor)
   });
 
   NSMutableDictionary* viewAttributes = [NSMutableDictionary new];
+
+  [viewAttributes
+      setObject:[UIDInspectableText
+                    fromText:[NSString stringWithFormat:@"%p", self]]
+         forKey:AddressAttributeId];
 
   [viewAttributes setObject:[UIDInspectableBounds fromRect:self.frame]
                      forKey:FrameAttributeId];

@@ -149,7 +149,7 @@ const TooltipProvider: React.FC<{}> = memo(function TooltipProvider({
             setTooltip({
               rect: node.getBoundingClientRect(),
               title,
-              options: options,
+              options,
             });
           }, options.delay);
           return;
@@ -157,7 +157,7 @@ const TooltipProvider: React.FC<{}> = memo(function TooltipProvider({
         setTooltip({
           rect: node.getBoundingClientRect(),
           title,
-          options: options,
+          options,
         });
       },
       close() {

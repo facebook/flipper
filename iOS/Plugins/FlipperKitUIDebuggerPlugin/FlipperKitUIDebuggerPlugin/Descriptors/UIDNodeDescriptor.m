@@ -11,8 +11,8 @@
 
 @implementation UIDNodeDescriptor
 
-- (NSUInteger)identifierForNode:(id)node {
-  return [node hash];
+- (NSString*)identifierForNode:(id)node {
+  return [NSString stringWithFormat:@"%ld", [node hash]];
 }
 
 - (NSString*)nameForNode:(id)node {
@@ -20,7 +20,7 @@
 }
 
 - (UIDInlineAttributes*)inlineAttributesForNode:(id)node {
-  return @{@"address" : [NSString stringWithFormat:@"%p", node]};
+  return nil;
 }
 
 - (UIDGenericAttributes*)hiddenAttributesForNode:(id)node {

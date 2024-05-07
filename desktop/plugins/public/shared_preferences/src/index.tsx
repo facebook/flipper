@@ -131,7 +131,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
         const name = selectedPreferences.get();
         if (name != null) {
           updateSharedPreferences({
-            name: name,
+            name,
             preferences: preferences.preferences,
           });
 
@@ -171,7 +171,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   client.onConnect(async () => {
     const results = await client.send('getAllSharedPreferences', {});
     Object.entries(results).forEach(([name, prefs]) =>
-      updateSharedPreferences({name: name, preferences: prefs}),
+      updateSharedPreferences({name, preferences: prefs}),
     );
   });
 

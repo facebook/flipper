@@ -226,6 +226,28 @@ const IosSdkInstalled = (props: PropsFor<'ios.sdk--installed'>) => (
   </div>
 );
 
+const HasSimulatorsOk = (props: PropsFor<'ios.has-simulators--ok'>) => (
+  <Typography.Paragraph>
+    You have {props.count} simulators available.
+  </Typography.Paragraph>
+);
+const HasSimulatorsIdbFailed = (
+  props: PropsFor<'ios.has-simulators--idb-failed'>,
+) => (
+  <Typography.Paragraph>
+    Command to list devices failed, make sure idb is installed.
+    <CodeBlock>{props.message}</CodeBlock>
+  </Typography.Paragraph>
+);
+const HasSimulatorsNoDevices = (
+  _props: PropsFor<'ios.has-simulators--no-devices'>,
+) => (
+  <Typography.Paragraph>
+    No available simulators found. Launch XCode and install SDK for iOS or run{' '}
+    <CodeBlock>xcode-select --install</CodeBlock>
+  </Typography.Paragraph>
+);
+
 const IosXctraceInstalled = (props: PropsFor<'ios.xctrace--installed'>) => (
   <Typography.Paragraph>
     xctrace is installed.
@@ -318,6 +340,10 @@ const messageToComp: {
 
   'ios.sdk--installed': IosSdkInstalled,
   'ios.sdk--not_installed': IosSdkNotInstalled,
+
+  'ios.has-simulators--ok': HasSimulatorsOk,
+  'ios.has-simulators--no-devices': HasSimulatorsNoDevices,
+  'ios.has-simulators--idb-failed': HasSimulatorsIdbFailed,
 
   'ios.xctrace--installed': IosXctraceInstalled,
   'ios.xctrace--not_installed': IosXctraceNotInstalled,

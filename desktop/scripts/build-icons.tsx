@@ -28,7 +28,7 @@ function getIconPartsFromName(icon: string): {
   const isOutlineVersion = icon.endsWith('-outline');
   const trimmedName = isOutlineVersion ? icon.replace('-outline', '') : icon;
   const variant = isOutlineVersion ? 'outline' : 'filled';
-  return {trimmedName: trimmedName, variant: variant};
+  return {trimmedName, variant};
 }
 
 export async function downloadIcons(buildFolder: string) {

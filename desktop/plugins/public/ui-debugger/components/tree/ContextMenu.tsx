@@ -162,7 +162,7 @@ export const ContextMenu: React.FC<{
           },
           ...Object.entries(hoveredNode.inlineAttributes).map(
             ([key, value]) => ({
-              key: key,
+              key,
               label: `Copy ${key}`,
               icon: <SnippetsOutlined />,
               onClick: () => {

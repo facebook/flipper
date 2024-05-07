@@ -275,12 +275,13 @@ export function Component() {
         plugin.isConnected ? (
           <>
             <Button
+              type="ghost"
               title={`Click to ${paused ? 'resume' : 'pause'} the log stream`}
               danger={paused}
               onClick={plugin.resumePause}>
               {paused ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
             </Button>
-            <Button title="Clear logs" onClick={plugin.clearLogs}>
+            <Button type="ghost" title="Clear logs" onClick={plugin.clearLogs}>
               <DeleteOutlined />
             </Button>
           </>

@@ -137,6 +137,6 @@ export default class AndroidCertificateProvider extends CertificateProvider {
     ].map((s) => this.santitizeString(s));
 
     const isMatch = sanitizedDeviceCsr === sanitizedClientCsr;
-    return {isMatch: isMatch, foundCsr: sanitizedDeviceCsr};
+    return {isMatch, foundCsr: sanitizedDeviceCsr};
   }
 }

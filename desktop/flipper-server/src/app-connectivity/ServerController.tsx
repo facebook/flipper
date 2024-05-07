@@ -266,12 +266,15 @@ export class ServerController
       clearTimeout(timeout);
     }
 
-    if (clientQuery.medium === 'WWW' || clientQuery.medium === 'NONE') {
+    const device = this.flipperServer.getDeviceWithSerial(
+      clientQuery.device_id,
+    );
+    if (!device) {
       this.flipperServer.registerDevice(
         new DummyDevice(
           this.flipperServer,
           clientQuery.device_id,
-          `${clientQuery.app} (Unknown Device)`,
+          `${clientQuery.device}`,
           clientQuery.os,
         ),
       );
@@ -282,6 +285,7 @@ export class ServerController
       deviceName: clientQuery.device,
       appName: appNameWithUpdateHint(clientQuery),
     };
+
     this.emit('start-client-setup', client);
   }
 
@@ -425,15 +429,22 @@ export class ServerController
               result.certificates?.key,
             );
 
-            const deviceId = uuid();
-            this.flipperServer.registerDevice(
-              new DummyDevice(
-                this.flipperServer,
-                deviceId,
-                clientQuery.app,
-                clientQuery.os,
-              ),
+            let deviceId = uuid();
+            const device = this.flipperServer.getDeviceWithName(
+              clientQuery.device,
             );
+            if (device) {
+              deviceId = device.serial;
+            } else {
+              this.flipperServer.registerDevice(
+                new DummyDevice(
+                  this.flipperServer,
+                  deviceId,
+                  `${clientQuery.device} via QR Exchange`,
+                  clientQuery.os,
+                ),
+              );
+            }
 
             tracker.track('app-connection-insecure-attempt-fallback', {
               app: clientQuery.app,
@@ -531,7 +542,7 @@ export class ServerController
 
     const info = {
       client,
-      connection: connection,
+      connection,
     };
 
     recorder.log(
@@ -605,15 +616,24 @@ export class ServerController
    * @param id The client connection identifier.
    */
   removeConnection(id: string) {
-    const info = this.connections.get(id);
-    if (info) {
+    const connectionInfo = this.connections.get(id);
+    if (connectionInfo) {
       recorder.log(
-        info.client.query,
-        `Disconnected: ${info.client.query.app} on ${info.client.query.device_id}.`,
+        connectionInfo.client.query,
+        `Disconnected: ${connectionInfo.client.query.app} on ${connectionInfo.client.query.device_id}.`,
       );
+
+      const device = this.flipperServer.getDeviceWithSerial(
+        connectionInfo.client.query.device_id,
+      );
+
       this.flipperServer.emit('client-disconnected', {id});
       this.connections.delete(id);
       this.flipperServer.pluginManager.stopAllServerAddOns(id);
+
+      if (device && device.info.deviceType === 'dummy') {
+        this.flipperServer.unregisterDevice(device.serial);
+      }
     }
   }
 

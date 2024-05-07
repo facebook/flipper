@@ -169,7 +169,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     streamInterceptor.emit('frameReceived', {
       frameTime: frameScan.frameTime,
       snapshot: frameScan.snapshot,
-      nodes: nodes,
+      nodes,
     });
     applyFrameworkEvents(frameScan, nodes);
   };

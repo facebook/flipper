@@ -179,11 +179,11 @@ export default class ListView extends Component<Props, State> {
     let selectedElements: Set<string> = new Set([]);
     if (this.props.type === 'single') {
       if (!selected) {
-        this.setState({selectedElements: selectedElements});
+        this.setState({selectedElements});
         this.props.onChange([...selectedElements]);
       } else {
         selectedElements.add(id);
-        this.setState({selectedElements: selectedElements});
+        this.setState({selectedElements});
         this.props.onChange([...selectedElements]);
       }
     } else {

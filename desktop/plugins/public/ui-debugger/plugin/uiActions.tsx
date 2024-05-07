@@ -60,7 +60,7 @@ export function uiActions(
     } else {
       uiState.nodeSelection.set({
         source,
-        node: node, //last known state of the node, may be offscreen
+        node, //last known state of the node, may be offscreen
       });
     }
 
@@ -68,7 +68,7 @@ export function uiActions(
       tracker.track('node-selected', {
         name: node.name,
         tags: node.tags,
-        source: source,
+        source,
       });
 
       let current = node.parent;
@@ -255,11 +255,11 @@ export function uiActions(
       );
 
       tracker.track('attribute-editted', {
-        nodeId: nodeId,
+        nodeId,
         nodeName: node?.name ?? 'Unknown',
         attributeName: last(attributePath) ?? 'Unknown',
         attributePath,
-        value: value,
+        value,
         attributeType: (typeof value).toString(),
         tags: node?.tags ?? [],
       });

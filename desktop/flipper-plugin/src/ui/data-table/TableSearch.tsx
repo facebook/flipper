@@ -76,7 +76,7 @@ export const TableSearch = memo(function TableSearch({
   );
   const toggleSearchDropdown = useCallback(
     (show: boolean) => {
-      dispatch({type: 'showSearchDropdown', show: show});
+      dispatch({type: 'showSearchDropdown', show});
     },
     [dispatch],
   );

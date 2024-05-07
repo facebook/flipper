@@ -1125,7 +1125,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
       pluginKey: `${client.id}#TestPlugin`,
       pluginId: 'TestPlugin',
       pluginName: 'TestPlugin',
-      client: client,
+      client,
     },
   ]);
 });

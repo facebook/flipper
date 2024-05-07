@@ -149,7 +149,7 @@ export const Dialog = {
       ...rest,
       defaultValue: true,
       children: () => message,
-      onConfirm: onConfirm,
+      onConfirm,
     });
   },
 
@@ -242,6 +242,7 @@ export const Dialog = {
   select<T>({
     defaultValue,
     renderer,
+    onValidate,
     ...rest
   }: {
     defaultValue: T;
@@ -250,10 +251,12 @@ export const Dialog = {
       onChange: (newValue: T) => void,
       onCancel: () => void,
     ) => React.ReactElement;
+    onValidate?: (value: T) => string;
   } & BaseDialogOptions): DialogResult<false | T> {
     const handle = Dialog.show<T>({
       ...rest,
       defaultValue,
+      onValidate,
       children: (currentValue, setValue): React.ReactElement =>
         renderer(currentValue, setValue, () => handle.close()),
     });

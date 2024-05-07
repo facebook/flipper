@@ -132,7 +132,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
       ...state,
       databases,
       outdatedDatabaseList: false,
-      selectedDatabase: selectedDatabase,
+      selectedDatabase,
       selectedDatabaseTable: selectedTable,
       pageRowNumber: 0,
       currentPage: sameTableSelected ? state.currentPage : null,
@@ -402,13 +402,13 @@ export function plugin(client: PluginClient<Events, Methods>) {
             databaseId: newState.selectedDatabase,
             order: newState.currentSort?.key,
             reverse: (newState.currentSort?.direction || 'up') === 'down',
-            table: table,
+            table,
             start: newState.pageRowNumber,
           })
           .then((data) => {
             updatePage({
-              databaseId: databaseId,
-              table: table,
+              databaseId,
+              table,
               columns: data.columns,
               rows: data.values,
               start: data.start,
@@ -426,13 +426,13 @@ export function plugin(client: PluginClient<Events, Methods>) {
       if (newState.currentStructure === null && databaseId && table) {
         client
           .send('getTableStructure', {
-            databaseId: databaseId,
-            table: table,
+            databaseId,
+            table,
           })
           .then((data) => {
             updateStructure({
-              databaseId: databaseId,
-              table: table,
+              databaseId,
+              table,
               columns: data.structureColumns,
               rows: data.structureValues,
               indexesColumns: data.indexesColumns,
@@ -453,8 +453,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
       ) {
         client
           .send('getTableInfo', {
-            databaseId: databaseId,
-            table: table,
+            databaseId,
+            table,
           })
           .then((data) => {
             updateTableInfo({

@@ -222,7 +222,7 @@ export default function Searchable(
           ? this.props.defaultSearchTerm
           : savedState.searchTerm || this.state.searchTerm;
         this.setState({
-          searchTerm: searchTerm,
+          searchTerm,
           filters: savedState.filters || this.state.filters,
           regexEnabled: savedState.regexEnabled || this.state.regexEnabled,
           contentSearchEnabled:

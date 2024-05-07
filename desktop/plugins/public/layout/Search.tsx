@@ -165,7 +165,7 @@ export default class Search extends Component<Props, State> {
       matches: new Set(
         searchResults.filter((x) => x.isMatch).map((x) => x.element.id),
       ),
-      query: query,
+      query,
     });
   }
 

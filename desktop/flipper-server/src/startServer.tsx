@@ -122,7 +122,7 @@ async function start() {
     process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
   const environmentInfo = await getEnvironmentInfo(rootPath, isProduction);
 
-  await initializeLogger(environmentInfo, staticPath);
+  await initializeLogger(environmentInfo);
 
   const t1 = performance.now();
   const loggerInitializedMS = t1 - t0;

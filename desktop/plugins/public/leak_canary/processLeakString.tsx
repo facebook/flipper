@@ -250,7 +250,7 @@ function processLeak(output: Leak[], leakInfo: string): Leak[] {
     elementsSimple: toObjectMap(elementsSimple),
     staticFields: toObjectMap(staticFields, true),
     instanceFields: toObjectMap(instanceFields, true),
-    retainedSize: retainedSize,
+    retainedSize,
   });
   return output;
 }

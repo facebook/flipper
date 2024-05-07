@@ -78,7 +78,7 @@ export default function reducer(
       return produce(state, (draft) => {
         draft[installationDir] = {
           plugin,
-          startedByUser: startedByUser,
+          startedByUser,
           status: PluginDownloadStatus.QUEUED,
         };
       });
