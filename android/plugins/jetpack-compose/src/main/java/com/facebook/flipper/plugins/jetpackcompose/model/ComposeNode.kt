@@ -39,25 +39,22 @@ class ComposeNode(
           inspectorNode.width,
           inspectorNode.height)
 
-  val recompositionCount: Int?
-
-  val skipCount: Int?
+  val recompositionCounts: Pair<Int, Int>? by lazy {
+    recompositionHandler.getCounts(inspectorNode.key, inspectorNode.anchorId)?.let {
+      Pair(it.count, it.skips)
+    }
+  }
 
   val children: List<Any> = collectChildren()
 
-  val parameters: List<NodeParameter>
+  val parameters: List<NodeParameter> by lazy { getNodeParameters(ParameterKind.Normal) }
 
-  val mergedSemantics: List<NodeParameter>
+  val mergedSemantics: List<NodeParameter> by lazy {
+    getNodeParameters(ParameterKind.MergedSemantics)
+  }
 
-  val unmergedSemantics: List<NodeParameter>
-
-  init {
-    val count = recompositionHandler.getCounts(inspectorNode.key, inspectorNode.anchorId)
-    recompositionCount = count?.count
-    skipCount = count?.skips
-    parameters = getNodeParameters(ParameterKind.Normal)
-    mergedSemantics = getNodeParameters(ParameterKind.MergedSemantics)
-    unmergedSemantics = getNodeParameters(ParameterKind.UnmergedSemantics)
+  val unmergedSemantics: List<NodeParameter> by lazy {
+    getNodeParameters(ParameterKind.UnmergedSemantics)
   }
 
   private fun getNodeParameters(kind: ParameterKind): List<NodeParameter> {
