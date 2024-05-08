@@ -24,6 +24,9 @@ import java.io.IOException
 
 @RequiresApi(Build.VERSION_CODES.Q)
 object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() {
+
+  internal var hideSystemNodes: Boolean = true
+
   private val recompositionHandler by lazy {
     RecompositionHandler(DefaultArtTooling("Flipper")).apply {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -67,7 +70,7 @@ object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() 
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val layoutInspector = LayoutInspectorTree()
-        layoutInspector.hideSystemNodes = true
+        layoutInspector.hideSystemNodes = hideSystemNodes
         val composeNodes =
             try {
               transform(child, layoutInspector.convert(child), layoutInspector)

@@ -18,6 +18,7 @@ import com.facebook.flipper.plugins.jetpackcompose.model.ComposeInnerViewNode
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+import com.facebook.flipper.plugins.uidebugger.model.ActionIcon
 import com.facebook.soloader.SoLoader
 
 const val JetpackComposeTag = "Compose"
@@ -38,6 +39,7 @@ object UIDebuggerComposeSupport {
   }
 
   fun enable(context: UIDContext) {
+    addCustomActions(context)
     addDescriptors(context.descriptorRegister)
   }
 
@@ -45,6 +47,18 @@ object UIDebuggerComposeSupport {
     register.register(AbstractComposeView::class.java, AbstractComposeViewDescriptor)
     register.register(ComposeNode::class.java, ComposeNodeDescriptor)
     register.register(ComposeInnerViewNode::class.java, ComposeInnerViewDescriptor)
+  }
+
+  private fun addCustomActions(context: UIDContext) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      context.addCustomActionGroup("Compose", ActionIcon.Local("icons/compose-logo.png")) {
+        booleanAction("Hide System Nodes", AbstractComposeViewDescriptor.hideSystemNodes) { newValue
+          ->
+          AbstractComposeViewDescriptor.hideSystemNodes = newValue
+          newValue
+        }
+      }
+    }
   }
 
   private fun enableDebugInspectorInfo() {
