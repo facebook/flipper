@@ -564,9 +564,9 @@ export class FlipperServerImpl implements FlipperServer {
       assertNotNull(this.ios);
       return this.ios.launchSimulator(udid);
     },
-    'ios-launch-app': async (udid, appName) => {
+    'ios-launch-app': async (udid, bundleId) => {
       assertNotNull(this.ios);
-      return this.ios.launchApp(udid, appName);
+      return this.ios.launchApp(udid, bundleId);
     },
     'ios-idb-kill': async () => {
       assertNotNull(this.ios);
