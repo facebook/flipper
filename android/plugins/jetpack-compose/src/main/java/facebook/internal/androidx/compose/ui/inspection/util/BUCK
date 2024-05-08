@@ -2,6 +2,7 @@ load("@fbsource//tools/build_defs/android:fb_android_library.bzl", "fb_android_l
 
 fb_android_library(
     name = "util",
+    abi_generation_mode = "source_only",
     oncall = "flipper",
     deps = [
         "//third-party/java/androidx/collection/collection:collection",
