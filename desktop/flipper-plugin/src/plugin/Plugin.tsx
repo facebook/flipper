@@ -46,6 +46,11 @@ export interface PluginClient<
   readonly appId: string;
 
   /**
+   * Identifier that uniquely identifies the application bundle
+   */
+  readonly bundleId: string;
+
+  /**
    * Registered name for the connected application
    */
   readonly appName: string;
@@ -194,6 +199,9 @@ export class SandyPluginInstance extends BasePluginInstance {
       },
       get appId() {
         return realClient.id;
+      },
+      get bundleId() {
+        return realClient.query.app_id ?? 'unknown';
       },
       get appName() {
         return realClient.query.app;
