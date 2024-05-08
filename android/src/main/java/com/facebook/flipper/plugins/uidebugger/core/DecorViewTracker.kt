@@ -104,6 +104,10 @@ class DecorViewTracker(private val context: UIDContext, private val snapshotter:
     Log.i(LogTag, "Starting tracking root views, currently ${Curtains.rootViews.size} root views")
   }
 
+  fun requestTraversal() {
+    preDrawListener?.onPreDraw()
+  }
+
   fun stop() {
     Curtains.onRootViewsChangedListeners.clear()
     currentDecorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)

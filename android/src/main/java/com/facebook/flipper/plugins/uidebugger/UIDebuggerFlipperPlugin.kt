@@ -15,10 +15,13 @@ import com.facebook.flipper.plugins.uidebugger.core.*
 import com.facebook.flipper.plugins.uidebugger.descriptors.ApplicationRefDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.CompoundTypeHint
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
+import com.facebook.flipper.plugins.uidebugger.model.Action
+import com.facebook.flipper.plugins.uidebugger.model.ActionIcon
 import com.facebook.flipper.plugins.uidebugger.model.InitEvent
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 
 const val LogTag = "ui-debugger"
 
@@ -69,13 +72,45 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
       }
     }
 
+    connection.receive("customActionGroup") { args, responder ->
+      try {
+        val customActionGroupIndex = args.getInt("customActionGroupIndex")
+        val customAction = context.customActionGroups[customActionGroupIndex]
+
+        val customActionIndex = args.getInt("customActionIndex")
+        when (val item = customAction.actions[customActionIndex]) {
+          is Action.UnitAction -> {
+            item.action()
+            context.decorViewTracker.requestTraversal()
+            responder.success()
+          }
+          is Action.BooleanAction -> {
+            val newBooleanActionValue = args.getBoolean("newBooleanActionValue")
+            val result = item.action(newBooleanActionValue)
+            context.decorViewTracker.requestTraversal()
+            responder.success(FlipperObject.Builder().put("result", result).build())
+          }
+        }
+      } catch (exception: Exception) {
+
+        val errorResponse =
+            FlipperObject.Builder()
+                .put("errorType", exception.javaClass)
+                .put("errorMessage", exception.message)
+                .put("stackTrace", exception.stackTraceToString())
+                .build()
+        responder.error(errorResponse)
+      }
+    }
+
     connection.send(
         InitEvent.name,
-        Json.encodeToString(
+        INIT_EVENT_JSON.encodeToString(
             InitEvent.serializer(),
             InitEvent(
                 ApplicationRefDescriptor.getId(context.applicationRef),
-                context.frameworkEventMetadata)))
+                context.frameworkEventMetadata,
+                context.customActionGroups)))
 
     connection.send(
         MetadataUpdateEvent.name,
@@ -105,5 +140,37 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
 
   override fun runInBackground(): Boolean {
     return false
+  }
+
+  companion object {
+    private val INIT_EVENT_JSON = Json {
+      serializersModule = SerializersModule {
+        polymorphic(
+            Action::class,
+            Action.UnitAction::class,
+            Action.UnitAction.serializer(),
+        )
+        polymorphic(
+            Action::class,
+            Action.BooleanAction::class,
+            Action.BooleanAction.serializer(),
+        )
+        polymorphic(
+            ActionIcon::class,
+            ActionIcon.Local::class,
+            ActionIcon.Local.serializer(),
+        )
+        polymorphic(
+            ActionIcon::class,
+            ActionIcon.Antd::class,
+            ActionIcon.Antd.serializer(),
+        )
+        polymorphic(
+            ActionIcon::class,
+            ActionIcon.Fb::class,
+            ActionIcon.Fb.serializer(),
+        )
+      }
+    }
   }
 }
