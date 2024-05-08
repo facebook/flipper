@@ -101,6 +101,7 @@ export type UninitializedClient = {
 
 export type ClientQuery = {
   readonly app: string;
+  readonly app_id?: string;
   readonly os: DeviceOS;
   readonly device: string;
   readonly device_id: string;

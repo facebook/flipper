@@ -33,6 +33,7 @@ class Recorder {
   private flipperServer_: FlipperServerImpl | undefined;
   private undefinedClientQuery_: ClientQuery = {
     app: 'NONE',
+    app_id: 'NONE',
     device: 'NONE',
     medium: 'NONE',
     os: 'Browser',

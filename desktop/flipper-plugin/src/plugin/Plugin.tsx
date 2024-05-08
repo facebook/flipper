@@ -126,6 +126,7 @@ export interface RealFlipperClient {
   connected: Atom<boolean>;
   query: {
     app: string;
+    app_id?: string;
     os: string;
     device: string;
     device_id: string;

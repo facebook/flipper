@@ -171,6 +171,7 @@ export default class MockFlipper {
     }
     query = query ?? {
       app: name ?? `serial_${++this._clientCounter}`,
+      app_id: name ?? 'NONE',
       os: 'Android',
       device: device.title,
       device_id: device.serial,
