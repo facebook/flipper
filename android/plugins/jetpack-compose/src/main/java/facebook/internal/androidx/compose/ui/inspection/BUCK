@@ -2,6 +2,7 @@ load("@fbsource//tools/build_defs/android:fb_android_library.bzl", "fb_android_l
 
 fb_android_library(
     name = "ui-inspection",
+    abi_generation_mode = "source_only",
     create_suffixed_alias = True,
     dataclass_generate = {
         "mode": "EXPLICIT",
