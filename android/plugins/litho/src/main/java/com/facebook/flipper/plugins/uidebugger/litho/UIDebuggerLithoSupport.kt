@@ -10,7 +10,11 @@ package com.facebook.flipper.plugins.uidebugger.litho
 import com.facebook.flipper.plugins.uidebugger.core.ConnectionListener
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
-import com.facebook.flipper.plugins.uidebugger.litho.descriptors.*
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.ComponentTreeDescriptor
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.DebugComponentDescriptor
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.LithoViewDescriptor
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.MatrixDrawableDescriptor
+import com.facebook.flipper.plugins.uidebugger.litho.descriptors.TextDrawableDescriptor
 import com.facebook.flipper.plugins.uidebugger.model.FrameworkEvent
 import com.facebook.flipper.plugins.uidebugger.model.FrameworkEventMetadata
 import com.facebook.litho.ComponentTree
@@ -137,9 +141,12 @@ object UIDebuggerLithoSupport {
     event.attributeOrNull<Any?>(attributeName)?.let { attributes[attributeName] = it.toString() }
   }
 
+  lateinit var DebugComponentDescritpor: DebugComponentDescriptor
+
   private fun addDescriptors(register: DescriptorRegister) {
     register.register(LithoView::class.java, LithoViewDescriptor)
-    register.register(DebugComponent::class.java, DebugComponentDescriptor(register))
+    DebugComponentDescritpor = DebugComponentDescriptor(register)
+    register.register(DebugComponent::class.java, DebugComponentDescritpor)
     register.register(TextDrawable::class.java, TextDrawableDescriptor)
     register.register(MatrixDrawable::class.java, MatrixDrawableDescriptor)
     register.register(ComponentTree::class.java, ComponentTreeDescriptor(register))
