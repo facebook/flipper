@@ -21,7 +21,11 @@ data class CustomActionGroup(
 sealed interface Action {
   @Serializable
   @SerialName("UnitAction")
-  data class UnitAction(val title: String, @Transient val action: () -> Unit = {}) : Action
+  data class UnitAction(
+      val title: String,
+      val actionIcon: ActionIcon,
+      @Transient val action: () -> Unit = {}
+  ) : Action
 
   @Serializable
   @SerialName("BooleanAction")
@@ -48,8 +52,8 @@ class CustomActionsScope {
 
   private val _actions = mutableListOf<Action>()
 
-  fun unitAction(title: String, action: () -> Unit) {
-    _actions.add(Action.UnitAction(title, action))
+  fun unitAction(title: String, actionIcon: ActionIcon, action: () -> Unit) {
+    _actions.add(Action.UnitAction(title, actionIcon, action))
   }
 
   fun booleanAction(title: String, initialValue: Boolean, action: (Boolean) -> Boolean) {
