@@ -31,7 +31,7 @@ sealed interface Action {
   @SerialName("BooleanAction")
   data class BooleanAction(
       val title: String,
-      val initialValue: Boolean,
+      val value: Boolean,
       @Transient val action: (Boolean) -> Boolean = { it },
   ) : Action
 }

@@ -74,7 +74,7 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
       }
     }
 
-    connection.receive("customActionGroup") { args, responder ->
+    connection.receive("onCustomAction") { args, responder ->
       try {
         val customActionGroupIndex = args.getInt("customActionGroupIndex")
         val customAction = context.customActionGroups[customActionGroupIndex]
@@ -87,7 +87,7 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
             responder.success()
           }
           is Action.BooleanAction -> {
-            val newBooleanActionValue = args.getBoolean("newBooleanActionValue")
+            val newBooleanActionValue = args.getBoolean("value")
             val result = item.action(newBooleanActionValue)
             context.decorViewTracker.requestTraversal()
             responder.success(FlipperObject.Builder().put("result", result).build())

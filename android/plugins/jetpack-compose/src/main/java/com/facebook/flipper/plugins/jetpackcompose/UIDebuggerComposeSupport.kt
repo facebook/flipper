@@ -51,7 +51,7 @@ object UIDebuggerComposeSupport {
 
   private fun addCustomActions(context: UIDContext) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      context.addCustomActionGroup("Compose", ActionIcon.Local("icons/compose-logo.png")) {
+      context.addCustomActionGroup("Compose options", ActionIcon.Local("icons/compose-logo.png")) {
         booleanAction("Hide System Nodes", AbstractComposeViewDescriptor.hideSystemNodes) { newValue
           ->
           AbstractComposeViewDescriptor.hideSystemNodes = newValue
