@@ -14,12 +14,14 @@ import com.facebook.flipper.core.FlipperPlugin
 import com.facebook.flipper.plugins.uidebugger.core.*
 import com.facebook.flipper.plugins.uidebugger.descriptors.ApplicationRefDescriptor
 import com.facebook.flipper.plugins.uidebugger.descriptors.CompoundTypeHint
+import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
 import com.facebook.flipper.plugins.uidebugger.model.Action
 import com.facebook.flipper.plugins.uidebugger.model.ActionIcon
 import com.facebook.flipper.plugins.uidebugger.model.InitEvent
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.model.MetadataUpdateEvent
+import java.lang.IllegalStateException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 
@@ -91,6 +93,31 @@ class UIDebuggerFlipperPlugin(val context: UIDContext) : FlipperPlugin {
             responder.success(FlipperObject.Builder().put("result", result).build())
           }
         }
+      } catch (exception: Exception) {
+
+        val errorResponse =
+            FlipperObject.Builder()
+                .put("errorType", exception.javaClass)
+                .put("errorMessage", exception.message)
+                .put("stackTrace", exception.stackTraceToString())
+                .build()
+        responder.error(errorResponse)
+      }
+    }
+
+    connection.receive("additionalNodeInspectionChange") { args, responder ->
+      try {
+        val changeType = args.getString("changeType")
+        val nodeId: Id = args.getInt("nodeId")
+
+        when (changeType) {
+          "Add" -> context.layoutTraversal.additionalNodeInspectionIds.add(nodeId)
+          "Remove" -> context.layoutTraversal.additionalNodeInspectionIds.remove(nodeId)
+          else -> throw IllegalStateException("Unknown change type: $changeType")
+        }
+
+        context.decorViewTracker.requestTraversal()
+        responder.success()
       } catch (exception: Exception) {
 
         val errorResponse =

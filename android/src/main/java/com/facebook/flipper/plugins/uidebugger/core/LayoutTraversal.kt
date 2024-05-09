@@ -8,9 +8,11 @@
 package com.facebook.flipper.plugins.uidebugger.core
 
 import android.util.Log
+import androidx.collection.mutableScatterSetOf
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
+import com.facebook.flipper.plugins.uidebugger.model.AdditionalDataStatus
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.TraversalError
 import com.facebook.flipper.plugins.uidebugger.util.Immediate
@@ -25,6 +27,7 @@ import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 class LayoutTraversal(
     private val context: UIDContext,
 ) {
+  internal val additionalNodeInspectionIds = mutableScatterSetOf<Id>()
 
   @Suppress("unchecked_cast")
   private fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
@@ -63,7 +66,8 @@ class LayoutTraversal(
                       descriptor.getBounds(node),
                       emptySet(),
                       emptyList(),
-                      null)))
+                      null,
+                      AdditionalDataStatus.NOT_AVAILABLE)))
 
           shallow.remove(node)
           continue
@@ -91,24 +95,34 @@ class LayoutTraversal(
           }
         }
 
-        val attributes = descriptor.getAttributes(node)
+        val shouldGetAdditionalData = curId in additionalNodeInspectionIds
+        val attributesInfo = descriptor.getAttributes(node, shouldGetAdditionalData)
         val bounds = descriptor.getBounds(node)
         val tags = descriptor.getTags(node)
         visited.add(
-            attributes.map { attrs ->
+            attributesInfo.map { attrsInfo ->
+              val additionalDataStatus =
+                  if (!attrsInfo.hasAdditionalData) {
+                    AdditionalDataStatus.NOT_AVAILABLE
+                  } else if (shouldGetAdditionalData) {
+                    AdditionalDataStatus.ENABLED
+                  } else {
+                    AdditionalDataStatus.DISABLED
+                  }
               Node(
                   curId,
                   parentId,
                   descriptor.getQualifiedName(node),
                   descriptor.getName(node),
                   descriptor.getBoxData(node),
-                  attrs,
+                  attrsInfo.attributeSections,
                   descriptor.getInlineAttributes(node),
                   descriptor.getHiddenAttributes(node),
                   bounds,
                   tags,
                   childrenIds,
-                  activeChildId)
+                  activeChildId,
+                  additionalDataStatus)
             })
       } catch (exception: Exception) {
         Log.e(LogTag, "Error while processing node ${node.javaClass.name} $node", exception)
