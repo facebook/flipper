@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 
 @Preview
 @Composable
-fun Counter() {
+fun Counter(complexParameter: ComplexParameter) {
   var count: Int by remember { mutableIntStateOf(0) }
   var openAlertDialog by remember { mutableStateOf(false) }
 
@@ -114,6 +114,10 @@ fun AlertDialogExample(
 class JetpackComposeActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContent { Counter() }
+    setContent { Counter(ComplexParameter(ComplexParameterChild("Hello"))) }
   }
 }
+
+class ComplexParameter(val child: ComplexParameterChild)
+
+class ComplexParameterChild(val value: String)
