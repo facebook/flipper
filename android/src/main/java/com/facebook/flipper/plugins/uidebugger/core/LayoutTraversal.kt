@@ -8,7 +8,6 @@
 package com.facebook.flipper.plugins.uidebugger.core
 
 import android.util.Log
-import androidx.collection.mutableScatterSetOf
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
@@ -27,7 +26,7 @@ import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 class LayoutTraversal(
     private val context: UIDContext,
 ) {
-  internal val additionalNodeInspectionIds = mutableScatterSetOf<Id>()
+  internal val additionalNodeInspectionIds = mutableSetOf<Id>()
 
   @Suppress("unchecked_cast")
   private fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
