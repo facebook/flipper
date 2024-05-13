@@ -685,7 +685,10 @@ export class FlipperServerImpl implements FlipperServer {
     const existing = this.devices.get(serial);
     if (existing) {
       // assert different kind of devices aren't accidentally reusing the same serial
-      if (Object.getPrototypeOf(existing) !== Object.getPrototypeOf(device)) {
+      if (
+        existing.info.deviceType !== 'dummy' &&
+        Object.getPrototypeOf(existing) !== Object.getPrototypeOf(device)
+      ) {
         throw new Error(
           `Tried to register a new device type for existing serial '${serial}': Trying to replace existing '${
             Object.getPrototypeOf(existing).constructor.name
