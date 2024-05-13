@@ -59,7 +59,7 @@ ext {
 ext.deps = [
         // Kotlin support
         kotlinStdLibrary   : "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION",
-        kotlinCoroutinesAndroid : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3",
+        kotlinCoroutinesAndroid : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1",
         // Android support
         supportAnnotations : "androidx.annotation:annotation:$ANDROIDX_VERSION",
         supportAppCompat   : "androidx.appcompat:appcompat:$ANDROIDX_VERSION",
