@@ -89,7 +89,7 @@ class LayoutInspectorTree {
   private var foundNode: InspectorNode? = null
   private var windowSize = emptySize
   private val inlineClassConverter = InlineClassConverter()
-  private val parameterFactory = ReflectionFreeParameterFactory()
+  private val parameterFactory = ParameterFactory(inlineClassConverter)
   private val cache = ArrayDeque<MutableInspectorNode>()
   private var generatedId = -1L
   private val subCompositions = SubCompositionRoots()
@@ -168,7 +168,8 @@ class LayoutInspectorTree {
       node: InspectorNode,
       kind: ParameterKind,
       maxRecursions: Int,
-      maxInitialIterableSize: Int
+      maxInitialIterableSize: Int,
+      useReflection: Boolean
   ): List<NodeParameter> {
     val parameters = node.parametersByKind(kind)
     return parameters.mapIndexed { index, parameter ->
@@ -181,7 +182,8 @@ class LayoutInspectorTree {
           kind,
           index,
           maxRecursions,
-          maxInitialIterableSize)
+          maxInitialIterableSize,
+          useReflection)
     }
   }
 
