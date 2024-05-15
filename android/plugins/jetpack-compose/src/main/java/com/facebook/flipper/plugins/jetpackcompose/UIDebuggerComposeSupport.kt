@@ -60,6 +60,9 @@ object UIDebuggerComposeSupport {
               AbstractComposeViewDescriptor.layoutInspector.hideSystemNodes = newValue
               newValue
             }
+        unitAction("Reset Recomposition Counts", ActionIcon.Antd("CloseSquareOutlined")) {
+          AbstractComposeViewDescriptor.resetRecompositionCounts()
+        }
       }
     }
   }

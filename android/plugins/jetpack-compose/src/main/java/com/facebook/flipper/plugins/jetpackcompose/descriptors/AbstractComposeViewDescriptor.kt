@@ -34,6 +34,10 @@ object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() 
         }
       }
 
+  fun resetRecompositionCounts() {
+    recompositionHandler.changeCollectionMode(startCollecting = true, keepCounts = false)
+  }
+
   override fun onGetName(node: AbstractComposeView): String = node.javaClass.simpleName
 
   private fun transform(
