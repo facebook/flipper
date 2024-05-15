@@ -1,3 +1,11 @@
+# 0.253.0 (15/5/2024)
+
+ * [D55967421](https://github.com/facebook/flipper/search?q=D55967421&type=Commits) -  BloksDebugger - Async component payload support (android only currently)
+ * [D56065247](https://github.com/facebook/flipper/search?q=D56065247&type=Commits) -  [Internal]
+ * [D56420921](https://github.com/facebook/flipper/search?q=D56420921&type=Commits) -  Bloks debugger, Refresh screen, Set sandbox & workplace feedback button moved to right of power search to increase available vertical space
+ * [D57157243](https://github.com/facebook/flipper/search?q=D57157243&type=Commits) -  Added compose menu with ability to show / hide system nodes
+
+
 # 0.252.0 (10/4/2024)
 
  * [D55696687](https://github.com/facebook/flipper/search?q=D55696687&type=Commits) -  UIDebugger fix visualiser shaking
