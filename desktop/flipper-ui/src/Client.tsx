@@ -45,6 +45,7 @@ import {EventEmitter} from 'eventemitter3';
 import {createServerAddOnControls} from './utils/createServerAddOnControls';
 import isProduction from './utils/isProduction';
 import {freeze} from 'immer';
+import {retry} from 'ts-retry-promise';
 
 type Plugins = Set<string>;
 type PluginsArr = Array<string>;
@@ -236,10 +237,26 @@ export default class Client extends EventEmitter {
   // get the supported plugins
   async loadPlugins(phase: 'init' | 'refresh'): Promise<Set<string>> {
     try {
-      const response = await timeout(
-        30 * 1000,
-        this.rawCall<{plugins: Plugins}>('getPlugins', false),
-        'Fetch plugin timeout. Unresponsive client?',
+      const response = await retry(
+        () =>
+          //shortish timeout for each individual request
+          timeout(
+            5 * 1000,
+            this.rawCall<{plugins: Plugins}>('getPlugins', false),
+            'Fetch plugin timeout. Unresponsive client?',
+          ),
+        {
+          retries: 5,
+          delay: 1000,
+          backoff: 'LINEAR',
+          logger: (msg) =>
+            this.flipperServer.exec(
+              'log-connectivity-event',
+              'warning',
+              this.query,
+              `Attempt to fetch plugins failed for phase ${phase}, Error: ${msg}`,
+            ),
+        },
       );
       this.plugins = new Set(response.plugins ?? []);
       console.info(
