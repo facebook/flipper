@@ -33,7 +33,7 @@ import {
   createState,
   getFlipperLib,
 } from 'flipper-plugin';
-import {message} from 'antd';
+import {message, notification} from 'antd';
 import {
   isFlipperMessageDebuggingEnabled,
   registerFlipperDebugMessage,
@@ -257,6 +257,12 @@ export default class Client extends EventEmitter {
         `Failed to fetch plugins for phase ${phase}`,
         e,
       );
+
+      notification.error({
+        key: `plugin-init-error${this.id}`,
+        duration: 10,
+        message: `Failed to initialise client ${this.query.app}, please restart the app`,
+      });
     }
     return this.plugins;
   }
