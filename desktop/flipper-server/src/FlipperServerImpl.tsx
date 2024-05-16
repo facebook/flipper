@@ -30,6 +30,7 @@ import {
   DeviceDebugData,
   CertificateExchangeMedium,
   Settings,
+  ClientQuery,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
@@ -64,6 +65,7 @@ import {movePWA} from './utils/findInstallation';
 import GK from './fb-stubs/GK';
 import {fetchNewVersion} from './fb-stubs/fetchNewVersion';
 import dns from 'dns';
+import {recorder} from './recorder';
 
 // The default on node16 is to prefer ipv4 results which causes issues
 // in some setups.
@@ -470,6 +472,13 @@ export class FlipperServerImpl implements FlipperServer {
         isFile: stats.isFile(),
         isSymbolicLink: stats.isSymbolicLink(),
       };
+    },
+    'log-connectivity-event': async (
+      level: 'info' | 'warning' | 'error',
+      query: ClientQuery | null,
+      message: any[],
+    ) => {
+      recorder.log_(level, query ?? recorder.undefinedClientQuery_, message);
     },
     'node-api-fs-readlink': readlink,
     'node-api-fs-readfile': async (path, options) => {

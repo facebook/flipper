@@ -192,20 +192,30 @@ export default class Client extends EventEmitter {
   }
 
   async init() {
-    await this.loadPlugins('init');
-    await Promise.all(
-      [...this.plugins].map(async (pluginId) =>
-        this.startPluginIfNeeded(await this.getPlugin(pluginId)),
-      ),
-    );
-    this.backgroundPlugins = new Set(await this.getBackgroundPlugins());
-    this.backgroundPlugins.forEach((plugin) => {
-      if (this.shouldConnectAsBackgroundPlugin(plugin)) {
-        this.initPlugin(plugin);
-      }
-    });
-    this.emit('plugins-change');
-    this.resolveInitPromise?.(null);
+    try {
+      await this.loadPlugins('init');
+      await Promise.all(
+        [...this.plugins].map(async (pluginId) =>
+          this.startPluginIfNeeded(await this.getPlugin(pluginId)),
+        ),
+      );
+      this.backgroundPlugins = new Set(await this.getBackgroundPlugins());
+      this.backgroundPlugins.forEach((plugin) => {
+        if (this.shouldConnectAsBackgroundPlugin(plugin)) {
+          this.initPlugin(plugin);
+        }
+      });
+      this.emit('plugins-change');
+      this.resolveInitPromise?.(null);
+    } catch (e) {
+      this.flipperServer.exec(
+        'log-connectivity-event',
+        'error',
+        this.query,
+        `Failed to initialise client`,
+        e,
+      );
+    }
   }
 
   async initFromImport(
@@ -225,23 +235,28 @@ export default class Client extends EventEmitter {
 
   // get the supported plugins
   async loadPlugins(phase: 'init' | 'refresh'): Promise<Set<string>> {
-    let response;
     try {
-      response = await timeout(
+      const response = await timeout(
         30 * 1000,
         this.rawCall<{plugins: Plugins}>('getPlugins', false),
         'Fetch plugin timeout. Unresponsive client?',
       );
+      this.plugins = new Set(response.plugins ?? []);
+      console.info(
+        `Received plugins from '${this.query.app}' on device '${this.query.device}'`,
+        [...this.plugins],
+      );
+      if (phase === 'init') {
+        await this.waitForPluginsInit();
+      }
     } catch (e) {
-      console.warn('Failed to fetch plugin', e);
-    }
-    this.plugins = new Set(response?.plugins ?? []);
-    console.info(
-      `Received plugins from '${this.query.app}' on device '${this.query.device}'`,
-      [...this.plugins],
-    );
-    if (phase === 'init') {
-      await this.waitForPluginsInit();
+      this.flipperServer.exec(
+        'log-connectivity-event',
+        'error',
+        this.query,
+        `Failed to fetch plugins for phase ${phase}`,
+        e,
+      );
     }
     return this.plugins;
   }

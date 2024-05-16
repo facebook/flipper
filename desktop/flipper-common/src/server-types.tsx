@@ -292,6 +292,11 @@ export type FlipperServerCommands = {
     serial: string,
     destination: string,
   ) => Promise<void>;
+  'log-connectivity-event': (
+    level: 'info' | 'warning' | 'error',
+    query: ClientQuery | null,
+    ...message: any
+  ) => Promise<void>;
   'device-stop-screencapture': (serial: string) => Promise<string>; // file path
   'device-shell-exec': (serial: string, command: string) => Promise<string>;
   'device-install-app': (
