@@ -22,18 +22,20 @@ import facebook.internal.androidx.compose.ui.inspection.inspector.InspectorNode
 import facebook.internal.androidx.compose.ui.inspection.inspector.LayoutInspectorTree
 import java.io.IOException
 
-@RequiresApi(Build.VERSION_CODES.Q)
 object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() {
 
-  internal var hideSystemNodes: Boolean = true
+  @RequiresApi(Build.VERSION_CODES.Q) internal val layoutInspector = LayoutInspectorTree()
 
-  private val recompositionHandler by lazy {
-    RecompositionHandler(DefaultArtTooling("Flipper")).apply {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        attachJvmtiAgent()
-        startTrackingRecompositions(this)
+  private val recompositionHandler =
+      RecompositionHandler(DefaultArtTooling("Flipper")).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          attachJvmtiAgent()
+          startTrackingRecompositions(this)
+        }
       }
-    }
+
+  fun resetRecompositionCounts() {
+    recompositionHandler.changeCollectionMode(startCollecting = true, keepCounts = false)
   }
 
   override fun onGetName(node: AbstractComposeView): String = node.javaClass.simpleName
@@ -69,8 +71,7 @@ object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() 
       children.add(child)
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val layoutInspector = LayoutInspectorTree()
-        layoutInspector.hideSystemNodes = hideSystemNodes
+        layoutInspector.resetAccumulativeState()
         val composeNodes =
             try {
               transform(child, layoutInspector.convert(child), layoutInspector)

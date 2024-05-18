@@ -101,12 +101,14 @@ class LayoutTraversal(
         visited.add(
             attributesInfo.map { attrsInfo ->
               val additionalDataStatus =
-                  if (!attrsInfo.hasAdditionalData) {
-                    AdditionalDataStatus.NOT_AVAILABLE
-                  } else if (shouldGetAdditionalData) {
-                    AdditionalDataStatus.ENABLED
-                  } else {
-                    AdditionalDataStatus.DISABLED
+                  when (!shouldGetAdditionalData && !attrsInfo.hasAdditionalData) {
+                    true -> AdditionalDataStatus.NOT_AVAILABLE
+                    false -> {
+                      when (shouldGetAdditionalData) {
+                        true -> AdditionalDataStatus.ENABLED
+                        false -> AdditionalDataStatus.DISABLED
+                      }
+                    }
                   }
               Node(
                   curId,

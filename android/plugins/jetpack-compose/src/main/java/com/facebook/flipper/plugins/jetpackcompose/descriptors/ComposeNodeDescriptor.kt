@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import com.facebook.flipper.plugins.jetpackcompose.JetpackComposeTag
 import com.facebook.flipper.plugins.jetpackcompose.descriptors.ComposeNodeDescriptor.toInspectableValue
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
+import com.facebook.flipper.plugins.uidebugger.descriptors.AttributesInfo
 import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
@@ -78,7 +79,10 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
     return node.children
   }
 
-  override fun getAttributes(node: ComposeNode): MaybeDeferred<Map<MetadataId, InspectableObject>> {
+  override fun getAttributes(
+      node: ComposeNode,
+      shouldGetAdditionalData: Boolean
+  ): MaybeDeferred<AttributesInfo> {
     return Deferred {
       val builder = mutableMapOf<MetadataId, InspectableObject>()
       val props = mutableMapOf<Int, Inspectable>()
@@ -115,26 +119,26 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
       }
 
       val params = mutableMapOf<Int, Inspectable>()
-      node.parameters.forEach { parameter ->
+      node.getParameters(shouldGetAdditionalData).forEach { parameter ->
         fillNodeParameters(parameter, params, node.inspectorNode.name)
       }
       builder[ParametersAttributeId] = InspectableObject(params.toMap())
 
       val mergedSemantics = mutableMapOf<Int, Inspectable>()
-      node.mergedSemantics.forEach { parameter ->
+      node.getMergedSemantics(shouldGetAdditionalData).forEach { parameter ->
         fillNodeParameters(parameter, mergedSemantics, node.inspectorNode.name)
       }
       builder[MergedSemanticsAttributeId] = InspectableObject(mergedSemantics.toMap())
 
       val unmergedSemantics = mutableMapOf<Int, Inspectable>()
-      node.unmergedSemantics.forEach { parameter ->
+      node.getUnmergedSemantics(shouldGetAdditionalData).forEach { parameter ->
         fillNodeParameters(parameter, unmergedSemantics, node.inspectorNode.name)
       }
       builder[UnmergedSemanticsAttributeId] = InspectableObject(unmergedSemantics.toMap())
 
       builder[SectionId] = InspectableObject(props.toMap())
 
-      builder
+      AttributesInfo(builder, node.hasAdditionalData)
     }
   }
 
@@ -189,6 +193,7 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
   private fun NodeParameter.toInspectableValue(): InspectableValue {
     return when (type) {
       ParameterType.Iterable,
+      ParameterType.ComplexObject,
       ParameterType.String -> InspectableValue.Text(value.toString())
       ParameterType.Boolean -> InspectableValue.Boolean(value as Boolean)
       ParameterType.Int32 -> InspectableValue.Number(value as Int)

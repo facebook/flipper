@@ -44,18 +44,24 @@ object UIDebuggerComposeSupport {
   }
 
   private fun addDescriptors(register: DescriptorRegister) {
-    register.register(AbstractComposeView::class.java, AbstractComposeViewDescriptor)
-    register.register(ComposeNode::class.java, ComposeNodeDescriptor)
-    register.register(ComposeInnerViewNode::class.java, ComposeInnerViewDescriptor)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      register.register(AbstractComposeView::class.java, AbstractComposeViewDescriptor)
+      register.register(ComposeNode::class.java, ComposeNodeDescriptor)
+      register.register(ComposeInnerViewNode::class.java, ComposeInnerViewDescriptor)
+    }
   }
 
   private fun addCustomActions(context: UIDContext) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       context.addCustomActionGroup("Compose options", ActionIcon.Local("icons/compose-logo.png")) {
-        booleanAction("Hide System Nodes", AbstractComposeViewDescriptor.hideSystemNodes) { newValue
-          ->
-          AbstractComposeViewDescriptor.hideSystemNodes = newValue
-          newValue
+        booleanAction(
+            "Hide System Nodes", AbstractComposeViewDescriptor.layoutInspector.hideSystemNodes) {
+                newValue ->
+              AbstractComposeViewDescriptor.layoutInspector.hideSystemNodes = newValue
+              newValue
+            }
+        unitAction("Reset Recomposition Counts", ActionIcon.Antd("CloseSquareOutlined")) {
+          AbstractComposeViewDescriptor.resetRecompositionCounts()
         }
       }
     }

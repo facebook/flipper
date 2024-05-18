@@ -361,8 +361,11 @@ export function handleDeviceConnected(
         `Tried to replace still connected device '${existing.serial}' with a new instance.`,
       );
     }
-    if (store.getState().settingsState.persistDeviceData) {
-      //Recycle device
+    if (
+      existing.deviceType !== 'dummy' &&
+      store.getState().settingsState.persistDeviceData
+    ) {
+      // Recycle device
       existing?.connected.set(true);
       store.dispatch({
         type: 'SELECT_DEVICE',
