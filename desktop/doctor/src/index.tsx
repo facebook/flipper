@@ -279,8 +279,14 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   const devices = result.stdout
                     .trim()
                     .split('\n')
-                    .map((x) => JSON.parse(x))
-                    .filter((x) => x.type === 'simulator');
+                    .map((x) => {
+                      try {
+                        return JSON.parse(x);
+                      } catch (e) {
+                        return null;
+                      }
+                    })
+                    .filter((x) => x != null && x.type === 'simulator');
 
                   if (devices.length === 0) {
                     return {
