@@ -160,6 +160,65 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             isSkipped: false,
             healthchecks: [
               {
+                key: 'ios.idb',
+                label: 'IDB installed',
+                isRequired: true,
+                run: async (
+                  _: FlipperDoctor.EnvironmentInfo,
+                  settings?: {enablePhysicalIOS: boolean; idbPath: string},
+                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
+                  if (!settings) {
+                    return {
+                      hasProblem: false,
+                      message: ['ios.idb--no_context'],
+                    };
+                  }
+                  if (!settings.enablePhysicalIOS) {
+                    return {
+                      hasProblem: false,
+                      message: ['ios.idb--physical_device_disabled'],
+                    };
+                  }
+                  const result = await tryExecuteCommand(
+                    `${settings?.idbPath} --help`,
+                  );
+                  const hasIdbCompanion =
+                    await tryExecuteCommand(`idbCompanion --help`);
+                  if (result.fail) {
+                    const hasIdbInPath = await tryExecuteCommand(`which idb`);
+
+                    if (!hasIdbInPath.fail) {
+                      return {
+                        hasProblem: true,
+                        message: [
+                          'ios.idb--not_installed_but_present',
+                          {
+                            idbPath: settings.idbPath,
+                            idbInPath: hasIdbInPath.stdout.trim(),
+                          },
+                        ],
+                      };
+                    }
+
+                    return {
+                      hasProblem: true,
+                      message: [
+                        'ios.idb--not_installed',
+                        {
+                          idbPath: settings.idbPath,
+                          hasIdbCompanion: !hasIdbCompanion.fail,
+                        },
+                      ],
+                    };
+                  }
+
+                  return {
+                    hasProblem: false,
+                    message: ['ios.idb--installed'],
+                  };
+                },
+              },
+              {
                 key: 'ios.xcode',
                 label: 'XCode Installed',
                 isRequired: true,
@@ -329,65 +388,6 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                       'ios.xctrace--installed',
                       {output: result.stdout.trim()},
                     ],
-                  };
-                },
-              },
-              {
-                key: 'ios.idb',
-                label: 'IDB installed',
-                isRequired: false,
-                run: async (
-                  _: FlipperDoctor.EnvironmentInfo,
-                  settings?: {enablePhysicalIOS: boolean; idbPath: string},
-                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
-                  if (!settings) {
-                    return {
-                      hasProblem: false,
-                      message: ['ios.idb--no_context'],
-                    };
-                  }
-                  if (!settings.enablePhysicalIOS) {
-                    return {
-                      hasProblem: false,
-                      message: ['ios.idb--physical_device_disabled'],
-                    };
-                  }
-                  const result = await tryExecuteCommand(
-                    `${settings?.idbPath} --help`,
-                  );
-                  const hasIdbCompanion =
-                    await tryExecuteCommand(`idbCompanion --help`);
-                  if (result.fail) {
-                    const hasIdbInPath = await tryExecuteCommand(`which idb`);
-
-                    if (!hasIdbInPath.fail) {
-                      return {
-                        hasProblem: true,
-                        message: [
-                          'ios.idb--not_installed_but_present',
-                          {
-                            idbPath: settings.idbPath,
-                            idbInPath: hasIdbInPath.stdout.trim(),
-                          },
-                        ],
-                      };
-                    }
-
-                    return {
-                      hasProblem: true,
-                      message: [
-                        'ios.idb--not_installed',
-                        {
-                          idbPath: settings.idbPath,
-                          hasIdbCompanion: !hasIdbCompanion.fail,
-                        },
-                      ],
-                    };
-                  }
-
-                  return {
-                    hasProblem: false,
-                    message: ['ios.idb--installed'],
                   };
                 },
               },
