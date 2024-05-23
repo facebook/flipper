@@ -33,6 +33,16 @@ const CommonOpenSSLInstalled = (
     <CodeBlock>{props.output}</CodeBlock>
   </div>
 );
+const XcodeSelectSwitch = ({
+  availableXcode,
+}: {
+  availableXcode: string | null;
+}) => (
+  <CliCommand
+    title="Select Xcode version foo bar baz"
+    command={`sudo xcode-select -switch ${availableXcode ?? '<path/to/>/Xcode.app'}`}
+  />
+);
 
 const CommonOpenSSLNotInstalled = (
   props: PropsFor<'common.openssl--not_installed'>,
@@ -162,28 +172,20 @@ const XcodeSelectSet = (props: PropsFor<'ios.xcode-select--set'>) => (
     <CodeBlock>{props.selected}</CodeBlock>
   </Typography.Paragraph>
 );
-const XcodeSelectNotSet = (_props: PropsFor<'ios.xcode-select--not_set'>) => (
+const XcodeSelectNotSet = (props: PropsFor<'ios.xcode-select--not_set'>) => (
   <Typography.Paragraph>
     xcode-select path not selected. <code>xcode-select -p</code> failed. To fix
     it run this command:
-    <CliCommand
-      title="Select Xcode version foo bar baz"
-      // TODO provide latest path to installed xcode from /Applications
-      command={`sudo xcode-select -switch <path/to/>/Xcode.app`}
-    />
+    <XcodeSelectSwitch availableXcode={props.availableXcode} />
   </Typography.Paragraph>
 );
 
 const XcodeSelectNoXcode = (
-  _props: PropsFor<'ios.xcode-select--no_xcode_selected'>,
+  props: PropsFor<'ios.xcode-select--no_xcode_selected'>,
 ) => (
   <Typography.Paragraph>
     xcode-select has no Xcode selected. To fix it it run this command:
-    <CliCommand
-      title="Select Xcode version foo bar baz"
-      // TODO provide latest path to installed xcode from /Applications
-      command={`sudo xcode-select -switch <path/to/>/Xcode.app`}
-    />
+    <XcodeSelectSwitch availableXcode={props.availableXcode} />
   </Typography.Paragraph>
 );
 
@@ -206,11 +208,7 @@ const XcodeSelectNonExistingSelected = (
   <Typography.Paragraph>
     xcode-select is pointing at a path that does not exist:
     <CodeBlock size="s">{props.selected}</CodeBlock>
-    <CliCommand
-      title="Select existing Xcode application"
-      // TODO provide latest path to installed xcode from /Applications
-      command={`sudo xcode-select -switch <path/to/>/Xcode.app`}
-    />
+    <XcodeSelectSwitch availableXcode={props.availableXcode} />
   </Typography.Paragraph>
 );
 

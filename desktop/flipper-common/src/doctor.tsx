@@ -167,8 +167,10 @@ export namespace FlipperDoctor {
     'ios.xcode--not_installed': [];
 
     'ios.xcode-select--set': [{selected: string}];
-    'ios.xcode-select--not_set': [{message: string}];
-    'ios.xcode-select--no_xcode_selected': [];
+    'ios.xcode-select--not_set': [
+      {message: string; availableXcode: string | null},
+    ];
+    'ios.xcode-select--no_xcode_selected': [{availableXcode: string | null}];
     'ios.xcode-select--noop': [];
     'ios.xcode-select--custom_path': [
       {
@@ -182,7 +184,9 @@ export namespace FlipperDoctor {
         latestXCode: string;
       },
     ];
-    'ios.xcode-select--nonexisting_selected': [{selected: string}];
+    'ios.xcode-select--nonexisting_selected': [
+      {selected: string; availableXcode: string | null},
+    ];
 
     'ios.sdk--installed': [{platforms: string[]}];
     'ios.sdk--not_installed': [];

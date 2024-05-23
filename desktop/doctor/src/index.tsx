@@ -251,22 +251,39 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 run: async (
                   _: FlipperDoctor.EnvironmentInfo,
                 ): Promise<FlipperDoctor.HealthcheckRunResult> => {
-                  // TODO check for an existing Xcode
+                  const allApps =
+                    await fs_extra.promises.readdir('/Applications');
+                  // Xcode_14.2.0_xxxxxxx.app
+                  // Xcode_14.3.1_xxxxxxxxxx.app
+                  // Xcode_15.0.0_xxxxxxxxxx.app
+                  // Xcode.app
+                  const latestXCode = allApps
+                    .filter((a) => a.startsWith('Xcode'))
+                    .sort()
+                    .pop();
+                  const availableXcode = latestXCode
+                    ? path.join('/Applications', latestXCode)
+                    : null;
+
                   const result = await tryExecuteCommand('xcode-select -p');
                   if (result.fail) {
                     return {
                       hasProblem: true,
                       message: [
                         'ios.xcode-select--not_set',
-                        {message: result.message},
+                        {message: result.message, availableXcode},
                       ],
                     };
                   }
+
                   const selectedXcode = result.stdout.toString().trim();
                   if (selectedXcode == '/Library/Developer/CommandLineTools') {
                     return {
                       hasProblem: true,
-                      message: ['ios.xcode-select--no_xcode_selected'],
+                      message: [
+                        'ios.xcode-select--no_xcode_selected',
+                        {availableXcode},
+                      ],
                     };
                   }
                   if ((await fs_extra.pathExists(selectedXcode)) == false) {
@@ -274,12 +291,15 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                       hasProblem: true,
                       message: [
                         'ios.xcode-select--nonexisting_selected',
-                        {selected: selectedXcode},
+                        {selected: selectedXcode, availableXcode},
                       ],
                     };
                   }
                   const validatedXcodeVersion =
-                    await validateSelectedXcodeVersion(selectedXcode);
+                    await validateSelectedXcodeVersion(
+                      selectedXcode,
+                      availableXcode,
+                    );
                   if (validatedXcodeVersion.hasProblem) {
                     return validatedXcodeVersion;
                   }

@@ -11,6 +11,7 @@ import {FlipperDoctor} from 'flipper-common';
 
 export async function validateSelectedXcodeVersion(
   _selectedPath: string,
+  _availableXcode: string | null,
 ): Promise<FlipperDoctor.HealthcheckRunResult> {
   return {
     hasProblem: false,
