@@ -187,6 +187,19 @@ const XcodeSelectNoXcode = (
   </Typography.Paragraph>
 );
 
+const XcodeSelectCustomPath = (
+  props: PropsFor<'ios.xcode-select--custom_path'>,
+) => (
+  <Typography.Paragraph>
+    Selected path is not a Xcode application:
+    <CodeBlock size="s">{props.selectedPath}</CodeBlock>
+    <CliCommand
+      title="Select existing Xcode application"
+      command={`sudo xcode-select -switch ${props.availableXcode ?? '<path/to/>/Xcode.app'}`}
+    />
+  </Typography.Paragraph>
+);
+
 const XcodeSelectNonExistingSelected = (
   props: PropsFor<'ios.xcode-select--nonexisting_selected'>,
 ) => (
@@ -335,7 +348,7 @@ const messageToComp: {
   'ios.xcode-select--no_xcode_selected': XcodeSelectNoXcode,
   'ios.xcode-select--nonexisting_selected': XcodeSelectNonExistingSelected,
   'ios.xcode-select--noop': Noop,
-  'ios.xcode-select--custom_path': Noop,
+  'ios.xcode-select--custom_path': XcodeSelectCustomPath,
   'ios.xcode-select--old_version_selected': Noop,
 
   'ios.sdk--installed': IosSdkInstalled,

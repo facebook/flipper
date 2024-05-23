@@ -170,7 +170,12 @@ export namespace FlipperDoctor {
     'ios.xcode-select--not_set': [{message: string}];
     'ios.xcode-select--no_xcode_selected': [];
     'ios.xcode-select--noop': [];
-    'ios.xcode-select--custom_path': [];
+    'ios.xcode-select--custom_path': [
+      {
+        selectedPath: string;
+        availableXcode: string | null;
+      },
+    ];
     'ios.xcode-select--old_version_selected': [
       {
         selectedVersion: string;
