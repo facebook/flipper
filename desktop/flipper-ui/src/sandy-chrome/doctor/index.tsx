@@ -254,8 +254,8 @@ const HasSimulatorsNoDevices = (
   _props: PropsFor<'ios.has-simulators--no-devices'>,
 ) => (
   <Typography.Paragraph>
-    No available simulators found. Launch XCode and install SDK for iOS or run{' '}
-    <CodeBlock>xcode-select --install</CodeBlock>
+    No available simulators found. This can happen because{' '}
+    <code>xcode-select</code> points to a wrong Xcode installation.
   </Typography.Paragraph>
 );
 
