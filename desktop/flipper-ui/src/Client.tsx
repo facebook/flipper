@@ -129,7 +129,7 @@ export default class Client extends EventEmitter {
     string /*pluginKey*/,
     {
       plugin: _SandyPluginInstance;
-      messages: Params[];
+      messages: (Params & {rawSize: number})[];
     }
   > = {};
 
@@ -396,8 +396,12 @@ export default class Client extends EventEmitter {
           if (!data.params) {
             throw new Error('expected params');
           }
-          const params: Params = data.params;
+
           const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
+          const params: Params & {rawSize: number} = {
+            ...data.params,
+            rawSize: bytes,
+          };
           this.emit('bytes-received', params.api, bytes);
           if (bytes > 5 * 1024 * 1024) {
             console.warn(

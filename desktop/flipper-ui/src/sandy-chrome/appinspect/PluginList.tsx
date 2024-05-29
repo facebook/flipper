@@ -35,6 +35,7 @@ import {reportUsage} from 'flipper-common';
 import ConnectivityStatus from './fb-stubs/ConnectivityStatus';
 import {useSelector} from 'react-redux';
 import {getPluginLists} from '../../selectors/connections';
+import {PluginMemoryWarning} from './PluginMemoryWarning';
 
 const {SubMenu} = Menu;
 const {Text} = Typography;
@@ -201,6 +202,7 @@ export const PluginList = memo(function PluginList({
             connections.selectedPlugin ? [connections.selectedPlugin] : []
           }
           mode="inline">
+          <PluginMemoryWarning />
           <PluginGroup key="enabled" title="Enabled">
             {allEnabledPlugins}
           </PluginGroup>
