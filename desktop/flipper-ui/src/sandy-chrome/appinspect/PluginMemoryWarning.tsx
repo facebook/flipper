@@ -18,6 +18,7 @@ import {getStore} from 'flipper-ui/src/store';
 import React, {useEffect, useState} from 'react';
 import {useDispatch} from '../../utils/useStore';
 import {Dispatch} from 'redux';
+import {clearMessageQueue} from 'flipper-ui/src/reducers/pluginMessageQueue';
 
 const PluginQueueMemoryUsageScanInterval = 2500;
 
@@ -37,7 +38,7 @@ export function PluginMemoryWarning() {
 
   const totalSizeMb = getQueuedMessagedConsumption();
 
-  if (totalSizeMb < 50) {
+  if (totalSizeMb < 50 && !isModalOpen) {
     return null;
   }
 
@@ -67,7 +68,10 @@ export function PluginMemoryWarning() {
           style={{
             top: '5vh',
           }}>
-          <PluginMemoryDetails rerender={() => rerender((x) => x + 1)} />
+          <PluginMemoryDetails
+            totalMb={totalSizeMb}
+            rerender={() => rerender((x) => x + 1)}
+          />
         </Modal>
       )}
     </Layout.Container>
@@ -116,19 +120,34 @@ function columns(
       key: 'actions',
       render: (_, record) => {
         return (
-          <Button
-            type="primary"
-            onClick={() => {
-              dispatch(
-                switchPlugin({
-                  plugin: record.pluginDef,
-                  selectedApp: record.app,
-                }),
-              );
-              rerender();
-            }}>
-            Deactivate
-          </Button>
+          <Layout.Horizontal gap="small">
+            <Button
+              type="primary"
+              onClick={() => {
+                dispatch(
+                  switchPlugin({
+                    plugin: record.pluginDef,
+                    selectedApp: record.app,
+                  }),
+                );
+                rerender();
+              }}>
+              Deactivate
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                const pluginKey = getPluginKey(
+                  record.client.id,
+                  {serial: record.client.query.device_id},
+                  record.pluginDef.id,
+                );
+                dispatch(clearMessageQueue(pluginKey));
+                rerender();
+              }}>
+              Clear queue
+            </Button>
+          </Layout.Horizontal>
         );
       },
     },
@@ -142,8 +161,15 @@ type PluginMemoryStats = {
   messagesmb: number;
   pluginId: string;
   pluginDef: PluginDefinition;
+  client: Client;
 };
-function PluginMemoryDetails({rerender}: {rerender: () => void}) {
+function PluginMemoryDetails({
+  rerender,
+  totalMb,
+}: {
+  totalMb: number;
+  rerender: () => void;
+}) {
   const clients = getStore().getState().connections.clients;
   const pluginQueue = getStore().getState().pluginMessageQueue;
   const dispatch = useDispatch();
@@ -158,6 +184,7 @@ function PluginMemoryDetails({rerender}: {rerender: () => void}) {
       pluginId: pluginDef?.id,
       name: pluginDef?.title ?? pluginDef?.id,
       app: client?.query.app ?? 'Unknown',
+      client,
       count: pluginQueue[pluginKey].length,
       pluginDef,
       device: client?.query.device ?? 'Unknown',
@@ -180,7 +207,12 @@ function PluginMemoryDetails({rerender}: {rerender: () => void}) {
         Background plugins do not consume messages untill you select them in the
         UI, they are buffered in memory instead.
         <br /> To free up memory, you can deactivate plugins you do not need in
-        this session.
+        this session. Alternatively you can purge a plugins message queue
+        without deactivating it.
+        <br />
+        <br />
+        Total usage:{' '}
+        <Typography.Text strong>{totalMb.toFixed(0)}Mb</Typography.Text>
         <br />
         <br />
       </Typography.Text>
