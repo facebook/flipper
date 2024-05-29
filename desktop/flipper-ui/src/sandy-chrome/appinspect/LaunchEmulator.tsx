@@ -286,8 +286,24 @@ export const LaunchEmulatorDialog = withTrackingScope(
                     );
                     onClose();
                   } catch (e) {
-                    console.warn('Failed to start simulator: ', e);
-                    message.error(`Failed to start simulator: ${e}`);
+                    if (
+                      // definitely a server error
+                      typeof e === 'string' &&
+                      e.includes('command timeout')
+                    ) {
+                      message.warn(
+                        'Launching simulator may take up to 2 minutes for the first time. Please wait.',
+                        // seconds
+                        20,
+                      );
+                    } else {
+                      console.warn('Failed to start simulator: ', e);
+                      message.error(
+                        `Failed to start simulator: ${e}`,
+                        // seconds
+                        20,
+                      );
+                    }
                   } finally {
                     setPendingEmulators(
                       produce((draft) => {

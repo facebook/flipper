@@ -198,7 +198,12 @@ export class IOSDeviceManager {
       const bridge = await this.getBridge();
       await bridge.launchSimulator(udid);
     } catch (e) {
-      console.warn('Failed to launch simulator:', e);
+      if (e.killed === true && e.signal === 'SIGTERM') {
+        throw new Error('Failed to launch simulator: command timeout');
+      } else {
+        console.warn('Failed to launch simulator:', e);
+        throw e;
+      }
     }
   }
 
