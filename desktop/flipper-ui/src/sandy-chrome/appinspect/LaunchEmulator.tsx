@@ -78,6 +78,11 @@ function NoSDKsEnabledAlert({onClose}: {onClose: () => void}) {
   );
 }
 
+type IOSState = {
+  type: 'loading' | 'error' | 'ready' | 'empty';
+  message?: string;
+};
+
 export const LaunchEmulatorDialog = withTrackingScope(
   function LaunchEmulatorDialog({onClose}: {onClose: () => void}) {
     const iosEnabled = useStore((state) => state.settingsState.enableIOS);
@@ -90,7 +95,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
     const [waitingForIos, setWaitingForIos] = useState(iosEnabled);
     const [waitingForAndroid, setWaitingForAndroid] = useState(androidEnabled);
 
-    const [iOSMessage, setiOSMessage] = useState<string>('Loading...');
+    const [iOSMessage, setiOSMessage] = useState<IOSState>({type: 'loading'});
     const [androidMessage, setAndroidMessage] = useState<string>('Loading...');
 
     const [favoriteVirtualDevices, setFavoriteVirtualDevices] =
@@ -124,11 +129,14 @@ export const LaunchEmulatorDialog = withTrackingScope(
           setWaitingForIos(false);
           setIosEmulators(nonPhysical);
           if (nonPhysical.length === 0) {
-            setiOSMessage('No simulators found');
+            setiOSMessage({type: 'empty'});
           }
         } catch (error) {
           console.warn('Failed to find iOS simulators', error);
-          setiOSMessage(`Error: ${error.message ?? error} \nRetrying...`);
+          setiOSMessage({
+            type: 'error',
+            message: `Error: ${error.message ?? error} \nRetrying...`,
+          });
           setTimeout(getiOSSimulators, 1000);
         }
       };
@@ -245,9 +253,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
       items.push(
         <Title key="ios-title" name="iOS Simulators" />,
         iosEmulators.length == 0 ? (
-          <Typography.Paragraph style={{textAlign: 'center'}}>
-            {iOSMessage}
-          </Typography.Paragraph>
+          <IOSPlaceholder kind={iOSMessage.type} message={iOSMessage.message} />
         ) : null,
         ...chain(iosEmulators)
           .map((device) => ({
@@ -334,6 +340,42 @@ export const LaunchEmulatorDialog = withTrackingScope(
     );
   },
 );
+
+function IOSPlaceholder({
+  kind,
+  message,
+}: {
+  kind: IOSState['type'];
+  message: string | undefined;
+}) {
+  switch (kind) {
+    case 'error':
+      return (
+        <Typography.Paragraph style={{textAlign: 'center'}}>
+          {message}
+        </Typography.Paragraph>
+      );
+    case 'empty':
+      return (
+        <>
+          <Typography.Paragraph style={{textAlign: 'center'}}>
+            No iOS simulators found. This is likely because because{' '}
+            <code>xcode-select</code> is pointing at a wrong Xcode installation.
+            See setup doctor for help. Run{' '}
+            <code>sudo xcode-select -switch /Applications/Xcode_xxxxx.app</code>{' '}
+            to select the correct Xcode installation (you need to update path to
+            Xcode.app in the command).
+          </Typography.Paragraph>
+          <Typography.Paragraph style={{textAlign: 'center'}}>
+            Alternatevely, Simulator app may not have any simulators created.
+            {message}
+          </Typography.Paragraph>
+        </>
+      );
+    default:
+      return null;
+  }
+}
 
 const FavIconStyle = {fontSize: 16, color: theme.primaryColor};
 
