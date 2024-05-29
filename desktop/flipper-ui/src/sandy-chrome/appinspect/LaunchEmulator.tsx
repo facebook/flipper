@@ -40,13 +40,9 @@ const COLD_BOOT = 'cold-boot';
 export function showEmulatorLauncher(store: Store) {
   renderReactRoot((unmount) => (
     <Provider store={store}>
-      <LaunchEmulatorContainer onClose={unmount} />
+      <LaunchEmulatorDialog onClose={unmount} />;
     </Provider>
   ));
-}
-
-function LaunchEmulatorContainer({onClose}: {onClose: () => void}) {
-  return <LaunchEmulatorDialog onClose={onClose} />;
 }
 
 function NoSDKsEnabledAlert({onClose}: {onClose: () => void}) {
