@@ -45,6 +45,7 @@ data class Update(
  */
 class UpdateQueue(val context: UIDContext) {
 
+  val json = Json { explicitNulls = false }
   // conflated channel means we only hold 1 item and newer values override older ones,
   // there is no point processing frames that the desktop cant keep up with since we only display
   // the latest
@@ -123,7 +124,7 @@ class UpdateQueue(val context: UIDContext) {
 
     val (serialized, serializationTimeMs) =
         StopWatch.time {
-          Json.encodeToString(
+          json.encodeToString(
               FrameScanEvent.serializer(),
               FrameScanEvent(update.startTimestamp, nodes, snapshot, frameworkEvents))
         }
@@ -151,7 +152,7 @@ class UpdateQueue(val context: UIDContext) {
             frameworkEventsCount = frameworkEvents.size)
 
     context.connectionRef.connection?.send(
-        PerfStatsEvent.name, Json.encodeToString(PerfStatsEvent.serializer(), perfStats))
+        PerfStatsEvent.name, json.encodeToString(PerfStatsEvent.serializer(), perfStats))
   }
 
   private fun sendMetadata() {
@@ -159,7 +160,7 @@ class UpdateQueue(val context: UIDContext) {
     if (metadata.isNotEmpty()) {
       context.connectionRef.connection?.send(
           MetadataUpdateEvent.name,
-          Json.encodeToString(MetadataUpdateEvent.serializer(), MetadataUpdateEvent(metadata)))
+          json.encodeToString(MetadataUpdateEvent.serializer(), MetadataUpdateEvent(metadata)))
     }
   }
 }

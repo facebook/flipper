@@ -25,7 +25,7 @@ data class Node(
     val tags: Set<String>,
     val children: List<Id>,
     val activeChild: Id?,
-    val additionalDataStatus: AdditionalDataStatus,
+    val additionalDataCollection: Boolean?,
 )
 
 /** Expected order is left right top bottom */
@@ -33,10 +33,3 @@ typealias CompactBoxData = List<Float>
 
 @Serializable
 class BoxData(val margin: CompactBoxData, val border: CompactBoxData, val padding: CompactBoxData)
-
-@Serializable
-enum class AdditionalDataStatus {
-  ENABLED,
-  DISABLED,
-  NOT_AVAILABLE
-}

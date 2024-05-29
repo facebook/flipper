@@ -11,7 +11,6 @@ import android.util.Log
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.NodeDescriptor
-import com.facebook.flipper.plugins.uidebugger.model.AdditionalDataStatus
 import com.facebook.flipper.plugins.uidebugger.model.Node
 import com.facebook.flipper.plugins.uidebugger.model.TraversalError
 import com.facebook.flipper.plugins.uidebugger.util.Immediate
@@ -66,7 +65,7 @@ class LayoutTraversal(
                       emptySet(),
                       emptyList(),
                       null,
-                      AdditionalDataStatus.NOT_AVAILABLE)))
+                      null)))
 
           shallow.remove(node)
           continue
@@ -100,16 +99,13 @@ class LayoutTraversal(
         val tags = descriptor.getTags(node)
         visited.add(
             attributesInfo.map { attrsInfo ->
-              val additionalDataStatus =
-                  when (!shouldGetAdditionalData && !attrsInfo.hasAdditionalData) {
-                    true -> AdditionalDataStatus.NOT_AVAILABLE
-                    false -> {
-                      when (shouldGetAdditionalData) {
-                        true -> AdditionalDataStatus.ENABLED
-                        false -> AdditionalDataStatus.DISABLED
-                      }
-                    }
+              val additionalDataCollection =
+                  if (!shouldGetAdditionalData && !attrsInfo.hasAdditionalData) {
+                    null
+                  } else {
+                    shouldGetAdditionalData
                   }
+
               Node(
                   curId,
                   parentId,
@@ -123,7 +119,7 @@ class LayoutTraversal(
                   tags,
                   childrenIds,
                   activeChildId,
-                  additionalDataStatus)
+                  additionalDataCollection)
             })
       } catch (exception: Exception) {
         Log.e(LogTag, "Error while processing node ${node.javaClass.name} $node", exception)
