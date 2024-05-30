@@ -308,9 +308,18 @@ export function plugin(client: PluginClient<Events, Methods>) {
       console.warn('onCustomAction failed', e);
     }
   }
+
+  async function onAdditionalDataCollectionChanged(
+    nodeId: Id,
+    changeType: 'Add' | 'Remove',
+  ) {
+    client.send('additionalNodeInspectionChange', {nodeId, changeType});
+  }
+
   return {
     rootId,
     customActionGroups,
+    onAdditionalDataCollectionChanged,
     onCustomAction,
     currentFrameTime: lastProcessedFrameTime as _ReadOnlyAtom<number>,
     uiState: uiState as ReadOnlyUIState,

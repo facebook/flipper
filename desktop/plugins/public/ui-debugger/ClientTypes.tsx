@@ -32,6 +32,10 @@ export type Methods = {
     customActionIndex: number;
     value: T;
   }): Promise<{result: T}>;
+  additionalNodeInspectionChange(params: {
+    changeType: 'Add' | 'Remove';
+    nodeId: Id;
+  }): Promise<void>;
 };
 
 export type CompoundTypeHint =
@@ -188,6 +192,7 @@ export type ClientNode = {
   bounds: Bounds;
   tags: Tag[];
   activeChild?: Id;
+  additionalDataCollection?: boolean;
 };
 
 /**
