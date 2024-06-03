@@ -20,18 +20,22 @@ export interface Request {
   url: string;
   domain: string;
   requestHeaders: Array<Header>;
-  requestData: string | Uint8Array | undefined;
+
   // response
   responseTime?: Date;
   status: string;
   reason?: string;
   responseHeaders?: Array<Header>;
-  responseData?: string | Uint8Array | undefined;
   responseLength?: number;
   requestLength?: number;
   responseIsMock?: boolean;
   duration?: number;
   insights?: Insights;
+}
+
+export interface RequestWithData extends Request {
+  requestData: string | Uint8Array | undefined;
+  responseData?: string | Uint8Array | undefined;
 }
 
 export type Requests = DataSource<Request, never>;

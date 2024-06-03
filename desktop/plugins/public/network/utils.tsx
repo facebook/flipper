@@ -10,7 +10,7 @@
 import {Buffer} from 'buffer';
 import decompress from 'brotli/decompress';
 import pako from 'pako';
-import {Request, Header, ResponseInfo} from './types';
+import {Header, ResponseInfo, RequestWithData} from './types';
 import {Base64} from 'js-base64';
 import {isInteger, parse} from 'lossless-json';
 
@@ -157,7 +157,10 @@ export function decodeBody(
 }
 
 export function convertRequestToCurlCommand(
-  request: Pick<Request, 'method' | 'url' | 'requestHeaders' | 'requestData'>,
+  request: Pick<
+    RequestWithData,
+    'method' | 'url' | 'requestHeaders' | 'requestData'
+  >,
 ): string {
   let command: string = `curl -v -X ${request.method}`;
   command += ` ${escapedString(request.url)}`;
@@ -235,14 +238,17 @@ export function getResponseLength(response: ResponseInfo): number {
   return 0;
 }
 
-export function getRequestLength(request: Request): number {
-  const lengthString = request.requestHeaders
-    ? getHeaderValue(request.requestHeaders, 'content-length')
+export function getRequestLength(
+  headers: Array<Header>,
+  data: string | null | undefined,
+): number {
+  const lengthString = headers
+    ? getHeaderValue(headers, 'content-length')
     : undefined;
   if (lengthString) {
     return parseInt(lengthString, 10);
-  } else if (request.requestData) {
-    return Buffer.byteLength(request.requestData, 'base64');
+  } else if (data) {
+    return Buffer.byteLength(data, 'base64');
   }
   return 0;
 }
@@ -282,7 +288,7 @@ export function formatOperationName(requestData: string): string {
   }
 }
 
-export function requestsToText(requests: Request[]): string {
+export function requestsToText(requests: RequestWithData[]): string {
   const request = requests[0];
   if (!request || !request.url) {
     return '<empty request>';
