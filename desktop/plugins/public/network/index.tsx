@@ -790,8 +790,8 @@ function getRowStyle(row: Request) {
     ? mockingStyle
     : row.status &&
         row.status !== '...' &&
-        parseInt(row.status, 10) >= 400 &&
-        parseInt(row.status, 10) < 600
+        ((parseInt(row.status, 10) >= 400 && parseInt(row.status, 10) < 600) ||
+          parseInt(row.status, 10) === -1)
       ? errorStyle
       : undefined;
 }
