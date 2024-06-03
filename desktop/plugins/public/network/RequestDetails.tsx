@@ -27,6 +27,7 @@ import {
   bodyAsString,
   formatBytes,
   getHeaderValue,
+  parseJsonWithBigInt,
   queryToObj,
 } from './utils';
 import {Request, Header, Insights, RetryInsights} from './types';
@@ -34,6 +35,7 @@ import {BodyOptions} from './index';
 import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
 import {KeyValueItem, KeyValueTable} from './KeyValueTable';
 import {CopyOutlined} from '@ant-design/icons';
+import {stringify} from 'lossless-json';
 
 const {Text} = Typography;
 
@@ -406,7 +408,7 @@ class JSONText extends Component<{children: any}> {
     const jsonObject = this.props.children;
     return (
       <CodeBlock>
-        {JSON.stringify(jsonObject, null, 2)}
+        {stringify(jsonObject, null, 2)}
         {'\n'}
       </CodeBlock>
     );
@@ -448,7 +450,7 @@ class JSONTextFormatter {
       contentType.startsWith('application/x-fb-flatbuffer')
     ) {
       try {
-        const data = JSON.parse(body);
+        const data = parseJsonWithBigInt(body);
         return <JSONText>{data}</JSONText>;
       } catch (SyntaxError) {
         // Multiple top level JSON roots, map them one by one
@@ -612,7 +614,8 @@ class GraphQLFormatter {
       contentType.startsWith('application/x-fb-flatbuffer')
     ) {
       try {
-        const data = JSON.parse(body);
+        const data = parseJsonWithBigInt(body);
+
         return (
           <div>
             {this.parsedServerTimeForFirstFlush(data)}

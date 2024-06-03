@@ -12,6 +12,7 @@ import decompress from 'brotli/decompress';
 import pako from 'pako';
 import {Request, Header, ResponseInfo} from './types';
 import {Base64} from 'js-base64';
+import {isInteger, parse} from 'lossless-json';
 
 export function getHeaderValue(
   headers: Array<Header> | undefined,
@@ -262,6 +263,14 @@ export function formatBytes(count: number | undefined): string {
     return `${(count / 1024.0).toFixed(1)} kB`;
   }
   return `${count} B`;
+}
+
+function customNumberParser(value: string) {
+  return isInteger(value) ? BigInt(value) : parseFloat(value);
+}
+
+export function parseJsonWithBigInt(jsonStr: string) {
+  return parse(jsonStr, null, customNumberParser);
 }
 
 export function formatOperationName(requestData: string): string {
