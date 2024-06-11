@@ -13,6 +13,7 @@ target 'Sample' do
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitExamplePlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitReactPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitDatabasesPlugin', :path => '../../FlipperKit.podspec', :configuration => 'Debug'
   pod 'Flipper', :path => '../../Flipper.podspec', :configuration => 'Debug'
   pod 'Flipper-DoubleConversion', :configuration => 'Debug'
   pod 'Flipper-Folly', :configuration => 'Debug'
