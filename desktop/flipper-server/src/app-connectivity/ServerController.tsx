@@ -442,7 +442,7 @@ export class ServerController
                 new DummyDevice(
                   this.flipperServer,
                   deviceId,
-                  `${clientQuery.device} via QR Exchange`,
+                  clientQuery.device,
                   clientQuery.os,
                 ),
               );
