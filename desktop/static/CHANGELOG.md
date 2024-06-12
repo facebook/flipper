@@ -1,3 +1,8 @@
+# 0.255.0 (12/6/2024)
+
+ * [D57865621](https://github.com/facebook/flipper/search?q=D57865621&type=Commits) -  Network plugin: Store data in IndexedDB to reduce memory consumption
+
+
 # 0.253.0 (15/5/2024)
 
  * [D55967421](https://github.com/facebook/flipper/search?q=D55967421&type=Commits) -  BloksDebugger - Async component payload support (android only currently)
