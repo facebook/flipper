@@ -31,7 +31,7 @@
     "protocol_handlers": [
       {
         "protocol": "web+flipper",
-        "url": "/?open-plugin=%s"
+        "url": "/?deep-link=%s"
       }
     ]
   }
