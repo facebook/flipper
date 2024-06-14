@@ -136,6 +136,7 @@ export namespace FlipperDoctor {
       enablePhysicalIOS: boolean;
       idbPath: string;
     };
+    isProduction: boolean;
   };
 
   /**

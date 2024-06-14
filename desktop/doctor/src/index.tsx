@@ -20,7 +20,9 @@ import type {FlipperDoctor} from 'flipper-common';
 import * as fs_extra from 'fs-extra';
 import {validateSelectedXcodeVersion} from './fb-stubs/validateSelectedXcodeVersion';
 
-export function getHealthchecks(): FlipperDoctor.Healthchecks {
+export function getHealthchecks(
+  isProduction: boolean,
+): FlipperDoctor.Healthchecks {
   return {
     common: {
       label: 'Common',
@@ -40,19 +42,24 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             };
           },
         },
-        {
-          key: 'common.watchman',
-          label: 'Watchman Installed',
-          run: async (_: FlipperDoctor.EnvironmentInfo) => {
-            const isAvailable = await isWatchmanAvailable();
-            return {
-              hasProblem: !isAvailable,
-              message: isAvailable
-                ? ['common.watchman--installed']
-                : ['common.watchman--not_installed'],
-            };
-          },
-        },
+
+        ...(!isProduction
+          ? [
+              {
+                key: 'common.watchman',
+                label: 'Watchman Installed',
+                run: async (_: FlipperDoctor.EnvironmentInfo) => {
+                  const isAvailable = await isWatchmanAvailable();
+                  return {
+                    hasProblem: !isAvailable,
+                    message: isAvailable
+                      ? ['common.watchman--installed']
+                      : ['common.watchman--not_installed'],
+                  };
+                },
+              } as FlipperDoctor.Healthcheck,
+            ]
+          : []),
       ],
     },
     android: {
@@ -421,11 +428,14 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
   };
 }
 
-export async function runHealthchecks(): Promise<
+export async function runHealthchecks(
+  isProduction: boolean,
+): Promise<
   Array<FlipperDoctor.CategoryResult | FlipperDoctor.SkippedHealthcheckCategory>
 > {
   const environmentInfo = await getEnvInfo();
-  const healthchecks: FlipperDoctor.Healthchecks = getHealthchecks();
+  const healthchecks: FlipperDoctor.Healthchecks =
+    getHealthchecks(isProduction);
   const results: Array<
     FlipperDoctor.CategoryResult | FlipperDoctor.SkippedHealthcheckCategory
   > = await Promise.all(

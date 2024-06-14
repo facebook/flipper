@@ -13,7 +13,7 @@ import {getEnvInfo} from './environmentInfo';
 (async () => {
   const environmentInfo = await getEnvInfo();
   console.log(JSON.stringify(environmentInfo));
-  const healthchecks = getHealthchecks();
+  const healthchecks = getHealthchecks(false);
   const results = await Promise.all(
     Object.entries(healthchecks).map(async ([key, category]) => [
       key,

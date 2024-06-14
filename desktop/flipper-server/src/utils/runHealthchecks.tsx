@@ -14,7 +14,7 @@ import produce from 'immer';
 export async function getHealthChecks(
   options: FlipperDoctor.HealthcheckSettings,
 ) {
-  return produce(getHealthchecks(), (healthchecks) => {
+  return produce(getHealthchecks(options.isProduction), (healthchecks) => {
     if (!options.settings.enableAndroid) {
       healthchecks.android = {
         label: healthchecks.android.label,
@@ -47,7 +47,7 @@ export async function runHealthcheck(
   categoryName: keyof FlipperDoctor.Healthchecks,
   ruleName: string,
 ): Promise<FlipperDoctor.HealthcheckResult> {
-  const healthchecks = getHealthchecks();
+  const healthchecks = getHealthchecks(options.isProduction);
   const category = healthchecks[categoryName];
   if (!category) {
     throw new Error(`Unknown category: ${categoryName}`);
