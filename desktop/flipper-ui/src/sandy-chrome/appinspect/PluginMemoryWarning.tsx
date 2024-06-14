@@ -194,8 +194,6 @@ function PluginMemoryDetails({
     } as PluginMemoryStats;
   });
 
-  console.log('rendeing modal');
-
   return (
     <Layout.Container
       style={{minHeight: '80vh', width: '100%', display: 'flex'}}>
