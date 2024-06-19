@@ -6,6 +6,7 @@ fb_android_library(
     dataclass_generate = {
         "mode": "EXPLICIT",
     },
+    k2 = True,
     oncall = "flipper",
     deps = [
         "//fbandroid/third-party/android/androidx/compose:ui-tooling-data",
