@@ -62,7 +62,8 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
     val className = rootViewOrActivity.javaClass.name
 
     if (className.contains("mediagallery.ui.MediaGalleryActivity") ||
-        className.contains("ImagineCreationActivity")) {
+        className.contains("ImagineCreationActivity") ||
+        className.contains("WriteWithAIActivity")) {
       // this activity doesn't contain the content and its actually in the decor view behind it, so
       // skip it :/
       return false
