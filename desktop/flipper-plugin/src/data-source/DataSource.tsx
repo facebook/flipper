@@ -1128,7 +1128,7 @@ export class DataSourceView<T, KeyType> {
       output,
       {
         value: oldValue,
-        id: -1,
+        id: -99999,
         visible: entry.visible,
         approxIndex: entry.approxIndex,
       },
