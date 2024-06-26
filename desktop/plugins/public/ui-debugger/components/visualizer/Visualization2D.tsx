@@ -53,9 +53,8 @@ export const Visualization2D: React.FC<
   const focusedNodeId = useValue(instance.uiState.focusedNode);
   const nodeSelection = useValue(instance.uiState.nodeSelection);
   const wireFrameMode = useValue(instance.uiState.wireFrameMode);
-
+  const boxVisualiserEnabled = useValue(instance.uiState.boxVisualiserEnabled);
   const [alignmentModeEnabled, setAlignmentModeEnabled] = useState(false);
-  const [boxVisualiserEnabled, setBoxVisualiserEnabled] = useState(false);
 
   const [targetMode, setTargetMode] = useState<TargetModeState>({
     state: 'disabled',
@@ -83,7 +82,7 @@ export const Visualization2D: React.FC<
           alignmentModeEnabled={alignmentModeEnabled}
           setAlignmentModeEnabled={setAlignmentModeEnabled}
           boxVisualiserEnabled={boxVisualiserEnabled}
-          setBoxVisualiserEnabled={setBoxVisualiserEnabled}
+          setBoxVisualiserEnabled={instance.uiActions.onSetBoxVisualiserEnabled}
         />
       )}
       <Visualization2DContent

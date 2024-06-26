@@ -343,7 +343,7 @@ export * from './ClientTypes';
 function createUIState(): UIState {
   return {
     isConnected: createState(false),
-
+    boxVisualiserEnabled: createState(false),
     viewMode: createState({mode: 'default'}),
 
     //used to disabled hover effects which cause rerenders and mess up the existing context menu

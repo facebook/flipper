@@ -311,9 +311,17 @@ export function uiActions(
     });
   };
 
+  const onSetBoxVisualiserEnabled = (enabled: boolean) => {
+    uiState.boxVisualiserEnabled.set(enabled);
+    tracker.track('box-visualiser-switched', {
+      on: enabled,
+    });
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
+    onSetBoxVisualiserEnabled,
     onHoverNode,
     onSelectNode,
     onContextMenuOpen,

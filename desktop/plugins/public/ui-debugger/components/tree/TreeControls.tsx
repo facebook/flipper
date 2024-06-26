@@ -267,6 +267,7 @@ function FrameworkEventsMonitoringModal({
 
             <div style={{position: 'relative', height: 26, marginTop: 16}}>
               <TreeNodeRow
+                boxVisualiserEnabled={false}
                 transform=""
                 onCollapseNode={() => {}}
                 onExpandNode={() => {}}
