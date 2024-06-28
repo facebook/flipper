@@ -10,7 +10,6 @@
 import {exec} from 'child_process';
 import os from 'os';
 import {promisify} from 'util';
-import {getEnvInfo} from './environmentInfo';
 export {getEnvInfo} from './environmentInfo';
 
 import * as watchman from 'fb-watchman';
@@ -426,52 +425,6 @@ export function getHealthchecks(
           }),
     },
   };
-}
-
-export async function runHealthchecks(
-  isProduction: boolean,
-): Promise<
-  Array<FlipperDoctor.CategoryResult | FlipperDoctor.SkippedHealthcheckCategory>
-> {
-  const environmentInfo = await getEnvInfo();
-  const healthchecks: FlipperDoctor.Healthchecks =
-    getHealthchecks(isProduction);
-  const results: Array<
-    FlipperDoctor.CategoryResult | FlipperDoctor.SkippedHealthcheckCategory
-  > = await Promise.all(
-    Object.entries(healthchecks).map(async ([key, category]) => {
-      if (category.isSkipped) {
-        return category;
-      }
-      const categoryResult: FlipperDoctor.CategoryResult = [
-        key,
-        {
-          label: category.label,
-          results: await Promise.all(
-            category.healthchecks.map(
-              async ({key, label, run, isRequired}) => ({
-                key,
-                label,
-                isRequired: isRequired ?? true,
-                // TODO: Fix this the next time the file is edited.
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                result: await run!(environmentInfo).catch((e) => {
-                  console.warn(`Health check ${key}/${label} failed with:`, e);
-                  // TODO Improve result type to be: OK | Problem(message, fix...)
-                  return {
-                    hasProblem: true,
-                  };
-                }),
-              }),
-            ),
-          ),
-        },
-      ];
-
-      return categoryResult;
-    }),
-  );
-  return results;
 }
 
 async function tryExecuteCommand(
