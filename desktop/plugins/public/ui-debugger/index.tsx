@@ -185,9 +185,6 @@ export function plugin(client: PluginClient<Events, Methods>) {
     if (frame.frameTime > lastProcessedFrameTime.get()) {
       applyFrameData(frame.nodes, frame.snapshot);
       lastProcessedFrameTime.set(frame.frameTime);
-      const selectedNode = uiState.nodeSelection.get();
-      if (selectedNode != null)
-        _uiActions.ensureAncestorsExpanded(selectedNode.node.id);
     }
   });
 
