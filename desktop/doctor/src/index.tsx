@@ -188,8 +188,6 @@ export function getHealthchecks(
                   const result = await tryExecuteCommand(
                     `${settings?.idbPath} --help`,
                   );
-                  const hasIdbCompanion =
-                    await tryExecuteCommand(`idbCompanion --help`);
                   if (result.fail) {
                     const hasIdbInPath = await tryExecuteCommand(`which idb`);
 
@@ -205,6 +203,9 @@ export function getHealthchecks(
                         ],
                       };
                     }
+                    const hasIdbCompanion = await tryExecuteCommand(
+                      'which idb_companion',
+                    );
 
                     return {
                       hasProblem: true,
