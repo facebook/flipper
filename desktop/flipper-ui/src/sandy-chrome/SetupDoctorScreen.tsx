@@ -154,10 +154,28 @@ function CollapsableCategory(props: {
           header={check.label}
           extra={<CheckIcon status={check.result.status} />}>
           {check.result.message != null ? (
-            <DoctorMessage
-              id={check.result.message[0]}
-              props={check.result.message[1]}
-            />
+            <>
+              {check.result.subchecks ? (
+                <ul>
+                  {check.result.subchecks.map((subcheck, i) => (
+                    <li key={i}>
+                      {subcheck.status === 'ok' ? (
+                        <CheckCircleFilled
+                          style={{color: theme.successColor}}
+                        />
+                      ) : (
+                        <CloseCircleFilled style={{color: theme.errorColor}} />
+                      )}{' '}
+                      {subcheck.title}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              <DoctorMessage
+                id={check.result.message[0]}
+                props={check.result.message[1]}
+              />
+            </>
           ) : null}
         </Collapse.Panel>
       ))}

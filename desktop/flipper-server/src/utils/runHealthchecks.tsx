@@ -68,6 +68,7 @@ export async function runHealthcheck(
   return checkResult.hasProblem && check.isRequired
     ? {
         status: 'FAILED',
+        subchecks: checkResult.subchecks,
         message: checkResult.message,
       }
     : checkResult.hasProblem && !check.isRequired

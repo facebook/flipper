@@ -69,8 +69,15 @@ export namespace FlipperDoctor {
     command: string;
   };
 
+  export type HealthcheckRunSubcheck = {
+    status: 'ok' | 'fail';
+    title: string;
+  };
+
   export type HealthcheckRunResult = {
     hasProblem: boolean;
+    /** Indicates what sub checks were passed to better communicate the problem */
+    subchecks?: HealthcheckRunSubcheck[];
     message: MessageIdWithParams;
   };
 
@@ -109,6 +116,7 @@ export namespace FlipperDoctor {
     status: HealthcheckStatus;
     isAcknowledged?: boolean;
     message?: MessageIdWithParams;
+    subchecks?: HealthcheckRunSubcheck[];
   };
 
   export type HealthcheckReportItem = {
