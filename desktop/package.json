@@ -170,7 +170,6 @@
     "packages": [
       "scripts",
       "babel-transformer",
-      "doctor",
       "pkg",
       "pkg-lib",
       "flipper-common",

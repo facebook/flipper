@@ -3369,10 +3369,12 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
-"@types/fb-watchman@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@types/fb-watchman/-/fb-watchman-2.0.1.tgz#4f44c7b7ac98463488765d41d269272dd34cb815"
-  integrity sha512-iJ7/e6drSmuCzAp96/dpksm8YjxbhhyXWV6m1HPbRHvZwUOUZ5vZvZIAUJxKDtI0UpdNfDvLPiai0MTJmmS+HA==
+"@types/fb-watchman@^2.0.1":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@types/fb-watchman/-/fb-watchman-2.0.4.tgz#3a02379aa90d86ceb965a2beaebd7e79faa81e82"
+  integrity sha512-h7yAQ5Sf96PdZz+sfDDl6Hscl/JqsVXadjF6YHmJeWviziDCGQtqUQUDS2tYjfD/eTzhfZwNfwcfb91a4PaZKQ==
+  dependencies:
+    "@types/node" "*"
 
 "@types/file-saver@^2.0.5":
   version "2.0.5"

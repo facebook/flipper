@@ -7,7 +7,7 @@
  * @format
  */
 
-import {getHealthchecks, getEnvInfo} from 'flipper-doctor';
+import {getHealthchecks, getEnvInfo} from '../doctor';
 import {FlipperDoctor} from 'flipper-common';
 import produce from 'immer';
 

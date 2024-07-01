@@ -10,8 +10,10 @@
   "bugs": "https://github.com/facebook/flipper/issues",
   "dependencies": {
     "chalk": "^4",
+    "envinfo": "^7.8.1",
     "exit-hook": "^2.1.1",
     "express": "^4.17.3",
+    "fb-watchman": "^2.0.2",
     "file-stream-rotator": "^0.6.1",
     "flipper-common": "0.0.0",
     "flipper-pkg-lib": "0.0.0",
@@ -31,7 +33,6 @@
     "archiver": "^5.3.1",
     "async-mutex": "^0.3.2",
     "axios": "^0.26.0",
-    "flipper-doctor": "0.0.0",
     "flipper-plugin-lib": "0.0.0",
     "form-data": "^4.0.0",
     "invariant": "^2.2.4",
@@ -56,6 +57,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "@types/fb-watchman": "^2.0.1",
     "@types/http-proxy": "^1.17.8",
     "@types/node": "^17.0.31",
     "@types/archiver": "^5.3.1",

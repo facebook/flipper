@@ -31,9 +31,6 @@
       "path": "../pkg-lib"
     },
     {
-      "path": "../doctor"
-    },
-    {
       "path": "../eslint-plugin-flipper"
     },
     {
