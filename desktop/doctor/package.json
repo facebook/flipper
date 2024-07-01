@@ -13,8 +13,7 @@
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
-    "prepack": "yarn reset && yarn build",
-    "run": "yarn run build && node lib/cli.js"
+    "prepack": "yarn reset && yarn build"
   },
   "files": [
     "lib/**/*"
