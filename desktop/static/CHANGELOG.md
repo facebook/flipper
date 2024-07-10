@@ -1,3 +1,9 @@
+# 0.257.0 (10/7/2024)
+
+ * [D59001348](https://github.com/facebook/flipper/search?q=D59001348&type=Commits) -  [Internal]
+ * [D59374023](https://github.com/facebook/flipper/search?q=D59374023&type=Commits) -  [Internal]
+
+
 # 0.255.0 (12/6/2024)
 
  * [D57865621](https://github.com/facebook/flipper/search?q=D57865621&type=Commits) -  Network plugin: Store data in IndexedDB to reduce memory consumption
