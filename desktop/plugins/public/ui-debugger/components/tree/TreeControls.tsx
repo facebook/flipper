@@ -40,6 +40,7 @@ import {
 } from '../shared/FrameworkEventsTreeSelect';
 import {createDropDownItem} from '../shared/createDropDownItem';
 import {TreeNodeRow} from './Tree';
+import {CustomActionGroupDropDown} from './CustomActions';
 
 type FrameworkEventsDropDownItems = 'OpenTable' | 'Monitoring';
 const frameworkEventsDropDownItems = [
@@ -85,6 +86,8 @@ export const TreeControls: React.FC = () => {
   );
 
   const isConnected = useValue(instance.uiState.isConnected);
+
+  const customActionGroups = useValue(instance.customActionGroups);
 
   return (
     <Layout.Horizontal gap="medium" pad="medium">
@@ -133,6 +136,13 @@ export const TreeControls: React.FC = () => {
             </Button>
           </Tooltip>
         )}
+      {customActionGroups.map((group, idx) => (
+        <CustomActionGroupDropDown
+          key={group.title}
+          groupIdx={idx}
+          customActionGroup={group}
+        />
+      ))}
       {frameworkEventMonitoring.size > 0 && (
         <>
           <Dropdown
@@ -257,6 +267,7 @@ function FrameworkEventsMonitoringModal({
 
             <div style={{position: 'relative', height: 26, marginTop: 16}}>
               <TreeNodeRow
+                boxVisualiserEnabled={false}
                 transform=""
                 onCollapseNode={() => {}}
                 onExpandNode={() => {}}

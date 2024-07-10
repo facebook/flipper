@@ -59,6 +59,7 @@ describe('ServerWebSocket', () => {
       device,
       os,
       app,
+      app_id: `com.facebook.flipper.${app}`,
       sdk_version: sdkVersion,
       medium: 'WWW',
     };

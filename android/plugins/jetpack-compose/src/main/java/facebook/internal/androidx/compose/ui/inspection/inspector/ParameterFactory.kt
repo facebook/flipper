@@ -30,8 +30,6 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.inspection.util.copy
-import androidx.compose.ui.inspection.util.removeLast
 import androidx.compose.ui.platform.InspectableModifier
 import androidx.compose.ui.platform.InspectableValue
 import androidx.compose.ui.text.AnnotatedString
@@ -48,6 +46,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import facebook.internal.androidx.compose.ui.inspection.inspector.ParameterType.DimensionDp
+import facebook.internal.androidx.compose.ui.inspection.util.copy
+import facebook.internal.androidx.compose.ui.inspection.util.removeLast
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier as JavaModifier
 import java.util.IdentityHashMap
@@ -63,14 +63,15 @@ import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaGetter
 
-private val reflectionScope: ReflectionScope = ReflectionScope()
-
 /**
  * Factory of [NodeParameter]s.
  *
  * Each parameter value is converted to a user readable value.
  */
 internal class ParameterFactory(private val inlineClassConverter: InlineClassConverter) {
+
+  private val reflectionScope: ReflectionScope = ReflectionScope()
+
   /** A map from known values to a user readable string representation. */
   private val valueLookup = mutableMapOf<Any, String>()
 
@@ -127,11 +128,26 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
       kind: ParameterKind,
       parameterIndex: Int,
       maxRecursions: Int,
-      maxInitialIterableSize: Int
+      maxInitialIterableSize: Int,
+      useReflection: Boolean
   ): NodeParameter {
     val creator = creatorCache ?: ParameterCreator()
     try {
-      return reflectionScope.withReflectiveAccess {
+      return if (useReflection) {
+        reflectionScope.withReflectiveAccess {
+          creator.create(
+              rootId,
+              nodeId,
+              anchorId,
+              name,
+              value,
+              kind,
+              parameterIndex,
+              maxRecursions,
+              maxInitialIterableSize,
+              true)
+        }
+      } else {
         creator.create(
             rootId,
             nodeId,
@@ -141,52 +157,8 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
             kind,
             parameterIndex,
             maxRecursions,
-            maxInitialIterableSize)
-      }
-    } finally {
-      creatorCache = creator
-    }
-  }
-
-  /**
-   * Create/expand the [NodeParameter] specified by [reference].
-   *
-   * @param rootId is the root id of the specified [nodeId].
-   * @param nodeId is the [InspectorNode.id] of the node the parameter belongs to.
-   * @param anchorId is the [InspectorNode.anchorId] of the node the parameter belongs to.
-   * @param name is the name of the [reference].parameterIndex'th parameter of the node.
-   * @param value is the value of the [reference].parameterIndex'th parameter of the node.
-   * @param startIndex is the index of the 1st wanted element of a List/Array.
-   * @param maxElements is the max number of elements wanted from a List/Array.
-   * @param maxRecursions is the max recursion into composite types starting from reference.
-   * @param maxInitialIterableSize is the max number of elements wanted in new List/Array values.
-   */
-  fun expand(
-      rootId: Long,
-      nodeId: Long,
-      anchorId: Int,
-      name: String,
-      value: Any?,
-      reference: NodeParameterReference,
-      startIndex: Int,
-      maxElements: Int,
-      maxRecursions: Int,
-      maxInitialIterableSize: Int
-  ): NodeParameter? {
-    val creator = creatorCache ?: ParameterCreator()
-    try {
-      return reflectionScope.withReflectiveAccess {
-        creator.expand(
-            rootId,
-            nodeId,
-            anchorId,
-            name,
-            value,
-            reference,
-            startIndex,
-            maxElements,
-            maxRecursions,
-            maxInitialIterableSize)
+            maxInitialIterableSize,
+            false)
       }
     } finally {
       creatorCache = creator
@@ -194,8 +166,7 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
   }
 
   fun clearReferenceCache() {
-    val creator = creatorCache ?: return
-    creator.clearReferenceCache()
+    creatorCache?.clearReferenceCache()
   }
 
   private fun loadConstantsFrom(javaClass: Class<*>) {
@@ -335,6 +306,7 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
     private val rootValueIndexCache =
         mutableLongObjectMapOf<IdentityHashMap<Any, NodeParameterReference>>()
     private var valueIndexMap = IdentityHashMap<Any, NodeParameterReference>()
+    private var useReflection = false
 
     fun create(
         rootId: Long,
@@ -345,55 +317,23 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
         kind: ParameterKind,
         parameterIndex: Int,
         maxRecursions: Int,
-        maxInitialIterableSize: Int
+        maxInitialIterableSize: Int,
+        useReflection: Boolean
     ): NodeParameter =
         try {
           setup(
-              rootId, nodeId, anchorId, kind, parameterIndex, maxRecursions, maxInitialIterableSize)
+              rootId,
+              nodeId,
+              anchorId,
+              kind,
+              parameterIndex,
+              maxRecursions,
+              maxInitialIterableSize,
+              useReflection)
           create(name, value, null) ?: createEmptyParameter(name)
         } finally {
           setup()
         }
-
-    fun expand(
-        rootId: Long,
-        nodeId: Long,
-        anchorId: Int,
-        name: String,
-        value: Any?,
-        reference: NodeParameterReference,
-        startIndex: Int,
-        maxElements: Int,
-        maxRecursions: Int,
-        maxInitialIterableSize: Int
-    ): NodeParameter? {
-      setup(
-          rootId,
-          nodeId,
-          anchorId,
-          reference.kind,
-          reference.parameterIndex,
-          maxRecursions,
-          maxInitialIterableSize)
-      var parent: Pair<String, Any?>? = null
-      var new = Pair(name, value)
-      reference.indices.forEach { index ->
-        parent = new
-        new = find(new.first, new.second, index) ?: return null
-      }
-      recursions = 0
-      valueIndex.addAll(reference.indices)
-      val parameter =
-          if (startIndex == 0) {
-            create(new.first, new.second, parent?.second)
-          } else {
-            createFromCompositeValue(new.first, new.second, parent?.second, startIndex, maxElements)
-          }
-      if (parameter == null && reference.indices.isEmpty()) {
-        return createEmptyParameter(name)
-      }
-      return parameter
-    }
 
     fun clearReferenceCache() {
       rootValueIndexCache.clear()
@@ -406,7 +346,8 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
         newKind: ParameterKind = ParameterKind.Normal,
         newParameterIndex: Int = 0,
         maxRecursions: Int = 0,
-        maxInitialIterableSize: Int = 0
+        maxInitialIterableSize: Int = 0,
+        useReflection: Boolean = false
     ) {
       rootId = newRootId
       nodeId = newNodeId
@@ -419,6 +360,7 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
       valueIndex.clear()
       valueLazyReferenceMap.clear()
       valueIndexMap = rootValueIndexCache.getOrPut(newRootId) { IdentityHashMap() }
+      this.useReflection = useReflection
     }
 
     private fun create(name: String, value: Any?, parentValue: Any?): NodeParameter? {
@@ -448,8 +390,10 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
       if (value == null) {
         return null
       }
-      createFromConstant(name, value)?.let {
-        return it
+      if (useReflection) {
+        createFromConstant(name, value)?.let {
+          return it
+        }
       }
       return when (value) {
         is AnnotatedString -> NodeParameter(name, ParameterType.String, value.text)
@@ -496,25 +440,21 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
               createFromSequence(name, value, value.asSequence(), startIndex, maxElements)
           value.javaClass.isArray -> createFromArray(name, value, startIndex, maxElements)
           value is Offset -> createFromOffset(name, value)
-          value is Shadow -> createFromShadow(name, value)
+          value is Shadow -> {
+            if (useReflection) {
+              createFromShadow(name, value)
+            } else {
+              NodeParameter(name, ParameterType.ComplexObject, value.toString())
+            }
+          }
           value is TextStyle -> createFromTextStyle(name, value)
-          else -> createFromKotlinReflection(name, value)
-        }
-
-    private fun find(name: String, value: Any?, index: Int): Pair<String, Any?>? =
-        when {
-          value == null -> null
-          value is Modifier -> findFromModifier(name, value, index)
-          value is InspectableValue -> findFromInspectableValue(value, index)
-          value is Sequence<*> -> findFromSequence(value, index)
-          value is Map<*, *> -> findFromSequence(value.asSequence(), index)
-          value is Map.Entry<*, *> -> findFromMapEntry(value, index)
-          value is Iterable<*> -> findFromSequence(value.asSequence(), index)
-          value.javaClass.isArray -> findFromArray(value, index)
-          value is Offset -> findFromOffset(value, index)
-          value is Shadow -> findFromShadow(value, index)
-          value is TextStyle -> findFromTextStyle(value, index)
-          else -> findFromKotlinReflection(value, index)
+          else -> {
+            if (useReflection) {
+              createFromKotlinReflection(name, value)
+            } else {
+              NodeParameter(name, ParameterType.ComplexObject, value.toString())
+            }
+          }
         }
 
     private fun createRecursively(
@@ -628,11 +568,6 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
       return createFromSequence(name, value, sequence, startIndex, maxElements)
     }
 
-    private fun findFromArray(value: Any, index: Int): Pair<String, Any?>? {
-      val sequence = arrayToSequence(value) ?: return null
-      return findFromSequence(sequence, index)
-    }
-
     private fun arrayToSequence(value: Any): Sequence<*>? =
         when (value) {
           is Array<*> -> value.asSequence()
@@ -695,19 +630,18 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
       }
     }
 
-    private fun findFromKotlinReflection(value: Any, index: Int): Pair<String, Any?>? {
-      val properties = lookup(value)?.entries?.iterator()?.asSequence() ?: return null
-      val element = properties.elementAtOrNull(index)?.value ?: return null
-      return Pair(element.name, valueOf(element, value))
-    }
-
     private fun lookup(value: Any): Map<String, KProperty<*>>? {
       val kClass = value::class
       val simpleName = kClass.simpleName
       val qualifiedName = kClass.qualifiedName
       if (simpleName == null ||
           qualifiedName == null ||
-          ignoredPackagePrefixes.any { qualifiedName.startsWith(it) }) {
+          ignoredPackagePrefixes.any { qualifiedName.startsWith(it) } ||
+          kClass.allSuperclasses.any { superClass ->
+            val superClassQualifiedName = superClass.qualifiedName
+            superClassQualifiedName == null ||
+                ignoredPackagePrefixes.any { superClassQualifiedName.startsWith(it) }
+          }) {
         // Exit without creating a parameter for:
         // - internal synthetic classes
         // - certain android packages
@@ -753,15 +687,6 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
       return parameter.removeIfEmpty(value)
     }
 
-    private fun findFromInspectableValue(value: InspectableValue, index: Int): Pair<String, Any?>? {
-      val elements = value.inspectableElements.toList()
-      if (index !in elements.indices) {
-        return null
-      }
-      val element = elements[index]
-      return Pair(element.name, element.value)
-    }
-
     private fun createFromMapEntry(
         name: String,
         entry: Map.Entry<*, *>,
@@ -777,13 +702,6 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
         elements.add(value)
       }
     }
-
-    private fun findFromMapEntry(entry: Map.Entry<*, *>, index: Int): Pair<String, Any?>? =
-        when (index) {
-          0 -> Pair("key", entry.key)
-          1 -> Pair("value", entry.value)
-          else -> null
-        }
 
     private fun createFromSequence(
         name: String,
@@ -813,11 +731,6 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
           parameter.removeIfEmpty(value)
         }
       }
-    }
-
-    private fun findFromSequence(value: Sequence<*>, index: Int): Pair<String, Any?>? {
-      val element = value.elementAtOrNull(index) ?: return null
-      return Pair("[$index]", element)
     }
 
     private fun sequenceName(value: Any): String =
@@ -868,16 +781,6 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
       return collector.modifiers
     }
 
-    private fun findFromModifier(name: String, value: Modifier, index: Int): Pair<String, Any?>? =
-        when {
-          name.isNotEmpty() -> {
-            val modifiers = unwrap(value)
-            if (index in modifiers.indices) Pair("", modifiers[index]) else null
-          }
-          value is InspectableValue -> findFromInspectableValue(value, index)
-          else -> null
-        }
-
     private fun createFromOffset(name: String, value: Offset): NodeParameter {
       val parameter = NodeParameter(name, ParameterType.String, Offset::class.java.simpleName)
       val elements = parameter.elements
@@ -887,13 +790,6 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
       elements.add(NodeParameter("y", DimensionDp, y).apply { index = 1 })
       return parameter
     }
-
-    private fun findFromOffset(value: Offset, index: Int): Pair<String, Any?>? =
-        when (index) {
-          0 -> Pair("x", with(density) { value.x.toDp() })
-          1 -> Pair("y", with(density) { value.y.toDp() })
-          else -> null
-        }
 
     // Special handling of blurRadius: convert to dp:
     private fun createFromShadow(name: String, value: Shadow): NodeParameter? {
@@ -907,14 +803,6 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
         elements[index].index = existing.index
       }
       return parameter
-    }
-
-    private fun findFromShadow(value: Shadow, index: Int): Pair<String, Any?>? {
-      val result = findFromKotlinReflection(value, index)
-      if (result == null || result.first != "blurRadius") {
-        return result
-      }
-      return Pair("blurRadius", with(density) { value.blurRadius.toDp() })
     }
 
     // Temporary handling of TextStyle: remove when TextStyle implements InspectableValue
@@ -943,28 +831,6 @@ internal class ParameterFactory(private val inlineClassConverter: InlineClassCon
       create("textIndent", value.textIndent, value, 16)?.let { elements.add(it) }
       return parameter
     }
-
-    private fun findFromTextStyle(value: TextStyle, index: Int): Pair<String, Any?>? =
-        when (index) {
-          0 -> Pair("color", value.color)
-          1 -> Pair("fontSize", value.fontSize)
-          2 -> Pair("fontWeight", value.fontWeight)
-          3 -> Pair("fontStyle", value.fontStyle)
-          4 -> Pair("fontSynthesis", value.fontSynthesis)
-          5 -> Pair("fontFamily", value.fontFamily)
-          6 -> Pair("fontFeatureSettings", value.fontFeatureSettings)
-          7 -> Pair("letterSpacing", value.letterSpacing)
-          8 -> Pair("baselineShift", value.baselineShift)
-          9 -> Pair("textGeometricTransform", value.textGeometricTransform)
-          10 -> Pair("localeList", value.localeList)
-          11 -> Pair("background", value.background)
-          12 -> Pair("textDecoration", value.textDecoration)
-          13 -> Pair("shadow", value.shadow)
-          14 -> Pair("textDirection", value.textDirection)
-          15 -> Pair("lineHeight", value.lineHeight)
-          16 -> Pair("textIndent", value.textIndent)
-          else -> null
-        }
 
     @Suppress("DEPRECATION")
     private fun createFromTextUnit(name: String, value: TextUnit): NodeParameter =

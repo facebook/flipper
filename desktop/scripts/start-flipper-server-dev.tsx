@@ -129,13 +129,7 @@ async function startWatchChanges() {
     // We only watch for changes that might affect the server.
     // For UI changes, Metro / hot module reloading / fast refresh take care of the changes
     await Promise.all(
-      [
-        'doctor',
-        'pkg-lib',
-        'plugin-lib',
-        'flipper-common',
-        'flipper-server',
-      ].map((dir) =>
+      ['pkg-lib', 'plugin-lib', 'flipper-common', 'flipper-server'].map((dir) =>
         watchman.startWatchFiles(
           dir,
           () => {

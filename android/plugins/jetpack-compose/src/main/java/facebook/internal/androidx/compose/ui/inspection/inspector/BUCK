@@ -1,0 +1,17 @@
+load("@fbsource//tools/build_defs/android:fb_android_library.bzl", "fb_android_library")
+
+fb_android_library(
+    name = "inspector",
+    create_suffixed_alias = True,
+    dataclass_generate = {
+        "mode": "EXPLICIT",
+    },
+    k2 = True,
+    oncall = "flipper",
+    deps = [
+        "//fbandroid/third-party/android/androidx/compose:ui-tooling-data",
+        "//third-party/java/androidx/compose/ui/ui-android:ui-android-aar",
+        "//third-party/kotlin:kotlin-reflect",
+        "//xplat/sonar/android/plugins/jetpack-compose/src/main/java/facebook/internal/androidx/compose/ui/inspection/util:util",
+    ],
+)

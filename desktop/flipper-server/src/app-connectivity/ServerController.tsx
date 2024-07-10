@@ -171,6 +171,7 @@ export class ServerController
   ): Promise<ClientDescription> {
     const {
       app,
+      app_id,
       os,
       device,
       device_id,
@@ -194,6 +195,7 @@ export class ServerController
       clientConnection,
       {
         app,
+        app_id,
         os,
         device,
         device_id,
@@ -440,7 +442,7 @@ export class ServerController
                 new DummyDevice(
                   this.flipperServer,
                   deviceId,
-                  `${clientQuery.device} via QR Exchange`,
+                  clientQuery.device,
                   clientQuery.os,
                 ),
               );

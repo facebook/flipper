@@ -26,7 +26,6 @@ export function MultiSelectableDropDownItem<T>({
   return (
     <StyledMultiSelectDropDownItem
       center
-      padv="small"
       gap="small"
       onClick={(e) => {
         e.stopPropagation();
@@ -47,5 +46,9 @@ export const StyledMultiSelectDropDownItem = styled(Layout.Horizontal)({
   ':hover': {
     backgroundColor: theme.backgroundWash,
   },
-  height: 32,
+  cursor: 'pointer',
+  height: 38,
+  userSelect: 'none',
+  paddingLeft: theme.space.medium,
+  paddingRight: theme.space.medium,
 });

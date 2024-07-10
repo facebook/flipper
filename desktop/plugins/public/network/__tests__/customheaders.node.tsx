@@ -7,6 +7,8 @@
  * @format
  */
 
+import 'core-js/stable/structured-clone';
+import 'fake-indexeddb/auto';
 import {TestUtils} from 'flipper-plugin';
 import * as NetworkPlugin from '../index';
 
@@ -118,11 +120,10 @@ test('Can handle custom headers', async () => {
     },
   ]);
 
-  renderer.unmount();
-
   // after import, columns should be visible and restored
   {
     const snapshot = await exportStateAsync();
+    renderer.unmount();
     // Note: snapshot is set in the previous test
     const {instance: instance2, renderer: renderer2} = TestUtils.renderPlugin(
       NetworkPlugin,

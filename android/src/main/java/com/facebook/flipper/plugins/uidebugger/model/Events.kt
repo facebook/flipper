@@ -10,7 +10,11 @@ package com.facebook.flipper.plugins.uidebugger.model
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 
 @kotlinx.serialization.Serializable
-class InitEvent(val rootId: Id, val frameworkEventMetadata: List<FrameworkEventMetadata>) {
+class InitEvent(
+    val rootId: Id,
+    val frameworkEventMetadata: List<FrameworkEventMetadata>,
+    val customActionGroups: List<CustomActionGroup>
+) {
   companion object {
     const val name = "init"
   }

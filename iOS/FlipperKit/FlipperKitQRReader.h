@@ -30,6 +30,7 @@ typedef void (^FBFlipperKitQRResult)(
 /** QRReader controller that displays the camera and attempts to read QR
  * metadata objects.
  */
+API_AVAILABLE(macCatalyst(14.0))
 @interface FBFlipperKitQRReaderController : UIViewController
 
 - (instancetype _Nonnull)initWith:(FBFlipperKitQRResult _Nonnull)completion;
@@ -39,6 +40,7 @@ typedef void (^FBFlipperKitQRResult)(
 /** QRReader prompt. Shows an alert to the user asking to scan a QR with the
  * device's camera.
  */
+API_AVAILABLE(macCatalyst(14.0))
 @interface FBFlipperKitQRReaderPrompt : UIAlertController
 
 - (void)show;
@@ -50,6 +52,7 @@ typedef void (^FBFlipperKitQRResult)(
 
 /** QRReader entrypoint.
  */
+API_AVAILABLE(macCatalyst(14.0))
 @interface FlipperKitQRReader : NSObject
 
 + (void)read:(FBFlipperKitQRResult _Nonnull)result;

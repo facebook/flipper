@@ -130,9 +130,6 @@ export function VisualiserControls({
               disabled={boxModeDisabled}
               shape="circle"
               onClick={() => {
-                tracker.track('box-visualiser-switched', {
-                  on: !boxVisualiserEnabled,
-                });
                 setBoxVisualiserEnabled(!boxVisualiserEnabled);
               }}
               icon={

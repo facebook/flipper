@@ -159,7 +159,7 @@ export function devicePlugin(client: DevicePluginClient) {
   client.onDeepLink((payload: unknown) => {
     if (typeof payload === 'string') {
       tableManagerRef.current?.setSearchExpression(powerSearchInitialState);
-      // timeout as we want to await restoring any previous scroll positin first, then scroll to the
+      // timeout as we want to await restoring any previous scroll position first, then scroll to them
       setTimeout(() => {
         let hasMatch = false;
         rows.view.output(0, rows.view.size).forEach((row, index) => {

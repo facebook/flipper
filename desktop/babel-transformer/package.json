@@ -29,7 +29,7 @@
   },
   "scripts": {
     "reset": "rimraf lib *.tsbuildinfo",
-    "build": "tsc -b && cd .. && ./ts-node ./scripts/compute-package-checksum.tsx -d ./babel-transformer -o ./lib/checksum.txt",
+    "build": "tsc -b && cd .. && tsx ./scripts/compute-package-checksum.tsx -d ./babel-transformer -o ./lib/checksum.txt",
     "prepack": "yarn reset && yarn build"
   },
   "files": [

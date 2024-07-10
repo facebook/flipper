@@ -33,6 +33,7 @@ const IGNORED_TYPES = new Set(
     'inquirer',
     'mock-fs',
     'npm-packlist',
+    'core-js',
   ].map((x) => `@types/${x}`),
 );
 

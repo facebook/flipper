@@ -31,8 +31,9 @@ type ConnectionRecorderEvents = {
 
 class Recorder {
   private flipperServer_: FlipperServerImpl | undefined;
-  private undefinedClientQuery_: ClientQuery = {
+  undefinedClientQuery_: ClientQuery = {
     app: 'NONE',
+    app_id: 'NONE',
     device: 'NONE',
     medium: 'NONE',
     os: 'Browser',
@@ -71,7 +72,7 @@ class Recorder {
     },
   };
 
-  private log_ = (
+  log_ = (
     type: 'info' | 'warning' | 'error',
     clientQuery: ClientQuery,
     ...args: any[]

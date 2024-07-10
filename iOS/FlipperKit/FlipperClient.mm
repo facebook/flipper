@@ -127,8 +127,11 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
     }
 
 #if !TARGET_OS_OSX
-    [self setBackupCertificateProvider:[[FlipperKitQRVerifiedCertificateProvider
+    if (@available(macCatalyst 14.0, *)) {
+      [self
+          setBackupCertificateProvider:[[FlipperKitQRVerifiedCertificateProvider
                                            alloc] initCPPCertificateProvider]];
+    }
 #endif
   }
   return self;

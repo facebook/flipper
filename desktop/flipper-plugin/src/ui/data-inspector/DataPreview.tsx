@@ -86,6 +86,9 @@ export default class DataPreview extends PureComponent<{
       case 'number':
         propValueElement = <NumberValue>{`${propValue}`}</NumberValue>;
         break;
+      case 'bigint':
+        propValueElement = <NumberValue>{`${propValue}`}</NumberValue>;
+        break;
       case 'string':
         if (propValue.length <= 20) {
           propValueElement = <StringValue>{propValue}</StringValue>;

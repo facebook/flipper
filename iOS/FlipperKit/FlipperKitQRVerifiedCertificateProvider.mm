@@ -79,72 +79,81 @@ void QRVerifiedCertificateProvider::getCertificates(
       : nullptr;
 
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-  [FlipperKitQRReader read:^(
-                          NSString* key,
-                          NSError* error,
-                          BOOL cancelled,
-                          FBFlipperKitQRResultAck readResultAck) {
-    if (error || cancelled) {
-      // If the QR code was cancelled, we should not proceed on further
-      // requests.
-      cancelled_ = cancelled;
-      certError =
-          [NSError errorWithDomain:FBFlipperKitQRCertificateProviderErrorDomain
-                              code:-1
-                          userInfo:@{
-                            NSLocalizedDescriptionKey : NSLocalizedString(
-                                @"Unable to read key from QR code", nil),
-                          }];
+  if (@available(macCatalyst 14.0, *)) {
+    [FlipperKitQRReader read:^(
+                            NSString* key,
+                            NSError* error,
+                            BOOL cancelled,
+                            FBFlipperKitQRResultAck readResultAck) {
+      if (error || cancelled) {
+        // If the QR code was cancelled, we should not proceed on further
+        // requests.
+        cancelled_ = cancelled;
+        certError = [NSError
+            errorWithDomain:FBFlipperKitQRCertificateProviderErrorDomain
+                       code:-1
+                   userInfo:@{
+                     NSLocalizedDescriptionKey : NSLocalizedString(
+                         @"Unable to read key from QR code", nil),
+                   }];
+        dispatch_semaphore_signal(semaphore);
+        return;
+      }
+
+      // Get the data from the base64-encoded key.
+      NSData* keyData = [[NSData alloc] initWithBase64EncodedString:key
+                                                            options:0];
+      // QR codes may be corrupt, invalid, or just contain a different
+      // content to the one that is expected i.e. base-64 encoded key.
+      // If that is the case, then just return with an error.
+      if (!keyData) {
+        readResultAck(QRReaderResultError);
+        return;
+      }
+
+      auto success = AESDecrypt(
+          [encryptedCertificatesPath UTF8String],
+          [certificatesPath UTF8String],
+          (const unsigned char*)[keyData bytes]);
+
+      // If the decryption failed, must likely, the key is invalid which may be
+      // caused by an erroneous QR read.
+      if (!success) {
+        readResultAck(QRReaderResultError);
+        return;
+      }
+
+      // If the decryption was successful, we can now read the certificates.
+      // The certificates are stored in a zip file. Unzip to destination.
+
+      [SSZipArchive unzipFileAtPath:certificatesPath toDestination:destination];
+
+      // Remove the certificate zip file.
+      [fileManager removeItemAtPath:certificatesPath error:nil];
+
+      // At this stage, dismiss the QR code reader.
+      readResultAck(QRReaderResultAccepted);
+
+      if (QRReadStep) {
+        QRReadStep->complete();
+      }
+
+      // Signal the semaphore as to unblock the connection thread.
       dispatch_semaphore_signal(semaphore);
       return;
-    }
-
-    // Get the data from the base64-encoded key.
-    NSData* keyData = [[NSData alloc] initWithBase64EncodedString:key
-                                                          options:0];
-    // QR codes may be corrupt, invalid, or just contain a different
-    // content to the one that is expected i.e. base-64 encoded key.
-    // If that is the case, then just return with an error.
-    if (!keyData) {
-      readResultAck(QRReaderResultError);
-      return;
-    }
-
-    auto success = AESDecrypt(
-        [encryptedCertificatesPath UTF8String],
-        [certificatesPath UTF8String],
-        (const unsigned char*)[keyData bytes]);
-
-    // If the decryption failed, must likely, the key is invalid which may be
-    // caused by an erroneous QR read.
-    if (!success) {
-      readResultAck(QRReaderResultError);
-      return;
-    }
-
-    // If the decryption was successful, we can now read the certificates.
-    // The certificates are stored in a zip file. Unzip to destination.
-
-    [SSZipArchive unzipFileAtPath:certificatesPath toDestination:destination];
-
-    // Remove the certificate zip file.
-    [fileManager removeItemAtPath:certificatesPath error:nil];
-
-    // At this stage, dismiss the QR code reader.
-    readResultAck(QRReaderResultAccepted);
-
-    if (QRReadStep) {
-      QRReadStep->complete();
-    }
-
-    // Signal the semaphore as to unblock the connection thread.
-    dispatch_semaphore_signal(semaphore);
-    return;
-  }];
-
-  // Wait for the semaphore to be signalled. This will block the connection
-  // thread until the QR code is read or an error takes place.
-  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    }];
+    // Wait for the semaphore to be signalled. This will block the connection
+    // thread until the QR code is read or an error takes place.
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  } else {
+    certError = [NSError
+        errorWithDomain:FBFlipperKitQRCertificateProviderErrorDomain
+                   code:-1
+               userInfo:@{
+                 NSLocalizedDescriptionKey : NSLocalizedString(
+                     @"Unsupported platform for QR Certificate Provider", nil),
+               }];
+  }
 
   // Remove the encrypted certificates.
   [fileManager removeItemAtPath:encryptedCertificatesPath error:nil];

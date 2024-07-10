@@ -34,6 +34,7 @@ export type Color = string;
 export type UIState = {
   viewMode: Atom<ViewMode>;
   wireFrameMode: Atom<WireFrameMode>;
+  boxVisualiserEnabled: Atom<boolean>;
   isConnected: Atom<boolean>;
   isPaused: Atom<boolean>;
   streamState: Atom<StreamState>;
@@ -120,6 +121,7 @@ export type UIActions = {
   setVisualiserWidth: (width: number) => void;
   onSetFilterMainThreadMonitoring: (toggled: boolean) => void;
   onSetViewMode: (viewMode: ViewMode) => void;
+  onSetBoxVisualiserEnabled: (enabled: boolean) => void;
   onSetFrameworkEventMonitored: (
     eventType: FrameworkEventType,
     monitored: boolean,

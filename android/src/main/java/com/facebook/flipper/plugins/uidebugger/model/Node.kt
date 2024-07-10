@@ -25,6 +25,7 @@ data class Node(
     val tags: Set<String>,
     val children: List<Id>,
     val activeChild: Id?,
+    val additionalDataCollection: Boolean?,
 )
 
 /** Expected order is left right top bottom */

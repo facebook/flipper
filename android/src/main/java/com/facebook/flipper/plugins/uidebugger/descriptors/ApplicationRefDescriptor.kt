@@ -61,7 +61,9 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
   fun isUsefulRoot(rootViewOrActivity: Any): Boolean {
     val className = rootViewOrActivity.javaClass.name
 
-    if (className.contains("mediagallery.ui.MediaGalleryActivity")) {
+    if (className.contains("mediagallery.ui.MediaGalleryActivity") ||
+        className.contains("ImagineCreationActivity") ||
+        className.contains("WriteWithAIActivity")) {
       // this activity doesn't contain the content and its actually in the decor view behind it, so
       // skip it :/
       return false

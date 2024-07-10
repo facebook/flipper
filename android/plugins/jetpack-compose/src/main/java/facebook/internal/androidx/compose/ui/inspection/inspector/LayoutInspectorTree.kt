@@ -16,7 +16,9 @@
 
 package facebook.internal.androidx.compose.ui.inspection.inspector
 
+import android.os.Build
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import androidx.collection.LongList
 import androidx.collection.mutableIntObjectMapOf
@@ -27,8 +29,6 @@ import androidx.compose.runtime.tooling.CompositionGroup
 import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.R
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.inspection.util.AnchorMap
-import androidx.compose.ui.inspection.util.NO_ANCHOR_ID
 import androidx.compose.ui.layout.GraphicLayerInfo
 import androidx.compose.ui.layout.LayoutInfo
 import androidx.compose.ui.node.InteroperableComposeUiNode
@@ -48,6 +48,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.toSize
+import facebook.internal.androidx.compose.ui.inspection.util.AnchorMap
+import facebook.internal.androidx.compose.ui.inspection.util.NO_ANCHOR_ID
 import java.util.ArrayDeque
 import java.util.Collections
 import java.util.IdentityHashMap
@@ -79,6 +81,7 @@ private val unwantedCalls =
 
 /** Generator of a tree for the Layout Inspector. */
 @OptIn(UiToolingDataApi::class)
+@RequiresApi(Build.VERSION_CODES.Q)
 class LayoutInspectorTree {
   @Suppress("MemberVisibilityCanBePrivate") var hideSystemNodes = true
   var includeNodesOutsizeOfWindow = true
@@ -165,7 +168,8 @@ class LayoutInspectorTree {
       node: InspectorNode,
       kind: ParameterKind,
       maxRecursions: Int,
-      maxInitialIterableSize: Int
+      maxInitialIterableSize: Int,
+      useReflection: Boolean
   ): List<NodeParameter> {
     val parameters = node.parametersByKind(kind)
     return parameters.mapIndexed { index, parameter ->
@@ -178,40 +182,9 @@ class LayoutInspectorTree {
           kind,
           index,
           maxRecursions,
-          maxInitialIterableSize)
+          maxInitialIterableSize,
+          useReflection)
     }
-  }
-
-  /**
-   * Converts a part of the [RawParameter] identified by [reference] into a displayable parameter.
-   * If the parameter is some sort of a collection then [startIndex] and [maxElements] describes the
-   * scope of the data returned.
-   */
-  fun expandParameter(
-      rootId: Long,
-      node: InspectorNode,
-      reference: NodeParameterReference,
-      startIndex: Int,
-      maxElements: Int,
-      maxRecursions: Int,
-      maxInitialIterableSize: Int
-  ): NodeParameter? {
-    val parameters = node.parametersByKind(reference.kind)
-    if (reference.parameterIndex !in parameters.indices) {
-      return null
-    }
-    val parameter = parameters[reference.parameterIndex]
-    return parameterFactory.expand(
-        rootId,
-        node.id,
-        node.anchorId,
-        parameter.name,
-        parameter.value,
-        reference,
-        startIndex,
-        maxElements,
-        maxRecursions,
-        maxInitialIterableSize)
   }
 
   /** Reset any state accumulated between windows. */

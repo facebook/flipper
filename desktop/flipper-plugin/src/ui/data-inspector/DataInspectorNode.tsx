@@ -193,6 +193,10 @@ const defaultValueExtractor: DataValueExtractor = (value: any) => {
     return {mutable: true, type: 'number', value};
   }
 
+  if (type === 'bigint') {
+    return {mutable: true, type: 'bigint', value};
+  }
+
   if (type === 'string') {
     return {mutable: true, type: 'string', value};
   }

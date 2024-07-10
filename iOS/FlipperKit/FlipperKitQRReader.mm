@@ -84,12 +84,16 @@ typedef NS_ENUM(NSInteger, QRActionButtonState) {
 
 @property(atomic) BOOL isReading;
 @property(nonatomic, strong) UIWindow* promptWindow;
-@property(nonatomic, strong) AVCaptureSession* captureSession;
-@property(nonatomic, strong) AVCaptureVideoPreviewLayer* videoPreviewPlayer;
+@property(nonatomic, strong)
+    AVCaptureSession* captureSession API_AVAILABLE(macCatalyst(14.0));
+@property(nonatomic, strong)
+    AVCaptureVideoPreviewLayer* videoPreviewPlayer API_AVAILABLE(
+        macCatalyst(14.0));
 @property(nonatomic, strong) AVAudioPlayer* audioPlayer;
 
 @end
 
+API_AVAILABLE(macCatalyst(14.0))
 @implementation FBFlipperKitQRReaderController
 
 + (void)readQRWith:(FBFlipperKitQRResult)completion {

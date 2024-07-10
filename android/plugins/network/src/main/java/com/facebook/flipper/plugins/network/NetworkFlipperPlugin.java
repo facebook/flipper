@@ -19,8 +19,7 @@ import javax.annotation.Nullable;
 public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements NetworkReporter {
   public static final String ID = "Network";
   private static final int MAX_BODY_SIZE_IN_BYTES = 1024 * 1024;
-
-  private final List<NetworkResponseFormatter> mFormatters;
+  private List<NetworkResponseFormatter> mFormatters;
 
   public NetworkFlipperPlugin() {
     this(null);
@@ -33,6 +32,10 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
   @Override
   public String getId() {
     return ID;
+  }
+
+  public void setFormatters(List<NetworkResponseFormatter> formatters) {
+    mFormatters = formatters;
   }
 
   @Override

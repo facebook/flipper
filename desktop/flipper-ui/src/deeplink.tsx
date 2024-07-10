@@ -47,7 +47,7 @@ export async function handleDeeplink(
     // or alternatively flipper://welcome to open the welcome screen.
     return;
   }
-  if (uri.href.startsWith('flipper://open-plugin')) {
+  if (uri.pathname === '//open-plugin') {
     return handleOpenPluginDeeplink(store, query, trackInteraction);
   }
   if (uri.pathname.match(/^\/*import\/*$/)) {

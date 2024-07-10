@@ -557,6 +557,13 @@ function TroubleshootMenu() {
               }}>
               Restart ADB (Android connections)
             </Menu.Item>
+            <Menu.Item
+              key="restart-flipper-serer"
+              onClick={() => {
+                getFlipperServer().exec('restart');
+              }}>
+              Restart Flipper Server
+            </Menu.Item>
           </Menu.SubMenu>
         </Menu>
       </Badge>

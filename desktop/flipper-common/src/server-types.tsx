@@ -101,6 +101,7 @@ export type UninitializedClient = {
 
 export type ClientQuery = {
   readonly app: string;
+  readonly app_id?: string;
   readonly os: DeviceOS;
   readonly device: string;
   readonly device_id: string;
@@ -290,6 +291,11 @@ export type FlipperServerCommands = {
   'device-start-screencapture': (
     serial: string,
     destination: string,
+  ) => Promise<void>;
+  'log-connectivity-event': (
+    level: 'info' | 'warning' | 'error',
+    query: ClientQuery | null,
+    ...message: any
   ) => Promise<void>;
   'device-stop-screencapture': (serial: string) => Promise<string>; // file path
   'device-shell-exec': (serial: string, command: string) => Promise<string>;

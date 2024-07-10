@@ -13,6 +13,9 @@ import android.util.Log
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.plugins.uidebugger.LogTag
 import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister
+import com.facebook.flipper.plugins.uidebugger.model.ActionIcon
+import com.facebook.flipper.plugins.uidebugger.model.CustomActionGroup
+import com.facebook.flipper.plugins.uidebugger.model.CustomActionsScope
 import com.facebook.flipper.plugins.uidebugger.model.FrameworkEvent
 import com.facebook.flipper.plugins.uidebugger.model.FrameworkEventMetadata
 import com.facebook.flipper.plugins.uidebugger.model.TraversalError
@@ -35,7 +38,11 @@ class UIDContext(
 
   val attributeEditor = AttributeEditor(applicationRef, descriptorRegister)
   val bitmapPool = BitmapPool()
+  val customActionGroups: List<CustomActionGroup>
+    get() = _customActionGroups
+
   private val canvasSnapshotter = CanvasSnapshotter(bitmapPool)
+  private val _customActionGroups = mutableListOf<CustomActionGroup>()
 
   private val snapshotter =
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -72,6 +79,16 @@ class UIDContext(
 
   fun clearFrameworkEvents() {
     synchronized(pendingFrameworkEvents) { pendingFrameworkEvents.clear() }
+  }
+
+  fun addCustomActionGroup(
+      title: String,
+      actionIcon: ActionIcon,
+      block: CustomActionsScope.() -> Unit
+  ) {
+    val scope = CustomActionsScope()
+    scope.block()
+    _customActionGroups.add(CustomActionGroup(title, actionIcon, scope.actions))
   }
 
   companion object {

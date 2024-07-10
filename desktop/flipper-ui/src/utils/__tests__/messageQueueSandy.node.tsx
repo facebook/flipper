@@ -718,7 +718,11 @@ test('queue will be cleaned up when it exceeds maximum size', () => {
   for (i = 0; i < queueSize; i++) {
     state = pluginMessageQueue(
       state,
-      queueMessages(pluginKey, [{method: 'test', params: {i}}], queueSize),
+      queueMessages(
+        pluginKey,
+        [{method: 'test', params: {i}, rawSize: 10}],
+        queueSize,
+      ),
     );
   }
   // almost full
@@ -731,7 +735,11 @@ test('queue will be cleaned up when it exceeds maximum size', () => {
 
   state = pluginMessageQueue(
     state,
-    queueMessages(pluginKey, [{method: 'test', params: {i: ++i}}], queueSize),
+    queueMessages(
+      pluginKey,
+      [{method: 'test', params: {i: ++i}, rawSize: 10}],
+      queueSize,
+    ),
   );
 
   const newLength = Math.ceil(0.9 * queueSize) + 1; // ~4500

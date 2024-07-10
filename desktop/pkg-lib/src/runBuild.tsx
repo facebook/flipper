@@ -154,6 +154,8 @@ export default async function bundlePlugin(
 
   const bundleConfigs: RunBuildConfig[] = [];
 
+  await fs.remove(path.dirname(plugin.entry));
+
   await fs.ensureDir(path.dirname(plugin.entry));
   bundleConfigs.push({
     pluginDir,

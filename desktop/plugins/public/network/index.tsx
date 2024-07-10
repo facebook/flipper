@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {createRef} from 'react';
+import React, {createRef, useEffect, useState} from 'react';
 import {
   Button,
   Form,
@@ -16,6 +16,7 @@ import {
   message,
   Modal,
   Radio,
+  Spin,
   Typography,
 } from 'antd';
 
@@ -44,6 +45,7 @@ import {
   AddProtobufEvent,
   PartialResponses,
   SerializedRequest,
+  RequestWithData,
 } from './types';
 import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
 import {
@@ -55,7 +57,6 @@ import {
   formatDuration,
   requestsToText,
   decodeBody,
-  formatOperationName,
 } from './utils';
 import RequestDetails from './RequestDetails';
 import {assembleChunksIfResponseIsComplete} from './chunks';
@@ -71,6 +72,7 @@ import {
   computeMockRoutes,
 } from './request-mocking/NetworkRouteManager';
 import {Base64} from 'js-base64';
+import {RequestDataDB} from './RequestDataDB';
 
 const LOCALSTORAGE_MOCK_ROUTE_LIST_KEY = '__NETWORK_CACHED_MOCK_ROUTE_LIST';
 const LOCALSTORAGE_RESPONSE_BODY_FORMAT_KEY =
@@ -131,6 +133,12 @@ export function plugin(client: PluginClient<Events, Methods>) {
   });
   const columns = createState<DataTableColumn<Request>[]>(baseColumns); // not persistable
 
+  const db = new RequestDataDB();
+
+  client.onDeactivate(() => {
+    db.closeConnection();
+  });
+
   client.onDeepLink((payload: unknown) => {
     const searchTermDelim = 'searchTerm=';
     if (typeof payload !== 'string') {
@@ -167,6 +175,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
       console.warn(`Ignoring duplicate request with id ${data.id}:`, data);
     } else {
       requests.append(createRequestFromRequestInfo(data, customColumns.get()));
+      db.storeRequestData(data.id, decodeBody(data.headers, data.data));
     }
   });
 
@@ -178,6 +187,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
     requests.upsert(
       updateRequestWithResponseInfo(request, response, customColumns.get()),
+    );
+    db.storeResponseData(
+      response.id,
+      decodeBody(response.headers, response.data),
     );
   }
 
@@ -277,6 +290,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
         routes,
         informClientMockChange,
         tableManagerRef,
+        db,
       ),
     );
   }
@@ -365,18 +379,19 @@ export function plugin(client: PluginClient<Events, Methods>) {
     const serializedRequests: SerializedRequest[] = [];
     for (let i = 0; i < requests.size; i++) {
       const request = requests.get(i);
+      const requestWithData = await db.addDataToRequest(request);
       serializedRequests.push({
         ...request,
         requestTime: request.requestTime.getTime(),
         responseTime: request.responseTime?.getTime(),
         requestData:
-          request.requestData instanceof Uint8Array
-            ? [Base64.fromUint8Array(request.requestData)]
-            : request.requestData,
+          requestWithData.requestData instanceof Uint8Array
+            ? [Base64.fromUint8Array(requestWithData.requestData)]
+            : requestWithData.requestData,
         responseData:
-          request.responseData instanceof Uint8Array
-            ? [Base64.fromUint8Array(request.responseData)]
-            : request.responseData,
+          requestWithData.responseData instanceof Uint8Array
+            ? [Base64.fromUint8Array(requestWithData.responseData)]
+            : requestWithData.responseData,
       });
       if (idler.isCancelled()) {
         return;
@@ -399,6 +414,16 @@ export function plugin(client: PluginClient<Events, Methods>) {
     isMockResponseSupported.set(data.isMockResponseSupported);
     customColumns.set(data.customColumns);
     data.requests2.forEach((request) => {
+      const requestData = Array.isArray(request.requestData)
+        ? Base64.toUint8Array(request.requestData[0])
+        : request.requestData;
+
+      db.storeRequestData(request.id, requestData);
+      const responseData = Array.isArray(request.responseData)
+        ? Base64.toUint8Array(request.responseData[0])
+        : request.responseData;
+
+      db.storeResponseData(request.id, responseData);
       requests.append({
         ...request,
         requestTime: new Date(request.requestTime),
@@ -406,17 +431,12 @@ export function plugin(client: PluginClient<Events, Methods>) {
           request.responseTime != null
             ? new Date(request.responseTime)
             : undefined,
-        requestData: Array.isArray(request.requestData)
-          ? Base64.toUint8Array(request.requestData[0])
-          : request.requestData,
-        responseData: Array.isArray(request.responseData)
-          ? Base64.toUint8Array(request.responseData[0])
-          : request.responseData,
       });
     });
   });
 
   return {
+    db,
     columns,
     routes,
     nextRouteId,
@@ -448,11 +468,12 @@ export function plugin(client: PluginClient<Events, Methods>) {
         <>
           <Menu.Item
             key="curl"
-            onClick={() => {
+            onClick={async () => {
               if (!request) {
                 return;
               }
-              const command = convertRequestToCurlCommand(request);
+              const requestWithData = await db.addDataToRequest(request);
+              const command = convertRequestToCurlCommand(requestWithData);
               client.writeTextToClipboard(command);
             }}>
             Copy cURL command
@@ -541,8 +562,8 @@ function createRequestFromRequestInfo(
     method: data.method,
     url: data.url ?? '',
     domain,
+    requestLength: getRequestLength(data.headers, data.data),
     requestHeaders: data.headers,
-    requestData: decodeBody(data.headers, data.data),
     status: '...',
   };
   customColumns
@@ -570,7 +591,6 @@ function updateRequestWithResponseInfo(
     responseData: decodeBody(response.headers, response.data),
     responseIsMock: response.isMock,
     responseLength: getResponseLength(response),
-    requestLength: getRequestLength(request),
     duration: response.timestamp - request.requestTime.getTime(),
     insights: response.insights ?? undefined,
   };
@@ -641,14 +661,32 @@ export function Component() {
   );
 }
 
+const NOT_FETCHED = Symbol('not fetched');
+
 function Sidebar() {
   const instance = usePlugin(plugin);
   const selectedId = useValue(instance.selectedId);
   const detailBodyFormat = useValue(instance.detailBodyFormat);
 
+  const [requestWithData, setRequestWithData] = useState<
+    RequestWithData | typeof NOT_FETCHED
+  >(NOT_FETCHED);
+  const db = instance.db;
   // TODO: Fix this the next time the file is edited.
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const request = instance.requests.getById(selectedId!);
+
+  useEffect(() => {
+    async function fetchDataFromDB() {
+      if (!request) {
+        return;
+      }
+      const requestWithData = await db.addDataToRequest(request);
+      setRequestWithData(requestWithData);
+    }
+    fetchDataFromDB();
+  }, [db, request, setRequestWithData]);
+
   if (!request) {
     return (
       <Layout.Container pad grow center>
@@ -657,10 +695,12 @@ function Sidebar() {
     );
   }
 
-  return (
+  return requestWithData === NOT_FETCHED ? (
+    <Spin />
+  ) : (
     <RequestDetails
       key={selectedId}
-      request={request}
+      request={requestWithData}
       bodyFormat={detailBodyFormat}
       onSelectFormat={instance.onSelectFormat}
       onCopyText={instance.onCopyText}
@@ -681,14 +721,6 @@ const baseColumns: DataTableColumn<Request>[] = [
     width: 120,
     visible: false,
     powerSearchConfig: {type: 'dateTime'},
-  },
-  {
-    key: 'requestData',
-    title: 'GraphQL operation name',
-    width: 120,
-    visible: false,
-    formatters: formatOperationName,
-    powerSearchConfig: {type: 'object'},
   },
   {
     key: 'domain',
@@ -758,8 +790,8 @@ function getRowStyle(row: Request) {
     ? mockingStyle
     : row.status &&
         row.status !== '...' &&
-        parseInt(row.status, 10) >= 400 &&
-        parseInt(row.status, 10) < 600
+        ((parseInt(row.status, 10) >= 400 && parseInt(row.status, 10) < 600) ||
+          parseInt(row.status, 10) === -1)
       ? errorStyle
       : undefined;
 }
