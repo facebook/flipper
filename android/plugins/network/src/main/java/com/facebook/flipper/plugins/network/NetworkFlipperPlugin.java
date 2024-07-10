@@ -143,7 +143,7 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
         .run();
   }
 
-  private String toBase64(@Nullable byte[] bytes) {
+  public static String toBase64(@Nullable byte[] bytes) {
     if (bytes == null) {
       return null;
     }
