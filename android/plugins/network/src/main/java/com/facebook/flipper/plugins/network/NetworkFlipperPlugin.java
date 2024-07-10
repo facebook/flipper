@@ -150,7 +150,7 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
     return new String(Base64.encode(bytes, Base64.DEFAULT));
   }
 
-  private FlipperArray toFlipperObject(List<Header> headers) {
+  public static FlipperArray toFlipperObject(List<Header> headers) {
     final FlipperArray.Builder list = new FlipperArray.Builder();
 
     for (Header header : headers) {
