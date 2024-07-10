@@ -160,7 +160,7 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
     return list.build();
   }
 
-  private static boolean shouldStripResponseBody(ResponseInfo responseInfo) {
+  public static boolean shouldStripResponseBody(ResponseInfo responseInfo) {
     final Header contentType = responseInfo.getFirstHeader("content-type");
     if (contentType == null) {
       return false;
