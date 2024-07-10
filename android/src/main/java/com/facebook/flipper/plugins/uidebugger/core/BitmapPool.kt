@@ -48,7 +48,8 @@ class BitmapPool(private val config: Bitmap.Config = Bitmap.Config.RGB_565) {
     return if (bitmaps == null || bitmaps.isEmpty()) {
       LeasedBitmap(Bitmap.createBitmap(width, height, config))
     } else {
-      LeasedBitmap(bitmaps.removeLast())
+      // Workaround for a JDK21/Kotlin bug, see KT-66044
+      LeasedBitmap(checkNotNull(bitmaps.removeLastOrNull()))
     }
   }
 

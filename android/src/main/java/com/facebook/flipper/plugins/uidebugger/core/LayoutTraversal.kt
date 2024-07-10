@@ -41,7 +41,8 @@ class LayoutTraversal(
     val shallow = mutableSetOf<Any>()
 
     while (stack.isNotEmpty()) {
-      val (node, parentId) = stack.removeLast()
+      // Workaround for a JDK21/Kotlin bug, see KT-66044
+      val (node, parentId) = checkNotNull(stack.removeLastOrNull())
 
       try {
 
