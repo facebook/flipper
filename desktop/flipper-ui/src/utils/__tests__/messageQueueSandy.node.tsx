@@ -142,6 +142,7 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
           "api": "TestPlugin",
           "method": "inc",
           "params": {},
+          "rawSize": 154,
         },
       ],
     }
@@ -154,6 +155,7 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
           "api": "TestPlugin",
           "method": "inc",
           "params": {},
+          "rawSize": 154,
         },
         {
           "api": "TestPlugin",
@@ -161,6 +163,7 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
           "params": {
             "delta": 2,
           },
+          "rawSize": 172,
         },
         {
           "api": "TestPlugin",
@@ -168,6 +171,7 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
           "params": {
             "delta": 3,
           },
+          "rawSize": 172,
         },
       ],
     }
@@ -210,7 +214,9 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
   client.flushMessageBuffer();
 
   expect(store.getState().pluginMessageQueue).toEqual({
-    [pluginKey]: [{api: 'TestPlugin', method: 'inc', params: {delta: 5}}],
+    [pluginKey]: [
+      {api: 'TestPlugin', method: 'inc', params: {delta: 5}, rawSize: 172},
+    ],
   });
 });
 
@@ -282,6 +288,7 @@ test('queue - events are queued for plugins that are favorite when app is not se
           "params": {
             "delta": 2,
           },
+          "rawSize": 172,
         },
       ],
     }
@@ -315,6 +322,7 @@ test('queue - events are queued for plugins that are favorite when app is select
           "params": {
             "delta": 2,
           },
+          "rawSize": 172,
         },
       ],
       "TestApp#Android#MockAndroidDevice#serial2#TestPlugin": [
@@ -324,6 +332,7 @@ test('queue - events are queued for plugins that are favorite when app is select
           "params": {
             "delta": 3,
           },
+          "rawSize": 172,
         },
       ],
     }
@@ -359,7 +368,9 @@ test('queue - events processing will be paused', async () => {
   });
 
   expect(store.getState().pluginMessageQueue).toEqual({
-    [pluginKey]: [{api: 'TestPlugin', method: 'inc', params: {delta: 5}}],
+    [pluginKey]: [
+      {api: 'TestPlugin', method: 'inc', params: {delta: 5}, rawSize: 172},
+    ],
   });
 
   await idler.next();
@@ -514,6 +525,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
         api: 'StubPlugin',
         method: 'log',
         params: {line: 'suff'},
+        rawSize: 180,
       },
     }),
   );
@@ -527,6 +539,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
           "api": "TestPlugin",
           "method": "inc",
           "params": {},
+          "rawSize": 154,
         },
       ],
     }
@@ -541,6 +554,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
             "params": {
               "line": "suff",
             },
+            "rawSize": 208,
           },
         ],
         "plugin": "[SandyPluginInstance]",
@@ -553,6 +567,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
             "params": {
               "delta": 2,
             },
+            "rawSize": 172,
           },
           {
             "api": "TestPlugin",
@@ -560,6 +575,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
             "params": {
               "delta": 3,
             },
+            "rawSize": 172,
           },
         ],
         "plugin": "[SandyPluginInstance]",
@@ -580,6 +596,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
           "params": {
             "line": "suff",
           },
+          "rawSize": 208,
         },
       ],
       "TestApp#Android#MockAndroidDevice#serial#TestPlugin": [
@@ -587,6 +604,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
           "api": "TestPlugin",
           "method": "inc",
           "params": {},
+          "rawSize": 154,
         },
         {
           "api": "TestPlugin",
@@ -594,6 +612,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
           "params": {
             "delta": 2,
           },
+          "rawSize": 172,
         },
         {
           "api": "TestPlugin",
@@ -601,6 +620,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
           "params": {
             "delta": 3,
           },
+          "rawSize": 172,
         },
       ],
     }
@@ -638,6 +658,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
           "api": "TestPlugin",
           "method": "inc",
           "params": {},
+          "rawSize": 154,
         },
         {
           "api": "TestPlugin",
@@ -645,6 +666,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
           "params": {
             "delta": 2,
           },
+          "rawSize": 172,
         },
         {
           "api": "TestPlugin",
@@ -652,6 +674,7 @@ test('client - incoming messages are buffered and flushed together', async () =>
           "params": {
             "delta": 3,
           },
+          "rawSize": 172,
         },
       ],
     }
@@ -676,6 +699,7 @@ test('queue - messages that have not yet flushed be lost when disabling the plug
             "params": {
               "delta": 2,
             },
+            "rawSize": 172,
           },
         ],
         "plugin": "[SandyPluginInstance]",
@@ -689,6 +713,7 @@ test('queue - messages that have not yet flushed be lost when disabling the plug
           "api": "TestPlugin",
           "method": "inc",
           "params": {},
+          "rawSize": 154,
         },
       ],
     }
@@ -726,11 +751,16 @@ test('queue will be cleaned up when it exceeds maximum size', () => {
     );
   }
   // almost full
-  expect(state[pluginKey][0]).toEqual({method: 'test', params: {i: 0}});
+  expect(state[pluginKey][0]).toEqual({
+    method: 'test',
+    params: {i: 0},
+    rawSize: 10,
+  });
   expect(state[pluginKey].length).toBe(queueSize); // ~5000
   expect(state[pluginKey][queueSize - 1]).toEqual({
     method: 'test',
     params: {i: queueSize - 1}, // ~4999
+    rawSize: 10,
   });
 
   state = pluginMessageQueue(
@@ -747,9 +777,11 @@ test('queue will be cleaned up when it exceeds maximum size', () => {
   expect(state[pluginKey][0]).toEqual({
     method: 'test',
     params: {i: queueSize - newLength + 1}, // ~500
+    rawSize: 10,
   });
   expect(state[pluginKey][newLength - 1]).toEqual({
     method: 'test',
     params: {i}, // ~50001
+    rawSize: 10,
   });
 });
