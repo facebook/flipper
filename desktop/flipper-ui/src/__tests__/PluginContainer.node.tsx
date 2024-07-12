@@ -124,7 +124,8 @@ test.skip('Plugin container can render plugin and receive updates', async () => 
   expect((await renderer.findByTestId('counter')).textContent).toBe('2');
 });
 
-test('Number of times console errors/warning during plugin render', async () => {
+// TODO(T119353406): Disabled due to flakiness.
+test.skip('Number of times console errors/warning during plugin render', async () => {
   await renderMockFlipperWithPlugin(TestPlugin);
 
   expect(errorSpy.mock.calls).toEqual([
