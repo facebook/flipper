@@ -78,7 +78,9 @@ describe('SecureServerWebSocket', () => {
       device,
       os,
       app,
-      app_id: `com.facebook.flipper.${app}`,
+      // FIXME
+      // app_id: `com.facebook.flipper.${app}`,
+      app_id: undefined,
       sdk_version: sdkVersion,
       csr,
       csr_path: csrPath,

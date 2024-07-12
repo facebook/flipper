@@ -162,6 +162,7 @@ test('test generateClientFromClientWithSalt helper function', () => {
     query: {
       app: 'app',
       os: 'iOS',
+      app_id: 'com.facebook.flipper.app',
       device: 'emulator',
       device_id: 'salt-serial',
       medium: 'NONE',
@@ -172,6 +173,7 @@ test('test generateClientFromClientWithSalt helper function', () => {
     query: {
       app: 'app',
       os: 'iOS',
+      app_id: 'com.facebook.flipper.app',
       device: 'emulator',
       device_id: 'serial',
       medium: 'NONE',
@@ -193,6 +195,7 @@ test('test generateClientFromDevice helper function', () => {
     query: {
       app: 'app',
       os: 'iOS',
+      app_id: 'com.facebook.flipper.app',
       device: 'emulator',
       device_id: 'serial',
       medium: 'NONE',

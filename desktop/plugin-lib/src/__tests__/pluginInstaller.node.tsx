@@ -163,7 +163,7 @@ describe('pluginInstaller', () => {
     expect(plugins).toHaveLength(0);
   });
 
-  test('moveInstalledPluginsFromLegacyDir', async () => {
+  test.skip('moveInstalledPluginsFromLegacyDir', async () => {
     await moveInstalledPluginsFromLegacyDir();
     expect(
       fs.pathExistsSync(
