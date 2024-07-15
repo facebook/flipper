@@ -19,7 +19,9 @@ import javax.annotation.Nullable;
 public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements NetworkReporter {
   public static final String ID = "Network";
   private static final int MAX_BODY_SIZE_IN_BYTES = 1024 * 1024;
+
   private List<NetworkResponseFormatter> mFormatters;
+  private final List<NetworkRequestFormatter> mRequestFormatters;
 
   public NetworkFlipperPlugin() {
     this(null);
@@ -27,6 +29,13 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
 
   public NetworkFlipperPlugin(List<NetworkResponseFormatter> formatters) {
     this.mFormatters = formatters;
+    this.mRequestFormatters = null;
+  }
+
+  public NetworkFlipperPlugin(
+      List<NetworkResponseFormatter> formatters, List<NetworkRequestFormatter> requestFormatters) {
+    this.mFormatters = formatters;
+    this.mRequestFormatters = requestFormatters;
   }
 
   @Override
@@ -40,7 +49,8 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
 
   @Override
   public void reportRequest(final RequestInfo requestInfo) {
-    (new ErrorReportingRunnable(getConnection()) {
+    final Runnable job =
+        new ErrorReportingRunnable(getConnection()) {
           @Override
           protected void runOrThrow() throws Exception {
             final FlipperObject request =
@@ -55,8 +65,26 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
 
             send("newRequest", request);
           }
-        })
-        .run();
+        };
+
+    if (mRequestFormatters != null) {
+      for (NetworkRequestFormatter formatter : mRequestFormatters) {
+        if (formatter.shouldFormat(requestInfo)) {
+          formatter.format(
+              requestInfo,
+              new NetworkRequestFormatter.OnCompletionListener() {
+                @Override
+                public void onCompletion(final String json) {
+                  requestInfo.body = json.getBytes();
+                  job.run();
+                }
+              });
+          return;
+        }
+      }
+    }
+
+    job.run();
   }
 
   @Override
