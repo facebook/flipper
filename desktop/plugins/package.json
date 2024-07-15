@@ -24,6 +24,6 @@
     "react-dom": "*"
   },
   "scripts": {
-    "postinstall": "cd .. && ./ts-node ./plugins/postinstall.tsx"
+    "postinstall": "cd .. && tsx ./plugins/postinstall.tsx"
   }
 }
