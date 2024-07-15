@@ -7,6 +7,7 @@ exports[`can create a Fake flipper with legacy wrapper 1`] = `
       "id": "TestApp#Android#MockAndroidDevice#serial",
       "query": {
         "app": "TestApp",
+        "app_id": "TestApp",
         "device": "MockAndroidDevice",
         "device_id": "serial",
         "medium": "NONE",

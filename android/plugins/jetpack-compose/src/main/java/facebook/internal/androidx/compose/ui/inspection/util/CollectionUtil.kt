@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package androidx.compose.ui.inspection.util
+package facebook.internal.androidx.compose.ui.inspection.util
 
 import androidx.collection.IntList
 import androidx.collection.MutableIntList

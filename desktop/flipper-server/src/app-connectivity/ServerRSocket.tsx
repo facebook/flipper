@@ -74,8 +74,8 @@ class ServerRSocket extends ServerWebSocketBase {
             ? this._trustedRequestHandler
             : this._untrustedRequestHandler,
           transport: new RSocketTCPServer({
-            port: port,
-            serverFactory: serverFactory,
+            port,
+            serverFactory,
           }),
         });
         rawServer.start();

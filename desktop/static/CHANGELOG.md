@@ -1,3 +1,27 @@
+# 0.257.0 (10/7/2024)
+
+ * [D59001348](https://github.com/facebook/flipper/search?q=D59001348&type=Commits) -  [Internal]
+ * [D59374023](https://github.com/facebook/flipper/search?q=D59374023&type=Commits) -  [Internal]
+
+
+# 0.255.0 (12/6/2024)
+
+ * [D57865621](https://github.com/facebook/flipper/search?q=D57865621&type=Commits) -  Network plugin: Store data in IndexedDB to reduce memory consumption
+
+
+# 0.253.0 (15/5/2024)
+
+ * [D55967421](https://github.com/facebook/flipper/search?q=D55967421&type=Commits) -  BloksDebugger - Async component payload support (android only currently)
+ * [D56065247](https://github.com/facebook/flipper/search?q=D56065247&type=Commits) -  [Internal]
+ * [D56420921](https://github.com/facebook/flipper/search?q=D56420921&type=Commits) -  Bloks debugger, Refresh screen, Set sandbox & workplace feedback button moved to right of power search to increase available vertical space
+ * [D57157243](https://github.com/facebook/flipper/search?q=D57157243&type=Commits) -  Added compose menu with ability to show / hide system nodes
+
+
+# 0.252.0 (10/4/2024)
+
+ * [D55696687](https://github.com/facebook/flipper/search?q=D55696687&type=Commits) -  UIDebugger fix visualiser shaking
+
+
 # 0.250.0 (13/3/2024)
 
  * [D54306266](https://github.com/facebook/flipper/search?q=D54306266&type=Commits) -  UIDebugger framework event table given its own button in menu

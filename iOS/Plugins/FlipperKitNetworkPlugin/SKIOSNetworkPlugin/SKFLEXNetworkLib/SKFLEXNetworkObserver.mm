@@ -446,51 +446,54 @@ typedef void (^NSURLSessionAsyncCompletion)(
     SEL selector = @selector(sendSynchronousRequest:returningResponse:error:);
     SEL swizzledSelector = [SKFLEXUtility swizzledSelectorForSelector:selector];
 
-    NSData* (
-        ^syncSwizzleBlock)(Class, NSURLRequest*, NSURLResponse**, NSError**) =
+    NSData* (^syncSwizzleBlock)(
+        Class, NSURLRequest*, NSURLResponse**, NSError**) =
         ^NSData*(
             Class slf,
             NSURLRequest* request,
             NSURLResponse** response,
             NSError** error) {
-      NSData* data = nil;
-      NSString* requestID = [self nextRequestID];
-      [[SKFLEXNetworkRecorder defaultRecorder]
-          recordRequestWillBeSentWithRequestID:requestID
-                                       request:request
-                              redirectResponse:nil];
-      NSString* mechanism = [self mechanismFromClassMethod:selector
-                                                   onClass:className];
-      [[SKFLEXNetworkRecorder defaultRecorder] recordMechanism:mechanism
-                                                  forRequestID:requestID];
-      NSError* temporaryError = nil;
-      NSURLResponse* temporaryResponse = nil;
-      data =
-          ((id(*)(id, SEL, id, NSURLResponse**, NSError**))
-               objc_msgSend)(slf, swizzledSelector, request, &temporaryResponse, &temporaryError);
-      [[SKFLEXNetworkRecorder defaultRecorder]
-          recordResponseReceivedWithRequestID:requestID
-                                     response:temporaryResponse];
-      [[SKFLEXNetworkRecorder defaultRecorder]
-          recordDataReceivedWithRequestID:requestID
-                               dataLength:[data length]];
-      if (temporaryError) {
-        [[SKFLEXNetworkRecorder defaultRecorder]
-            recordLoadingFailedWithRequestID:requestID
-                                       error:temporaryError];
-      } else {
-        [[SKFLEXNetworkRecorder defaultRecorder]
-            recordLoadingFinishedWithRequestID:requestID
-                                  responseBody:data];
-      }
-      if (error) {
-        *error = temporaryError;
-      }
-      if (response) {
-        *response = temporaryResponse;
-      }
-      return data;
-    };
+          NSData* data = nil;
+          NSString* requestID = [self nextRequestID];
+          [[SKFLEXNetworkRecorder defaultRecorder]
+              recordRequestWillBeSentWithRequestID:requestID
+                                           request:request
+                                  redirectResponse:nil];
+          NSString* mechanism = [self mechanismFromClassMethod:selector
+                                                       onClass:className];
+          [[SKFLEXNetworkRecorder defaultRecorder] recordMechanism:mechanism
+                                                      forRequestID:requestID];
+          NSError* temporaryError = nil;
+          NSURLResponse* temporaryResponse = nil;
+          data = ((id(*)(id, SEL, id, NSURLResponse**, NSError**))objc_msgSend)(
+              slf,
+              swizzledSelector,
+              request,
+              &temporaryResponse,
+              &temporaryError);
+          [[SKFLEXNetworkRecorder defaultRecorder]
+              recordResponseReceivedWithRequestID:requestID
+                                         response:temporaryResponse];
+          [[SKFLEXNetworkRecorder defaultRecorder]
+              recordDataReceivedWithRequestID:requestID
+                                   dataLength:[data length]];
+          if (temporaryError) {
+            [[SKFLEXNetworkRecorder defaultRecorder]
+                recordLoadingFailedWithRequestID:requestID
+                                           error:temporaryError];
+          } else {
+            [[SKFLEXNetworkRecorder defaultRecorder]
+                recordLoadingFinishedWithRequestID:requestID
+                                      responseBody:data];
+          }
+          if (error) {
+            *error = temporaryError;
+          }
+          if (response) {
+            *response = temporaryResponse;
+          }
+          return data;
+        };
 
     [SKFLEXUtility replaceImplementationOfKnownSelector:selector
                                                 onClass:className
@@ -530,36 +533,32 @@ typedef void (^NSURLSessionAsyncCompletion)(
         className = [[NSURLSession sharedSession] class];
       }
 
-      NSURLSessionTask* (
-          ^asyncDataOrDownloadSwizzleBlock)(Class, id, NSURLSessionAsyncCompletion) =
+      NSURLSessionTask* (^asyncDataOrDownloadSwizzleBlock)(
+          Class, id, NSURLSessionAsyncCompletion) =
           ^NSURLSessionTask*(
               Class slf, id argument, NSURLSessionAsyncCompletion completion) {
-        NSURLSessionTask* task = nil;
-        // If completion block was not provided sender expect to receive
-        // delegated methods or does not interested in callback at all. In this
-        // case we should just call original method implementation with nil
-        // completion block.
-        if (completion) {
-          NSString* requestID = [self nextRequestID];
-          NSString* mechanism = [self mechanismFromClassMethod:selector
-                                                       onClass:className];
-          NSURLSessionAsyncCompletion completionWrapper =
-              [self asyncCompletionWrapperForRequestID:requestID
-                                             mechanism:mechanism
-                                            completion:completion];
-          task = ((id(*)(
-              id,
-              SEL,
-              id,
-              id))objc_msgSend)(slf, swizzledSelector, argument, completionWrapper);
-          [self setRequestID:requestID forConnectionOrTask:task];
-        } else {
-          task =
-              ((id(*)(id, SEL, id, id))
-                   objc_msgSend)(slf, swizzledSelector, argument, completion);
-        }
-        return task;
-      };
+            NSURLSessionTask* task = nil;
+            // If completion block was not provided sender expect to receive
+            // delegated methods or does not interested in callback at all. In
+            // this case we should just call original method implementation with
+            // nil completion block.
+            if (completion) {
+              NSString* requestID = [self nextRequestID];
+              NSString* mechanism = [self mechanismFromClassMethod:selector
+                                                           onClass:className];
+              NSURLSessionAsyncCompletion completionWrapper =
+                  [self asyncCompletionWrapperForRequestID:requestID
+                                                 mechanism:mechanism
+                                                completion:completion];
+              task = ((id(*)(id, SEL, id, id))objc_msgSend)(
+                  slf, swizzledSelector, argument, completionWrapper);
+              [self setRequestID:requestID forConnectionOrTask:task];
+            } else {
+              task = ((id(*)(id, SEL, id, id))objc_msgSend)(
+                  slf, swizzledSelector, argument, completion);
+            }
+            return task;
+          };
 
       [SKFLEXUtility
           replaceImplementationOfKnownSelector:selector
@@ -599,39 +598,31 @@ typedef void (^NSURLSessionAsyncCompletion)(
         className = [[NSURLSession sharedSession] class];
       }
 
-      NSURLSessionUploadTask* (
-          ^asyncUploadTaskSwizzleBlock)(Class, NSURLRequest*, id, NSURLSessionAsyncCompletion) =
+      NSURLSessionUploadTask* (^asyncUploadTaskSwizzleBlock)(
+          Class, NSURLRequest*, id, NSURLSessionAsyncCompletion) =
           ^NSURLSessionUploadTask*(
               Class slf,
               NSURLRequest* request,
               id argument,
               NSURLSessionAsyncCompletion completion) {
-        NSURLSessionUploadTask* task = nil;
-        if (completion) {
-          NSString* requestID = [self nextRequestID];
-          NSString* mechanism = [self mechanismFromClassMethod:selector
-                                                       onClass:className];
-          NSURLSessionAsyncCompletion completionWrapper =
-              [self asyncCompletionWrapperForRequestID:requestID
-                                             mechanism:mechanism
-                                            completion:completion];
-          task = ((id(*)(
-              id,
-              SEL,
-              id,
-              id,
-              id))objc_msgSend)(slf, swizzledSelector, request, argument, completionWrapper);
-          [self setRequestID:requestID forConnectionOrTask:task];
-        } else {
-          task = ((id(*)(
-              id,
-              SEL,
-              id,
-              id,
-              id))objc_msgSend)(slf, swizzledSelector, request, argument, completion);
-        }
-        return task;
-      };
+            NSURLSessionUploadTask* task = nil;
+            if (completion) {
+              NSString* requestID = [self nextRequestID];
+              NSString* mechanism = [self mechanismFromClassMethod:selector
+                                                           onClass:className];
+              NSURLSessionAsyncCompletion completionWrapper =
+                  [self asyncCompletionWrapperForRequestID:requestID
+                                                 mechanism:mechanism
+                                                completion:completion];
+              task = ((id(*)(id, SEL, id, id, id))objc_msgSend)(
+                  slf, swizzledSelector, request, argument, completionWrapper);
+              [self setRequestID:requestID forConnectionOrTask:task];
+            } else {
+              task = ((id(*)(id, SEL, id, id, id))objc_msgSend)(
+                  slf, swizzledSelector, request, argument, completion);
+            }
+            return task;
+          };
 
       [SKFLEXUtility
           replaceImplementationOfKnownSelector:selector
@@ -698,8 +689,11 @@ typedef void (^NSURLSessionAsyncCompletion)(
   struct objc_method_description methodDescription =
       protocol_getMethodDescription(protocol, selector, NO, YES);
 
-  typedef NSURLRequest* (
-      ^NSURLConnectionWillSendRequestBlock)(id<NSURLConnectionDelegate> slf, NSURLConnection* connection, NSURLRequest* request, NSURLResponse* response);
+  typedef NSURLRequest* (^NSURLConnectionWillSendRequestBlock)(
+      id<NSURLConnectionDelegate> slf,
+      NSURLConnection* connection,
+      NSURLRequest* request,
+      NSURLResponse* response);
 
   NSURLConnectionWillSendRequestBlock undefinedBlock = ^NSURLRequest*(
       id<NSURLConnectionDelegate> slf,
@@ -725,12 +719,8 @@ typedef void (^NSURLSessionAsyncCompletion)(
           undefinedBlock(slf, connection, request, response);
         }
         originalImplementationBlock:^{
-          returnValue = ((id(*)(
-              id,
-              SEL,
-              id,
-              id,
-              id))objc_msgSend)(slf, swizzledSelector, connection, request, response);
+          returnValue = ((id(*)(id, SEL, id, id, id))objc_msgSend)(
+              slf, swizzledSelector, connection, request, response);
         }];
     return returnValue;
   };

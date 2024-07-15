@@ -11,8 +11,5 @@
     {
       "path": "../../flipper-common"
     }
-  ],
-  "ts-node": {
-    "transpileOnly": true
-  }
+  ]
 }

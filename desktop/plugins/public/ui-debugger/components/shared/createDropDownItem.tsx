@@ -12,5 +12,5 @@ export function createDropDownItem<T>(
   label: string,
   icon?: React.ReactNode,
 ) {
-  return {key: wireframeMode, label: label, icon};
+  return {key: wireframeMode, label, icon};
 }

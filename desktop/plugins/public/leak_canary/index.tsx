@@ -109,7 +109,7 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
     }
 
     this.setState({
-      leaks: leaks,
+      leaks,
       leaksCount: leaks.length,
     });
   };
@@ -159,7 +159,7 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
     elementSimple.expanded = !elementSimple.expanded;
 
     this.setState({
-      leaks: leaks,
+      leaks,
     });
   };
 
@@ -172,13 +172,13 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
     _: number, // depth
   ): {mutable: boolean; type: DataDescriptionType; value: any} {
     if (!isNaN(value)) {
-      return {mutable: false, type: 'number', value: value};
+      return {mutable: false, type: 'number', value};
     } else if (value == 'true' || value == 'false') {
-      return {mutable: false, type: 'boolean', value: value};
+      return {mutable: false, type: 'boolean', value};
     } else if (value == 'null') {
-      return {mutable: false, type: 'null', value: value};
+      return {mutable: false, type: 'null', value};
     }
-    return {mutable: false, type: 'enum', value: value};
+    return {mutable: false, type: 'enum', value};
   }
 
   renderSidebar() {

@@ -10,6 +10,7 @@
 import {Atom, DataTableManager, getFlipperLib} from 'flipper-plugin';
 import {createContext} from 'react';
 import {Header, Request} from '../types';
+import {RequestDataDB} from '../RequestDataDB';
 
 export type Route = {
   requestUrl: string;
@@ -34,7 +35,7 @@ export interface NetworkRouteManager {
   modifyRoute(id: string, routeChange: Partial<Route>): void;
   removeRoute(id: string): void;
   enableRoute(id: string): void;
-  copySelectedCalls(): void;
+  copySelectedCalls(): Promise<void>;
   importRoutes(): void;
   exportRoutes(): void;
   clearRoutes(): void;
@@ -47,7 +48,7 @@ export const nullNetworkRouteManager: NetworkRouteManager = {
   modifyRoute(_id: string, _routeChange: Partial<Route>) {},
   removeRoute(_id: string) {},
   enableRoute(_id: string) {},
-  copySelectedCalls() {},
+  async copySelectedCalls() {},
   importRoutes() {},
   exportRoutes() {},
   clearRoutes() {},
@@ -62,6 +63,7 @@ export function createNetworkManager(
   routes: Atom<{[id: string]: any}>,
   informClientMockChange: (routes: {[id: string]: any}) => Promise<void>,
   tableManagerRef: React.RefObject<DataTableManager<Request> | undefined>,
+  requestDB: RequestDataDB,
 ): NetworkRouteManager {
   return {
     addRoute(): string | undefined {
@@ -104,18 +106,18 @@ export function createNetworkManager(
       }
       informClientMockChange(routes.get());
     },
-    copySelectedCalls() {
-      tableManagerRef.current?.getSelectedItems().forEach((request) => {
-        // convert headers
+
+    async copySelectedCalls() {
+      const selectedItems = tableManagerRef.current?.getSelectedItems() || [];
+      const promises = selectedItems.map(async (request) => {
+        // Convert headers
         const headers: {[id: string]: Header} = {};
         request.responseHeaders?.forEach((e) => {
           headers[e.key] = e;
         });
 
         // no need to convert data, already converted when real call was created
-        const responseData =
-          request && request.responseData ? request.responseData : '';
-
+        const responseData = await requestDB.getResponseData(request.id);
         const newNextRouteId = nextRouteId.get();
         routes.update((draft) => {
           draft[newNextRouteId.toString()] = {
@@ -129,7 +131,7 @@ export function createNetworkManager(
         });
         nextRouteId.set(newNextRouteId + 1);
       });
-
+      await Promise.all(promises);
       informClientMockChange(routes.get());
     },
     importRoutes() {

@@ -40,6 +40,7 @@ import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.rendercore.FastMath
 import com.facebook.yoga.YogaEdge
 import java.lang.reflect.Modifier
+import kotlinx.serialization.json.JsonObject
 
 typealias GlobalKey = String
 
@@ -247,8 +248,7 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
       Bounds.fromRect(node.boundsInParentDebugComponent)
 
   override fun getTags(node: DebugComponent): Set<String> {
-    val tags = mutableSetOf(LithoTag)
-
+    val tags: MutableSet<String> = mutableSetOf(LithoTag)
     if (node.component.mountType != Component.MountType.NONE) {
       tags.add(LithoMountableTag)
     }
@@ -302,6 +302,8 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
     return mountingData
   }
+
+  override fun getHiddenAttributes(node: DebugComponent): JsonObject? = null
 
   class OverrideData(
       val metadataPath: List<Metadata>,

@@ -119,7 +119,7 @@ test('getActivePersistentPlugins, with message queue', async () => {
 
   state.pluginMessageQueue = {
     [getPluginKey(client.id, device, 'ClientPlugin3')]: [
-      {method: 'msg', params: {msg: 'ClientPlugin3'}},
+      {method: 'msg', params: {msg: 'ClientPlugin3'}, rawSize: 10},
     ],
   };
 

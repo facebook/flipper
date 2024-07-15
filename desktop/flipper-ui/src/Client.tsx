@@ -33,7 +33,7 @@ import {
   createState,
   getFlipperLib,
 } from 'flipper-plugin';
-import {message} from 'antd';
+import {message, notification} from 'antd';
 import {
   isFlipperMessageDebuggingEnabled,
   registerFlipperDebugMessage,
@@ -45,6 +45,7 @@ import {EventEmitter} from 'eventemitter3';
 import {createServerAddOnControls} from './utils/createServerAddOnControls';
 import isProduction from './utils/isProduction';
 import {freeze} from 'immer';
+import {retry} from 'ts-retry-promise';
 
 type Plugins = Set<string>;
 type PluginsArr = Array<string>;
@@ -128,7 +129,7 @@ export default class Client extends EventEmitter {
     string /*pluginKey*/,
     {
       plugin: _SandyPluginInstance;
-      messages: Params[];
+      messages: (Params & {rawSize: number})[];
     }
   > = {};
 
@@ -192,20 +193,30 @@ export default class Client extends EventEmitter {
   }
 
   async init() {
-    await this.loadPlugins('init');
-    await Promise.all(
-      [...this.plugins].map(async (pluginId) =>
-        this.startPluginIfNeeded(await this.getPlugin(pluginId)),
-      ),
-    );
-    this.backgroundPlugins = new Set(await this.getBackgroundPlugins());
-    this.backgroundPlugins.forEach((plugin) => {
-      if (this.shouldConnectAsBackgroundPlugin(plugin)) {
-        this.initPlugin(plugin);
-      }
-    });
-    this.emit('plugins-change');
-    this.resolveInitPromise?.(null);
+    try {
+      await this.loadPlugins('init');
+      await Promise.all(
+        [...this.plugins].map(async (pluginId) =>
+          this.startPluginIfNeeded(await this.getPlugin(pluginId)),
+        ),
+      );
+      this.backgroundPlugins = new Set(await this.getBackgroundPlugins());
+      this.backgroundPlugins.forEach((plugin) => {
+        if (this.shouldConnectAsBackgroundPlugin(plugin)) {
+          this.initPlugin(plugin);
+        }
+      });
+      this.emit('plugins-change');
+      this.resolveInitPromise?.(null);
+    } catch (e) {
+      this.flipperServer.exec(
+        'log-connectivity-event',
+        'error',
+        this.query,
+        `Failed to initialise client`,
+        e,
+      );
+    }
   }
 
   async initFromImport(
@@ -225,23 +236,50 @@ export default class Client extends EventEmitter {
 
   // get the supported plugins
   async loadPlugins(phase: 'init' | 'refresh'): Promise<Set<string>> {
-    let response;
     try {
-      response = await timeout(
-        30 * 1000,
-        this.rawCall<{plugins: Plugins}>('getPlugins', false),
-        'Fetch plugin timeout. Unresponsive client?',
+      const response = await retry(
+        () =>
+          //shortish timeout for each individual request
+          timeout(
+            5 * 1000,
+            this.rawCall<{plugins: Plugins}>('getPlugins', false),
+            'Fetch plugin timeout. Unresponsive client?',
+          ),
+        {
+          retries: 5,
+          delay: 1000,
+          backoff: 'LINEAR',
+          logger: (msg) =>
+            this.flipperServer.exec(
+              'log-connectivity-event',
+              'warning',
+              this.query,
+              `Attempt to fetch plugins failed for phase ${phase}, Error: ${msg}`,
+            ),
+        },
       );
+      this.plugins = new Set(response.plugins ?? []);
+      console.info(
+        `Received plugins from '${this.query.app}' on device '${this.query.device}'`,
+        [...this.plugins],
+      );
+      if (phase === 'init') {
+        await this.waitForPluginsInit();
+      }
     } catch (e) {
-      console.warn('Failed to fetch plugin', e);
-    }
-    this.plugins = new Set(response?.plugins ?? []);
-    console.info(
-      `Received plugins from '${this.query.app}' on device '${this.query.device}'`,
-      [...this.plugins],
-    );
-    if (phase === 'init') {
-      await this.waitForPluginsInit();
+      this.flipperServer.exec(
+        'log-connectivity-event',
+        'error',
+        this.query,
+        `Failed to fetch plugins for phase ${phase}`,
+        e,
+      );
+
+      notification.error({
+        key: `plugin-init-error${this.id}`,
+        duration: 10,
+        message: `Failed to initialise client ${this.query.app}, please restart the app`,
+      });
     }
     return this.plugins;
   }
@@ -358,8 +396,12 @@ export default class Client extends EventEmitter {
           if (!data.params) {
             throw new Error('expected params');
           }
-          const params: Params = data.params;
+
           const bytes = msg.length * 2; // string lengths are measured in UTF-16 units (not characters), so 2 bytes per char
+          const params: Params & {rawSize: number} = {
+            ...data.params,
+            rawSize: bytes,
+          };
           this.emit('bytes-received', params.api, bytes);
           if (bytes > 5 * 1024 * 1024) {
             console.warn(

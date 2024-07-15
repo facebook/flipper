@@ -44,6 +44,7 @@ class QRVerifiedCertificateProvider : public FlipperCertificateProvider {
 } // namespace flipper
 } // namespace facebook
 
+API_AVAILABLE(macCatalyst(14.0))
 @interface FlipperKitQRVerifiedCertificateProvider
     : NSObject<FlipperKitCertificateProvider>
 

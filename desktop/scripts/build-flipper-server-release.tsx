@@ -126,13 +126,6 @@ const argv = yargs
         'Unique build identifier to be used as the version patch part for the build',
       type: 'number',
     },
-    // On intern we ship flipper-server with node_modules (no big internet behind the firewall). yarn.lock makes sure that a CI that builds flipper-server installs the same dependencies all the time.
-    'generate-lock': {
-      describe:
-        'Generate a new yarn.lock file for flipper-server prod build. It is used for reproducible builds of the final artifact for the intern.',
-      type: 'boolean',
-      default: false,
-    },
     mac: {
       describe: 'Build arm64 and x64 bundles for MacOS.',
       type: 'boolean',
@@ -276,7 +269,7 @@ async function linkLocalDeps(buildFolder: string) {
   const manifest = await fs.readJSON(path.resolve(serverDir, 'package.json'));
 
   const resolutions = {
-    'flipper-doctor': `file:${rootDir}/doctor`,
+    ...manifest.resolutions,
     'flipper-common': `file:${rootDir}/flipper-common`,
     'flipper-server-client': `file:${rootDir}/flipper-server-client`,
     'flipper-pkg-lib': `file:${rootDir}/pkg-lib`,
@@ -284,7 +277,7 @@ async function linkLocalDeps(buildFolder: string) {
   };
   manifest.resolutions = resolutions;
 
-  for (const depName of Object.keys(manifest.dependencies)) {
+  for (const depName in manifest.dependencies) {
     if (depName in resolutions) {
       manifest.dependencies[depName] =
         resolutions[depName as keyof typeof resolutions];
@@ -292,7 +285,6 @@ async function linkLocalDeps(buildFolder: string) {
   }
 
   delete manifest.scripts;
-  delete manifest.devDependencies;
 
   await fs.writeFile(
     path.join(buildFolder, 'package.json'),
@@ -381,13 +373,6 @@ async function yarnInstall(dir: string) {
     )}`,
   );
 
-  if (!argv['generate-lock']) {
-    await fs.copyFile(
-      path.resolve(rootDir, 'yarn.flipper-server.lock'),
-      path.resolve(dir, 'yarn.lock'),
-    );
-  }
-
   await spawn(
     'yarn',
     [
@@ -401,15 +386,6 @@ async function yarnInstall(dir: string) {
       shell: true,
     },
   );
-
-  if (argv['generate-lock']) {
-    await fs.copyFile(
-      path.resolve(dir, 'yarn.lock'),
-      path.resolve(rootDir, 'yarn.flipper-server.lock'),
-    );
-  }
-
-  await fs.rm(path.resolve(dir, 'yarn.lock'));
 }
 
 async function stripForwardingToolFromArchive(archive: string): Promise<void> {

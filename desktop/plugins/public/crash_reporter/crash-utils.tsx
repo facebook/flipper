@@ -53,7 +53,7 @@ export function showCrashNotification(
     id: crash.notificationID,
     message: msg,
     severity: 'error',
-    title: title,
+    title,
     action: crash.notificationID,
     category: crash.reason || 'Unknown reason',
   });

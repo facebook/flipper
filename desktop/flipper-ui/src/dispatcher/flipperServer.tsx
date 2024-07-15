@@ -70,6 +70,23 @@ export function connectFlipperServerToStore(
     handleDeviceDisconnected(store, logger, deviceInfo);
   });
 
+  server.on('device-removed', (deviceInfo) => {
+    const device = store
+      .getState()
+      .connections.devices.find((d) => d.serial === deviceInfo.serial);
+
+    if (device) {
+      if (device.connected) {
+        device.disconnect();
+      }
+
+      store.dispatch({
+        type: 'UNREGISTER_DEVICE',
+        payload: device,
+      });
+    }
+  });
+
   server.on('client-setup', (client) => {
     store.dispatch({
       type: 'START_CLIENT_SETUP',
@@ -344,8 +361,11 @@ export function handleDeviceConnected(
         `Tried to replace still connected device '${existing.serial}' with a new instance.`,
       );
     }
-    if (store.getState().settingsState.persistDeviceData) {
-      //Recycle device
+    if (
+      existing.deviceType !== 'dummy' &&
+      store.getState().settingsState.persistDeviceData
+    ) {
+      // Recycle device
       existing?.connected.set(true);
       store.dispatch({
         type: 'SELECT_DEVICE',

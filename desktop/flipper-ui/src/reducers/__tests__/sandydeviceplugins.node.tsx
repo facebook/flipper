@@ -37,8 +37,8 @@ function devicePlugin(client: DevicePluginClient) {
   initialized = true;
 
   return {
-    activateStub: activateStub,
-    deactivateStub: deactivateStub,
+    activateStub,
+    deactivateStub,
     destroyStub,
   };
 }

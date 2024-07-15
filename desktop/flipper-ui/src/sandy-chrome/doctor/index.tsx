@@ -33,6 +33,16 @@ const CommonOpenSSLInstalled = (
     <CodeBlock>{props.output}</CodeBlock>
   </div>
 );
+const XcodeSelectSwitch = ({
+  availableXcode,
+}: {
+  availableXcode: string | null;
+}) => (
+  <CliCommand
+    title="Select Xcode version foo bar baz"
+    command={`sudo xcode-select -switch ${availableXcode ?? '<path/to/>/Xcode.app'}`}
+  />
+);
 
 const CommonOpenSSLNotInstalled = (
   props: PropsFor<'common.openssl--not_installed'>,
@@ -162,27 +172,32 @@ const XcodeSelectSet = (props: PropsFor<'ios.xcode-select--set'>) => (
     <CodeBlock>{props.selected}</CodeBlock>
   </Typography.Paragraph>
 );
-const XcodeSelectNotSet = (_props: PropsFor<'ios.xcode-select--not_set'>) => (
+const XcodeSelectNotSet = (props: PropsFor<'ios.xcode-select--not_set'>) => (
   <Typography.Paragraph>
     xcode-select path not selected. <code>xcode-select -p</code> failed. To fix
     it run this command:
-    <CliCommand
-      title="Select Xcode version foo bar baz"
-      // TODO provide latest path to installed xcode from /Applications
-      command={`sudo xcode-select -switch <path/to/>/Xcode.app`}
-    />
+    <XcodeSelectSwitch availableXcode={props.availableXcode} />
   </Typography.Paragraph>
 );
 
 const XcodeSelectNoXcode = (
-  _props: PropsFor<'ios.xcode-select--no_xcode_selected'>,
+  props: PropsFor<'ios.xcode-select--no_xcode_selected'>,
 ) => (
   <Typography.Paragraph>
     xcode-select has no Xcode selected. To fix it it run this command:
+    <XcodeSelectSwitch availableXcode={props.availableXcode} />
+  </Typography.Paragraph>
+);
+
+const XcodeSelectCustomPath = (
+  props: PropsFor<'ios.xcode-select--custom_path'>,
+) => (
+  <Typography.Paragraph>
+    Selected path is not a Xcode application:
+    <CodeBlock size="s">{props.selectedPath}</CodeBlock>
     <CliCommand
-      title="Select Xcode version foo bar baz"
-      // TODO provide latest path to installed xcode from /Applications
-      command={`sudo xcode-select -switch <path/to/>/Xcode.app`}
+      title="Select existing Xcode application"
+      command={`sudo xcode-select -switch ${props.availableXcode ?? '<path/to/>/Xcode.app'}`}
     />
   </Typography.Paragraph>
 );
@@ -193,11 +208,7 @@ const XcodeSelectNonExistingSelected = (
   <Typography.Paragraph>
     xcode-select is pointing at a path that does not exist:
     <CodeBlock size="s">{props.selected}</CodeBlock>
-    <CliCommand
-      title="Select existing Xcode application"
-      // TODO provide latest path to installed xcode from /Applications
-      command={`sudo xcode-select -switch <path/to/>/Xcode.app`}
-    />
+    <XcodeSelectSwitch availableXcode={props.availableXcode} />
   </Typography.Paragraph>
 );
 
@@ -224,6 +235,28 @@ const IosSdkInstalled = (props: PropsFor<'ios.sdk--installed'>) => (
       ))}
     </List>
   </div>
+);
+
+const HasSimulatorsOk = (props: PropsFor<'ios.has-simulators--ok'>) => (
+  <Typography.Paragraph>
+    You have {props.count} simulators available.
+  </Typography.Paragraph>
+);
+const HasSimulatorsIdbFailed = (
+  props: PropsFor<'ios.has-simulators--idb-failed'>,
+) => (
+  <Typography.Paragraph>
+    Command to list devices failed, make sure idb is installed.
+    <CodeBlock>{props.message}</CodeBlock>
+  </Typography.Paragraph>
+);
+const HasSimulatorsNoDevices = (
+  _props: PropsFor<'ios.has-simulators--no-devices'>,
+) => (
+  <Typography.Paragraph>
+    No available simulators found. This can happen because{' '}
+    <code>xcode-select</code> points to a wrong Xcode installation.
+  </Typography.Paragraph>
 );
 
 const IosXctraceInstalled = (props: PropsFor<'ios.xctrace--installed'>) => (
@@ -313,11 +346,15 @@ const messageToComp: {
   'ios.xcode-select--no_xcode_selected': XcodeSelectNoXcode,
   'ios.xcode-select--nonexisting_selected': XcodeSelectNonExistingSelected,
   'ios.xcode-select--noop': Noop,
-  'ios.xcode-select--custom_path': Noop,
+  'ios.xcode-select--custom_path': XcodeSelectCustomPath,
   'ios.xcode-select--old_version_selected': Noop,
 
   'ios.sdk--installed': IosSdkInstalled,
   'ios.sdk--not_installed': IosSdkNotInstalled,
+
+  'ios.has-simulators--ok': HasSimulatorsOk,
+  'ios.has-simulators--no-devices': HasSimulatorsNoDevices,
+  'ios.has-simulators--idb-failed': HasSimulatorsIdbFailed,
 
   'ios.xctrace--installed': IosXctraceInstalled,
   'ios.xctrace--not_installed': IosXctraceNotInstalled,

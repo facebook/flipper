@@ -13,11 +13,11 @@
 @interface UIDTransientNode : NSObject
 
 @property(nonatomic) id node;
-@property(nonatomic, nullable) NSNumber* parent;
+@property(nonatomic, nullable) NSString* parent;
 @property(nonatomic) BOOL shallow;
 
 - (instancetype)initWithNode:(id)node;
-- (instancetype)initWithNode:(id)node parent:(NSNumber*)parent;
+- (instancetype)initWithNode:(id)node parent:(NSString*)parent;
 
 @end
 
@@ -27,7 +27,7 @@
   return [self initWithNode:node parent:nil];
 }
 
-- (instancetype)initWithNode:(id)node parent:(NSNumber*)parent {
+- (instancetype)initWithNode:(id)node parent:(NSString*)parent {
   if (self = [super init]) {
     _node = node;
     _parent = parent;
@@ -74,7 +74,7 @@
     UIDNodeDescriptor* descriptor =
         [self.descriptorRegister descriptorForClass:[node class]];
 
-    NSUInteger nodeIdentifier = [descriptor identifierForNode:node];
+    NSString* nodeIdentifier = [descriptor identifierForNode:node];
 
     UIDNode* uidNode =
         [[UIDNode alloc] initWithIdentifier:nodeIdentifier
@@ -96,13 +96,11 @@
 
     NSArray* children = [descriptor childrenOfNode:node];
     id<NSObject> activeChild = [descriptor activeChildForNode:node];
-    NSNumber* activeChildId = nil;
+    NSString* activeChildId = nil;
     if (activeChild != nil) {
       UIDNodeDescriptor* activeChildDescriptor =
           [self.descriptorRegister descriptorForClass:[activeChild class]];
-      NSUInteger childId =
-          [activeChildDescriptor identifierForNode:activeChild];
-      activeChildId = [NSNumber numberWithUnsignedInteger:childId];
+      activeChildId = [activeChildDescriptor identifierForNode:activeChild];
     }
 
     NSMutableArray* childrenIds = [NSMutableArray new];
@@ -110,13 +108,10 @@
       UIDNodeDescriptor* childDescriptor =
           [self.descriptorRegister descriptorForClass:[child class]];
       assert(childDescriptor != nil);
-      [childrenIds
-          addObject:[NSNumber numberWithUnsignedInteger:
-                                  [childDescriptor identifierForNode:child]]];
+      [childrenIds addObject:[childDescriptor identifierForNode:child]];
 
-      UIDTransientNode* transientChildNode = [[UIDTransientNode alloc]
-          initWithNode:child
-                parent:[NSNumber numberWithUnsignedInteger:nodeIdentifier]];
+      UIDTransientNode* transientChildNode =
+          [[UIDTransientNode alloc] initWithNode:child parent:nodeIdentifier];
 
       // This is a child which is not active, so mark it as to not
       // traverse its children.
@@ -136,7 +131,7 @@
   return nodes;
 }
 
-- (id<NSObject>)findWithId:(NSUInteger)nodeId inHierarchyWithRoot:(id)root {
+- (id<NSObject>)findWithId:(NSString*)nodeId inHierarchyWithRoot:(id)root {
   if (root == nil) {
     return nil;
   }
@@ -151,9 +146,9 @@
     UIDNodeDescriptor* descriptor =
         [self.descriptorRegister descriptorForClass:[node class]];
 
-    NSUInteger nodeIdentifier = [descriptor identifierForNode:node];
+    NSString* nodeIdentifier = [descriptor identifierForNode:node];
 
-    if (nodeIdentifier == nodeId) {
+    if ([nodeIdentifier isEqualToString:nodeId]) {
       return node;
     }
 

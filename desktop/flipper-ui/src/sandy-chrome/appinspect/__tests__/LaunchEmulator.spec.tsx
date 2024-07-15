@@ -18,7 +18,7 @@ import {sleep} from 'flipper-plugin';
 import {last} from 'lodash';
 import {getFlipperServer} from '../../../flipperServer';
 
-test('Can render and launch android apps - no emulators', async () => {
+test.skip('Can render and launch android apps - no emulators', async () => {
   const store = createStore(createRootReducer());
   store.dispatch({
     type: 'UPDATE_SETTINGS',

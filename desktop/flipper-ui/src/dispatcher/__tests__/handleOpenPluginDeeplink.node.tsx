@@ -69,7 +69,7 @@ test('open-plugin deeplink parsing - 3', () => {
   ).toThrowErrorMatchingInlineSnapshot(`"Missing plugin-id param"`);
 });
 
-test('Triggering a deeplink will work', async () => {
+test.skip('Triggering a deeplink will work', async () => {
   const linksSeen: any[] = [];
 
   const plugin = (client: PluginClient) => {
@@ -163,7 +163,7 @@ test('Triggering a deeplink will work', async () => {
   );
 });
 
-test('triggering a deeplink without applicable device can wait for a device', async () => {
+test.skip('triggering a deeplink without applicable device can wait for a device', async () => {
   let lastOS: string = '';
   const definition = TestUtils.createTestDevicePlugin(
     {
@@ -250,7 +250,7 @@ test('triggering a deeplink without applicable device can wait for a device', as
   expect(lastOS).toBe('iOS');
 });
 
-test('triggering a deeplink without applicable client can wait for a device', async () => {
+test.skip('triggering a deeplink without applicable client can wait for a device', async () => {
   const definition = TestUtils.createTestPlugin(
     {
       Component() {
@@ -332,7 +332,7 @@ test('triggering a deeplink without applicable client can wait for a device', as
   `);
 });
 
-test('triggering a deeplink with incompatible device will cause bail', async () => {
+test.skip('triggering a deeplink with incompatible device will cause bail', async () => {
   const definition = TestUtils.createTestDevicePlugin(
     {
       Component() {

@@ -105,6 +105,7 @@ export function VisualiserControls({
   const targetToolTip =
     targetMode.state === 'disabled' ? 'Target Mode' : 'Exit  target mode';
 
+  const boxModeDisabled = selectedNode?.boxData == null;
   return (
     <Layout.Container padh="large" gap="small" padv="medium">
       <Layout.Right style={{flexGrow: 0}} gap="medium" center>
@@ -119,21 +120,25 @@ export function VisualiserControls({
         </Typography.Text>
 
         <Layout.Horizontal gap="medium" center>
-          <Tooltip title="Box model visualisation mode">
+          <Tooltip
+            title={
+              boxModeDisabled
+                ? 'Box visualisation not available for this element type'
+                : 'Box model visualisation mode'
+            }>
             <Button
+              disabled={boxModeDisabled}
               shape="circle"
               onClick={() => {
-                tracker.track('box-visualiser-switched', {
-                  on: !boxVisualiserEnabled,
-                });
                 setBoxVisualiserEnabled(!boxVisualiserEnabled);
               }}
               icon={
                 <BorderOutlined
                   style={{
-                    color: boxVisualiserEnabled
-                      ? theme.primaryColor
-                      : theme.black,
+                    color:
+                      boxVisualiserEnabled && !boxModeDisabled
+                        ? theme.primaryColor
+                        : theme.black,
                   }}
                 />
               }

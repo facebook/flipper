@@ -112,6 +112,7 @@ module.exports = {
     'no-bitwise': 0, // bitwise operations needed in some places
     'consistent-return': 0,
     'no-var': 2,
+    'object-shorthand': ['error', 'properties'],
     'prefer-const': [2, {destructuring: 'all'}],
     'prefer-spread': 1,
     'prefer-rest-params': 1,

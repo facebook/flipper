@@ -101,6 +101,7 @@ export type UninitializedClient = {
 
 export type ClientQuery = {
   readonly app: string;
+  readonly app_id?: string;
   readonly os: DeviceOS;
   readonly device: string;
   readonly device_id: string;
@@ -143,6 +144,7 @@ export type FlipperServerEvents = {
   };
   'device-connected': DeviceDescription;
   'device-disconnected': DeviceDescription;
+  'device-removed': DeviceDescription;
   'device-log': {
     serial: string;
     entry: DeviceLogEntry;
@@ -290,6 +292,11 @@ export type FlipperServerCommands = {
     serial: string,
     destination: string,
   ) => Promise<void>;
+  'log-connectivity-event': (
+    level: 'info' | 'warning' | 'error',
+    query: ClientQuery | null,
+    ...message: any
+  ) => Promise<void>;
   'device-stop-screencapture': (serial: string) => Promise<string>; // file path
   'device-shell-exec': (serial: string, command: string) => Promise<string>;
   'device-install-app': (
@@ -318,6 +325,7 @@ export type FlipperServerCommands = {
   'android-adb-kill': () => Promise<void>;
   'ios-get-simulators': (bootedOnly: boolean) => Promise<DeviceTarget[]>;
   'ios-launch-simulator': (udid: string) => Promise<void>;
+  'ios-launch-app': (udid: string, appName: string) => Promise<void>;
   'ios-idb-kill': () => Promise<void>;
   'persist-settings': (settings: Settings) => Promise<void>;
   'persist-launcher-settings': (settings: LauncherSettings) => Promise<void>;

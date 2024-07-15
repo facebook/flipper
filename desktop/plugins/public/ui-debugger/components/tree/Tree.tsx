@@ -7,7 +7,14 @@
  * @format
  */
 
-import {Id, ClientNode, NodeMap, MetadataId, Metadata} from '../../ClientTypes';
+import {
+  Id,
+  ClientNode,
+  NodeMap,
+  MetadataId,
+  Metadata,
+  BoxData,
+} from '../../ClientTypes';
 import {Color, OnSelectNode} from '../../DesktopTypes';
 import React, {
   CSSProperties,
@@ -39,7 +46,11 @@ import {
   useKeyboardControlsCallback,
 } from './useKeyboardControls';
 import {toTreeList} from './toTreeList';
-import {CaretDownOutlined, WarningOutlined} from '@ant-design/icons';
+import {
+  BorderOutlined,
+  CaretDownOutlined,
+  WarningOutlined,
+} from '@ant-design/icons';
 
 const {Text} = Typography;
 
@@ -74,6 +85,9 @@ export function Tree2({
   const nodeSelection = useValue(instance.uiState.nodeSelection);
   const isContextMenuOpen = useValue(instance.uiState.isContextMenuOpen);
   const hoveredNode = head(useValue(instance.uiState.hoveredNodes));
+  const isBoxVisualiserEnabled = useValue(
+    instance.uiState.boxVisualiserEnabled,
+  );
 
   const filterMainThreadMonitoring = useValue(
     instance.uiState.filterMainThreadMonitoring,
@@ -290,6 +304,7 @@ export function Tree2({
                   innerRef={refs[virtualRow.index]}
                   key={virtualRow.index}
                   treeNode={treeNodes[virtualRow.index]}
+                  boxVisualiserEnabled={isBoxVisualiserEnabled}
                   highlightedNodes={highlightedNodes}
                   selectedNode={nodeSelection?.node.id}
                   hoveredNode={hoveredNode}
@@ -399,12 +414,14 @@ export function TreeNodeRow({
   onExpandNode,
   onCollapseNode,
   onHoverNode,
+  boxVisualiserEnabled,
 }: {
   transform: string;
   innerRef: Ref<any>;
   treeNode: TreeNode;
   highlightedNodes: Map<Id, Color>;
   selectedNode?: Id;
+  boxVisualiserEnabled: boolean;
   hoveredNode?: Id;
   isUsingKBToScroll: RefObject<MillisSinceEpoch>;
   isContextMenuOpen: boolean;
@@ -430,7 +447,7 @@ export function TreeNodeRow({
         top: 0,
         left: 0,
         height: TreeItemHeight,
-        transform: transform,
+        transform,
         //Due to absolute positioning width is set outside of react via a useLayoutEffect in parent
       }}>
       <IndentGuides
@@ -470,6 +487,11 @@ export function TreeNodeRow({
 
         {nodeIcon(treeNode)}
         <TreeNodeTextContent treeNode={treeNode} />
+        {boxVisualiserEnabled && boxDataHasData(treeNode.boxData) && (
+          <Tooltip title="This element has padding, margin or border">
+            <BorderOutlined style={{padding: theme.space.medium}} />
+          </Tooltip>
+        )}
         {treeNode.frameworkEvents && (
           <Tooltip
             title={`${treeNode.frameworkEvents} monitored framework events`}>
@@ -485,6 +507,21 @@ export function TreeNodeRow({
       </TreeNodeContent>
     </div>
   );
+}
+function boxDataHasData(boxData?: BoxData) {
+  if (boxData == null) {
+    return false;
+  }
+  for (let i = 0; i < boxData.border.length - 1; i++) {
+    if (
+      boxData.border[i] > 0 ||
+      boxData.padding[i] > 0 ||
+      boxData.margin[i] > 0
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function TreeNodeTextContent({treeNode}: {treeNode: TreeNode}) {

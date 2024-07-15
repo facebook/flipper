@@ -19,7 +19,7 @@
     "react-query": "^3.39.1",
     "async": "2.3.0",
     "@tanstack/react-virtual": "3.0.0-beta.54",
-    "ts-retry-promise": "^0.7.0",
+    "ts-retry-promise": "^0.8.1",
     "memoize-weak": "^1.0.2",
     "eventemitter3": "^4.0.7"
   },

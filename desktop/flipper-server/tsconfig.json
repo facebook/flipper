@@ -17,9 +17,6 @@
   "include": ["./src/**/*"],
   "references": [
     {
-      "path": "../doctor"
-    },
-    {
       "path": "../flipper-common"
     },
     {

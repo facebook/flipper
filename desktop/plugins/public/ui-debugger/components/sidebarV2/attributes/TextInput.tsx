@@ -32,7 +32,7 @@ export function StyledTextArea({
       autoSize
       className={cx(inputBase, !mutable && readOnlyInput)}
       bordered
-      style={{color: color, ...pendingStyle(optimisticValue)}}
+      style={{color, ...pendingStyle(optimisticValue)}}
       readOnly={!mutable}
       value={optimisticValue.value}
       onChange={(event) => optimisticValue.onChange(event.target.value)}

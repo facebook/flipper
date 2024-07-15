@@ -19,7 +19,7 @@
   },
   "peerDependencies": {},
   "scripts": {
-    "start": "ts-node src/index.tsx",
+    "start": "tsx src/index.tsx",
     "reset": "rimraf lib *.tsbuildinfo",
     "build": "tsc -b",
     "prepack": "yarn reset && yarn build"

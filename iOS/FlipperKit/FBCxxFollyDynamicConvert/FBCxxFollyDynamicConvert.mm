@@ -134,5 +134,5 @@ folly::dynamic convertIdToFollyDynamic(id json, bool nullifyNanAndInf) {
 
   return nil;
 }
-}
-}
+} // namespace cxxutils
+} // namespace facebook

@@ -252,7 +252,7 @@ async function addSaltToDeviceSerial({
     flipperReleaseRevision: revision,
     clients: updatedClients,
     device: {...newDevice.toJSON(), pluginStates: devicePluginStates},
-    deviceScreenshot: deviceScreenshot,
+    deviceScreenshot,
     store: {
       activeNotifications: updatedPluginNotifications,
     },

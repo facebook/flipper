@@ -392,7 +392,7 @@ export function NavbarButton({
   if (count !== undefined) {
     return (
       <Badge
-        style={{zIndex: zIndex}}
+        style={{zIndex}}
         {...{onClick}}
         dot={count === true}
         count={count}
@@ -556,6 +556,13 @@ function TroubleshootMenu() {
                 getFlipperServer().exec('android-adb-kill');
               }}>
               Restart ADB (Android connections)
+            </Menu.Item>
+            <Menu.Item
+              key="restart-flipper-serer"
+              onClick={() => {
+                getFlipperServer().exec('restart');
+              }}>
+              Restart Flipper Server
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>

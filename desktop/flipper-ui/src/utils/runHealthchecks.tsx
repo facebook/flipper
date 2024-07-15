@@ -40,8 +40,12 @@ export type HealthcheckOptions = HealthcheckEventsHandler & HealthcheckSettings;
 
 async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
   const flipperServer = getFlipperServer();
+
+  const envInfo = await flipperServer.exec('environment-info');
+
   const healthchecks = await flipperServer.exec('doctor-get-healthchecks', {
     settings: options.settings,
+    isProduction: envInfo.isProduction,
   });
   options.startHealthchecks(healthchecks);
   let hasProblems = false;
@@ -56,7 +60,10 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
             await flipperServer
               .exec(
                 'doctor-run-healthcheck',
-                {settings: options.settings},
+                {
+                  settings: options.settings,
+                  isProduction: envInfo.isProduction,
+                },
                 categoryKey as keyof FlipperDoctor.Healthchecks,
                 h.key,
               )

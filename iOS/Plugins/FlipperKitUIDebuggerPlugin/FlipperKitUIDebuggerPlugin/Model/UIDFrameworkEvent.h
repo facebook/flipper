@@ -16,7 +16,7 @@ typedef NSArray<NSString*>* UIDStacktrace;
 
 @interface UIDFrameworkEvent : NSObject
 
-@property(nonatomic) NSUInteger nodeIdentifier;
+@property(nonatomic) NSString* nodeIdentifier;
 @property(nonatomic, strong) NSString* type;
 @property(nonatomic, strong) NSDate* timestamp;
 @property(nonatomic, strong) UIDEventPayload payload;

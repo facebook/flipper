@@ -40,6 +40,7 @@ import {MultiSelectableDropDownItem} from '../../shared/MultiSelectableDropDownI
 import {formatDuration, formatTimestampMillis} from '../../../utils/timeUtils';
 import {tracker} from '../../../utils/tracker';
 import {plugin} from '../../../index';
+import {CustomDropDown} from '../../shared/CustomDropDown';
 
 type Props = {
   node: ClientNode;
@@ -122,17 +123,14 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
                 }
               }}
               dropdownRender={() => (
-                <Layout.Container
-                  gap="small"
-                  pad="small"
-                  style={{
-                    backgroundColor: theme.white,
-                    borderRadius: theme.borderRadius,
-                    boxShadow: `0 0 4px 1px rgba(0,0,0,0.10)`,
-                  }}>
+                <CustomDropDown>
                   {showThreadsSection && (
                     <>
-                      <Typography.Text strong>By thread</Typography.Text>
+                      <Typography.Text
+                        style={{padding: theme.space.small}}
+                        strong>
+                        By thread
+                      </Typography.Text>
                       {allThreads.map((thread) => (
                         <MultiSelectableDropDownItem
                           onSelect={(thread, selected) => {
@@ -152,7 +150,11 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
 
                   {showEventTypesSection && (
                     <>
-                      <Typography.Text strong>By event type</Typography.Text>
+                      <Typography.Text
+                        strong
+                        style={{padding: theme.space.small}}>
+                        By event type
+                      </Typography.Text>
                       {allEventTypes.map((eventType) => (
                         <MultiSelectableDropDownItem
                           onSelect={(eventType, selected) => {
@@ -169,7 +171,7 @@ export const FrameworkEventsInspector: React.FC<Props> = ({
                       ))}
                     </>
                   )}
-                </Layout.Container>
+                </CustomDropDown>
               )}>
               <Button
                 shape="circle"

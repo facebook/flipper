@@ -45,6 +45,30 @@ let cachedDeepLinkURL: string | undefined;
 
 const logger = initLogger();
 
+const maybeDeepLinkURLFromSearchParams = (searchParams: URLSearchParams) => {
+  const deepLink = searchParams.get('deep-link');
+  if (deepLink) {
+    function removePrefix(input: string, prefix: string): string {
+      const regex = new RegExp(`^${prefix}+`);
+      return input.replace(regex, '');
+    }
+
+    const url = new URL(deepLink);
+    const hostname = removePrefix(url.pathname, '/');
+    const params = url.searchParams;
+
+    const deeplinkURL = new URL(`flipper://${hostname.toString()}`);
+    deeplinkURL.search = params.toString();
+
+    return deeplinkURL.toString();
+  }
+};
+
+const maybeDeepLinkURLFromURL = (url: string) => {
+  const searchParams = new URL(url).searchParams;
+  return maybeDeepLinkURLFromSearchParams(searchParams);
+};
+
 async function start() {
   /**
    * The following is used to ensure only one instance of Flipper is running at a time.
@@ -114,21 +138,9 @@ async function start() {
     return token;
   };
 
-  const openPlugin = params.get('open-plugin');
-  if (openPlugin) {
-    function removePrefix(input: string, prefix: string): string {
-      const regex = new RegExp(`^${prefix}+`);
-      return input.replace(regex, '');
-    }
-
-    const url = new URL(openPlugin);
-    const maybeParams = removePrefix(url.pathname, '/');
-    const params = new URLSearchParams(maybeParams);
-
-    const deeplinkURL = new URL('flipper://open-plugin');
-    deeplinkURL.search = params.toString();
-
-    cachedDeepLinkURL = deeplinkURL.toString();
+  const deepLinkURL = maybeDeepLinkURLFromSearchParams(params);
+  if (deepLinkURL) {
+    cachedDeepLinkURL = deepLinkURL.toString();
   }
 
   getLogger().info('[flipper-client][ui-browser] Create WS client');
@@ -259,20 +271,33 @@ async function initializePWA() {
 
     // @ts-ignore
     window.launchQueue.setConsumer(async (launchParams) => {
-      if (!launchParams || !launchParams.files) {
+      if (!launchParams) {
         return;
       }
-      getLogger().debug('[PWA] Attempt to to open a file');
-      for (const file of launchParams.files) {
-        const blob = await file.getFile();
-        blob.handle = file;
+      if (launchParams.files && launchParams.files.length > 0) {
+        getLogger().debug('[PWA] Attempt to to open a file');
+        for (const file of launchParams.files) {
+          const blob = await file.getFile();
+          blob.handle = file;
 
-        const data = await blob.text();
-        const name = file.name;
+          const data = await blob.text();
+          const name = file.name;
 
-        cachedFile = {name, data};
+          cachedFile = {name, data};
 
-        openFileIfAny();
+          openFileIfAny();
+          return;
+        }
+      }
+
+      if (launchParams.targetURL) {
+        getLogger().debug('[PWA] Attempt to to open an URL');
+        const deepLinkURL = maybeDeepLinkURLFromURL(launchParams.targetURL);
+        if (deepLinkURL) {
+          cachedDeepLinkURL = deepLinkURL.toString();
+        }
+        openURLIfAny();
+        return;
       }
     });
   } else {

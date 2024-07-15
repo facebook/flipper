@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package androidx.compose.ui.inspection.util
+package facebook.internal.androidx.compose.ui.inspection.util
 
 const val NO_ANCHOR_ID = 0
 

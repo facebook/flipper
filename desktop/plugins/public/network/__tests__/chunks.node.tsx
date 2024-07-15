@@ -7,6 +7,8 @@
  * @format
  */
 
+import 'core-js/stable/structured-clone';
+import 'fake-indexeddb/auto';
 import {combineBase64Chunks} from '../chunks';
 import {TestUtils, path} from 'flipper-plugin';
 import * as NetworkPlugin from '../index';
@@ -84,7 +86,7 @@ test('Reducer correctly adds followup chunk', () => {
   `);
 });
 
-test('Reducer correctly combines initial response and followup chunk', () => {
+test('Reducer correctly combines initial response and followup chunk', async () => {
   const {instance, sendEvent} = TestUtils.startPlugin(NetworkPlugin);
   sendEvent('newRequest', {
     data: btoa('x'),
@@ -137,7 +139,6 @@ test('Reducer correctly combines initial response and followup chunk', () => {
     }
   `);
   expect(instance.requests.records()[0]).toMatchObject({
-    requestData: 'x',
     requestHeaders: [
       {key: 'y', value: 'z'},
       {
@@ -165,7 +166,6 @@ test('Reducer correctly combines initial response and followup chunk', () => {
     insights: undefined,
     method: 'GET',
     reason: 'nothing',
-    requestData: 'x',
     requestHeaders: [
       {
         key: 'y',
@@ -176,13 +176,17 @@ test('Reducer correctly combines initial response and followup chunk', () => {
         value: 'text/plain',
       },
     ],
-    responseData: 'hello',
     responseHeaders: [{key: 'Content-Type', value: 'text/plain'}],
     responseIsMock: false,
     responseLength: 5,
     status: '200',
     url: 'http://test.com',
   });
+
+  const persistedRequestData = await instance.db.getRequestData('1');
+  expect(persistedRequestData).toEqual('x');
+  const persistedResponseData = await instance.db.getResponseData('1');
+  expect(persistedResponseData).toEqual('hello');
 });
 
 async function readJsonFixture(filename: string) {

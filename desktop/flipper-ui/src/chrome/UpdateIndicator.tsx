@@ -146,11 +146,10 @@ export function getUpdateAvailableMessage(versionCheckResult: {
           <>
             {' '}
             Run <code>arc pull</code> (optionally with <code>--latest</code>) in{' '}
-            <code>~/fbsource</code> and{' '}
+            <code>~/fbsource</code>, then{' '}
             <Button block type="primary" onClick={shutdownFlipper}>
               Quit Flipper to upgrade
             </Button>
-            .
           </>
         )
       ) : (

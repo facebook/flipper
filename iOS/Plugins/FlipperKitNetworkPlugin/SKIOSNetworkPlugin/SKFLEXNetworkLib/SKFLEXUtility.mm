@@ -120,9 +120,9 @@
     return;
   }
 
-  IMP implementation = imp_implementationWithBlock((id)(
-      [cls instancesRespondToSelector:selector] ? implementationBlock
-                                                : undefinedBlock));
+  IMP implementation = imp_implementationWithBlock(
+      (id)([cls instancesRespondToSelector:selector] ? implementationBlock
+                                                     : undefinedBlock));
 
   Method oldMethod = class_getInstanceMethod(cls, selector);
   if (oldMethod) {

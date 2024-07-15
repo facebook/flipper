@@ -53,9 +53,8 @@ export const Visualization2D: React.FC<
   const focusedNodeId = useValue(instance.uiState.focusedNode);
   const nodeSelection = useValue(instance.uiState.nodeSelection);
   const wireFrameMode = useValue(instance.uiState.wireFrameMode);
-
+  const boxVisualiserEnabled = useValue(instance.uiState.boxVisualiserEnabled);
   const [alignmentModeEnabled, setAlignmentModeEnabled] = useState(false);
-  const [boxVisualiserEnabled, setBoxVisualiserEnabled] = useState(false);
 
   const [targetMode, setTargetMode] = useState<TargetModeState>({
     state: 'disabled',
@@ -83,7 +82,7 @@ export const Visualization2D: React.FC<
           alignmentModeEnabled={alignmentModeEnabled}
           setAlignmentModeEnabled={setAlignmentModeEnabled}
           boxVisualiserEnabled={boxVisualiserEnabled}
-          setBoxVisualiserEnabled={setBoxVisualiserEnabled}
+          setBoxVisualiserEnabled={instance.uiActions.onSetBoxVisualiserEnabled}
         />
       )}
       <Visualization2DContent
@@ -103,7 +102,7 @@ export const Visualization2D: React.FC<
   );
 };
 
-const horizontalPadding = 16; //allows space for vertical scroll bar
+const horizontalPadding = 8; //allows space for vertical scroll bar
 
 function Visualization2DContent({
   disableInteractivity,
@@ -223,6 +222,8 @@ function Visualization2DContent({
       ref={containerRef}
       style={{
         paddingLeft: horizontalPadding,
+        overflowY: 'scroll',
+        scrollbarWidth: 'thin',
       }}
       vertical>
       <div
@@ -488,7 +489,7 @@ function toNestedNode(
       ),
       bounds: node.bounds,
       tags: node.tags,
-      activeChildIdx: activeChildIdx,
+      activeChildIdx,
     };
   }
 
@@ -560,7 +561,14 @@ function hitTest(node: NestedNode, mouseCoordinate: Coordinate): NestedNode[] {
     let children = node.children;
 
     if (node.activeChildIdx != null) {
-      children = [node.children[node.activeChildIdx]];
+      const activeChild = node.children[node.activeChildIdx];
+      if (activeChild == null) {
+        console.error(
+          `[ui-debugger] activeChildIdx not found for ${node.name}: ${node.activeChildIdx} not within ${node.children.length}`,
+        );
+      } else {
+        children = [activeChild];
+      }
     }
     const offsetMouseCoord = offsetCoordinate(mouseCoordinate, nodeBounds);
     let anyChildHitRecursive = false;

@@ -123,6 +123,11 @@ export function parseClientQuery(
     return;
   }
 
+  let app_id: string | undefined;
+  if (typeof query.app_id === 'string') {
+    app_id = query.app_id;
+  }
+
   let os: DeviceOS | undefined;
   if (typeof query.os === 'string') {
     os = query.os as DeviceOS;
@@ -152,6 +157,7 @@ export function parseClientQuery(
     device_id,
     device,
     app,
+    app_id,
     os,
     medium: transformCertificateExchangeMediumToType(medium),
     sdk_version,

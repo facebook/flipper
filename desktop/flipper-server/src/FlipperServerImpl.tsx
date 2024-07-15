@@ -30,6 +30,7 @@ import {
   DeviceDebugData,
   CertificateExchangeMedium,
   Settings,
+  ClientQuery,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
@@ -64,6 +65,7 @@ import {movePWA} from './utils/findInstallation';
 import GK from './fb-stubs/GK';
 import {fetchNewVersion} from './fb-stubs/fetchNewVersion';
 import dns from 'dns';
+import {recorder} from './recorder';
 
 // The default on node16 is to prefer ipv4 results which causes issues
 // in some setups.
@@ -471,6 +473,13 @@ export class FlipperServerImpl implements FlipperServer {
         isSymbolicLink: stats.isSymbolicLink(),
       };
     },
+    'log-connectivity-event': async (
+      level: 'info' | 'warning' | 'error',
+      query: ClientQuery | null,
+      message: any[],
+    ) => {
+      recorder.log_(level, query ?? recorder.undefinedClientQuery_, message);
+    },
     'node-api-fs-readlink': readlink,
     'node-api-fs-readfile': async (path, options) => {
       const contents = await readFile(path, options ?? 'utf8');
@@ -563,6 +572,10 @@ export class FlipperServerImpl implements FlipperServer {
     'ios-launch-simulator': async (udid) => {
       assertNotNull(this.ios);
       return this.ios.launchSimulator(udid);
+    },
+    'ios-launch-app': async (udid, bundleId) => {
+      assertNotNull(this.ios);
+      return this.ios.launchApp(udid, bundleId);
     },
     'ios-idb-kill': async () => {
       assertNotNull(this.ios);
@@ -681,7 +694,10 @@ export class FlipperServerImpl implements FlipperServer {
     const existing = this.devices.get(serial);
     if (existing) {
       // assert different kind of devices aren't accidentally reusing the same serial
-      if (Object.getPrototypeOf(existing) !== Object.getPrototypeOf(device)) {
+      if (
+        existing.info.deviceType !== 'dummy' &&
+        Object.getPrototypeOf(existing) !== Object.getPrototypeOf(device)
+      ) {
         throw new Error(
           `Tried to register a new device type for existing serial '${serial}': Trying to replace existing '${
             Object.getPrototypeOf(existing).constructor.name
@@ -702,8 +718,9 @@ export class FlipperServerImpl implements FlipperServer {
       return;
     }
     this.devices.delete(serial);
-    device.disconnect(); // we'll only destroy upon replacement
+    device.disconnect();
     this.emit('device-disconnected', device.info);
+    this.emit('device-removed', device.info);
   }
 
   getDevice(serial: string): ServerDevice {
@@ -725,6 +742,10 @@ export class FlipperServerImpl implements FlipperServer {
     if (matches.length === 1) {
       return matches[0];
     }
+  }
+
+  getDeviceWithSerial(serial: string): ServerDevice | undefined {
+    return this.devices.get(serial);
   }
 
   getDeviceSerials(): string[] {

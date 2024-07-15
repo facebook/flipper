@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<UIDNode*>*)traverse:(id)root;
 
-- (id<NSObject>)findWithId:(NSUInteger)nodeId inHierarchyWithRoot:(id)root;
+- (id<NSObject>)findWithId:(NSString*)nodeId inHierarchyWithRoot:(id)root;
 
 @end
 

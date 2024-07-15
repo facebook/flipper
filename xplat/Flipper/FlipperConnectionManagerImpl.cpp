@@ -213,6 +213,7 @@ void FlipperConnectionManagerImpl::connectAndExchangeCertificate() {
   payload->device = deviceData_.device;
   payload->device_id = "unknown";
   payload->app = deviceData_.app;
+  payload->app_id = deviceData_.appId;
   payload->sdk_version = SDK_VERSION;
   payload->medium = medium;
 
@@ -248,6 +249,7 @@ void FlipperConnectionManagerImpl::connectSecurely() {
   payload->device = deviceData_.device;
   payload->device_id = deviceId;
   payload->app = deviceData_.app;
+  payload->app_id = deviceData_.appId;
   payload->sdk_version = SDK_VERSION;
   payload->medium = medium;
   payload->csr = store_->getCertificateSigningRequest().c_str();
@@ -328,6 +330,14 @@ void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
       }
     } catch (std::length_error& e) {
       // Skip sending messages that are too large.
+      log(e.what());
+      return;
+    } catch (std::runtime_error& e) {
+      // Skip sending messages with invalid K/V.
+      // On newer versions of folly, this will throw a json::print_error.
+      // Because we are using an older version of folly, we need to catch
+      // the more generic std::runtime_error which is the base class for
+      // json::print_error.
       log(e.what());
       return;
     }

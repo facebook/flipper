@@ -14,7 +14,6 @@ export const ContentContainer = styled(Layout.Container)({
   flex: 1,
   overflow: 'hidden',
   background: theme.backgroundDefault,
-  border: `1px solid ${theme.dividerColor}`,
   borderRadius: theme.containerBorderRadius,
   boxShadow: `0px 0px 5px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(0, 0, 0, 0.05)`,
 });

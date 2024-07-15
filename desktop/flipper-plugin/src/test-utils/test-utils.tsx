@@ -108,6 +108,9 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
       currentUser: () => createState(null),
       isConnected: () => createState(true),
     },
+    runDeviceAction: () => {
+      return undefined as any;
+    },
     remoteServerContext: {
       childProcess: {
         exec: createStubFunction(),
@@ -368,6 +371,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     plugins: new Set([definition.id]),
     query: {
       app: appName,
+      app_id: `com.facebook.flipper.${appName}`,
       device: deviceName,
       device_id: testDevice.serial,
       os: testDevice.serial,

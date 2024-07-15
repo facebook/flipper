@@ -14,6 +14,8 @@ export const DEFAULT_MAX_QUEUE_SIZE = 10000;
 
 export type Message = {
   method: string;
+  /** raw size of message in bytes */
+  rawSize: number;
   params?: any;
 };
 

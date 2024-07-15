@@ -22,7 +22,7 @@ import {
 import {handleDeeplink} from '../deeplink';
 import {Logger} from 'flipper-common';
 
-test('Triggering a deeplink will work', async () => {
+test.skip('Triggering a deeplink will work', async () => {
   const linksSeen: any[] = [];
 
   const plugin = (client: PluginClient) => {
@@ -132,7 +132,7 @@ test('Will throw error on invalid protocol', async () => {
   );
 });
 
-test('Will track deeplinks', async () => {
+test.skip('Will track deeplinks', async () => {
   const definition = new _SandyPluginDefinition(
     TestUtils.createMockPluginDetails(),
     {

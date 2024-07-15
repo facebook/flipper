@@ -108,6 +108,7 @@ function generateClientFromClientWithSalt(
     id: identifier,
     query: {
       app,
+      app_id: `com.facebook.flipper.${app}`,
       os,
       device,
       device_id: `${salt}-${device_id}`,
@@ -121,7 +122,14 @@ function generateClientFromDevice(device: Device, app: string): ClientExport {
   const identifier = generateClientIdentifier(device, app);
   return {
     id: identifier,
-    query: {app, os, device: deviceType, device_id: serial, medium: 'NONE'},
+    query: {
+      app,
+      app_id: `com.facebook.flipper.${app}`,
+      os,
+      device: deviceType,
+      device_id: serial,
+      medium: 'NONE',
+    },
   };
 }
 
@@ -154,6 +162,7 @@ test('test generateClientFromClientWithSalt helper function', () => {
     query: {
       app: 'app',
       os: 'iOS',
+      app_id: 'com.facebook.flipper.app',
       device: 'emulator',
       device_id: 'salt-serial',
       medium: 'NONE',
@@ -164,6 +173,7 @@ test('test generateClientFromClientWithSalt helper function', () => {
     query: {
       app: 'app',
       os: 'iOS',
+      app_id: 'com.facebook.flipper.app',
       device: 'emulator',
       device_id: 'serial',
       medium: 'NONE',
@@ -185,6 +195,7 @@ test('test generateClientFromDevice helper function', () => {
     query: {
       app: 'app',
       os: 'iOS',
+      app_id: 'com.facebook.flipper.app',
       device: 'emulator',
       device_id: 'serial',
       medium: 'NONE',
@@ -734,6 +745,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     generateClientIdentifier(device1, 'app'),
     {
       app: 'app',
+      app_id: 'com.facebook.flipper.app',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
@@ -750,6 +762,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     generateClientIdentifier(device1, 'app2'),
     {
       app: 'app2',
+      app_id: 'com.facebook.flipper.app2',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
@@ -766,6 +779,7 @@ test('test determinePluginsToProcess for mutilple clients having plugins present
     generateClientIdentifier(device1, 'app3'),
     {
       app: 'app3',
+      app_id: 'com.facebook.flipper.app3',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
@@ -826,6 +840,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     generateClientIdentifier(device1, 'app'),
     {
       app: 'app',
+      app_id: 'com.facebook.flipper.app',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
@@ -842,6 +857,7 @@ test('test determinePluginsToProcess for no selected plugin present in any clien
     generateClientIdentifier(device1, 'app2'),
     {
       app: 'app2',
+      app_id: 'com.facebook.flipper.app2',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
@@ -885,6 +901,7 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     generateClientIdentifier(device1, 'app'),
     {
       app: 'app',
+      app_id: 'com.facebook.flipper.app',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
@@ -901,6 +918,7 @@ test('test determinePluginsToProcess for multiple clients on same device', async
     generateClientIdentifier(device1, 'app2'),
     {
       app: 'app2',
+      app_id: 'com.facebook.flipper.app2',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
@@ -949,6 +967,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     generateClientIdentifier(device1, 'app'),
     {
       app: 'app',
+      app_id: 'com.facebook.flipper.app',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
@@ -965,6 +984,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     generateClientIdentifier(device1, 'app2'),
     {
       app: 'app1',
+      app_id: 'com.facebook.flipper.app1',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial1',
@@ -981,6 +1001,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     generateClientIdentifier(device2, 'app'),
     {
       app: 'app',
+      app_id: 'com.facebook.flipper.app',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial2',
@@ -997,6 +1018,7 @@ test('test determinePluginsToProcess for multiple clients on different device', 
     generateClientIdentifier(device2, 'app2'),
     {
       app: 'app1',
+      app_id: 'com.facebook.flipper.app1',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial2',
@@ -1069,6 +1091,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     generateClientIdentifier(selectedDevice, 'app'),
     {
       app: 'app',
+      app_id: 'com.facebook.flipper.app',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial',
@@ -1085,6 +1108,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
     generateClientIdentifier(archivedDevice, 'app'),
     {
       app: 'app',
+      app_id: 'com.facebook.flipper.app',
       os: 'iOS',
       device: 'TestiPhone',
       device_id: 'serial-archived',
@@ -1125,7 +1149,7 @@ test('test determinePluginsToProcess to ignore archived clients', async () => {
       pluginKey: `${client.id}#TestPlugin`,
       pluginId: 'TestPlugin',
       pluginName: 'TestPlugin',
-      client: client,
+      client,
     },
   ]);
 });

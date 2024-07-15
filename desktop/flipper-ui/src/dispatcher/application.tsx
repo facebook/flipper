@@ -47,7 +47,7 @@ export default (store: Store, logger: Logger) => {
     const isFocused = document.hasFocus();
     store.dispatch({
       type: 'windowIsFocused',
-      payload: {isFocused: isFocused, time: Date.now()},
+      payload: {isFocused, time: Date.now()},
     });
   });
 

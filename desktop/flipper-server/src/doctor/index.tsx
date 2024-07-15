@@ -10,7 +10,6 @@
 import {exec} from 'child_process';
 import os from 'os';
 import {promisify} from 'util';
-import {getEnvInfo} from './environmentInfo';
 export {getEnvInfo} from './environmentInfo';
 
 import * as watchman from 'fb-watchman';
@@ -20,7 +19,9 @@ import type {FlipperDoctor} from 'flipper-common';
 import * as fs_extra from 'fs-extra';
 import {validateSelectedXcodeVersion} from './fb-stubs/validateSelectedXcodeVersion';
 
-export function getHealthchecks(): FlipperDoctor.Healthchecks {
+export function getHealthchecks(
+  isProduction: boolean,
+): FlipperDoctor.Healthchecks {
   return {
     common: {
       label: 'Common',
@@ -40,19 +41,24 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             };
           },
         },
-        {
-          key: 'common.watchman',
-          label: 'Watchman Installed',
-          run: async (_: FlipperDoctor.EnvironmentInfo) => {
-            const isAvailable = await isWatchmanAvailable();
-            return {
-              hasProblem: !isAvailable,
-              message: isAvailable
-                ? ['common.watchman--installed']
-                : ['common.watchman--not_installed'],
-            };
-          },
-        },
+
+        ...(!isProduction
+          ? [
+              {
+                key: 'common.watchman',
+                label: 'Watchman Installed',
+                run: async (_: FlipperDoctor.EnvironmentInfo) => {
+                  const isAvailable = await isWatchmanAvailable();
+                  return {
+                    hasProblem: !isAvailable,
+                    message: isAvailable
+                      ? ['common.watchman--installed']
+                      : ['common.watchman--not_installed'],
+                  };
+                },
+              } as FlipperDoctor.Healthcheck,
+            ]
+          : []),
       ],
     },
     android: {
@@ -69,6 +75,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 run: async (
                   _: FlipperDoctor.EnvironmentInfo,
                 ): Promise<FlipperDoctor.HealthcheckRunResult> => {
+                  // eslint-disable-next-line node/no-sync
                   const hasProblem = !fs.existsSync(
                     '/Applications/Android Studio.app',
                   );
@@ -100,6 +107,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 hasProblem: true,
                 message: ['android.sdk--no_ANDROID_HOME'],
               };
+              // eslint-disable-next-line node/no-sync
             } else if (!fs.existsSync(androidHome)) {
               const androidStudioAndroidHome = `${os.homedir()}/Library/Android/sdk`;
               const globalAndroidHome = '/opt/android_sdk';
@@ -119,6 +127,7 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
               };
             } else {
               const platformToolsDir = path.join(androidHome, 'platform-tools');
+              // eslint-disable-next-line node/no-sync
               if (!fs.existsSync(platformToolsDir)) {
                 return {
                   hasProblem: true,
@@ -160,6 +169,66 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
             isSkipped: false,
             healthchecks: [
               {
+                key: 'ios.idb',
+                label: 'IDB installed',
+                isRequired: true,
+                run: async (
+                  _: FlipperDoctor.EnvironmentInfo,
+                  settings?: {enablePhysicalIOS: boolean; idbPath: string},
+                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
+                  if (!settings) {
+                    return {
+                      hasProblem: false,
+                      message: ['ios.idb--no_context'],
+                    };
+                  }
+                  if (!settings.enablePhysicalIOS) {
+                    return {
+                      hasProblem: false,
+                      message: ['ios.idb--physical_device_disabled'],
+                    };
+                  }
+                  const result = await tryExecuteCommand(
+                    `${settings?.idbPath} --help`,
+                  );
+                  if (result.fail) {
+                    const hasIdbInPath = await tryExecuteCommand(`which idb`);
+
+                    if (!hasIdbInPath.fail) {
+                      return {
+                        hasProblem: true,
+                        message: [
+                          'ios.idb--not_installed_but_present',
+                          {
+                            idbPath: settings.idbPath,
+                            idbInPath: hasIdbInPath.stdout.trim(),
+                          },
+                        ],
+                      };
+                    }
+                    const hasIdbCompanion = await tryExecuteCommand(
+                      'which idb_companion',
+                    );
+
+                    return {
+                      hasProblem: true,
+                      message: [
+                        'ios.idb--not_installed',
+                        {
+                          idbPath: settings.idbPath,
+                          hasIdbCompanion: !hasIdbCompanion.fail,
+                        },
+                      ],
+                    };
+                  }
+
+                  return {
+                    hasProblem: false,
+                    message: ['ios.idb--installed'],
+                  };
+                },
+              },
+              {
                 key: 'ios.xcode',
                 label: 'XCode Installed',
                 isRequired: true,
@@ -192,37 +261,87 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 run: async (
                   _: FlipperDoctor.EnvironmentInfo,
                 ): Promise<FlipperDoctor.HealthcheckRunResult> => {
-                  // TODO check for an existing Xcode
+                  const subchecks: FlipperDoctor.HealthcheckRunSubcheck[] = [];
+                  const allApps =
+                    await fs_extra.promises.readdir('/Applications');
+                  // Xcode_14.2.0_xxxxxxx.app
+                  // Xcode_14.3.1_xxxxxxxxxx.app
+                  // Xcode_15.0.0_xxxxxxxxxx.app
+                  // Xcode.app
+                  const latestXCode = allApps
+                    .filter((a) => a.startsWith('Xcode'))
+                    .sort()
+                    .pop();
+                  const availableXcode = latestXCode
+                    ? path.join('/Applications', latestXCode)
+                    : null;
+                  subchecks.push({
+                    status: availableXcode ? 'ok' : 'fail',
+                    title: 'Xcode in /Applications',
+                  });
+
                   const result = await tryExecuteCommand('xcode-select -p');
+                  subchecks.push({
+                    status: result.fail ? 'fail' : 'ok',
+                    title: 'xcode-select runs successfully',
+                  });
                   if (result.fail) {
                     return {
                       hasProblem: true,
+                      subchecks,
                       message: [
                         'ios.xcode-select--not_set',
-                        {message: result.message},
+                        {message: result.message, availableXcode},
                       ],
                     };
                   }
+
                   const selectedXcode = result.stdout.toString().trim();
-                  if (selectedXcode == '/Library/Developer/CommandLineTools') {
+                  const isSelectedXcodeCommandLineTools =
+                    selectedXcode == '/Library/Developer/CommandLineTools';
+                  subchecks.push({
+                    status: isSelectedXcodeCommandLineTools ? 'fail' : 'ok',
+                    title:
+                      'xcode-select does NOT point to "/Library/Developer/CommandLineTools"',
+                  });
+                  if (isSelectedXcodeCommandLineTools) {
                     return {
                       hasProblem: true,
-                      message: ['ios.xcode-select--no_xcode_selected'],
+                      subchecks,
+                      message: [
+                        'ios.xcode-select--no_xcode_selected',
+                        {availableXcode},
+                      ],
                     };
                   }
-                  if ((await fs_extra.pathExists(selectedXcode)) == false) {
+
+                  const selectedXcodeExists =
+                    await fs_extra.pathExists(selectedXcode);
+                  subchecks.push({
+                    status: selectedXcodeExists ? 'ok' : 'fail',
+                    title: 'Selected Xcode exists',
+                  });
+                  if (!selectedXcodeExists) {
                     return {
                       hasProblem: true,
+                      subchecks,
                       message: [
                         'ios.xcode-select--nonexisting_selected',
-                        {selected: selectedXcode},
+                        {selected: selectedXcode, availableXcode},
                       ],
                     };
                   }
                   const validatedXcodeVersion =
-                    await validateSelectedXcodeVersion(selectedXcode);
+                    await validateSelectedXcodeVersion(
+                      selectedXcode,
+                      availableXcode,
+                      subchecks,
+                    );
                   if (validatedXcodeVersion.hasProblem) {
-                    return validatedXcodeVersion;
+                    return {
+                      ...validatedXcodeVersion,
+                      subchecks,
+                    };
                   }
                   return {
                     hasProblem: false,
@@ -256,6 +375,55 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                 },
               },
               {
+                key: 'ios.has-simulators',
+                label: 'Simulators are available',
+                isRequired: true,
+                run: async (
+                  _e: FlipperDoctor.EnvironmentInfo,
+                  settings?: {enablePhysicalIOS: boolean; idbPath: string},
+                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
+                  const result = await tryExecuteCommand(
+                    `${settings?.idbPath ?? 'idb'} list-targets --json`,
+                  );
+                  if (result.fail) {
+                    return {
+                      hasProblem: true,
+                      message: [
+                        'ios.has-simulators--idb-failed',
+                        {message: result.message},
+                      ],
+                    };
+                  }
+
+                  const devices = result.stdout
+                    .trim()
+                    .split('\n')
+                    .map((x) => {
+                      try {
+                        return JSON.parse(x);
+                      } catch (e) {
+                        return null;
+                      }
+                    })
+                    .filter((x) => x != null && x.type === 'simulator');
+
+                  if (devices.length === 0) {
+                    return {
+                      hasProblem: true,
+                      message: ['ios.has-simulators--no-devices'],
+                    };
+                  }
+
+                  return {
+                    hasProblem: false,
+                    message: [
+                      'ios.has-simulators--ok',
+                      {count: devices.length},
+                    ],
+                  };
+                },
+              },
+              {
                 key: 'ios.xctrace',
                 label: 'xctrace exists',
                 isRequired: true,
@@ -283,65 +451,6 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
                   };
                 },
               },
-              {
-                key: 'ios.idb',
-                label: 'IDB installed',
-                isRequired: false,
-                run: async (
-                  _: FlipperDoctor.EnvironmentInfo,
-                  settings?: {enablePhysicalIOS: boolean; idbPath: string},
-                ): Promise<FlipperDoctor.HealthcheckRunResult> => {
-                  if (!settings) {
-                    return {
-                      hasProblem: false,
-                      message: ['ios.idb--no_context'],
-                    };
-                  }
-                  if (!settings.enablePhysicalIOS) {
-                    return {
-                      hasProblem: false,
-                      message: ['ios.idb--physical_device_disabled'],
-                    };
-                  }
-                  const result = await tryExecuteCommand(
-                    `${settings?.idbPath} --help`,
-                  );
-                  const hasIdbCompanion =
-                    await tryExecuteCommand(`idbCompanion --help`);
-                  if (result.fail) {
-                    const hasIdbInPath = await tryExecuteCommand(`which idb`);
-
-                    if (!hasIdbInPath.fail) {
-                      return {
-                        hasProblem: true,
-                        message: [
-                          'ios.idb--not_installed_but_present',
-                          {
-                            idbPath: settings.idbPath,
-                            idbInPath: hasIdbInPath.stdout.trim(),
-                          },
-                        ],
-                      };
-                    }
-
-                    return {
-                      hasProblem: true,
-                      message: [
-                        'ios.idb--not_installed',
-                        {
-                          idbPath: settings.idbPath,
-                          hasIdbCompanion: !hasIdbCompanion.fail,
-                        },
-                      ],
-                    };
-                  }
-
-                  return {
-                    hasProblem: false,
-                    message: ['ios.idb--installed'],
-                  };
-                },
-              },
             ],
           }
         : {
@@ -350,49 +459,6 @@ export function getHealthchecks(): FlipperDoctor.Healthchecks {
           }),
     },
   };
-}
-
-export async function runHealthchecks(): Promise<
-  Array<FlipperDoctor.CategoryResult | FlipperDoctor.SkippedHealthcheckCategory>
-> {
-  const environmentInfo = await getEnvInfo();
-  const healthchecks: FlipperDoctor.Healthchecks = getHealthchecks();
-  const results: Array<
-    FlipperDoctor.CategoryResult | FlipperDoctor.SkippedHealthcheckCategory
-  > = await Promise.all(
-    Object.entries(healthchecks).map(async ([key, category]) => {
-      if (category.isSkipped) {
-        return category;
-      }
-      const categoryResult: FlipperDoctor.CategoryResult = [
-        key,
-        {
-          label: category.label,
-          results: await Promise.all(
-            category.healthchecks.map(
-              async ({key, label, run, isRequired}) => ({
-                key,
-                label,
-                isRequired: isRequired ?? true,
-                // TODO: Fix this the next time the file is edited.
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                result: await run!(environmentInfo).catch((e) => {
-                  console.warn(`Health check ${key}/${label} failed with:`, e);
-                  // TODO Improve result type to be: OK | Problem(message, fix...)
-                  return {
-                    hasProblem: true,
-                  };
-                }),
-              }),
-            ),
-          ),
-        },
-      ];
-
-      return categoryResult;
-    }),
-  );
-  return results;
 }
 
 async function tryExecuteCommand(

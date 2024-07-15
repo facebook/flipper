@@ -59,6 +59,9 @@ describe('ServerWebSocket', () => {
       device,
       os,
       app,
+      // FIXME
+      // app_id: `com.facebook.flipper.${app}`,
+      app_id: undefined,
       sdk_version: sdkVersion,
       medium: 'WWW',
     };
