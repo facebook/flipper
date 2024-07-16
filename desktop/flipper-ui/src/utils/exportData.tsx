@@ -28,7 +28,6 @@ import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {Dialog, getFlipperLib, Idler} from 'flipper-plugin';
 import {ClientQuery} from 'flipper-common';
-import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
 import {exportLogs} from '../chrome/ConsoleLogs';
@@ -456,7 +455,7 @@ async function getStoreExport(
 
 export async function exportStore(
   store: MiddlewareAPI,
-  includeSupportDetails?: boolean,
+  _includeSupportDetails?: boolean,
   idler: Idler = new TestIdler(true),
   statusUpdate: (msg: string) => void = () => {},
 ): Promise<{
@@ -752,19 +751,6 @@ export async function startFileExport(dispatch: Store['dispatch']) {
   dispatch(selectedPlugins(plugins));
   Dialog.showModal((onHide) => (
     <ShareSheetExportFile onHide={onHide} logger={getLogger()} />
-  ));
-}
-
-export async function startLinkExport(dispatch: Store['dispatch']) {
-  const plugins = await selectPlugins();
-  if (plugins === false) {
-    return; // cancelled
-  }
-  // TODO: no need to put this in the store,
-  // need to be cleaned up later in combination with SupportForm
-  dispatch(selectedPlugins(plugins));
-  Dialog.showModal((onHide) => (
-    <ShareSheetExportUrl onHide={onHide} logger={getLogger()} />
   ));
 }
 

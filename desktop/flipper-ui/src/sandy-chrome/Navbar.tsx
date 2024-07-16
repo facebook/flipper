@@ -53,11 +53,9 @@ import {
   ExportEverythingEverywhereAllAtOnceStatus,
   startFileImport,
   startFileExport,
-  startLinkExport,
 } from '../utils/exportData';
 import UpdateIndicator from '../chrome/UpdateIndicator';
 import {css} from '@emotion/css';
-import constants from '../fb-stubs/constants';
 import {setStaticView} from '../reducers/connections';
 import {StyleGuide} from './StyleGuide';
 import {openDeeplinkDialog} from '../deeplink';
@@ -638,11 +636,6 @@ function ExtrasMenu() {
     () => startFileExport(store.dispatch),
     [store.dispatch],
   );
-  const startLinkExportTracked = useTrackedCallback(
-    'Link export',
-    () => startLinkExport(store.dispatch),
-    [store.dispatch],
-  );
   const startFileImportTracked = useTrackedCallback(
     'File import',
     () => startFileImport(store),
@@ -679,15 +672,6 @@ function ExtrasMenu() {
           label: 'Export Flipper file',
           onClick: startFileExportTracked,
         },
-        ...(constants.ENABLE_SHAREABLE_LINK
-          ? [
-              {
-                key: 'exportShareableLink',
-                label: 'Export shareable link',
-                onClick: startLinkExportTracked,
-              },
-            ]
-          : []),
         {
           type: 'divider',
         },
