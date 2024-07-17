@@ -9,17 +9,16 @@ import UIKit
 
 class UserDefaultsViewController: UIViewController {
 
-    @IBOutlet weak var keyTextField: UITextField!
-    @IBOutlet weak var valueTextField: UITextField!
+  @IBOutlet weak var keyTextField: UITextField!
+  @IBOutlet weak var valueTextField: UITextField!
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+  override func viewDidLoad() {
+    super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-    }
+    // Do any additional setup after loading the view.
+  }
 
-    @IBAction func tappedSave(_ sender: Any) {
-        UserDefaults.standard.set(self.valueTextField.text ?? "", forKey: self.keyTextField.text ?? "")
-    }
-
+  @IBAction func tappedSave(_ sender: Any) {
+    UserDefaults.standard.set(self.valueTextField.text ?? "", forKey: self.keyTextField.text ?? "")
+  }
 }
