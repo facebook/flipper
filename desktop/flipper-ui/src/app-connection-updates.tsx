@@ -92,14 +92,48 @@ export const connectionUpdate = (
     if (update.detail) {
       content += `\n ${update.detail}`;
     }
+    let duration = 0;
+    if (update.type === 'success' || update.type === 'success-info') {
+      duration = 3;
+    } else if (update.type === 'loading') {
+      // seconds until show how to debug hanging connection
+      duration = 10;
+    }
     message.open({
-      key: update.app,
+      key: update.key,
       type: update.type === 'success-info' ? 'info' : update.type,
       content,
       className,
-      duration:
-        update.type === 'success' || update.type === 'success-info' ? 3 : 0,
-      onClick: () => message.destroy(update.key),
+      duration,
+      onClick:
+        update.type !== 'loading'
+          ? () => {
+              message.destroy(update.key);
+            }
+          : undefined,
+      onClose: () => {
+        // only called if closed by timeout
+        console.log('on close called for ', update.key);
+        if (update.type === 'loading') {
+          // TODO show conect timeout modal NEXT DIFF
+          console.log('show a modal with step');
+
+          notification.error({
+            key: update.key,
+            message: 'App failed to connect',
+            description: (
+              <div>
+                <div>To fix try the following</div>
+                <div>uno</div>
+                <div>dos</div>
+                <div>tres</div>
+              </div>
+            ),
+            duration: 0,
+            onClose: () => notification.close(update.key),
+          });
+        }
+      },
     });
   }
 };
