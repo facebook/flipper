@@ -14,6 +14,10 @@ import React from 'react';
 import {DataValueExtractor} from './DataPreview';
 import {HighlightProvider, HighlightManager} from '../Highlight';
 import {Layout} from '../Layout';
+import {Dropdown, MenuProps} from 'antd';
+import {_tryGetFlipperLibImplementation} from 'flipper-plugin';
+import {safeStringify} from 'flipper-plugin';
+import {getValueAtPath} from '../data-table/DataTableManager';
 
 export type DataInspectorProps = {
   /**
@@ -109,7 +113,9 @@ export class DataInspector extends PureComponent<
     filterExpanded: {},
     filter: '',
     hoveredNodePath: undefined,
-  };
+  } as DataInspectorState;
+
+  isContextMenuOpen = false;
 
   static getDerivedStateFromProps(
     nextProps: DataInspectorProps,
@@ -193,9 +199,11 @@ export class DataInspector extends PureComponent<
   };
 
   setHoveredNodePath = (path?: string) => {
-    this.setState({
-      hoveredNodePath: path,
-    });
+    if (!this.isContextMenuOpen) {
+      this.setState({
+        hoveredNodePath: path,
+      });
+    }
   };
 
   removeHover = () => {
@@ -209,34 +217,108 @@ export class DataInspector extends PureComponent<
 
   render() {
     return (
-      <Layout.Container onMouseLeave={this.removeHover}>
-        <RootDataContext.Provider value={this.getRootData}>
-          <HighlightProvider
-            text={this.props.filter}
-            highlightColor={this.props.highlightColor}>
-            <DataInspectorNode
-              hoveredNodePath={this.state.hoveredNodePath}
-              setHoveredNodePath={this.setHoveredNodePath}
-              data={this.props.data}
-              diff={this.props.diff}
-              extractValue={this.props.extractValue}
-              setValue={this.props.setValue}
-              expanded={this.state.expanded}
-              onExpanded={this.onExpanded}
-              onDelete={this.props.onDelete}
-              onRenderName={this.props.onRenderName}
-              onRenderDescription={this.props.onRenderDescription}
-              expandRoot={this.props.expandRoot}
-              collapsed={this.props.filter ? true : this.props.collapsed}
-              tooltips={this.props.tooltips}
-              parentPath={EMPTY_ARRAY}
-              depth={0}
-              parentAncestry={EMPTY_ARRAY}
-              additionalContextMenuItems={this.props.additionalContextMenuItems}
-            />
-          </HighlightProvider>
-        </RootDataContext.Provider>
-      </Layout.Container>
+      <Dropdown
+        menu={this.getContextMenu()}
+        onOpenChange={(open) => {
+          this.isContextMenuOpen = open;
+        }}
+        trigger={['contextMenu']}>
+        <Layout.Container onMouseLeave={this.removeHover}>
+          <RootDataContext.Provider value={this.getRootData}>
+            <HighlightProvider
+              text={this.props.filter}
+              highlightColor={this.props.highlightColor}>
+              <DataInspectorNode
+                hoveredNodePath={this.state.hoveredNodePath}
+                setHoveredNodePath={this.setHoveredNodePath}
+                data={this.props.data}
+                diff={this.props.diff}
+                extractValue={this.props.extractValue}
+                setValue={this.props.setValue}
+                expanded={this.state.expanded}
+                onExpanded={this.onExpanded}
+                onRenderName={this.props.onRenderName}
+                onRenderDescription={this.props.onRenderDescription}
+                expandRoot={this.props.expandRoot}
+                collapsed={this.props.filter ? true : this.props.collapsed}
+                tooltips={this.props.tooltips}
+                parentPath={EMPTY_ARRAY}
+                depth={0}
+                parentAncestry={EMPTY_ARRAY}
+              />
+            </HighlightProvider>
+          </RootDataContext.Provider>
+        </Layout.Container>
+      </Dropdown>
     );
   }
+
+  getContextMenu = () => {
+    const lib = _tryGetFlipperLibImplementation();
+
+    let extraItems = [] as MenuProps['items'];
+
+    const hoveredNodePath = this.state.hoveredNodePath;
+    const value =
+      hoveredNodePath != null && hoveredNodePath.length > 0
+        ? getValueAtPath(this.props.data, hoveredNodePath)
+        : this.props.data;
+    if (
+      this.props.additionalContextMenuItems != null &&
+      hoveredNodePath != null &&
+      hoveredNodePath.length > 0
+    ) {
+      const fullPath = hoveredNodePath.split('.');
+      const parentPath = fullPath.slice(0, fullPath.length - 1);
+      const name = fullPath[fullPath.length - 1];
+
+      const additionalItems = this.props.additionalContextMenuItems(
+        parentPath,
+        value,
+        name,
+      );
+
+      extraItems = [
+        ...additionalItems.map((component) => ({
+          key: `additionalItem-${parentPath}.${name}`,
+          label: component,
+        })),
+        {type: 'divider'},
+      ];
+    }
+
+    const items = [
+      ...(extraItems as []),
+      {key: 'copy-value', label: 'Copy'},
+      ...(this.props.onDelete != null
+        ? [{key: 'delete-value', label: 'Delete'}]
+        : []),
+      {type: 'divider'},
+      {key: 'copy-tree', label: 'Copy full tree'},
+      ...(lib?.isFB ? [{key: 'create-paste', label: 'Create paste'}] : []),
+    ] as MenuProps['items'];
+
+    return {
+      items,
+      onClick: (info) => {
+        this.isContextMenuOpen = false;
+        if (info.key === 'copy-value') {
+          if (this.state.hoveredNodePath != null) {
+            const value = getValueAtPath(
+              this.props.data,
+              this.state.hoveredNodePath,
+            );
+            lib?.writeTextToClipboard(safeStringify(value));
+          }
+        } else if (info.key === 'delete-value') {
+          const pathStr = this.state.hoveredNodePath as string | undefined;
+          this.props.onDelete?.(pathStr?.split('.') ?? []);
+        } else if (info.key === 'copy-tree') {
+          lib?.writeTextToClipboard(safeStringify(this.props.data));
+        } else if (info.key === 'create-paste') {
+          lib?.createPaste(safeStringify(this.props.data));
+        }
+      },
+    } as MenuProps;
+  };
 }
