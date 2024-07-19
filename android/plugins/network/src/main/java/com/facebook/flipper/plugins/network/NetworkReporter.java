@@ -38,6 +38,7 @@ public interface NetworkReporter {
     public String method;
     public String uri;
     public byte[] body;
+    public String videoId = null;
 
     public Header getFirstHeader(final String name) {
       for (Header header : headers) {
