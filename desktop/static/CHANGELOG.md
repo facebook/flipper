@@ -1,3 +1,8 @@
+# 0.258.0 (16/7/2024)
+
+ * [D59629955](https://github.com/facebook/flipper/search?q=D59629955&type=Commits) -  Update offline message
+
+
 # 0.257.0 (10/7/2024)
 
  * [D59001348](https://github.com/facebook/flipper/search?q=D59001348&type=Commits) -  [Internal]
