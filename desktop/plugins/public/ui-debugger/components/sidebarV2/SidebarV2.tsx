@@ -45,6 +45,8 @@ export function SidebarV2({
       })
     : [];
 
+  //when select node not in frame, dont show data as its stale
+  const actualNode = getNode(nodeSelection.node.id, nodes);
   return (
     <Layout.Container gap pad>
       <Tabs
@@ -53,14 +55,10 @@ export function SidebarV2({
         centered
         key={nodeSelection?.node?.id}>
         <Tab tab={<Tooltip title="Attributes">Attributes</Tooltip>}>
-          {getNode(nodeSelection.node.id, nodes) == null ? (
-            //when select node not in frame, dont show data as its stale
+          {actualNode == null ? (
             <NoData message="Node is no longer on screen" />
           ) : (
-            <AttributesInspector
-              node={nodeSelection.node}
-              metadata={metadata}
-            />
+            <AttributesInspector node={actualNode} metadata={metadata} />
           )}
         </Tab>
         {selectedFrameworkEvents?.length > 0 && (

@@ -41,7 +41,7 @@ type ConsoleFeedLogMessage = {
 
 export function enableConsoleHook() {
   addLogTailer((level, ...data) => {
-    const logMessage = {method: level, data: data, id: v4()};
+    const logMessage = {method: level, data, id: v4()};
     exportLogs.push(logMessage);
 
     if (level === 'debug') {

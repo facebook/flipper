@@ -146,7 +146,7 @@ export function assertSerializable(obj: any) {
         const proto = Object.getPrototypeOf(value);
         if (Array.isArray(value)) {
           value.forEach((child, index) => {
-            path.push('' + index);
+            path.push(`${index}`);
             check(child);
             path.pop();
           });

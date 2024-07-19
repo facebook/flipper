@@ -89,7 +89,7 @@ FB_LINKABLE(NSError_AttributeEditorError)
       initWithDescriptorRegister:descriptorRegister];
 }
 
-- (void)editNodeWithId:(NSNumber*)nodeId
+- (void)editNodeWithId:(NSString*)nodeId
                   value:(id)value
     metadataIdentifiers:(NSArray<UIDMetadataId>*)metadataIdentifiers
        compoundTypeHint:(UIDCompoundTypeHint)compoundTypeHint
@@ -106,8 +106,7 @@ FB_LINKABLE(NSError_AttributeEditorError)
       return;
     }
 
-    id<NSObject> node = [traversal findWithId:[nodeId unsignedIntegerValue]
-                          inHierarchyWithRoot:root];
+    id<NSObject> node = [traversal findWithId:nodeId inHierarchyWithRoot:root];
     if (!node) {
       reportResult(
           [NSError UID_errorWithType:AttributeEditorErrorTypeNodeNotFound]);

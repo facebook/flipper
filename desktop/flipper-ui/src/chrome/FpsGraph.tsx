@@ -50,10 +50,12 @@ export default function FpsGraph({sampleRate = 200}: {sampleRate?: number}) {
 
       ctx.font = 'lighter 10px arial';
       ctx.fillText(
-        (missedFrames
-          ? // if we were chocked, show FPS based on frames missed
-            Math.floor((1000 / sampleRate) * missedFrames)
-          : lastFps) + ' fps',
+        `${
+          missedFrames
+            ? // if we were chocked, show FPS based on frames missed
+              Math.floor((1000 / sampleRate) * missedFrames)
+            : lastFps
+        } fps`,
         0,
         height - 4,
       );

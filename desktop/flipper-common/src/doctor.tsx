@@ -69,8 +69,15 @@ export namespace FlipperDoctor {
     command: string;
   };
 
+  export type HealthcheckRunSubcheck = {
+    status: 'ok' | 'fail';
+    title: string;
+  };
+
   export type HealthcheckRunResult = {
     hasProblem: boolean;
+    /** Indicates what sub checks were passed to better communicate the problem */
+    subchecks?: HealthcheckRunSubcheck[];
     message: MessageIdWithParams;
   };
 
@@ -109,6 +116,7 @@ export namespace FlipperDoctor {
     status: HealthcheckStatus;
     isAcknowledged?: boolean;
     message?: MessageIdWithParams;
+    subchecks?: HealthcheckRunSubcheck[];
   };
 
   export type HealthcheckReportItem = {
@@ -136,6 +144,7 @@ export namespace FlipperDoctor {
       enablePhysicalIOS: boolean;
       idbPath: string;
     };
+    isProduction: boolean;
   };
 
   /**
@@ -167,20 +176,33 @@ export namespace FlipperDoctor {
     'ios.xcode--not_installed': [];
 
     'ios.xcode-select--set': [{selected: string}];
-    'ios.xcode-select--not_set': [{message: string}];
-    'ios.xcode-select--no_xcode_selected': [];
+    'ios.xcode-select--not_set': [
+      {message: string; availableXcode: string | null},
+    ];
+    'ios.xcode-select--no_xcode_selected': [{availableXcode: string | null}];
     'ios.xcode-select--noop': [];
-    'ios.xcode-select--custom_path': [];
+    'ios.xcode-select--custom_path': [
+      {
+        selectedPath: string;
+        availableXcode: string | null;
+      },
+    ];
     'ios.xcode-select--old_version_selected': [
       {
         selectedVersion: string;
         latestXCode: string;
       },
     ];
-    'ios.xcode-select--nonexisting_selected': [{selected: string}];
+    'ios.xcode-select--nonexisting_selected': [
+      {selected: string; availableXcode: string | null},
+    ];
 
     'ios.sdk--installed': [{platforms: string[]}];
     'ios.sdk--not_installed': [];
+
+    'ios.has-simulators--idb-failed': [{message: string}];
+    'ios.has-simulators--no-devices': [];
+    'ios.has-simulators--ok': [{count: number}];
 
     'ios.xctrace--installed': [{output: string}];
     'ios.xctrace--not_installed': [{message: string}];

@@ -25,6 +25,7 @@ import {
   ClientNode,
   FrameworkEventMetadata,
   Methods,
+  CustomActionGroup,
 } from './ClientTypes';
 import {
   UIState,
@@ -74,6 +75,8 @@ export function plugin(client: PluginClient<Events, Methods>) {
     Map<FrameworkEventType, FrameworkEventMetadata>
   >(new Map());
 
+  const customActionGroups = createState<CustomActionGroup[]>([]);
+
   const uiState: UIState = createUIState();
 
   //this is the client data is what drives all of desktop UI
@@ -107,6 +110,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
         draft.set(frameworkEventMeta.type, false);
       });
     });
+
+    if (event.customActionGroups != null) {
+      customActionGroups.set(event.customActionGroups);
+    }
     if (
       event.supportedTraversalModes &&
       event.supportedTraversalModes.length > 1
@@ -169,7 +176,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
     streamInterceptor.emit('frameReceived', {
       frameTime: frameScan.frameTime,
       snapshot: frameScan.snapshot,
-      nodes: nodes,
+      nodes,
     });
     applyFrameworkEvents(frameScan, nodes);
   };
@@ -178,9 +185,6 @@ export function plugin(client: PluginClient<Events, Methods>) {
     if (frame.frameTime > lastProcessedFrameTime.get()) {
       applyFrameData(frame.nodes, frame.snapshot);
       lastProcessedFrameTime.set(frame.frameTime);
-      const selectedNode = uiState.nodeSelection.get();
-      if (selectedNode != null)
-        _uiActions.ensureAncestorsExpanded(selectedNode.node.id);
     }
   });
 
@@ -275,8 +279,45 @@ export function plugin(client: PluginClient<Events, Methods>) {
   });
   client.onMessage('frameScan', processFrame);
 
+  async function onCustomAction<T extends boolean | undefined>(
+    customActionGroupIndex: number,
+    customActionIndex: number,
+    value: T,
+  ) {
+    try {
+      const response = await client.send('onCustomAction', {
+        customActionGroupIndex,
+        customActionIndex,
+        value,
+      });
+
+      customActionGroups.update((draft) => {
+        const action = draft[customActionGroupIndex].actions[customActionIndex];
+
+        switch (action.type) {
+          case 'UnitAction':
+            return;
+          case 'BooleanAction':
+            action.value = response.result as boolean;
+        }
+      });
+    } catch (e) {
+      console.warn('onCustomAction failed', e);
+    }
+  }
+
+  async function onAdditionalDataCollectionChanged(
+    nodeId: Id,
+    changeType: 'Add' | 'Remove',
+  ) {
+    client.send('additionalNodeInspectionChange', {nodeId, changeType});
+  }
+
   return {
     rootId,
+    customActionGroups,
+    onAdditionalDataCollectionChanged,
+    onCustomAction,
     currentFrameTime: lastProcessedFrameTime as _ReadOnlyAtom<number>,
     uiState: uiState as ReadOnlyUIState,
     uiActions: _uiActions,
@@ -299,7 +340,7 @@ export * from './ClientTypes';
 function createUIState(): UIState {
   return {
     isConnected: createState(false),
-
+    boxVisualiserEnabled: createState(false),
     viewMode: createState({mode: 'default'}),
 
     //used to disabled hover effects which cause rerenders and mess up the existing context menu
@@ -324,6 +365,11 @@ function createUIState(): UIState {
     //The nodes are sorted by area since you most likely want to select the smallest node under your cursor
     hoveredNodes: createState<Id[]>([]),
 
+    nodeLevelFrameworkEventFilters: createState({
+      threads: new Set(),
+      eventTypes: new Set(),
+    }),
+
     searchTerm: createState<string>(''),
     focusedNode: createState<Id | undefined>(undefined),
     expandedNodes: createState<Set<Id>>(new Set()),
@@ -332,5 +378,7 @@ function createUIState(): UIState {
     // view-hierarchy is the default state so we start with it until we fetch supported modes from the client
     supportedTraversalModes: createState<TraversalMode[]>(['view-hierarchy']),
     traversalMode: createState<TraversalMode>('view-hierarchy'),
+
+    referenceImage: createState(null),
   };
 }

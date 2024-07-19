@@ -47,7 +47,7 @@ export async function handleDeeplink(
     // or alternatively flipper://welcome to open the welcome screen.
     return;
   }
-  if (uri.href.startsWith('flipper://open-plugin')) {
+  if (uri.pathname === '//open-plugin') {
     return handleOpenPluginDeeplink(store, query, trackInteraction);
   }
   if (uri.pathname.match(/^\/*import\/*$/)) {
@@ -63,7 +63,7 @@ export async function handleDeeplink(
           console.warn('Failed to download Flipper trace', e);
           message.error({
             duration: 0,
-            content: 'Failed to download Flipper trace: ' + e,
+            content: `Failed to download Flipper trace: ${e}`,
           });
         })
         .finally(() => {

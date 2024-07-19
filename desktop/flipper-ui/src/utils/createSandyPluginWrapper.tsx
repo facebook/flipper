@@ -149,7 +149,7 @@ export function createSandyPluginWrapper<S, A extends BaseAction, P>(
           );
         } catch (e) {
           console.error(
-            'Failed to compute notifications for plugin ' + Plugin.id,
+            `Failed to compute notifications for plugin ${Plugin.id}`,
             e,
           );
         }

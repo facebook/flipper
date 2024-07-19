@@ -53,7 +53,7 @@ export function Tabs({
   });
 
   const [activeTab, setActiveTab] = useLocalStorageState<string | undefined>(
-    'Tabs:' + (localStorageKeyOverride ?? keys.join(',')),
+    `Tabs:${localStorageKeyOverride ?? keys.join(',')}`,
     undefined,
   );
 

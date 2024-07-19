@@ -67,7 +67,7 @@ export function ColorInspector({
           {
             value: inspectable.value.r,
             addonText: 'R',
-            mutable: mutable,
+            mutable,
             hint: 'COLOR',
             min: 0,
             max: 255,
@@ -76,7 +76,7 @@ export function ColorInspector({
           {
             value: inspectable.value.g,
             addonText: 'G',
-            mutable: mutable,
+            mutable,
             hint: 'COLOR',
             min: 0,
             max: 255,
@@ -85,7 +85,7 @@ export function ColorInspector({
           {
             value: inspectable.value.b,
             addonText: 'B',
-            mutable: mutable,
+            mutable,
             hint: 'COLOR',
             min: 0,
             max: 255,
@@ -96,7 +96,7 @@ export function ColorInspector({
             addonText: 'A',
             min: 0,
             max: 1,
-            mutable: mutable,
+            mutable,
             hint: 'COLOR',
             onChange: (updated) => onChange({...inspectable.value, a: updated}),
           },
@@ -123,5 +123,5 @@ const RGBAtoHEX = (color: Color) => {
     (color.g | (1 << 8)).toString(16).slice(1) +
     (color.b | (1 << 8)).toString(16).slice(1);
 
-  return '#' + hex.toUpperCase();
+  return `#${hex.toUpperCase()}`;
 };

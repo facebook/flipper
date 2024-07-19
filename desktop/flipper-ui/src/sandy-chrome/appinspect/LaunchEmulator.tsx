@@ -24,6 +24,7 @@ import {
   withTrackingScope,
   useLocalStorageState,
   theme,
+  getFlipperLib,
 } from 'flipper-plugin';
 import {Provider} from 'react-redux';
 import {DeviceTarget} from 'flipper-common';
@@ -39,13 +40,9 @@ const COLD_BOOT = 'cold-boot';
 export function showEmulatorLauncher(store: Store) {
   renderReactRoot((unmount) => (
     <Provider store={store}>
-      <LaunchEmulatorContainer onClose={unmount} />
+      <LaunchEmulatorDialog onClose={unmount} />;
     </Provider>
   ));
-}
-
-function LaunchEmulatorContainer({onClose}: {onClose: () => void}) {
-  return <LaunchEmulatorDialog onClose={onClose} />;
 }
 
 function NoSDKsEnabledAlert({onClose}: {onClose: () => void}) {
@@ -74,11 +71,17 @@ function NoSDKsEnabledAlert({onClose}: {onClose: () => void}) {
         <SettingsSheet
           platform={getFlipperServerConfig().environmentInfo.os.platform}
           onHide={() => setShowSettings(false)}
+          isFB={getFlipperLib().isFB}
         />
       )}
     </>
   );
 }
+
+type IOSState = {
+  type: 'loading' | 'error' | 'ready' | 'empty';
+  message?: string;
+};
 
 export const LaunchEmulatorDialog = withTrackingScope(
   function LaunchEmulatorDialog({onClose}: {onClose: () => void}) {
@@ -92,7 +95,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
     const [waitingForIos, setWaitingForIos] = useState(iosEnabled);
     const [waitingForAndroid, setWaitingForAndroid] = useState(androidEnabled);
 
-    const [iOSMessage, setiOSMessage] = useState<string>('Loading...');
+    const [iOSMessage, setiOSMessage] = useState<IOSState>({type: 'loading'});
     const [androidMessage, setAndroidMessage] = useState<string>('Loading...');
 
     const [favoriteVirtualDevices, setFavoriteVirtualDevices] =
@@ -126,11 +129,14 @@ export const LaunchEmulatorDialog = withTrackingScope(
           setWaitingForIos(false);
           setIosEmulators(nonPhysical);
           if (nonPhysical.length === 0) {
-            setiOSMessage('No simulators found');
+            setiOSMessage({type: 'empty'});
           }
         } catch (error) {
           console.warn('Failed to find iOS simulators', error);
-          setiOSMessage(`Error: ${error.message ?? error} \nRetrying...`);
+          setiOSMessage({
+            type: 'error',
+            message: `Error: ${error.message ?? error} \nRetrying...`,
+          });
           setTimeout(getiOSSimulators, 1000);
         }
       };
@@ -199,7 +205,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
                 onClose();
               } catch (e) {
                 console.error('Failed to start emulator: ', e);
-                message.error('Failed to start emulator: ' + e);
+                message.error(`Failed to start emulator: ${e}`);
               } finally {
                 setPendingEmulators(
                   produce((draft) => {
@@ -247,9 +253,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
       items.push(
         <Title key="ios-title" name="iOS Simulators" />,
         iosEmulators.length == 0 ? (
-          <Typography.Paragraph style={{textAlign: 'center'}}>
-            {iOSMessage}
-          </Typography.Paragraph>
+          <IOSPlaceholder kind={iOSMessage.type} message={iOSMessage.message} />
         ) : null,
         ...chain(iosEmulators)
           .map((device) => ({
@@ -282,8 +286,24 @@ export const LaunchEmulatorDialog = withTrackingScope(
                     );
                     onClose();
                   } catch (e) {
-                    console.warn('Failed to start simulator: ', e);
-                    message.error('Failed to start simulator: ' + e);
+                    if (
+                      // definitely a server error
+                      typeof e === 'string' &&
+                      e.includes('command timeout')
+                    ) {
+                      message.warn(
+                        'Launching simulator may take up to 2 minutes for the first time. Please wait.',
+                        // seconds
+                        20,
+                      );
+                    } else {
+                      console.warn('Failed to start simulator: ', e);
+                      message.error(
+                        `Failed to start simulator: ${e}`,
+                        // seconds
+                        20,
+                      );
+                    }
                   } finally {
                     setPendingEmulators(
                       produce((draft) => {
@@ -336,6 +356,42 @@ export const LaunchEmulatorDialog = withTrackingScope(
     );
   },
 );
+
+function IOSPlaceholder({
+  kind,
+  message,
+}: {
+  kind: IOSState['type'];
+  message: string | undefined;
+}) {
+  switch (kind) {
+    case 'error':
+      return (
+        <Typography.Paragraph style={{textAlign: 'center'}}>
+          {message}
+        </Typography.Paragraph>
+      );
+    case 'empty':
+      return (
+        <>
+          <Typography.Paragraph style={{textAlign: 'center'}}>
+            No iOS simulators found. This is likely because because{' '}
+            <code>xcode-select</code> is pointing at a wrong Xcode installation.
+            See setup doctor for help. Run{' '}
+            <code>sudo xcode-select -switch /Applications/Xcode_xxxxx.app</code>{' '}
+            to select the correct Xcode installation (you need to update path to
+            Xcode.app in the command).
+          </Typography.Paragraph>
+          <Typography.Paragraph style={{textAlign: 'center'}}>
+            Alternatevely, Simulator app may not have any simulators created.
+            {message}
+          </Typography.Paragraph>
+        </>
+      );
+    default:
+      return null;
+  }
+}
 
 const FavIconStyle = {fontSize: 16, color: theme.primaryColor};
 

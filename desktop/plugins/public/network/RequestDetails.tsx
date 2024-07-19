@@ -27,18 +27,20 @@ import {
   bodyAsString,
   formatBytes,
   getHeaderValue,
+  parseJsonWithBigInt,
   queryToObj,
 } from './utils';
-import {Request, Header, Insights, RetryInsights} from './types';
+import {Header, Insights, RetryInsights, RequestWithData} from './types';
 import {BodyOptions} from './index';
 import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
 import {KeyValueItem, KeyValueTable} from './KeyValueTable';
 import {CopyOutlined} from '@ant-design/icons';
+import {stringify} from 'lossless-json';
 
 const {Text} = Typography;
 
 type RequestDetailsProps = {
-  request: Request;
+  request: RequestWithData;
   bodyFormat: string;
   onSelectFormat: (bodyFormat: string) => void;
   onCopyText(test: string): void;
@@ -131,7 +133,7 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
                 typeof request.responseData === 'string' &&
                 request.responseData ? (
                   <CopyOutlined
-                    title="Copy response body"
+                    title="Copy raw response body"
                     onClick={(e) => {
                       e.stopPropagation();
                       onCopyText(request.responseData as string);
@@ -208,12 +210,12 @@ class HeaderInspector extends Component<
 }
 
 type BodyFormatter = {
-  formatRequest?: (request: Request) => any;
-  formatResponse?: (request: Request) => any;
+  formatRequest?: (request: RequestWithData) => any;
+  formatResponse?: (request: RequestWithData) => any;
 };
 
 class RequestBodyInspector extends Component<{
-  request: Request;
+  request: RequestWithData;
   formattedText: boolean;
 }> {
   render() {
@@ -238,7 +240,7 @@ class RequestBodyInspector extends Component<{
           }
         } catch (e) {
           console.warn(
-            'BodyFormatter exception from ' + formatter.constructor.name,
+            `BodyFormatter exception from ${formatter.constructor.name}`,
             e.message,
           );
         }
@@ -249,7 +251,7 @@ class RequestBodyInspector extends Component<{
 }
 
 class ResponseBodyInspector extends Component<{
-  request: Request;
+  request: RequestWithData;
   formattedText: boolean;
 }> {
   render() {
@@ -274,7 +276,7 @@ class ResponseBodyInspector extends Component<{
           }
         } catch (e) {
           console.warn(
-            'BodyFormatter exception from ' + formatter.constructor.name,
+            `BodyFormatter exception from ${formatter.constructor.name}`,
             e.message,
           );
         }
@@ -298,7 +300,7 @@ const Empty = () => (
   </Layout.Container>
 );
 
-function renderRawBody(request: Request, mode: 'request' | 'response') {
+function renderRawBody(request: RequestWithData, mode: 'request' | 'response') {
   const data = mode === 'request' ? request.requestData : request.responseData;
   return (
     <Layout.Container gap>
@@ -357,7 +359,7 @@ class ImageWithSize extends Component<ImageWithSizeProps, ImageWithSizeState> {
 }
 
 class ImageFormatter {
-  formatResponse(request: Request) {
+  formatResponse(request: RequestWithData) {
     if (
       getHeaderValue(request.responseHeaders, 'content-type').startsWith(
         'image/',
@@ -387,7 +389,7 @@ class VideoFormatter {
     maxHeight: 500,
   });
 
-  formatResponse = (request: Request) => {
+  formatResponse = (request: RequestWithData) => {
     const contentType = getHeaderValue(request.responseHeaders, 'content-type');
     if (contentType.startsWith('video/')) {
       return (
@@ -406,7 +408,7 @@ class JSONText extends Component<{children: any}> {
     const jsonObject = this.props.children;
     return (
       <CodeBlock>
-        {JSON.stringify(jsonObject, null, 2)}
+        {stringify(jsonObject, null, 2)}
         {'\n'}
       </CodeBlock>
     );
@@ -426,14 +428,14 @@ class XMLText extends Component<{body: any}> {
 }
 
 class JSONTextFormatter {
-  formatRequest(request: Request) {
+  formatRequest(request: RequestWithData) {
     return this.format(
       bodyAsString(request.requestData),
       getHeaderValue(request.requestHeaders, 'content-type'),
     );
   }
 
-  formatResponse(request: Request) {
+  formatResponse(request: RequestWithData) {
     return this.format(
       bodyAsString(request.responseData),
       getHeaderValue(request.responseHeaders, 'content-type'),
@@ -448,7 +450,7 @@ class JSONTextFormatter {
       contentType.startsWith('application/x-fb-flatbuffer')
     ) {
       try {
-        const data = JSON.parse(body);
+        const data = parseJsonWithBigInt(body);
         return <JSONText>{data}</JSONText>;
       } catch (SyntaxError) {
         // Multiple top level JSON roots, map them one by one
@@ -462,14 +464,14 @@ class JSONTextFormatter {
 }
 
 class XMLTextFormatter {
-  formatRequest(request: Request) {
+  formatRequest(request: RequestWithData) {
     return this.format(
       bodyAsString(request.requestData),
       getHeaderValue(request.requestHeaders, 'content-type'),
     );
   }
 
-  formatResponse(request: Request) {
+  formatResponse(request: RequestWithData) {
     return this.format(
       bodyAsString(request.responseData),
       getHeaderValue(request.responseHeaders, 'content-type'),
@@ -488,14 +490,14 @@ class XMLTextFormatter {
 }
 
 class JSONFormatter {
-  formatRequest(request: Request) {
+  formatRequest(request: RequestWithData) {
     return this.format(
       bodyAsString(request.requestData),
       getHeaderValue(request.requestHeaders, 'content-type'),
     );
   }
 
-  formatResponse(request: Request) {
+  formatResponse(request: RequestWithData) {
     return this.format(
       bodyAsString(request.responseData),
       getHeaderValue(request.responseHeaders, 'content-type'),
@@ -528,7 +530,7 @@ class JSONFormatter {
 }
 
 class LogEventFormatter {
-  formatRequest(request: Request) {
+  formatRequest(request: RequestWithData) {
     if (request.url.indexOf('logging_client_event') > 0) {
       const data = queryToObj(bodyAsString(request.requestData));
       if (typeof data.message === 'string') {
@@ -540,7 +542,7 @@ class LogEventFormatter {
 }
 
 class GraphQLBatchFormatter {
-  formatRequest(request: Request) {
+  formatRequest(request: RequestWithData) {
     if (request.url.indexOf('graphqlbatch') > 0) {
       const data = queryToObj(bodyAsString(request.requestData));
       if (typeof data.queries === 'string') {
@@ -571,12 +573,13 @@ class GraphQLFormatter {
     const timeAtFlushMs = serverMetadata['time_at_flush_ms'];
     return (
       <Text type="secondary">
-        {'Server wall time for initial response (ms): ' +
-          (timeAtFlushMs - requestStartMs)}
+        {`Server wall time for initial response (ms): ${
+          timeAtFlushMs - requestStartMs
+        }`}
       </Text>
     );
   }
-  formatRequest(request: Request) {
+  formatRequest(request: RequestWithData) {
     if (request.url.indexOf('graphql') > 0) {
       const decoded = request.requestData;
       if (!decoded) {
@@ -593,7 +596,7 @@ class GraphQLFormatter {
     }
   }
 
-  formatResponse(request: Request) {
+  formatResponse(request: RequestWithData) {
     return this.format(
       // TODO: Fix this the next time the file is edited.
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -611,7 +614,8 @@ class GraphQLFormatter {
       contentType.startsWith('application/x-fb-flatbuffer')
     ) {
       try {
-        const data = JSON.parse(body);
+        const data = parseJsonWithBigInt(body);
+
         return (
           <div>
             {this.parsedServerTimeForFirstFlush(data)}
@@ -637,7 +641,7 @@ class GraphQLFormatter {
 }
 
 class FormUrlencodedFormatter {
-  formatRequest = (request: Request) => {
+  formatRequest = (request: RequestWithData) => {
     const contentType = getHeaderValue(request.requestHeaders, 'content-type');
     if (contentType.startsWith('application/x-www-form-urlencoded')) {
       const decoded = request.requestData;
@@ -652,7 +656,7 @@ class FormUrlencodedFormatter {
 }
 
 class BinaryFormatter {
-  formatRequest(request: Request) {
+  formatRequest(request: RequestWithData) {
     if (
       getHeaderValue(request.requestHeaders, 'content-type') ===
       'application/octet-stream'
@@ -662,7 +666,7 @@ class BinaryFormatter {
     return undefined;
   }
 
-  formatResponse(request: Request) {
+  formatResponse(request: RequestWithData) {
     if (
       getHeaderValue(request.responseHeaders, 'content-type') ===
       'application/octet-stream'
@@ -677,7 +681,7 @@ class ProtobufFormatter {
   private protobufDefinitionRepository =
     ProtobufDefinitionsRepository.getInstance();
 
-  formatRequest(request: Request) {
+  formatRequest(request: RequestWithData) {
     if (
       getHeaderValue(request.requestHeaders, 'content-type') ===
       'application/x-protobuf'
@@ -712,7 +716,7 @@ class ProtobufFormatter {
     return undefined;
   }
 
-  formatResponse(request: Request) {
+  formatResponse(request: RequestWithData) {
     if (
       getHeaderValue(request.responseHeaders, 'content-type') ===
         'application/x-protobuf' ||

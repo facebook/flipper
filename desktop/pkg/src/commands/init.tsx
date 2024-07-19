@@ -139,7 +139,7 @@ export default class Init extends Command {
 }
 
 function getPackageNameFromId(id: string): string {
-  return 'flipper-plugin-' + id.toLowerCase().replace(/[^a-zA-Z0-9\-_]+/g, '-');
+  return `flipper-plugin-${id.toLowerCase().replace(/[^a-zA-Z0-9\-_]+/g, '-')}`;
 }
 
 export async function initTemplate(

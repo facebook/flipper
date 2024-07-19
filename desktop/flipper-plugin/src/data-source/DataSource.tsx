@@ -388,7 +388,7 @@ export class DataSource<T extends any, KeyType = never> {
    */
   public delete(index: number) {
     if (index < 0 || index >= this._records.length) {
-      throw new Error('Out of bounds: ' + index);
+      throw new Error(`Out of bounds: ${index}`);
     }
     const entry = this._records.splice(index, 1)[0];
     if (this.keyAttribute) {
@@ -1128,7 +1128,7 @@ export class DataSourceView<T, KeyType> {
       output,
       {
         value: oldValue,
-        id: -1,
+        id: -99999,
         visible: entry.visible,
         approxIndex: entry.approxIndex,
       },

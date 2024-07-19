@@ -16,26 +16,19 @@ import {
   useEffect,
   useCallback,
   createContext,
-  useContext,
-  ReactElement,
-  SyntheticEvent,
 } from 'react';
 import styled from '@emotion/styled';
 import DataPreview, {DataValueExtractor, InspectorName} from './DataPreview';
 import {getSortedKeys} from './utils';
 import React from 'react';
 import {useHighlighter, HighlightManager} from '../Highlight';
-import {Dropdown, Menu, Tooltip} from 'antd';
+import {Tooltip} from 'antd';
 import {useInUnitTest} from '../../utils/useInUnitTest';
 import {theme} from '../theme';
-import {tryGetFlipperLibImplementation} from '../../plugin/FlipperLib';
-import {safeStringify} from '../../utils/safeStringify';
 
 export {DataValueExtractor} from './DataPreview';
 
 export const RootDataContext = createContext<() => any>(() => ({}));
-
-export const contextMenuTrigger = ['contextMenu' as const];
 
 const BaseContainer = styled.div<{
   depth?: number;
@@ -144,9 +137,6 @@ type DataInspectorProps = {
    */
   onExpanded?: ((path: string, expanded: boolean) => void) | undefined | null;
   /**
-   * Callback whenever delete action is invoked on current path.
-   */
-  onDelete?: DataInspectorDeleteValue | undefined | null;
   /**
    * Render callback that can be used to customize the rendering of object keys.
    */
@@ -175,11 +165,6 @@ type DataInspectorProps = {
    * Object of properties that will have tooltips
    */
   tooltips?: any;
-  additionalContextMenuItems?: (
-    parentPath: string[],
-    value: any,
-    name?: string,
-  ) => ReactElement[];
 
   hoveredNodePath?: string;
 
@@ -191,6 +176,10 @@ const defaultValueExtractor: DataValueExtractor = (value: any) => {
 
   if (type === 'number') {
     return {mutable: true, type: 'number', value};
+  }
+
+  if (type === 'bigint') {
+    return {mutable: true, type: 'bigint', value};
   }
 
   if (type === 'string') {
@@ -304,7 +293,6 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
     expandRoot,
     parentPath,
     onExpanded,
-    onDelete,
     onRenderName,
     onRenderDescription,
     extractValue: extractValueProp,
@@ -314,12 +302,10 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
     collapsed,
     tooltips,
     setValue: setValueProp,
-    additionalContextMenuItems,
     hoveredNodePath,
     setHoveredNodePath,
   }) {
     const highlighter = useHighlighter();
-    const getRoot = useContext(RootDataContext);
     const isUnitTest = useInUnitTest();
 
     const shouldExpand = useRef(false);
@@ -413,22 +399,19 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
       [onExpanded, expandedPaths],
     );
 
-    const handleClick = useCallback(() => {
-      if (!isUnitTest) {
-        cancelIdleCallback(expandHandle.current);
-      }
-      const isExpanded = shouldBeExpanded(expandedPaths, path, collapsed);
-      setExpanded(path, !isExpanded);
-    }, [expandedPaths, path, collapsed, isUnitTest]);
-
-    const handleDelete = useCallback(
-      (path: Array<string>) => {
-        if (!onDelete) {
+    const handleClick = useCallback(
+      (event) => {
+        if (!isUnitTest) {
+          cancelIdleCallback(expandHandle.current);
+        }
+        if (event.buttons !== 0) {
+          //only process left click
           return;
         }
-        onDelete(path);
+        const isExpanded = shouldBeExpanded(expandedPaths, path, collapsed);
+        setExpanded(path, !isExpanded);
       },
-      [onDelete],
+      [expandedPaths, path, collapsed, isUnitTest],
     );
 
     /**
@@ -484,7 +467,6 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
               expanded={expandedPaths}
               collapsed={collapsed}
               onExpanded={onExpanded}
-              onDelete={onDelete}
               onRenderName={onRenderName}
               onRenderDescription={onRenderDescription}
               parentPath={path}
@@ -494,7 +476,6 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
               data={metadata.data}
               diff={metadata.diff}
               tooltips={tooltips}
-              additionalContextMenuItems={additionalContextMenuItems}
             />
           );
 
@@ -588,78 +569,27 @@ export const DataInspectorNode: React.FC<DataInspectorProps> = memo(
       }
     }
 
-    function getContextMenu() {
-      const lib = tryGetFlipperLibImplementation();
-      const extraItems = additionalContextMenuItems
-        ? [
-            additionalContextMenuItems(parentPath, value, name),
-            <Menu.Divider key="extradivider" />,
-          ]
-        : [];
-      return (
-        <Menu>
-          {extraItems}
-          <Menu.Item
-            key="copyClipboard"
-            onClick={() => {
-              lib?.writeTextToClipboard(safeStringify(getRoot()));
-            }}>
-            Copy tree
-          </Menu.Item>
-          {lib?.isFB && (
-            <Menu.Item
-              key="createPaste"
-              onClick={() => {
-                lib?.createPaste(safeStringify(getRoot()));
-              }}>
-              Create paste from tree
-            </Menu.Item>
-          )}
-          <Menu.Divider />
-          <Menu.Item
-            key="copyValue"
-            onClick={() => {
-              lib?.writeTextToClipboard(safeStringify(data));
-            }}>
-            Copy value
-          </Menu.Item>
-          {!isExpandable && onDelete ? (
-            <Menu.Item
-              key="delete"
-              onClick={() => {
-                handleDelete(path);
-              }}>
-              Delete
-            </Menu.Item>
-          ) : null}
-        </Menu>
-      );
-    }
-
     const nodePath = path.join('.');
 
     return (
-      <Dropdown overlay={getContextMenu} trigger={contextMenuTrigger}>
-        <BaseContainer
-          onContextMenu={stopPropagation}
-          hovered={hoveredNodePath === nodePath}
-          onMouseEnter={() => {
-            setHoveredNodePath(nodePath);
-          }}
-          onMouseLeave={() => {
-            setHoveredNodePath(parentPath.join('.'));
-          }}
-          depth={depth}
-          disabled={!!setValueProp && !!setValue === false}>
-          <PropertyContainer onClick={isExpandable ? handleClick : undefined}>
-            {expandedPaths && <ExpandControl>{expandGlyph}</ExpandControl>}
-            {descriptionOrPreview}
-            {wrapperStart}
-          </PropertyContainer>
-          {propertyNodesContainer}
-          {wrapperEnd}
-        </BaseContainer>
-      </Dropdown>
+      <BaseContainer
+        hovered={hoveredNodePath === nodePath}
+        onMouseEnter={() => {
+          setHoveredNodePath(nodePath);
+        }}
+        onMouseLeave={() => {
+          setHoveredNodePath(parentPath.join('.'));
+        }}
+        depth={depth}
+        disabled={!!setValueProp && !!setValue === false}>
+        <PropertyContainer onClick={isExpandable ? handleClick : undefined}>
+          {expandedPaths && <ExpandControl>{expandGlyph}</ExpandControl>}
+          {descriptionOrPreview}
+          {wrapperStart}
+        </PropertyContainer>
+        {propertyNodesContainer}
+        {wrapperEnd}
+      </BaseContainer>
     );
   },
   dataInspectorPropsAreEqual,
@@ -704,7 +634,7 @@ function dataInspectorPropsAreEqual(
       ? '' // root
       : !nextProps.parentPath.length
         ? nextProps.name // root element
-        : nextProps.parentPath.join('.') + '.' + nextProps.name;
+        : `${nextProps.parentPath.join('.')}.${nextProps.name}`;
 
     // we are being collapsed
     if (props.expanded[path] !== nextProps.expanded[path]) {
@@ -744,7 +674,6 @@ function dataInspectorPropsAreEqual(
     nextProps.depth === props.depth &&
     nextProps.parentPath === props.parentPath &&
     nextProps.onExpanded === props.onExpanded &&
-    nextProps.onDelete === props.onDelete &&
     nextProps.setValue === props.setValue &&
     nextProps.collapsed === props.collapsed &&
     nextProps.expandRoot === props.expandRoot &&
@@ -756,9 +685,4 @@ function isValueExpandable(data: any) {
   return (
     typeof data === 'object' && data !== null && Object.keys(data).length > 0
   );
-}
-
-function stopPropagation(e: SyntheticEvent) {
-  //without this the parent element will receive the context menu event and multiple context menus overlap
-  e.stopPropagation();
 }

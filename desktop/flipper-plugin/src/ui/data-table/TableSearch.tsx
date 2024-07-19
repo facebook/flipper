@@ -76,7 +76,7 @@ export const TableSearch = memo(function TableSearch({
   );
   const toggleSearchDropdown = useCallback(
     (show: boolean) => {
-      dispatch({type: 'showSearchDropdown', show: show});
+      dispatch({type: 'showSearchDropdown', show});
     },
     [dispatch],
   );
@@ -149,7 +149,7 @@ export const TableSearch = memo(function TableSearch({
     try {
       new RegExp(searchValue);
     } catch (e) {
-      return '' + e;
+      return `${e}`;
     }
   }, [useRegex, searchValue]);
 

@@ -41,7 +41,7 @@ async function findGlobalDevTools(
     await flipperServer.exec('node-api-fs-stat', devToolsPath);
     return devToolsPath;
   } catch (error) {
-    console.warn('Failed to find globally installed React DevTools: ' + error);
+    console.warn(`Failed to find globally installed React DevTools: ${error}`);
     return undefined;
   }
 }

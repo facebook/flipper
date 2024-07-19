@@ -45,7 +45,10 @@ class FlipperConnectionManagerMock : public FlipperConnectionManager {
   }
 
   void setCertificateProvider(
-      const std::shared_ptr<FlipperCertificateProvider> provider) override{};
+      const std::shared_ptr<FlipperCertificateProvider> provider) override {};
+
+  void setBackupCertificateProvider(
+      const std::shared_ptr<FlipperCertificateProvider> provider) override {};
 
   std::shared_ptr<FlipperCertificateProvider> getCertificateProvider()
       override {

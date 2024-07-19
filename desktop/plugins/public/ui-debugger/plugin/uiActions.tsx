@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Atom, PluginClient} from 'flipper-plugin';
+import {Atom, PluginClient, getFlipperLib} from 'flipper-plugin';
 import {debounce, last} from 'lodash';
 import {
   ClientNode,
@@ -28,6 +28,8 @@ import {
   UIState,
   ViewMode,
   WireFrameMode,
+  ReferenceImageAction,
+  Operation,
 } from '../DesktopTypes';
 import {tracker} from '../utils/tracker';
 import {checkFocusedNodeStillActive} from './ClientDataUtils';
@@ -58,7 +60,7 @@ export function uiActions(
     } else {
       uiState.nodeSelection.set({
         source,
-        node: node, //last known state of the node, may be offscreen
+        node, //last known state of the node, may be offscreen
       });
     }
 
@@ -66,7 +68,7 @@ export function uiActions(
       tracker.track('node-selected', {
         name: node.name,
         tags: node.tags,
-        source: source,
+        source,
       });
 
       let current = node.parent;
@@ -253,11 +255,11 @@ export function uiActions(
       );
 
       tracker.track('attribute-editted', {
-        nodeId: nodeId,
+        nodeId,
         nodeName: node?.name ?? 'Unknown',
         attributeName: last(attributePath) ?? 'Unknown',
         attributePath,
-        value: value,
+        value,
         attributeType: (typeof value).toString(),
         tags: node?.tags ?? [],
       });
@@ -265,9 +267,61 @@ export function uiActions(
     100,
   );
 
+  const onReferenceImageAction = async (action: ReferenceImageAction) => {
+    if (action === 'Import') {
+      const fileDescriptor = await getFlipperLib().importFile({
+        title: 'Select a reference image',
+        extensions: ['.png'],
+        encoding: 'binary',
+      });
+
+      if (fileDescriptor?.data != null) {
+        const blob = new Blob([fileDescriptor.data], {type: 'image/png'});
+        const imageUrl = URL.createObjectURL(blob);
+        uiState.referenceImage.set({url: imageUrl, opacity: 0.7});
+        tracker.track('reference-image-switched', {on: true});
+      }
+    } else if (action === 'Clear') {
+      uiState.referenceImage.set(null);
+      tracker.track('reference-image-switched', {on: false});
+    } else if (typeof action === 'number') {
+      uiState.referenceImage.update((draft) => {
+        if (draft != null) draft.opacity = action;
+      });
+    }
+  };
+
+  const onChangeNodeLevelEventTypeFilter = (thread: string, op: Operation) => {
+    uiState.nodeLevelFrameworkEventFilters.update((draft) => {
+      if (op === 'add') {
+        draft.eventTypes.add(thread);
+      } else {
+        draft.eventTypes.delete(thread);
+      }
+    });
+  };
+
+  const onChangeNodeLevelThreadFilter = (eventType: string, op: Operation) => {
+    uiState.nodeLevelFrameworkEventFilters.update((draft) => {
+      if (op === 'add') {
+        draft.threads.add(eventType);
+      } else {
+        draft.threads.delete(eventType);
+      }
+    });
+  };
+
+  const onSetBoxVisualiserEnabled = (enabled: boolean) => {
+    uiState.boxVisualiserEnabled.set(enabled);
+    tracker.track('box-visualiser-switched', {
+      on: enabled,
+    });
+  };
+
   return {
     onExpandNode,
     onCollapseNode,
+    onSetBoxVisualiserEnabled,
     onHoverNode,
     onSelectNode,
     onContextMenuOpen,
@@ -284,6 +338,9 @@ export function uiActions(
     onCollapseAllRecursively,
     ensureAncestorsExpanded,
     onSetTraversalMode,
+    onReferenceImageAction,
+    onChangeNodeLevelEventTypeFilter,
+    onChangeNodeLevelThreadFilter,
     editClientAttribute,
   };
 }

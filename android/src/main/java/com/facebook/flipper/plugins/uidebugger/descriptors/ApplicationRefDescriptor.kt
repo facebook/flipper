@@ -14,6 +14,7 @@ import com.facebook.flipper.plugins.uidebugger.core.ActivityTracker
 import com.facebook.flipper.plugins.uidebugger.core.ApplicationRef
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
 import com.facebook.flipper.plugins.uidebugger.util.DisplayMetrics
+import curtains.Curtains
 
 object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
 
@@ -34,7 +35,7 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
   override fun onGetChildren(node: ApplicationRef): List<Any> {
     val children = mutableListOf<Any>()
 
-    val rootViews = node.rootsResolver.rootViews()
+    val rootViews = Curtains.rootViews
 
     val decorViewToActivity: Map<View, Activity> = ActivityTracker.decorViewToActivityMap
 
@@ -60,7 +61,9 @@ object ApplicationRefDescriptor : ChainedDescriptor<ApplicationRef>() {
   fun isUsefulRoot(rootViewOrActivity: Any): Boolean {
     val className = rootViewOrActivity.javaClass.name
 
-    if (className.contains("mediagallery.ui.MediaGalleryActivity")) {
+    if (className.contains("mediagallery.ui.MediaGalleryActivity") ||
+        className.contains("ImagineCreationActivity") ||
+        className.contains("WriteWithAIActivity")) {
       // this activity doesn't contain the content and its actually in the decor view behind it, so
       // skip it :/
       return false

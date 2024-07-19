@@ -7,9 +7,12 @@
 
 package com.facebook.flipper.plugins.jetpackcompose.descriptors
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.facebook.flipper.plugins.jetpackcompose.JetpackComposeTag
 import com.facebook.flipper.plugins.jetpackcompose.descriptors.ComposeNodeDescriptor.toInspectableValue
 import com.facebook.flipper.plugins.jetpackcompose.model.ComposeNode
+import com.facebook.flipper.plugins.uidebugger.descriptors.AttributesInfo
 import com.facebook.flipper.plugins.uidebugger.descriptors.BaseTags
 import com.facebook.flipper.plugins.uidebugger.descriptors.Id
 import com.facebook.flipper.plugins.uidebugger.descriptors.MetadataRegister
@@ -21,11 +24,12 @@ import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
-import com.facebook.flipper.plugins.uidebugger.util.Immediate
+import com.facebook.flipper.plugins.uidebugger.util.Deferred
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import facebook.internal.androidx.compose.ui.inspection.inspector.NodeParameter
 import facebook.internal.androidx.compose.ui.inspection.inspector.ParameterType
 
+@RequiresApi(Build.VERSION_CODES.Q)
 object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
 
   private const val NAMESPACE = "ComposeNode"
@@ -75,66 +79,76 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
     return node.children
   }
 
-  override fun getAttributes(node: ComposeNode): MaybeDeferred<Map<MetadataId, InspectableObject>> {
+  override fun getAttributes(
+      node: ComposeNode,
+      shouldGetAdditionalData: Boolean
+  ): MaybeDeferred<AttributesInfo> {
+    return Deferred {
+      val builder = mutableMapOf<MetadataId, InspectableObject>()
+      val props = mutableMapOf<Int, Inspectable>()
 
-    val builder = mutableMapOf<MetadataId, InspectableObject>()
-    val props = mutableMapOf<Int, Inspectable>()
+      props[IdAttributeId] = InspectableValue.Number(node.inspectorNode.id)
+      props[ViewIdAttributeId] = InspectableValue.Number(node.inspectorNode.viewId)
+      props[KeyAttributeId] = InspectableValue.Number(node.inspectorNode.key)
+      props[NameAttributeId] = InspectableValue.Text(node.inspectorNode.name)
+      props[FilenameAttributeId] = InspectableValue.Text(node.inspectorNode.fileName)
+      props[PackageHashAttributeId] = InspectableValue.Number(node.inspectorNode.packageHash)
+      props[LineNumberAttributeId] = InspectableValue.Number(node.inspectorNode.lineNumber)
+      props[OffsetAttributeId] = InspectableValue.Number(node.inspectorNode.offset)
+      props[LengthAttributeId] = InspectableValue.Number(node.inspectorNode.length)
 
-    props[IdAttributeId] = InspectableValue.Number(node.inspectorNode.id)
-    props[ViewIdAttributeId] = InspectableValue.Number(node.inspectorNode.viewId)
-    props[KeyAttributeId] = InspectableValue.Number(node.inspectorNode.key)
-    props[NameAttributeId] = InspectableValue.Text(node.inspectorNode.name)
-    props[FilenameAttributeId] = InspectableValue.Text(node.inspectorNode.fileName)
-    props[PackageHashAttributeId] = InspectableValue.Number(node.inspectorNode.packageHash)
-    props[LineNumberAttributeId] = InspectableValue.Number(node.inspectorNode.lineNumber)
-    props[OffsetAttributeId] = InspectableValue.Number(node.inspectorNode.offset)
-    props[LengthAttributeId] = InspectableValue.Number(node.inspectorNode.length)
+      props[BoxAttributeId] =
+          InspectableValue.Bounds(
+              Bounds(
+                  node.inspectorNode.left,
+                  node.inspectorNode.top,
+                  node.inspectorNode.width,
+                  node.inspectorNode.height))
 
-    props[BoxAttributeId] =
-        InspectableValue.Bounds(
-            Bounds(
-                node.inspectorNode.left,
-                node.inspectorNode.top,
-                node.inspectorNode.width,
-                node.inspectorNode.height))
+      node.inspectorNode.bounds?.let { bounds ->
+        val quadBounds = mutableMapOf<Int, Inspectable>()
+        quadBounds[Bounds0AttributeId] =
+            InspectableValue.Coordinate(Coordinate(bounds.x0, bounds.y0))
+        quadBounds[Bounds1AttributeId] =
+            InspectableValue.Coordinate(Coordinate(bounds.x1, bounds.y1))
+        quadBounds[Bounds2AttributeId] =
+            InspectableValue.Coordinate(Coordinate(bounds.x2, bounds.y2))
+        quadBounds[Bounds3AttributeId] =
+            InspectableValue.Coordinate(Coordinate(bounds.x3, bounds.y3))
+        props[BoundsAttributeId] = InspectableObject(quadBounds.toMap())
+      }
 
-    node.inspectorNode.bounds?.let { bounds ->
-      val quadBounds = mutableMapOf<Int, Inspectable>()
-      quadBounds[Bounds0AttributeId] = InspectableValue.Coordinate(Coordinate(bounds.x0, bounds.y0))
-      quadBounds[Bounds1AttributeId] = InspectableValue.Coordinate(Coordinate(bounds.x1, bounds.y1))
-      quadBounds[Bounds2AttributeId] = InspectableValue.Coordinate(Coordinate(bounds.x2, bounds.y2))
-      quadBounds[Bounds3AttributeId] = InspectableValue.Coordinate(Coordinate(bounds.x3, bounds.y3))
-      props[BoundsAttributeId] = InspectableObject(quadBounds.toMap())
+      val params = mutableMapOf<Int, Inspectable>()
+      node.getParameters(shouldGetAdditionalData).forEach { parameter ->
+        fillNodeParameters(parameter, params, node.inspectorNode.name)
+      }
+      builder[ParametersAttributeId] = InspectableObject(params.toMap())
+
+      val mergedSemantics = mutableMapOf<Int, Inspectable>()
+      node.getMergedSemantics(shouldGetAdditionalData).forEach { parameter ->
+        fillNodeParameters(parameter, mergedSemantics, node.inspectorNode.name)
+      }
+      builder[MergedSemanticsAttributeId] = InspectableObject(mergedSemantics.toMap())
+
+      val unmergedSemantics = mutableMapOf<Int, Inspectable>()
+      node.getUnmergedSemantics(shouldGetAdditionalData).forEach { parameter ->
+        fillNodeParameters(parameter, unmergedSemantics, node.inspectorNode.name)
+      }
+      builder[UnmergedSemanticsAttributeId] = InspectableObject(unmergedSemantics.toMap())
+
+      builder[SectionId] = InspectableObject(props.toMap())
+
+      AttributesInfo(builder, node.hasAdditionalData)
     }
-
-    val params = mutableMapOf<Int, Inspectable>()
-    node.parameters.forEach { parameter ->
-      fillNodeParameters(parameter, params, node.inspectorNode.name)
-    }
-    builder[ParametersAttributeId] = InspectableObject(params.toMap())
-
-    val mergedSemantics = mutableMapOf<Int, Inspectable>()
-    node.mergedSemantics.forEach { parameter ->
-      fillNodeParameters(parameter, mergedSemantics, node.inspectorNode.name)
-    }
-    builder[MergedSemanticsAttributeId] = InspectableObject(mergedSemantics.toMap())
-
-    val unmergedSemantics = mutableMapOf<Int, Inspectable>()
-    node.unmergedSemantics.forEach { parameter ->
-      fillNodeParameters(parameter, unmergedSemantics, node.inspectorNode.name)
-    }
-    builder[UnmergedSemanticsAttributeId] = InspectableObject(unmergedSemantics.toMap())
-
-    builder[SectionId] = InspectableObject(props.toMap())
-
-    return Immediate(builder)
   }
 
   override fun getInlineAttributes(node: ComposeNode): Map<String, String> {
     val attributes = mutableMapOf<String, String>()
     if (!node.inspectorNode.inlined) {
-      node.recompositionCount?.let { attributes["🔄"] = it.toString() }
-      node.skipCount?.let { attributes["⏭️"] = it.toString() }
+      node.recompositionCounts?.let { (counts, skips) ->
+        attributes["🔄"] = counts.toString()
+        attributes["⏭️"] = skips.toString()
+      }
     } else {
       attributes["inline"] = "true"
     }
@@ -179,6 +193,7 @@ object ComposeNodeDescriptor : NodeDescriptor<ComposeNode> {
   private fun NodeParameter.toInspectableValue(): InspectableValue {
     return when (type) {
       ParameterType.Iterable,
+      ParameterType.ComplexObject,
       ParameterType.String -> InspectableValue.Text(value.toString())
       ParameterType.Boolean -> InspectableValue.Boolean(value as Boolean)
       ParameterType.Int32 -> InspectableValue.Number(value as Int)

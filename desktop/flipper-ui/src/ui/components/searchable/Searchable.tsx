@@ -222,7 +222,7 @@ export default function Searchable(
           ? this.props.defaultSearchTerm
           : savedState.searchTerm || this.state.searchTerm;
         this.setState({
-          searchTerm: searchTerm,
+          searchTerm,
           filters: savedState.filters || this.state.filters,
           regexEnabled: savedState.regexEnabled || this.state.regexEnabled,
           contentSearchEnabled:
@@ -291,10 +291,9 @@ export default function Searchable(
       } else if (this.props.columns) {
         // if we have a table, we are using it's colums to uniquely identify
         // the table (in case there is more than one table rendered at a time)
-        return (
-          'TABLE_COLUMNS_' +
-          Object.keys(this.props.columns).join('_').toUpperCase()
-        );
+        return `TABLE_COLUMNS_${Object.keys(this.props.columns)
+          .join('_')
+          .toUpperCase()}`;
       }
     };
 

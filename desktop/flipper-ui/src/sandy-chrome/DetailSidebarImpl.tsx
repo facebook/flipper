@@ -18,6 +18,7 @@ export type DetailSidebarProps = {
   children: any;
   width?: number;
   minWidth?: number;
+  onResize?: (width: number, height: number) => void;
 };
 
 /* eslint-disable react-hooks/rules-of-hooks */
@@ -25,6 +26,7 @@ export function DetailSidebarImpl({
   children,
   width,
   minWidth,
+  onResize,
 }: DetailSidebarProps) {
   const [domNode, setDomNode] = useState(
     document.getElementById('detailsSidebar'),
@@ -70,6 +72,7 @@ export function DetailSidebarImpl({
       domNode &&
       ReactDOM.createPortal(
         <_Sidebar
+          onResize={onResize}
           minWidth={minWidth}
           width={width || 300}
           position="right"

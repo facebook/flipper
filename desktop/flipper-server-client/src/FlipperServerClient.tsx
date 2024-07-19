@@ -41,11 +41,16 @@ export function createFlipperServer(
   };
 
   const socket = new ReconnectingWebSocket(URLProvider);
-  return createFlipperServerWithSocket(socket as WebSocket, onStateChange);
+  return createFlipperServerWithSocket(
+    socket as WebSocket,
+    port,
+    onStateChange,
+  );
 }
 
 export function createFlipperServerWithSocket(
   socket: WebSocket,
+  port: number,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
   onStateChange(FlipperServerState.CONNECTING);
@@ -57,7 +62,7 @@ export function createFlipperServerWithSocket(
           new Error(
             `Failed to connect to the server in a timely manner.
              It may be unresponsive. Run the following from the terminal
-             'sudo kill -9 $(lsof -t -i :52342)' as to kill any existing running instance, if any.`,
+             'sudo kill -9 $(lsof -t -i :${port})' as to kill any existing running instance, if any.`,
           ),
         );
       }, CONNECTION_TIMEOUT);

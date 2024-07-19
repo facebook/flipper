@@ -45,6 +45,7 @@ import {getFlipperServer, getFlipperServerConfig} from '../flipperServer';
 type OwnProps = {
   onHide: () => void;
   platform: Platform;
+  isFB: boolean;
   noModal?: boolean; // used for testing
 };
 
@@ -84,7 +85,12 @@ class SettingsSheet extends Component<Props, State> {
     this.props.onHide();
     await flush();
     await sleep(1000);
-    getFlipperServer().exec('shutdown');
+    if (this.props.platform === 'darwin' && this.props.isFB) {
+      getFlipperServer().exec('restart');
+    } else {
+      getFlipperServer().exec('shutdown');
+    }
+    window.close();
   };
 
   applyChangesWithoutRestart = async () => {
@@ -358,7 +364,8 @@ class SettingsSheet extends Component<Props, State> {
           disabled={settingsPristine}
           type="primary"
           onClick={this.applyChanges}>
-          Apply and Restart
+          Apply and{' '}
+          {this.props.platform === 'darwin' ? 'Restart' : 'Quit Flipper'}
         </Button>
       </>
     );

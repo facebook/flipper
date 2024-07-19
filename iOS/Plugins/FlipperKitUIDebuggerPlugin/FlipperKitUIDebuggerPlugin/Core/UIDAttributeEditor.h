@@ -36,7 +36,7 @@ typedef void (^ReportAttributeEditorResult)(NSError* _Nullable);
 + (instancetype)attributeEditorWithDescriptorRegister:
     (UIDDescriptorRegister*)descriptorRegister;
 
-- (void)editNodeWithId:(NSNumber*)nodeId
+- (void)editNodeWithId:(NSString*)nodeId
                   value:(id)value
     metadataIdentifiers:(NSArray<UIDMetadataId>*)metadataIdentifiers
        compoundTypeHint:(UIDCompoundTypeHint)compoundTypeHint

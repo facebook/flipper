@@ -94,7 +94,7 @@ async function buildPlugin() {
       : path.join(
           distDir,
           'plugins',
-          path.relative(pluginsDir, pluginDir) + '.tgz',
+          `${path.relative(pluginsDir, pluginDir)}.tgz`,
         );
     const outputUnpackedDir = outputUnpackedArg
       ? path.resolve(outputUnpackedArg)
@@ -137,7 +137,7 @@ async function buildPlugin() {
       await fs.move(packageJsonBackupPath, packageJsonPath, {overwrite: true});
       await fs.remove(tmpDir);
     }
-    await fs.writeFile(outputFile + '.hash', checksum);
+    await fs.writeFile(`${outputFile}.hash`, checksum);
   }
 }
 

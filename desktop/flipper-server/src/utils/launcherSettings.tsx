@@ -36,7 +36,7 @@ function getLauncherSettingsFile(): string {
 
 const defaultLauncherSettings: LauncherSettings = {
   releaseChannel: ReleaseChannel.DEFAULT,
-  ignoreLocalPin: false,
+  ignoreLocalPin: true,
 };
 
 interface FormattedSettings {

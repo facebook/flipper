@@ -62,7 +62,7 @@ const WINDOWS_STARTUP_SCRIPT = `@echo off
 setlocal
 set "THIS_DIR=%~dp0"
 cd /d "%THIS_DIR%"
-flipper-runtime server %*
+flipper-runtime.exe ./server %*
 `;
 
 // eslint-disable-next-line node/no-sync
@@ -125,13 +125,6 @@ const argv = yargs
       description:
         'Unique build identifier to be used as the version patch part for the build',
       type: 'number',
-    },
-    // On intern we ship flipper-server with node_modules (no big internet behind the firewall). yarn.lock makes sure that a CI that builds flipper-server installs the same dependencies all the time.
-    'generate-lock': {
-      describe:
-        'Generate a new yarn.lock file for flipper-server prod build. It is used for reproducible builds of the final artifact for the intern.',
-      type: 'boolean',
-      default: false,
     },
     mac: {
       describe: 'Build arm64 and x64 bundles for MacOS.',
@@ -276,7 +269,7 @@ async function linkLocalDeps(buildFolder: string) {
   const manifest = await fs.readJSON(path.resolve(serverDir, 'package.json'));
 
   const resolutions = {
-    'flipper-doctor': `file:${rootDir}/doctor`,
+    ...manifest.resolutions,
     'flipper-common': `file:${rootDir}/flipper-common`,
     'flipper-server-client': `file:${rootDir}/flipper-server-client`,
     'flipper-pkg-lib': `file:${rootDir}/pkg-lib`,
@@ -284,7 +277,7 @@ async function linkLocalDeps(buildFolder: string) {
   };
   manifest.resolutions = resolutions;
 
-  for (const depName of Object.keys(manifest.dependencies)) {
+  for (const depName in manifest.dependencies) {
     if (depName in resolutions) {
       manifest.dependencies[depName] =
         resolutions[depName as keyof typeof resolutions];
@@ -292,7 +285,6 @@ async function linkLocalDeps(buildFolder: string) {
   }
 
   delete manifest.scripts;
-  delete manifest.devDependencies;
 
   await fs.writeFile(
     path.join(buildFolder, 'package.json'),
@@ -381,13 +373,6 @@ async function yarnInstall(dir: string) {
     )}`,
   );
 
-  if (!argv['generate-lock']) {
-    await fs.copyFile(
-      path.resolve(rootDir, 'yarn.flipper-server.lock'),
-      path.resolve(dir, 'yarn.lock'),
-    );
-  }
-
   await spawn(
     'yarn',
     [
@@ -401,15 +386,6 @@ async function yarnInstall(dir: string) {
       shell: true,
     },
   );
-
-  if (argv['generate-lock']) {
-    await fs.copyFile(
-      path.resolve(dir, 'yarn.lock'),
-      path.resolve(rootDir, 'yarn.flipper-server.lock'),
-    );
-  }
-
-  await fs.rm(path.resolve(dir, 'yarn.lock'));
 }
 
 async function stripForwardingToolFromArchive(archive: string): Promise<void> {
@@ -735,6 +711,34 @@ async function createMacDMG(
   });
 }
 
+async function createTar(
+  platform: BuildPlatform,
+  outputPath: string,
+  destPath: string,
+) {
+  console.log(`⚙️  Create tar of: ${outputPath}`);
+
+  const name = `flipper-server-${platform}.tar.gz`;
+  const temporaryDirectory = os.tmpdir();
+  const tempTarPath = path.resolve(temporaryDirectory, name);
+  const finalTarPath = path.resolve(destPath, name);
+
+  // Create a tar.gz based on the output path
+  await tar.c(
+    {
+      gzip: true,
+      file: tempTarPath,
+      cwd: outputPath,
+    },
+    ['.'],
+  );
+
+  await fs.move(tempTarPath, finalTarPath);
+  await fs.remove(outputPath);
+
+  console.log(`✅  Tar successfully created: ${finalTarPath}`);
+}
+
 async function setUpLinuxBundle(outputDir: string) {
   console.log(`⚙️  Creating Linux startup script in ${outputDir}/flipper`);
   await fs.writeFile(path.join(outputDir, 'flipper'), LINUX_STARTUP_SCRIPT);
@@ -909,14 +913,25 @@ async function bundleServerReleaseForPlatform(
     }
   } else {
     const outputPaths = {
-      nodePath: path.join(outputDir, 'flipper-runtime'),
+      nodePath: path.join(
+        outputDir,
+        platform === BuildPlatform.WINDOWS
+          ? 'flipper-runtime.exe'
+          : 'flipper-runtime',
+      ),
       resourcesPath: outputDir,
     };
 
     if (platform === BuildPlatform.LINUX) {
       await setUpLinuxBundle(outputDir);
+      if (argv.tar) {
+        await createTar(platform, outputDir, distDir);
+      }
     } else if (platform === BuildPlatform.WINDOWS) {
       await setUpWindowsBundle(outputDir);
+      if (argv.tar) {
+        await createTar(platform, outputDir, distDir);
+      }
     }
 
     console.log(

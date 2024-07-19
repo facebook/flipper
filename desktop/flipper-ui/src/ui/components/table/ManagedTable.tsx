@@ -175,9 +175,7 @@ export class ManagedTable extends React.Component<
   };
 
   getTableKey = (): string => {
-    return (
-      'TABLE_COLUMNS_' + Object.keys(this.props.columns).join('_').toUpperCase()
-    );
+    return `TABLE_COLUMNS_${Object.keys(this.props.columns).join('_').toUpperCase()}`;
   };
 
   tableRef = React.createRef<List>();

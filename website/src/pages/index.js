@@ -68,12 +68,12 @@ export default function Index() {
                 </a>
                 <a
                   className="landing-btn landing-btn-middle primary"
-                  href="https://www.facebook.com/fbflipper/public/linux">
+                  href="https://www.facebook.com/fbflipper/public/other">
                   Linux
                 </a>
                 <a
                   className="landing-btn landing-btn-right primary"
-                  href="https://www.facebook.com/fbflipper/public/windows">
+                  href="https://www.facebook.com/fbflipper/public/other">
                   Windows
                 </a>
                 <a className="landing-btn" href={useBaseUrl('docs/features')}>

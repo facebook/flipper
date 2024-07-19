@@ -14,6 +14,7 @@
 #import "UIDSnapshot.h"
 #import "UIView+UIDDescriptor.h"
 
+static UIDMetadataId AddressAttributeId;
 static UIDMetadataId UIViewAttributeId;
 static UIDMetadataId FrameAttributeId;
 static UIDMetadataId BoundsAttributeId;
@@ -72,8 +73,8 @@ static UIDMetadataId AccessibilityTraitStartsMediaSessionAttributeId;
 FB_LINKABLE(UIView_UIDDescriptor)
 @implementation UIView (UIDDescriptor)
 
-- (NSUInteger)UID_identifier {
-  return [self hash];
+- (NSString*)UID_identifier {
+  return [NSString stringWithFormat:@"%lu", [self hash]];
 }
 
 - (nonnull NSString*)UID_name {
@@ -83,6 +84,9 @@ FB_LINKABLE(UIView_UIDDescriptor)
 - (void)UID_aggregateAttributes:(nonnull UIDMutableAttributes*)attributes {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
+    AddressAttributeId = [[UIDMetadataRegister shared]
+        registerMetadataWithType:UIDEBUGGER_METADATA_TYPE_ATTRIBUTE
+                            name:@"Address"];
     UIViewAttributeId = [[UIDMetadataRegister shared]
         registerMetadataWithType:UIDEBUGGER_METADATA_TYPE_ATTRIBUTE
                             name:@"UIView"];
@@ -345,6 +349,11 @@ FB_LINKABLE(UIView_UIDDescriptor)
 
   NSMutableDictionary* viewAttributes = [NSMutableDictionary new];
 
+  [viewAttributes
+      setObject:[UIDInspectableText
+                    fromText:[NSString stringWithFormat:@"%p", self]]
+         forKey:AddressAttributeId];
+
   [viewAttributes setObject:[UIDInspectableBounds fromRect:self.frame]
                      forKey:FrameAttributeId];
   [viewAttributes setObject:[UIDInspectableBounds fromRect:self.bounds]
@@ -606,27 +615,33 @@ FB_LINKABLE(UIView_UIDDescriptor)
 
 /**
   In the context of UIView, the active child is defined as the last view in
-  the subviews collection. If said item's next responder is a UIViewController,
-  then return this instead.
+  the subviews collection that itself has children. This is to avoid random
+  labels or non container views becoming active child
+
+  We need to account for the fact we inject view controllers into the heierachy,
+  so if said item's next responder is a different view controller to the current
+   UIViewController then return the new controller so the active child is
+  actually one of the children returned to the desktop
  */
+
 - (id<NSObject>)UID_activeChild {
   if (self.isHidden) {
     return nil;
   }
-
   if (self.subviews && self.subviews.count > 0) {
-    UIView* activeChild = [self.subviews lastObject];
-    BOOL isController =
-        [activeChild.nextResponder isKindOfClass:[UIViewController class]];
+    for (UIView* subview in [self.subviews reverseObjectEnumerator]) {
+      if (subview.subviews && subview.subviews.count > 0) {
+        BOOL isRootViewOfController =
+            [subview.nextResponder isKindOfClass:[UIViewController class]];
 
-    if (isController && activeChild.nextResponder != self.nextResponder) {
-/* @cwt-override FIXME[T168581563]: -Wnullable-to-nonnull-conversion */
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
-      return activeChild.nextResponder;
-#pragma clang diagnostic pop
+        if (isRootViewOfController &&
+            subview.nextResponder != self.nextResponder) {
+          return (id<NSObject>)[subview nextResponder];
+        }
+
+        return subview;
+      }
     }
-    return activeChild;
   }
   return nil;
 }

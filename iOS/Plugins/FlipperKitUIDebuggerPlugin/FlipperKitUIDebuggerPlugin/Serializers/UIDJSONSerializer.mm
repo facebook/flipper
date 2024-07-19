@@ -10,6 +10,7 @@
 #import "UIDJSONSerializer.h"
 #import "NSArray+Foundation.h"
 #import "NSDictionary+Foundation.h"
+#import "NSObject+Foundation.h"
 #import "NSSet+Foundation.h"
 #import "UIDBounds+Foundation.h"
 #import "UIDEdgeInsets+Foundation.h"

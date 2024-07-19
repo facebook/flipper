@@ -162,7 +162,7 @@ internal object SnapshotCommon {
     }
 
     // something went wrong, use fallback, make sure to give bitmap back to pool first
-    Log.i(LogTag, "Using fallback snapshot method")
+    Log.d(LogTag, "Using fallback snapshot method")
     reusableBitmap?.readyForReuse()
     return fallback?.takeSnapshot(view)
   }

@@ -150,9 +150,9 @@ export class IDBBridge implements IOSBridge {
     await this._execIdb(`install ${ipaPath} --udid ${serial}`);
   }
 
-  async openApp(serial: string, name: string): Promise<void> {
-    console.log(`Opening app via IDB ${name} ${serial}`);
-    await this._execIdb(`launch ${name} --udid ${serial} -f`);
+  async openApp(serial: string, bundleId: string): Promise<void> {
+    console.log(`Opening app via IDB ${bundleId} ${serial}`);
+    await this._execIdb(`launch --udid ${serial} ${bundleId} -f`);
   }
 
   async getActiveDevices(bootedOnly: boolean): Promise<DeviceTarget[]> {
@@ -326,7 +326,7 @@ function getLogExtraArgs(deviceType: DeviceType) {
 }
 
 function makeTempScreenshotFilePath() {
-  const imageName = uuid() + '.png';
+  const imageName = `${uuid()}.png`;
   return path.join(getFlipperServerConfig().paths.tempPath, imageName);
 }
 

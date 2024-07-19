@@ -48,7 +48,8 @@ export function SandyApp() {
   // Messages need to be pushed down to make sure they appear below
   // the navigation bar which has a height of 68px.
   message.config({
-    top: 68,
+    top: 10,
+    maxCount: 2,
   });
 
   useEffect(() => {
@@ -165,7 +166,7 @@ export function SandyApp() {
                   ) : (
                     <ContentContainer>
                       {React.createElement(staticView, {
-                        logger: logger,
+                        logger,
                       })}
                     </ContentContainer>
                   )}

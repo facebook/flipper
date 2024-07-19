@@ -1,0 +1,28 @@
+{
+  "$schema": "https://fbflipper.com/schemas/plugin-package/v2.json",
+  "name": "flipper-plugin-cookies",
+  "id": "cookies",
+  "pluginType": "client",
+  "version": "0.0.0",
+  "flipperBundlerEntry": "index.tsx",
+  "main": "dist/bundle.js",
+  "license": "MIT",
+  "title": "Cookies",
+  "icon": "apps",
+  "keywords": [
+    "flipper-plugin",
+    "cookies"
+  ],
+  "description": "Flipper plugin to monitor NSHTTPCookieStorage",
+  "peerDependencies": {
+    "flipper-plugin": "*",
+    "antd": "*",
+    "react": "*",
+    "react-dom": "*",
+    "@emotion/styled": "*",
+    "@ant-design/icons": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@types/node": "*"
+  }
+}

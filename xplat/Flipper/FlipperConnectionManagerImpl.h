@@ -49,8 +49,13 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
       std::unique_ptr<FlipperResponder> responder) override;
 
   void reconnect();
+
   void setCertificateProvider(
       const std::shared_ptr<FlipperCertificateProvider> provider) override;
+
+  void setBackupCertificateProvider(
+      const std::shared_ptr<FlipperCertificateProvider> provider) override;
+
   std::shared_ptr<FlipperCertificateProvider> getCertificateProvider() override;
 
  private:
@@ -59,6 +64,8 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   bool isConnectionTrusted_ = false;
 
   std::shared_ptr<FlipperCertificateProvider> certificateProvider_ = nullptr;
+  std::shared_ptr<FlipperCertificateProvider> backupCertificateProvider_ =
+      nullptr;
 
   Callbacks* callbacks_;
 
@@ -91,6 +98,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
       std::shared_ptr<FlipperStep> gettingCertificateStep,
       std::string response,
       bool isError);
+  void getCertificatesFromProvider(FlipperCertificateProvider& provider);
   bool isRunningInOwnThread();
   void reevaluateSocketProvider();
   std::string getDeviceId();

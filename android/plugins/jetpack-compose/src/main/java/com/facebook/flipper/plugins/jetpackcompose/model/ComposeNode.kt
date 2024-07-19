@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.jetpackcompose.model
 
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -17,11 +18,13 @@ import facebook.internal.androidx.compose.ui.inspection.inspector.InspectorNode
 import facebook.internal.androidx.compose.ui.inspection.inspector.LayoutInspectorTree
 import facebook.internal.androidx.compose.ui.inspection.inspector.NodeParameter
 import facebook.internal.androidx.compose.ui.inspection.inspector.ParameterKind
+import facebook.internal.androidx.compose.ui.inspection.inspector.ParameterType
 
 // Same values as in AndroidX (ComposeLayoutInspector.kt)
 private const val MAX_RECURSIONS = 2
 private const val MAX_ITERABLE_SIZE = 5
 
+@RequiresApi(Build.VERSION_CODES.Q)
 class ComposeNode(
     private val parentComposeView: View,
     private val layoutInspectorTree: LayoutInspectorTree,
@@ -37,31 +40,63 @@ class ComposeNode(
           inspectorNode.width,
           inspectorNode.height)
 
-  val recompositionCount: Int?
-
-  val skipCount: Int?
+  val recompositionCounts: Pair<Int, Int>? by lazy {
+    recompositionHandler.getCounts(inspectorNode.key, inspectorNode.anchorId)?.let {
+      Pair(it.count, it.skips)
+    }
+  }
 
   val children: List<Any> = collectChildren()
 
-  val parameters: List<NodeParameter>
+  val hasAdditionalData: Boolean
+    get() {
+      return hasAdditionalParameterData ||
+          hasAdditionalMergedSemanticsData ||
+          hasAdditionalUnmergedSemanticsData
+    }
 
-  val mergedSemantics: List<NodeParameter>
+  private var hasAdditionalParameterData: Boolean = false
+  private var hasAdditionalMergedSemanticsData: Boolean = false
+  private var hasAdditionalUnmergedSemanticsData: Boolean = false
 
-  val unmergedSemantics: List<NodeParameter>
-
-  init {
-    val count = recompositionHandler.getCounts(inspectorNode.key, inspectorNode.anchorId)
-    recompositionCount = count?.count
-    skipCount = count?.skips
-    parameters = getNodeParameters(ParameterKind.Normal)
-    mergedSemantics = getNodeParameters(ParameterKind.MergedSemantics)
-    unmergedSemantics = getNodeParameters(ParameterKind.UnmergedSemantics)
+  fun getParameters(useReflection: Boolean): List<NodeParameter> {
+    return getNodeParameters(ParameterKind.Normal, useReflection)
   }
 
-  private fun getNodeParameters(kind: ParameterKind): List<NodeParameter> {
+  fun getMergedSemantics(useReflection: Boolean): List<NodeParameter> {
+    return getNodeParameters(ParameterKind.MergedSemantics, useReflection)
+  }
+
+  fun getUnmergedSemantics(useReflection: Boolean): List<NodeParameter> {
+    return getNodeParameters(ParameterKind.UnmergedSemantics, useReflection)
+  }
+
+  private fun getNodeParameters(kind: ParameterKind, useReflection: Boolean): List<NodeParameter> {
     layoutInspectorTree.resetAccumulativeState()
-    return layoutInspectorTree.convertParameters(
-        inspectorNode.id, inspectorNode, kind, MAX_RECURSIONS, MAX_ITERABLE_SIZE)
+    return try {
+      val params =
+          layoutInspectorTree.convertParameters(
+              inspectorNode.id,
+              inspectorNode,
+              kind,
+              MAX_RECURSIONS,
+              MAX_ITERABLE_SIZE,
+              useReflection)
+      if (!useReflection) {
+        // We only need to check for additional data if we are not using reflection since
+        // params parsed with useReflection == true wont have complex objects
+        val hasAdditionalData = hasAdditionalData(params)
+        when (kind) {
+          ParameterKind.Normal -> hasAdditionalParameterData = hasAdditionalData
+          ParameterKind.MergedSemantics -> hasAdditionalMergedSemanticsData = hasAdditionalData
+          ParameterKind.UnmergedSemantics -> hasAdditionalUnmergedSemanticsData = hasAdditionalData
+        }
+      }
+      params
+    } catch (t: Throwable) {
+      Log.e(TAG, "Failed to get parameters.", t)
+      emptyList()
+    }
   }
 
   private fun collectChildren(): List<Any> {
@@ -101,5 +136,22 @@ class ComposeNode(
       }
     }
     return null
+  }
+
+  private fun hasAdditionalData(params: List<NodeParameter>): Boolean {
+    val queue = ArrayDeque<NodeParameter>()
+    queue.addAll(params)
+    while (!queue.isEmpty()) {
+      val param = queue.removeFirst()
+      if (param.type == ParameterType.ComplexObject) {
+        return true
+      }
+      queue.addAll(param.elements)
+    }
+    return false
+  }
+
+  companion object {
+    private const val TAG = "ComposeNode"
   }
 }

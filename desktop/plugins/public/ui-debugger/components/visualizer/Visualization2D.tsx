@@ -32,12 +32,13 @@ import {
   Layout,
 } from 'flipper-plugin';
 import {plugin} from '../../index';
-import {head, isEqual, throttle} from 'lodash';
-import {useDelay} from '../../hooks/useDelay';
-import {Tooltip} from 'antd';
+import {isEqual, throttle} from 'lodash';
 import {TargetModeState, VisualiserControls} from './VisualizerControls';
-import {getNode} from '../../utils/map';
-import {filterOutFalsy} from '../../utils/array';
+import {
+  VisualiserOverlays,
+  pxScaleFactorCssVar,
+  toPx,
+} from './VisualiserOverlays';
 
 export const Visualization2D: React.FC<
   {
@@ -52,6 +53,8 @@ export const Visualization2D: React.FC<
   const focusedNodeId = useValue(instance.uiState.focusedNode);
   const nodeSelection = useValue(instance.uiState.nodeSelection);
   const wireFrameMode = useValue(instance.uiState.wireFrameMode);
+  const boxVisualiserEnabled = useValue(instance.uiState.boxVisualiserEnabled);
+  const [alignmentModeEnabled, setAlignmentModeEnabled] = useState(false);
 
   const [targetMode, setTargetMode] = useState<TargetModeState>({
     state: 'disabled',
@@ -76,6 +79,10 @@ export const Visualization2D: React.FC<
           selectedNode={nodeSelection?.node}
           setTargetMode={setTargetMode}
           targetMode={targetMode}
+          alignmentModeEnabled={alignmentModeEnabled}
+          setAlignmentModeEnabled={setAlignmentModeEnabled}
+          boxVisualiserEnabled={boxVisualiserEnabled}
+          setBoxVisualiserEnabled={instance.uiActions.onSetBoxVisualiserEnabled}
         />
       )}
       <Visualization2DContent
@@ -88,12 +95,14 @@ export const Visualization2D: React.FC<
         setTargetMode={setTargetMode}
         wireframeMode={wireFrameMode}
         nodeSelection={nodeSelection}
+        alignmentModeEnabled={alignmentModeEnabled}
+        boxVisualiserEnabled={boxVisualiserEnabled}
       />
     </Layout.Container>
   );
 };
 
-const horizontalPadding = 16; //allows space for vertical scroll bar
+const horizontalPadding = 8; //allows space for vertical scroll bar
 
 function Visualization2DContent({
   disableInteractivity,
@@ -105,10 +114,11 @@ function Visualization2DContent({
   setTargetMode,
   wireframeMode,
   nodeSelection,
+  alignmentModeEnabled,
+  boxVisualiserEnabled,
 }: {
   targetMode: TargetModeState;
   setTargetMode: (targetMode: TargetModeState) => void;
-
   wireframeMode: WireFrameMode;
   nodeSelection?: NodeSelection;
   focusState: FocusState;
@@ -116,14 +126,16 @@ function Visualization2DContent({
   snapshotNode: ClientNode;
   snapshotInfo: SnapshotInfo;
   disableInteractivity: boolean;
+  alignmentModeEnabled: boolean;
+  boxVisualiserEnabled: boolean;
 }) {
   const instance = usePlugin(plugin);
-  const hoveredNodes = useValue(instance.uiState.hoveredNodes);
-  const hoveredNodeId = head(hoveredNodes);
   const rootNodeRef = useRef<HTMLDivElement>();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const traversalMode = useValue(instance.uiState.traversalMode);
+
+  const referenceImage = useValue(instance.uiState.referenceImage);
 
   const measuredWidth = useMeasuredWidth(containerRef);
 
@@ -205,37 +217,13 @@ function Visualization2DContent({
     availableWidthConsideringPadding,
   );
 
-  const overlayCursor =
-    targetMode.state === 'disabled' ? 'pointer' : 'crosshair';
-
-  const onClickOverlay = () => {
-    const selectedNode = getNode(hoveredNodeId, nodes);
-    if (selectedNode != null) {
-      instance.uiActions.onSelectNode(selectedNode, 'visualiser');
-      instance.uiActions.ensureAncestorsExpanded(selectedNode.id);
-    } else {
-      instance.uiActions.onSelectNode(undefined, 'visualiser');
-    }
-
-    if (targetMode.state !== 'disabled') {
-      setTargetMode({
-        state: 'selected',
-        targetedNodes: filterOutFalsy(
-          hoveredNodes
-            .slice()
-            .reverse()
-            .map((n) => getNode(n, nodes)),
-        ),
-        sliderPosition: hoveredNodes.length - 1,
-      });
-    }
-  };
-
   return (
     <Layout.ScrollContainer
       ref={containerRef}
       style={{
         paddingLeft: horizontalPadding,
+        overflowY: 'scroll',
+        scrollbarWidth: 'thin',
       }}
       vertical>
       <div
@@ -264,28 +252,15 @@ function Visualization2DContent({
             height: toPx(focusState.actualRoot.bounds.height),
           } as React.CSSProperties
         }>
-        {hoveredNodeId != null && (
-          <DelayedHoveredToolTip
-            key={hoveredNodeId}
-            nodeId={hoveredNodeId}
-            nodes={nodes}>
-            <OverlayBorder
-              cursor={overlayCursor}
-              onClick={onClickOverlay}
-              nodeId={hoveredNodeId}
-              nodes={nodes}
-              type="hovered"
-            />
-          </DelayedHoveredToolTip>
-        )}
-        {nodeSelection != null && (
-          <OverlayBorder
-            cursor={overlayCursor}
-            type="selected"
-            nodeId={nodeSelection.node.id}
-            nodes={nodes}
-          />
-        )}
+        <VisualiserOverlays
+          nodes={nodes}
+          nodeSelection={nodeSelection}
+          targetMode={targetMode}
+          setTargetMode={setTargetMode}
+          snapshotNode={snapshotNode}
+          alignmentModeEnabled={alignmentModeEnabled}
+          boxVisualiserEnabled={boxVisualiserEnabled}
+        />
         <div
           ref={rootNodeRef as any}
           style={{
@@ -305,10 +280,22 @@ function Visualization2DContent({
             height: toPx(focusState.focusedRoot.bounds.height),
             overflow: 'hidden',
           }}>
-          {snapshotNode && (
+          <img
+            src={`data:image/png;base64,${snapshotInfo.data}`}
+            style={{
+              position: 'absolute',
+              marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
+              marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
+              width: toPx(snapshotNode.bounds.width),
+              height: toPx(snapshotNode.bounds.height),
+            }}
+          />
+          {referenceImage != null && (
             <img
-              src={'data:image/png;base64,' + snapshotInfo.data}
+              src={referenceImage.url}
               style={{
+                position: 'absolute',
+                opacity: referenceImage.opacity,
                 marginLeft: toPx(-focusState.focusedRootGlobalOffset.x),
                 marginTop: toPx(-focusState.focusedRootGlobalOffset.y),
                 width: toPx(snapshotNode.bounds.width),
@@ -316,7 +303,8 @@ function Visualization2DContent({
               }}
             />
           )}
-          <MemoedVisualizationNode2D
+
+          <MemoedVisualizationWireframeNode
             wireframeMode={wireframeMode}
             isSelectedOrChildOrSelected={false}
             selectedNodeId={nodeSelection?.node.id}
@@ -330,8 +318,8 @@ function Visualization2DContent({
   );
 }
 
-const MemoedVisualizationNode2D = React.memo(
-  Visualization2DNode,
+const MemoedVisualizationWireframeNode = React.memo(
+  VisualizationWireframeNode,
   (prev, next) => {
     if (prev.node != next.node || prev.wireframeMode != next.wireframeMode) {
       return false;
@@ -347,7 +335,7 @@ const MemoedVisualizationNode2D = React.memo(
   },
 );
 
-function Visualization2DNode({
+function VisualizationWireframeNode({
   wireframeMode,
   isSelectedOrChildOrSelected,
   selectedNodeId,
@@ -382,7 +370,7 @@ function Visualization2DNode({
   }
 
   const children = nestedChildren.map((child, index) => (
-    <Visualization2DNode
+    <VisualizationWireframeNode
       wireframeMode={wireframeMode}
       selectedNodeId={selectedNodeId}
       isSelectedOrChildOrSelected={isSelected || isSelectedOrChildOrSelected}
@@ -446,77 +434,6 @@ function Visualization2DNode({
   );
 }
 
-const DelayedHoveredToolTip: React.FC<{
-  nodeId: Id;
-  nodes: Map<Id, ClientNode>;
-  children: JSX.Element;
-}> = ({nodeId, nodes, children}) => {
-  const node = nodes.get(nodeId);
-
-  const isVisible = useDelay(longHoverDelay);
-
-  return (
-    <Tooltip
-      open={isVisible}
-      key={nodeId}
-      placement="top"
-      zIndex={100}
-      trigger={[]}
-      title={node?.name}
-      align={{
-        offset: [0, 7],
-      }}>
-      {children}
-    </Tooltip>
-  );
-};
-
-const OverlayBorder = styled.div<{
-  cursor: 'pointer' | 'crosshair';
-  type: 'selected' | 'hovered';
-  nodeId: Id;
-  nodes: Map<Id, ClientNode>;
-}>(({type, nodeId, nodes, cursor}) => {
-  const offset = getTotalOffset(nodeId, nodes);
-  const node = nodes.get(nodeId);
-  return {
-    zIndex: 100,
-    pointerEvents: type === 'selected' ? 'none' : 'auto',
-    cursor: cursor,
-    position: 'absolute',
-    top: toPx(offset.y),
-    left: toPx(offset.x),
-    width: toPx(node?.bounds?.width ?? 0),
-    height: toPx(node?.bounds?.height ?? 0),
-    boxSizing: 'border-box',
-    borderWidth: 3,
-    borderStyle: 'solid',
-    color: 'transparent',
-    borderColor:
-      type === 'selected' ? theme.primaryColor : theme.textColorPlaceholder,
-  };
-});
-
-/**
- * computes the x,y offset of a given node from the root of the visualization
- * in node coordinates
- */
-function getTotalOffset(id: Id, nodes: Map<Id, ClientNode>): Coordinate {
-  const offset = {x: 0, y: 0};
-  let curId: Id | undefined = id;
-
-  while (curId != null) {
-    const cur = nodes.get(curId);
-    if (cur != null) {
-      offset.x += cur.bounds.x;
-      offset.y += cur.bounds.y;
-    }
-    curId = cur?.parent;
-  }
-
-  return offset;
-}
-
 /**
  * this is the border that shows the green or blue line, it is implemented as a sibling to the
  * node itself so that it has the same size but the border doesnt affect the sizing of its children
@@ -535,13 +452,7 @@ const NodeBorder = styled.div({
   borderColor: theme.disabledColor,
 });
 
-const longHoverDelay = 500;
-const pxScaleFactorCssVar = '--pxScaleFactor';
 const MouseThrottle = 32;
-
-function toPx(n: number) {
-  return `calc(${n}px / var(${pxScaleFactorCssVar}))`;
-}
 
 function toNestedNode(
   rootId: Id,
@@ -578,7 +489,7 @@ function toNestedNode(
       ),
       bounds: node.bounds,
       tags: node.tags,
-      activeChildIdx: activeChildIdx,
+      activeChildIdx,
     };
   }
 
@@ -650,7 +561,14 @@ function hitTest(node: NestedNode, mouseCoordinate: Coordinate): NestedNode[] {
     let children = node.children;
 
     if (node.activeChildIdx != null) {
-      children = [node.children[node.activeChildIdx]];
+      const activeChild = node.children[node.activeChildIdx];
+      if (activeChild == null) {
+        console.error(
+          `[ui-debugger] activeChildIdx not found for ${node.name}: ${node.activeChildIdx} not within ${node.children.length}`,
+        );
+      } else {
+        children = [activeChild];
+      }
     }
     const offsetMouseCoord = offsetCoordinate(mouseCoordinate, nodeBounds);
     let anyChildHitRecursive = false;

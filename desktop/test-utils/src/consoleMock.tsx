@@ -29,7 +29,7 @@ function format(entry: any) {
 }
 
 function log(...msgs: any) {
-  process.stdout.write(msgs.map(format).join(' ') + '\n');
+  process.stdout.write(`${msgs.map(format).join(' ')}\n`);
 }
 
 export default {

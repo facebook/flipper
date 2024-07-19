@@ -46,6 +46,11 @@ export interface PluginClient<
   readonly appId: string;
 
   /**
+   * Identifier that uniquely identifies the application bundle
+   */
+  readonly bundleId: string;
+
+  /**
    * Registered name for the connected application
    */
   readonly appName: string;
@@ -126,6 +131,7 @@ export interface RealFlipperClient {
   connected: Atom<boolean>;
   query: {
     app: string;
+    app_id?: string;
     os: string;
     device: string;
     device_id: string;
@@ -193,6 +199,9 @@ export class SandyPluginInstance extends BasePluginInstance {
       },
       get appId() {
         return realClient.id;
+      },
+      get bundleId() {
+        return realClient.query.app_id ?? 'unknown';
       },
       get appName() {
         return realClient.query.app;
@@ -307,8 +316,8 @@ export class SandyPluginInstance extends BasePluginInstance {
 
   receiveMessages(messages: Message[]) {
     messages.forEach((message) => {
-      if (this.events.listenerCount('event-' + message.method) > 0) {
-        this.events.emit('event-' + message.method, message.params);
+      if (this.events.listenerCount(`event-${message.method}`) > 0) {
+        this.events.emit(`event-${message.method}`, message.params);
       } else {
         this.events.emit('unhandled-event', message.method, message.params);
       }

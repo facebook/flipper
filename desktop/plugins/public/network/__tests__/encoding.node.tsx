@@ -7,6 +7,8 @@
  * @format
  */
 
+import 'core-js/stable/structured-clone';
+import 'fake-indexeddb/auto';
 import {readFile} from 'fs';
 import {decodeBody, isTextual} from '../utils';
 import {ResponseInfo} from '../types';
@@ -195,14 +197,12 @@ test('binary data gets serialized correctly', async () => {
         value: 'text/plain',
       },
     ],
-    requestData: donatingExpected,
     responseHeaders: [
       {
         key: 'Content-Type',
         value: 'image/png',
       },
     ],
-    responseData: new Uint8Array(tinyLogoExpected),
   });
 
   const snapshot = await exportStateAsync();
@@ -255,8 +255,7 @@ test('binary data gets serialized correctly', async () => {
         value: 'text/plain',
       },
     ],
-    requestData: donatingExpected,
-    responseData: new Uint8Array(tinyLogoExpected),
+
     responseHeaders: [
       {
         key: 'Content-Type',
@@ -268,4 +267,8 @@ test('binary data gets serialized correctly', async () => {
     status: '200',
     url: 'http://www.fbflipper.com',
   });
+  const persistedRequestData2 = await instance2.db.getRequestData('0');
+  expect(persistedRequestData2).toEqual(donatingExpected);
+  const persistedResponseData2 = await instance2.db.getResponseData('0');
+  expect(persistedResponseData2).toEqual(new Uint8Array(tinyLogoExpected));
 });

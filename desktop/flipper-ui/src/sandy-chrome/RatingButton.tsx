@@ -132,7 +132,7 @@ class FeedbackComponent extends Component<
   };
   onSubmitRating(newRating: number) {
     const nextAction = newRating <= 2 ? 'leave-comment' : 'finished';
-    this.setState({rating: newRating, nextAction: nextAction});
+    this.setState({rating: newRating, nextAction});
     this.props.submitRating(newRating);
     if (nextAction === 'finished') {
       setTimeout(this.props.close, 5000);
@@ -233,7 +233,7 @@ class FeedbackComponent extends Component<
         ];
         break;
       default: {
-        console.error('Illegal state: nextAction: ' + this.state.nextAction);
+        console.error(`Illegal state: nextAction: ${this.state.nextAction}`);
         return null;
       }
     }

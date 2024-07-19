@@ -25,7 +25,7 @@ export async function openFile(path: string | null) {
   // Rather randomly chosen. Some FSs still reserve 8 bytes for empty files.
   // If this doesn't reliably catch "corrupt" files, you might want to increase this.
   if (fileStat.size <= 8) {
-    throw new Error('File seems to be (almost) empty: ' + path);
+    throw new Error(`File seems to be (almost) empty: ${path}`);
   }
 
   await open(path);

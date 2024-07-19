@@ -30,7 +30,7 @@ export const bookmarksToAutoCompleteProvider = (
     matchPatterns: new Map<string, URI>(),
   } as AutoCompleteProvider;
   bookmarks.forEach((bookmark, uri) => {
-    const matchPattern = bookmark.commonName + ' - ' + uri;
+    const matchPattern = `${bookmark.commonName} - ${uri}`;
     autoCompleteProvider.matchPatterns.set(matchPattern, uri);
   });
   return autoCompleteProvider;
@@ -44,8 +44,7 @@ export const appMatchPatternsToAutoCompleteProvider = (
     matchPatterns: new Map<string, URI>(),
   };
   appMatchPatterns.forEach((appMatchPattern) => {
-    const matchPattern =
-      appMatchPattern.className + ' - ' + appMatchPattern.pattern;
+    const matchPattern = `${appMatchPattern.className} - ${appMatchPattern.pattern}`;
     autoCompleteProvider.matchPatterns.set(
       matchPattern,
       appMatchPattern.pattern,

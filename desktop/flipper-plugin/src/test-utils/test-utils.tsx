@@ -108,6 +108,9 @@ export function createMockFlipperLib(options?: StartPluginOptions): FlipperLib {
       currentUser: () => createState(null),
       isConnected: () => createState(true),
     },
+    runDeviceAction: () => {
+      return undefined as any;
+    },
     remoteServerContext: {
       childProcess: {
         exec: createStubFunction(),
@@ -368,6 +371,7 @@ export function startPlugin<Module extends FlipperPluginModule<any>>(
     plugins: new Set([definition.id]),
     query: {
       app: appName,
+      app_id: `com.facebook.flipper.${appName}`,
       device: deviceName,
       device_id: testDevice.serial,
       os: testDevice.serial,
@@ -578,7 +582,7 @@ function createBasePluginResult(
     triggerMenuEntry: (action: string) => {
       const entry = pluginInstance.menuEntries.find((e) => e.action === action);
       if (!entry) {
-        throw new Error('No menu entry found with action: ' + action);
+        throw new Error(`No menu entry found with action: ${action}`);
       }
       entry.handler();
     },
@@ -703,7 +707,7 @@ export function createStubFlipperServerConfig(): FlipperServerConfig {
       desktopPath: `/dev/null`,
       execPath: '/exec',
       homePath: `/dev/null`,
-      staticPath: rootPath + '/static',
+      staticPath: `${rootPath}/static`,
       tempPath: '/temp',
     },
     processConfig: {

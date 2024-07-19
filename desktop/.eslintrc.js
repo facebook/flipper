@@ -106,11 +106,13 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     'react/jsx-key': 'error',
+    'prefer-template': 'error',
     'no-new': 0, // new keyword needed e.g. new Notification
     'no-catch-shadow': 0, // only relevant for IE8 and below
     'no-bitwise': 0, // bitwise operations needed in some places
     'consistent-return': 0,
     'no-var': 2,
+    'object-shorthand': ['error', 'properties'],
     'prefer-const': [2, {destructuring: 'all'}],
     'prefer-spread': 1,
     'prefer-rest-params': 1,

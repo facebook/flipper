@@ -80,6 +80,9 @@ describe('BrowserServerWebSocket', () => {
       device,
       os,
       app,
+      // FIXME
+      // app_id: `com.facebook.flipper.${app}`,
+      app_id: undefined,
       sdk_version: sdkVersion,
       medium: 'NONE',
     };
@@ -182,6 +185,9 @@ describe('BrowserServerWebSocket', () => {
       device,
       os: 'MacOS',
       app: device,
+      // FIXME
+      // app_id: `com.facebook.flipper.${device}`,
+      app_id: undefined,
       sdk_version: 4,
       medium: 'NONE',
     };

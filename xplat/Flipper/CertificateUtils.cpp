@@ -17,6 +17,7 @@
 #include <openssl/rsa.h>
 #include <openssl/x509.h>
 #include <stdio.h>
+#include <array>
 #include <cstring>
 #include <stdexcept>
 
@@ -406,6 +407,87 @@ void generateCertPKCS12_free(
   EVP_PKEY_free(pKey);
   sk_X509_free(cacertstack);
   PKCS12_free(pkcs12bundle);
+}
+
+#define AES_BLOCK_SIZE 16
+#define AES_BUFFER_SIZE 4096
+bool AESDecrypt(
+    const char* encryptedFilePath,
+    const char* decryptedFilePath,
+    const unsigned char* key) {
+  std::array<unsigned char, AES_BLOCK_SIZE> iv;
+  std::array<unsigned char, AES_BUFFER_SIZE> decrypted;
+  std::array<unsigned char, AES_BUFFER_SIZE> encrypted;
+
+  EVP_CIPHER_CTX* ctx;
+
+  int length;
+  int plaintextLength;
+  int encryptedLength;
+
+  FILE* encryptedFile = fopen(encryptedFilePath, "rb");
+  if (!encryptedFile) {
+    return false;
+  }
+  FILE* decryptedFile = fopen(decryptedFilePath, "wb");
+
+  auto cleanup = [&encryptedFile, &decryptedFile]() {
+    fclose(encryptedFile);
+    fclose(decryptedFile);
+  };
+
+  // Read the IV from the beginning of the file.
+  if (fread(iv.data(), 1, AES_BLOCK_SIZE, encryptedFile) != AES_BLOCK_SIZE) {
+    cleanup();
+    return false;
+  }
+
+  if (!(ctx = EVP_CIPHER_CTX_new())) {
+    cleanup();
+    return false;
+  }
+
+  auto extendedCleanup = [&ctx, &cleanup]() {
+    EVP_CIPHER_CTX_free(ctx);
+    cleanup();
+  };
+
+  if (1 !=
+      EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), nullptr, key, iv.data())) {
+    extendedCleanup();
+    return false;
+  }
+
+  EVP_CIPHER_CTX_set_padding(ctx, 0);
+
+  while ((encryptedLength =
+              fread(encrypted.data(), 1, AES_BUFFER_SIZE, encryptedFile)) > 0) {
+    if (1 !=
+        EVP_DecryptUpdate(
+            ctx,
+            decrypted.data(),
+            &length,
+            encrypted.data(),
+            encryptedLength)) {
+      extendedCleanup();
+      return false;
+    }
+
+    plaintextLength = length;
+    fwrite(decrypted.data(), 1, plaintextLength, decryptedFile);
+  }
+
+  if (1 != EVP_DecryptFinal_ex(ctx, decrypted.data() + length, &length)) {
+    extendedCleanup();
+    return false;
+  }
+
+  plaintextLength += length;
+  fwrite(decrypted.data(), 1, plaintextLength, decryptedFile);
+
+  extendedCleanup();
+
+  return true;
 }
 
 } // namespace flipper

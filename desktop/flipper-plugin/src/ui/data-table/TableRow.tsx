@@ -14,7 +14,7 @@ import {DataTableColumn, TableRowRenderContext} from './DataTable';
 import {Width} from '../../utils/widthUtils';
 import {DataFormatter} from '../DataFormatter';
 import {Dropdown} from 'antd';
-import {contextMenuTrigger} from '../data-inspector/DataInspectorNode';
+
 import {getValueAtPath} from './DataTableManager';
 import {HighlightManager, useHighlighter} from '../Highlight';
 
@@ -146,7 +146,7 @@ export const TableRow = memo(function TableRow<T extends object>({
   );
   if (config.onContextMenu) {
     return (
-      <Dropdown overlay={config.onContextMenu} trigger={contextMenuTrigger}>
+      <Dropdown overlay={config.onContextMenu} trigger={['contextMenu']}>
         {row}
       </Dropdown>
     );

@@ -29,7 +29,9 @@ android {
         implementation project(':android')
         implementation "androidx.compose.ui:ui:$COMPOSE_VERSION"
         implementation "androidx.compose.ui:ui-tooling:$COMPOSE_VERSION"
+        implementation "androidx.compose.ui:ui-tooling-data:$COMPOSE_VERSION"
         implementation "org.jetbrains.kotlin:kotlin-reflect:$KOTLIN_VERSION"
+        implementation "androidx.collection:collection-ktx:1.4.0"
         implementation project(':inspection-lib')
         implementation deps.soloader
     }

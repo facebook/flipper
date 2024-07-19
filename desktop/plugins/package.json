@@ -9,7 +9,8 @@
   "devDependencies": {
     "fs-extra": "^9.0.1",
     "p-map": "^4.0.0",
-    "promisify-child-process": "^4.1.1"
+    "promisify-child-process": "^4.1.1",
+    "tsx": "^4.16.2"
   },
   "peerDependencies": {
     "@ant-design/icons": "*",
@@ -24,6 +25,6 @@
     "react-dom": "*"
   },
   "scripts": {
-    "postinstall": "cd .. && ./ts-node ./plugins/postinstall.tsx"
+    "postinstall": "tsx postinstall.tsx"
   }
 }

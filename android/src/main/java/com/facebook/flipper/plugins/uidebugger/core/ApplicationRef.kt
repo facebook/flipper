@@ -20,7 +20,6 @@ class ApplicationRef(val application: Application) {
   // the root view resolver will at least find the decor view, this is the case for various
   // kinds of custom overlays
   // 2. Dialog fragments
-  val rootsResolver: RootViewResolver = RootViewResolver()
   val windowManagerUtility = WindowManagerUtility()
   val activitiesStack: List<Activity>
     get() {

@@ -9,10 +9,12 @@ package com.facebook.flipper.plugins.uidebugger.descriptors
 
 import com.facebook.flipper.core.FlipperDynamic
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.BoxData
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.Metadata
 import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
+import java.lang.IllegalStateException
 import kotlinx.serialization.json.JsonObject
 
 /*
@@ -59,6 +61,8 @@ interface NodeDescriptor<T> {
   /** The children this node exposes in the inspector. */
   fun getChildren(node: T): List<Any>
 
+  fun getBoxData(node: T): BoxData? = null
+
   /**
    * If you have overlapping children this indicates which child is active / on top, we will only
    * listen to / traverse this child. If return null we assume all children are 'active'
@@ -68,9 +72,34 @@ interface NodeDescriptor<T> {
   /**
    * Get the attribute to show for this node in the sidebar of the inspector. The object first level
    * is a section and subsequent objects within are the first level of that section. Nested objects
-   * will nest in the sidebar
+   * will nest in the sidebar.
+   *
+   * You have to implement only one of [getAttributes(T)] or [getAttributes(T, boolean)] methods. If
+   * you don't need to support Nodes that can request additional data then use this variant,
+   * otherwise use [getAttributes(T, boolean)].
    */
-  fun getAttributes(node: T): MaybeDeferred<Map<MetadataId, InspectableObject>>
+  fun getAttributes(node: T): MaybeDeferred<Map<MetadataId, InspectableObject>> {
+    throw IllegalStateException(
+        "One of the getAttributes methods must be implemented by the NodeDescriptor.")
+  }
+
+  /**
+   * Get the attribute to show for this node in the sidebar of the inspector. The object first level
+   * is a section and subsequent objects within are the first level of that section. Nested objects
+   * will nest in the sidebar.
+   *
+   * This is a more advanced version of [getAttributes(T)] that allows for telling Flipper that some
+   * of the attributes can be computed on demand. When [shouldGetAdditionalData] is true then this
+   * method should perform the expensive computation on the attributes, if it's false then it
+   * shouldn't. If any attribute is expensive to compute then this method should return
+   * [AttributesInfo.hasAdditionalData] set to true which will result in showing some extra UI to be
+   * in the sidebar of the UI Debugger in Flipper Desktop app.
+   */
+  fun getAttributes(node: T, shouldGetAdditionalData: Boolean): MaybeDeferred<AttributesInfo> {
+    return getAttributes(node).map {
+      AttributesInfo(attributeSections = it, hasAdditionalData = false)
+    }
+  }
 
   /**
    * Set of tags to describe this node in an abstract way for the UI Unfortunately this can't be an
@@ -93,6 +122,11 @@ interface NodeDescriptor<T> {
       hint: CompoundTypeHint?
   ) {}
 }
+
+data class AttributesInfo(
+    val attributeSections: Map<MetadataId, InspectableObject>,
+    val hasAdditionalData: Boolean
+)
 
 enum class CompoundTypeHint {
   TOP,

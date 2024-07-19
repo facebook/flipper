@@ -16,7 +16,7 @@
 
 package facebook.internal.androidx.compose.ui.inspection.inspector
 
-import facebook.internal.androidx.compose.ui.inspection.util.asIntArray
+import androidx.collection.IntList
 
 /**
  * A reference to a parameter to a [NodeParameter]
@@ -33,16 +33,8 @@ class NodeParameterReference(
     val anchorId: Int,
     val kind: ParameterKind,
     val parameterIndex: Int,
-    val indices: IntArray
+    val indices: IntList
 ) {
-  constructor(
-      nodeId: Long,
-      anchorId: Int,
-      kind: ParameterKind,
-      parameterIndex: Int,
-      indices: List<Int>
-  ) : this(nodeId, anchorId, kind, parameterIndex, indices.asIntArray())
-
   // For testing:
   override fun toString(): String {
     val suffix = if (indices.isNotEmpty()) ", ${indices.joinToString()}" else ""

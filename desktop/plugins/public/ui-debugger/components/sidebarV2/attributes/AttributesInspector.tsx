@@ -53,6 +53,7 @@ import {
 import {StyledTextArea} from './TextInput';
 import {ColorInspector} from './ColorInput';
 import {SelectInput} from './SelectInput';
+import {MultiSelectableDropDownItem} from '../../shared/MultiSelectableDropDownItem';
 
 type ModalData = {
   data: unknown;
@@ -77,6 +78,7 @@ export function AttributesInspector({
   node: ClientNode;
   metadata: MetadataMap;
 }) {
+  const instance = usePlugin(plugin);
   const [modalData, setModalData] = useState<ModalData | null>(null);
 
   const [attributeFilter, setAttributeFilter] = useLocalStorageState(
@@ -143,6 +145,21 @@ export function AttributesInspector({
           placeholder="Filter attributes"
           prefix={<SearchOutlined />}
         />
+        {node.additionalDataCollection != null && (
+          <MultiSelectableDropDownItem
+            text="Collect additional data"
+            value={node.id}
+            selectedValues={
+              new Set(node.additionalDataCollection ? [node.id] : [])
+            }
+            onSelect={(_, selected) =>
+              instance.onAdditionalDataCollectionChanged(
+                node.id,
+                selected ? 'Add' : 'Remove',
+              )
+            }
+          />
+        )}
 
         {sections.length === 0 ? (
           <NoData message="No attributes match filter " />
@@ -217,7 +234,7 @@ function AttributeSection(
         if (attributeValue.type === 'object') {
           return (
             <SubSection
-              key={'subsection_' + attributeName}
+              key={`subsection_${attributeName}`}
               nodeId={nodeId}
               onDisplayModal={onDisplayModal}
               attributeName={attributeName}

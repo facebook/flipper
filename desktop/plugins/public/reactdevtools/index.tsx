@@ -257,15 +257,15 @@ export function devicePlugin(client: DevicePluginClient<Events, Methods>) {
 
       startPollForConnection();
     } catch (e) {
-      console.error('Failed to initalize React DevTools' + e);
-      setStatus(ConnectionStatus.Error, 'Failed to initialize DevTools: ' + e);
+      console.error(`Failed to initalize React DevTools${e}`);
+      setStatus(ConnectionStatus.Error, `Failed to initialize DevTools: ${e}`);
     }
   }
 
   function setStatus(cs: ConnectionStatus, status: string) {
     connectionStatus.set(cs);
     if (status.startsWith('The server is listening on')) {
-      statusMessage.set(status + ' Waiting for connection...');
+      statusMessage.set(`${status} Waiting for connection...`);
     } else {
       statusMessage.set(status);
     }

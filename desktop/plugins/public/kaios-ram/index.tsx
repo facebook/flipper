@@ -177,11 +177,11 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
           if (name !== 'b2g') {
             const ussString = fields[appInfoSectionFieldToIndex['USS']];
             const uss = ussString ? parseFloat(ussString) : -1;
-            appInfoData[name + ' USS'] = uss;
+            appInfoData[`${name} USS`] = uss;
           } else {
             const rssString = fields[appInfoSectionFieldToIndex['RSS']];
             const rss = rssString ? parseFloat(rssString) : -1;
-            appInfoData[name + ' RSS'] = rss;
+            appInfoData[`${name} RSS`] = rss;
           }
         }
         if (line.startsWith('NAME')) {

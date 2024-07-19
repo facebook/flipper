@@ -28,7 +28,6 @@ import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
 import {Dialog, getFlipperLib, Idler} from 'flipper-plugin';
 import {ClientQuery} from 'flipper-common';
-import ShareSheetExportUrl from '../chrome/ShareSheetExportUrl';
 import ShareSheetExportFile from '../chrome/ShareSheetExportFile';
 import ExportDataPluginSheet from '../chrome/ExportDataPluginSheet';
 import {exportLogs} from '../chrome/ConsoleLogs';
@@ -171,7 +170,7 @@ async function exportSandyPluginStates(
           .get(pluginId)!
           .exportState(idler, statusUpdate);
       } catch (error) {
-        console.error('Error while serializing plugin ' + pluginId, error);
+        console.error(`Error while serializing plugin ${pluginId}`, error);
         throw new Error(`Failed to serialize plugin ${pluginId}: ${error}`);
       }
     }
@@ -205,7 +204,7 @@ async function addSaltToDeviceSerial({
   devicePluginStates,
 }: AddSaltToDeviceSerialOptions): Promise<ExportType> {
   const {serial} = device;
-  const newSerial = salt + '-' + serial;
+  const newSerial = `${salt}-${serial}`;
   const newDevice = new ArchivedDevice({
     serial: newSerial,
     deviceType: device.deviceType,
@@ -252,7 +251,7 @@ async function addSaltToDeviceSerial({
     flipperReleaseRevision: revision,
     clients: updatedClients,
     device: {...newDevice.toJSON(), pluginStates: devicePluginStates},
-    deviceScreenshot: deviceScreenshot,
+    deviceScreenshot,
     store: {
       activeNotifications: updatedPluginNotifications,
     },
@@ -456,7 +455,7 @@ async function getStoreExport(
 
 export async function exportStore(
   store: MiddlewareAPI,
-  includeSupportDetails?: boolean,
+  _includeSupportDetails?: boolean,
   idler: Idler = new TestIdler(true),
   statusUpdate: (msg: string) => void = () => {},
 ): Promise<{
@@ -755,23 +754,12 @@ export async function startFileExport(dispatch: Store['dispatch']) {
   ));
 }
 
-export async function startLinkExport(dispatch: Store['dispatch']) {
-  const plugins = await selectPlugins();
-  if (plugins === false) {
-    return; // cancelled
-  }
-  // TODO: no need to put this in the store,
-  // need to be cleaned up later in combination with SupportForm
-  dispatch(selectedPlugins(plugins));
-  Dialog.showModal((onHide) => (
-    <ShareSheetExportUrl onHide={onHide} logger={getLogger()} />
-  ));
-}
-
 async function selectPlugins() {
   return await Dialog.select<string[]>({
     title: 'Select plugins to export',
     defaultValue: [],
+    onValidate: (plugins) =>
+      plugins.length === 0 ? 'Please select at least one plugin.' : '',
     renderer: (value, onChange, onCancel) => (
       <ExportDataPluginSheet
         onHide={onCancel}

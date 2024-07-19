@@ -44,7 +44,7 @@ export function createMockDownloadablePluginDetails(
   const name = params.name || `flipper-plugin-${lowercasedID}`;
   const details: DownloadablePluginDetails = {
     name: name || `flipper-plugin-${lowercasedID}`,
-    id: id,
+    id,
     buildId,
     bugs: {
       email: 'bugs@localhost',
@@ -63,9 +63,9 @@ export function createMockDownloadablePluginDetails(
     specVersion: 2,
     pluginType: 'client',
     title: title ?? id,
-    version: version,
+    version,
     downloadUrls: [`http://localhost/${lowercasedID}/${version}`],
-    lastUpdated: lastUpdated,
+    lastUpdated,
     isActivatable: false,
     isEnabledByDefault: false,
   };

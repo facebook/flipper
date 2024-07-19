@@ -45,21 +45,27 @@ test('additional context menu items are rendered', async () => {
       data={json}
       expandRoot
       additionalContextMenuItems={(parentPath, value, name) => {
-        return [
-          <Menu.Item key="test">
-            path={[...parentPath, name].join('->')}
-          </Menu.Item>,
-        ];
+        const path = [...parentPath, name].join('->');
+        return [<Menu.Item key="test">path={path}</Menu.Item>];
       }}
     />,
   );
 
   expect(await res.queryByText('path=data')).toBeFalsy;
-  fireEvent.contextMenu(await res.findByText(/data/), {});
-  expect(await res.findByText('path=data')).toBeTruthy;
+  const dataContainer = await res.findByText(/data/);
+  fireEvent.mouseEnter(dataContainer, {});
+  fireEvent.contextMenu(dataContainer, {});
+
+  const contextItem = await res.findByText('path=data');
+  expect(contextItem).toBeTruthy;
+  fireEvent.click(contextItem);
+  expect(await res.queryByText('path=data')).toBeFalsy;
+  fireEvent.mouseLeave(dataContainer, {});
 
   //try on a nested element
-  fireEvent.contextMenu(await res.findByText(/awesomely/), {});
+  const awesomely = await res.findByText(/awesomely/);
+  fireEvent.mouseEnter(awesomely, {});
+  fireEvent.contextMenu(awesomely, {});
   expect(await res.findByText('path=data->is->awesomely')).toBeTruthy;
 });
 

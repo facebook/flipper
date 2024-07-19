@@ -139,13 +139,13 @@ export function tableContextMenuFactory<T extends object>(
         disabled={!hasSelection}>
         {visibleColumns.map((column, idx) => (
           <Item
-            key={'copy cell' + (column.key ?? idx)}
+            key={`copy cell${column.key ?? idx}`}
             onClick={() => {
               const items = getSelectedItems(dataView, selection);
               if (items.length) {
                 lib.writeTextToClipboard(
                   items
-                    .map((item) => '' + getValueAtPath(item, column.key))
+                    .map((item) => `${getValueAtPath(item, column.key)}`)
                     .join('\n'),
                 );
               }
@@ -157,7 +157,7 @@ export function tableContextMenuFactory<T extends object>(
       <Menu.Divider />
       <SubMenu title="Visible columns" key="visible columns">
         {columns.map((column, idx) => (
-          <Menu.Item key={'visible column ' + (column.key ?? idx)}>
+          <Menu.Item key={`visible column ${column.key ?? idx}`}>
             <Checkbox
               checked={column.visible}
               onClick={(e) => {
@@ -228,7 +228,7 @@ export function tableContextMenuFactory<T extends object>(
               onChange={(color: string) => {
                 dispatch({
                   type: 'setSearchHighlightColor',
-                  color: color,
+                  color,
                 });
               }}>
               {Object.entries(theme.searchHighlightBackground).map(
@@ -284,17 +284,13 @@ function defaultOnCopyRows<T extends object>(
   items: T[],
   visibleColumns: DataTableColumn<T>[],
 ) {
-  return (
-    visibleColumns.map(friendlyColumnTitle).join('\t') +
-    '\n' +
-    items
-      .map((row, idx) =>
-        visibleColumns
-          .map((col) => textContent(renderColumnValue(col, row, true, idx)))
-          .join('\t'),
-      )
-      .join('\n')
-  );
+  return `${visibleColumns.map(friendlyColumnTitle).join('\t')}\n${items
+    .map((row, idx) =>
+      visibleColumns
+        .map((col) => textContent(renderColumnValue(col, row, true, idx)))
+        .join('\t'),
+    )
+    .join('\n')}`;
 }
 
 function rowsToJson<T>(items: T[]) {

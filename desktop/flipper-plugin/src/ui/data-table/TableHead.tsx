@@ -43,19 +43,16 @@ function SortIcons({
           e.stopPropagation();
           onSort(direction === 'asc' ? undefined : 'asc');
         }}
-        className={
-          'ant-table-column-sorter-up ' + (direction === 'asc' ? 'active' : '')
-        }
+        className={`ant-table-column-sorter-up ${direction === 'asc' ? 'active' : ''}`}
       />
       <CaretDownFilled
         onClick={(e) => {
           e.stopPropagation();
           onSort(direction === 'desc' ? undefined : 'desc');
         }}
-        className={
-          'ant-table-column-sorter-down ' +
-          (direction === 'desc' ? 'active' : '')
-        }
+        className={`ant-table-column-sorter-down ${
+          direction === 'desc' ? 'active' : ''
+        }`}
       />
     </SortIconsContainer>
   );

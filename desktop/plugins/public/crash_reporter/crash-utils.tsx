@@ -18,7 +18,7 @@ function truncate(baseString: string, numOfChars: number): string {
     return baseString;
   }
   const truncated_string = unicodeSubstring(baseString, 0, numOfChars - 1);
-  return truncated_string + '\u2026';
+  return `${truncated_string}\u2026`;
 }
 
 function trimCallStackIfPossible(callstack: string): string {
@@ -38,11 +38,11 @@ export function showCrashNotification(
     return;
   }
 
-  let title: string = 'CRASH: ' + truncate(crash.name || crash.reason, 50);
+  let title: string = `CRASH: ${truncate(crash.name || crash.reason, 50)}`;
   title = `${
     crash.name == crash.reason
       ? title
-      : title + 'Reason: ' + truncate(crash.reason, 50)
+      : `${title}Reason: ${truncate(crash.reason, 50)}`
   }`;
   const callstack = crash.callstack
     ? trimCallStackIfPossible(crash.callstack)
@@ -53,7 +53,7 @@ export function showCrashNotification(
     id: crash.notificationID,
     message: msg,
     severity: 'error',
-    title: title,
+    title,
     action: crash.notificationID,
     category: crash.reason || 'Unknown reason',
   });

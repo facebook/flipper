@@ -54,7 +54,8 @@ class AttributeEditor(
 
     val stack = mutableListOf<Any>(applicationRef)
     while (stack.isNotEmpty()) {
-      val curNode = stack.removeLast()
+      // Workaround for a JDK21/Kotlin bug, see KT-66044
+      val curNode = checkNotNull(stack.removeLastOrNull())
       val curDescriptor = descriptorRegister.descriptorForClassUnsafe(curNode.javaClass)
       if (curDescriptor.getId(curNode) == nodeId) {
         return curNode

@@ -21,6 +21,7 @@ import com.facebook.flipper.plugins.uidebugger.litho.LithoTag
 import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.ComponentDataExtractor
 import com.facebook.flipper.plugins.uidebugger.litho.descriptors.props.LayoutPropExtractor
 import com.facebook.flipper.plugins.uidebugger.model.Bounds
+import com.facebook.flipper.plugins.uidebugger.model.BoxData
 import com.facebook.flipper.plugins.uidebugger.model.Inspectable
 import com.facebook.flipper.plugins.uidebugger.model.InspectableObject
 import com.facebook.flipper.plugins.uidebugger.model.InspectableValue
@@ -29,7 +30,6 @@ import com.facebook.flipper.plugins.uidebugger.model.MetadataId
 import com.facebook.flipper.plugins.uidebugger.util.Deferred
 import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentTree
 import com.facebook.litho.DebugComponent
 import com.facebook.litho.DebugLayoutNodeEditor
 import com.facebook.litho.StateContainer
@@ -40,6 +40,7 @@ import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.rendercore.FastMath
 import com.facebook.yoga.YogaEdge
 import java.lang.reflect.Modifier
+import kotlinx.serialization.json.JsonObject
 
 typealias GlobalKey = String
 
@@ -60,6 +61,32 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
 
   override fun getQualifiedName(node: com.facebook.litho.DebugComponent): String =
       node.component::class.qualifiedName ?: ""
+
+  override fun getBoxData(node: DebugComponent): BoxData? {
+    val layoutNode = node.layoutNode ?: return null
+    val margin =
+        listOf<Float>(
+            layoutNode.getLayoutMargin(YogaEdge.LEFT),
+            layoutNode.getLayoutMargin(YogaEdge.RIGHT),
+            layoutNode.getLayoutMargin(YogaEdge.TOP),
+            layoutNode.getLayoutMargin(YogaEdge.BOTTOM))
+
+    val border =
+        listOf<Float>(
+            layoutNode.getLayoutBorderWidth(YogaEdge.LEFT),
+            layoutNode.getLayoutBorderWidth(YogaEdge.RIGHT),
+            layoutNode.getLayoutBorderWidth(YogaEdge.TOP),
+            layoutNode.getLayoutBorderWidth(YogaEdge.BOTTOM))
+
+    val padding =
+        listOf<Float>(
+            layoutNode.getLayoutPadding(YogaEdge.LEFT),
+            layoutNode.getLayoutPadding(YogaEdge.RIGHT),
+            layoutNode.getLayoutPadding(YogaEdge.TOP),
+            layoutNode.getLayoutPadding(YogaEdge.BOTTOM))
+
+    return BoxData(margin, border, padding)
+  }
 
   override fun getChildren(node: DebugComponent): List<Any> {
     val result = mutableListOf<Any>()
@@ -221,8 +248,7 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
       Bounds.fromRect(node.boundsInParentDebugComponent)
 
   override fun getTags(node: DebugComponent): Set<String> {
-    val tags = mutableSetOf(LithoTag)
-
+    val tags: MutableSet<String> = mutableSetOf(LithoTag)
     if (node.component.mountType != Component.MountType.NONE) {
       tags.add(LithoMountableTag)
     }
@@ -252,23 +278,23 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
     }
 
     val mountState = lithoView.mountDelegateTarget
-    val componentTree = lithoView.componentTree ?: return mountingData
+    val layoutState = lithoView.currentLayoutState ?: return mountingData
 
     val component = node.component
 
     if (component.mountType != Component.MountType.NONE) {
-      val renderUnit = DebugComponent.getRenderUnit(node, componentTree)
+      val renderUnit = DebugComponent.getRenderUnit(node, layoutState)
       if (renderUnit != null) {
         val renderUnitId = renderUnit.id
         val isMounted = mountState.getContentById(renderUnitId) != null
         mountingData[isMountedAttributeId] = InspectableValue.Boolean(isMounted)
-        isExcludedFromIncrementalMount(node, componentTree)?.let {
-          mountingData[excludeFromIncrementalMountAttributeId] = InspectableValue.Boolean(it)
-        }
+        mountingData[excludeFromIncrementalMountAttributeId] =
+            InspectableValue.Boolean(
+                DebugComponent.isExcludedFromIncrementalMount(node, layoutState))
       }
     }
 
-    val visibilityOutput = DebugComponent.getVisibilityOutput(node, componentTree)
+    val visibilityOutput = DebugComponent.getVisibilityOutput(node, layoutState)
     if (visibilityOutput != null) {
       val isVisible = DebugComponent.isVisible(node, lithoView)
       mountingData[isVisibleAttributeId] = InspectableValue.Boolean(isVisible)
@@ -277,25 +303,7 @@ class DebugComponentDescriptor(val register: DescriptorRegister) : NodeDescripto
     return mountingData
   }
 
-  private fun isExcludedFromIncrementalMount(
-      node: DebugComponent,
-      componentTree: ComponentTree
-  ): Boolean? {
-    return try {
-      // TODO: T174494880 Remove reflection approach once litho-oss releases new version. When
-      // ready, just replace by DebugComponent.isExcludedFromIncrementalMount(node, componentTree)
-      val debugComponentClass = DebugComponent::class.java
-      val isExcludedFromIncrementalMountMethod =
-          debugComponentClass.getDeclaredMethod(
-              "isExcludedFromIncrementalMount",
-              DebugComponent::class.java,
-              ComponentTree::class.java)
-      isExcludedFromIncrementalMountMethod.invoke(null, node, componentTree) as? Boolean
-    } catch (exception: Exception) {
-      // Reflection is really brittle and we don't want to break the UI Debugger in that case.
-      null
-    }
-  }
+  override fun getHiddenAttributes(node: DebugComponent): JsonObject? = null
 
   class OverrideData(
       val metadataPath: List<Metadata>,

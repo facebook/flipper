@@ -23,13 +23,19 @@ import facebook.internal.androidx.compose.ui.inspection.inspector.LayoutInspecto
 import java.io.IOException
 
 object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() {
-  private val recompositionHandler by lazy {
-    RecompositionHandler(DefaultArtTooling("Flipper")).apply {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        attachJvmtiAgent()
-        startTrackingRecompositions(this)
+
+  @RequiresApi(Build.VERSION_CODES.Q) internal val layoutInspector = LayoutInspectorTree()
+
+  private val recompositionHandler =
+      RecompositionHandler(DefaultArtTooling("Flipper")).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          attachJvmtiAgent()
+          startTrackingRecompositions(this)
+        }
       }
-    }
+
+  fun resetRecompositionCounts() {
+    recompositionHandler.changeCollectionMode(startCollecting = true, keepCounts = false)
   }
 
   override fun onGetName(node: AbstractComposeView): String = node.javaClass.simpleName
@@ -51,6 +57,13 @@ object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() 
   }
 
   override fun onGetChildren(node: AbstractComposeView): List<Any> {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      return listOf(
+          WarningMessage(
+              "Flipper Compose Plugin works only on devices with Android Q (API 29) and above.",
+              getBounds(node)))
+    }
+
     val children = mutableListOf<Any>()
     val count = node.childCount - 1
     for (i in 0..count) {
@@ -58,9 +71,16 @@ object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() 
       children.add(child)
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val layoutInspector = LayoutInspectorTree()
-        layoutInspector.hideSystemNodes = true
-        val composeNodes = transform(child, layoutInspector.convert(child), layoutInspector)
+        layoutInspector.resetAccumulativeState()
+        val composeNodes =
+            try {
+              transform(child, layoutInspector.convert(child), layoutInspector)
+            } catch (t: Throwable) {
+              listOf(
+                  WarningMessage(
+                      "Unknown error occurred while trying to inspect compose node: ${t.message}",
+                      getBounds(node)))
+            }
         return if (composeNodes.isNullOrEmpty()) {
           listOf(
               WarningMessage(

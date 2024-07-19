@@ -44,6 +44,6 @@ function getChangelogPath() {
   if (fs.existsSync(changelogPath)) {
     return changelogPath;
   } else {
-    throw new Error('Changelog path path does not exist: ' + changelogPath);
+    throw new Error(`Changelog path path does not exist: ${changelogPath}`);
   }
 }

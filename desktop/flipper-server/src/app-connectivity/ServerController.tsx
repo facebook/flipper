@@ -18,14 +18,20 @@ import {
   reportPlatformFailures,
   FlipperServerEvents,
   ConnectionRecordEntry,
+  uuid,
 } from 'flipper-common';
-import CertificateProvider from './certificate-exchange/CertificateProvider';
+import CertificateProvider, {
+  CertificateExchangeRequestResult,
+} from './certificate-exchange/CertificateProvider';
 import {ClientConnection, ConnectionStatus} from './ClientConnection';
 import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import DummyDevice from '../devices/DummyDevice';
 import {appNameWithUpdateHint, assertNotNull} from './Utilities';
-import ServerWebSocketBase, {ServerEventsListener} from './ServerWebSocketBase';
+import ServerWebSocketBase, {
+  CertificateExchangeRequestResponse,
+  ServerEventsListener,
+} from './ServerWebSocketBase';
 import {
   createBrowserServer,
   createServer,
@@ -44,6 +50,7 @@ import DesktopCertificateProvider from '../devices/desktop/DesktopCertificatePro
 import WWWCertificateProvider from '../fb-stubs/WWWCertificateProvider';
 import {tracker} from '../tracker';
 import {recorder} from '../recorder';
+import GK from '../fb-stubs/GK';
 
 type ClientTimestampTracker = {
   insecureStart?: number;
@@ -89,7 +96,6 @@ export class ServerController
 
     recorder.enable(flipperServer);
   }
-
   onClientMessage(clientId: string, payload: string): void {
     this.flipperServer.emit('client-message', {
       id: clientId,
@@ -165,6 +171,7 @@ export class ServerController
   ): Promise<ClientDescription> {
     const {
       app,
+      app_id,
       os,
       device,
       device_id,
@@ -188,6 +195,7 @@ export class ServerController
       clientConnection,
       {
         app,
+        app_id,
         os,
         device,
         device_id,
@@ -260,13 +268,15 @@ export class ServerController
       clearTimeout(timeout);
     }
 
-    if (clientQuery.medium === 'WWW' || clientQuery.medium === 'NONE') {
+    const device = this.flipperServer.getDeviceWithSerial(
+      clientQuery.device_id,
+    );
+    if (!device) {
       this.flipperServer.registerDevice(
         new DummyDevice(
           this.flipperServer,
           clientQuery.device_id,
-          clientQuery.app +
-            (clientQuery.medium === 'WWW' ? ' Server Exchanged' : ''),
+          `${clientQuery.device}`,
           clientQuery.os,
         ),
       );
@@ -277,6 +287,7 @@ export class ServerController
       deviceName: clientQuery.device,
       appName: appNameWithUpdateHint(clientQuery),
     };
+
     this.emit('start-client-setup', client);
   }
 
@@ -313,7 +324,7 @@ export class ServerController
     unsanitizedCSR: string,
     clientQuery: ClientQuery,
     appDirectory: string,
-  ): Promise<{deviceId: string}> {
+  ): Promise<CertificateExchangeRequestResponse> {
     let certificateProvider: CertificateProvider;
     switch (clientQuery.os) {
       case 'Android': {
@@ -365,11 +376,9 @@ export class ServerController
         ),
         'processCertificateSigningRequest',
       )
-        .then((response) => {
-          recorder.log(
-            clientQuery,
-            'Certificate Signing Request successfully processed',
-          );
+        .then((result: CertificateExchangeRequestResult) => {
+          const shouldSendEncryptedCertificates =
+            GK.get('flipper_encrypted_exchange') && clientQuery.os === 'iOS';
 
           const client: UninitializedClient = {
             os: clientQuery.os,
@@ -377,29 +386,85 @@ export class ServerController
             appName: appNameWithUpdateHint(clientQuery),
           };
 
-          this.timeHandlers.set(
-            // In the original insecure connection request, `device_id` is set to "unknown".
-            // Flipper queries adb/idb to learn the device ID and provides it back to the app.
-            // Once app knows it, it starts using the correct device ID for its subsequent secure connections.
-            // When the app re-connects securely after the certificate exchange process, we need to cancel this timeout.
-            // Since the original clientQuery has `device_id` set to "unknown", we update it here with the correct `device_id` to find it and cancel it later.
-            clientQueryToKey({...clientQuery, device_id: response.deviceId}),
-            setTimeout(() => {
-              this.emit('client-unresponsive-error', {
-                client,
-                medium: clientQuery.medium,
-                deviceID: response.deviceId,
-              });
-            }, 30 * 1000),
-          );
+          if (!result.error) {
+            recorder.log(
+              clientQuery,
+              'Certificate Signing Request successfully processed',
+            );
 
-          tracker.track('app-connection-certificate-exchange', {
-            ...clientQuery,
-            successful: true,
-            device_id: response.deviceId,
-          });
+            this.timeHandlers.set(
+              // In the original insecure connection request, `device_id` is set to "unknown".
+              // Flipper queries adb/idb to learn the device ID and provides it back to the app.
+              // Once app knows it, it starts using the correct device ID for its subsequent secure connections.
+              // When the app re-connects securely after the certificate exchange process, we need to cancel this timeout.
+              // Since the original clientQuery has `device_id` set to "unknown", we update it here with the correct `device_id` to find it and cancel it later.
+              clientQueryToKey({...clientQuery, device_id: result.deviceId}),
+              setTimeout(() => {
+                this.emit('client-unresponsive-error', {
+                  client,
+                  medium: clientQuery.medium,
+                  deviceID: result.deviceId,
+                });
+              }, 30 * 1000),
+            );
 
-          resolve(response);
+            tracker.track('app-connection-certificate-exchange', {
+              ...clientQuery,
+              successful: true,
+              device_id: result.deviceId,
+            });
+
+            const response: CertificateExchangeRequestResponse = {
+              deviceId: result.deviceId,
+            };
+
+            resolve(response);
+          } else if (shouldSendEncryptedCertificates) {
+            recorder.log(
+              clientQuery,
+              'Certificate Signing Request failed, attempt fallback exchange',
+            );
+
+            this.emit(
+              'client-setup-secret-exchange',
+              client,
+              result.certificates?.key,
+            );
+
+            let deviceId = uuid();
+            const device = this.flipperServer.getDeviceWithName(
+              clientQuery.device,
+            );
+            if (device) {
+              deviceId = device.serial;
+            } else {
+              this.flipperServer.registerDevice(
+                new DummyDevice(
+                  this.flipperServer,
+                  deviceId,
+                  clientQuery.device,
+                  clientQuery.os,
+                ),
+              );
+            }
+
+            tracker.track('app-connection-insecure-attempt-fallback', {
+              app: clientQuery.app,
+              os: clientQuery.os,
+              device: clientQuery.device,
+              medium: clientQuery.medium,
+              device_id: deviceId,
+            });
+
+            const response: CertificateExchangeRequestResponse = {
+              deviceId,
+              certificates: result.certificates?.data,
+            };
+
+            resolve(response);
+          } else {
+            throw result.error;
+          }
         })
         .catch((error: Error) => {
           tracker.track('app-connection-certificate-exchange', {
@@ -479,7 +544,7 @@ export class ServerController
 
     const info = {
       client,
-      connection: connection,
+      connection,
     };
 
     recorder.log(
@@ -553,15 +618,24 @@ export class ServerController
    * @param id The client connection identifier.
    */
   removeConnection(id: string) {
-    const info = this.connections.get(id);
-    if (info) {
+    const connectionInfo = this.connections.get(id);
+    if (connectionInfo) {
       recorder.log(
-        info.client.query,
-        `Disconnected: ${info.client.query.app} on ${info.client.query.device_id}.`,
+        connectionInfo.client.query,
+        `Disconnected: ${connectionInfo.client.query.app} on ${connectionInfo.client.query.device_id}.`,
       );
+
+      const device = this.flipperServer.getDeviceWithSerial(
+        connectionInfo.client.query.device_id,
+      );
+
       this.flipperServer.emit('client-disconnected', {id});
       this.connections.delete(id);
       this.flipperServer.pluginManager.stopAllServerAddOns(id);
+
+      if (device && device.info.deviceType === 'dummy') {
+        this.flipperServer.unregisterDevice(device.serial);
+      }
     }
   }
 

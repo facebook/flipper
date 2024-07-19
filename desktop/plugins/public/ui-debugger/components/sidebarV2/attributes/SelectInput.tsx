@@ -39,7 +39,7 @@ export function SelectInput({
         value={optimisticValue.value}
         options={options}
         style={{
-          color: color,
+          color,
           height: rowHeight,
           ...opactity(optimisticValue),
         }}

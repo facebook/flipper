@@ -101,7 +101,8 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5"
+    "tsx": "^4.15.7",
+    "typescript": "^5.4.2"
   },
   "homepage": "https://fbflipper.com/",
   "icon": "icon.png",
@@ -119,32 +120,32 @@
   },
   "scripts": {
     "build": "yarn build:flipper-server",
-    "build-plugin": "./ts-node scripts/build-plugin.tsx",
+    "build-plugin": "tsx scripts/build-plugin.tsx",
     "build:eslint": "cd eslint-plugin-flipper && yarn build",
-    "build:flipper-server": "yarn build:tsc && ./ts-node scripts/build-flipper-server-release.tsx",
+    "build:flipper-server": "yarn build:tsc && tsx scripts/build-flipper-server-release.tsx",
     "build:themes": "lessc --js themes/light.less static/themes/light.css && lessc --js themes/dark.less static/themes/dark.css",
-    "build:tsc": "tsc -b tsc-root/tsconfig.json && ./ts-node ./scripts/compute-package-checksum.tsx -d ./babel-transformer -o ./lib/checksum.txt",
-    "bump-versions": "./ts-node scripts/bump-versions.tsx",
-    "bundle-all-plugins": "./ts-node scripts/bundle-all-plugins.tsx",
+    "build:tsc": "tsc -b tsc-root/tsconfig.json && tsx ./scripts/compute-package-checksum.tsx -d ./babel-transformer -o ./lib/checksum.txt",
+    "bump-versions": "tsx scripts/bump-versions.tsx",
+    "bundle-all-plugins": "tsx scripts/bundle-all-plugins.tsx",
     "docs": "cd ../website && yarn start",
     "fix": "eslint . --fix --ext .js,.ts,.tsx",
-    "flipper-server": "cross-env NODE_ENV=development ./ts-node scripts/start-flipper-server-dev.tsx",
+    "flipper-server": "cross-env NODE_ENV=development tsx scripts/start-flipper-server-dev.tsx",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn tsc-plugins && yarn run lint:types-deps",
     "lint:eslint": "eslint . --ext .js,.ts,.tsx",
     "lint:tsc": "tsc && tsc -p tsc-root/tsconfig.json --noemit",
-    "lint:types-deps": "./ts-node ./scripts/verify-types-dependencies.tsx",
-    "list-plugins": "./ts-node scripts/list-plugins.tsx",
+    "lint:types-deps": "tsx ./scripts/verify-types-dependencies.tsx",
+    "list-plugins": "tsx scripts/list-plugins.tsx",
     "open-dist": "open ../dist/mac/Flipper.app --args --launcher=false --inspect=9229",
-    "postinstall": "patch-package && yarn --cwd plugins install --mutex network:30331 && yarn tsc -b pkg-lib/tsconfig.json  && ./ts-node scripts/remove-plugin-entry-points.tsx && yarn build:tsc && yarn build:themes",
+    "postinstall": "patch-package && yarn --cwd plugins install --mutex network:30331 && yarn tsc -b pkg-lib/tsconfig.json  && tsx scripts/remove-plugin-entry-points.tsx && yarn build:tsc && yarn build:themes",
     "prebuild": "yarn build:tsc && yarn rm-dist && yarn build:themes",
     "predev-server": "yarn build:tsc",
     "preflipper-server": "yarn build:tsc",
     "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
     "prelint:eslint": "yarn build:eslint",
     "pretest": "yarn build:tsc",
-    "publish-packages": "./ts-node scripts/publish-packages.tsx",
+    "publish-packages": "tsx scripts/publish-packages.tsx",
     "reset": "yarn rm-dist && yarn rm-temp && yarn rm-metro-cache && yarn cache clean && yarn rm-bundle && yarn rm-modules",
-    "resolve-plugin-dir": "./ts-node scripts/resolve-plugin-dir.tsx",
+    "resolve-plugin-dir": "tsx scripts/resolve-plugin-dir.tsx",
     "rm-bundle": "rimraf static/main.bundle.* **/dist/bundle.* **/lib **/*.tsbuildinfo",
     "rm-dist": "rimraf ../dist",
     "rm-metro-cache": "rimraf $TMPDIR/metro-cache*",
@@ -156,7 +157,7 @@
     "start:no-bundled-plugins": "yarn start --no-bundled-plugins",
     "test": "cross-env TZ=Pacific/Pohnpei jest",
     "test:debug": "yarn build:tsc && cross-env TZ=Pacific/Pohnpei node --inspect node_modules/.bin/jest --runInBand",
-    "tsc-plugins": "./ts-node scripts/tsc-plugins.tsx",
+    "tsc-plugins": "tsx scripts/tsc-plugins.tsx",
     "watch": "cross-env TZ=Pacific/Pohnpei node --expose-gc --stack-trace-limit=40 ./node_modules/.bin/jest --watch"
   },
   "engines": {
@@ -164,12 +165,11 @@
     "npm": "use yarn instead",
     "yarn": "^1.16"
   },
-  "version": "0.246.0",
+  "version": "0.259.0",
   "workspaces": {
     "packages": [
       "scripts",
       "babel-transformer",
-      "doctor",
       "pkg",
       "pkg-lib",
       "flipper-common",
@@ -177,7 +177,6 @@
       "flipper-server-client",
       "flipper-ui",
       "flipper-server",
-      "e2e",
       "plugin-lib",
       "test-utils",
       "eslint-plugin-flipper",
@@ -188,5 +187,6 @@
   },
   "dependencies": {
     "js-flipper": "^0.182.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

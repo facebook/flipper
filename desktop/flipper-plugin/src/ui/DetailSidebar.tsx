@@ -15,6 +15,7 @@ export type DetailSidebarProps = {
   children: any;
   width?: number;
   minWidth?: number;
+  onResize?: (width: number, height: number) => void;
 };
 
 /* eslint-disable react-hooks/rules-of-hooks */

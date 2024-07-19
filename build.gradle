@@ -19,7 +19,7 @@ buildscript {
 }
 
 plugins {
-    id 'de.undercouch.download' version '5.3.1'
+    id 'de.undercouch.download' version '5.6.0'
     id 'com.github.ben-manes.versions' version '0.47.0'
 }
 
@@ -83,7 +83,7 @@ ext.deps = [
         websocket          : 'org.java-websocket:Java-WebSocket:1.5.4',
         openssl            : 'com.android.ndk.thirdparty:openssl:1.1.1l-beta-1',
         // Annotations
-        kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1",
+        kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3",
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
         proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.19.0',
@@ -110,7 +110,7 @@ ext.deps = [
         okhttp3            : 'com.squareup.okhttp3:okhttp:4.11.0',
         leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.3',
         leakcanary2        : 'com.squareup.leakcanary:leakcanary-android:2.8.1',
-        protobuf           : 'com.google.protobuf:protobuf-java:3.25.1',
+        protobuf           : 'com.google.protobuf:protobuf-java:3.25.3',
         testCore           : 'androidx.test:core:1.4.0',
         testRules          : 'androidx.test:rules:1.5.0',
         // Plugin dependencies

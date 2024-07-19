@@ -16,10 +16,10 @@ export function registerShortcut(
   // Normalize shortcuts format.
   // split acceleratos like Shift+CmdOrCtrl+Z into Shift+Cmd+Z,Shift+Control+Z
   if (accelerator.includes('CmdOrCtrl')) {
-    accelerator =
-      accelerator.replace('CmdOrCtrl', 'Cmd') +
-      ',' +
-      accelerator.replace('CmdOrCtrl', 'Ctrl');
+    accelerator = `${accelerator.replace(
+      'CmdOrCtrl',
+      'Cmd',
+    )},${accelerator.replace('CmdOrCtrl', 'Ctrl')}`;
   }
   hotkeys(accelerator, handler);
   return () => {

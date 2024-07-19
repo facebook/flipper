@@ -25,6 +25,7 @@ import com.facebook.flipper.plugins.uidebugger.util.MaybeDeferred
 class LayoutTraversal(
     private val context: UIDContext,
 ) {
+  internal val additionalNodeInspectionIds = mutableSetOf<Id>()
 
   @Suppress("unchecked_cast")
   private fun NodeDescriptor<*>.asAny(): NodeDescriptor<Any> = this as NodeDescriptor<Any>
@@ -40,7 +41,8 @@ class LayoutTraversal(
     val shallow = mutableSetOf<Any>()
 
     while (stack.isNotEmpty()) {
-      val (node, parentId) = stack.removeLast()
+      // Workaround for a JDK21/Kotlin bug, see KT-66044
+      val (node, parentId) = checkNotNull(stack.removeLastOrNull())
 
       try {
 
@@ -56,12 +58,14 @@ class LayoutTraversal(
                       parentId,
                       descriptor.getQualifiedName(node),
                       descriptor.getName(node),
+                      descriptor.getBoxData(node),
                       emptyMap(),
                       emptyMap(),
                       null,
                       descriptor.getBounds(node),
                       emptySet(),
                       emptyList(),
+                      null,
                       null)))
 
           shallow.remove(node)
@@ -90,23 +94,33 @@ class LayoutTraversal(
           }
         }
 
-        val attributes = descriptor.getAttributes(node)
+        val shouldGetAdditionalData = curId in additionalNodeInspectionIds
+        val attributesInfo = descriptor.getAttributes(node, shouldGetAdditionalData)
         val bounds = descriptor.getBounds(node)
         val tags = descriptor.getTags(node)
         visited.add(
-            attributes.map { attrs ->
+            attributesInfo.map { attrsInfo ->
+              val additionalDataCollection =
+                  if (!shouldGetAdditionalData && !attrsInfo.hasAdditionalData) {
+                    null
+                  } else {
+                    shouldGetAdditionalData
+                  }
+
               Node(
                   curId,
                   parentId,
                   descriptor.getQualifiedName(node),
                   descriptor.getName(node),
-                  attrs,
+                  descriptor.getBoxData(node),
+                  attrsInfo.attributeSections,
                   descriptor.getInlineAttributes(node),
                   descriptor.getHiddenAttributes(node),
                   bounds,
                   tags,
                   childrenIds,
-                  activeChildId)
+                  activeChildId,
+                  additionalDataCollection)
             })
       } catch (exception: Exception) {
         Log.e(LogTag, "Error while processing node ${node.javaClass.name} $node", exception)

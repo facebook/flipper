@@ -64,9 +64,9 @@ function formatFrequency(freq: number) {
   } else if (freq == -2) {
     return 'off';
   } else if (freq > 1000 * 1000) {
-    return (freq / 1000 / 1000).toFixed(2) + ' GHz';
+    return `${(freq / 1000 / 1000).toFixed(2)} GHz`;
   } else {
-    return freq / 1000 + ' MHz';
+    return `${freq / 1000} MHz`;
   }
 }
 
@@ -92,7 +92,7 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     type: string,
   ) => Promise<void> = async (core: number, type: string) => {
     const output = await executeShell(
-      'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/' + type,
+      `cat /sys/devices/system/cpu/cpu${core}/cpufreq/${type}`,
     );
     cpuState.update((draft) => {
       const newFreq = isNormalInteger(output) ? parseInt(output, 10) : -1;
@@ -111,9 +111,7 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     core: number,
   ) => {
     const output = await executeShell(
-      'cat /sys/devices/system/cpu/cpu' +
-        core +
-        '/cpufreq/scaling_available_frequencies',
+      `cat /sys/devices/system/cpu/cpu${core}/cpufreq/scaling_available_frequencies`,
     );
     cpuState.update((draft) => {
       const freqs = output.split(' ').map((num: string) => {
@@ -131,7 +129,7 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     core: number,
   ) => {
     const output = await executeShell(
-      'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_governor',
+      `cat /sys/devices/system/cpu/cpu${core}/cpufreq/scaling_governor`,
     );
     cpuState.update((draft) => {
       if (output.toLowerCase().includes('no such file')) {
@@ -146,9 +144,7 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
     core: number,
   ) => {
     const output = await executeShell(
-      'cat /sys/devices/system/cpu/cpu' +
-        core +
-        '/cpufreq/scaling_available_governors',
+      `cat /sys/devices/system/cpu/cpu${core}/cpufreq/scaling_available_governors`,
     );
     return output.split(' ');
   };
@@ -176,25 +172,25 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
       output.startsWith('apq') ||
       output.startsWith('sdm')
     ) {
-      hwInfo = 'QUALCOMM ' + output.toUpperCase();
+      hwInfo = `QUALCOMM ${output.toUpperCase()}`;
     } else if (output.startsWith('exynos')) {
       const chipname = await executeShell('getprop ro.chipname');
       if (chipname != null) {
         cpuState.update((draft) => {
-          draft.hardwareInfo = 'SAMSUMG ' + chipname.toUpperCase();
+          draft.hardwareInfo = `SAMSUMG ${chipname.toUpperCase()}`;
         });
       }
       return;
     } else if (output.startsWith('mt')) {
-      hwInfo = 'MEDIATEK ' + output.toUpperCase();
+      hwInfo = `MEDIATEK ${output.toUpperCase()}`;
     } else if (output.startsWith('sc')) {
-      hwInfo = 'SPREADTRUM ' + output.toUpperCase();
+      hwInfo = `SPREADTRUM ${output.toUpperCase()}`;
     } else if (output.startsWith('hi') || output.startsWith('kirin')) {
-      hwInfo = 'HISILICON ' + output.toUpperCase();
+      hwInfo = `HISILICON ${output.toUpperCase()}`;
     } else if (output.startsWith('rk')) {
-      hwInfo = 'ROCKCHIP ' + output.toUpperCase();
+      hwInfo = `ROCKCHIP ${output.toUpperCase()}`;
     } else if (output.startsWith('bcm')) {
-      hwInfo = 'BROADCOM ' + output.toUpperCase();
+      hwInfo = `BROADCOM ${output.toUpperCase()}`;
     }
     cpuState.update((draft) => {
       draft.hardwareInfo = hwInfo;
@@ -204,7 +200,7 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
   const readThermalZones = async () => {
     const thermal_dir = '/sys/class/thermal/';
     const map = {};
-    const output = await executeShell('ls ' + thermal_dir);
+    const output = await executeShell(`ls ${thermal_dir}`);
     if (output.toLowerCase().includes('permission denied')) {
       cpuState.update((draft) => {
         draft.thermalAccessible = false;
@@ -232,11 +228,11 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
   };
 
   const readThermalZone = async (path: string, dir: string, map: any) => {
-    const type = await executeShell('cat ' + path + '/type');
+    const type = await executeShell(`cat ${path}/type`);
     if (type.length == 0) {
       return;
     }
-    const temp = await executeShell('cat ' + path + '/temp');
+    const temp = await executeShell(`cat ${path}/temp`);
     if (Number.isNaN(Number(temp))) {
       return;
     }
@@ -345,7 +341,7 @@ export function devicePlugin(client: PluginClient<{}, {}>) {
       }
       cpuState.set({
         cpuCount: count,
-        cpuFreq: cpuFreq,
+        cpuFreq,
         monitoring: false,
         hardwareInfo: '',
         temperatureMap: {},
@@ -414,8 +410,7 @@ export function Component() {
     let availableFreqTitle = 'Scaling Available Frequencies';
     const selected = cpuState.cpuFreq[id];
     if (selected.scaling_available_freqs.length > 0) {
-      availableFreqTitle +=
-        ' (' + selected.scaling_available_freqs.length.toString() + ')';
+      availableFreqTitle += ` (${selected.scaling_available_freqs.length.toString()})`;
     }
 
     const keys = [availableFreqTitle, 'Scaling Available Governors'];
@@ -525,7 +520,7 @@ function buildAvailableGovList(freq: CPUFrequency): string {
 
 function buildSidebarRow(key: string, val: any) {
   return {
-    key: key,
+    key,
     value: val,
   };
 }

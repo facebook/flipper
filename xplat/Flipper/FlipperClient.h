@@ -91,6 +91,10 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
 
   void setCertificateProvider(
       const std::shared_ptr<FlipperCertificateProvider> provider);
+
+  void setBackupCertificateProvider(
+      const std::shared_ptr<FlipperCertificateProvider> provider);
+
   std::shared_ptr<FlipperCertificateProvider> getCertificateProvider();
 
   std::shared_ptr<FlipperPlugin> getPlugin(const std::string& identifier);

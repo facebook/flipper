@@ -5,7 +5,7 @@ license = "MIT"
 repository = "https://github.com/facebook/flipper.git"
 keywords = ["flipper", "cli"]
 categories = ["development-tools"]
-version = "0.5.0"
+version = "0.5.2"
 authors = ["Facebook, Inc."]
 edition = "2021"
 
@@ -14,7 +14,7 @@ clap = { version = "^3", features = ["derive", "cargo"] }
 shellexpand = "^3"
 tar = "0.4.39"
 serde = { version = "^1", features = ["derive"] }
-serde_yaml = "0.9.30"
+serde_yaml = "0.9.32"
 anyhow = "^1"
 sha2 = "0.10.7"
 data-encoding = "^2"

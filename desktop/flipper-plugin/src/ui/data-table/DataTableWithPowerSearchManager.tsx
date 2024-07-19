@@ -270,7 +270,7 @@ export const dataTableManagerReducer = produce<
       break;
     }
     default: {
-      throw new Error('Unknown action ' + (action as any).type);
+      throw new Error(`Unknown action ${(action as any).type}`);
     }
   }
 });
@@ -291,6 +291,7 @@ export type DataTableManager<T> = {
     end: number,
     allowUnselect?: boolean,
   ): void;
+  setAutoScroll(autoScroll: boolean): void;
   selectItemById(id: string, addToSelection?: boolean): void;
   clearSelection(): void;
   getSelectedItem(): T | undefined;
@@ -325,6 +326,9 @@ export function createDataTableManager<T>(
     },
     resetFilters() {
       dispatch({type: 'resetFilters'});
+    },
+    setAutoScroll(autoScroll: boolean) {
+      dispatch({type: 'setAutoScroll', autoScroll});
     },
     selectItem(index: number, addToSelection = false, allowUnselect = false) {
       dispatch({

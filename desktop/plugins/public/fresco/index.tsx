@@ -168,7 +168,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
         });
         imageDataList.push(imageData);
       } catch (e) {
-        console.error('[fresco] getImage failed:', e);
+        console.warn('[fresco] getImage failed:', e);
       }
     }
 
@@ -237,11 +237,11 @@ export function plugin(client: PluginClient<Events, Methods>) {
       debugLog(`Cannot fetch image ${imageId}: disconnected`);
       return;
     }
-    debugLog('<- getImage requested for ' + imageId);
+    debugLog(`<- getImage requested for ${imageId}`);
     client
       .send('getImage', {imageId})
       .then((image: ImageData) => {
-        debugLog('-> getImage ' + imageId + ' returned');
+        debugLog(`-> getImage ${imageId} returned`);
         imagePool.get()?._fetchCompleted(image);
       })
       .catch((e) => console.error('[fresco] getImage failed:', e));
@@ -351,7 +351,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
   }
 
   function updateCaches(reason: string) {
-    debugLog('Requesting images list (reason=' + reason + ')');
+    debugLog(`Requesting images list (reason=${reason})`);
     client
       .send('listImages', {
         showDiskImages: showDiskImages.get(),

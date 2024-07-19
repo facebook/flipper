@@ -54,4 +54,5 @@ enum class ParameterType {
   Lambda,
   FunctionReference,
   Iterable,
+  ComplexObject,
 }

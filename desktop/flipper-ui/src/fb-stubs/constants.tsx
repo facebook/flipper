@@ -12,9 +12,6 @@ import {DeviceOS} from 'flipper-plugin';
 export default Object.freeze({
   IS_PUBLIC_BUILD: true,
 
-  // Enables the flipper data to be exported through shareabale link
-  ENABLE_SHAREABLE_LINK: false,
-
   FEEDBACK_GROUP_LINK: 'https://github.com/facebook/flipper/issues',
 
   // Workplace Group ID's

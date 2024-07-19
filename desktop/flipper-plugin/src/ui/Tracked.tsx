@@ -132,7 +132,7 @@ export function wrapInteractionHandler<T extends Function>(
       duration: initialEnd - start,
       totalDuration: Date.now() - start,
       success: error ? 0 : 1,
-      error: error ? '' + error : undefined,
+      error: error ? `${error}` : undefined,
       componentType:
         element === null
           ? 'unknown'

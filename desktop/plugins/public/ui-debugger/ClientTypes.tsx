@@ -27,6 +27,15 @@ export type Methods = {
     metadataIdPath: MetadataId[];
     compoundTypeHint?: CompoundTypeHint;
   }): Promise<void>;
+  onCustomAction<T extends boolean | undefined>(params: {
+    customActionGroupIndex: number;
+    customActionIndex: number;
+    value: T;
+  }): Promise<{result: T}>;
+  additionalNodeInspectionChange(params: {
+    changeType: 'Add' | 'Remove';
+    nodeId: Id;
+  }): Promise<void>;
 };
 
 export type CompoundTypeHint =
@@ -107,6 +116,38 @@ export type InitEvent = {
   frameworkEventMetadata?: FrameworkEventMetadata[];
   supportedTraversalModes?: TraversalMode[];
   currentTraversalMode?: TraversalMode;
+  customActionGroups?: CustomActionGroup[];
+};
+
+type LocalIcon = {
+  type: 'Local';
+  iconPath: string;
+};
+
+type IconPackIcon = {
+  type: 'Fb' | 'Antd';
+  iconName: string;
+};
+
+export type BooleanAction = {
+  type: 'BooleanAction';
+  title: string;
+  value: boolean;
+};
+
+export type UnitAction = {
+  type: 'UnitAction';
+  title: string;
+};
+
+export type CustomAction = BooleanAction | UnitAction;
+
+export type ActionIcon = LocalIcon | IconPackIcon;
+
+export type CustomActionGroup = {
+  title: string;
+  actionIcon: ActionIcon;
+  actions: CustomAction[];
 };
 
 export type PerformanceStatsEvent = {
@@ -142,6 +183,7 @@ export type ClientNode = {
   parent?: Id;
   qualifiedName: string; //this is the name of the component plus qualification so myles has a chance of finding it. E.g com.facebook.MyView
   lineNumber?: number;
+  boxData?: BoxData;
   name: string;
   attributes: Record<MetadataId, Inspectable>;
   inlineAttributes: Record<string, string>;
@@ -150,6 +192,19 @@ export type ClientNode = {
   bounds: Bounds;
   tags: Tag[];
   activeChild?: Id;
+  additionalDataCollection?: boolean;
+};
+
+/**
+ * Space efficient representation of a box, order is:
+ * Left, Right, Top, Bottom,
+ */
+type CompactBox = [number, number, number, number];
+
+export type BoxData = {
+  margin: CompactBox;
+  border: CompactBox;
+  padding: CompactBox;
 };
 
 export type Metadata = {
@@ -218,6 +273,7 @@ export type Tag =
   | 'iOS'
   | 'BloksBoundTree'
   | 'BloksDerived'
+  | 'BloksRootHost'
   | 'TreeRoot'
   | 'Warning';
 

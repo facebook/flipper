@@ -30,6 +30,7 @@ static constexpr auto PRIVATE_KEY_FILE = "privateKey.pem";
 static constexpr auto CERTIFICATE_FILE_NAME = "device.p12";
 static constexpr auto CERTIFICATE_PASSWORD = "fl1pp3r";
 static constexpr auto CONNECTION_CONFIG_FILE = "connection_config.json";
+static constexpr auto ENCRYPTED_CERTIFICATES_FILE = "certificates.enc";
 
 bool fileExists(std::string fileName);
 std::string loadStringFromFile(std::string fileName);
@@ -125,6 +126,19 @@ void ConnectionContextStore::storeConnectionConfig(folly::dynamic& config) {
   writeStringToFile(json, absoluteFilePath(CONNECTION_CONFIG_FILE));
 }
 
+void ConnectionContextStore::storeConnectionEncryptedCertificates(
+    folly::dynamic& config) {
+  if (config.find("certificates") != config.items().end()) {
+    auto path = absoluteFilePath(ENCRYPTED_CERTIFICATES_FILE);
+    std::remove(path.c_str());
+    std::ofstream output(path);
+    if (output.is_open()) {
+      output << config["certificates"];
+      output.close();
+    }
+  }
+}
+
 std::string ConnectionContextStore::absoluteFilePath(
     const char* filename) const {
 #ifndef WIN32
@@ -156,7 +170,15 @@ std::string ConnectionContextStore::getPath(StoreItem storeItem) {
       return absoluteFilePath(CERTIFICATE_FILE_NAME);
     case CONNECTION_CONFIG:
       return absoluteFilePath(CONNECTION_CONFIG_FILE);
+    case ENCRYPTED_CERTS:
+      return absoluteFilePath(ENCRYPTED_CERTIFICATES_FILE);
   }
+}
+
+bool ConnectionContextStore::hasItem(StoreItem storeItem) {
+  std::string path = getPath(storeItem);
+
+  return fileExists(path);
 }
 
 bool ConnectionContextStore::resetState() {
@@ -176,7 +198,8 @@ bool ConnectionContextStore::resetState() {
           CLIENT_CERT_FILE_NAME,
           PRIVATE_KEY_FILE,
           CONNECTION_CONFIG_FILE,
-          CERTIFICATE_FILE_NAME}) {
+          CERTIFICATE_FILE_NAME,
+          ENCRYPTED_CERTIFICATES_FILE}) {
       std::remove(absoluteFilePath(file).c_str());
     }
     return true;

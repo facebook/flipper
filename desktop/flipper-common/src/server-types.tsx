@@ -101,6 +101,7 @@ export type UninitializedClient = {
 
 export type ClientQuery = {
   readonly app: string;
+  readonly app_id?: string;
   readonly os: DeviceOS;
   readonly device: string;
   readonly device_id: string;
@@ -143,6 +144,7 @@ export type FlipperServerEvents = {
   };
   'device-connected': DeviceDescription;
   'device-disconnected': DeviceDescription;
+  'device-removed': DeviceDescription;
   'device-log': {
     serial: string;
     entry: DeviceLogEntry;
@@ -152,6 +154,10 @@ export type FlipperServerEvents = {
     crash: CrashLog;
   };
   'client-setup': UninitializedClient;
+  'client-setup-secret-exchange': {
+    client: UninitializedClient;
+    secret: string;
+  };
   'client-setup-error': {
     client: UninitializedClient;
     type: 'error' | 'warning';
@@ -286,6 +292,11 @@ export type FlipperServerCommands = {
     serial: string,
     destination: string,
   ) => Promise<void>;
+  'log-connectivity-event': (
+    level: 'info' | 'warning' | 'error',
+    query: ClientQuery | null,
+    ...message: any
+  ) => Promise<void>;
   'device-stop-screencapture': (serial: string) => Promise<string>; // file path
   'device-shell-exec': (serial: string, command: string) => Promise<string>;
   'device-install-app': (
@@ -314,6 +325,7 @@ export type FlipperServerCommands = {
   'android-adb-kill': () => Promise<void>;
   'ios-get-simulators': (bootedOnly: boolean) => Promise<DeviceTarget[]>;
   'ios-launch-simulator': (udid: string) => Promise<void>;
+  'ios-launch-app': (udid: string, appName: string) => Promise<void>;
   'ios-idb-kill': () => Promise<void>;
   'persist-settings': (settings: Settings) => Promise<void>;
   'persist-launcher-settings': (settings: LauncherSettings) => Promise<void>;
@@ -385,6 +397,7 @@ export type FlipperServerCommands = {
   ) => Promise<void>;
   'intern-cloud-upload': (path: string) => Promise<string>;
   shutdown: () => Promise<void>;
+  restart: () => Promise<void>;
   'is-logged-in': () => Promise<boolean>;
   'environment-info': () => Promise<EnvironmentInfo>;
   'move-pwa': () => Promise<void>;

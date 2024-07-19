@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIDSnapshotInfo : NSObject
 
-@property(nonatomic) NSUInteger nodeId;
+@property(nonatomic) NSString* nodeId;
 @property(nonatomic, strong) UIImage* image;
 
 @end

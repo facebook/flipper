@@ -33,7 +33,7 @@ export function transformCertificateExchangeMediumToType(
     case 3:
       return 'NONE';
     default:
-      throw new Error('Unknown Certificate exchange medium: ' + medium);
+      throw new Error(`Unknown Certificate exchange medium: ${medium}`);
   }
 }
 
@@ -50,7 +50,7 @@ export function transformCertificateExchangeMediumToType(
  */
 export function appNameWithUpdateHint(query: ClientQuery): string {
   if (query.os === 'Android' && (!query.sdk_version || query.sdk_version < 3)) {
-    return query.app + ' (Outdated SDK)';
+    return `${query.app} (Outdated SDK)`;
   }
   return query.app;
 }
@@ -123,6 +123,11 @@ export function parseClientQuery(
     return;
   }
 
+  let app_id: string | undefined;
+  if (typeof query.app_id === 'string') {
+    app_id = query.app_id;
+  }
+
   let os: DeviceOS | undefined;
   if (typeof query.os === 'string') {
     os = query.os as DeviceOS;
@@ -138,7 +143,7 @@ export function parseClientQuery(
   }
 
   if (medium !== undefined && (medium < 1 || medium > 3)) {
-    throw new Error('Unsupported exchange medium: ' + medium);
+    throw new Error(`Unsupported exchange medium: ${medium}`);
   }
 
   let sdk_version: number | undefined;
@@ -152,6 +157,7 @@ export function parseClientQuery(
     device_id,
     device,
     app,
+    app_id,
     os,
     medium: transformCertificateExchangeMediumToType(medium),
     sdk_version,
@@ -199,7 +205,7 @@ export function parseSecureClientQuery(
   }
 
   if (medium !== undefined && (medium < 1 || medium > 3)) {
-    throw new Error('Unsupported exchange medium: ' + medium);
+    throw new Error(`Unsupported exchange medium: ${medium}`);
   }
   return {
     ...clientQuery,

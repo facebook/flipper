@@ -11,6 +11,6 @@ export function safeStringify(value: any, space: number = 2) {
   try {
     return JSON.stringify(value, null, space);
   } catch (e) {
-    return '<Failed to serialize: ' + e + '>';
+    return `<Failed to serialize: ${e}>`;
   }
 }

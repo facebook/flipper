@@ -152,7 +152,7 @@ test('Correct top level API exposed', () => {
 
 test('All APIs documented', async () => {
   const docs = await promisify(readFile)(
-    __dirname + '/../../../../docs/extending/flipper-plugin.mdx',
+    `${__dirname}/../../../../docs/extending/flipper-plugin.mdx`,
     'utf8',
   );
   Object.keys(FlipperPluginModule)

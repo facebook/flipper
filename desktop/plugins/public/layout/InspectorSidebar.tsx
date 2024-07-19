@@ -129,7 +129,7 @@ const Sidebar: React.FC<Props> = (props: Props) => {
             sectionDefs.push({
               key: extraSection,
               id: extraSection,
-              data: data,
+              data,
             });
           }
         } else {
@@ -156,7 +156,7 @@ const Sidebar: React.FC<Props> = (props: Props) => {
           name: props.element?.name,
         })
         .then((response) => {
-          setElementSnapshot({element: element, snapshot: response.snapshot});
+          setElementSnapshot({element, snapshot: response.snapshot});
         })
         .catch((e) => {
           console.log(
@@ -208,7 +208,7 @@ const Sidebar: React.FC<Props> = (props: Props) => {
             marginRight: 'auto',
             width: '100%',
           }}
-          src={'data:image/png;base64,' + elementSnapshot?.snapshot}
+          src={`data:image/png;base64,${elementSnapshot?.snapshot}`}
         />
       </Panel>
     ) : null;

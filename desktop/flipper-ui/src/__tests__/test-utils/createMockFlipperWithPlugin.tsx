@@ -245,7 +245,7 @@ export async function createMockFlipperWithPlugin(
           store.getState().plugins.devicePlugins.get(id)
         : pluginClazz;
       if (!plugin) {
-        throw new Error('unknown plugin ' + id);
+        throw new Error(`unknown plugin ${id}`);
       }
       store.dispatch(
         switchPlugin({

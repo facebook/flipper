@@ -20,7 +20,7 @@ import {
   buildGenericClientIdFromQuery,
 } from 'flipper-common';
 import Client from '../Client';
-import {Button, notification} from 'antd';
+import {Button, Modal, notification} from 'antd';
 import BaseDevice from '../devices/BaseDevice';
 import {ClientDescription, timeout} from 'flipper-common';
 import {reportPlatformFailures} from 'flipper-common';
@@ -30,6 +30,7 @@ import {NotificationBody} from '../ui/components/NotificationBody';
 import {Layout} from '../ui';
 import {toggleConnectivityModal} from '../reducers/application';
 import {connectionUpdate} from '../app-connection-updates';
+import {QRCodeSVG} from 'qrcode.react';
 
 export function connectFlipperServerToStore(
   server: FlipperServer,
@@ -48,7 +49,7 @@ export function connectFlipperServerToStore(
 
   server.on('server-error', (err) => {
     if (err.code === 'EADDRINUSE') {
-      handeEADDRINUSE('' + err);
+      handeEADDRINUSE(`${err}`);
     } else {
       const text = err.message ?? err;
       notification.error({
@@ -69,6 +70,23 @@ export function connectFlipperServerToStore(
     handleDeviceDisconnected(store, logger, deviceInfo);
   });
 
+  server.on('device-removed', (deviceInfo) => {
+    const device = store
+      .getState()
+      .connections.devices.find((d) => d.serial === deviceInfo.serial);
+
+    if (device) {
+      if (device.connected) {
+        device.disconnect();
+      }
+
+      store.dispatch({
+        type: 'UNREGISTER_DEVICE',
+        payload: device,
+      });
+    }
+  });
+
   server.on('client-setup', (client) => {
     store.dispatch({
       type: 'START_CLIENT_SETUP',
@@ -84,6 +102,7 @@ export function connectFlipperServerToStore(
         type: 'loading',
         app: client.appName,
         device: client.deviceName,
+        os: client.os,
         title: 'is attempting to connect...',
       },
       troubleshootConnection,
@@ -95,6 +114,7 @@ export function connectFlipperServerToStore(
       {
         key: buildGenericClientId(client),
         type,
+        os: client.os,
         app: client.appName,
         device: client.deviceName,
         title: 'failed to establish a connection',
@@ -104,12 +124,46 @@ export function connectFlipperServerToStore(
     );
   });
 
+  type ModalType = {
+    destroy: () => void;
+  };
+  const modals: Map<string, ModalType> = new Map();
+  const secretExchangeKeyWithId = (id: string) =>
+    `client-setup-secret-exchange-${id}`;
+  server.on('client-setup-secret-exchange', ({client, secret}) => {
+    // An option is given to dismiss the attempt by the current app for the
+    // current session. So, check if the user has decided to opt-out before
+    // showing the QR modal.
+    const key = secretExchangeKeyWithId(buildGenericClientId(client));
+    if (sessionStorage.getItem(key) !== null) {
+      return;
+    }
+
+    // Find and dismiss any existing QR modal.
+    let secretExchangeModal = modals.get(key);
+    secretExchangeModal?.destroy();
+
+    secretExchangeModal = Modal.confirm({
+      title: `${client.appName} is trying to connect. Please use your device to scan the QR code.`,
+      centered: true,
+      width: 350,
+      content: <QRCodeSVG value={secret} size={225} />,
+      onCancel() {
+        sessionStorage.setItem(key, '');
+      },
+      onOk() {},
+      cancelText: 'Dismiss for the session',
+    });
+    modals.set(key, secretExchangeModal);
+  });
+
   server.on('client-setup-step', ({client, step}) => {
     connectionUpdate(
       {
         key: buildGenericClientId(client),
         type: 'info',
         app: client.appName,
+        os: client.os,
         device: client.deviceName,
         title: step,
       },
@@ -118,6 +172,12 @@ export function connectFlipperServerToStore(
   });
 
   server.on('client-connected', (payload: ClientDescription) => {
+    const key = secretExchangeKeyWithId(
+      buildGenericClientIdFromQuery(payload.query),
+    );
+    const secretExchangeModal = modals.get(key);
+    secretExchangeModal?.destroy();
+
     handleClientConnected(server, store, logger, payload);
     connectionUpdate(
       {
@@ -125,6 +185,7 @@ export function connectFlipperServerToStore(
         type: 'success',
         app: payload.query.app,
         device: payload.query.device,
+        os: payload.query.os,
         title: 'successfully connected',
       },
       troubleshootConnection,
@@ -141,6 +202,7 @@ export function connectFlipperServerToStore(
           key: buildGenericClientIdFromQuery(existingClient.query),
           type: 'success-info',
           app: existingClient.query.app,
+          os: existingClient.query.os,
           device: existingClient.query.device,
           title: 'disconnected',
         },
@@ -251,7 +313,7 @@ function handleServerStateChange({
       notification.error({
         key: `server-${state}-error`,
         message: 'Failed to start flipper-server',
-        description: '' + error,
+        description: `${error}`,
         duration: null,
       });
     }
@@ -304,8 +366,11 @@ export function handleDeviceConnected(
         `Tried to replace still connected device '${existing.serial}' with a new instance.`,
       );
     }
-    if (store.getState().settingsState.persistDeviceData) {
-      //Recycle device
+    if (
+      existing.deviceType !== 'dummy' &&
+      store.getState().settingsState.persistDeviceData
+    ) {
+      // Recycle device
       existing?.connected.set(true);
       store.dispatch({
         type: 'SELECT_DEVICE',
