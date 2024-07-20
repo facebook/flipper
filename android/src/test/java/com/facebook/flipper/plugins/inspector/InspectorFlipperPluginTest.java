@@ -42,7 +42,7 @@ import org.robolectric.annotation.LooperMode;
 
 @LooperMode(LEGACY)
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 19)
+@Config(sdk = 21)
 public class InspectorFlipperPluginTest {
 
   private MockApplicationDescriptor mApplicationDescriptor;
@@ -297,7 +297,7 @@ public class InspectorFlipperPluginTest {
                                         .put("1", new FlipperObject.Builder()))))
                 .put(
                     "path",
-                    new FlipperArray.Builder().put("com.facebook.flipper").put("test").put("1"))
+                    new FlipperArray.Builder().put("com.facebook.flipper").put("test").put("3"))
                 .build()));
   }
 
