@@ -29,7 +29,7 @@ module.exports = {
     'html',
     ...(process.env.COVERAGE_TEXT === 'detailed' ? ['text'] : []),
   ],
-  testMatch: ['**/**.(node|spec).(js|jsx|ts|tsx)'],
+  testMatch: ['**/**.(node|spec).(ts|tsx)'],
   testEnvironment: 'jsdom',
   resolver: '<rootDir>/jest.resolver.js',
 };
