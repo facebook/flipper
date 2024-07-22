@@ -361,7 +361,7 @@ export function handleDeviceConnected(
     .connections.devices.find((device) => device.serial === deviceInfo.serial);
   // handled outside reducer, as it might emit new redux actions...
   if (existing) {
-    if (existing.connected.get()) {
+    if (existing.connected.get() && process.env.NODE_ENV !== 'test') {
       console.warn(
         `Tried to replace still connected device '${existing.serial}' with a new instance.`,
       );
@@ -474,9 +474,11 @@ export async function handleClientConnected(
     });
   }
 
-  console.log(
-    `Searching matching device ${query.device_id} for client ${query.app}...`,
-  );
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(
+      `Searching matching device ${query.device_id} for client ${query.app}...`,
+    );
+  }
   const device =
     getDeviceBySerial(store.getState(), query.device_id) ??
     (await findDeviceForConnection(store, query.app, query.device_id).catch(
@@ -537,7 +539,9 @@ export async function handleClientConnected(
       client.init(),
       `Failed to initialize client ${query.app} on ${query.device_id} in a timely manner`,
     );
-    console.log(`${query.app} on ${query.device_id} connected and ready.`);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(`${query.app} on ${query.device_id} connected and ready.`);
+    }
   } catch (e) {
     if (e instanceof NoLongerConnectedToClientError) {
       console.warn(

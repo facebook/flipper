@@ -1,0 +1,15 @@
+diff --git a/node_modules/react-dom/cjs/react-dom.development.js b/node_modules/react-dom/cjs/react-dom.development.js
+index ae216b2..02c457f 100644
+--- a/node_modules/react-dom/cjs/react-dom.development.js
++++ b/node_modules/react-dom/cjs/react-dom.development.js
+@@ -83,7 +83,9 @@ function printWarning(level, format, args) {
+     // breaks IE9: https://github.com/facebook/react/issues/13610
+     // eslint-disable-next-line react-internal/no-production-logging
+ 
+-    Function.prototype.apply.call(console[level], console, argsWithFormat);
++    if (process.env.NODE_ENV !== "test") {
++      Function.prototype.apply.call(console[level], console, argsWithFormat);
++    }
+   }
+ }
+ 

@@ -259,10 +259,12 @@ export default class Client extends EventEmitter {
         },
       );
       this.plugins = new Set(response.plugins ?? []);
-      console.info(
-        `Received plugins from '${this.query.app}' on device '${this.query.device}'`,
-        [...this.plugins],
-      );
+      if (process.env.NODE_ENV !== 'test') {
+        console.info(
+          `Received plugins from '${this.query.app}' on device '${this.query.device}'`,
+          [...this.plugins],
+        );
+      }
       if (phase === 'init') {
         await this.waitForPluginsInit();
       }

@@ -107,7 +107,6 @@ test('it supports deeplink and select nodes + navigating to bottom', async () =>
   await sleep(1000);
 
   const current = instance.tableManagerRef.current;
-  console.error('ref', current);
   expect(current?.getSelectedItems()).toEqual([
     {
       ...entry2,

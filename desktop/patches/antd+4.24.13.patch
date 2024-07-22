@@ -1,5 +1,5 @@
 diff --git a/node_modules/antd/es/button/button.js b/node_modules/antd/es/button/button.js
-index 635e056..611d5b4 100644
+index 635e056..805ebfa 100644
 --- a/node_modules/antd/es/button/button.js
 +++ b/node_modules/antd/es/button/button.js
 @@ -165,6 +165,7 @@ var InternalButton = function InternalButton(props, ref) {
@@ -25,8 +25,21 @@ index 635e056..611d5b4 100644
    };
    process.env.NODE_ENV !== "production" ? warning(!(typeof icon === 'string' && icon.length > 2), 'Button', "`icon` is using ReactNode instead of string naming in v4. Please check `".concat(icon, "` at https://ant.design/components/icon")) : void 0;
    process.env.NODE_ENV !== "production" ? warning(!(ghost && isUnBorderedButtonType(type)), 'Button', "`link` or `text` button can't be a `ghost` button.") : void 0;
+diff --git a/node_modules/antd/es/tabs/hooks/useLegacyItems.js b/node_modules/antd/es/tabs/hooks/useLegacyItems.js
+index 5f06ff5..568f3b5 100644
+--- a/node_modules/antd/es/tabs/hooks/useLegacyItems.js
++++ b/node_modules/antd/es/tabs/hooks/useLegacyItems.js
+@@ -19,7 +19,7 @@ export default function useLegacyItems(items, children) {
+   if (items) {
+     return items;
+   }
+-  process.env.NODE_ENV !== "production" ? warning(!children, 'Tabs', 'Tabs.TabPane is deprecated. Please use `items` directly.') : void 0;
++  // process.env.NODE_ENV !== "production" ? warning(!children, 'Tabs', 'Tabs.TabPane is deprecated. Please use `items` directly.') : void 0;
+   var childrenItems = toArray(children).map(function (node) {
+     if ( /*#__PURE__*/React.isValidElement(node)) {
+       var key = node.key,
 diff --git a/node_modules/antd/es/typography/Link.js b/node_modules/antd/es/typography/Link.js
-index 9156f1d..3978c6a 100644
+index 9156f1d..0d6090c 100644
 --- a/node_modules/antd/es/typography/Link.js
 +++ b/node_modules/antd/es/typography/Link.js
 @@ -19,12 +19,24 @@ var Link = /*#__PURE__*/React.forwardRef(function (_a, ref) {
@@ -55,3 +68,30 @@ index 9156f1d..3978c6a 100644
    }));
  });
  export default Link;
+\ No newline at end of file
+diff --git a/node_modules/antd/lib/dropdown/dropdown.js b/node_modules/antd/lib/dropdown/dropdown.js
+index 05175ab..cf735f2 100644
+--- a/node_modules/antd/lib/dropdown/dropdown.js
++++ b/node_modules/antd/lib/dropdown/dropdown.js
+@@ -39,7 +39,7 @@ var Dropdown = function Dropdown(props) {
+         newName = _ref2[1];
+       process.env.NODE_ENV !== "production" ? (0, _warning["default"])(!(deprecatedName in props), 'Dropdown', "`".concat(deprecatedName, "` is deprecated which will be removed in next major version, please use `").concat(newName, "` instead.")) : void 0;
+     });
+-    process.env.NODE_ENV !== "production" ? (0, _warning["default"])(!('overlay' in props), 'Dropdown', '`overlay` is deprecated. Please use `menu` instead.') : void 0;
++    // process.env.NODE_ENV !== "production" ? (0, _warning["default"])(!('overlay' in props), 'Dropdown', '`overlay` is deprecated. Please use `menu` instead.') : void 0;
+   }
+   var getTransitionName = function getTransitionName() {
+     var rootPrefixCls = getPrefixCls();
+diff --git a/node_modules/antd/lib/tabs/hooks/useLegacyItems.js b/node_modules/antd/lib/tabs/hooks/useLegacyItems.js
+index 7cf5363..45c579e 100644
+--- a/node_modules/antd/lib/tabs/hooks/useLegacyItems.js
++++ b/node_modules/antd/lib/tabs/hooks/useLegacyItems.js
+@@ -27,7 +27,7 @@ function useLegacyItems(items, children) {
+   if (items) {
+     return items;
+   }
+-  process.env.NODE_ENV !== "production" ? (0, _warning["default"])(!children, 'Tabs', 'Tabs.TabPane is deprecated. Please use `items` directly.') : void 0;
++  // process.env.NODE_ENV !== "production" ? (0, _warning["default"])(!children, 'Tabs', 'Tabs.TabPane is deprecated. Please use `items` directly.') : void 0;
+   var childrenItems = (0, _toArray["default"])(children).map(function (node) {
+     if ( /*#__PURE__*/React.isValidElement(node)) {
+       var key = node.key,
