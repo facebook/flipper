@@ -293,6 +293,15 @@ function defaultOnCopyRows<T extends object>(
     .join('\n')}`;
 }
 
-function rowsToJson<T>(items: T[]) {
-  return JSON.stringify(items.length > 1 ? items : items[0], null, 2);
+function rowsToJson(items: any[]) {
+  return JSON.stringify(
+    items.length > 1 ? items : items[0],
+    function (_key, value) {
+      if (typeof value === 'bigint') {
+        return `${value.toString()}n`;
+      }
+      return value;
+    },
+    2,
+  );
 }
