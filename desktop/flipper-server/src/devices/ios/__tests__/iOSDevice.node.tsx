@@ -46,13 +46,13 @@ const fakeExistingDevices = [
 
 beforeEach(() => {
   fakeSimctlBridge = {
-    getActiveDevices: jest.fn().mockImplementation(async () => fakeDevices),
+    getActiveDevices: jest.fn(async () => fakeDevices),
   };
   fakeIDBBridge = {
-    getActiveDevices: jest.fn().mockImplementation(async () => fakeDevices),
+    getActiveDevices: jest.fn(async () => fakeDevices),
   };
   fakeFlipperServer = {
-    getDevices: jest.fn().mockImplementation(() => fakeExistingDevices),
+    getDevices: jest.fn(() => fakeExistingDevices),
     registerDevice: jest.fn(),
     unregisterDevice: jest.fn(),
   };
@@ -129,6 +129,8 @@ test('test queryDevices when simctl used', async () => {
 
   expect(fakeFlipperServer.unregisterDevice).toBeCalledTimes(1);
   expect(fakeFlipperServer.unregisterDevice).toBeCalledWith('plapatine');
+
+  // FIXME unregister devices, causes a hanging promise in jest
 });
 
 test('test queryDevices when idb used', async () => {
@@ -152,4 +154,6 @@ test('test queryDevices when idb used', async () => {
 
   expect(fakeFlipperServer.unregisterDevice).toBeCalledTimes(1);
   expect(fakeFlipperServer.unregisterDevice).toBeCalledWith('plapatine');
+
+  // FIXME unregister devices, causes a hanging promise in jest
 });
