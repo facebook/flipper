@@ -20,14 +20,14 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
   public static final String ID = "Network";
   private static final int MAX_BODY_SIZE_IN_BYTES = 1024 * 1024;
 
-  private List<NetworkResponseFormatter> mFormatters;
-  private final List<NetworkRequestFormatter> mRequestFormatters;
+  private @Nullable List<NetworkResponseFormatter> mFormatters;
+  private @Nullable final List<NetworkRequestFormatter> mRequestFormatters;
 
   public NetworkFlipperPlugin() {
     this(null);
   }
 
-  public NetworkFlipperPlugin(List<NetworkResponseFormatter> formatters) {
+  public NetworkFlipperPlugin(@Nullable List<NetworkResponseFormatter> formatters) {
     this.mFormatters = formatters;
     this.mRequestFormatters = null;
   }
@@ -171,7 +171,7 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
         .run();
   }
 
-  public static String toBase64(@Nullable byte[] bytes) {
+  public static @Nullable String toBase64(@Nullable byte[] bytes) {
     if (bytes == null) {
       return null;
     }
