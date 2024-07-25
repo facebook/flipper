@@ -31,6 +31,7 @@ import {
   CertificateExchangeMedium,
   Settings,
   ClientQuery,
+  RmOptions,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
@@ -448,10 +449,12 @@ export class FlipperServerImpl implements FlipperServer {
     },
     'node-api-fs-unlink': unlink,
     'node-api-fs-mkdir': mkdir,
-    'node-api-fs-rm': async (path, {maxRetries} = {}) =>
+    'node-api-fs-rm': async (path, options?: RmOptions) =>
       new Promise<void>((resolve, reject) =>
-        rm(path, {disableGlob: true, maxBusyTries: maxRetries}, (err) =>
-          err ? reject(err) : resolve(),
+        rm(
+          path,
+          {disableGlob: true, maxBusyTries: options?.maxRetries ?? 0},
+          (err) => (err ? reject(err) : resolve()),
         ),
       ),
     'node-api-fs-copyFile': copyFile,
