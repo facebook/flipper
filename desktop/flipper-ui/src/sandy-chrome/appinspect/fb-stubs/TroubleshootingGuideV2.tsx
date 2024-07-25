@@ -7,6 +7,9 @@
  * @format
  */
 
-export function TroubleshootingGuideV2() {
+export function TroubleshootingGuideV2(_: {
+  open: boolean;
+  closeGuide: () => void;
+}) {
   return null;
 }

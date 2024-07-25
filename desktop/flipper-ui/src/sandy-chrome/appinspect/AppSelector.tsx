@@ -48,7 +48,11 @@ function getOsIcon(os?: DeviceOS) {
   }
 }
 
-export function AppSelector() {
+export function AppSelector({
+  setTroubleshootingGuideOpen,
+}: {
+  setTroubleshootingGuideOpen: (open: boolean) => void;
+}) {
   const dispatch = useDispatch();
   const selectableDevices = useSelector(getSelectableDevices);
   const {selectedDevice, clients, uninitializedClients, selectedAppId} =
@@ -80,6 +84,7 @@ export function AppSelector() {
     uninitializedClients,
     onSelectDevice,
     onSelectApp,
+    () => setTroubleshootingGuideOpen(true),
   );
   // TODO: Fix this the next time the file is edited.
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -219,6 +224,7 @@ function computeEntries(
   uninitializedClients: State['connections']['uninitializedClients'],
   onSelectDevice: (device: BaseDevice) => void,
   onSelectApp: (device: BaseDevice, client: Client) => void,
+  onTroubleshoot: () => void,
 ) {
   const entries = selectableDevices.map((device) => {
     const deviceEntry = (
@@ -257,6 +263,19 @@ function computeEntries(
       )),
     ]);
   }
+
+  if (entries.length > 0) {
+    entries.push([
+      <Menu.Divider key="divider" />,
+      <Menu.Item
+        icon={<ExclamationCircleOutlined />}
+        key="troubleshoot"
+        onClick={onTroubleshoot}>
+        {"Can't see your device / app?"}
+      </Menu.Item>,
+    ]);
+  }
+
   return entries.flat();
 }
 

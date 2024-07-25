@@ -80,6 +80,8 @@ import {ItemType} from 'antd/lib/menu/hooks/useItems';
 import {TroubleshootingGuideV2} from './appinspect/fb-stubs/TroubleshootingGuideV2';
 
 export const Navbar = withTrackingScope(function Navbar() {
+  const [troubleshootingGuideOpen, setTroubleshootingGuideOpen] =
+    useState(false);
   return (
     <Layout.Horizontal
       borderBottom
@@ -93,7 +95,9 @@ export const Navbar = withTrackingScope(function Navbar() {
       }}>
       <Layout.Horizontal style={{gap: 6}}>
         <LeftSidebarToggleButton />
-        <AppSelector />
+        <AppSelector
+          setTroubleshootingGuideOpen={setTroubleshootingGuideOpen}
+        />
         <StatusMessage />
         <NavbarScreenshotButton />
         <NavbarScreenRecordButton />
@@ -109,7 +113,10 @@ export const Navbar = withTrackingScope(function Navbar() {
         <NoConnectivityWarning />
 
         <NotificationButton />
-        <TroubleshootMenu />
+        <TroubleshootMenu
+          troubleshootingGuideOpen={troubleshootingGuideOpen}
+          setTroubleshootingGuideOpen={setTroubleshootingGuideOpen}
+        />
         <SandyRatingButton />
         <ExtrasMenu />
         <RightSidebarToggleButton />
@@ -447,7 +454,13 @@ const submenu = css`
 const AlertsZIndex = 101;
 const TroubleShootZIndex = 100;
 
-function TroubleshootMenu() {
+function TroubleshootMenu({
+  troubleshootingGuideOpen,
+  setTroubleshootingGuideOpen,
+}: {
+  troubleshootingGuideOpen: boolean;
+  setTroubleshootingGuideOpen: (open: boolean) => void;
+}) {
   const store = useStore();
   const [status, setStatus] = useState<
     ExportEverythingEverywhereAllAtOnceStatus | undefined
@@ -527,7 +540,17 @@ function TroubleshootMenu() {
               Troubleshoot Connectivity
             </Menu.Item>
             <TroubleshootingGuide />
-            <TroubleshootingGuideV2 />
+            <Menu.Item
+              key="TroubleshootingGuideV2"
+              onClick={() => {
+                setTroubleshootingGuideOpen(true);
+              }}>
+              Troubleshooting Guide V2
+            </Menu.Item>
+            <TroubleshootingGuideV2
+              open={troubleshootingGuideOpen}
+              closeGuide={() => setTroubleshootingGuideOpen(false)}
+            />
 
             <Menu.Item
               key="rage"
