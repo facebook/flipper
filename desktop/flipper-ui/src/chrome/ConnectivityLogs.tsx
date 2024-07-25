@@ -225,6 +225,10 @@ function clearMessages() {
   rows.clear();
 }
 
+export function getConnectivityLogs() {
+  return rows.records();
+}
+
 export const ConnectivityLogs = () => {
   const [selection, setSelection] = useState<
     ConnectionRecordEntry | undefined
