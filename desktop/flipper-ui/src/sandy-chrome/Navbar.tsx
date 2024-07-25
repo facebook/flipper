@@ -77,6 +77,7 @@ import {showChangelog} from '../chrome/ChangelogSheet';
 import {FlipperSetupWizard} from '../chrome/FlipperSetupWizard';
 // eslint-disable-next-line no-restricted-imports
 import {ItemType} from 'antd/lib/menu/hooks/useItems';
+import {TroubleshootingGuideV2} from './appinspect/fb-stubs/TroubleshootingGuideV2';
 
 export const Navbar = withTrackingScope(function Navbar() {
   return (
@@ -526,6 +527,7 @@ function TroubleshootMenu() {
               Troubleshoot Connectivity
             </Menu.Item>
             <TroubleshootingGuide />
+            <TroubleshootingGuideV2 />
 
             <Menu.Item
               key="rage"
