@@ -13,6 +13,7 @@ import React from 'react';
 import {Layout} from './ui';
 import {Dialog, getFlipperLib, path} from 'flipper-plugin';
 import {getFlipperServer} from './flipperServer';
+import {getLogger} from 'flipper-common';
 
 type ConnectionUpdate = {
   key: string;
@@ -195,8 +196,10 @@ export function DIYConnectivityFix({
             type="primary"
             size="small"
             onClick={() => {
+              const step = os === 'iOS' ? 'ios-idb-kill' : 'android-adb-kill';
+              logTroubleshootGuideStep(step);
               getFlipperServer()
-                .exec(os === 'iOS' ? 'ios-idb-kill' : 'android-adb-kill')
+                .exec(step)
                 .then(() => {
                   notification.info({
                     message: `Restarted ${os} connections`,
@@ -243,6 +246,7 @@ export function DIYConnectivityFix({
                     ),
                   )
                   .then(() => {
+                    logTroubleshootGuideStep('delete-certs');
                     notification.info({
                       message: `Certificates deleted`,
                       description: 'Please restart Flipper',
@@ -265,6 +269,7 @@ export function DIYConnectivityFix({
             type="primary"
             size="small"
             onClick={() => {
+              logTroubleshootGuideStep('restart-flipper');
               getFlipperServer()
                 .exec('restart')
                 .then(() => {
@@ -291,4 +296,10 @@ export function DIYConnectivityFix({
       </Typography.Paragraph>
     </div>
   );
+}
+
+export function logTroubleshootGuideStep(step: string) {
+  getLogger().track('usage', 'troubleshoot-guide-v2-step', {
+    step,
+  });
 }
