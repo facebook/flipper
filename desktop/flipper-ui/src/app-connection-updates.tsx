@@ -160,85 +160,103 @@ function DIYConnectivityFixModal({
         <Typography.Title style={styles.title}>
           Connecting to {app} has timed out.
         </Typography.Title>
-        <Typography.Paragraph>
-          This is usually can be fixed in a few ways. Try the following in the
-          order presented.
-        </Typography.Paragraph>
-        <Typography.Title level={2} style={styles.title}>
-          Least involved
-        </Typography.Title>
-        <ol style={styles.numberedList}>
+        <DIYConnectivityFix os={os} mode="app-connectivity" />
+      </div>
+    </Modal>
+  );
+}
+
+export function DIYConnectivityFix({
+  os,
+  mode,
+}: {
+  os: string;
+  mode: 'cant-see-device' | 'app-connectivity';
+}) {
+  return (
+    <div>
+      <Typography.Paragraph>
+        This is usually can be fixed in a few ways. Try the following in the
+        order presented.
+      </Typography.Paragraph>
+      <Typography.Title level={3} style={styles.title}>
+        Least involved
+      </Typography.Title>
+      <ol style={styles.numberedList}>
+        {mode === 'app-connectivity' && (
           <li>
             <Typography.Text>
               Completly close the app on the device
             </Typography.Text>
           </li>
-          <li>
-            <Button
-              type="primary"
-              size="small"
-              onClick={() => {
-                getFlipperServer()
-                  .exec(os === 'iOS' ? 'ios-idb-kill' : 'android-adb-kill')
-                  .then(() => {
-                    notification.info({
-                      message: `Restarted ${os} connections`,
-                    });
-                  })
-                  .catch((e) => {
-                    notification.error({
-                      message: `Failed to restart ${os} connections`,
-                      description: e.message,
-                    });
+        )}
+        <li>
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => {
+              getFlipperServer()
+                .exec(os === 'iOS' ? 'ios-idb-kill' : 'android-adb-kill')
+                .then(() => {
+                  notification.info({
+                    message: `Restarted ${os} connections`,
                   });
-              }}>
-              Click to restart{' '}
-              {os === 'iOS'
-                ? 'IDB (iOS connections)'
-                : 'ADB (Android connections)'}
-            </Button>
-          </li>
+                })
+                .catch((e) => {
+                  notification.error({
+                    message: `Failed to restart ${os} connections`,
+                    description: e.message,
+                  });
+                });
+            }}>
+            Click to restart{' '}
+            {os === 'iOS'
+              ? 'IDB (iOS connections)'
+              : 'ADB (Android connections)'}
+          </Button>
+        </li>
+        {mode === 'app-connectivity' && (
           <li>
             <Typography.Text>Launch the app on the device</Typography.Text>
           </li>
-        </ol>
-        <Typography.Title level={2} style={styles.title}>
-          More involved
-        </Typography.Title>
-        <ol style={styles.numberedList}>
-          <li>
-            <Typography.Text>Restart device</Typography.Text>
-          </li>
-          <li>
-            <Button
-              type="primary"
-              size="small"
-              onClick={() => {
-                getFlipperServer()
-                  .exec('restart')
-                  .then(() => {
-                    notification.info({
-                      message: `Restarted ${os} connections`,
-                    });
-                  })
-                  .catch((e) => {
-                    notification.error({
-                      message: `Failed to restart ${os} connections`,
-                      description: e.message,
-                    });
+        )}
+      </ol>
+      <Typography.Title level={3} style={styles.title}>
+        More involved
+      </Typography.Title>
+      <ol style={styles.numberedList}>
+        <li>
+          <Typography.Text>Restart device / emulator</Typography.Text>
+        </li>
+        <li>
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => {
+              getFlipperServer()
+                .exec('restart')
+                .then(() => {
+                  notification.info({
+                    message: `Restarted ${os} connections`,
                   });
-              }}>
-              Click to restart Flipper
-            </Button>
-          </li>
-        </ol>
-        <Typography.Title level={2} style={styles.title}>
-          Most involved
-        </Typography.Title>
-        <Typography.Paragraph>
-          This can be frequently fixed by restarting your computer.
-        </Typography.Paragraph>
-      </div>
-    </Modal>
+                })
+                .catch((e) => {
+                  notification.error({
+                    message: `Failed to restart ${os} connections`,
+                    description: e.message,
+                  });
+                });
+            }}>
+            Click to restart Flipper
+          </Button>
+        </li>
+      </ol>
+      <Typography.Title level={3} style={styles.title}>
+        Most involved
+      </Typography.Title>
+      <Typography.Paragraph>
+        Restarting your computer can frequently solve these sorts of issues.
+      </Typography.Paragraph>
+    </div>
   );
 }
