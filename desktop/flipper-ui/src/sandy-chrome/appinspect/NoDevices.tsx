@@ -20,7 +20,7 @@ const {Text, Link, Title} = Typography;
 export function NoDevices({
   showTroubleshootingGuide,
 }: {
-  showTroubleshootingGuide: () => void;
+  showTroubleshootingGuide: (source: string) => void;
 }) {
   const store = useStore();
 
@@ -46,7 +46,7 @@ export function NoDevices({
             or if you are struggling to connect try the{' '}
             <Link
               onClick={() => {
-                showTroubleshootingGuide();
+                showTroubleshootingGuide('no-devices');
               }}>
               troubleshooting wizard
             </Link>

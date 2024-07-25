@@ -43,7 +43,7 @@ import SetupDoctorScreen, {
   checkHasNewProblem,
   checkHasProblem,
 } from './SetupDoctorScreen';
-import {isProduction} from 'flipper-common';
+import {getLogger, isProduction} from 'flipper-common';
 import FpsGraph from '../chrome/FpsGraph';
 import NetworkGraph from '../chrome/NetworkGraph';
 import {errorCounterAtom} from '../chrome/ConsoleLogs';
@@ -95,7 +95,10 @@ export const Navbar = withTrackingScope(function Navbar() {
       <Layout.Horizontal style={{gap: 6}}>
         <LeftSidebarToggleButton />
         <AppSelector
-          openTroubleShootingGuide={() => setTroubleshootingGuideOpen(true)}
+          openTroubleShootingGuide={(source: string) => {
+            setTroubleshootingGuideOpen(true);
+            logTroubleShootGuideOpen(source);
+          }}
         />
         <StatusMessage />
         <NavbarScreenshotButton />
@@ -114,7 +117,12 @@ export const Navbar = withTrackingScope(function Navbar() {
         <NotificationButton />
         <TroubleshootMenu
           troubleshootingGuideOpen={troubleshootingGuideOpen}
-          setTroubleshootingGuideOpen={setTroubleshootingGuideOpen}
+          setTroubleshootingGuideOpen={(open) => {
+            setTroubleshootingGuideOpen(open);
+            if (open) {
+              logTroubleShootGuideOpen('troubleshoot-menu');
+            }
+          }}
         />
         <SandyRatingButton />
         <ExtrasMenu />
@@ -785,4 +793,10 @@ function ExtrasMenu() {
       />
     </>
   );
+}
+
+function logTroubleShootGuideOpen(source: string) {
+  getLogger().track('usage', 'troubleshooting-guide-v2-open', {
+    source,
+  });
 }

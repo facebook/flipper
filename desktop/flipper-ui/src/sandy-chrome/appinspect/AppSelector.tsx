@@ -50,7 +50,7 @@ function getOsIcon(os?: DeviceOS) {
 export function AppSelector({
   openTroubleShootingGuide,
 }: {
-  openTroubleShootingGuide: () => void;
+  openTroubleShootingGuide: (source: string) => void;
 }) {
   const dispatch = useDispatch();
   const selectableDevices = useSelector(getSelectableDevices);
@@ -207,7 +207,7 @@ function computeEntries(
   uninitializedClients: State['connections']['uninitializedClients'],
   onSelectDevice: (device: BaseDevice) => void,
   onSelectApp: (device: BaseDevice, client: Client) => void,
-  onTroubleshoot: () => void,
+  onTroubleshoot: (source: string) => void,
 ) {
   const entries = selectableDevices.map((device) => {
     const deviceEntry = (
@@ -253,7 +253,7 @@ function computeEntries(
       <Menu.Item
         icon={<ExclamationCircleOutlined />}
         key="troubleshoot"
-        onClick={onTroubleshoot}>
+        onClick={() => onTroubleshoot('device-dropdown')}>
         {"Can't see your device / app?"}
       </Menu.Item>,
     ]);
