@@ -67,7 +67,6 @@ import {
   NavbarScreenshotButton,
 } from '../chrome/ScreenCaptureButtons';
 import {StatusMessage} from './appinspect/AppInspect';
-import {TroubleshootingGuide} from './appinspect/fb-stubs/TroubleshootingGuide';
 import {FlipperDevTools} from '../chrome/FlipperDevTools';
 import {TroubleshootingHub} from '../chrome/TroubleshootingHub';
 import {Notification} from './notification/Notification';
@@ -533,25 +532,16 @@ function TroubleshootMenu({
               <Badge dot={hasNewProblem}>Setup Doctor</Badge>
             </Menu.Item>
             <Menu.Item
-              key="connectivity"
-              onClick={() => {
-                store.dispatch(toggleConnectivityModal());
-              }}>
-              Troubleshoot Connectivity
-            </Menu.Item>
-            <TroubleshootingGuide />
-            <Menu.Item
               key="TroubleshootingGuideV2"
               onClick={() => {
                 setTroubleshootingGuideOpen(true);
               }}>
-              Troubleshooting Guide V2
+              Troubleshooting wizard
             </Menu.Item>
             <TroubleshootingGuideV2
               open={troubleshootingGuideOpen}
               closeGuide={() => setTroubleshootingGuideOpen(false)}
             />
-
             <Menu.Item
               key="rage"
               onClick={exportEverythingEverywhereAllAtOnceTracked}>
@@ -565,6 +555,13 @@ function TroubleshootMenu({
               <Layout.Horizontal center gap="small">
                 Flipper Logs <Badge count={flipperErrorLogCount} />
               </Layout.Horizontal>
+            </Menu.Item>
+            <Menu.Item
+              key="connectivity"
+              onClick={() => {
+                store.dispatch(toggleConnectivityModal());
+              }}>
+              Connectivity Logs
             </Menu.Item>
             <Menu.Item
               key="restart-idb"
