@@ -100,7 +100,6 @@
     "pretty-format": "^29.7.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^29.2.3",
-    "ts-node": "^10.9.1",
     "tsx": "^4.15.7",
     "typescript": "^5.4.2"
   },

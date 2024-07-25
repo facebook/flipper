@@ -41,11 +41,11 @@
       "name": "Launch Current Script",
       "args": ["${file}"],
       "env": {
-        "TS_NODE_FILES": "true"
+        "NODE_OPTIONS": "--import tsx"
       },
       "protocol": "inspector",
       "internalConsoleOptions": "openOnSessionStart",
-      "runtimeArgs": ["--require", "ts-node/register"]
+      "runtimeArgs": []
     },
     {
       "type": "node",
