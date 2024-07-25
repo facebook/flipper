@@ -11,7 +11,7 @@ import {css} from '@emotion/css';
 import {Button, message, Modal, notification, Typography} from 'antd';
 import React from 'react';
 import {Layout} from './ui';
-import {Dialog} from 'flipper-plugin';
+import {Dialog, getFlipperLib, path} from 'flipper-plugin';
 import {getFlipperServer} from './flipperServer';
 
 type ConnectionUpdate = {
@@ -228,6 +228,38 @@ export function DIYConnectivityFix({
         <li>
           <Typography.Text>Restart device / emulator</Typography.Text>
         </li>
+        {mode === 'app-connectivity' && (
+          <li>
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => {
+                getFlipperLib()
+                  .remoteServerContext.fs.rm(
+                    path.join(
+                      getFlipperLib().paths.homePath,
+                      '.flipper',
+                      'certs',
+                    ),
+                  )
+                  .then(() => {
+                    notification.info({
+                      message: `Certificates deleted`,
+                      description: 'Please restart Flipper',
+                      duration: 10000,
+                    });
+                  })
+                  .catch((e) => {
+                    notification.error({
+                      message: `Failed to delete cerificates folder, ${e}`,
+                    });
+                  });
+              }}>
+              Click to clear Flipper certificates
+            </Button>
+          </li>
+        )}
+
         <li>
           <Button
             type="primary"
@@ -237,12 +269,12 @@ export function DIYConnectivityFix({
                 .exec('restart')
                 .then(() => {
                   notification.info({
-                    message: `Restarted ${os} connections`,
+                    message: `Restarting Flipper server`,
                   });
                 })
                 .catch((e) => {
                   notification.error({
-                    message: `Failed to restart ${os} connections`,
+                    message: `Failed to restart Flipper`,
                     description: e.message,
                   });
                 });
