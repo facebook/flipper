@@ -96,7 +96,7 @@ export const Navbar = withTrackingScope(function Navbar() {
       <Layout.Horizontal style={{gap: 6}}>
         <LeftSidebarToggleButton />
         <AppSelector
-          setTroubleshootingGuideOpen={setTroubleshootingGuideOpen}
+          openTroubleShootingGuide={() => setTroubleshootingGuideOpen(true)}
         />
         <StatusMessage />
         <NavbarScreenshotButton />

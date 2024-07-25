@@ -31,7 +31,6 @@ import {brandColors, brandIcons, colors} from '../../ui/components/colors';
 import {getSelectableDevices} from '../../selectors/connections';
 import {NoDevices} from './NoDevices';
 import BaseDevice from '../../devices/BaseDevice';
-import {GK} from '../../utils/GK';
 
 const {Text} = Typography;
 
@@ -49,9 +48,9 @@ function getOsIcon(os?: DeviceOS) {
 }
 
 export function AppSelector({
-  setTroubleshootingGuideOpen,
+  openTroubleShootingGuide,
 }: {
-  setTroubleshootingGuideOpen: (open: boolean) => void;
+  openTroubleShootingGuide: () => void;
 }) {
   const dispatch = useDispatch();
   const selectableDevices = useSelector(getSelectableDevices);
@@ -84,16 +83,15 @@ export function AppSelector({
     uninitializedClients,
     onSelectDevice,
     onSelectApp,
-    () => setTroubleshootingGuideOpen(true),
+    openTroubleShootingGuide,
   );
   // TODO: Fix this the next time the file is edited.
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const client = clients.get(selectedAppId!);
-  const gkSelfSufficiency = GK('flipper_self_sufficiency');
 
   return (
     <>
-      {entries.length ? (
+      {entries.length > 0 ? (
         <Radio.Group
           value={selectedAppId}
           size="small"
@@ -128,23 +126,8 @@ export function AppSelector({
           </Dropdown>
         </Radio.Group>
       ) : (
-        <Layout.Horizontal gap center>
-          <ExclamationCircleOutlined style={{color: theme.warningColor}} />
-          <Text
-            type="secondary"
-            style={{
-              textTransform: 'uppercase',
-              fontSize: '0.8em',
-              color: theme.errorColor,
-            }}>
-            No devices found
-          </Text>
-        </Layout.Horizontal>
+        <NoDevices showTroubleshootingGuide={openTroubleShootingGuide} />
       )}
-      {
-        /* Return the public component NoDevices if showGuide is false (This means that the user is not in the GK Allowlist) and no devices are detected */
-        !gkSelfSufficiency && entries.length == 0 ? <NoDevices /> : null
-      }
     </>
   );
 }
