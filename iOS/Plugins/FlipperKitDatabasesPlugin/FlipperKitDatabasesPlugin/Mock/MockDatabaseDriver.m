@@ -91,7 +91,10 @@
                                                          total:numRows];
 }
 
-- (DatabaseExecuteSqlResponse*)executeSQL:(NSString*)sql {
+- (DatabaseExecuteSqlResponse*)
+    executeSQLWithDatabaseDescriptor:
+        (id<DatabaseDescriptor>)databaseDescriptor
+                                 sql:(NSString*)sql {
   // Generate a mock response with a random type
   NSString* type;
   NSArray* columns = @[ @"id", @"name", @"age" ];
