@@ -164,7 +164,7 @@
     "npm": "use yarn instead",
     "yarn": "^1.16"
   },
-  "version": "0.259.0",
+  "version": "0.260.0",
   "workspaces": {
     "packages": [
       "scripts",
