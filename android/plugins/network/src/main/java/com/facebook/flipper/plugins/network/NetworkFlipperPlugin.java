@@ -93,7 +93,7 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
         new ErrorReportingRunnable(getConnection()) {
           @Override
           protected void runOrThrow() throws Exception {
-            if (shouldStripResponseBody(responseInfo)) {
+            if (shouldStripResponseBody(responseInfo, isConnected())) {
               responseInfo.body = null;
             }
 
@@ -188,7 +188,11 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
     return list.build();
   }
 
-  public static boolean shouldStripResponseBody(ResponseInfo responseInfo) {
+  public static boolean shouldStripResponseBody(ResponseInfo responseInfo, boolean isConnected) {
+    if (!isConnected) {
+      return true;
+    }
+
     final Header contentType = responseInfo.getFirstHeader("content-type");
     if (contentType == null) {
       return false;
