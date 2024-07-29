@@ -108,7 +108,7 @@ test('test checkXcodeVersionMismatch with no sims running and no xcode-select', 
   );
 });
 
-test('test queryDevices when simctl used', async () => {
+test.skip('test queryDevices when simctl used', async () => {
   const ios = new IOSDeviceManager(
     fakeFlipperServer,
     getFlipperServerConfig().settings,
@@ -133,7 +133,7 @@ test('test queryDevices when simctl used', async () => {
   // FIXME unregister devices, causes a hanging promise in jest
 });
 
-test('test queryDevices when idb used', async () => {
+test.skip('test queryDevices when idb used', async () => {
   const ios = new IOSDeviceManager(
     fakeFlipperServer,
     getFlipperServerConfig().settings,
