@@ -93,16 +93,19 @@ async function postinstall(): Promise<number> {
     }
     return 1;
   }
-  console.log("* Installing public plugins' dependencies...");
-  await exec('yarn install --mutex network:30330', {
-    cwd: publicPluginsDir,
-  });
-  if (await fs.pathExists(fbPluginsDir)) {
-    console.log("* Installing internal plugins' dependencies...");
-    await exec('yarn install --mutex network:30330', {
-      cwd: fbPluginsDir,
-    });
-  }
+  console.log("* Installing plugins' dependencies...");
+  await Promise.all([
+    exec('yarn install --mutex network:30330', {
+      cwd: publicPluginsDir,
+    }),
+    fs.pathExists(fbPluginsDir).then((exists) => {
+      if (exists) {
+        return exec('yarn install --mutex network:30330', {
+          cwd: fbPluginsDir,
+        });
+      }
+    }),
+  ]);
   const peerDependenciesArray = Object.keys(peerDependencies);
   console.log('* Removing peer dependencies from node_modules...');
   await Promise.all([
