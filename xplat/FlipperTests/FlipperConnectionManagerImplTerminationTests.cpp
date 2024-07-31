@@ -44,7 +44,7 @@ TEST_F(
         state,
         contextStore);
     FAIL();
-  } catch (std::invalid_argument& e) {
+  } catch (std::invalid_argument&) {
     // Pass test
   }
   try {
@@ -53,7 +53,7 @@ TEST_F(
         state,
         contextStore);
     FAIL();
-  } catch (std::invalid_argument& e) {
+  } catch (std::invalid_argument&) {
     // Pass test
   }
 }
