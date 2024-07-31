@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class ApplicationWrapper implements Application.ActivityLifecycleCallbacks {
 
@@ -47,7 +48,7 @@ public class ApplicationWrapper implements Application.ActivityLifecycleCallback
   }
 
   @Override
-  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+  public void onActivityCreated(Activity activity, @Nullable Bundle savedInstanceState) {
     mActivities.add(new WeakReference<>(activity));
     notifyListener();
   }
