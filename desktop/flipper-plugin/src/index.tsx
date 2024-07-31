@@ -212,4 +212,5 @@ export {
   ServerAddOn,
   ServerAddOnPluginConnection,
   FlipperServerForServerAddOn,
+  InternGraphServerError,
 } from 'flipper-common';

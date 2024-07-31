@@ -77,6 +77,16 @@ export class ConnectivityError extends Error {
   name: 'ConnectivityError';
 }
 
+export class InternGraphServerError extends Error {
+  body: any;
+  constructor(msg: string, body: any) {
+    super(msg);
+    this.name = 'InternGraphServerError';
+    this.body = body;
+  }
+  name: 'InternGraphServerError';
+}
+
 export class UserUnauthorizedError extends Error {
   constructor(msg: string = 'User unauthorized.') {
     super(msg);

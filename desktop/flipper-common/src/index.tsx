@@ -55,6 +55,7 @@ export {
   isError,
   isAuthError,
   FlipperServerDisconnectedError,
+  InternGraphServerError,
   FlipperServerTimeoutError,
   getStringFromErrorLike,
   getErrorFromErrorLike,
