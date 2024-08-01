@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
 
@@ -36,7 +37,8 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
       onSharedPreferenceChangeListener =
           new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            public void onSharedPreferenceChanged(
+                SharedPreferences sharedPreferences, @Nullable String key) {
               if (mConnection == null) {
                 return;
               }
