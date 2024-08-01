@@ -42,6 +42,7 @@ test('Correct top level API exposed', () => {
       "FileSelector",
       "HighlightContext",
       "HighlightProvider",
+      "InternGraphServerError",
       "Layout",
       "MarkerTimeline",
       "MasterDetail",
