@@ -34,11 +34,22 @@ export type ShareType = {
   closeOnFinish: boolean;
 } & SubShareType;
 
+export type ConnectivityModalState =
+  | {
+      isOpen: true;
+      os: string;
+      app: string;
+    }
+  | {
+      isOpen: false;
+    };
+
 export type State = {
   isTroubleshootingModalOpen: boolean;
   isSettingsModalOpen: boolean;
   isSetupWizardOpen: boolean;
   isNotificationModalOpen: boolean;
+  diyConnectivityFixModal: ConnectivityModalState;
   leftSidebarVisible: boolean;
   rightSidebarVisible: boolean;
   rightSidebarAvailable: boolean;
@@ -83,6 +94,13 @@ export type Action =
     }
   | {
       type: 'TOGGLE_CONNECTIVITY_MODAL';
+    }
+  | {
+      type: 'OPEN_DIY_CONNECTIVITY_FIX_MODAL';
+      payload: {os: string; app: string};
+    }
+  | {
+      type: 'CLOSE_DIY_CONNECTIVITY_FIX_MODAL';
     };
 
 export const initialState: () => State = () => ({
@@ -92,6 +110,9 @@ export const initialState: () => State = () => ({
   isSettingsModalOpen: false,
   isSetupWizardOpen: false,
   isNotificationModalOpen: false,
+  diyConnectivityFixModal: {
+    isOpen: false,
+  },
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
@@ -153,6 +174,27 @@ export default function reducer(
     return {
       ...state,
       windowIsFocused: action.payload.isFocused,
+    };
+  } else if (action.type === 'OPEN_DIY_CONNECTIVITY_FIX_MODAL') {
+    // do not reopen the modal if it's already open
+    if (state.diyConnectivityFixModal.isOpen) {
+      return state;
+    } else {
+      return {
+        ...state,
+        diyConnectivityFixModal: {
+          isOpen: true,
+          os: action.payload.os,
+          app: action.payload.app,
+        },
+      };
+    }
+  } else if (action.type === 'CLOSE_DIY_CONNECTIVITY_FIX_MODAL') {
+    return {
+      ...state,
+      diyConnectivityFixModal: {
+        isOpen: false,
+      },
     };
   } else if (action.type === 'LAUNCHER_MSG') {
     return {
@@ -233,4 +275,16 @@ export const addStatusMessage = (payload: StatusMessageType): Action => ({
 export const removeStatusMessage = (payload: StatusMessageType): Action => ({
   type: 'REMOVE_STATUS_MSG',
   payload,
+});
+
+export const openDiyConnectivityFixModal = (payload: {
+  os: string;
+  app: string;
+}): Action => ({
+  type: 'OPEN_DIY_CONNECTIVITY_FIX_MODAL',
+  payload,
+});
+
+export const closeDiyConnectivityFixModal = (): Action => ({
+  type: 'CLOSE_DIY_CONNECTIVITY_FIX_MODAL',
 });
