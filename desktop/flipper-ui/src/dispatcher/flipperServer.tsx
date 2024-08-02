@@ -106,6 +106,7 @@ export function connectFlipperServerToStore(
         title: 'is attempting to connect...',
       },
       troubleshootConnection,
+      store.dispatch,
     );
   });
 
@@ -121,6 +122,7 @@ export function connectFlipperServerToStore(
         detail: message,
       },
       troubleshootConnection,
+      store.dispatch,
     );
   });
 
@@ -168,6 +170,7 @@ export function connectFlipperServerToStore(
         title: step,
       },
       troubleshootConnection,
+      store.dispatch,
     );
   });
 
@@ -189,6 +192,7 @@ export function connectFlipperServerToStore(
         title: 'successfully connected',
       },
       troubleshootConnection,
+      store.dispatch,
     );
   });
 
@@ -207,6 +211,7 @@ export function connectFlipperServerToStore(
           title: 'disconnected',
         },
         troubleshootConnection,
+        store.dispatch,
       );
     }
   });

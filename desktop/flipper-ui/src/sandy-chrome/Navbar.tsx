@@ -22,7 +22,8 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {useDispatch, useStore} from '../utils/useStore';
 import config from '../fb-stubs/config';
 import {currentUser, isConnected, logoutUser} from '../fb-stubs/user';
-import {Badge, Button, Menu, Modal} from 'antd';
+import {DIYConnectivityFix} from './DIYConnectivityFix';
+import {Badge, Button, Menu, Modal, Typography} from 'antd';
 import {
   BellOutlined,
   BugOutlined,
@@ -36,6 +37,7 @@ import {
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
   toggleSettingsModal,
+  closeDiyConnectivityFixModal,
 } from '../reducers/application';
 import PluginManager from '../chrome/plugin-manager/PluginManager';
 import {showEmulatorLauncher} from './appinspect/LaunchEmulator';
@@ -608,6 +610,7 @@ function TroubleshootMenu({
         onClose={() => setFlipperDevToolsModalOpen(false)}
       />
       <TroubleshootingModal />
+      <DIYConnectivityFixModal />
     </>
   );
 }
@@ -799,4 +802,27 @@ function logTroubleShootGuideOpen(source: string) {
   getLogger().track('usage', 'troubleshooting-guide-v2-open', {
     source,
   });
+}
+
+function DIYConnectivityFixModal() {
+  const state = useStore((s) => s.application.diyConnectivityFixModal);
+  const dispatch = useDispatch();
+  if (!state.isOpen) {
+    return null;
+  }
+  return (
+    <Modal
+      onCancel={() => {
+        dispatch(closeDiyConnectivityFixModal());
+      }}
+      open
+      footer={null}>
+      <div>
+        <Typography.Title style={{marginBottom: 8}}>
+          Connecting to {state.app} has timed out.
+        </Typography.Title>
+        <DIYConnectivityFix os={state.os} mode="app-connectivity" />
+      </div>
+    </Modal>
+  );
 }
