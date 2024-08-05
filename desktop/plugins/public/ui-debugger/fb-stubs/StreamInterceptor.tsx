@@ -8,7 +8,7 @@
  */
 
 import {DeviceOS} from 'flipper-plugin';
-import {StreamInterceptorEventEmitter} from '../DesktopTypes';
+import {StreamInterceptorEventEmitter, UIState} from '../DesktopTypes';
 
 /**
  * Stream inteceptors have the change to modify the frame or metata early in the pipeline
@@ -16,6 +16,7 @@ import {StreamInterceptorEventEmitter} from '../DesktopTypes';
 export function addInterceptors(
   _deviceOS: DeviceOS,
   eventEmitter: StreamInterceptorEventEmitter,
+  _uiState: UIState,
 ) {
   //no-op impmentation for open source
   eventEmitter.on('frameReceived', async (frame) => {
