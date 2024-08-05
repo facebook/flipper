@@ -185,6 +185,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
     if (frame.frameTime > lastProcessedFrameTime.get()) {
       applyFrameData(frame.nodes, frame.snapshot);
       lastProcessedFrameTime.set(frame.frameTime);
+    } else {
+      console.debug(
+        '[ui-debugger] frameTime is older than lastProcessedFrameTime... discarding',
+      );
     }
   });
 
