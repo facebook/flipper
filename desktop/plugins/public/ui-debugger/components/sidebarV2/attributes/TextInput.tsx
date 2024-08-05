@@ -18,7 +18,9 @@ export function StyledTextArea({
   color,
   mutable,
   onChange,
+  style,
 }: {
+  style?: React.CSSProperties;
   value: string;
   color: string;
   mutable: boolean;
@@ -32,7 +34,7 @@ export function StyledTextArea({
       autoSize
       className={cx(inputBase, !mutable && readOnlyInput)}
       bordered
-      style={{color, ...pendingStyle(optimisticValue)}}
+      style={{color, ...pendingStyle(optimisticValue), ...style}}
       readOnly={!mutable}
       value={optimisticValue.value}
       onChange={(event) => optimisticValue.onChange(event.target.value)}

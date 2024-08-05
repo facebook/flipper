@@ -46,6 +46,7 @@ import {
 import {
   boolColor,
   enumColor,
+  nullColor,
   numberColor,
   rowHeight,
   stringColor,
@@ -374,6 +375,19 @@ function NamedAttribute({
   );
 }
 
+function checkForNull(inspectable: Inspectable) {
+  if (inspectable.type === 'array') {
+    return inspectable.items == null;
+  } else if (inspectable.type === 'pluginDeeplink') {
+    return inspectable.pluginId == null;
+  } else if (inspectable.type === 'object') {
+    return inspectable.fields == null;
+  } else {
+    return inspectable.value == null;
+  }
+}
+const emptyfn = () => {};
+
 function AttributeValue({
   metadataMap,
   name,
@@ -396,6 +410,19 @@ function AttributeValue({
   const numberGroupOnChange = (value: number, hint: CompoundTypeHint): void => {
     instance.uiActions.editClientAttribute(nodeId, value, metadataPath, hint);
   };
+
+  if (checkForNull(inspectable)) {
+    return (
+      <StyledTextArea
+        style={{fontStyle: 'italic'}}
+        color={nullColor}
+        mutable={false}
+        value={'NULL'}
+        onChange={emptyfn}
+      />
+    );
+  }
+
   switch (inspectable.type) {
     case 'boolean':
       return (

@@ -39,6 +39,7 @@ export const readOnlyInput = css`
 
 export const boolColor = '#C41D7F';
 export const stringColor = '#AF5800';
+export const nullColor = '#cb34cb';
 export const enumColor = '#006D75';
 export const numberColor = '#003EB3';
 export const rowHeight = 26;
