@@ -10,6 +10,10 @@
 import {QueryClient, setLogger} from 'react-query';
 
 export const queryClient = new QueryClient({});
+const oneHour = 60 * 60 * 1000;
+queryClient.setDefaultOptions({
+  queries: {cacheTime: oneHour, staleTime: oneHour},
+});
 
 setLogger({
   log: (...args) => {
