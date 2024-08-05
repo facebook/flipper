@@ -183,12 +183,12 @@ export function plugin(client: PluginClient<Events, Methods>) {
   };
 
   streamInterceptor.on('frameUpdated', (frame) => {
-    if (frame.frameTime > lastProcessedFrameTime.get()) {
+    if (frame.frameTime >= lastProcessedFrameTime.get()) {
       applyFrameData(frame.nodes, frame.snapshot);
       lastProcessedFrameTime.set(frame.frameTime);
     } else {
       console.debug(
-        '[ui-debugger] frameTime is older than lastProcessedFrameTime... discarding',
+        `[ui-debugger] frameTime ${frame.frameTime} is older than lastProcessedFrameTime ${lastProcessedFrameTime.get()}... discarding`,
       );
     }
   });
