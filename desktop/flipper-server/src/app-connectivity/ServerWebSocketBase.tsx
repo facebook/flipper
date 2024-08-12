@@ -172,9 +172,7 @@ abstract class ServerWebSocketBase {
           console.info(`[conn] CSR created at`, requestDate.toISOString());
           if (!isSameDay(requestDate)) {
             throw new Error(
-              `The certificate request being processed was generated on a different date than the current system date. 
-               This discrepancy can lead to certificate verification errors. 
-               To resolve this issue, please ensure that the device's date and time settings match the system's current date and time.`,
+              `Please ensure that the device's date and time settings are correct`,
             );
           }
         }
