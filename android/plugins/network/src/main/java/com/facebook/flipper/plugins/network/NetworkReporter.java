@@ -18,9 +18,9 @@ public interface NetworkReporter {
 
   public class Header {
     public final String name;
-    public final String value;
+    public final @Nullable String value;
 
-    public Header(final String name, final String value) {
+    public Header(final String name, @Nullable final String value) {
       this.name = name;
       this.value = value;
     }
@@ -35,9 +35,9 @@ public interface NetworkReporter {
     public String requestId;
     public long timeStamp;
     public List<Header> headers = new ArrayList<>();
-    public String method;
-    public String uri;
-    public byte[] body;
+    @Nullable public String method;
+    @Nullable public String uri;
+    @Nullable public byte[] body;
     public String videoId = null;
 
     public Header getFirstHeader(final String name) {
@@ -54,7 +54,7 @@ public interface NetworkReporter {
     public String requestId;
     public long timeStamp;
     public int statusCode;
-    public String statusReason;
+    public @Nullable String statusReason;
     public List<Header> headers = new ArrayList<>();
     public @Nullable byte[] body;
     public boolean isMock = false;
