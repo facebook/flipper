@@ -248,7 +248,7 @@ export class SimctlBridge implements IOSBridge {
         )}`,
       );
     } finally {
-      await fs.rmdir(extractTmpDir, {recursive: true});
+      await fs.rm(extractTmpDir, {recursive: true});
     }
   }
 
