@@ -113,7 +113,7 @@ public class FlipperObject {
     return mJson.hashCode();
   }
 
-  public static final class Builder {
+  public static class Builder {
     private final JSONObject mJson;
 
     public Builder() {

@@ -115,7 +115,7 @@ public class FlipperArray {
     return mJson.hashCode();
   }
 
-  public static final class Builder {
+  public static class Builder {
     private final JSONArray mJson;
 
     public Builder() {
