@@ -147,19 +147,6 @@ jobs:
           max_attempts: 3
           command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutPlugin --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
-  lint-flipperkit_layout_ck_plugin_pod:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3.5.3
-      - name: Install Dependences
-        run: pod repo update
-      - name: Lint FlipperKit/FlipperKitLayoutComponentKitSupport
-        uses: nick-fields/retry@v2.8.3
-        with:
-          timeout_minutes: 60
-          max_attempts: 3
-          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitLayoutComponentKitSupport --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
-
   lint-flipperkit_network_pod:
     runs-on: macos-latest
     steps:
