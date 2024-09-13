@@ -66,13 +66,15 @@ export default (
   },
 ) => {
   // This needn't happen immediately and is (light) I/O work.
-  if (window.requestIdleCallback) {
-    window.requestIdleCallback(() => {
-      refreshInstalledPlugins(store).catch((err) =>
-        console.error('Failed to refresh installed plugins:', err),
-      );
+  window.requestIdleCallback?.(() => {
+    refreshInstalledPlugins(store).catch((err: Error) => {
+      if (err.toString().includes('Not connected to Flipper server')) {
+        console.warn('Failed to refresh installed plugins:', err);
+      } else {
+        console.error('Failed to refresh installed plugins:', err);
+      }
     });
-  }
+  });
 
   let running = false;
   const unsubscribeHandlePluginCommands = sideEffect(
