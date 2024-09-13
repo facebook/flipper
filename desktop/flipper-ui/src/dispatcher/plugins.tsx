@@ -294,7 +294,13 @@ export async function getDynamicPlugins(): Promise<InstalledPluginDetails[]> {
   try {
     return await getFlipperServer().exec('plugins-load-dynamic-plugins');
   } catch (e) {
-    console.error('Failed to load dynamic plugins', e);
+    if (
+      e.toString().includes('Flipper Server disconnected. Reason: ws-close')
+    ) {
+      console.warn('Failed to load dynamic plugins', e);
+    } else {
+      console.error('Failed to load dynamic plugins', e);
+    }
     return [];
   }
 }
