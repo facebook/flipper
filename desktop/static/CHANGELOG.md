@@ -1,3 +1,8 @@
+# 0.267.0 (18/9/2024)
+
+ * [D62567586](https://github.com/facebook/flipper/search?q=D62567586&type=Commits) -  UIDebugger - Fix open in IDE for Litho components - You still need to have a fbsource checkout in your home dir but it will be found correctly now
+
+
 # 0.258.0 (16/7/2024)
 
  * [D59629955](https://github.com/facebook/flipper/search?q=D59629955&type=Commits) -  Update offline message
