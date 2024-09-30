@@ -15,6 +15,7 @@
 #include "FireAndForgetBasedFlipperResponder.h"
 #include "FlipperConnectionImpl.h"
 #include "FlipperConnectionManagerImpl.h"
+#include "FlipperMultiPlugin.h"
 #include "FlipperState.h"
 #include "FlipperStep.h"
 #include "Log.h"
@@ -64,6 +65,22 @@ void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
     std::lock_guard<std::mutex> lock(mutex_);
     if (plugins_.find(plugin->identifier()) != plugins_.end()) {
       log("[client] Plugin " + plugin->identifier() + " already added");
+      // If the plugin is allowed to create a multi plugin, then instead of
+      // skipping, create a multi plugin and replace the existing plugin.
+      if (plugin->isDuplicationAllowed) {
+        log("[client] Plugin is allowed for duplication. Creating multiplugin");
+        auto existingPlugin = plugins_[plugin->identifier()];
+        std::vector<std::shared_ptr<FlipperPlugin>> plugins = {
+            existingPlugin, plugin};
+        auto newPlugin =
+            std::static_pointer_cast<facebook::flipper::FlipperPlugin>(
+                std::make_shared<facebook::flipper::FlipperMultiPlugin>(
+                    std::move(plugins)));
+        disconnect(std::move(existingPlugin));
+        plugins_.erase(plugin->identifier());
+        plugins_[plugin->identifier()] = std::move(newPlugin);
+        needs_refresh = true;
+      }
     } else {
       plugins_[plugin->identifier()] = plugin;
       needs_refresh = true;

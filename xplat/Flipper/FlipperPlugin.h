@@ -44,6 +44,8 @@ class FlipperPlugin {
   virtual bool runInBackground() {
     return false;
   }
+
+  bool isDuplicationAllowed = false;
 };
 
 } // namespace flipper
