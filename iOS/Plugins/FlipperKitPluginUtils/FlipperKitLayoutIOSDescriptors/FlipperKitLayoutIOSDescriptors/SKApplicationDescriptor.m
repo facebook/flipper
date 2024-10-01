@@ -57,8 +57,21 @@
 }
 
 - (NSArray<UIWindow*>*)visibleChildrenForNode:(UIApplication*)node {
+  NSMutableArray<UIWindow*>* windows = [NSMutableArray new];
+  if (@available(iOS 13, *)) {
+    for (UIWindowScene* scene in node.connectedScenes) {
+      [windows addObjectsFromArray:scene.windows];
+    }
+  } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    // TODO T202813939 Remove this branch once we drop support for iOS lower
+    // than 13
+    [windows addObjectsFromArray:node.windows];
+  }
+#pragma clang diagnostic pop
   NSMutableArray<UIWindow*>* children = [NSMutableArray new];
-  for (UIWindow* window in node.windows) {
+  for (UIWindow* window in windows) {
     if ([window isKindOfClass:[SKHiddenWindow class]] ||
         [window
             isKindOfClass:objc_lookUpClass("FBAccessibilityOverlayWindow")] ||
