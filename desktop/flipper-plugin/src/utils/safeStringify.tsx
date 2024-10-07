@@ -9,7 +9,11 @@
 
 export function safeStringify(value: any, space: number = 2) {
   try {
-    return JSON.stringify(value, null, space);
+    return JSON.stringify(
+      value,
+      (_, v) => (typeof v === 'bigint' ? v.toString() : v),
+      space,
+    );
   } catch (e) {
     return `<Failed to serialize: ${e}>`;
   }
