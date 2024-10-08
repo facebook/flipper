@@ -32,6 +32,7 @@ import {
   Settings,
   ClientQuery,
   RmOptions,
+  DownloadFileStartOptions,
 } from 'flipper-common';
 import {ServerDevice} from './devices/ServerDevice';
 import {Base64} from 'js-base64';
@@ -49,6 +50,7 @@ import {sendScribeLogs} from './fb-stubs/sendScribeLogs';
 import {
   internGraphGETAPIRequest,
   internGraphPOSTAPIRequest,
+  rewriteInternRequest,
 } from './fb-stubs/internRequests';
 import {commandNodeApiExec} from './commands/NodeApiExec';
 import {commandDownloadFileStartFactory} from './commands/DownloadFile';
@@ -501,9 +503,26 @@ export class FlipperServerImpl implements FlipperServer {
     'node-api-fs-writefile-binary': (path, base64contents) =>
       writeFile(path, Base64.toUint8Array(base64contents), 'binary'),
     // TODO: Do we need API to cancel an active download?
-    'download-file-start': commandDownloadFileStartFactory(
-      this.emit.bind(this),
-    ),
+    'download-file-start': async (
+      endpoint: string,
+      dest: string,
+      options?: DownloadFileStartOptions,
+    ) => {
+      const downloadFileStart = commandDownloadFileStartFactory(
+        this.emit.bind(this),
+      );
+
+      const {url, headers, proxy} = await rewriteInternRequest(
+        endpoint,
+        options?.headers ?? {},
+      );
+
+      return downloadFileStart(url, dest, {
+        ...options,
+        proxy: proxy ?? undefined,
+        headers: headers as Record<string, string>,
+      });
+    },
     'get-config': async () => this.config,
     'get-changelog': getChangelog,
     'device-find': async (deviceSerial) => {

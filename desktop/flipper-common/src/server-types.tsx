@@ -506,6 +506,7 @@ export interface DownloadFileStartOptions {
   maxRedirects?: number;
   headers?: Record<string, string>;
   overwrite?: boolean;
+  proxy?: {host: string; port: number; protocol?: string};
 }
 
 export type DownloadFileUpdate = {

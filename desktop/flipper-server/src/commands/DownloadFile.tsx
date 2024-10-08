@@ -31,7 +31,7 @@ export const commandDownloadFileStartFactory =
   async (
     url,
     dest,
-    {method = 'GET', timeout, maxRedirects, headers, overwrite} = {},
+    {method = 'GET', timeout, maxRedirects, headers, overwrite, proxy} = {},
   ) => {
     const destExists = await pathExists(dest);
 
@@ -70,6 +70,7 @@ export const commandDownloadFileStartFactory =
       timeout,
       maxRedirects,
       headers,
+      proxy,
     });
     let totalSize = parseInt(response.headers['content-length'], 10);
     if (Number.isNaN(totalSize)) {

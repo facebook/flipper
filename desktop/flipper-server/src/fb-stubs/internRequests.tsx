@@ -7,6 +7,7 @@
  * @format
  */
 
+import type {AxiosProxyConfig} from 'axios';
 import {GraphFileUpload, GraphResponse} from 'flipper-common';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -42,4 +43,15 @@ export async function internGraphGETAPIRequest(
   token: string,
 ): Promise<GraphResponse> {
   throw new Error('Feature not implemented');
+}
+
+export async function rewriteInternRequest(
+  url: string,
+  headers: Record<string, string>,
+): Promise<{
+  url: string;
+  headers: Record<string, string>;
+  proxy: AxiosProxyConfig | null;
+}> {
+  return {url, headers, proxy: null};
 }
