@@ -45,7 +45,7 @@ class FlipperPlugin {
     return false;
   }
 
-  bool isDuplicationAllowed = false;
+  std::atomic<bool> isDuplicationAllowed{false};
 };
 
 } // namespace flipper

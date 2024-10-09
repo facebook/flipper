@@ -811,6 +811,9 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
     try {
       auto wrapper =
           std::make_shared<JFlipperPluginWrapper>(make_global(plugin));
+      if (wrapper->identifier() == "UIPerf") {
+        wrapper->isDuplicationAllowed.store(true);
+      }
       FlipperClient::instance()->addPlugin(wrapper);
     } catch (const std::exception& e) {
       handleException(e);
