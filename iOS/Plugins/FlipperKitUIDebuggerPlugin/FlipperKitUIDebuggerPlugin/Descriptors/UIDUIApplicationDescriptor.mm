@@ -59,7 +59,12 @@
 }
 
 - (UIImage*)snapshotForNode:(UIApplication*)node {
-  return UIDApplicationSnapshot(node, [self childrenOfNode:node]);
+  NSMutableArray<UIWindow*>* windows = [NSMutableArray new];
+  UIWindow* window = node.keyWindow;
+  if (window != nil) {
+    [windows addObject:window];
+  }
+  return UIDApplicationSnapshot(node, windows);
 }
 
 @end
