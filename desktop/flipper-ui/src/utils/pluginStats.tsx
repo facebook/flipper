@@ -126,8 +126,8 @@ export function addBackgroundStat(
   stat.maxTime = Math.max(stat.maxTime, cpuTime);
   if (cpuTime > MAX_BACKGROUND_TASK_TIME) {
     console.warn(
-      `Plugin ${plugin} took too much time while doing background: ${cpuTime}ms. Handling background messages should take less than ${MAX_BACKGROUND_TASK_TIME}ms.`,
-      messages,
+      `Plugin ${plugin} took too much time while doing background: ${cpuTime}ms. Handling background messages should take less than ${MAX_BACKGROUND_TASK_TIME}ms. message queue length`,
+      messages.length,
     );
   }
 }
