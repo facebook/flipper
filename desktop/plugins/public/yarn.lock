@@ -1889,18 +1889,18 @@ react-color@^2.19.3:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
-react-devtools-core@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-6.0.0.tgz#a1e3964677fb0c81ca391ed66e5b5d22621d9304"
-  integrity sha512-VmW+VhR9mR2difSed80BNpYLkYyWYzsZgdLPlakoFPYGiD7fwC36tp4HLw45N4sRqY+Te6ZWD9MVSex8d4gFxg==
+react-devtools-core@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-6.0.1.tgz#ffa1ba4bb176e6fd66040d98008d8ab74b258784"
+  integrity sha512-II3iSJhnR5nAscYDa9FCgPLq8mO5aEx/EKKtdXYTDnvdFEa3K7gs3jn1SKRXwQf9maOmIilmjnnx7Qy+3annPA==
   dependencies:
     shell-quote "^1.6.1"
     ws "^7"
 
-react-devtools-inline@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/react-devtools-inline/-/react-devtools-inline-6.0.0.tgz#60d0a2ca7e0a4926ed19cf48a06c9a3979cb37cc"
-  integrity sha512-21nnjYtihp7FoIks0Q9YOWzTHAQlIgApL81MbRwOQHzhTVR4uUprSMCRxSyloyZaWworlQl1WobqeW/+sYSfDw==
+react-devtools-inline@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/react-devtools-inline/-/react-devtools-inline-6.0.1.tgz#057467d4a7ee11796ebfa64b3fc11880ae2844f9"
+  integrity sha512-AT79dsZmU8YLSb8Bax52KZHzqKIl7eC6jW0x1gO1KUmtzOvwJM1mBDyCame3N6gLsg2ScuTL7DyOG39qTik94g==
   dependencies:
     source-map-js "^0.6.2"
     sourcemap-codec "^1.4.8"
