@@ -23,6 +23,7 @@ PODS:
     - FlipperKit/FBDefines
     - FlipperKit/FKPortForwarding
     - SocketRocket (~> 0.7.0)
+    - SSZipArchive (~> 2.4.3)
   - FlipperKit/CppBridge (0.250.0):
     - Flipper (~> 0.250.0)
   - FlipperKit/FBCxxFollyDynamicConvert (0.250.0):
@@ -31,6 +32,8 @@ PODS:
   - FlipperKit/FKPortForwarding (0.250.0):
     - CocoaAsyncSocket (~> 7.6)
     - Flipper-PeerTalk (~> 0.0.4)
+  - FlipperKit/FlipperKitDatabasesPlugin (0.250.0):
+    - FlipperKit/Core
   - FlipperKit/FlipperKitExamplePlugin (0.250.0):
     - FlipperKit/Core
   - FlipperKit/FlipperKitHighlightOverlay (0.250.0)
@@ -63,6 +66,7 @@ PODS:
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
   - SocketRocket (0.7.0)
+  - SSZipArchive (2.4.3)
 
 DEPENDENCIES:
   - CocoaAsyncSocket
@@ -73,6 +77,7 @@ DEPENDENCIES:
   - Flipper-Glog
   - Flipper-PeerTalk
   - FlipperKit (from `../../FlipperKit.podspec`)
+  - FlipperKit/FlipperKitDatabasesPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitExamplePlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitLayoutPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/FlipperKitReactPlugin (from `../../FlipperKit.podspec`)
@@ -82,6 +87,7 @@ DEPENDENCIES:
   - libevent
   - OpenSSL-Universal
   - SocketRocket (~> 0.7.0)
+  - SSZipArchive (~> 2.4.3)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs:
@@ -95,6 +101,7 @@ SPEC REPOS:
     - libevent
     - OpenSSL-Universal
     - SocketRocket
+    - SSZipArchive
 
 EXTERNAL SOURCES:
   Flipper:
@@ -111,11 +118,12 @@ SPEC CHECKSUMS:
   Flipper-Folly: 584845625005ff068a6ebf41f857f468decd26b3
   Flipper-Glog: 70c50ce58ddaf67dc35180db05f191692570f446
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
-  FlipperKit: 069c87a133bff0a67a8c3b24bfe56d7c86835499
+  FlipperKit: d8dc7bd618e40e7e52da9b12580be43b673429be
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
+  SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
 
-PODFILE CHECKSUM: 183869a0e4a7ff3632408564a06aeb8f4ddc1992
+PODFILE CHECKSUM: fff2fff9d9b19fd6653c1c9d17468c26c33d920f
 
 COCOAPODS: 1.15.2
