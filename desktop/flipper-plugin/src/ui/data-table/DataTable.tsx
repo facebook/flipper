@@ -369,6 +369,9 @@ export function DataTable<T extends object>(
             tableManager.setShowNumberedHistory(true);
           }
           break;
+        case 'a':
+          tableManager.addRangeToSelection(0, outputSize-1);
+          break;
         default:
           handled = false;
       }
