@@ -50,23 +50,23 @@ if (CMAKE_ANDROID_ARCH_ABI STREQUAL "x86_64")
     add_compile_options(-mpclmul)
 endif()
 
- file(GLOB SRC_FILES ${FOLLY_DIR}/portability/*.cpp
-                     ${FOLLY_DIR}/io/async/ssl/*.cpp
-                     ${FOLLY_DIR}/io/async/*.cpp
-                     ${FOLLY_DIR}/detail/*.cpp
-                     ${FOLLY_DIR}/synchronization/*.cpp
-                     ${FOLLY_DIR}/lang/*.cpp
-                     ${FOLLY_DIR}/hash/*.cpp
-                     ${FOLLY_DIR}/hash/detail/*.cpp
-                     ${FOLLY_DIR}/memory/*.cpp
-                     ${FOLLY_DIR}/futures/*.cpp
-                     ${FOLLY_DIR}/futures/detail/*.cpp
-                     ${FOLLY_DIR}/experimental/hazptr/*.cpp
-                     ${FOLLY_DIR}/executors/*.cpp
-                     ${FOLLY_DIR}/concurrency/*.cpp
-                     ${FOLLY_DIR}/ssl/*.cpp
-                     ${FOLLY_DIR}/ssl/detail/*.cpp
-                     )
+file(GLOB SRC_FILES ${FOLLY_DIR}/portability/*.cpp
+                    ${FOLLY_DIR}/io/async/ssl/*.cpp
+                    ${FOLLY_DIR}/io/async/*.cpp
+                    ${FOLLY_DIR}/detail/*.cpp
+                    ${FOLLY_DIR}/synchronization/*.cpp
+                    ${FOLLY_DIR}/lang/*.cpp
+                    ${FOLLY_DIR}/hash/*.cpp
+                    ${FOLLY_DIR}/hash/detail/*.cpp
+                    ${FOLLY_DIR}/memory/*.cpp
+                    ${FOLLY_DIR}/futures/*.cpp
+                    ${FOLLY_DIR}/futures/detail/*.cpp
+                    ${FOLLY_DIR}/experimental/hazptr/*.cpp
+                    ${FOLLY_DIR}/executors/*.cpp
+                    ${FOLLY_DIR}/concurrency/*.cpp
+                    ${FOLLY_DIR}/ssl/*.cpp
+                    ${FOLLY_DIR}/ssl/detail/*.cpp
+                    )
 list(APPEND SRC_FILES ${FOLLY_DIR}/io/async/HHWheelTimer.cpp
                       ${FOLLY_DIR}/io/async/AsyncPipe.cpp
                       ${FOLLY_DIR}/io/async/AsyncTimeout.cpp
@@ -131,6 +131,6 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${GLOG_DIR}/glog-0.3.5/src/
     ${DOUBLECONVERSION_DIR})
 
-install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
+install(TARGETS ${PACKAGE_NAME} DESTINATION ./build/)
 
-target_link_libraries(${PACKAGE_NAME} glog double-conversion openssl::ssl openssl::crypto event event_extra event_core)
+target_link_libraries(${PACKAGE_NAME} glog double-conversion event event_extra event_core)
