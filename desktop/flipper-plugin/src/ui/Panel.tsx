@@ -13,8 +13,16 @@ import {TrackingScope} from './Tracked';
 import {useLocalStorageState} from '../utils/useLocalStorageState';
 import {useCallback} from 'react';
 import styled from '@emotion/styled';
+import {css} from '@emotion/css';
 import {Spacing, theme} from './theme';
 import {Layout} from './Layout';
+
+const stickyHeader = css`
+  & .ant-collapse-header {
+    position: sticky !important;
+    top: 0;
+  }
+`;
 
 export const Panel: React.FC<{
   title: string;
@@ -28,6 +36,7 @@ export const Panel: React.FC<{
   collapsed?: boolean;
   pad?: Spacing;
   gap?: Spacing;
+  stickyHeader?: boolean;
   extraActions?: React.ReactElement | null;
   className?: string;
 }> = (props) => {
@@ -52,6 +61,7 @@ export const Panel: React.FC<{
         onChange={toggle}>
         <Collapse.Panel
           key={props.title}
+          className={props.stickyHeader ? stickyHeader : undefined}
           header={
             props.extraActions ? (
               <Layout.Right center>
