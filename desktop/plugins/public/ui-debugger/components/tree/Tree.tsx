@@ -133,7 +133,7 @@ export function Tree2({
     count: treeNodes.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => TreeItemHeightNumber,
-    overscan: 20,
+    overscan: 5,
   });
 
   const prevSearchTerm = useRef<string | null>(null);
