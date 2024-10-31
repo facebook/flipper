@@ -19,7 +19,7 @@ class FlipperConnectionManager {
   class Callbacks;
 
  public:
-  virtual ~FlipperConnectionManager(){};
+  virtual ~FlipperConnectionManager() {}
 
   /**
    Establishes a connection to the ws server.
@@ -84,7 +84,7 @@ class FlipperConnectionManager {
 
 class FlipperConnectionManager::Callbacks {
  public:
-  virtual ~Callbacks(){};
+  virtual ~Callbacks() {}
 
   virtual void onConnected() = 0;
 

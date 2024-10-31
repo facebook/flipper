@@ -18,7 +18,7 @@ namespace flipper {
  */
 class FlipperResponder {
  public:
-  virtual ~FlipperResponder(){};
+  virtual ~FlipperResponder() {}
 
   /**
    * Deliver a successful response to the Flipper desktop app.

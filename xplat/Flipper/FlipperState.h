@@ -24,7 +24,7 @@ enum State { success, in_progress, failed };
 
 class StateElement {
  public:
-  StateElement(std::string name, State state) : name_(name), state_(state){};
+  StateElement(std::string name, State state) : name_(name), state_(state) {}
   std::string name_;
   State state_;
 };
