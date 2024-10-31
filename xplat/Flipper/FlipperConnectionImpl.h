@@ -21,73 +21,27 @@ class FlipperConnectionImpl : public FlipperConnection {
  public:
   FlipperConnectionImpl(
       FlipperConnectionManager* socket,
-      const std::string& name)
-      : socket_(socket), name_(name) {}
+      const std::string& name);
 
   void call(
       const std::string& method,
       const folly::dynamic& params,
-      std::shared_ptr<FlipperResponder> responder) {
-    if (receivers_.find(method) == receivers_.end()) {
-      std::string errorMessage = "Receiver " + method + " not found.";
-      log("Error: " + errorMessage);
-      responder->error(folly::dynamic::object("message", errorMessage));
-      return;
-    }
-    try {
-      receivers_.at(method)(params, responder);
-    } catch (const std::exception& ex) {
-      std::string errorMessage = "Receiver " + method + " failed with error. ";
-      std::string reason = ex.what();
-      errorMessage += "Error: '" + reason + "'.";
-      log("Error: " + errorMessage);
-      responder->error(folly::dynamic::object("message", errorMessage));
-    }
-  }
+      std::shared_ptr<FlipperResponder> responder);
 
-  void send(const std::string& method, const folly::dynamic& params) override {
-    folly::dynamic message = folly::dynamic::object("method", "execute")(
-        "params",
-        folly::dynamic::object("api", name_)("method", method)(
-            "params", params));
-    socket_->sendMessage(message);
-  }
+  void send(const std::string& method, const folly::dynamic& params) override;
 
-  void sendRaw(const std::string& method, const std::string& params) override {
-    std::stringstream ss;
-    ss << "{"
-          "\"method\": \"execute\","
-          "\"params\": {"
-          "\"api\": \""
-       << name_
-       << "\","
-          "\"method\": \""
-       << method
-       << "\","
-          "\"params\":"
-       << params << "}}";
-    auto message = ss.str();
-    socket_->sendMessageRaw(message);
-  }
+  void sendRaw(const std::string& method, const std::string& params) override;
 
   void error(const std::string& message, const std::string& stacktrace)
-      override {
-    socket_->sendMessage(folly::dynamic::object(
-        "error",
-        folly::dynamic::object("message", message)("stacktrace", stacktrace)));
-  }
+      override;
 
   void receive(const std::string& method, const FlipperReceiver& receiver)
-      override {
-    receivers_[method] = receiver;
-  }
+      override;
 
   /**
-  Runtime check which receivers are supported for this app
-  */
-  bool hasReceiver(const std::string& method) {
-    return receivers_.find(method) != receivers_.end();
-  }
+   * Runtime check which receivers are supported for this app
+   */
+  bool hasReceiver(const std::string& method);
 
  private:
   FlipperConnectionManager* socket_;
