@@ -437,6 +437,7 @@ export function plugin(client: PluginClient<Events, Methods>) {
 
   return {
     db,
+    client,
     columns,
     routes,
     nextRouteId,

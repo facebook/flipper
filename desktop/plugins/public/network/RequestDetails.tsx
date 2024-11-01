@@ -36,6 +36,7 @@ import {ProtobufDefinitionsRepository} from './ProtobufDefinitionsRepository';
 import {KeyValueItem, KeyValueTable} from './KeyValueTable';
 import {CopyOutlined} from '@ant-design/icons';
 import {stringify} from 'lossless-json';
+import {RequestAlert} from './fb-stubs/RequestAlert';
 
 const {Text} = Typography;
 
@@ -75,6 +76,8 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
 
     return (
       <>
+        <RequestAlert request={request} />
+
         <Panel key="request" title={'Request'}>
           <KeyValueTable items={this.urlColumns(url)} />
         </Panel>
@@ -553,7 +556,7 @@ class GraphQLBatchFormatter {
   }
 }
 
-class GraphQLFormatter {
+export class GraphQLFormatter {
   parsedServerTimeForFirstFlush(data: any) {
     const firstResponse =
       Array.isArray(data) && data.length > 0 ? data[0] : data;
@@ -579,19 +582,24 @@ class GraphQLFormatter {
       </Text>
     );
   }
+  static requestToObject(request: RequestWithData) {
+    const decoded = request.requestData;
+    if (!decoded) {
+      return undefined;
+    }
+    const data = queryToObj(bodyAsString(decoded));
+    if (typeof data.variables === 'string') {
+      data.variables = JSON.parse(data.variables);
+    }
+    if (typeof data.query_params === 'string') {
+      data.query_params = JSON.parse(data.query_params);
+    }
+
+    return data;
+  }
   formatRequest(request: RequestWithData) {
     if (request.url.indexOf('graphql') > 0) {
-      const decoded = request.requestData;
-      if (!decoded) {
-        return undefined;
-      }
-      const data = queryToObj(bodyAsString(decoded));
-      if (typeof data.variables === 'string') {
-        data.variables = JSON.parse(data.variables);
-      }
-      if (typeof data.query_params === 'string') {
-        data.query_params = JSON.parse(data.query_params);
-      }
+      const data = GraphQLFormatter.requestToObject(request);
       return <DataInspector expandRoot data={data} />;
     }
   }
