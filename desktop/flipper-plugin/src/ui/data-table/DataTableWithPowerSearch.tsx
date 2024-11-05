@@ -98,6 +98,7 @@ type DataTableBaseProps<T = any> = {
     | null
     | ((dataView?: DataSourceView<T, T[keyof T]>) => React.ReactElement);
   powerSearchInitialState?: SearchExpressionTerm[];
+  onSearchExpressionChange?: (searchExpression: SearchExpressionTerm[]) => void;
   /**
    * Adds a special power search entry to search through the entire row (mathching a substring in it after stringifying it as a JSON)
    * @default true
@@ -255,6 +256,10 @@ export function DataTable<T extends object>(
   useAssertStableRef(dataSource, 'dataSource');
   useAssertStableRef(onRowStyle, 'onRowStyle');
   useAssertStableRef(props.onSelect, 'onRowSelect');
+  useAssertStableRef(
+    props.onSearchExpressionChange,
+    'onSearchExpressionChanges',
+  );
   useAssertStableRef(props.columns, 'columns');
   useAssertStableRef(onCopyRows, 'onCopyRows');
   useAssertStableRef(onContextMenu, 'onContextMenu');
@@ -929,6 +934,7 @@ export function DataTable<T extends object>(
             searchExpression={searchExpression}
             onSearchExpressionChange={(newSearchExpression) => {
               tableManager.setSearchExpression(newSearchExpression);
+              props.onSearchExpressionChange?.(newSearchExpression);
             }}
             onConfirmUnknownOption={
               props.enablePowerSearchWholeRowSearch
