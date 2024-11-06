@@ -21,10 +21,10 @@ export function StyledTextArea({
   style,
 }: {
   style?: React.CSSProperties;
-  value: string;
+  value: string | null;
   color: string;
   mutable: boolean;
-  onChange: (value: string) => void;
+  onChange: (value: string | null) => void;
   rightAddon?: string;
 }) {
   const optimisticValue = useOptimisticValue(value, onChange);
@@ -36,7 +36,7 @@ export function StyledTextArea({
       bordered
       style={{color, ...pendingStyle(optimisticValue), ...style}}
       readOnly={!mutable}
-      value={optimisticValue.value}
+      value={optimisticValue.value ?? undefined}
       onChange={(event) => optimisticValue.onChange(event.target.value)}
     />
   );

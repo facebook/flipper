@@ -362,5 +362,5 @@ export type InspectableArray = {
 
 export type InspectableUnknown = {
   type: 'unknown';
-  value: string;
+  value: string | null;
 };
