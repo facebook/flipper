@@ -40,6 +40,10 @@ class ComponentTreeDescriptor(val register: DescriptorRegister) : NodeDescriptor
   private val ComponentTreeId =
       MetadataRegister.register(MetadataRegister.TYPE_ATTRIBUTE, "treeConfiguration", "id")
 
+  private val LithoVisibilityEventsControllerId =
+      MetadataRegister.register(
+          MetadataRegister.TYPE_ATTRIBUTE, NAMESPACE, "LithoVisibilityEventsController")
+
   private val qualifiedName = ComponentTree::class.qualifiedName ?: ""
 
   override fun getId(node: ComponentTree): Id = node.id
@@ -83,8 +87,26 @@ class ComponentTreeDescriptor(val register: DescriptorRegister) : NodeDescriptor
       attributeSections[ConfigurationSectionId] =
           InspectableObject(getLithoConfigurationAttributes(node))
 
+      attributeSections[LithoVisibilityEventsControllerId] =
+          InspectableObject(getLithoVisibilityEventsControllerAttributes(node))
+
       attributeSections
     }
+  }
+
+  private fun getLithoVisibilityEventsControllerAttributes(
+      tree: ComponentTree
+  ): Map<MetadataId, Inspectable> {
+    val lithoVisibilityEventsController = tree.getLithoVisibilityEventsController()
+    val metadataId =
+        MetadataRegister.register(
+            MetadataRegister.TYPE_ATTRIBUTE,
+            "LithoVisibilityEventsController",
+            "LithoVisibilityEventsController")
+
+    return mapOf(
+        metadataId to
+            InspectableValue.Unknown(lithoVisibilityEventsController?.toString() ?: "null"))
   }
 
   private fun getLithoConfigurationAttributes(tree: ComponentTree): Map<MetadataId, Inspectable> {
