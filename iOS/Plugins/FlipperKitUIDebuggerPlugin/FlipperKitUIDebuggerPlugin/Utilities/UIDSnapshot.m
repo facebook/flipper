@@ -31,7 +31,7 @@ UIImage* UIDApplicationSnapshot(UIApplication* application, NSArray* windows) {
   // like in Split View on an iPad, the running application is
   // not using the entire screen thus the snapshot stretches to
   // fill the screen size which is incorrect.
-  if (application.delegate.window) {
+  if ([application.delegate respondsToSelector:@selector(window)]) {
     size = application.delegate.window.bounds.size;
   }
 
