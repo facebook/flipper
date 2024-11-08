@@ -207,7 +207,37 @@
   init.frameworkEventMetadata = [_context.frameworkEventManager eventsMetadata];
   init.currentTraversalMode = _traversalMode;
 
-  [_context.connection send:[UIDInitEvent name] withRawParams:UID_toJSON(init)];
+  NSError* error = nil;
+  if (error) {
+    [self sendClientErrorMessage:error step:@"init"];
+    return;
+  }
+  [_context.connection send:[UIDInitEvent name]
+              withRawParams:UID_toJSON(init, &error)];
+}
+
+- (void)sendClientErrorMessage:(NSError*)error step:(NSString*)step {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
+
+  NSDictionary* clientError = @{
+    @"errorMessage" : error.localizedDescription,
+    @"errorType" : error.localizedFailureReason,
+    @"step" : step,
+  };
+
+  NSError* errorMessageSerializeError = nil;
+  NSString* clientErrorEvent =
+      UID_FoundationtoJSON(clientError, &errorMessageSerializeError);
+
+  if (errorMessageSerializeError) {
+    // uh oh...
+    return;
+  }
+
+  [_context.connection send:@"traversalError" withRawParams:clientErrorEvent];
+
+#pragma clang diagnostic pop
 }
 
 - (void)sendMetadataUpdate {
@@ -220,7 +250,12 @@
   UIDMetadataUpdateEvent* metadataUpdateEvent = [UIDMetadataUpdateEvent new];
   metadataUpdateEvent.attributeMetadata = pendingMetadata;
 
-  id JSON = UID_toJSON(metadataUpdateEvent);
+  NSError* error = nil;
+  id JSON = UID_toJSON(metadataUpdateEvent, &error);
+  if (error) {
+    [self sendClientErrorMessage:error step:@"metadataUpdate"];
+    return;
+  }
 
   [_context.connection send:[UIDMetadataUpdateEvent name] withRawParams:JSON];
 }
@@ -252,7 +287,14 @@
 
     uint64_t t3 = UIDPerformanceNow();
 
-    NSString* JSON = UID_FoundationtoJSON(intermediate);
+    NSError* error = nil;
+
+    NSString* JSON = UID_FoundationtoJSON(intermediate, &error);
+    if (error) {
+      [self sendClientErrorMessage:error step:@"serialization"];
+      return;
+    }
+
     uint64_t t4 = UIDPerformanceNow();
     NSUInteger payloadSize = JSON.length;
 
@@ -280,8 +322,12 @@
     perfStats.payloadSize = payloadSize;
     perfStats.dynamicMeasures = UIDPerformanceGet();
 
+    NSString* perfStatsMessage = UID_toJSON(perfStats, &error);
+    if (error) {
+      [self sendClientErrorMessage:error step:@"perfStats"];
+    }
     [self->_context.connection send:[UIDPerfStatsEvent name]
-                      withRawParams:UID_toJSON(perfStats)];
+                      withRawParams:perfStatsMessage];
   });
 }
 

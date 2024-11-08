@@ -30,37 +30,55 @@ extern "C" {
 id UID_toFoundation(id<UIDFoundation> object) {
   return [object toFoundation];
 }
-
-NSString* UID_FoundationtoJSON(id object) {
-  NSError* error = NULL;
-  if (![NSJSONSerialization isValidJSONObject:object]) {
-    return @"";
-  }
-
+NSString* UID_FoundationtoJSON(id object, NSError** error) {
   uint64_t t0 = UIDPerformanceNow();
 
-  NSData* data = [NSJSONSerialization dataWithJSONObject:object
-                                                 options:0
-                                                   error:&error];
-  uint64_t t1 = UIDPerformanceNow();
+  // NSJSONSerialization dataWithJSONObject throws and exception if data not
+  // serializable despite taking an error param hence the try catch
+  @try {
+    uint64_t t1 = UIDPerformanceNow();
 
-  UIDPerformanceAggregate(
-      @"serialisationBinaryMS", UIDMonotonicTimeConvertMachUnitsToMS(t1 - t0));
+    NSData* data = [NSJSONSerialization dataWithJSONObject:object
+                                                   options:0
+                                                     error:error];
 
-  NSString* JSON = [[NSString alloc] initWithData:data
-                                         encoding:NSUTF8StringEncoding];
+    if (*error) {
+      return nil;
+    }
 
-  uint64_t t2 = UIDPerformanceNow();
+    UIDPerformanceAggregate(
+        @"serialisationBinaryMS",
+        UIDMonotonicTimeConvertMachUnitsToMS(t1 - t0));
 
-  UIDPerformanceAggregate(
-      @"serialisationEncodingMS",
-      UIDMonotonicTimeConvertMachUnitsToMS(t2 - t1));
+    NSString* JSON = [[NSString alloc] initWithData:data
+                                           encoding:NSUTF8StringEncoding];
 
-  return JSON;
+    uint64_t t2 = UIDPerformanceNow();
+
+    UIDPerformanceAggregate(
+        @"serialisationEncodingMS",
+        UIDMonotonicTimeConvertMachUnitsToMS(t2 - t1));
+
+    return JSON;
+
+  } @catch (NSException* exception) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullable-to-nonnull-conversion"
+    *error = [NSError errorWithDomain:@"com.facebook.flipper.uidebugger"
+                                 code:100
+                             userInfo:@{
+                               NSLocalizedDescriptionKey : exception.reason,
+                               NSLocalizedFailureReasonErrorKey : exception.name
+                             }];
+
+    return nil;
+
+#pragma clang diagnostic pop
+  }
 }
 
-NSString* UID_toJSON(id object) {
-  return UID_FoundationtoJSON(UID_toFoundation(object));
+NSString* UID_toJSON(id object, NSError** error) {
+  return UID_FoundationtoJSON(UID_toFoundation(object), error);
 }
 #ifdef __cplusplus
 }

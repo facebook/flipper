@@ -17,8 +17,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern NSString* UID_toJSON(id obj);
-extern NSString* UID_FoundationtoJSON(id obj);
+extern NSString* UID_toJSON(id obj, NSError** error);
+extern NSString* UID_FoundationtoJSON(id obj, NSError** error);
 extern id UID_toFoundation(id<UIDFoundation> obj);
 #ifdef __cplusplus
 }
