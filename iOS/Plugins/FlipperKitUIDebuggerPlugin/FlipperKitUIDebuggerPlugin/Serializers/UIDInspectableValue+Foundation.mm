@@ -14,9 +14,9 @@
 
 static auto CGFloatToNSNumber(CGFloat x) -> NSNumber* {
 #if CGFLOAT_IS_DOUBLE
-  return [NSNumber numberWithDouble:x];
+  return std::isinf(x) ? @(-1) : [NSNumber numberWithDouble:x];
 #else
-  return [NSNumber numberWithFloat:x];
+  return std::isinf(x) ? @(-1) : [NSNumber numberWithDouble:x];
 #endif
 }
 
