@@ -289,11 +289,6 @@ bool generateCertPKCS12(
   OpenSSL_add_all_algorithms();
   ERR_load_crypto_strings();
 
-  // Load the certificate's private key
-  if ((cert_privkey = EVP_PKEY_new()) == NULL) {
-    return false;
-  }
-
   BIO* privateKeyBio = bioFromFile(keyFilepath);
   if (privateKeyBio == nullptr) {
     generateCertPKCS12_free(
@@ -303,6 +298,7 @@ bool generateCertPKCS12(
 
   if (!(cert_privkey =
             PEM_read_bio_PrivateKey(privateKeyBio, NULL, NULL, NULL))) {
+    BIO_free(privateKeyBio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
@@ -311,12 +307,15 @@ bool generateCertPKCS12(
   // Load the certificate
   BIO* certificateBio = bioFromFile(certFilepath);
   if (certificateBio == nullptr) {
+    BIO_free(privateKeyBio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
   if (!(cert = PEM_read_bio_X509(certificateBio, NULL, NULL, NULL))) {
+    BIO_free(privateKeyBio);
+    BIO_free(certificateBio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
@@ -325,12 +324,17 @@ bool generateCertPKCS12(
   // Load the CA certificate who signed it
   BIO* cacertBio = bioFromFile(cacertFilepath);
   if (cacertBio == nullptr) {
+    BIO_free(privateKeyBio);
+    BIO_free(certificateBio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
   if (!(cacert = PEM_read_bio_X509(cacertBio, NULL, NULL, NULL))) {
+    BIO_free(cacertBio);
+    BIO_free(privateKeyBio);
+    BIO_free(certificateBio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
@@ -338,19 +342,15 @@ bool generateCertPKCS12(
 
   // Load the CA certificate on the stack
   if ((cacertstack = sk_X509_new_null()) == NULL) {
+    BIO_free(cacertBio);
+    BIO_free(privateKeyBio);
+    BIO_free(certificateBio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
   sk_X509_push(cacertstack, cacert);
-
-  // Create the PKCS12 structure and fill it with our data
-  if ((pkcs12bundle = PKCS12_new()) == NULL) {
-    generateCertPKCS12_free(
-        cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
-    return false;
-  }
 
   // Values of zero use the openssl default values
   pkcs12bundle = PKCS12_create(
@@ -367,6 +367,9 @@ bool generateCertPKCS12(
   );
 
   if (pkcs12bundle == nullptr) {
+    BIO_free(cacertBio);
+    BIO_free(privateKeyBio);
+    BIO_free(certificateBio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
@@ -376,12 +379,19 @@ bool generateCertPKCS12(
   BIO* pkcs12Bio = BIO_new(BIO_s_mem());
   bytes = i2d_PKCS12_bio(pkcs12Bio, pkcs12bundle);
   if (bytes <= 0) {
+    BIO_free(cacertBio);
+    BIO_free(privateKeyBio);
+    BIO_free(certificateBio);
+    BIO_free(pkcs12Bio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
   }
 
   if (!bioToFile(pkcs12Filepath, pkcs12Bio)) {
+    BIO_free(cacertBio);
+    BIO_free(privateKeyBio);
+    BIO_free(certificateBio);
     BIO_free(pkcs12Bio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
@@ -389,6 +399,9 @@ bool generateCertPKCS12(
   }
 
   // Done, free resources
+  BIO_free(cacertBio);
+  BIO_free(privateKeyBio);
+  BIO_free(certificateBio);
   BIO_free(pkcs12Bio);
   generateCertPKCS12_free(
       cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
