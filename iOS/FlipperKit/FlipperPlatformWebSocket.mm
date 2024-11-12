@@ -106,6 +106,9 @@ static constexpr int connectionKeepaliveSeconds = 10;
 
   [stream setProperty:SSLOptions
                forKey:(__bridge id)kCFStreamPropertySSLSettings];
+
+  CFRelease(items);
+  CFRelease(certificate);
 }
 
 @end
