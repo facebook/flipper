@@ -98,15 +98,15 @@ export const LaunchEmulatorDialog = withTrackingScope(
     const [iOSMessage, setiOSMessage] = useState<IOSState>({type: 'loading'});
     const [androidMessage, setAndroidMessage] = useState<string>('Loading...');
 
-    const [favoriteVirtualDevices, setFavoriteVirtualDevices] =
+    const [favoriteVirtualDeviceIds, setFavoriteVirtualDeviceIds] =
       useLocalStorageState<string[]>('favourite-virtual-devices', []);
 
-    const addToFavorites = (deviceName: string) => {
-      setFavoriteVirtualDevices(uniq([deviceName, ...favoriteVirtualDevices]));
+    const addToFavorites = (id: string) => {
+      setFavoriteVirtualDeviceIds(uniq([id, ...favoriteVirtualDeviceIds]));
     };
 
-    const removeFromFavorites = (deviceName: string) => {
-      setFavoriteVirtualDevices(without(favoriteVirtualDevices, deviceName));
+    const removeFromFavorites = (deviceId: string) => {
+      setFavoriteVirtualDeviceIds(without(favoriteVirtualDeviceIds, deviceId));
     };
 
     const [pendingEmulators, setPendingEmulators] = useState(new Set<string>());
@@ -185,7 +185,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
         ...chain(
           androidEmulators.map((name) => ({
             name,
-            isFavorite: favoriteVirtualDevices.includes(name),
+            isFavorite: favoriteVirtualDeviceIds.includes(name),
           })),
         )
           .sortBy((item) => [!item.isFavorite, item.name])
@@ -235,7 +235,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
                 addToFavorites={addToFavorites}
                 removeFromFavorites={removeFromFavorites}
                 isFavorite={isFavorite}
-                name={name}>
+                id={name}>
                 <Dropdown.Button
                   overlay={menu}
                   icon={<MoreOutlined />}
@@ -258,7 +258,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
         ...chain(iosEmulators)
           .map((device) => ({
             device,
-            isFavorite: favoriteVirtualDevices.includes(device.name),
+            isFavorite: favoriteVirtualDeviceIds.includes(device.udid),
           }))
           .sortBy((item) => [!item.isFavorite, item.device.name])
           .map(({device, isFavorite}) => (
@@ -267,7 +267,7 @@ export const LaunchEmulatorDialog = withTrackingScope(
               addToFavorites={addToFavorites}
               removeFromFavorites={removeFromFavorites}
               isFavorite={isFavorite}
-              name={device.name}>
+              id={device.udid}>
               <Button
                 type="default"
                 key={device.udid}
@@ -405,26 +405,26 @@ function Title({name}: {name: string}) {
 
 function VirtualDeviceRow({
   isFavorite,
-  name,
+  id,
   addToFavorites,
   removeFromFavorites,
   children,
 }: {
   children: ReactNode;
   isFavorite: boolean;
-  name: string;
-  addToFavorites: (deviceName: string) => void;
-  removeFromFavorites: (deviceName: string) => void;
+  id: string;
+  addToFavorites: (id: string) => void;
+  removeFromFavorites: (id: string) => void;
 }) {
   return (
-    <Layout.Horizontal gap="medium" center grow key={name}>
+    <Layout.Horizontal gap="medium" center grow key={id}>
       {children}
       {isFavorite ? (
         <HeartFilled
           testing-id="favorite"
           aria-label="favorite"
           onClick={() => {
-            removeFromFavorites(name);
+            removeFromFavorites(id);
           }}
           style={FavIconStyle}
         />
@@ -433,7 +433,7 @@ function VirtualDeviceRow({
           testing-id="not-favorite"
           aria-label="not-favorite"
           onClick={() => {
-            addToFavorites(name);
+            addToFavorites(id);
           }}
           style={FavIconStyle}
         />
