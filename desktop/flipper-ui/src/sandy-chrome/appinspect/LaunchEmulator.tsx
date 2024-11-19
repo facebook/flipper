@@ -178,7 +178,9 @@ export const LaunchEmulatorDialog = withTrackingScope(
       items.push(
         <Title key="android-title" name="Android emulators" />,
         androidEmulators.length == 0 ? (
-          <Typography.Paragraph style={{textAlign: 'center'}}>
+          <Typography.Paragraph
+            style={{textAlign: 'center'}}
+            key="android-message">
             {androidMessage}
           </Typography.Paragraph>
         ) : null,
@@ -253,7 +255,11 @@ export const LaunchEmulatorDialog = withTrackingScope(
       items.push(
         <Title key="ios-title" name="iOS Simulators" />,
         iosEmulators.length == 0 ? (
-          <IOSPlaceholder kind={iOSMessage.type} message={iOSMessage.message} />
+          <IOSPlaceholder
+            kind={iOSMessage.type}
+            message={iOSMessage.message}
+            key="ios-placeholder"
+          />
         ) : null,
         ...chain(iosEmulators)
           .map((device) => ({
@@ -417,7 +423,7 @@ function VirtualDeviceRow({
   removeFromFavorites: (id: string) => void;
 }) {
   return (
-    <Layout.Horizontal gap="medium" center grow key={id}>
+    <Layout.Horizontal gap="medium" center grow>
       {children}
       {isFavorite ? (
         <HeartFilled
