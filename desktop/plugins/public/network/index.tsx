@@ -170,13 +170,10 @@ export function plugin(client: PluginClient<Events, Methods>) {
   });
 
   client.onMessage('newRequest', (data) => {
-    // Some network stacks may send duplicate data, so we filter them out.
-    if (requests.has(data.id)) {
-      console.warn(`Ignoring duplicate request with id ${data.id}:`, data);
-    } else {
-      requests.append(createRequestFromRequestInfo(data, customColumns.get()));
-      db.storeRequestData(data.id, decodeBody(data.headers, data.data));
-    }
+    // Network stacks might emit newRequest multiple times with incremental
+    // data, hence the upsert.
+    requests.upsert(createRequestFromRequestInfo(data, customColumns.get()));
+    db.storeRequestData(data.id, decodeBody(data.headers, data.data));
   });
 
   function storeResponse(response: ResponseInfo) {
@@ -542,7 +539,7 @@ function showCustomColumnDialog(
   renderReactRoot((unmount) => <CustomColumnDialog unmount={unmount} />);
 }
 
-function createRequestFromRequestInfo(
+export function createRequestFromRequestInfo(
   data: RequestInfo,
   customColumns: CustomColumnConfig[],
 ): Request {
