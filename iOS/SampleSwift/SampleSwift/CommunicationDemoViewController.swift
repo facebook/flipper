@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import UIKit
 import FlipperKit
+import UIKit
 
 class CommunicationDemoViewController: UIViewController, UITableViewDataSource, FlipperKitExampleCommunicationResponderDelegate {
   @IBOutlet weak var messageField: UITextField!
@@ -19,12 +19,12 @@ class CommunicationDemoViewController: UIViewController, UITableViewDataSource, 
   }
 
   @IBAction func tappedTriggerNotification(_ sender: UIButton) {
-  FlipperKitExamplePlugin.sharedInstance()?.triggerNotification();
+    FlipperKitExamplePlugin.sharedInstance()?.triggerNotification()
   }
 
   @IBAction func tappedSendMessage(_ sender: UIButton) {
     if let message = self.messageField.text {
-      FlipperKitExamplePlugin.sharedInstance()?.sendMessage(message);
+      FlipperKitExamplePlugin.sharedInstance()?.sendMessage(message)
     }
   }
 
@@ -35,13 +35,13 @@ class CommunicationDemoViewController: UIViewController, UITableViewDataSource, 
   }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return messageArray.count;
+    return messageArray.count
   }
 
   func messageReceived(_ msg: String!) {
     messageArray.append(msg)
     DispatchQueue.main.async { [weak self] in
-      self?.tableView.reloadData();
+      self?.tableView.reloadData()
     }
   }
 }

@@ -9,16 +9,15 @@ import UIKit
 
 class ViewController: UIViewController, UITableViewDataSource {
   let marineMammals: [MarineMammal] = MarineMammal.defaultList
-  
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
   }
-  
+
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return marineMammals.count
   }
-  
+
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "MarineMammalCell", for: indexPath)
     guard let mammalCell = cell as? MarineMammalCell else {
@@ -26,6 +25,5 @@ class ViewController: UIViewController, UITableViewDataSource {
     }
     mammalCell.populate(marineMammal: marineMammals[indexPath.row])
     return mammalCell
-  }  
+  }
 }
-
