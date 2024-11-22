@@ -43,7 +43,7 @@ test('DataSource handles updates', () => {
     key: 'id',
     indices: [['method'], ['status']],
   });
-  const customColumns = [];
+  const customColumns: Parameters<typeof createRequestFromRequestInfo>[1] = [];
 
   requests.upsert(createRequestFromRequestInfo(firstRequest, customColumns));
   requests.upsert(createRequestFromRequestInfo(secondRequest, customColumns));
