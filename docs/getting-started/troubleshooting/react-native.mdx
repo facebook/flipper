@@ -37,7 +37,8 @@ When using Flipper with React Native, two devices should show up:
 
 ### I'm seeing "certificate verify failed, type = SSL error" in the logs
 
-Ensure that your device is set to the correct time and time zone for TLS verification to work.
+1. Ensure that your device is set to the correct time and time zone for TLS verification to work.
+2. Remove the old certificates (mv ~/.flipper/certs ~/.flipper/certs.old)                            
 
 ### I see my app, but I don't see the external plugins I've installed
 
