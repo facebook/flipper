@@ -12,6 +12,7 @@ import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -22,66 +23,95 @@ import okhttp3.Response;
 
 public final class ExampleActions {
 
-  public static void sendPostRequest(OkHttpClient client) {
-    final RequestBody formBody =
-        new FormBody.Builder().add("app", "Flipper").add("remarks", "Its awesome").build();
+   public static void sendPostRequest() {
+       // Create a new OkHttpClient instance with timeouts for this request
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .build();
 
-    final Request request =
-        new Request.Builder()
-            .url("https://demo9512366.mockable.io/SonarPost")
-            .post(formBody)
-            .build();
+        final RequestBody formBody =
+                new FormBody.Builder().add("app", "Flipper").add("remarks", "Its awesome").build();
 
-    client
-        .newCall(request)
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(final Call call, final IOException e) {
-                e.printStackTrace();
-                Log.d("Flipper", e.getMessage());
-              }
+        final Request request =
+                new Request.Builder()
+                        .url("https://demo9512366.mockable.io/SonarPost") // Update with the correct URL
+                        .post(formBody)
+                        .build();
 
-              @Override
-              public void onResponse(final Call call, final Response response) throws IOException {
-                if (response.isSuccessful()) {
-                  Log.d("Flipper", response.body().string());
-                } else {
-                  Log.d("Flipper", "not successful");
-                }
-              }
-            });
-  }
+        client
+                .newCall(request)
+                .enqueue(
+                        new Callback() {
+                            @Override
+                            public void onFailure(final Call call, final IOException e) {
+                                e.printStackTrace();
+                                Log.d("Flipper", "Post Request Failed: " + e.getMessage());
 
-  public static void sendGetRequest(OkHttpClient client) {
-    final Request request =
-        new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
-    client
-        .newCall(request)
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(final Call call, final IOException e) {
-                e.printStackTrace();
-                Log.d("Flipper", e.getMessage());
-              }
+                                // Close the OkHttpClient when no longer needed
+                                client.dispatcher().executorService().shutdown();
+                                client.connectionPool().evictAll();
+                            }
 
-              @Override
-              public void onResponse(final Call call, final Response response) throws IOException {
-                if (response.isSuccessful()) {
-                  Log.d("Flipper", response.body().string());
-                } else {
-                  Log.d("Flipper", "not successful");
-                }
-              }
-            });
-  }
+                            @Override
+                            public void onResponse(final Call call, final Response response) throws IOException {
+                                if (response.isSuccessful()) {
+                                    Log.d("Flipper", "Post Request Successful: " + response.body().string());
+                                } else {
+                                    Log.d("Flipper", "Post Request Not Successful: " + response.code());
+                                }
 
-  public static void sendNotification() {
-    final FlipperClient client = AndroidFlipperClient.getInstanceIfInitialized();
-    if (client != null) {
-      final ExampleFlipperPlugin plugin = client.getPluginByClass(ExampleFlipperPlugin.class);
-      plugin.triggerNotification();
+                                // Close the OkHttpClient when no longer needed
+                                client.dispatcher().executorService().shutdown();
+                                client.connectionPool().evictAll();
+                            }
+                        });
     }
-  }
+
+    public static void sendGetRequest() {
+        // Create a new OkHttpClient instance with timeouts for this request
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .build();
+
+        final Request request =
+                new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
+
+        client
+                .newCall(request)
+                .enqueue(
+                        new Callback() {
+                            @Override
+                            public void onFailure(final Call call, final IOException e) {
+                                e.printStackTrace();
+                                Log.d("Flipper", "Get Request Failed: " + e.getMessage());
+
+                                // Close the OkHttpClient when no longer needed
+                                client.dispatcher().executorService().shutdown();
+                                client.connectionPool().evictAll();
+                            }
+
+                            @Override
+                            public void onResponse(final Call call, final Response response) throws IOException {
+                                if (response.isSuccessful()) {
+                                    Log.d("Flipper", "Get Request Successful: " + response.body().string());
+                                } else {
+                                    Log.d("Flipper", "Get Request Not Successful: " + response.code());
+                                }
+
+                                // Close the OkHttpClient when no longer needed
+                                client.dispatcher().executorService().shutdown();
+                                client.connectionPool().evictAll();
+                            }
+                        });
+    }
+
+    public static void sendNotification() {
+        final FlipperClient client = AndroidFlipperClient.getInstanceIfInitialized();
+        if (client != null) {
+            final ExampleFlipperPlugin plugin = client.getPluginByClass(ExampleFlipperPlugin.class);
+            plugin.triggerNotification();
+        }
+    }
 }
