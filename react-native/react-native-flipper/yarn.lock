@@ -5342,9 +5342,9 @@ react-native-windows@0.68.2:
     ws "^6.1.4"
 
 react-native@^0.68.2:
-  version "0.68.4"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.68.4.tgz#c52c590f93e9d115010e458650957824c0b1406e"
-  integrity sha512-Hp5qwztQ1XNnV43QTz1kUx33iZHmJqbbe7L19V9psaWtX/h9j6SEtZ3UHBrigIPlppkIP1E5x3CDr9FdD4d6CA==
+  version "0.68.7"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.68.7.tgz#9b179f909ac8640e369957696f98070ddf7c32e7"
+  integrity sha512-t7XvcwKyXhN9vR8GfgLUyEYYccwI390pG7debFSGns/5Vb0+/ZiGuSmVZGLNt1NVc3UH2zI2GGkDdSJR8Locig==
   dependencies:
     "@jest/create-cache-key-function" "^27.0.1"
     "@react-native-community/cli" "^7.0.3"
