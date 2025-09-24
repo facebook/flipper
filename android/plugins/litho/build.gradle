@@ -37,7 +37,7 @@ android {
         implementation deps.lithoSectionsCore
         implementation deps.lithoWidget
         implementation deps.supportAppCompat
-        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1"
+        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0"
         compileOnly deps.jsr305
 
         testImplementation deps.junit
