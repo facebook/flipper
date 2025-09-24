@@ -58,23 +58,11 @@ export default function Index() {
             </FbInternalOnly>
             <OssOnly>
               <div>
-                <p className="landing-btn landing-btn-left landing-btn-label">
+                <a
+                  className="landing-btn primary"
+                  target="_blank"
+                  href="https://github.com/facebook/flipper/releases">
                   Download
-                </p>
-                <a
-                  className="landing-btn landing-btn-middle primary"
-                  href="https://www.facebook.com/fbflipper/public/mac">
-                  Mac
-                </a>
-                <a
-                  className="landing-btn landing-btn-middle primary"
-                  href="https://www.facebook.com/fbflipper/public/other">
-                  Linux
-                </a>
-                <a
-                  className="landing-btn landing-btn-right primary"
-                  href="https://www.facebook.com/fbflipper/public/other">
-                  Windows
                 </a>
                 <a className="landing-btn" href={useBaseUrl('docs/features')}>
                   Learn more
@@ -181,7 +169,7 @@ export default function Index() {
           </a>
           <OssOnly>
             <a
-              href="https://www.facebook.com/fbflipper/public/mac"
+              href="https://github.com/facebook/flipper/releases"
               target="_blank"
               className="landing-btn">
               Download Flipper
