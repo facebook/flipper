@@ -226,7 +226,7 @@ std::pair<std::string, std::string> ConnectionContextStore::getCertificate() {
           certificate_path.c_str(),
           CERTIFICATE_FILE_NAME,
           CERTIFICATE_PASSWORD)) {
-    log("ERROR: Unable to genereate certificate pkcs#12");
+    log("ERROR: Unable to generate certificate pkcs#12");
     return std::make_pair("", "");
   }
 
