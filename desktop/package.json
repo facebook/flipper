@@ -71,7 +71,7 @@
     "@testing-library/react": "^12.1.4",
     "@types/jest": "^29.5.3",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
-    "@typescript-eslint/parser": "^6.19.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.56.0",
     "eslint-config-fbjs": "^4.0.0",
