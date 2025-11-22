@@ -213,7 +213,10 @@
         }
         @try {
           DatabaseExecuteSqlResponse* sqlResponse =
-              [descriptorHolder.databaseDriver executeSQL:request.value];
+              [descriptorHolder.databaseDriver
+                    executeSQLWithDatabaseDescriptor:descriptorHolder
+                                                         .databaseDescriptor
+                                                 sql:request.value];
           NSDictionary* response =
               [ObjectMapper databaseExecuteSqlResponseToDictionary:sqlResponse];
           [responder success:response];

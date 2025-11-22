@@ -33,5 +33,8 @@
                                reverse:(BOOL)reverse
                                  start:(NSInteger)start
                                  count:(NSInteger)count;
-- (DatabaseExecuteSqlResponse*)executeSQL:(NSString*)sql;
+- (DatabaseExecuteSqlResponse*)
+    executeSQLWithDatabaseDescriptor:
+        (id<DatabaseDescriptor>)databaseDescriptor
+                                 sql:(NSString*)sql;
 @end
