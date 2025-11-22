@@ -67,4 +67,4 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${LIBEVENT_DIR}/include/event2
     )
 
-target_link_libraries(${PACKAGE_NAME} fbjni::fbjni flippercpp)
+target_link_libraries(${PACKAGE_NAME} flippercpp fbjni::fbjni log openssl::ssl openssl::crypto)
