@@ -25,4 +25,4 @@ xz2 = "0.1.7"
 ignore = "0.4.22"
 
 [dev-dependencies]
-tempfile = "3.9.0"
+tempfile = "3.10.1"
