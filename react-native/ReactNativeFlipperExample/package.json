@@ -11,7 +11,7 @@
     "use-local-deps": "relative-deps"
   },
   "dependencies": {
-    "react": "^18.0.0",
+    "react": "^18.3.1",
     "react-native": "^0.69.7",
     "react-native-flipper": "^0.195.0",
     "react-native-windows": "^0.69.0"
