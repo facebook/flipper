@@ -27,4 +27,5 @@ jobs:
         yes | sdkmanager "platforms;android-33" || true
         /tmp/retry -m 3 ./gradlew :android:assembleRelease --info
     - name: Deploy Snapshot
+      if: ${{ github.repository == 'facebook/flipper' }}
       run: "/tmp/retry -m 3 scripts/publish-android-snapshot.sh"

@@ -12,6 +12,7 @@ on:
 
 jobs:
   build:
+    if: ${{ github.repository == 'facebook/flipper' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3.5.3

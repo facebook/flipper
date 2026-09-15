@@ -8,6 +8,7 @@ on:
 
 jobs:
   publish_flipper_pod:
+    if: ${{ github.repository == 'facebook/flipper' }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3.5.3
@@ -27,6 +28,7 @@ jobs:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
   publish_flipperkit_pod:
+    if: ${{ github.repository == 'facebook/flipper' }}
     needs: publish_flipper_pod
     runs-on: macos-latest
     steps:
@@ -47,6 +49,7 @@ jobs:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
   create_pr:
+    if: ${{ github.repository == 'facebook/flipper' }}
     needs: publish_flipperkit_pod
     runs-on: macos-latest
     steps:
