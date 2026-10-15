@@ -22,7 +22,7 @@ jobs:
       id: yarn-cache-dir-path
       run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       shell: bash
-    - uses: actions/cache@v2
+    - uses: actions/cache@v4
       id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -61,25 +61,25 @@ jobs:
       run: yarn build --win
       working-directory: ${{env.desktop-directory}}
     - name: upload linux artifact
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v4
       if: matrix.os == 'ubuntu-latest'
       with:
         name: Flipper-linux.zip
         path: dist/Flipper-linux.zip
     - name: upload windows artifact
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v4
       if: matrix.os == 'windows-latest'
       with:
         name: Flipper-win.zip
         path: dist/Flipper-win.zip
     - name: upload mac zip artifact
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v4
       if: matrix.os == 'macos-latest'
       with:
         name: Flipper-mac.zip
         path: dist/Flipper-mac.zip
     - name: upload mac dmg artifact
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v4
       if: matrix.os == 'macos-latest'
       with:
         name: Flipper-mac.dmg

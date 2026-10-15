@@ -47,7 +47,7 @@ jobs:
         java-version: '11'
     - name: Compute build cache
       run: ${GITHUB_WORKSPACE}/scripts/checksum-android.sh checksum-android.txt
-    - uses: actions/cache@v3.3.1
+    - uses: actions/cache@v4
       with:
         path: |
           ~/.gradle/caches/modules-*
