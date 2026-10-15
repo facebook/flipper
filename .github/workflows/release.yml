@@ -151,12 +151,16 @@ jobs:
           path: "flipper-server.tgz"
       - name: GitHub Upload Release Artifacts
         if: ${{ needs.release.outputs.tag != '' }}
-        uses: aigoncharov/github-upload-release-artifacts-action@2.2.3
+        uses: softprops/action-gh-release@v0.1.15
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          created_tag: ${{ needs.release.outputs.tag }}
-          args: flipper-server.tgz/flipper-server.tgz Flipper-server-mac-x64.dmg/Flipper-server-mac-x64.dmg Flipper-server-mac-aarch64.dmg/Flipper-server-mac-aarch64.dmg
+          tag_name: ${{ needs.release.outputs.tag }}
+          fail_on_unmatched_files: true
+          files: |
+            flipper-server.tgz/flipper-server.tgz
+            Flipper-server-mac-x64.dmg/Flipper-server-mac-x64.dmg
+            Flipper-server-mac-aarch64.dmg/Flipper-server-mac-aarch64.dmg
       - name: Set up npm token
         if: ${{ needs.release.outputs.tag != '' && github.repository == 'facebook/flipper' }}
         run: echo "//registry.yarnpkg.com/:_authToken=${{ secrets.FLIPPER_NPM_TOKEN }}" >> ~/.npmrc
