@@ -10,10 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y sdkmanager
     - name: Install JDK
       uses: actions/setup-java@v4
       with:
@@ -24,7 +20,7 @@ jobs:
       run: scripts/install-retry.sh
     - name: Build
       run: |
-        yes | sdkmanager "platforms;android-33" || true
+        yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-33" || true
         /tmp/retry -m 3 ./gradlew :android:assembleRelease --info
     - name: Deploy Snapshot
       if: ${{ github.repository == 'facebook/flipper' }}
