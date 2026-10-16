@@ -156,24 +156,6 @@ Pod::Spec.new do |spec|
     ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**", "ONLY_ACTIVE_ARCH": "YES" }
   end
 
-  spec.subspec "FlipperKitLayoutComponentKitSupport" do |ss|
-    ss.header_dir = "FlipperKitLayoutComponentKitSupport"
-    ss.dependency             'FlipperKit/Core'
-    ss.dependency             'ComponentKit', '0.31'
-    ss.dependency             'RenderCore', '0.31'
-    ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
-    ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
-    ss.dependency             'FlipperKit/FlipperKitHighlightOverlay'
-    ss.dependency             'FlipperKit/FlipperKitLayoutHelpers'
-    ss.compiler_flags       = folly_compiler_flags
-    ss.public_header_files = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h',
-                             'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/SKSubDescriptor.h'
-    ss.source_files         = "iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
-    ss.exclude_files        = ['iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/fb/*','iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/facebook/*']
-    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**","ONLY_ACTIVE_ARCH": "YES" }
-
-  end
-
   spec.subspec "FlipperKitNetworkPlugin" do |ss|
     ss.header_dir = "FlipperKitNetworkPlugin"
     ss.dependency             'FlipperKit/Core'
