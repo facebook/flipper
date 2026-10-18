@@ -7,14 +7,14 @@ on:
       - "xplat/**"
       - "Flipper.podspec"
       - "FlipperKit.podspec"
-      - "iOS-pod-lint.yml"
+      - ".github/workflows/iOS-pod-lint.yml"
   pull_request:
     paths:
       - "iOS/**"
       - "xplat/**"
       - "Flipper.podspec"
       - "FlipperKit.podspec"
-      - "iOS-pod-lint.yml"
+      - ".github/workflows/iOS-pod-lint.yml"
 
 jobs:
   lint-flipperkit_fbdefines_pod:
@@ -28,7 +28,7 @@ jobs:
         with:
           timeout_minutes: 60
           max_attempts: 3
-          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FBDefines --use-libraries --allow-warnings --verbose --skip-import-validation
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FBDefines --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_core_pod:
     runs-on: macos-latest
@@ -41,7 +41,7 @@ jobs:
         with:
           timeout_minutes: 60
           max_attempts: 3
-          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/Core --use-libraries --allow-warnings --verbose --skip-import-validation
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/Core --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_cppbridge_pod:
     runs-on: macos-latest
@@ -54,7 +54,7 @@ jobs:
         with:
           timeout_minutes: 60
           max_attempts: 3
-          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/CppBridge --use-libraries --allow-warnings --verbose --skip-import-validation
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/CppBridge --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_dynamic_convert_pod:
     runs-on: macos-latest
@@ -67,7 +67,7 @@ jobs:
         with:
           timeout_minutes: 60
           max_attempts: 3
-          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FBCxxFollyDynamicConvert --use-libraries --allow-warnings --verbose --skip-import-validation
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FBCxxFollyDynamicConvert --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_port_forwarding_pod:
     runs-on: macos-latest
@@ -80,7 +80,7 @@ jobs:
         with:
           timeout_minutes: 60
           max_attempts: 3
-          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FKPortForwarding --use-libraries --allow-warnings --verbose --skip-import-validation
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FKPortForwarding --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_layout_highlight_pod:
     runs-on: macos-latest
@@ -93,7 +93,7 @@ jobs:
         with:
           timeout_minutes: 60
           max_attempts: 3
-          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitHighlightOverlay --use-libraries --allow-warnings --verbose --skip-import-validation
+          command: pod lib lint FlipperKit.podspec --subspec=FlipperKit/FlipperKitHighlightOverlay --include-podspecs=Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
 
   lint-flipperkit_layout_text_searchable_pod:
     runs-on: macos-latest
