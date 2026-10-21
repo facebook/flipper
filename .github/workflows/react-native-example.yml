@@ -83,7 +83,7 @@ jobs:
       - name: Gather environment info
         run: npx envinfo
       - name: Install vcpkg packages
-        run: vcpkg install openssl:x64-uwp openssl:arm-uwp
+        run: vcpkg install openssl:x64-uwp
       - name: Integrate vcpkg
         run: vcpkg integrate install
       - name: Install yarn dependencies (react-native-flipper)
