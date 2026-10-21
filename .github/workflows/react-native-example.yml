@@ -98,4 +98,9 @@ jobs:
         run: yarn relative-deps
       - name: Build React Native Windows Example debug app
         shell: powershell
+        env:
+          # fmt 7.1.3, bundled with react-native-windows 0.69, uses
+          # stdext::checked_array_iterator, which current MSVC deprecates (STL4043).
+          # react-native-windows builds with warnings as errors.
+          CL: /D_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
         run: npx react-native run-windows --logging --no-autolink --no-packager --no-deploy --no-launch --arch x64
