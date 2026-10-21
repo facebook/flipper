@@ -4,6 +4,16 @@ source 'https://github.com/CocoaPods/Specs'
 
 platform :ios, '12.4'
 
+# React Native 0.69's boost podspec downloads from boostorg.jfrog.io, which no
+# longer serves the pinned tarball. archives.boost.io serves the identical file
+# (same sha256), so point the bundled podspec there before pods are resolved.
+boost_podspec = File.join(__dir__, '../node_modules/react-native/third-party-podspecs/boost.podspec')
+if File.exist?(boost_podspec)
+  File.write(boost_podspec, File.read(boost_podspec).sub(
+    'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/',
+    'https://archives.boost.io/release/1.76.0/source/'))
+end
+
 # used for automatic bumping
 flipperkit_version = '0.250.0'
 
