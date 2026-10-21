@@ -65,7 +65,7 @@ jobs:
         cd android && ./gradlew assembleDebug
 
   build-react-native-example-windows:
-    runs-on: windows-2019
+    runs-on: windows-2022
     defaults:
       run:
         working-directory: react-native/ReactNativeFlipperExample
@@ -75,11 +75,11 @@ jobs:
         with:
           node-version: '18.x'
       - name: Set up NuGet.exe
-      - uses: NuGet/setup-nuget@v1.2.0
+        uses: NuGet/setup-nuget@v1.2.0
         with:
           nuget-version: '5.x'
       - name: Add msbuild to PATH
-      - uses: microsoft/setup-msbuild@v1.3.1
+        uses: microsoft/setup-msbuild@v1.3.1
       - name: Gather environment info
         run: npx envinfo
       - name: Install vcpkg packages
