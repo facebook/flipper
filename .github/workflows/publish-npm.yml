@@ -20,7 +20,11 @@ jobs:
         with:
           node-version: '18.x'
       - name: Install
-        run: yarn
+        uses: nick-invision/retry@v2.0.0
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: cd desktop && yarn
       - name: Set versions
         run: yarn bump-versions
       - name: Set up npm token
