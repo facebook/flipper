@@ -8,7 +8,7 @@ target 'Tutorial' do
 
   pod 'FlipperKit', '~>' + flipperkit_version
   # Layout and network plugins are not yet supported for swift projects
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
+  pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
 
@@ -18,8 +18,8 @@ target 'Tutorial' do
   # it's dependencies to be static and all other pods to
   # be dynamic.
   $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-    'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
-    'Flipper-Glog', 'Flipper-PeerTalk', 'Yoga', 'YogaKit',
+    'CocoaAsyncSocket', 'Flipper-DoubleConversion',
+    'Flipper-Glog', 'Flipper-PeerTalk',
     'CocoaLibEvent', 'OpenSSL-Universal', 'Flipper-Boost-iOSX', 'Flipper-Fmt']
 
   pre_install do |installer|
