@@ -9,6 +9,7 @@
 #include <folly/DynamicConverter.h>
 #include <folly/String.h>
 #include <folly/json.h>
+#include <chrono>
 #include <stdexcept>
 #include <thread>
 #include "ConnectionContextStore.h"

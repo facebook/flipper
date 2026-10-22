@@ -12,6 +12,7 @@
 #include <folly/futures/Future.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/ScopedEventBaseThread.h>
+#include <chrono>
 
 namespace facebook {
 namespace flipper {
