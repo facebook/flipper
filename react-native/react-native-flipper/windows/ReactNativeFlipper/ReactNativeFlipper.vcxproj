@@ -170,7 +170,10 @@
     <ClCompile Include="..\..\..\..\xplat\Flipper\ConnectionContextStore.cpp" />
     <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperBase64.cpp" />
     <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperClient.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperConnectionImpl.cpp" />
     <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperConnectionManagerImpl.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperLogger.cpp" />
+    <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperMultiPlugin.cpp" />
     <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperSocketProvider.cpp" />
     <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperState.cpp" />
     <ClCompile Include="..\..\..\..\xplat\Flipper\FlipperStep.cpp" />
