@@ -35,13 +35,19 @@ target 'ReactNativeFlipperExample' do
   post_install do |installer|
     react_native_post_install(installer)
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
-    # React Native 0.69's bundled Yoga declares `operator"" _pt`, which current
-    # Xcode reports as -Wdeprecated-literal-operator; Yoga builds with -Werror.
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
+        # React Native 0.69's bundled Yoga declares `operator"" _pt`, which current
+        # Xcode reports as -Wdeprecated-literal-operator; Yoga builds with -Werror.
         flags = config.build_settings['WARNING_CFLAGS'] || '$(inherited)'
         flags = flags.join(' ') if flags.is_a?(Array)
         config.build_settings['WARNING_CFLAGS'] = "#{flags} -Wno-error=deprecated-literal-operator"
+
+        # Boost 1.76 (used by RCT-Folly) still uses std::unary_function, which
+        # current libc++ removes in C++17 unless this compatibility macro is set.
+        defs = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] || '$(inherited)'
+        defs = defs.join(' ') if defs.is_a?(Array)
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = "#{defs} _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"
       end
     end
   end
