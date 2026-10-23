@@ -27,6 +27,7 @@ import {GRAPH_SECRET} from '../fb-stubs/constants';
 import {sessionId} from '../sessionId';
 import {UIPreference, openUI} from '../utils/openUI';
 import {processExit} from '../utils/processExit';
+import {isAllowedHost, isLoopbackAddress} from './localhostSecurity';
 
 import util from 'node:util';
 
@@ -146,6 +147,21 @@ async function startHTTPServer(
 }> {
   const app = express();
 
+  app.use((req, res, next) => {
+    if (!isLoopbackAddress(req.socket.remoteAddress)) {
+      res.status(403).send('Forbidden: only localhost connections are allowed');
+      return;
+    }
+
+    // Prevent DNS rebinding from bypassing the peer-address check.
+    if (!isAllowedHost(req.headers.host)) {
+      res.status(403).send('Forbidden: invalid Host header');
+      return;
+    }
+
+    next();
+  });
+
   app.use((_req, res, next) => {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');
@@ -239,7 +255,7 @@ async function startHTTPServer(
     }
   });
 
-  server.listen(config.port);
+  server.listen(config.port, '127.0.0.1');
 
   /**
    * Create the promise which can be waited on. In this case,
@@ -288,6 +304,13 @@ async function startHTTPServer(
  */
 function attachWS(server: http.Server, _config: Config) {
   const verifyClient: VerifyClientCallbackSync = ({req}) => {
+    if (
+      !isLoopbackAddress(req.socket.remoteAddress) ||
+      !isAllowedHost(req.headers.host)
+    ) {
+      return false;
+    }
+
     return process.env.SKIP_TOKEN_VERIFICATION ? true : verifyAuthToken(req);
   };
 
