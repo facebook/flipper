@@ -32,15 +32,9 @@ export type {FlipperServer, FlipperServerCommands, FlipperServerExecOptions};
 export function createFlipperServer(
   host: string,
   port: number,
-  tokenProvider: () => string | null | undefined,
   onStateChange: (state: FlipperServerState) => void,
 ): Promise<FlipperServer> {
-  const URLProvider = () => {
-    const token = tokenProvider();
-    return `ws://${host}:${port}?token=${token}`;
-  };
-
-  const socket = new ReconnectingWebSocket(URLProvider);
+  const socket = new ReconnectingWebSocket(`ws://${host}:${port}`);
   return createFlipperServerWithSocket(
     socket as WebSocket,
     port,

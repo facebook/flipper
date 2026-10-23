@@ -29,7 +29,6 @@ import {setFlipperServerConfig as setFlipperServerConfigServer} from 'flipper-se
   appVersion: '0.0.0',
   sessionId: 'TEST_SESSION_ID',
   unixname: 'Luke',
-  authToken: 'TEST_AUTH_TOKEN',
 };
 
 const test = global.test;

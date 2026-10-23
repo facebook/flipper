@@ -26,7 +26,6 @@ declare global {
       appVersion: string;
       sessionId: string;
       unixname: string;
-      authToken: string;
     };
 
     flipperShowMessage?(message: {title?: string; detail?: string}): void;

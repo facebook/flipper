@@ -28,6 +28,7 @@ import {sessionId} from '../sessionId';
 import {UIPreference, openUI} from '../utils/openUI';
 import {processExit} from '../utils/processExit';
 import {isAllowedHost, isLoopbackAddress} from './localhostSecurity';
+import {getRequestAuthToken} from './requestAuthentication';
 
 import util from 'node:util';
 
@@ -40,16 +41,7 @@ type Config = {
 type ReadyForConnections = (server: FlipperServerImpl) => Promise<void>;
 
 const verifyAuthToken = (req: http.IncomingMessage): boolean => {
-  let token: string | null = null;
-
-  if (req.url) {
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    token = url.searchParams.get('token');
-  }
-
-  if (!token && req.headers['x-access-token']) {
-    token = req.headers['x-access-token'] as string;
-  }
+  const token = getRequestAuthToken(req.headers);
 
   if (!isProduction()) {
     console.info('[conn] verifyAuthToken -> token', token);
@@ -175,6 +167,12 @@ async function startHTTPServer(
       : path.join(config.staticPath, 'loading.html');
     const token = await getAuthToken();
 
+    res.cookie('flipper_auth', token, {
+      httpOnly: true,
+      sameSite: 'strict',
+      path: '/',
+    });
+
     const flipperConfig = {
       theme: 'light',
       entryPoint: isProduction()
@@ -185,7 +183,6 @@ async function startHTTPServer(
       appVersion: environmentInfo.appVersion,
       sessionId,
       unixname: environmentInfo.os.unixname,
-      authToken: token,
     };
 
     fs.readFile(resource, (_err, content) => {
@@ -311,7 +308,7 @@ function attachWS(server: http.Server, _config: Config) {
       return false;
     }
 
-    return process.env.SKIP_TOKEN_VERIFICATION ? true : verifyAuthToken(req);
+    return verifyAuthToken(req);
   };
 
   const options: ServerOptions = {

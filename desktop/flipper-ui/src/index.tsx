@@ -85,12 +85,7 @@ async function start() {
   const params = new URL(location.href).searchParams;
 
   if (!isProduction()) {
-    let token = params.get('token');
-    if (!token) {
-      token = window.flipperConfig.authToken;
-    }
-
-    const socket = new WebSocket(`ws://${location.host}?token=${token}`);
+    const socket = new WebSocket(`ws://${location.host}`);
     socket.addEventListener('message', ({data: dataRaw}) => {
       const message = JSON.parse(dataRaw.toString());
 
@@ -112,32 +107,6 @@ async function start() {
     });
   }
 
-  const tokenProvider = () => {
-    const providerParams = new URL(location.href).searchParams;
-    let token = providerParams.get('token');
-    if (!token) {
-      console.info('[flipper-client][ui-browser] Get token from HTML instead');
-      token = window.flipperConfig.authToken;
-      if (!token || token === 'FLIPPER_AUTH_TOKEN_REPLACE_ME') {
-        console.warn(
-          '[flipper-client][ui-browser] Failed to get token from HTML',
-          token,
-        );
-        window.flipperShowMessage?.({
-          detail: `[flipper-client][ui-browser] Failed to get token from HTML: ${token}`,
-        });
-      }
-    }
-
-    getLogger().info(
-      '[flipper-client][ui-browser] Token is available: ',
-      token?.length != 0,
-      token?.length === 460,
-    );
-
-    return token;
-  };
-
   const deepLinkURL = maybeDeepLinkURLFromSearchParams(params);
   if (deepLinkURL) {
     cachedDeepLinkURL = deepLinkURL.toString();
@@ -149,7 +118,6 @@ async function start() {
   const flipperServer = await createFlipperServer(
     location.hostname,
     parseInt(location.port, 10),
-    tokenProvider,
     (state: FlipperServerState) => {
       const timestamp = performance.now();
       getLogger().track('usage', 'browser-server-state-changed', {
