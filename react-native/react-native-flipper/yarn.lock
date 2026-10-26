@@ -2027,15 +2027,15 @@
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
 
-"@react-native-windows/cli@0.68.1":
-  version "0.68.1"
-  resolved "https://registry.yarnpkg.com/@react-native-windows/cli/-/cli-0.68.1.tgz#63becfef30279d5b45dfe9ff145b5ff4411c853f"
-  integrity sha512-NYTlk77ldCu/TNfXEFsruiT/wRJ08KKJN1fDPfkixbj82Ub7iBzaTt5v7o6FFVgTG9uG5RGCV3UWSeYCWWMUhw==
+"@react-native-windows/cli@0.68.9":
+  version "0.68.9"
+  resolved "https://registry.yarnpkg.com/@react-native-windows/cli/-/cli-0.68.9.tgz#f6826b64d83c589833adb4465fbd5b5a4f5f2fd8"
+  integrity sha512-BP7aCjJ3tyOZrBZfuhXFKXVu4epsBumeTYoWu+YO9JAEl/a7gaYuLbrKIqNDvmh4XCDaAlKNG5Ik+14vXLUuKw==
   dependencies:
-    "@react-native-windows/fs" "0.68.0"
-    "@react-native-windows/package-utils" "0.68.0"
-    "@react-native-windows/telemetry" "0.68.1"
-    "@xmldom/xmldom" "^0.7.5"
+    "@react-native-windows/fs" "0.68.1"
+    "@react-native-windows/package-utils" "0.68.1"
+    "@react-native-windows/telemetry" "0.68.5"
+    "@xmldom/xmldom" "^0.7.7"
     chalk "^4.1.0"
     cli-spinners "^2.2.0"
     envinfo "^7.5.0"
@@ -2053,49 +2053,48 @@
     xml-parser "^1.2.1"
     xpath "^0.0.27"
 
-"@react-native-windows/find-repo-root@0.68.0":
-  version "0.68.0"
-  resolved "https://registry.yarnpkg.com/@react-native-windows/find-repo-root/-/find-repo-root-0.68.0.tgz#efbc5af3a4952a7e7712f8d6bd73b8de858f3d7d"
-  integrity sha512-YuSUlrRdr6SNPapf4b77yi3U/rfTeYhetBpSwm1L/jq3UT8Wm4Z/JSBZg2UioYIeQV6xrNRjlLQHKjDBzmxOkQ==
+"@react-native-windows/find-repo-root@0.68.1":
+  version "0.68.1"
+  resolved "https://registry.yarnpkg.com/@react-native-windows/find-repo-root/-/find-repo-root-0.68.1.tgz#d8d92568e58bffe808ca407eec811ec6ffb20f6b"
+  integrity sha512-MUwwQMxJj4s9R08CovCAChiQAlZZeSXcFoKuolH2AQ39WOT/w1UbFpznZSU34R3c4JqmsSJd91m0OPgaUhhcvA==
   dependencies:
     find-up "^4.1.0"
 
-"@react-native-windows/fs@0.68.0":
-  version "0.68.0"
-  resolved "https://registry.yarnpkg.com/@react-native-windows/fs/-/fs-0.68.0.tgz#bdf722b9c7475e66de9a580b37cdb7136af797a4"
-  integrity sha512-2ZnL0NVs6zJQgXypyX1Arh7Xyo8mG1yKw1ephbOX5U6J7HLlnsx3X1sANGIz+JcAjA9jEJ08r9DHbH93NvzFWA==
+"@react-native-windows/fs@0.68.1":
+  version "0.68.1"
+  resolved "https://registry.yarnpkg.com/@react-native-windows/fs/-/fs-0.68.1.tgz#7df0a215dd0d2c123312191a4f9554d08caeb3dc"
+  integrity sha512-8xjwolhwEzFm+GXgneS9YxrLqEBPs6S9T8NQJmo09aAI9bRs8X5FkXh9RnuT7ZAqIHOUaL4zdm83DI7OsZXzgA==
   dependencies:
     graceful-fs "^4.2.8"
 
-"@react-native-windows/package-utils@0.68.0":
-  version "0.68.0"
-  resolved "https://registry.yarnpkg.com/@react-native-windows/package-utils/-/package-utils-0.68.0.tgz#072b838fd106aedaff746ae6fab5173b6c61880a"
-  integrity sha512-IgcZib3Ydhosk8HoN/9l/im/EzeualqQPku/aRUyLehKjYEi7YksUDEM3un9bWyAwCeT9gpIjbEnEFwODQdvZg==
+"@react-native-windows/package-utils@0.68.1":
+  version "0.68.1"
+  resolved "https://registry.yarnpkg.com/@react-native-windows/package-utils/-/package-utils-0.68.1.tgz#c79607dd24412a1b130bfde9e011705634bf5fa1"
+  integrity sha512-vYr/P2RuqqO+M1iORmb55EfSFGXLWmyiUNqsEa0PcyCd9JsWfFZsWWq+0KhrqNNyj2IJYlolL3xXs7y32PCs6w==
   dependencies:
-    "@react-native-windows/find-repo-root" "0.68.0"
-    "@react-native-windows/fs" "0.68.0"
+    "@react-native-windows/find-repo-root" "0.68.1"
+    "@react-native-windows/fs" "0.68.1"
     get-monorepo-packages "^1.2.0"
     lodash "^4.17.15"
 
-"@react-native-windows/telemetry@0.68.1":
-  version "0.68.1"
-  resolved "https://registry.yarnpkg.com/@react-native-windows/telemetry/-/telemetry-0.68.1.tgz#eeb1d10bf04eedd5992907d60a9305c3ee7e7a3b"
-  integrity sha512-wpiDrP4mRjJfz/tBpQyYFHI2jXVwAL+nTWgTUSCmqtany9eASUyFoTvShIZNzPWpHqpYNJAP+FXBBsIXnU37KQ==
+"@react-native-windows/telemetry@0.68.5":
+  version "0.68.5"
+  resolved "https://registry.yarnpkg.com/@react-native-windows/telemetry/-/telemetry-0.68.5.tgz#e2fa578684ff1515fc5fe24fa374f5aa581ee89d"
+  integrity sha512-d5J19O059O60DGf6EWrmxqpBqlcFQK8iAeRdj0VMxvcDg+EgOkncdfhu3qvgxfr5D+ZjbVx3onZprbFD3vRWjw==
   dependencies:
-    "@react-native-windows/fs" "0.68.0"
-    "@xmldom/xmldom" "^0.7.5"
+    "@react-native-windows/fs" "0.68.1"
+    "@xmldom/xmldom" "^0.7.7"
     applicationinsights "^2.3.1"
     ci-info "^3.2.0"
     envinfo "^7.8.1"
     lodash "^4.17.21"
-    node-machine-id "^1.1.12"
     os-locale "^5.0.0"
     xpath "^0.0.27"
 
-"@react-native-windows/virtualized-list@0.68.0":
-  version "0.68.0"
-  resolved "https://registry.yarnpkg.com/@react-native-windows/virtualized-list/-/virtualized-list-0.68.0.tgz#06b63d21bad896c2bd37d6b5544f90f0f4fa838b"
-  integrity sha512-XKqwn7FWDUVanr42sNT+547je2YwCq38I3YR+iq1WcmH5TiQ5E+KF5jXvPv7oOFuWJzzXzjiRZUfEwMv2qqoMg==
+"@react-native-windows/virtualized-list@0.68.1":
+  version "0.68.1"
+  resolved "https://registry.yarnpkg.com/@react-native-windows/virtualized-list/-/virtualized-list-0.68.1.tgz#5dd169a44867fab7decf50941adb0219a2d2eb87"
+  integrity sha512-9FSmMpgBl1gDxNP7GEt9oQvGZuKcLdI8r3Cj6XpW1qNKoQcQu5tVZTpiJEQUM+DkBp7trWLKIPupf/xu4rJ7Zw==
   dependencies:
     invariant "^2.2.4"
 
@@ -2201,10 +2200,10 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@xmldom/xmldom@^0.7.5":
-  version "0.7.5"
-  resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.7.5.tgz#09fa51e356d07d0be200642b0e4f91d8e6dd408d"
-  integrity sha512-V3BIhmY36fXZ1OtVcI9W+FxQqxVLsPKcNjWigIaa81dLC9IolJl5Mt4Cvhmr0flUnjSpTdrbMTSbXqYqV5dT6A==
+"@xmldom/xmldom@^0.7.7":
+  version "0.7.13"
+  resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.7.13.tgz#ff34942667a4e19a9f4a0996a76814daac364cf3"
+  integrity sha512-lm2GW5PkosIzccsaZIz7tp8cPADSIlIHWDFTR1N0SzfinhhYgeIQjFMz4rYzanCScr3DqQLeomUDArp6MWKm+g==
 
 abort-controller@^3.0.0:
   version "3.0.0"
@@ -4823,11 +4822,6 @@ node-int64@^0.4.0:
   resolved "https://registry.yarnpkg.com/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
   integrity sha1-h6kGXNs1XTGC2PlM4RGIuCXGijs=
 
-node-machine-id@^1.1.12:
-  version "1.1.12"
-  resolved "https://registry.yarnpkg.com/node-machine-id/-/node-machine-id-1.1.12.tgz#37904eee1e59b320bb9c5d6c0a59f3b469cb6267"
-  integrity sha512-QNABxbrPa3qEIfrE6GOJ7BYIuignnJw7iQ2YPbc3Nla1HzRJjXzZOiikfF8m7eAMfichLt3M4VgLOetqgDmgGQ==
-
 node-releases@^1.1.71:
   version "1.1.72"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.72.tgz#14802ab6b1039a79a0c7d662b610a5bbd76eacbe"
@@ -5299,18 +5293,18 @@ react-native-gradle-plugin@^0.0.6:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.0.6.tgz#b61a9234ad2f61430937911003cddd7e15c72b45"
   integrity sha512-eIlgtsmDp1jLC24dRn43hB3kEcZVqx6DUQbR0N1ABXGnMEafm9I3V3dUUeD1vh+Dy5WqijSoEwLNUPLgu5zDMg==
 
-react-native-windows@0.68.2:
-  version "0.68.2"
-  resolved "https://registry.yarnpkg.com/react-native-windows/-/react-native-windows-0.68.2.tgz#0a3debb08265dfdaa50382d5934236e66c18207b"
-  integrity sha512-MQanrSQ1NRclY9t6dBO/PkWa5oD+JSuQF6HEmOgvI7fMfGkmOTub0ndwmo5IxxeQMqw8yNdkxa9mYAYVSCcfNQ==
+react-native-windows@0.68.35:
+  version "0.68.35"
+  resolved "https://registry.yarnpkg.com/react-native-windows/-/react-native-windows-0.68.35.tgz#2608e8e9fa6cb3fa16c5a59a1196181974c20882"
+  integrity sha512-UO4nZuv2tKkqnycsJuxD3zTfWsJ8DsEyIy6c1zDibF6d9QkmyfMPlDN6S2MQBq9NsITR+uq5aFq929+M6FtSqQ==
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@jest/create-cache-key-function" "^27.0.1"
     "@react-native-community/cli" "^7.0.3"
     "@react-native-community/cli-platform-android" "^7.0.1"
     "@react-native-community/cli-platform-ios" "^7.0.1"
-    "@react-native-windows/cli" "0.68.1"
-    "@react-native-windows/virtualized-list" "0.68.0"
+    "@react-native-windows/cli" "0.68.9"
+    "@react-native-windows/virtualized-list" "0.68.1"
     "@react-native/assets" "1.0.0"
     "@react-native/normalize-color" "2.0.0"
     "@react-native/polyfills" "2.0.0"
@@ -5874,15 +5868,7 @@ source-map-resolve@^0.5.0:
     source-map-url "^0.4.0"
     urix "^0.1.0"
 
-source-map-support@^0.5.16:
-  version "0.5.16"
-  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.16.tgz#0ae069e7fe3ba7538c64c98515e35339eac5a042"
-  integrity sha512-efyLRJDr68D9hBBNIPWFjhpFzURh+KJykQwvMyW5UiZzYwoF6l4YMMDIJJEyFWxWCqfyxLzz6tSfUFR+kXXsVQ==
-  dependencies:
-    buffer-from "^1.0.0"
-    source-map "^0.6.0"
-
-source-map-support@^0.5.19, source-map-support@~0.5.20:
+source-map-support@^0.5.16, source-map-support@^0.5.19, source-map-support@~0.5.20:
   version "0.5.21"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.21.tgz#04fe7c7f9e1ed2d662233c28cb2b35b9f63f6e4f"
   integrity sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==
