@@ -43,7 +43,7 @@
     "node-fetch": "^2.6.0",
     "node-forge": "^0.10.0",
     "openssl-wrapper": "^0.3.4",
-    "promisify-child-process": "^4.1.2",
+    "promisify-child-process": "^5.0.1",
     "rimraf": "^3.0.2",
     "rsocket-core": "^0.0.27",
     "rsocket-flowable": "^0.0.27",
