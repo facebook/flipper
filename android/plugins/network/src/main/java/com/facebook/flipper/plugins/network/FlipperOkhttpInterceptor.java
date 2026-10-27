@@ -184,7 +184,9 @@ public class FlipperOkhttpInterceptor
 
     final Set<String> keys = headers.names();
     for (final String key : keys) {
-      list.add(new NetworkReporter.Header(key, headers.get(key)));
+      for (final String value : headers.values(key)) {
+        list.add(new NetworkReporter.Header(key, value));
+      }
     }
     return list;
   }
