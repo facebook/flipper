@@ -5,14 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import UIKit
 import FlipperKit
+import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
-
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
@@ -20,10 +19,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
     client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
     client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
-    client?.add(FKUserDefaultsPlugin.init(suiteName: nil))
+    client?.add(FKUserDefaultsPlugin(suiteName: nil))
     client?.add(SeaMammalsPlugin(MarineMammal.defaultList))
     client?.start()
-    
+
     return true
   }
 
@@ -48,7 +47,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationWillTerminate(_ application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
   }
-
-
 }
-
